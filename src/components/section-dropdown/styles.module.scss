@@ -1,0 +1,12 @@
+:local(.Section) {
+  border-top: 1px solid #D1D1D1;
+}
+
+
+:local(.headerWrapper) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 25px 25px 0 0;
+}
