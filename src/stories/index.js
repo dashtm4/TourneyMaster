@@ -2,21 +2,19 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { linkTo } from '@storybook/addon-links';
 import StoriesWrapper from './helpers/stories-wrapper';
+import '../styles/common.scss'
 
 import HeadingLevelTwo from '../components/common/headings/heading-level-two';
 import HeadingLevelThree from '../components/common/headings/heading-level-three';
 import HeadingLevelFour from '../components/common/headings/heading-level-four';
-
 import Button from '../components/common/buttons/button';
 import Checkbox from '../components/common/buttons/checkbox';
 import Radio from '../components/common/buttons/radio';
 import TextField from '../components/common/input';
-
 import SectionDropdown from '../components/common/section-dropdown';
-
 import ProgressBar from '../components/common/progress-bar';
+import ColorPicker from '../components/common/color-picker'
 
-import '../styles/common.scss'
 
 storiesOf('TourneyMaster', module)
   .add('Headeings', () => (
@@ -60,6 +58,11 @@ storiesOf('TourneyMaster', module)
       </StoriesWrapper>
     )
   })
+  .add('Color Picker', () => (
+    <StoriesWrapper>
+      <ColorPicker />
+    </StoriesWrapper>
+  ))
   .add('Buttons', () => (
     <>
       <Button label="Create tournament" color="primary" />
