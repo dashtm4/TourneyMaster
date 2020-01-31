@@ -30,11 +30,11 @@ const Select: React.FC<ISelectProps> = ({
   <ThemeProvider theme={theme}>
     <MuiTextField
       id="select"
+      variant="outlined"
       select={true}
       label={label}
       value={value}
       onChange={onChange}
-      variant="outlined"
     >
       {options.map((option: string, index: number) => (
         <MenuItem key={index} value={option}>
