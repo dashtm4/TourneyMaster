@@ -2,25 +2,25 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { linkTo } from '@storybook/addon-links';
 import StoriesWrapper from './helpers/stories-wrapper';
-import HeadingLevelTwo from '../components/headings/heading-level-two';
-import HeadingLevelThree from '../components/headings/heading-level-three';
-import HeadingLevelFour from '../components/headings/heading-level-four';
-import SectionDropdown from '../components/section-dropdown';
+
+import HeadingLevelTwo from '../components/common/headings/heading-level-two';
+import HeadingLevelThree from '../components/common/headings/heading-level-three';
+import HeadingLevelFour from '../components/common/headings/heading-level-four';
+
+import Button from '../components/common/buttons/button';
+import Checkbox from '../components/common/buttons/checkbox';
+import Radio from '../components/common/buttons/radio';
+import TextField from '../components/common/input';
+
+import SectionDropdown from '../components/common/section-dropdown';
+
 import '../styles/common.scss'
 
 storiesOf('TourneyMaster', module)
-  .add('Headeing Level Two', () => (
-    <StoriesWrapper showApp={linkTo('App')}>
+  .add('Headeings', () => (
+    <StoriesWrapper>
       <HeadingLevelTwo>Heading Level Two</HeadingLevelTwo>
-    </StoriesWrapper>
-  ))
-  .add('Headeing Level Three', () => (
-    <StoriesWrapper>
       <HeadingLevelThree>Heading Level Three</HeadingLevelThree>
-    </StoriesWrapper>
-  ))
-  .add('Headeing Level Four', () => (
-    <StoriesWrapper>
       <HeadingLevelFour>Heading Level Four</HeadingLevelFour>
     </StoriesWrapper>
   ))
@@ -32,3 +32,17 @@ storiesOf('TourneyMaster', module)
       </SectionDropdown>
     </StoriesWrapper>
   ))
+  .add('Buttons', () => (
+    <>
+      <Button label="Create tournament" color="primary" />
+      <Button label="Delete" color="secondary" />
+      <Checkbox options={['Option1', 'Option2']} formLabel="Choose an option" />
+      <Radio options={['Male', 'Female']} formLabel="Gender" />
+    </>
+  ))
+  .add('Inputs', () => (
+    <>
+      <TextField />
+    </>
+  ))
+
