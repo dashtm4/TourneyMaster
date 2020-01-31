@@ -13,8 +13,10 @@ import Radio from '../components/common/buttons/radio';
 import TextField from '../components/common/input';
 import SectionDropdown from '../components/common/section-dropdown';
 import ProgressBar from '../components/common/progress-bar';
-import ColorPicker from '../components/common/color-picker'
-
+import ColorPicker from '../components/common/color-picker';
+import Paper from '../components/common/paper';
+import CardMessage from '../components/common/card-message';
+import { CardMessageTypes } from '../components/common/card-message/Types';
 
 storiesOf('TourneyMaster', module)
   .add('Headeings', () => (
@@ -62,6 +64,25 @@ storiesOf('TourneyMaster', module)
     <StoriesWrapper>
       <ColorPicker />
     </StoriesWrapper>
+  ))
+  .add('Paper', () => (
+    <StoriesWrapper>
+      <Paper />
+    </StoriesWrapper>
+  ))
+  .add('Card Message', () => (
+    <>
+      <StoriesWrapper>
+        <CardMessage type={CardMessageTypes.INFO}>
+          Playoff settings include Bracket Type, # of Teams, and Ranking Factors
+        </CardMessage>
+      </StoriesWrapper>
+      <StoriesWrapper>
+        <CardMessage type={CardMessageTypes.WARNING}>
+          All existing data in the tournaments Registration section will be overridden!
+        </CardMessage>
+      </StoriesWrapper>
+    </>
   ))
   .add('Buttons', () => (
     <>
