@@ -14,6 +14,8 @@ import TextField from '../components/common/input';
 
 import SectionDropdown from '../components/common/section-dropdown';
 
+import ProgressBar from '../components/common/progress-bar';
+
 import '../styles/common.scss'
 
 storiesOf('TourneyMaster', module)
@@ -24,7 +26,7 @@ storiesOf('TourneyMaster', module)
       <HeadingLevelFour>Heading Level Four</HeadingLevelFour>
     </StoriesWrapper>
   ))
-  .add('SectionDropdown', () => (
+  .add('Section Dropdown', () => (
     <StoriesWrapper>
       <SectionDropdown>
         <span>Its header</span>
@@ -32,6 +34,32 @@ storiesOf('TourneyMaster', module)
       </SectionDropdown>
     </StoriesWrapper>
   ))
+  .add('Progress Bar', () => {
+    const [completed, setCompleted] = React.useState(0);
+
+    React.useEffect(() => {
+      function progress() {
+        setCompleted(oldCompleted => {
+          if (oldCompleted === 100) {
+            return 0;
+          }
+          const diff = Math.random() * 10;
+          return Math.min(oldCompleted + diff, 100);
+        });
+      }
+
+      const timer = setInterval(progress, 500);
+      return () => {
+        clearInterval(timer);
+      };
+    }, []);
+
+    return (
+      <StoriesWrapper>
+        <ProgressBar completed={completed} />
+      </StoriesWrapper>
+    )
+  })
   .add('Buttons', () => (
     <>
       <Button label="Create tournament" color="primary" />
