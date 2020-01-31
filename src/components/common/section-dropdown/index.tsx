@@ -9,7 +9,7 @@ interface Props {
 }
 
 const SectionDropdown = ({ children }: Props) => (
-  <section className={styles.Section}>
+  <section className={styles.section}>
     <ExpansionPanel>
       <ExpansionPanelSummary
         expandIcon={<ExpandMoreIcon />}

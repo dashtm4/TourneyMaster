@@ -19,6 +19,7 @@ import CardMessage from '../components/common/card-message';
 import { CardMessageTypes } from '../components/common/card-message/Types';
 import TooltipMessage from '../components/common/tooltip-message';
 import { TooltipMessageTypes } from '../components/common/tooltip-message/Types';
+import DashboardMenu from '../components/common/dashboard-menu';
 
 storiesOf('TourneyMaster', module)
   .add('Headeings', () => (
@@ -103,6 +104,11 @@ storiesOf('TourneyMaster', module)
         </TooltipMessage>
       </StoriesWrapper>
     </>
+  ))
+  .add('Dashboard Menu', () => (
+    <StoriesWrapper>
+      <DashboardMenu />
+    </StoriesWrapper>
   ))
   .add('Buttons', () => (
     <>
