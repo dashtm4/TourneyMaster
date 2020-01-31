@@ -1,13 +1,31 @@
 import React from 'react';
-import styles from './styles.module.scss';
-import { TooltipMessageTypes } from './Types'
+import { withStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import { TooltipMessageTypes } from './Types';
 
 interface Props {
-  children: string;
-  type: string
+  children: React.ReactElement;
+  title: string;
+  type: string;
 }
 
-const getColor = (type: string) => {
+const TooltipWrapped = withStyles({
+  arrow: {
+    color: '#F4F4F4'
+  },
+  tooltip: {
+    maxWidth: 325,
+    padding: '18px',
+    color: '#6A6A6A',
+    fontSize: 16,
+    lineHeight: '22px',
+    border: '1px solid #dadde9',
+    backgroundColor: '#F4F4F4',
+    boxShadow: '0 1px 10px 0 rgba(0,0,0,0.2)'
+  },
+})(Tooltip);
+
+const getTooltipColor = (type: string) => {
   switch (type) {
     case TooltipMessageTypes.INFO:
       return 'inherit'
@@ -15,15 +33,19 @@ const getColor = (type: string) => {
       return '#FF0F19'
   }
 
-  return ''
+  return 'inherit'
 }
 
-const TooltipMessage = ({ children, type }: Props) => (
-  <p
-    className={styles.TooltipMessage}
-    style={{ color: getColor(type) }}>
+
+const TooltipMessage = ({ children, title, type }: Props) => (
+  <TooltipWrapped
+    title={
+      <span style={{ color: getTooltipColor(type) }}>
+        {title}
+      </span>}
+    arrow>
     {children}
-  </p>
+  </TooltipWrapped>
 )
 
 export default TooltipMessage

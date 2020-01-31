@@ -89,13 +89,17 @@ storiesOf('TourneyMaster', module)
   .add('Tooltip Message', () => (
     <>
       <StoriesWrapper>
-        <TooltipMessage type={TooltipMessageTypes.INFO}>
-          TRUE Florida (2020, 2021) cannot play 10:00 AM - 12:00 PM
+        <TooltipMessage
+          title={'TRUE Florida (2020, 2021) cannot play 10:00 AM - 12:00 PM'}
+          type={TooltipMessageTypes.WARNING}>
+          <p>TRUE Florida (2020, 2021) cannot play 10:00 AM - 12:00 PM</p>
         </TooltipMessage>
       </StoriesWrapper>
       <StoriesWrapper>
-        <TooltipMessage type={TooltipMessageTypes.WARNING}>
-          All existing data in the tournaments Registration section will be overridden!
+        <TooltipMessage
+          title={'All existing data in the tournaments Registration section will be overridden!'}
+          type={TooltipMessageTypes.INFO}>
+          <button>Right now!</button>
         </TooltipMessage>
       </StoriesWrapper>
     </>
