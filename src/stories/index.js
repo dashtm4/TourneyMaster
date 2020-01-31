@@ -17,6 +17,8 @@ import ColorPicker from '../components/common/color-picker';
 import Paper from '../components/common/paper';
 import CardMessage from '../components/common/card-message';
 import { CardMessageTypes } from '../components/common/card-message/Types';
+import TooltipMessage from '../components/common/tooltip-message';
+import { TooltipMessageTypes } from '../components/common/tooltip-message/Types';
 
 storiesOf('TourneyMaster', module)
   .add('Headeings', () => (
@@ -81,6 +83,20 @@ storiesOf('TourneyMaster', module)
         <CardMessage type={CardMessageTypes.WARNING}>
           All existing data in the tournaments Registration section will be overridden!
         </CardMessage>
+      </StoriesWrapper>
+    </>
+  ))
+  .add('Tooltip Message', () => (
+    <>
+      <StoriesWrapper>
+        <TooltipMessage type={TooltipMessageTypes.INFO}>
+          TRUE Florida (2020, 2021) cannot play 10:00 AM - 12:00 PM
+        </TooltipMessage>
+      </StoriesWrapper>
+      <StoriesWrapper>
+        <TooltipMessage type={TooltipMessageTypes.WARNING}>
+          All existing data in the tournaments Registration section will be overridden!
+        </TooltipMessage>
       </StoriesWrapper>
     </>
   ))
