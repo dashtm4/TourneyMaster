@@ -8,7 +8,7 @@ import {
   FormLabel,
 } from '@material-ui/core';
 
-const myTheme = createMuiTheme({
+const theme = createMuiTheme({
   typography: {
     fontFamily: 'Open Sans',
     fontSize: 16,
@@ -31,10 +31,15 @@ const myTheme = createMuiTheme({
 interface ICheckboxProps {
   options: string[];
   formLabel: string;
+  onChange: () => {};
 }
 
-const Checkbox: React.FC<ICheckboxProps> = ({ options, formLabel }) => (
-  <ThemeProvider theme={myTheme}>
+const Checkbox: React.FC<ICheckboxProps> = ({
+  options,
+  formLabel,
+  onChange,
+}) => (
+  <ThemeProvider theme={theme}>
     <FormLabel component="legend">{formLabel}</FormLabel>
     <FormGroup>
       {options.map((option: string, index: number) => (
@@ -42,6 +47,7 @@ const Checkbox: React.FC<ICheckboxProps> = ({ options, formLabel }) => (
           key={index}
           control={<MuiCheckbox value={option} color="primary" />}
           label={option}
+          onChange={onChange}
         />
       ))}
     </FormGroup>

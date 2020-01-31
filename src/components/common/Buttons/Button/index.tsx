@@ -2,8 +2,9 @@ import React from 'react';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { Button as MuiButton } from '@material-ui/core';
+import styles from './style.module.sass';
 
-const myTheme = createMuiTheme({
+const theme = createMuiTheme({
   typography: {
     fontFamily: 'Open Sans',
     fontSize: 16,
@@ -13,7 +14,7 @@ const myTheme = createMuiTheme({
       main: '#1C315F',
     },
     secondary: {
-      main: '#FF0F19',
+      main: '#00A3EA',
     },
   },
   overrides: {
@@ -21,7 +22,6 @@ const myTheme = createMuiTheme({
       root: {
         borderRadius: '21px',
         textTransform: 'none',
-        lineHeight: '22px',
       },
     },
   },
@@ -30,11 +30,25 @@ const myTheme = createMuiTheme({
 interface IButtonProps {
   label: string;
   color: 'primary' | 'secondary' | 'inherit' | 'default' | undefined;
+  variant: 'text' | 'outlined' | 'contained' | undefined;
+  type: string;
+  onClick: () => {};
 }
 
-const Button: React.FC<IButtonProps> = ({ label, color }) => (
-  <ThemeProvider theme={myTheme}>
-    <MuiButton variant="contained" color={color}>
+const Button: React.FC<IButtonProps> = ({
+  label,
+  color,
+  variant,
+  type,
+  onClick,
+}) => (
+  <ThemeProvider theme={theme}>
+    <MuiButton
+      variant={variant}
+      color={color}
+      className={type && styles[`${type}Btn`]}
+      onClick={onClick}
+    >
       {label}
     </MuiButton>
   </ThemeProvider>
