@@ -20,6 +20,9 @@ body {
   line-height: 20px !important;
   text-rendering: optimizeSpeed;
 
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
   scroll-behavior: smooth;
 }
 
@@ -29,11 +32,29 @@ img {
   max-width: 100%;
 }
 
+h1, h2, h3, h4, h5, p {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
 input,
 button,
 textarea,
 select {
+  margin: 0;
+
   font: inherit;
+  font-size: 100%
+}
+
+ol, ul {
+  list-style: none
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
 .visually-hidden {
@@ -51,6 +72,11 @@ select {
 
   clip: rect(0 0 0 0);
   clip-path: inset(100%);
+}
+
+#root {
+  height: 100vh;
+  background-color: #ececec;
 }
 
 @media (prefers-reduced-motion: reduce) {

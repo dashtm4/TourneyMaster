@@ -2,14 +2,11 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { linkTo } from '@storybook/addon-links';
 import StoriesWrapper from './helpers/stories-wrapper';
-import withDropdown from '../hocs/with-dropdown'
-import HeadingLevelTwo from '../components/heading-level-two';
-import HeadingLevelThree from '../components/heading-level-three';
-import HeadingLevelFour from '../components/heading-level-four';
+import HeadingLevelTwo from '../components/headings/heading-level-two';
+import HeadingLevelThree from '../components/headings/heading-level-three';
+import HeadingLevelFour from '../components/headings/heading-level-four';
 import SectionDropdown from '../components/section-dropdown';
 import '../styles/common.scss'
-
-const SectionDropdownWrapped = withDropdown(SectionDropdown);
 
 storiesOf('TourneyMaster', module)
   .add('Headeing Level Two', () => (
@@ -29,6 +26,9 @@ storiesOf('TourneyMaster', module)
   ))
   .add('SectionDropdown', () => (
     <StoriesWrapper>
-      <SectionDropdownWrapped>There will be content</SectionDropdownWrapped>
+      <SectionDropdown>
+        <span>Its header</span>
+        <p>Threre will be content</p>
+      </SectionDropdown>
     </StoriesWrapper>
   ))

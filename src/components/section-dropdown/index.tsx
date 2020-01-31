@@ -1,32 +1,29 @@
 import React from 'react'
-import CardWrapper from '../card-wrapper'
-import HeadeingLevelThree from '../heading-level-three'
-import ButtonCorner from '../button-corner'
-import { BindingAction } from '../../models/callback'
+import HeadeingLevelThree from '../headings/heading-level-three'
+import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import styles from './styles.module.scss'
 
 interface Props {
-  children: React.ReactElement;
-  // from withDropdown hoc
-  isOpen: boolean;
-  onDropdownToggle: BindingAction;
+  children: React.ReactElement[];
 }
 
-const CORNER_BTN_STYLES = {
-  width: '15px',
-  height: '15px',
-  borderWidth: '4px'
-}
-
-const SectionDropdown = ({ children, isOpen, onDropdownToggle }: Props) => (
+const SectionDropdown = ({ children }: Props) => (
   <section className={styles.Section}>
-    <div className={styles.headerWrapper}>
-      <HeadeingLevelThree>Messaging</HeadeingLevelThree>
-      <ButtonCorner isActive={isOpen} onClick={onDropdownToggle} styles={CORNER_BTN_STYLES} />
-    </div>
-    {isOpen
-      ? <CardWrapper>{children}</CardWrapper>
-      : null}
+    <ExpansionPanel>
+      <ExpansionPanelSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+      >
+        <HeadeingLevelThree>
+          {children[0]}
+        </HeadeingLevelThree>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails>
+        {children[1]}
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
   </section>
 )
 

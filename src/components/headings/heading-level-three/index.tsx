@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, ThemeProvider, createMuiTheme } from '@material-ui/core';
 import styles from './styles.module.scss'
 interface Props {
-  children: string;
+  children: React.ReactElement;
 }
 
 const THEME = createMuiTheme({
@@ -13,6 +13,13 @@ const THEME = createMuiTheme({
       'sans-serif'
     ].join(','),
     fontSize: 24
+  },
+  overrides: {
+    MuiTypography: {
+      root: {
+        color: '#6A6A6A'
+      }
+    }
   }
 });
 
