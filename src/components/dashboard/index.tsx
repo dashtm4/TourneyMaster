@@ -12,6 +12,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import styles from './styles.module.scss';
 import Button from '../common/buttons/button';
+import HeadingLevelTwo from '../common/headings/heading-level-two';
+import Paper from '../common/paper';
 
 class Dashboard extends React.Component {
   render() {
@@ -33,7 +35,21 @@ class Dashboard extends React.Component {
               color="primary"
             />
           </div>
-          <div className={styles['container']}>
+          <Paper>
+            <div className={styles['main-menu']}>
+              <Button
+                label="Edit Dashboard Layout"
+                variant="text"
+                color="secondary"
+              />
+              <Button
+                label="Create tournament"
+                variant="contained"
+                color="primary"
+              />
+            </div>
+          </Paper>
+          <div className={styles.container}>
             <div className={styles['menu']}>
               <div className={styles['item']}>
                 <FontAwesomeIcon className={styles['icon']} icon={faUser} />
@@ -63,7 +79,9 @@ class Dashboard extends React.Component {
               </div>
             </div>
             <div className={styles['main']}>
-              <div className={styles['title']}>My Dashboard</div>
+              <HeadingLevelTwo>
+                <span>My Dashboard</span>
+              </HeadingLevelTwo>
               <div className={styles['info-wrapper']}>
                 <div className={classnames(styles['paper'], styles['alerts'])}>
                   <div className={styles['card-title']}>Alerts</div>
