@@ -34,14 +34,14 @@ const theme = createMuiTheme({
 });
 
 interface ITextFieldProps {
-  endAdornment: string;
-  startAdornment: string;
+  endAdornment?: string;
+  startAdornment?: string;
   label: string;
-  fullWidth: boolean;
-  multiline: boolean;
-  rows: string;
-  value: string;
-  onChange: () => {};
+  fullWidth?: boolean;
+  multiline?: boolean;
+  rows?: string;
+  value?: string;
+  onChange?: () => {};
 }
 
 const TextField: React.FC<ITextFieldProps> = ({

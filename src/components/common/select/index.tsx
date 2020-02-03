@@ -18,7 +18,7 @@ interface ISelectProps {
   options: string[];
   label: string;
   value: string;
-  onChange: () => {};
+  onChange?: () => {};
 }
 
 const Select: React.FC<ISelectProps> = ({

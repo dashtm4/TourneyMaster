@@ -1,6 +1,6 @@
 enum CardMessageTypes {
   INFO = 'info',
-  WARNING = 'warning'
+  WARNING = 'warning',
 }
 
-export { CardMessageTypes }
+export { CardMessageTypes };
