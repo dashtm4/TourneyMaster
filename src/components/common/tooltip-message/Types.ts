@@ -1,6 +1,6 @@
 enum TooltipMessageTypes {
   INFO = 'info',
-  WARNING = 'warning'
+  WARNING = 'warning',
 }
 
-export { TooltipMessageTypes }
+export { TooltipMessageTypes };

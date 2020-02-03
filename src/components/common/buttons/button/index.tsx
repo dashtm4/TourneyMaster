@@ -3,6 +3,7 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { Button as MuiButton } from '@material-ui/core';
 import styles from './style.module.scss';
+import { SvgIconProps } from '@material-ui/core';
 
 const theme = createMuiTheme({
   typography: {
@@ -32,6 +33,7 @@ interface IButtonProps {
   color: 'primary' | 'secondary' | 'inherit' | 'default' | undefined;
   variant: 'text' | 'outlined' | 'contained' | undefined;
   type?: string;
+  icon?: (props: SvgIconProps) => JSX.Element;
   onClick?: () => {};
 }
 
@@ -41,6 +43,7 @@ const Button: React.FC<IButtonProps> = ({
   variant,
   type,
   onClick,
+  icon,
 }) => (
   <ThemeProvider theme={theme}>
     <MuiButton
@@ -49,7 +52,7 @@ const Button: React.FC<IButtonProps> = ({
       className={type && styles[`${type}Btn`]}
       onClick={onClick}
     >
-      {label}
+      {icon} {label}
     </MuiButton>
   </ThemeProvider>
 );
