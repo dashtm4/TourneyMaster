@@ -32,7 +32,7 @@ interface IButtonProps {
   color: 'primary' | 'secondary' | 'inherit' | 'default' | undefined;
   variant: 'text' | 'outlined' | 'contained' | undefined;
   type: string;
-  onClick: () => {};
+  onClick: () => void;
 }
 
 const Button: React.FC<IButtonProps> = ({

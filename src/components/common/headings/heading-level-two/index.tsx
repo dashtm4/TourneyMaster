@@ -3,7 +3,7 @@ import { Typography, ThemeProvider, createMuiTheme } from '@material-ui/core';
 import styles from './styles.module.scss';
 
 interface Props {
-  children: React.ReactElement;
+  children: string;
 }
 
 const THEME = createMuiTheme({

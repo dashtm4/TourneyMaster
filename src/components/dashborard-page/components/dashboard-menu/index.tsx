@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   ExpansionPanelWrapped,
   ExpansionPanelSummaryWrapped,
@@ -13,20 +14,23 @@ import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ErrorIcon from '@material-ui/icons/Error';
 import PinIcon from './icon-pin-material';
+import { Routes } from '../../../../common/constants';
 import styles from './styles.module.scss';
 
 const DashboardMenu = () => (
-  <section className={styles.dashboardMenu}>
-    <h2 className={`${styles.itemTitle} ${styles.itemTitleAlone}`}>
-      <PersonIcon className={styles.itemTitleIcon} />
-      My Dashboard
-    </h2>
+  <aside className={styles.dashboardMenu}>
     <ul className={styles.list}>
+      <li className={`${styles.itemTitle} ${styles.itemTitleAlone}`}>
+        <PersonIcon className={styles.itemTitleIcon} />
+        <a href="#">My Dashboard</a>
+      </li>
       <li className={styles.itemTitle}>
         <ExpansionPanelWrapped>
           <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
             <InsertDriveFileIcon className={styles.itemTitleIcon} />
-            <span className={styles.itemTitle}>Library Manager</span>
+            <Link to={Routes.LIBRARY} className={styles.itemTitle}>
+              Library Manager
+            </Link>
           </ExpansionPanelSummaryWrapped>
           <ExpansionPanelDetailsWrapper>
             <ul className={styles.list}>
@@ -108,7 +112,7 @@ const DashboardMenu = () => (
       <PinIcon />
       Unpin Menu
     </button>
-  </section>
+  </aside>
 );
 
 export default DashboardMenu;
