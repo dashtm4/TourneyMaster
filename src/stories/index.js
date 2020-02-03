@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { linkTo } from '@storybook/addon-links';
 import StoriesWrapper from './helpers/stories-wrapper';
-import '../styles/common.scss'
+import '../styles/index.scss';
 
 import HeadingLevelTwo from '../components/common/headings/heading-level-two';
 import HeadingLevelThree from '../components/common/headings/heading-level-three';
@@ -61,7 +61,7 @@ storiesOf('TourneyMaster', module)
       <StoriesWrapper>
         <ProgressBar completed={completed} />
       </StoriesWrapper>
-    )
+    );
   })
   .add('Color Picker', () => (
     <StoriesWrapper>
@@ -82,7 +82,8 @@ storiesOf('TourneyMaster', module)
       </StoriesWrapper>
       <StoriesWrapper>
         <CardMessage type={CardMessageTypes.WARNING}>
-          All existing data in the tournaments Registration section will be overridden!
+          All existing data in the tournaments Registration section will be
+          overridden!
         </CardMessage>
       </StoriesWrapper>
     </>
@@ -92,14 +93,18 @@ storiesOf('TourneyMaster', module)
       <StoriesWrapper>
         <TooltipMessage
           title={'TRUE Florida (2020, 2021) cannot play 10:00 AM - 12:00 PM'}
-          type={TooltipMessageTypes.WARNING}>
+          type={TooltipMessageTypes.WARNING}
+        >
           <p>TRUE Florida (2020, 2021) cannot play 10:00 AM - 12:00 PM</p>
         </TooltipMessage>
       </StoriesWrapper>
       <StoriesWrapper>
         <TooltipMessage
-          title={'All existing data in the tournaments Registration section will be overridden!'}
-          type={TooltipMessageTypes.INFO}>
+          title={
+            'All existing data in the tournaments Registration section will be overridden!'
+          }
+          type={TooltipMessageTypes.INFO}
+        >
           <button>Right now!</button>
         </TooltipMessage>
       </StoriesWrapper>
@@ -122,5 +127,4 @@ storiesOf('TourneyMaster', module)
     <>
       <TextField />
     </>
-  ))
-
+  ));
