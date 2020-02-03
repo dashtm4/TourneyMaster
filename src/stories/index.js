@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { linkTo } from '@storybook/addon-links';
 import { action } from '@storybook/addon-actions';
 import StoriesWrapper from './helpers/stories-wrapper';
-import '../styles/common.scss';
+import '../styles/index.scss';
 import HeadingLevelTwo from '../components/common/headings/heading-level-two';
 import HeadingLevelThree from '../components/common/headings/heading-level-three';
 import HeadingLevelFour from '../components/common/headings/heading-level-four';
