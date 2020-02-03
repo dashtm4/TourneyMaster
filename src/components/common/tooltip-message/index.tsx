@@ -11,7 +11,7 @@ interface Props {
 
 const TooltipWrapped = withStyles({
   arrow: {
-    color: '#F4F4F4'
+    color: '#F4F4F4',
   },
   tooltip: {
     maxWidth: 325,
@@ -21,31 +21,28 @@ const TooltipWrapped = withStyles({
     lineHeight: '22px',
     border: '1px solid #dadde9',
     backgroundColor: '#F4F4F4',
-    boxShadow: '0 1px 10px 0 rgba(0,0,0,0.2)'
+    boxShadow: '0 1px 10px 0 rgba(0,0,0,0.2)',
   },
 })(Tooltip);
 
 const getTooltipColor = (type: string) => {
   switch (type) {
     case TooltipMessageTypes.INFO:
-      return 'inherit'
+      return 'inherit';
     case TooltipMessageTypes.WARNING:
-      return '#FF0F19'
+      return '#FF0F19';
   }
 
-  return 'inherit'
-}
-
+  return 'inherit';
+};
 
 const TooltipMessage = ({ children, title, type }: Props) => (
   <TooltipWrapped
-    title={
-      <span style={{ color: getTooltipColor(type) }}>
-        {title}
-      </span>}
-    arrow>
+    title={<span style={{ color: getTooltipColor(type) }}>{title}</span>}
+    arrow
+  >
     {children}
   </TooltipWrapped>
-)
+);
 
-export default TooltipMessage
+export default TooltipMessage;

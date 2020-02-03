@@ -8,20 +8,16 @@ interface Props {
 
 const THEME = createMuiTheme({
   typography: {
-    fontFamily: [
-      'Open Sans',
-      'Arial',
-      'sans-serif'
-    ].join(','),
-    fontSize: 32
+    fontFamily: ['Open Sans', 'Arial', 'sans-serif'].join(','),
+    fontSize: 32,
   },
   overrides: {
     MuiTypography: {
       root: {
-        color: '#1C315F'
-      }
-    }
-  }
+        color: '#1C315F',
+      },
+    },
+  },
 });
 
 const HeadeingLevelTwo = ({ children }: Props) => (

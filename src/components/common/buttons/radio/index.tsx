@@ -8,7 +8,7 @@ import {
   FormLabel,
 } from '@material-ui/core';
 
-const myTheme = createMuiTheme({
+const theme = createMuiTheme({
   typography: {
     fontFamily: 'Open Sans',
     fontSize: 16,
@@ -31,10 +31,11 @@ const myTheme = createMuiTheme({
 interface IRadioProps {
   options: string[];
   formLabel: string;
+  onChange: () => {};
 }
 
-const Radio: React.FC<IRadioProps> = ({ options, formLabel }) => (
-  <ThemeProvider theme={myTheme}>
+const Radio: React.FC<IRadioProps> = ({ options, formLabel, onChange }) => (
+  <ThemeProvider theme={theme}>
     <FormLabel component="legend">{formLabel}</FormLabel>
     <RadioGroup aria-label="gender" name="gender1">
       {options.map((option: string, index: number) => (
@@ -43,6 +44,7 @@ const Radio: React.FC<IRadioProps> = ({ options, formLabel }) => (
           value={option}
           control={<MuiRadio color="primary" />}
           label={option}
+          onChange={onChange}
         />
       ))}
     </RadioGroup>

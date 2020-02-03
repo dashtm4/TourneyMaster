@@ -22,6 +22,6 @@ const LightPaper = () => {
       <Paper elevation={3} />
     </div>
   );
-}
+};
 
 export default LightPaper;
