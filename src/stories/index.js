@@ -133,6 +133,13 @@ storiesOf('TourneyMaster', module)
         onClick={action('button-click')}
       />
       <Button
+        label="Icon"
+        variant="text"
+        color="secondary"
+        icon={<SportsFootballIcon />}
+        onClick={action('button-click')}
+      />
+      <Button
         label="Squared"
         variant="contained"
         color="primary"

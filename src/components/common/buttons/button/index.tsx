@@ -31,8 +31,9 @@ interface IButtonProps {
   label: string;
   color: 'primary' | 'secondary' | 'inherit' | 'default' | undefined;
   variant: 'text' | 'outlined' | 'contained' | undefined;
-  type: string;
-  onClick: () => {};
+  type?: string;
+  icon?: any;
+  onClick?: () => {};
 }
 
 const Button: React.FC<IButtonProps> = ({
@@ -41,6 +42,7 @@ const Button: React.FC<IButtonProps> = ({
   variant,
   type,
   onClick,
+  icon,
 }) => (
   <ThemeProvider theme={theme}>
     <MuiButton
@@ -49,7 +51,7 @@ const Button: React.FC<IButtonProps> = ({
       className={type && styles[`${type}Btn`]}
       onClick={onClick}
     >
-      {label}
+      {icon} {label}
     </MuiButton>
   </ThemeProvider>
 );
