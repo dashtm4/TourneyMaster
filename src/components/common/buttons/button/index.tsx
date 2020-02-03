@@ -2,7 +2,7 @@ import React from 'react';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { Button as MuiButton } from '@material-ui/core';
-import styles from './style.module.sass';
+import styles from './style.module.scss';
 
 const theme = createMuiTheme({
   typography: {

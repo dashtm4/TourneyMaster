@@ -21,10 +21,18 @@ const theme = createMuiTheme({
   overrides: {
     MuiTextField: {
       root: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: '4px',
         minWidth: 300,
+        boxShadow: '0 2px 5px 0 rgba(0,0,0,0.2)',
         '&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
           borderColor: '#00A3EA',
         },
+      },
+    },
+    MuiOutlinedInput: {
+      root: {
+        color: '#6A6A6A',
       },
     },
   },
@@ -47,6 +55,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
     <KeyboardDatePicker
       label={label}
       variant="inline"
+      size="small"
       inputVariant="outlined"
       value={value}
       format="yyyy/MM/dd"
@@ -58,6 +67,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
     <KeyboardTimePicker
       label={label}
       variant="inline"
+      size="small"
       inputVariant="outlined"
       placeholder="08:00 AM"
       mask="__:__ _M"

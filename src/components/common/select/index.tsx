@@ -31,6 +31,7 @@ const Select: React.FC<ISelectProps> = ({
     <MuiTextField
       id="select"
       variant="outlined"
+      size="small"
       select={true}
       label={label}
       value={value}
