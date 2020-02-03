@@ -1,14 +1,115 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { linkTo } from '@storybook/addon-links';
-import Button from '../components/common/Buttons/Button';
-import Checkbox from '../components/common/Buttons/Checkbox';
-import Radio from '../components/common/Buttons/Radio';
-import TextField from '../components/common/Input';
+import StoriesWrapper from './helpers/stories-wrapper';
+import '../styles/common.scss'
+
+import HeadingLevelTwo from '../components/common/headings/heading-level-two';
+import HeadingLevelThree from '../components/common/headings/heading-level-three';
+import HeadingLevelFour from '../components/common/headings/heading-level-four';
+import Button from '../components/common/buttons/button';
+import Checkbox from '../components/common/buttons/checkbox';
+import Radio from '../components/common/buttons/radio';
+import TextField from '../components/common/input';
+import SectionDropdown from '../components/common/section-dropdown';
+import ProgressBar from '../components/common/progress-bar';
+import ColorPicker from '../components/common/color-picker';
+import Paper from '../components/common/paper';
+import CardMessage from '../components/common/card-message';
+import { CardMessageTypes } from '../components/common/card-message/Types';
+import TooltipMessage from '../components/common/tooltip-message';
+import { TooltipMessageTypes } from '../components/common/tooltip-message/Types';
+import DashboardMenu from '../components/common/dashboard-menu';
 
 storiesOf('TourneyMaster', module)
-  .add('to Test', () => <h1 showApp={linkTo('App')}>Test story</h1>)
-  .add('to App', () => <h1 showApp={linkTo('App')}>TourneyMaster🔥</h1>)
+  .add('Headeings', () => (
+    <StoriesWrapper>
+      <HeadingLevelTwo>Heading Level Two</HeadingLevelTwo>
+      <HeadingLevelThree>Heading Level Three</HeadingLevelThree>
+      <HeadingLevelFour>Heading Level Four</HeadingLevelFour>
+    </StoriesWrapper>
+  ))
+  .add('Section Dropdown', () => (
+    <StoriesWrapper>
+      <SectionDropdown>
+        <span>Its header</span>
+        <p>Threre will be content</p>
+      </SectionDropdown>
+    </StoriesWrapper>
+  ))
+  .add('Progress Bar', () => {
+    const [completed, setCompleted] = React.useState(0);
+
+    React.useEffect(() => {
+      function progress() {
+        setCompleted(oldCompleted => {
+          if (oldCompleted === 100) {
+            return 0;
+          }
+          const diff = Math.random() * 10;
+          return Math.min(oldCompleted + diff, 100);
+        });
+      }
+
+      const timer = setInterval(progress, 500);
+      return () => {
+        clearInterval(timer);
+      };
+    }, []);
+
+    return (
+      <StoriesWrapper>
+        <ProgressBar completed={completed} />
+      </StoriesWrapper>
+    )
+  })
+  .add('Color Picker', () => (
+    <StoriesWrapper>
+      <ColorPicker />
+    </StoriesWrapper>
+  ))
+  .add('Paper', () => (
+    <StoriesWrapper>
+      <Paper />
+    </StoriesWrapper>
+  ))
+  .add('Card Message', () => (
+    <>
+      <StoriesWrapper>
+        <CardMessage type={CardMessageTypes.INFO}>
+          Playoff settings include Bracket Type, # of Teams, and Ranking Factors
+        </CardMessage>
+      </StoriesWrapper>
+      <StoriesWrapper>
+        <CardMessage type={CardMessageTypes.WARNING}>
+          All existing data in the tournaments Registration section will be overridden!
+        </CardMessage>
+      </StoriesWrapper>
+    </>
+  ))
+  .add('Tooltip Message', () => (
+    <>
+      <StoriesWrapper>
+        <TooltipMessage
+          title={'TRUE Florida (2020, 2021) cannot play 10:00 AM - 12:00 PM'}
+          type={TooltipMessageTypes.WARNING}>
+          <p>TRUE Florida (2020, 2021) cannot play 10:00 AM - 12:00 PM</p>
+        </TooltipMessage>
+      </StoriesWrapper>
+      <StoriesWrapper>
+        <TooltipMessage
+          title={'All existing data in the tournaments Registration section will be overridden!'}
+          type={TooltipMessageTypes.INFO}>
+          <button>Right now!</button>
+        </TooltipMessage>
+      </StoriesWrapper>
+    </>
+  ))
+  .add('Dashboard Menu', () => (
+    <StoriesWrapper>
+      <DashboardMenu />
+    </StoriesWrapper>
+  ))
   .add('Buttons', () => (
     <>
       <Button label="Create tournament" color="primary" />
@@ -21,4 +122,5 @@ storiesOf('TourneyMaster', module)
     <>
       <TextField />
     </>
-  ));
+  ))
+
