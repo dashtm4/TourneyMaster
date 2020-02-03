@@ -45,7 +45,7 @@ class LoginPage extends React.Component<RouteComponentProps, LoginPageState> {
     const { email, password } = this.state;
 
     return (
-      <div className={styles.container}>
+      <>
         <header className={styles.header}>
           <img src={logo} className={styles.logo} alt="logo" />
           <h2>Register for Tourney Master</h2>
@@ -106,7 +106,7 @@ class LoginPage extends React.Component<RouteComponentProps, LoginPageState> {
             Sign In
           </button>
         </form>
-      </div>
+      </>
     );
   }
 }
