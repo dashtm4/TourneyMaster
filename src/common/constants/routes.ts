@@ -1,7 +1,9 @@
 enum Routes {
+  DEFAULT = '/',
   LOGIN = '/login',
   DASHBOARD = '/dashboard',
-  LIBRARY = '/dashboard/library',
+  LIBRARY_MANAGER = '/library-manager',
+  LIBRARY_MANAGER_TOURNAMENTS = '/library-manager/tournaments',
 }
 
 export { Routes };

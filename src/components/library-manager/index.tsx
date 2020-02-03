@@ -1,7 +1,7 @@
 import React from 'react';
-import HeadingLevelTwo from '../../../common/headings/heading-level-two';
-import Button from '../../../common/buttons/button';
-import SectionDropdown from '../../../common/section-dropdown';
+import HeadingLevelTwo from '../common/headings/heading-level-two';
+import Button from '../common/buttons/button';
+import SectionDropdown from '../common/section-dropdown';
 import styles from './styles.module.scss';
 
 const LibraryManaget = () => (

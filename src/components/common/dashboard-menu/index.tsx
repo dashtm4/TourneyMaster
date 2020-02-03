@@ -14,7 +14,7 @@ import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ErrorIcon from '@material-ui/icons/Error';
 import PinIcon from './icon-pin-material';
-import { Routes } from '../../../../common/constants';
+import { Routes } from '../../../common/constants';
 import styles from './styles.module.scss';
 
 const DashboardMenu = () => (
@@ -28,14 +28,14 @@ const DashboardMenu = () => (
         <ExpansionPanelWrapped>
           <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
             <InsertDriveFileIcon className={styles.itemTitleIcon} />
-            <Link to={Routes.LIBRARY} className={styles.itemTitle}>
+            <Link to={Routes.LIBRARY_MANAGER} className={styles.itemTitle}>
               Library Manager
             </Link>
           </ExpansionPanelSummaryWrapped>
           <ExpansionPanelDetailsWrapper>
             <ul className={styles.list}>
               <li className={styles.itemSubTitle}>
-                <a href="#">Tournaments</a>
+                <Link to={Routes.LIBRARY_MANAGER_TOURNAMENTS}>Tournaments</Link>
               </li>
               <li className={styles.itemSubTitle}>
                 <a href="#">Facilities</a>
