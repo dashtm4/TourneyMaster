@@ -2,7 +2,7 @@ import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import logo from 'assets/logo.png';
 import UserInfo from './user-info';
-import styles from './style.module.sass';
+import styles from './style.module.scss';
 
 const Header: React.FC<RouteComponentProps> = ({ history }) => {
   const menuItems: string[] = [
