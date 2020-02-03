@@ -1,34 +1,80 @@
 import React from 'react';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
-import { TextField as MuiTextField } from '@material-ui/core';
+import { TextField as MuiTextField, InputAdornment } from '@material-ui/core';
+import SearchIcon from '@material-ui/icons/Search';
 
-const myTheme = createMuiTheme({
+const theme = createMuiTheme({
   typography: {
     fontFamily: 'Open Sans',
   },
   palette: {
     primary: {
-      main: '#1C315F',
-    },
-    secondary: {
-      main: '#FF0F19',
+      main: '#00A3EA',
     },
   },
   overrides: {
-    MuiButton: {
+    MuiTextField: {
       root: {
-        borderRadius: '21px',
-        textTransform: 'none',
-        lineHeight: '22px',
+        backgroundColor: '#FFFFFF',
+        borderRadius: '4px',
+        minWidth: 300,
+        boxShadow: '0 2px 5px 0 rgba(0,0,0,0.2)',
+        '&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+          borderColor: '#00A3EA',
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      root: {
+        color: '#6A6A6A',
       },
     },
   },
 });
 
-const TextField: React.FC = () => (
-  <ThemeProvider theme={myTheme}>
-    <MuiTextField label="Outlined" variant="outlined" />
+interface ITextFieldProps {
+  endAdornment: string;
+  startAdornment: string;
+  label: string;
+  fullWidth: boolean;
+  multiline: boolean;
+  rows: string;
+  value: string;
+  onChange: () => {};
+}
+
+const TextField: React.FC<ITextFieldProps> = ({
+  endAdornment,
+  startAdornment,
+  label,
+  fullWidth,
+  multiline,
+  rows,
+  value,
+  onChange,
+}) => (
+  <ThemeProvider theme={theme}>
+    <MuiTextField
+      fullWidth={fullWidth}
+      label={label}
+      variant="outlined"
+      size="small"
+      multiline={multiline}
+      rows={rows}
+      value={value}
+      onChange={onChange}
+      InputProps={{
+        endAdornment: endAdornment && (
+          <InputAdornment position="start">
+            {endAdornment === 'search' ? <SearchIcon /> : endAdornment}
+          </InputAdornment>
+        ),
+        startAdornment: startAdornment && (
+          <InputAdornment position="start">{startAdornment}</InputAdornment>
+        ),
+      }}
+    />
   </ThemeProvider>
 );
 

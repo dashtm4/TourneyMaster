@@ -1,9 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { linkTo } from '@storybook/addon-links';
+import { action } from '@storybook/addon-actions';
 import StoriesWrapper from './helpers/stories-wrapper';
 import '../styles/index.scss';
-
 import HeadingLevelTwo from '../components/common/headings/heading-level-two';
 import HeadingLevelThree from '../components/common/headings/heading-level-three';
 import HeadingLevelFour from '../components/common/headings/heading-level-four';
@@ -11,6 +11,9 @@ import Button from '../components/common/buttons/button';
 import Checkbox from '../components/common/buttons/checkbox';
 import Radio from '../components/common/buttons/radio';
 import TextField from '../components/common/input';
+import SportsFootballIcon from '@material-ui/icons/SportsFootball';
+import Select from '../components/common/select';
+import DatePicker from '../components/common/date-picker';
 import SectionDropdown from '../components/common/section-dropdown';
 import ProgressBar from '../components/common/progress-bar';
 import ColorPicker from '../components/common/color-picker';
@@ -117,14 +120,116 @@ storiesOf('TourneyMaster', module)
   ))
   .add('Buttons', () => (
     <>
-      <Button label="Create tournament" color="primary" />
-      <Button label="Delete" color="secondary" />
-      <Checkbox options={['Option1', 'Option2']} formLabel="Choose an option" />
-      <Radio options={['Male', 'Female']} formLabel="Gender" />
+      <Button
+        label="Create tournament"
+        variant="contained"
+        color="primary"
+        onClick={action('button-click')}
+      />
+      <Button
+        label="Link"
+        variant="text"
+        color="secondary"
+        onClick={action('button-click')}
+      />
+      <Button
+        label="Squared"
+        variant="contained"
+        color="primary"
+        type="squared"
+        onClick={action('button-click')}
+      />
+      <Button
+        label="Squared outlined"
+        variant="contained"
+        color="primary"
+        type="squaredOutlined"
+        onClick={action('button-click')}
+      />
+      <Button
+        label="Delete"
+        variant="contained"
+        type="danger"
+        onClick={action('button-click')}
+      />
+      <Checkbox
+        options={['Option1', 'Option2']}
+        formLabel="Choose an option"
+        onChange={action('checked')}
+      />
+      <Radio
+        options={['Male', 'Female']}
+        formLabel="Gender"
+        onChange={action('changed')}
+      />
     </>
   ))
   .add('Inputs', () => (
     <>
-      <TextField />
+      <div style={{ padding: '10px 0' }}>
+        <TextField label="Name" fullWidth onChange={action('changed')} />
+      </div>
+
+      <div style={{ padding: '10px 0' }}>
+        <TextField
+          endAdornment="search"
+          label="Search"
+          onChange={action('changed')}
+        />
+      </div>
+      <div style={{ padding: '10px 0' }}>
+        <TextField
+          startAdornment={<SportsFootballIcon />}
+          label="Icon"
+          onChange={action('changed')}
+        />
+      </div>
+      <div style={{ padding: '10px 0' }}>
+        <TextField
+          startAdornment="@"
+          label="Icon"
+          onChange={action('changed')}
+        />
+      </div>
+      <div style={{ padding: '10px 0' }}>
+        <TextField
+          endAdornment="minutes"
+          label="Duration"
+          onChange={action('changed')}
+        />
+      </div>
+      <div style={{ padding: '10px 0' }}>
+        <TextField
+          label="Textarea"
+          multiline
+          rows="4"
+          onChange={action('changed')}
+        />
+      </div>
+      <div style={{ padding: '10px 0' }}>
+        <Select
+          options={['Option1', 'Option2', 'Option3']}
+          label={'Choose something'}
+          onChange={action('selected')}
+        />
+      </div>
+    </>
+  ))
+  .add('Pickers', () => (
+    <>
+      <div style={{ padding: '10px 0' }}>
+        <DatePicker
+          onChange={action('picked')}
+          type="date"
+          label="Choose date"
+        />
+      </div>
+      <div style={{ padding: '10px 0' }}>
+        <DatePicker
+          onChange={action('picked')}
+          type="time"
+          label="Choose time"
+        />
+      </div>
     </>
   ));
