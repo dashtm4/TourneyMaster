@@ -1,7 +1,7 @@
 import React from 'react';
 import { Auth } from 'aws-amplify';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import styles from './style.module.sass';
+import styles from './style.module.scss';
 
 interface LoginPageState {
   email: string;
