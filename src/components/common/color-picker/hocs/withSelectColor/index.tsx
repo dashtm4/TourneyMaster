@@ -1,32 +1,33 @@
-import React from 'react'
+import React from 'react';
 
 interface State {
-  activeColor: string
+  activeColor: string;
 }
 
 const withSelectColor = (Component: any) => {
   return class WithSelectColor extends React.Component<any, State> {
     constructor(props: any) {
-      super(props)
+      super(props);
 
       this.state = {
-        activeColor: ''
-      }
+        activeColor: '',
+      };
     }
 
-    _changeHandler = ({ hex }: any) => this.setState({ activeColor: hex })
+    _changeHandler = ({ hex }: any) => this.setState({ activeColor: hex });
 
     render() {
-      const { activeColor } = this.state
+      const { activeColor } = this.state;
 
       return (
         <Component
           {...this.props}
           activeColor={activeColor}
-          onChange={this._changeHandler} />
-      )
+          onChange={this._changeHandler}
+        />
+      );
     }
-  }
-}
+  };
+};
 
-export default withSelectColor
+export default withSelectColor;
