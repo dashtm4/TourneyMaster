@@ -1,11 +1,11 @@
-## Intelligence on the APIS
+## Intelligence on the APIs
 
 APIs are governed by API Gateway. What is needed is the IdToken from Cognito. The sample user from the TourneyMaster Cognito User Pool is:
 
 username = api_demo@tourneymaster.org
 pword = ThisisNotMyRealPasswordJohnok?
 
-### COGNITO
+### AWS COGNITO
 
 Once a user is created in Cognito it needs to be confirmed. The following two CLI commands will confirm:
 
