@@ -10,19 +10,24 @@ import styles from './styles.module.scss';
 
 interface Props {
   children: React.ReactElement[];
+  padding?: string;
+  summaryPadding?: string;
 }
 
-const SectionDropdown = ({ children }: Props) => (
+const SectionDropdown = ({ children, padding, summaryPadding }: Props) => (
   <section className={styles.section}>
     <ExpansionPanel>
       <ExpansionPanelSummary
+        style={{ paddingLeft: summaryPadding }}
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"
         id="panel1a-header"
       >
         <HeadeingLevelThree>{children[0]}</HeadeingLevelThree>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails>{children[1]}</ExpansionPanelDetails>
+      <ExpansionPanelDetails style={{ padding }}>
+        {children[1]}
+      </ExpansionPanelDetails>
     </ExpansionPanel>
   </section>
 );

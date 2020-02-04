@@ -4,6 +4,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { TextField as MuiTextField, InputAdornment } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 
+const defaultWidth = 100;
 const theme = createMuiTheme({
   typography: {
     fontFamily: 'Open Sans',
@@ -18,7 +19,7 @@ const theme = createMuiTheme({
       root: {
         backgroundColor: '#FFFFFF',
         borderRadius: '4px',
-        minWidth: 300,
+        minWidth: defaultWidth,
         boxShadow: '0 2px 5px 0 rgba(0,0,0,0.2)',
         '&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
           borderColor: '#00A3EA',
@@ -41,6 +42,8 @@ interface ITextFieldProps {
   multiline?: boolean;
   rows?: string;
   value?: string;
+  width?: string;
+  placeholder?: string;
   onChange?: () => {};
 }
 
@@ -53,9 +56,13 @@ const TextField: React.FC<ITextFieldProps> = ({
   rows,
   value,
   onChange,
+  width,
+  placeholder,
 }) => (
   <ThemeProvider theme={theme}>
     <MuiTextField
+      style={{ width: width || defaultWidth }}
+      placeholder={placeholder}
       fullWidth={fullWidth}
       label={label}
       variant="outlined"

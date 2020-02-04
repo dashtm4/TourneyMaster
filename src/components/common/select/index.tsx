@@ -18,6 +18,7 @@ interface ISelectProps {
   options: string[];
   label: string;
   value: string;
+  width?: string;
   onChange?: () => {};
 }
 
@@ -26,16 +27,19 @@ const Select: React.FC<ISelectProps> = ({
   label,
   value,
   onChange,
+  width,
 }) => (
   <ThemeProvider theme={theme}>
     <MuiTextField
       id="select"
+      style={{ width: width || '100px' }}
       variant="outlined"
       size="small"
       select={true}
       label={label}
       value={value}
       onChange={onChange}
+      fullWidth={true}
     >
       {options.map((option: string, index: number) => (
         <MenuItem key={index} value={option}>

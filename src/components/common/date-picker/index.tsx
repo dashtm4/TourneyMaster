@@ -9,6 +9,7 @@ import {
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 
+const defaultWidth = 100;
 const theme = createMuiTheme({
   typography: {
     fontFamily: 'Open Sans',
@@ -23,7 +24,7 @@ const theme = createMuiTheme({
       root: {
         backgroundColor: '#FFFFFF',
         borderRadius: '4px',
-        minWidth: 300,
+        minWidth: defaultWidth,
         boxShadow: '0 2px 5px 0 rgba(0,0,0,0.2)',
         '&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
           borderColor: '#00A3EA',
@@ -42,6 +43,7 @@ interface IDatePickerProps {
   label: string;
   value?: string;
   type: string;
+  width?: string;
   onChange: () => {};
 }
 
@@ -50,10 +52,12 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   value,
   onChange,
   type,
+  width,
 }) => {
   const renderDatePicker = () => (
     <KeyboardDatePicker
       label={label}
+      style={{ width: width || defaultWidth }}
       variant="inline"
       size="small"
       inputVariant="outlined"
@@ -66,6 +70,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   const renderTimePicker = () => (
     <KeyboardTimePicker
       label={label}
+      style={{ width: width || defaultWidth }}
       variant="inline"
       size="small"
       inputVariant="outlined"
