@@ -1,9 +1,8 @@
-name: Deployment
+name: Development deployment
 
 on:
   push:
     branches:
-      - master
       - development
 jobs:
   build-and-deploy:
