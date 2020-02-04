@@ -12,7 +12,6 @@ const LibraryManaget = () => (
         variant="contained"
         color="primary"
         type="string"
-        onClick={() => {}}
       />
     </p>
     <div className={styles.headingWrapper}>
@@ -22,6 +21,42 @@ const LibraryManaget = () => (
       <li>
         <SectionDropdown>
           <span>Tournaments</span>
+          <p>Content</p>
+        </SectionDropdown>
+      </li>
+      <li>
+        <SectionDropdown>
+          <span>Facilities</span>
+          <p>Content</p>
+        </SectionDropdown>
+      </li>
+      <li>
+        <SectionDropdown>
+          <span>Registration</span>
+          <p>Content</p>
+        </SectionDropdown>
+      </li>
+      <li>
+        <SectionDropdown>
+          <span>Divisions & Pools</span>
+          <p>Content</p>
+        </SectionDropdown>
+      </li>
+      <li>
+        <SectionDropdown>
+          <span>Team Management</span>
+          <p>Content</p>
+        </SectionDropdown>
+      </li>
+      <li>
+        <SectionDropdown>
+          <span>Scheduling</span>
+          <p>Content</p>
+        </SectionDropdown>
+      </li>
+      <li>
+        <SectionDropdown>
+          <span>Messaging</span>
           <p>Content</p>
         </SectionDropdown>
       </li>
