@@ -40,7 +40,7 @@ const theme = createMuiTheme({
 
 interface IDatePickerProps {
   label: string;
-  value: string;
+  value?: string;
   type: string;
   onChange: () => {};
 }
