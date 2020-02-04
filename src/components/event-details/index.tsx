@@ -7,7 +7,9 @@ import TextField from 'components/common/input';
 import Select from 'components/common/select';
 import DatePicker from 'components/common/date-picker';
 import Button from 'components/common/buttons/button';
+import Radio from 'components/common/buttons/radio';
 import CodeIcon from '@material-ui/icons/Code';
+import Checkbox from 'components/common/buttons/checkbox';
 
 class EventDetails extends Component {
   onChange = () => ({});
@@ -19,6 +21,16 @@ class EventDetails extends Component {
       'Another Time',
       'Some Different Zone Idk',
     ];
+    const eventTypeOptions = ['Tournament', 'Showcase'];
+    const timeDivisionOptions = ['Halves (2)', 'Periods (3)', 'Quarters (4)'];
+    const resultsDisplayOptions = [
+      'Show Goals Scored',
+      'Show Goals Allowed',
+      'Show Goals Differential',
+      'Allow Ties',
+    ];
+    const totalRuntimeMin = 50;
+    const esDetailsOptions = ['Back to Back Game Warning', 'Require Waivers'];
 
     return (
       <div className={styles.container}>
@@ -97,7 +109,70 @@ class EventDetails extends Component {
           <HeadingLevelThree>
             <span className={styles.blockHeading}>Event Structure</span>
           </HeadingLevelThree>
-          <h2>BODY</h2>
+          <div className={styles['es-details']}>
+            <div className={styles['es-details-first']}>
+              <div className={styles.column}>
+                <Radio
+                  options={eventTypeOptions}
+                  formLabel="Event Type"
+                  onChange={this.onChange}
+                />
+              </div>
+              <div className={styles.column}>
+                <Radio
+                  options={timeDivisionOptions}
+                  formLabel="Time Division"
+                  onChange={this.onChange}
+                />
+              </div>
+              <div className={styles.column}>
+                <Checkbox
+                  options={resultsDisplayOptions}
+                  formLabel="Results Display"
+                  onChange={this.onChange}
+                />
+              </div>
+              <TextField
+                width="250px"
+                fullWidth={true}
+                label="Min # of Game Guarantee"
+              />
+            </div>
+            <div className={styles['es-details-second']}>
+              <TextField
+                width="170px"
+                fullWidth={true}
+                endAdornment="Minutes"
+                label="Pregame Warmup"
+              />
+              <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
+              <TextField
+                width="170px"
+                fullWidth={true}
+                endAdornment="Minutes"
+                label="Time Division Duration"
+              />
+              <span className={styles.innerSpanText}>
+                &nbsp;(2)&nbsp;+&nbsp;
+              </span>
+              <TextField
+                width="170px"
+                fullWidth={true}
+                endAdornment="Minutes"
+                label="Time Between Periods"
+              />
+              <span className={styles.innerSpanText}>
+                &nbsp;=&nbsp;{totalRuntimeMin} Minutes Total Runtime
+              </span>
+            </div>
+            <div className={styles['es-details-third']}>
+              <Checkbox
+                options={esDetailsOptions}
+                formLabel="Results Display"
+                onChange={this.onChange}
+              />
+            </div>
+          </div>
         </SectionDropdown>
 
         <SectionDropdown padding="0" summaryPadding="0">
