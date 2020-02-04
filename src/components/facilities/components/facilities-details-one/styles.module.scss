@@ -1,0 +1,52 @@
+:local(.form) {
+  width: 100%;
+}
+
+:local(.detailsSubtitle) {
+  font-weight: 600;
+  color: #6a6a6a;
+}
+
+:local(.descripWrapper) {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 6px;
+
+  color: #6a6a6a;
+}
+
+:local(.editBtn) {
+  color: #00a3ea;
+
+  background-color: transparent;
+
+  border: 0;
+
+  cursor: pointer;
+}
+
+:local(.nameWrapper) {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 15px;
+}
+
+:local(.nameWrapperStadium) {
+  h3 {
+    color: #6a6a6a;
+    font-size: 16px;
+
+    margin-bottom: 5px;
+  }
+}
+
+:local(.nameWrapperField) {
+  h3 {
+    color: #6a6a6a;
+    font-size: 16px;
+
+    margin-bottom: 5px;
+  }
+}
