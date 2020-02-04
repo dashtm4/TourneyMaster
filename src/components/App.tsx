@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import LoginPage from './login-page';
-import Header from '../components/header';
+import Header from './header';
 import DashboardMenu from './common/dashboard-menu';
 import LibraryManaget from './library-manager';
 import { Routes } from '../common/constants';
