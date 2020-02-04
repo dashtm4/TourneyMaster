@@ -1,0 +1,91 @@
+.root {
+  width: 100%;
+  background-color: #ececec;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: auto;
+  color: #6a6a6a;
+  font-family: 'Open Sans';
+}
+
+.dashboard {
+  height: 100%;
+  margin: 0 auto;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  margin-top: 76px;
+}
+
+.main {
+  margin: 0 30px;
+  width: 100%;
+}
+
+.heading {
+  margin: 12px 0;
+}
+
+.timeline-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-title {
+  display: flex;
+  align-items: center;
+  color: #1c315f;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.main-menu {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 25px;
+}
+
+.buttons-group {
+  display: flex;
+  flex-direction: row;
+}
+
+.dashboard-cards-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.tournaments-container > * {
+  margin: 16px 0;
+}
+.tournaments-heading {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+  .card-header {
+    flex-grow: 1;
+    width: 437px;
+  }
+  .buttons-group {
+    flex-grow: 1;
+    width: 388px;
+    justify-content: space-between;
+  }
+}
+.schedule-image {
+  align-self: flex-end;
+  height: 303px;
+  width: 344px;
+}

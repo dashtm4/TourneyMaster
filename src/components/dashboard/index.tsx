@@ -1,317 +1,170 @@
 import React from 'react';
-import classnames from 'classnames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faUser,
-  faBell,
-  faEnvelope,
-  faStickyNote,
-  faCog,
-  faCheckCircle,
-  faChevronDown,
-} from '@fortawesome/free-solid-svg-icons';
-import styles from './styles.module.scss';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import EditIcon from '@material-ui/icons/Edit';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import AlternateEmailIcon from '@material-ui/icons/AlternateEmail';
+import styles from './style.module.scss';
 import Button from '../common/buttons/button';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Paper from '../common/paper';
+import Menu from '../common/dashboard-menu';
+import schedule from '../../assets/schedule.svg';
+import TimelineCard from './timeline-card';
+import NotificationsCard from './notifications-card';
+import InfoCard from './info-card';
+import TournamentCard from './tournament-card';
+import tournamentLogoExample from '../../assets/tournamentLogoExample.svg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrophy } from '@fortawesome/free-solid-svg-icons';
+
+const data = [
+  { message: 'Publish Men’s Spring Thaw', date: '01/14/20' },
+  { message: 'Create Tournament Spring Lacrosse', date: '01/14/20' },
+  { message: 'Release Field Hockey 1 Retrospective', date: '01/14/20' },
+  { message: 'Release Field Hockey 1 Retrospective', date: '01/14/20' },
+  {
+    message: 'Post Tournament Play Scores for Field Hockey 1',
+    date: '02/15/20',
+  },
+];
+
+const notificationData = [
+  {
+    message: 'Post Tournament Play Scores for Field Hockey 1',
+    date: '01/14/20',
+  },
+  {
+    message:
+      'Robert Smith has added you as a collaborator for Draft Summer Lacrosse',
+    date: '01/14/20',
+  },
+  {
+    message:
+      'Reminder: Release Field Hockey I Retrospective is 2 weeks overdue',
+    date: '01/14/20',
+  },
+  {
+    message: 'Post Tournament Play Scores for Field Hockey 1',
+    date: '01/14/20',
+  },
+];
+
+const tournamentsData = [
+  {
+    id: '1',
+    logo: tournamentLogoExample,
+    title: 'Field Hockey I',
+    date: '01/02/10-01/03/21',
+    teamsRsvp: '2/8',
+    locations: 1,
+    status: 'Published',
+    players: 122,
+    fields: 2,
+    schedule: 'Available',
+  },
+  {
+    id: '2',
+    logo: tournamentLogoExample,
+    title: 'Field Hockey I',
+    date: '01/02/10-01/03/21',
+    teamsRsvp: '2/8',
+    locations: 1,
+    status: 'Published',
+    players: 122,
+    fields: 2,
+    schedule: 'Available',
+  },
+];
 
 class Dashboard extends React.Component {
   render() {
     return (
       <div className={styles.root}>
         <div className={styles.dashboard}>
-          <div
-            className={classnames(styles.paper, styles['main-menu'])}
-            style={{ marginTop: '76px' }}
-          >
-            <Button
-              label="Edit Dashboard Layout"
-              variant="text"
-              color="secondary"
-            />
-            <Button
-              label="Create tournament"
-              variant="contained"
-              color="primary"
-            />
-          </div>
-          <Paper>
-            <div className={styles['main-menu']}>
-              <Button
-                label="Edit Dashboard Layout"
-                variant="text"
-                color="secondary"
-              />
-              <Button
-                label="Create tournament"
-                variant="contained"
-                color="primary"
-              />
-            </div>
-          </Paper>
           <div className={styles.container}>
-            <div className={styles['menu']}>
-              <div className={styles['item']}>
-                <FontAwesomeIcon className={styles['icon']} icon={faUser} />
-                <b>My Dashboard</b>
-              </div>
-              <div className={styles['item']}>
-                <FontAwesomeIcon
-                  className={styles['icon']}
-                  icon={faStickyNote}
-                />
-                Library Manager
-              </div>
-              <div className={styles['item']}>
-                <FontAwesomeIcon className={styles['icon']} icon={faEnvelope} />
-                Messages
-              </div>
-              <div className={styles['item']}>
-                <FontAwesomeIcon
-                  className={styles['icon']}
-                  icon={faStickyNote}
-                />
-                Notes
-              </div>
-              <div className={styles['item']}>
-                <FontAwesomeIcon className={styles['icon']} icon={faCog} />
-                Settings
-              </div>
+            <div>
+              <Menu />
             </div>
-            <div className={styles['main']}>
-              <HeadingLevelTwo>
-                <span>My Dashboard</span>
-              </HeadingLevelTwo>
-              <div className={styles['info-wrapper']}>
-                <div className={classnames(styles['paper'], styles['alerts'])}>
-                  <div className={styles['card-title']}>Alerts</div>
-                  <div className={styles['alert']}>
-                    <div className={styles['alert-logo']}>
-                      <FontAwesomeIcon icon={faBell} />
-                    </div>
-                    <div className={styles['alert-message']}>
-                      <div>1 Team has requested feedback</div>
-                      <div className={styles['additionl-message']}>
-                        01/14/20
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles['alert']}>
-                    <div className={styles['alert-logo']}>
-                      <FontAwesomeIcon icon={faBell} />
-                    </div>
-                    <div className={styles['alert-message']}>
-                      <div>
-                        1 Team has registered for{' '}
-                        <span className={styles['link']}>Field Hockey I</span>
-                      </div>
-                      <div className={styles['additionl-message']}>
-                        01/14/20
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles['alert']}>
-                    <div className={styles['alert-logo']}>
-                      <FontAwesomeIcon icon={faBell} />
-                    </div>
-                    <div className={styles['alert-message']}>
-                      <div>5 Teams request feedback</div>
-                      <div className={styles['additionl-message']}>
-                        01/14/20
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles['alert']}>
-                    <div className={styles['alert-logo']}>
-                      <FontAwesomeIcon icon={faBell} />
-                    </div>
-                    <div className={styles['alert-message']}>
-                      <div>
-                        2 Teams have registered for{' '}
-                        <span className={styles['link']}>Field Hockey I</span>
-                      </div>
-                      <div className={styles['additionl-message']}>
-                        01/14/20
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles['expand']}>
-                    <FontAwesomeIcon icon={faChevronDown} />
-                  </div>
+            <div className={styles.main}>
+              <Paper>
+                <div className={styles['main-menu']}>
+                  <Button
+                    label="Edit Dashboard Layout"
+                    variant="text"
+                    color="secondary"
+                    icon={<EditIcon fontSize="small" />}
+                  />
+                  <Button
+                    label="Create tournament"
+                    variant="contained"
+                    color="primary"
+                  />
                 </div>
-                <div className={classnames(styles['paper'], styles['todos'])}>
-                  <div className={styles['card-title']}>To Do</div>
-                  <div className={styles['todo']}>
-                    <div
-                      className={styles['todo-logo']}
-                      style={{ color: '#8B8B8C' }}
-                    >
-                      <FontAwesomeIcon icon={faCheckCircle} />
-                    </div>
-                    <div className={styles['todo-message']}>
-                      <div>
-                        Resolve TRUE Florida{' '}
-                        <span className={styles['link']}>scheduling</span>{' '}
-                        conflict
-                      </div>
-                      <div className={styles['additionl-message']}>
-                        Due by 02/01/20
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles['todo']}>
-                    <div
-                      className={styles['todo-logo']}
-                      style={{ color: '#8B8B8C' }}
-                    >
-                      <FontAwesomeIcon icon={faCheckCircle} />
-                    </div>
-                    <div className={styles['todo-message']}>
-                      <div>
-                        Finalize{' '}
-                        <span className={styles['link']}>
-                          Men's Spring Thaw
-                        </span>{' '}
-                        Registration
-                      </div>
-                      <div className={styles['additionl-message']}>
-                        Due by 02/01/20
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles['todo']}>
-                    <div className={styles['todo-logo']}>
-                      <FontAwesomeIcon icon={faCheckCircle} />
-                    </div>
-                    <div className={styles['todo-message']}>
-                      <div>
-                        Resolve Trilogy{' '}
-                        <span className={styles['link']}>scheduling</span>{' '}
-                        conflict
-                      </div>
-                      <div className={styles['additionl-message']}>
-                        Completed 01/02/20
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles['expand']}>
-                    <FontAwesomeIcon icon={faChevronDown} />
-                  </div>
-                </div>
+              </Paper>
+              <div className={styles.heading}>
+                <HeadingLevelTwo>
+                  <span>My Dashboard</span>
+                </HeadingLevelTwo>
               </div>
-              <div className={styles['buttons-group']}>
-                <div className={styles['button']}>Live (1)</div>
-                <div className={styles['button']}>Draft (1)</div>
-                <div className={styles['button']}>Historical (0)</div>
+              <div className={styles['dashboard-cards-container']}>
+                <InfoCard
+                  icon={<AlternateEmailIcon fontSize="large" />}
+                  info="0 Team Mentions"
+                />
+                <InfoCard
+                  icon={<NotificationsIcon fontSize="large" />}
+                  info="0 New Notifications"
+                />
+                <InfoCard
+                  icon={<FormatListBulletedIcon fontSize="large" />}
+                  info="2 Pending Tasks"
+                />
               </div>
-              <div className={styles['tournaments-wrapper']}>
-                <div
-                  className={classnames(styles['paper'], styles['tournament'])}
-                >
-                  <div className={styles['tournament-info']}>
-                    <div className={styles['tournament-logo']}>
-                      <img alt={'sport logo'} />
-                    </div>
-                    <div className={styles['tournament-title']}>
-                      <div className={styles['card-title']}>Field Hockey I</div>
-                      <div>01/01/2020 - 04/01/2020</div>
-                    </div>
-                  </div>
-                  <div className={styles['stats']}>
-                    <div className={styles['column']}>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>
-                          Teams RSVP:
-                        </span>
-                        2/8
-                      </div>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>
-                          Locations:
-                        </span>
-                        1
-                      </div>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>
-                          Schedule:
-                        </span>
-                        <span className={styles['link']}>Available</span>
-                      </div>
-                    </div>
-                    <div className={styles['column']}>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>Players:</span>
-                        122
-                      </div>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>Fields:</span>1
-                      </div>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>Status:</span>
-                        Live
-                        <div className={styles['status-circle']}></div>
-                      </div>
+              <div className={styles['timeline-container']}>
+                <TimelineCard data={data} />
+                <img
+                  src={schedule}
+                  alt="schedule"
+                  className={styles['schedule-image']}
+                />
+              </div>
+              <NotificationsCard data={notificationData} />
+              <div className={styles['tournaments-container']}>
+                <div className={styles['tournaments-heading']}>
+                  <div className={styles['card-header']}>
+                    <div className={styles['card-title']}>
+                      <FontAwesomeIcon
+                        size="xs"
+                        icon={faTrophy}
+                        style={{ marginRight: '5px' }}
+                      />
+                      Tournaments
                     </div>
                   </div>
-                  <div className={styles['tournament-buttons']}>
-                    <div className={styles['button']}>Manage</div>
-                    <div className={styles['link']}>Duplicate</div>
+                  <div className={styles['buttons-group']}>
+                    <Button
+                      label="Published(1)"
+                      variant="contained"
+                      type="squared"
+                      color="primary"
+                    />
+                    <Button
+                      label="Draft (1)"
+                      variant="contained"
+                      type="squared"
+                      color="primary"
+                    />
+                    <Button
+                      label="Historical (0)"
+                      variant="contained"
+                      color="primary"
+                      type="squaredOutlined"
+                    />
                   </div>
                 </div>
-                <div
-                  className={classnames(styles['paper'], styles['tournament'])}
-                >
-                  <div className={styles['tournament-info']}>
-                    <div className={styles['tournament-logo']}>
-                      <img alt={'sport logo'} />
-                    </div>
-                    <div className={styles['tournament-title']}>
-                      <div className={styles['card-title']}>Field Hockey I</div>
-                      <div>01/01/2020 - 04/01/2020</div>
-                    </div>
-                  </div>
-                  <div className={styles['stats']}>
-                    <div className={styles['column']}>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>Teams:</span>
-                        24
-                      </div>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>
-                          Locations:
-                        </span>
-                        1
-                      </div>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>
-                          Schedule:
-                        </span>
-                        Pending
-                      </div>
-                    </div>
-                    <div className={styles['column']}>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>Players:</span>
-                        304
-                      </div>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>Fields:</span>6
-                      </div>
-                      <div className={styles['info']}>
-                        <span className={styles['column-title']}>Status:</span>
-                        Draft
-                        <div
-                          className={styles['status-circle']}
-                          style={{ backgroundColor: '#FFCB00' }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles['tournament-buttons']}>
-                    <div className={styles['button']}>Manage</div>
-                    <div className={styles['link']}>Duplicate</div>
-                  </div>
-                </div>
+                {tournamentsData.map((tournament: any) => (
+                  <TournamentCard key={tournament.id} data={tournament} />
+                ))}
               </div>
             </div>
           </div>

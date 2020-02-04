@@ -5,6 +5,8 @@ import Paper from '@material-ui/core/Paper';
 const useStyles = makeStyles(() => ({
   root: {
     padding: '12px',
+    backgroundColor: '#F4F4F4',
+    boxShadow: '0 1px 10px 0 rgba(0,0,0,0.1)',
   },
 }));
 
