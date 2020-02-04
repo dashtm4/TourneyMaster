@@ -55,6 +55,12 @@ ____
 1. POST: https://api.tourneymaster.org/v1/facilities
 1. DELETE: https://api.tourneymaster.org/v1/facilities?facilities_id=ABC123 VARCHAR(8)
 
+#### Fields (events.fields)
+1. GET (all): https://api.tourneymaster.org/v1/fields
+1. GET (specific facility): https://api.tourneymaster.org/v1/fields?fields_id=ABC123 VARCHAR(8)
+1. POST: https://api.tourneymaster.org/v1/fields
+1. DELETE: https://api.tourneymaster.org/v1/fields?fields_id=ABC123 VARCHAR(8)
+
 #### Members (events.members)
 1. GET (all): https://api.tourneymaster.org/v1/members
 1. GET (specific member): https://api.tourneymaster.org/v1/members?member_id=ABC123 VARCHAR(8)
