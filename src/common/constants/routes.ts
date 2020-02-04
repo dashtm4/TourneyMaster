@@ -1,4 +1,5 @@
 enum Routes {
+<<<<<<< HEAD
   DEFAULT = '/',
   LOGIN = '/login',
   DASHBOARD = '/dashboard',
@@ -7,3 +8,9 @@ enum Routes {
 }
 
 export { Routes };
+=======
+  LOGIN = '/login'
+}
+
+export { Routes }
+>>>>>>> development
