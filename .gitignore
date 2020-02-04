@@ -43,3 +43,5 @@ wp-content/themes/twenty*/
 *.log
 *.sql
 *.sqlite
+
+.env
