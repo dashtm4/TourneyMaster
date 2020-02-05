@@ -24,17 +24,22 @@ const TimelineCard = ({ data }: any) => (
           icon={<CalendarTodayIcon fontSize="small" />}
         />
       </div>
-      <ul>
+      <ul className={styles['notifications-list']}>
         {data.map((event: any, index: number) => (
           <li key={index} className={styles.notification}>
+            <div className={styles.line} />
+            <div className={styles.oval} />
             <div className={styles['notification-message']}>
-              <div>{event.message}</div>
+              <div>
+                {event.message}
+                <a className={styles['message-link']}>{event.link}</a>
+              </div>
               <div className={styles['additional-message']}>{event.date}</div>
             </div>
           </li>
         ))}
+        <ExpandMoreIcon className={styles.expand} fontSize="large" />
       </ul>
-      <ExpandMoreIcon className={styles.expand} fontSize="large" />
     </div>
   </Paper>
 );

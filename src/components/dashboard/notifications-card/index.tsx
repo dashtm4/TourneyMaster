@@ -16,7 +16,10 @@ const NotificationsCard = ({ data }: any) => (
       {data.map((notification: any, index: number) => (
         <li key={index} className={styles.notification}>
           <div className={styles['notification-message']}>
-            <div>{notification.message}</div>
+            <div>
+              {notification.message}
+              <a className={styles['message-link']}>{notification.link}</a>
+            </div>
             <div className={styles['additional-message']}>
               {notification.date}
             </div>

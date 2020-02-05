@@ -19,33 +19,39 @@ import { faTrophy } from '@fortawesome/free-solid-svg-icons';
 import Header from '../header';
 
 const data = [
-  { message: 'Publish Men’s Spring Thaw', date: '01/14/20' },
-  { message: 'Create Tournament Spring Lacrosse', date: '01/14/20' },
-  { message: 'Release Field Hockey 1 Retrospective', date: '01/14/20' },
-  { message: 'Release Field Hockey 1 Retrospective', date: '01/14/20' },
+  { message: 'Publish', link: 'Men’s Spring Thaw', date: '01/14/20' },
+  { message: 'Create Tournament', link: 'Spring Lacrosse', date: '01/14/20' },
   {
-    message: 'Post Tournament Play Scores for Field Hockey 1',
+    message: 'Release Retrospective for',
+    link: 'Field Hockey 1',
+    date: '01/14/20',
+  },
+  {
+    message: 'Post Tournament Play Scores for',
+    link: 'Field Hockey 1',
     date: '02/15/20',
   },
 ];
 
 const notificationData = [
   {
-    message: 'Post Tournament Play Scores for Field Hockey 1',
+    message: 'Post Tournament Play Scores for',
+    link: 'Field Hockey 1',
     date: '01/14/20',
   },
   {
-    message:
-      'Robert Smith has added you as a collaborator for Draft Summer Lacrosse',
+    message: 'Robert Smith has added you as a collaborator for',
+    link: 'Draft Summer Lacrosse',
     date: '01/14/20',
   },
   {
-    message:
-      'Reminder: Release Field Hockey I Retrospective is 2 weeks overdue',
+    message: 'Reminder: Release Retrospective is 2 weeks overdue for',
+    link: 'Field Hockey I',
     date: '01/14/20',
   },
   {
-    message: 'Post Tournament Play Scores for Field Hockey 1',
+    message: 'Post Tournament Play Scores for',
+    link: 'Field Hockey 1',
     date: '01/14/20',
   },
 ];
@@ -70,7 +76,7 @@ const tournamentsData = [
     date: '01/02/10-01/03/21',
     teamsRsvp: '2/8',
     locations: 1,
-    status: 'Published',
+    status: 'Draft',
     players: 122,
     fields: 2,
     schedule: 'Available',

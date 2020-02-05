@@ -2,6 +2,7 @@ import React from 'react';
 import Paper from '../../common/paper';
 import styles from './style.module.scss';
 import Button from '../../common/buttons/button';
+import { getTournamentStatusColor } from '../../../helpers/getTournamentStatusColor';
 
 const TournamentCard = ({ data }: any) => (
   <Paper>
@@ -29,7 +30,11 @@ const TournamentCard = ({ data }: any) => (
       </div>
       <div className={styles['tournament-content-item']}>
         <span className={styles['tournament-content-title']}>Status:</span>{' '}
-        {data.status}
+        {data.status}{' '}
+        <span
+          className={styles['tournament-status']}
+          style={{ ...getTournamentStatusColor(data.status) }}
+        />
       </div>
       <div className={styles['tournament-content-item']}>
         <span className={styles['tournament-content-title']}>Players:</span>{' '}
