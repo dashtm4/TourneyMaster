@@ -39,7 +39,6 @@ const LibraryManaget = () => (
                 Close Date:
               </span>
               <p>01/31/20</p>
-
               <span className={styles['tournament-status']} />
             </div>
             <div className={styles['tournament-content-item']}>
@@ -64,7 +63,7 @@ const LibraryManaget = () => (
               <span className={styles['tournament-content-title']}>
                 Discount End Date:
               </span>
-              <p>-</p>
+              <p>—</p>
             </div>
           </div>
         </SectionDropdown>
@@ -77,45 +76,39 @@ const LibraryManaget = () => (
               <span className={styles['tournament-content-title']}>
                 Max Teams Per Division:
               </span>
-              <p>-</p>
+              <p>—</p>
             </div>
             <div className={styles['tournament-content-item']}>
               <span className={styles['tournament-content-title']}>
                 Min Athletes on Roster:
               </span>
-              <p>-</p>
+              <p>—</p>
             </div>
             <div className={styles['tournament-content-item']}>
               <span className={styles['tournament-content-title']}>
                 Max Athletes on Roster:
               </span>
-              <p>-</p>
+              <p>—</p>
 
               <span className={styles['tournament-status']} />
             </div>
             <div className={styles['tournament-content-item']}>
               <span className={styles['tournament-content-title']}>
-                Entry Fee:
+                Athlete Birth Date:
               </span>
-              <p>$100.00</p>
+              <p>Require</p>
             </div>
             <div className={styles['tournament-content-item']}>
               <span className={styles['tournament-content-title']}>
-                Deposit Fee:
+                Athlete Jersey Number:
               </span>
-              <p>$25.00</p>
+              <p>Require</p>
             </div>
             <div className={styles['tournament-content-item']}>
               <span className={styles['tournament-content-title']}>
-                Early Bird Discount:
+                Athlete Email:
               </span>
-              <p>None</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Discount End Date:
-              </span>
-              <p>-</p>
+              <p>Require</p>
             </div>
           </div>
         </SectionDropdown>
@@ -123,7 +116,38 @@ const LibraryManaget = () => (
       <li>
         <SectionDropdown>
           <span>Main Contact</span>
-          <p>Content</p>
+          <div className={styles['tournament-content']}>
+            <div className={styles['tournament-content-item']}>
+              <span className={styles['tournament-content-title']}>First:</span>
+              <p>John</p>
+            </div>
+            <div className={styles['tournament-content-item']}>
+              <span className={styles['tournament-content-title']}>Last:</span>
+              <p>Anderson</p>
+            </div>
+            <div className={styles['tournament-content-item']}>
+              <span className={styles['tournament-content-title']}>Role:</span>
+              <p>None</p>
+
+              <span className={styles['tournament-status']} />
+            </div>
+            <div className={styles['tournament-content-item']}>
+              <span className={styles['tournament-content-title']}>Email:</span>
+              <p>janderson@gmail.com</p>
+            </div>
+            <div className={styles['tournament-content-item']}>
+              <span className={styles['tournament-content-title']}>
+                Mobile Number:
+              </span>
+              <p>612-456-8203</p>
+            </div>
+            <div className={styles['tournament-content-item']}>
+              <span className={styles['tournament-content-title']}>
+                Permission to Text:
+              </span>
+              <p>No</p>
+            </div>
+          </div>
         </SectionDropdown>
       </li>
     </ul>
