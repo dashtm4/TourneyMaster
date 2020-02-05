@@ -8,7 +8,7 @@ const defaultWidth = 100;
 interface ITextFieldProps {
   endAdornment?: string;
   startAdornment?: string;
-  label: string;
+  label?: string;
   fullWidth?: boolean;
   multiline?: boolean;
   rows?: string;

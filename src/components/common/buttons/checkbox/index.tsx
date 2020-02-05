@@ -8,8 +8,8 @@ import styles from './style.module.scss';
 
 interface ICheckboxProps {
   options: string[];
-  formLabel: string;
-  onChange: () => {};
+  formLabel?: string;
+  onChange?: any;
 }
 
 const Checkbox: React.FC<ICheckboxProps> = ({

@@ -9,6 +9,7 @@ enum Routes {
   UTILITIES = '/utilities',
   EVENT_DAY_COMPLEXITIES = '/event-day-complexities',
   EVENT_DETAILS = '/event-details',
+  FACILITIES = '/facilities',
 }
 
 export { Routes };
