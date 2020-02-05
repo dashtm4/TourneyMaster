@@ -30,8 +30,8 @@ const theme = createMuiTheme({
 
 interface ICheckboxProps {
   options: string[];
-  formLabel: string;
-  onChange: () => {};
+  formLabel?: string;
+  onChange?: () => void;
 }
 
 const Checkbox: React.FC<ICheckboxProps> = ({

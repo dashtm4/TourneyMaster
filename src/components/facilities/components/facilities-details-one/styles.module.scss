@@ -16,7 +16,10 @@
   color: #6a6a6a;
 }
 
-:local(.editBtn) {
+:local(.fromBtn) {
+  display: flex;
+  align-items: center;
+
   color: #00a3ea;
 
   background-color: transparent;
@@ -24,6 +27,10 @@
   border: 0;
 
   cursor: pointer;
+
+  svg {
+    fill: #00a3ea;
+  }
 }
 
 :local(.nameWrapper) {
@@ -33,20 +40,54 @@
   margin-top: 15px;
 }
 
-:local(.nameWrapperStadium) {
-  h3 {
-    color: #6a6a6a;
-    font-size: 16px;
+:local(.filedset) {
+  margin: 0;
+  padding: 0;
 
+  border: 0;
+
+  legend {
     margin-bottom: 5px;
   }
 }
 
-:local(.nameWrapperField) {
-  h3 {
-    color: #6a6a6a;
-    font-size: 16px;
+:local(.fieldTitle) {
+  font-size: 16px;
+  font-weight: bold;
+  color: #6a6a6a;
+}
 
-    margin-bottom: 5px;
+:local(.fieldList) {
+  display: flex;
+  flex-wrap: wrap;
+
+  margin: 0 0 25px -30px;
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    width: 255px;
+    margin: 16px 0 0 30px;
   }
+}
+
+:local(.restroomWrapper) {
+  display: flex;
+  justify-content: space-between;
+
+  margin-bottom: 15px;
+}
+
+:local(.restroomDetails) {
+  margin-bottom: 25px;
+}
+
+:local(.parkingWrapper) {
+  display: flex;
+  justify-content: space-around;
+}
+
+:local(.parkingDetails) {
+  margin-bottom: 25px;
 }
