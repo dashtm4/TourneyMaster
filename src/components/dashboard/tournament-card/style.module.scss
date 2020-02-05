@@ -35,9 +35,10 @@
   width: 70%;
   .card-title {
     color: #6a6a6a;
-    font-family: 'Open Sans SemiBold';
+    font-weight: 600;
     font-size: 24px;
     font-weight: 600;
+    margin-bottom: 10px;
   }
   .additional-message {
     color: #6a6a6a;
@@ -45,7 +46,7 @@
   }
 }
 .tournament-content-title {
-  font-family: 'Open Sans SemiBold';
+  font-weight: 600;
 }
 .tournament-status {
   height: 12px;
