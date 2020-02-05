@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
-import styles from './style.module.scss';
-import SectionDropdown from 'components/common/section-dropdown';
-import HeadingLevelThree from 'components/common/headings/heading-level-three';
-import HeadingLevelTwo from 'components/common/headings/heading-level-two';
-import TextField from 'components/common/input';
-import Select from 'components/common/select';
-import DatePicker from 'components/common/date-picker';
-import Button from 'components/common/buttons/button';
-import Radio from 'components/common/buttons/radio';
 import CodeIcon from '@material-ui/icons/Code';
-import Checkbox from 'components/common/buttons/checkbox';
+
+import styles from './style.module.scss';
+import {
+  Button,
+  Radio,
+  Checkbox,
+  DatePicker,
+  HeadingLevelTwo,
+  HeadingLevelThree,
+  Input,
+  SectionDropdown,
+  Select,
+} from 'components/common';
 
 class EventDetails extends Component {
   onChange = () => ({});
@@ -38,25 +41,25 @@ class EventDetails extends Component {
           <>Event Details</>
         </HeadingLevelTwo>
 
-        <SectionDropdown padding="0" summaryPadding="0">
+        <SectionDropdown type="section" padding="0">
           <HeadingLevelThree>
             <span className={styles.blockHeading}>Primary Information</span>
           </HeadingLevelThree>
           <div className={styles['pi-details']}>
             <div className={styles['pi-details-first']}>
-              <TextField width="256px" fullWidth={true} label="Event Name" />
-              <TextField width="161px" fullWidth={true} label="Event Tag" />
+              <Input width="256px" fullWidth={true} label="Event Name" />
+              <Input width="161px" fullWidth={true} label="Event Tag" />
               <Select
                 width="161px"
                 options={sportOptions}
                 label="Sport"
-                value=""
+                value={sportOptions[0]}
               />
               <Select
                 width="160px"
                 options={genderOptions}
                 label="Gender"
-                value=""
+                value={genderOptions[0]}
               />
             </div>
             <div className={styles['pi-details-second']}>
@@ -76,17 +79,17 @@ class EventDetails extends Component {
                 width="256px"
                 options={timeZoneOptions}
                 label="Time Zone"
-                value=""
+                value={timeZoneOptions[0]}
               />
             </div>
             <div className={styles['pi-details-third']}>
-              <TextField
+              <Input
                 width="635px"
                 label="General Location"
                 placeholder="Search google maps"
               />
               <div className={styles['pi-details-third-area']}>
-                <TextField
+                <Input
                   width="635px"
                   label="Description"
                   multiline={true}
@@ -105,7 +108,7 @@ class EventDetails extends Component {
           </div>
         </SectionDropdown>
 
-        <SectionDropdown padding="0" summaryPadding="0">
+        <SectionDropdown type="section" padding="0">
           <HeadingLevelThree>
             <span className={styles.blockHeading}>Event Structure</span>
           </HeadingLevelThree>
@@ -132,21 +135,21 @@ class EventDetails extends Component {
                   onChange={this.onChange}
                 />
               </div>
-              <TextField
+              <Input
                 width="250px"
                 fullWidth={true}
                 label="Min # of Game Guarantee"
               />
             </div>
             <div className={styles['es-details-second']}>
-              <TextField
+              <Input
                 width="170px"
                 fullWidth={true}
                 endAdornment="Minutes"
                 label="Pregame Warmup"
               />
               <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
-              <TextField
+              <Input
                 width="170px"
                 fullWidth={true}
                 endAdornment="Minutes"
@@ -155,7 +158,7 @@ class EventDetails extends Component {
               <span className={styles.innerSpanText}>
                 &nbsp;(2)&nbsp;+&nbsp;
               </span>
-              <TextField
+              <Input
                 width="170px"
                 fullWidth={true}
                 endAdornment="Minutes"
@@ -175,21 +178,21 @@ class EventDetails extends Component {
           </div>
         </SectionDropdown>
 
-        <SectionDropdown padding="0" summaryPadding="0">
+        <SectionDropdown type="section" padding="0">
           <HeadingLevelThree>
             <span className={styles.blockHeading}>Playoffs</span>
           </HeadingLevelThree>
           <h2>BODY</h2>
         </SectionDropdown>
 
-        <SectionDropdown padding="0" summaryPadding="0">
+        <SectionDropdown type="section" padding="0">
           <HeadingLevelThree>
             <span className={styles.blockHeading}>Media Assets</span>
           </HeadingLevelThree>
           <h2>BODY</h2>
         </SectionDropdown>
 
-        <SectionDropdown padding="0" summaryPadding="0">
+        <SectionDropdown type="section" padding="0">
           <HeadingLevelThree>
             <span className={styles.blockHeading}>Advanced Settings</span>
           </HeadingLevelThree>

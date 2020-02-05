@@ -8,17 +8,30 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import styles from './styles.module.scss';
 
+type DropdownType = 'section' | 'block';
+
 interface Props {
   children: React.ReactElement[];
   padding?: string;
-  summaryPadding?: string;
+  type?: DropdownType;
 }
 
-const SectionDropdown = ({ children, padding, summaryPadding }: Props) => (
+const setStyleOnType = (type?: DropdownType) =>
+  type && type === 'section'
+    ? {
+        background: 'transparent',
+        boxShadow: 'none',
+      }
+    : {};
+
+const setPanelSummaryStyle = (type?: DropdownType) =>
+  type && type === 'section' ? { paddingLeft: 0 } : {};
+
+const SectionDropdown = ({ children, padding, type }: Props) => (
   <section className={styles.section}>
-    <ExpansionPanel>
+    <ExpansionPanel style={setStyleOnType(type)}>
       <ExpansionPanelSummary
-        style={{ paddingLeft: summaryPadding }}
+        style={setPanelSummaryStyle(type)}
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"
         id="panel1a-header"
