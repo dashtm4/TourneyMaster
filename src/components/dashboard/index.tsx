@@ -84,90 +84,84 @@ const tournamentsData = [
 class Dashboard extends React.Component {
   render() {
     return (
-      <div className={styles.root}>
-        <div className={styles.dashboard}>
-          <div className={styles.container}>
-            <div className={styles.main}>
-              <Paper>
-                <div className={styles['main-menu']}>
-                  <Button
-                    label="Edit Dashboard Layout"
-                    variant="text"
-                    color="secondary"
-                    icon={<EditIcon fontSize="small" />}
-                  />
-                  <Button
-                    label="Create tournament"
-                    variant="contained"
-                    color="primary"
-                  />
-                </div>
-              </Paper>
-              <div className={styles.heading}>
-                <HeadingLevelTwo>My Dashboard</HeadingLevelTwo>
-              </div>
-              <div className={styles['dashboard-cards-container']}>
-                <InfoCard
-                  icon={<AlternateEmailIcon fontSize="large" />}
-                  info="0 Team Mentions"
+      <div className={styles.main}>
+        <Paper>
+          <div className={styles['main-menu']}>
+            <Button
+              label="Edit Dashboard Layout"
+              variant="text"
+              color="secondary"
+              icon={<EditIcon fontSize="small" />}
+            />
+            <Button
+              label="Create tournament"
+              variant="contained"
+              color="primary"
+            />
+          </div>
+        </Paper>
+        <div className={styles.heading}>
+          <HeadingLevelTwo>My Dashboard</HeadingLevelTwo>
+        </div>
+        <div className={styles['dashboard-cards-container']}>
+          <InfoCard
+            icon={<AlternateEmailIcon fontSize="large" />}
+            info="0 Team Mentions"
+          />
+          <InfoCard
+            icon={<NotificationsIcon fontSize="large" />}
+            info="0 New Notifications"
+          />
+          <InfoCard
+            icon={<FormatListBulletedIcon fontSize="large" />}
+            info="2 Pending Tasks"
+          />
+        </div>
+        <div className={styles['timeline-container']}>
+          <TimelineCard data={data} />
+          <img
+            src={schedule}
+            alt="schedule"
+            className={styles['schedule-image']}
+          />
+        </div>
+        <NotificationsCard data={notificationData} />
+        <div className={styles['tournaments-container']}>
+          <div className={styles['tournaments-heading']}>
+            <div className={styles['card-header']}>
+              <div className={styles['card-title']}>
+                <FontAwesomeIcon
+                  size="xs"
+                  icon={faTrophy}
+                  style={{ marginRight: '5px' }}
                 />
-                <InfoCard
-                  icon={<NotificationsIcon fontSize="large" />}
-                  info="0 New Notifications"
-                />
-                <InfoCard
-                  icon={<FormatListBulletedIcon fontSize="large" />}
-                  info="2 Pending Tasks"
-                />
-              </div>
-              <div className={styles['timeline-container']}>
-                <TimelineCard data={data} />
-                <img
-                  src={schedule}
-                  alt="schedule"
-                  className={styles['schedule-image']}
-                />
-              </div>
-              <NotificationsCard data={notificationData} />
-              <div className={styles['tournaments-container']}>
-                <div className={styles['tournaments-heading']}>
-                  <div className={styles['card-header']}>
-                    <div className={styles['card-title']}>
-                      <FontAwesomeIcon
-                        size="xs"
-                        icon={faTrophy}
-                        style={{ marginRight: '5px' }}
-                      />
-                      Tournaments
-                    </div>
-                  </div>
-                  <div className={styles['buttons-group']}>
-                    <Button
-                      label="Published(1)"
-                      variant="contained"
-                      type="squared"
-                      color="primary"
-                    />
-                    <Button
-                      label="Draft (1)"
-                      variant="contained"
-                      type="squared"
-                      color="primary"
-                    />
-                    <Button
-                      label="Historical (0)"
-                      variant="contained"
-                      color="primary"
-                      type="squaredOutlined"
-                    />
-                  </div>
-                </div>
-                {tournamentsData.map((tournament: any) => (
-                  <TournamentCard key={tournament.id} data={tournament} />
-                ))}
+                Tournaments
               </div>
             </div>
+            <div className={styles['buttons-group']}>
+              <Button
+                label="Published(1)"
+                variant="contained"
+                type="squared"
+                color="primary"
+              />
+              <Button
+                label="Draft (1)"
+                variant="contained"
+                type="squared"
+                color="primary"
+              />
+              <Button
+                label="Historical (0)"
+                variant="contained"
+                color="primary"
+                type="squaredOutlined"
+              />
+            </div>
           </div>
+          {tournamentsData.map((tournament: any) => (
+            <TournamentCard key={tournament.id} data={tournament} />
+          ))}
         </div>
       </div>
     );
