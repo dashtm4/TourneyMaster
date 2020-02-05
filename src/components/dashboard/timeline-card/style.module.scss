@@ -23,20 +23,17 @@
   margin: 0;
 }
 .notification-message {
-  font-family: 'Open Sans SemiBold';
   color: #6a6a6a;
   font-weight: 600;
   font-size: 16px;
   padding-top: 8px;
   .additional-message {
-    font-family: 'Open Sans';
     font-weight: normal;
     color: #6a6a6a;
     font-size: 12px;
     padding-bottom: 8px;
   }
   .message-link {
-    font-family: 'Open Sans';
     font-weight: normal;
     color: #11a8ea;
     cursor: pointer;
