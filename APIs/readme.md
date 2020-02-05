@@ -66,3 +66,9 @@ ____
 1. GET (specific member): https://api.tourneymaster.org/v1/members?member_id=ABC123 VARCHAR(8)
 1. POST: https://api.tourneymaster.org/v1/members
 1. DELETE: https://api.tourneymaster.org/v1/members?member_id=ABC123 VARCHAR(8)
+
+#### Teams (events.teams)
+1. GET (all): https://api.tourneymaster.org/v1/teams
+1. GET (specific member): https://api.tourneymaster.org/v1/teams?team_id=ABC123 VARCHAR(8)
+1. POST: https://api.tourneymaster.org/v1/teams
+1. DELETE: https://api.tourneymaster.org/v1/teams?team_id=ABC123 VARCHAR(8)
