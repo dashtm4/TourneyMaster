@@ -15,7 +15,7 @@ class Api {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        Authorization: `Bearer${AUTH_TOKEN}`,
+        Authorization: `Bearer ${AUTH_TOKEN}`,
       },
     });
   }

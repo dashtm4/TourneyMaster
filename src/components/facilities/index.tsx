@@ -20,9 +20,9 @@ class Facilities extends React.Component<any, State> {
   }
 
   async componentDidMount() {
-    const fasilities = await Api.get('/facilities');
+    const faсilities = await Api.get('/facilities');
 
-    console.log(fasilities);
+    console.log(faсilities);
   }
 
   onChangeFacilitiesCount = (evt: any) => {
