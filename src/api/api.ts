@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 
-const AUTH_TOKEN = localStorage.getItem('tocken');
+const AUTH_TOKEN = localStorage.getItem('token');
 const BASE_URL = 'https://api.tourneymaster.org/v1';
 
 class Api {

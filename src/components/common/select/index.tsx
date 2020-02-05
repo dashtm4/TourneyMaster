@@ -7,7 +7,7 @@ interface ISelectProps {
   label?: string;
   value: string;
   width?: string;
-  onChange?: any;
+  onChange?: () => {};
 }
 
 const Select: React.FC<ISelectProps> = ({
