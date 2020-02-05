@@ -3,18 +3,17 @@ import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Button from '../common/buttons/button';
 import SectionDropdown from '../common/section-dropdown';
 import styles from './styles.module.scss';
+import Paper from '../common/paper';
 
-const LibraryManaget = () => (
+const RegistrationView = () => (
   <section>
-    <p className={styles.btnWrapper}>
-      <Button
-        label="Link Data"
-        variant="contained"
-        color="primary"
-        type="string"
-      />
-    </p>
-    <div className={styles.headingWrapper}>
+    <Paper>
+      <div className={styles['main-menu']}>
+        <Button label="+ Add to Library" variant="text" color="secondary" />
+        <Button label="Edit" variant="contained" color="primary" />
+      </div>
+    </Paper>
+    <div className={styles.heading}>
       <HeadingLevelTwo>Registration</HeadingLevelTwo>
     </div>
     <ul className={styles.libraryList}>
@@ -41,6 +40,7 @@ const LibraryManaget = () => (
               <p>01/31/20</p>
               <span className={styles['tournament-status']} />
             </div>
+            <div className={styles.break}></div>
             <div className={styles['tournament-content-item']}>
               <span className={styles['tournament-content-title']}>
                 Entry Fee:
@@ -89,9 +89,9 @@ const LibraryManaget = () => (
                 Max Athletes on Roster:
               </span>
               <p>—</p>
-
               <span className={styles['tournament-status']} />
             </div>
+            <div className={styles.break}></div>
             <div className={styles['tournament-content-item']}>
               <span className={styles['tournament-content-title']}>
                 Athlete Birth Date:
@@ -154,4 +154,4 @@ const LibraryManaget = () => (
   </section>
 );
 
-export default LibraryManaget;
+export default RegistrationView;

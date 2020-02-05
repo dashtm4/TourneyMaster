@@ -13,10 +13,6 @@
   box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.1);
 }
 
-:local(.headingWrapper) {
-  margin-bottom: 24px;
-}
-
 :local(.libraryList) {
   margin: 0;
   padding: 0;
@@ -30,16 +26,33 @@
     padding-bottom: 7px;
   }
 }
+.main-menu {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-right: 25px;
+}
+.heading {
+  margin: 24px 0;
+}
 .tournament-content {
   display: flex;
   flex-wrap: wrap;
   .tournament-content-item {
-    flex-grow: 1;
-    width: 33%;
+    flex-grow: 0;
+    width: 20%;
     color: #6a6a6a;
     margin-bottom: 32px;
+    margin-right: 26px;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
   }
   .tournament-content-title {
     font-family: 'Open Sans SemiBold';
   }
+}
+.break {
+  flex-basis: 100%;
+  height: 0;
 }
