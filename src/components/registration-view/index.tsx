@@ -20,43 +20,19 @@ const LibraryManaget = () => (
     <ul className={styles.libraryList}>
       <li>
         <SectionDropdown>
-          <span>Tournaments</span>
+          <span>Primary Information</span>
           <p>Content</p>
         </SectionDropdown>
       </li>
       <li>
         <SectionDropdown>
-          <span>Facilities</span>
+          <span>Teams & Athletes</span>
           <p>Content</p>
         </SectionDropdown>
       </li>
       <li>
         <SectionDropdown>
-          <span>Registration</span>
-          <p>Content</p>
-        </SectionDropdown>
-      </li>
-      <li>
-        <SectionDropdown>
-          <span>Divisions & Pools</span>
-          <p>Content</p>
-        </SectionDropdown>
-      </li>
-      <li>
-        <SectionDropdown>
-          <span>Team Management</span>
-          <p>Content</p>
-        </SectionDropdown>
-      </li>
-      <li>
-        <SectionDropdown>
-          <span>Scheduling</span>
-          <p>Content</p>
-        </SectionDropdown>
-      </li>
-      <li>
-        <SectionDropdown>
-          <span>Messaging</span>
+          <span>Main Contact</span>
           <p>Content</p>
         </SectionDropdown>
       </li>
