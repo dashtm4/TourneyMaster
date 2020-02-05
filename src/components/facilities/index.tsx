@@ -37,7 +37,7 @@ class Facilities extends React.Component<any, State> {
         <Navigation />
         <div className={styles.sectionWrapper}>
           <div className={styles.headingWrapper}>
-            <HeadingLevelTwo>Fasilities</HeadingLevelTwo>
+            <HeadingLevelTwo>Facilities</HeadingLevelTwo>
           </div>
           <div className={styles.numberWrapper}>
             <span className={styles.numberTitleWrapper}>

@@ -4,13 +4,13 @@ import Button from '../common/buttons/button';
 import SectionDropdown from '../common/section-dropdown';
 import styles from './styles.module.scss';
 
-const LibraryManaget = () => (
+const LibraryManager = () => (
   <section>
     <p className={styles.btnWrapper}>
       <Button label="Link Data" variant="contained" color="primary" />
     </p>
     <div className={styles.headingWrapper}>
-      <HeadingLevelTwo>Library Managet</HeadingLevelTwo>
+      <HeadingLevelTwo>Library Manager</HeadingLevelTwo>
     </div>
     <ul className={styles.libraryList}>
       <li>
@@ -59,4 +59,4 @@ const LibraryManaget = () => (
   </section>
 );
 
-export default LibraryManaget;
+export default LibraryManager;
