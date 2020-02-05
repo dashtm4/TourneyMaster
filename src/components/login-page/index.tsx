@@ -26,7 +26,9 @@ class LoginPage extends React.Component<RouteComponentProps, LoginPageState> {
     this.setState({ password: e.target.value });
   };
 
-  onSignIn = async () => {
+  onSignIn = async (evt: React.SyntheticEvent) => {
+    evt.preventDefault();
+
     const { email, password } = this.state;
     const user = await Auth.signIn(email, password);
 
@@ -77,37 +79,22 @@ class LoginPage extends React.Component<RouteComponentProps, LoginPageState> {
               <span className="visually-hidden">Your name</span>
             </label>
             <label className={styles.accountEmail}>
-              <input
-                onChange={this.onEmailChange}
-                className={styles.emailInput}
-                type="text"
-                value={email}
-                placeholder="Email"
-              />
+              <input type="text" placeholder="Email" />
               <span className="visually-hidden">Email Adddress</span>
             </label>
             <label className={styles.accountPassword}>
               <input
-                onChange={this.onPasswordChange}
                 className={styles.passwordInput}
                 type="password"
-                value={password}
                 placeholder="Password"
               />
               <span className="visually-hidden">Password</span>
             </label>
-            <a className={styles.forgotPassword} href="#">
-              Forgot your password?
-            </a>
-            <button
-              className={styles.signIn}
-              type="button"
-              onClick={this.onSignIn}
-            >
-              Sign In
+            <button className={styles.signIn} type="button">
+              Sign Up
             </button>
           </form>
-          <form className="sign-form__login">
+          <form onSubmit={this.onSignIn} className="sign-form__login">
             <h2 className={styles.loginTitle}>Sign in</h2>
             <button
               type="button"
@@ -124,6 +111,7 @@ class LoginPage extends React.Component<RouteComponentProps, LoginPageState> {
                 type="text"
                 value={email}
                 placeholder="Email"
+                required
               />
               <span className="visually-hidden">Email Adddress</span>
             </label>
@@ -134,17 +122,14 @@ class LoginPage extends React.Component<RouteComponentProps, LoginPageState> {
                 type="password"
                 value={password}
                 placeholder="Password"
+                required
               />
               <span className="visually-hidden">Password</span>
             </label>
             <a className={styles.forgotPassword} href="#">
               Forgot your password?
             </a>
-            <button
-              className={styles.signIn}
-              type="button"
-              onClick={this.onSignIn}
-            >
+            <button className={styles.signIn} type="submit">
               Sign In
             </button>
           </form>
