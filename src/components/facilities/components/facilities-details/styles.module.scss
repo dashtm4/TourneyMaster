@@ -79,13 +79,17 @@
   margin-bottom: 15px;
 }
 
+:local(.filedsetGolf) {
+  padding-top: 25px;
+}
+
 :local(.restroomDetails) {
   margin-bottom: 25px;
 }
 
 :local(.parkingWrapper) {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 :local(.parkingDetails) {

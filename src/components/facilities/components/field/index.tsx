@@ -10,7 +10,7 @@ interface Props {
 const Field = ({ fieldNumber }: Props) => (
   <fieldset className={styles.field}>
     <legend>Field {fieldNumber} Name</legend>
-    <TextField label={`Field ${fieldNumber}`} />
+    <TextField placeholder={`Field ${fieldNumber}`} width="250px" />
     <Checkbox options={['Illuminated', 'Premier Location']} />
   </fieldset>
 );

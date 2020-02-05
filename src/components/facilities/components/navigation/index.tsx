@@ -16,7 +16,7 @@ const Navigation = () => (
         Upload From File
       </a>
     </span>
-    <Button label="Save" variant="contained" color="primary" type="string" />
+    <Button label="Save" variant="contained" color="primary" />
   </p>
 );
 

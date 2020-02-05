@@ -7,12 +7,7 @@ import styles from './styles.module.scss';
 const LibraryManaget = () => (
   <section>
     <p className={styles.btnWrapper}>
-      <Button
-        label="Link Data"
-        variant="contained"
-        color="primary"
-        type="string"
-      />
+      <Button label="Link Data" variant="contained" color="primary" />
     </p>
     <div className={styles.headingWrapper}>
       <HeadingLevelTwo>Library Managet</HeadingLevelTwo>
