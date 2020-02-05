@@ -14,6 +14,7 @@ import styles from './styles.module.scss';
 
 interface Props {
   facilitiyNumber: number;
+  isOpen: boolean;
 }
 
 interface State {
@@ -22,7 +23,7 @@ interface State {
   isParkingDetails: boolean;
 }
 
-class FacilitiesDetails extends React.Component<Props, State> {
+class FacilityDetails extends React.Component<Props, State> {
   constructor(props: any) {
     super(props);
 
@@ -46,11 +47,11 @@ class FacilitiesDetails extends React.Component<Props, State> {
   };
 
   render() {
-    const { facilitiyNumber } = this.props;
+    const { facilitiyNumber, isOpen } = this.props;
     const { fieldCount, isRestroomDetails, isParkingDetails } = this.state;
 
     return (
-      <ExpansionPanelWrapped>
+      <ExpansionPanelWrapped expanded={isOpen}>
         <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
           <h2 className={styles.detailsSubtitle}>
             Facility {facilitiyNumber} Details
@@ -114,12 +115,12 @@ class FacilitiesDetails extends React.Component<Props, State> {
             </fieldset>
             <div className={styles.parkingWrapper}>
               <fieldset className={styles.filedset}>
-                <legend className={styles.fieldTitle}>Restrooms</legend>
+                <legend className={styles.fieldTitle}>Parking Available</legend>
                 <Select value="Ample" options={['Ample']} width="160px" />
               </fieldset>
               <fieldset className={styles.filedset}>
                 <legend className={styles.fieldTitle}>
-                  # Portable Toilets
+                  Distance to Fields
                 </legend>
                 <TextField placeholder="Metres" width="160px" />
               </fieldset>
@@ -146,4 +147,4 @@ class FacilitiesDetails extends React.Component<Props, State> {
   }
 }
 
-export default FacilitiesDetails;
+export default FacilityDetails;
