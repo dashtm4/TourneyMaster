@@ -14,7 +14,6 @@ class Api {
       baseURL: this.baseUrl,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
         Authorization: `Bearer ${AUTH_TOKEN}`,
       },
     });
