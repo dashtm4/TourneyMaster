@@ -3,7 +3,7 @@ import { Typography } from '@material-ui/core';
 import styles from './styles.module.scss';
 
 interface Props {
-  children: React.ReactElement;
+  children: string;
 }
 
 const HeadeingLevelTwo = ({ children }: Props) => (

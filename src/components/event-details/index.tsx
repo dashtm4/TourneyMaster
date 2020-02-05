@@ -37,9 +37,7 @@ class EventDetails extends Component {
 
     return (
       <div className={styles.container}>
-        <HeadingLevelTwo>
-          <>Event Details</>
-        </HeadingLevelTwo>
+        <HeadingLevelTwo>Event Details</HeadingLevelTwo>
 
         <SectionDropdown type="section" padding="0">
           <HeadingLevelThree>

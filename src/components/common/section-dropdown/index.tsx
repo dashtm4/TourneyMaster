@@ -1,9 +1,9 @@
 import React from 'react';
 import HeadeingLevelThree from '../headings/heading-level-three';
 import {
-  ExpansionPanel,
   ExpansionPanelSummary,
   ExpansionPanelDetails,
+  ExpansionPanel,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import styles from './styles.module.scss';
