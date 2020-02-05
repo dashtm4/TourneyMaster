@@ -7,8 +7,8 @@ import Facilities from '../facilities';
 import MenuList from './constants/MenuList';
 import { Routes } from '../../common/constants';
 import styles from './styles.module.scss';
-import RegistrationView from '../registration-view';
 import Dashboard from '../dashboard';
+import Registration from '../registration-view';
 
 const AuthorizedPage = () => (
   <>
@@ -17,10 +17,10 @@ const AuthorizedPage = () => (
       <Menu list={MenuList} />
       <main className={styles.content}>
         <Switch>
-          <Route path={'/registration'} component={RegistrationView} />
           <Route path={Routes.DASHBOARD} component={Dashboard} />
           <Route path={Routes.LIBRARY_MANAGER} component={LibraryManaget} />
           <Route path={Routes.FACILITIES} component={Facilities} />
+          <Route path={Routes.REGISTRATION} component={Registration} />
         </Switch>
       </main>
     </div>

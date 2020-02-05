@@ -4,6 +4,36 @@ import Button from '../common/buttons/button';
 import SectionDropdown from '../common/section-dropdown';
 import styles from './styles.module.scss';
 import Paper from '../common/paper';
+import PrimaryInformation from './primary-information';
+import TeamsAthletesInfo from './teams-athletes';
+import MainContact from './main-contact';
+
+const primaryInformation = {
+  division: '2020, 2021',
+  openDate: '01/01/20',
+  closeDate: '01/31/20',
+  entryFee: '$100.00',
+  depositFee: '$25.00',
+  earlyBirdDiscount: 'None',
+  discountEndDate: '',
+};
+const teamsInfo = {
+  maxTeamsPerDiv: '',
+  minOnRoster: '',
+  maxOnRoster: '',
+  athleteBirth: 'Require',
+  athleteJersey: 'Require',
+  athleteEmail: 'Require',
+};
+
+const mainContact = {
+  first: 'John',
+  last: 'Anderson',
+  role: 'None',
+  email: 'janderson@gmail.com',
+  mobile: '612-456-8203',
+  permissionToText: 'No',
+};
 
 const RegistrationView = () => (
   <section>
@@ -18,136 +48,21 @@ const RegistrationView = () => (
     </div>
     <ul className={styles.libraryList}>
       <li>
-        <SectionDropdown>
+        <SectionDropdown type="section" padding="0">
           <span>Primary Information</span>
-          <div className={styles['tournament-content']}>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Division:
-              </span>
-              <p>2020, 2012</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Open Date:
-              </span>
-              <p>01/01/20</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Close Date:
-              </span>
-              <p>01/31/20</p>
-              <span className={styles['tournament-status']} />
-            </div>
-            <div className={styles.break}></div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Entry Fee:
-              </span>
-              <p>$100.00</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Deposit Fee:
-              </span>
-              <p>$25.00</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Early Bird Discount:
-              </span>
-              <p>None</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Discount End Date:
-              </span>
-              <p>—</p>
-            </div>
-          </div>
+          <PrimaryInformation data={primaryInformation} />
         </SectionDropdown>
       </li>
       <li>
-        <SectionDropdown>
+        <SectionDropdown type="section" padding="0">
           <span>Teams & Athletes</span>
-          <div className={styles['tournament-content']}>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Max Teams Per Division:
-              </span>
-              <p>—</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Min Athletes on Roster:
-              </span>
-              <p>—</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Max Athletes on Roster:
-              </span>
-              <p>—</p>
-              <span className={styles['tournament-status']} />
-            </div>
-            <div className={styles.break}></div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Athlete Birth Date:
-              </span>
-              <p>Require</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Athlete Jersey Number:
-              </span>
-              <p>Require</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Athlete Email:
-              </span>
-              <p>Require</p>
-            </div>
-          </div>
+          <TeamsAthletesInfo data={teamsInfo} />
         </SectionDropdown>
       </li>
       <li>
-        <SectionDropdown>
+        <SectionDropdown type="section" padding="0">
           <span>Main Contact</span>
-          <div className={styles['tournament-content']}>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>First:</span>
-              <p>John</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>Last:</span>
-              <p>Anderson</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>Role:</span>
-              <p>None</p>
-
-              <span className={styles['tournament-status']} />
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>Email:</span>
-              <p>janderson@gmail.com</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Mobile Number:
-              </span>
-              <p>612-456-8203</p>
-            </div>
-            <div className={styles['tournament-content-item']}>
-              <span className={styles['tournament-content-title']}>
-                Permission to Text:
-              </span>
-              <p>No</p>
-            </div>
-          </div>
+          <MainContact data={mainContact} />
         </SectionDropdown>
       </li>
     </ul>
