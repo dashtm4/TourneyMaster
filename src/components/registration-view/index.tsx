@@ -43,29 +43,31 @@ const RegistrationView = () => (
         <Button label="Edit" variant="contained" color="primary" />
       </div>
     </Paper>
-    <div className={styles.heading}>
-      <HeadingLevelTwo>Registration</HeadingLevelTwo>
+    <div style={{ maxWidth: '732px' }}>
+      <div className={styles.heading}>
+        <HeadingLevelTwo>Registration</HeadingLevelTwo>
+      </div>
+      <ul className={styles.libraryList}>
+        <li>
+          <SectionDropdown type="section" padding="0">
+            <span>Primary Information</span>
+            <PrimaryInformation data={primaryInformation} />
+          </SectionDropdown>
+        </li>
+        <li>
+          <SectionDropdown type="section" padding="0">
+            <span>Teams & Athletes</span>
+            <TeamsAthletesInfo data={teamsInfo} />
+          </SectionDropdown>
+        </li>
+        <li>
+          <SectionDropdown type="section" padding="0">
+            <span>Main Contact</span>
+            <MainContact data={mainContact} />
+          </SectionDropdown>
+        </li>
+      </ul>
     </div>
-    <ul className={styles.libraryList}>
-      <li>
-        <SectionDropdown type="section" padding="0">
-          <span>Primary Information</span>
-          <PrimaryInformation data={primaryInformation} />
-        </SectionDropdown>
-      </li>
-      <li>
-        <SectionDropdown type="section" padding="0">
-          <span>Teams & Athletes</span>
-          <TeamsAthletesInfo data={teamsInfo} />
-        </SectionDropdown>
-      </li>
-      <li>
-        <SectionDropdown type="section" padding="0">
-          <span>Main Contact</span>
-          <MainContact data={mainContact} />
-        </SectionDropdown>
-      </li>
-    </ul>
   </section>
 );
 

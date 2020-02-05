@@ -38,7 +38,9 @@ const Menu = ({ list }: Props) => (
                 <ul className={styles.list}>
                   {menuItem.children.map(menuSubItem => (
                     <li className={styles.itemSubTitle} key={menuSubItem}>
-                      <a href="#">{menuSubItem}</a>
+                      <Link to={menuSubItem} className={styles.itemTitle}>
+                        {menuSubItem}
+                      </Link>
                     </li>
                   ))}
                 </ul>

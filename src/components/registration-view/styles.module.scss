@@ -39,9 +39,11 @@
     &:last-of-type {
       margin-bottom: 0;
     }
+    p {
+      margin-top: 4px;
+    }
   }
   .section-title {
     font-family: 'Open Sans SemiBold';
-    margin-bottom: 4px;
   }
 }

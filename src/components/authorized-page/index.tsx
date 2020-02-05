@@ -21,6 +21,7 @@ const AuthorizedPage = () => (
           <Route path={Routes.LIBRARY_MANAGER} component={LibraryManaget} />
           <Route path={Routes.FACILITIES} component={Facilities} />
           <Route path={Routes.REGISTRATION} component={Registration} />
+          <Route path={Routes.DEFAULT} component={Dashboard} />
         </Switch>
       </main>
     </div>
