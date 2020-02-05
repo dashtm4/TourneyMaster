@@ -14,12 +14,20 @@ import styles from './styles.module.scss';
 
 const FIELD_COUNT = 4;
 
-class facilitiesDetailsOne extends React.Component {
+interface Props {
+  facilitiyNumber: number;
+}
+
+class FacilitiesDetails extends React.Component<Props> {
   render() {
+    const { facilitiyNumber } = this.props;
+
     return (
       <ExpansionPanelWrapped>
         <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
-          <h2 className={styles.detailsSubtitle}>Facility 1 Details</h2>
+          <h2 className={styles.detailsSubtitle}>
+            Facility {facilitiyNumber} Details
+          </h2>
         </ExpansionPanelSummaryWrapped>
         <ExpansionPanelDetailsWrapped>
           <form className={styles.form}>
@@ -108,4 +116,4 @@ class facilitiesDetailsOne extends React.Component {
   }
 }
 
-export default facilitiesDetailsOne;
+export default FacilitiesDetails;

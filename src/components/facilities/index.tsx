@@ -2,13 +2,15 @@ import React from 'react';
 import Navigation from './components/navigation';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Select from '../common/select';
-import FacilitiesDetailsOne from './components/facilities-details-one';
+import FacilitiesDetails from './components/facilities-details';
 import styles from './styles.module.scss';
 
+const FACILITIES_COUNT = 2;
+
 const Facilities = () => (
-  <>
+  <section>
     <Navigation />
-    <section className={styles.sectionWrapper}>
+    <div className={styles.sectionWrapper}>
       <div className={styles.headingWrapper}>
         <HeadingLevelTwo>Fasilities</HeadingLevelTwo>
       </div>
@@ -21,12 +23,14 @@ const Facilities = () => (
         />
       </div>
       <ul className={styles.facilitiesList}>
-        <li className={styles.facilitiesItem}>
-          <FacilitiesDetailsOne />
-        </li>
+        {Array.from(new Array(FACILITIES_COUNT), (_, idx) => (
+          <li className={styles.facilitiesItem} key={idx}>
+            <FacilitiesDetails facilitiyNumber={idx + 1} />
+          </li>
+        ))}
       </ul>
-    </section>
-  </>
+    </div>
+  </section>
 );
 
 export default Facilities;
