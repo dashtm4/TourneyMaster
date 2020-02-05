@@ -114,12 +114,12 @@ class FacilitiesDetails extends React.Component<Props, State> {
             </fieldset>
             <div className={styles.parkingWrapper}>
               <fieldset className={styles.filedset}>
-                <legend className={styles.fieldTitle}>Restrooms</legend>
+                <legend className={styles.fieldTitle}>Parking Available</legend>
                 <Select value="Ample" options={['Ample']} width="160px" />
               </fieldset>
               <fieldset className={styles.filedset}>
                 <legend className={styles.fieldTitle}>
-                  # Portable Toilets
+                  Distance to Fields
                 </legend>
                 <TextField placeholder="Metres" width="160px" />
               </fieldset>
