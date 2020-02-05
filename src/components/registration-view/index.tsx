@@ -43,7 +43,7 @@ const RegistrationView = () => (
         <Button label="Edit" variant="contained" color="primary" />
       </div>
     </Paper>
-    <div style={{ maxWidth: '732px' }}>
+    <div className={styles['section-container']}>
       <div className={styles.heading}>
         <HeadingLevelTwo>Registration</HeadingLevelTwo>
       </div>
