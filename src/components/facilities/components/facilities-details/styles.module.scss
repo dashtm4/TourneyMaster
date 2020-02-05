@@ -1,0 +1,97 @@
+:local(.form) {
+  width: 100%;
+}
+
+:local(.detailsSubtitle) {
+  font-weight: 600;
+  color: #6a6a6a;
+}
+
+:local(.descripWrapper) {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 6px;
+
+  color: #6a6a6a;
+}
+
+:local(.fromBtn) {
+  display: flex;
+  align-items: center;
+
+  color: #00a3ea;
+
+  background-color: transparent;
+
+  border: 0;
+
+  cursor: pointer;
+
+  svg {
+    fill: #00a3ea;
+  }
+}
+
+:local(.nameWrapper) {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 15px;
+}
+
+:local(.filedset) {
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  legend {
+    margin-bottom: 5px;
+  }
+}
+
+:local(.fieldTitle) {
+  font-size: 16px;
+  font-weight: bold;
+  color: #6a6a6a;
+}
+
+:local(.fieldList) {
+  display: flex;
+  flex-wrap: wrap;
+
+  margin: 0 0 25px -30px;
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    width: 255px;
+    margin: 16px 0 0 30px;
+  }
+}
+
+:local(.restroomWrapper) {
+  display: flex;
+  justify-content: space-between;
+
+  margin-bottom: 15px;
+}
+
+:local(.filedsetGolf) {
+  padding-top: 25px;
+}
+
+:local(.restroomDetails) {
+  margin-bottom: 25px;
+}
+
+:local(.parkingWrapper) {
+  display: flex;
+  justify-content: space-between;
+}
+
+:local(.parkingDetails) {
+  margin-bottom: 25px;
+}

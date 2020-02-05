@@ -4,10 +4,10 @@ import styles from './style.module.scss';
 
 interface ISelectProps {
   options: string[];
-  label: string;
+  label?: string;
   value: string;
   width?: string;
-  onChange?: () => {};
+  onChange?: any;
 }
 
 const Select: React.FC<ISelectProps> = ({
