@@ -17,11 +17,9 @@
 .container {
   display: flex;
   flex-direction: row;
-  margin-top: 76px;
 }
 
 .main {
-  margin: 0 30px;
   width: 100%;
 }
 
@@ -50,6 +48,7 @@
 }
 
 .main-menu {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   padding-right: 25px;

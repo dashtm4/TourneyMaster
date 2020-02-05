@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import LoginPage from './login-page';
-import Dashboard from './dashboard';
+import AuthorizedPage from './authorized-page';
 import { Routes } from '../common/constants';
 
 const App: React.FC = () => {
@@ -9,8 +9,8 @@ const App: React.FC = () => {
     <React.Fragment>
       <Router>
         <Switch>
-          <Route path={Routes.DASHBOARD} component={Dashboard} />
-          <Route path={Routes.LOGIN} component={LoginPage} />
+          <Route path={Routes.LOGIN} component={LoginPage} exact />
+          <Route path={Routes.DEFAULT} component={AuthorizedPage} />
         </Switch>
       </Router>
     </React.Fragment>

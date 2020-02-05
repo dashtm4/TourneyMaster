@@ -7,7 +7,6 @@ import styles from './style.module.scss';
 import Button from '../common/buttons/button';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Paper from '../common/paper';
-import Menu from '../common/dashboard-menu';
 import schedule from '../../assets/schedule.svg';
 import TimelineCard from './timeline-card';
 import NotificationsCard from './notifications-card';
@@ -16,7 +15,6 @@ import TournamentCard from './tournament-card';
 import tournamentLogoExample from '../../assets/tournamentLogoExample.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
-import Header from '../header';
 
 const data = [
   { message: 'Publish', link: 'Men’s Spring Thaw', date: '01/14/20' },
@@ -87,12 +85,8 @@ class Dashboard extends React.Component {
   render() {
     return (
       <div className={styles.root}>
-        <Header />
         <div className={styles.dashboard}>
           <div className={styles.container}>
-            <div>
-              <Menu />
-            </div>
             <div className={styles.main}>
               <Paper>
                 <div className={styles['main-menu']}>
@@ -110,9 +104,7 @@ class Dashboard extends React.Component {
                 </div>
               </Paper>
               <div className={styles.heading}>
-                <HeadingLevelTwo>
-                  <span>My Dashboard</span>
-                </HeadingLevelTwo>
+                <HeadingLevelTwo>My Dashboard</HeadingLevelTwo>
               </div>
               <div className={styles['dashboard-cards-container']}>
                 <InfoCard
