@@ -1,32 +1,10 @@
 import React from 'react';
-import { createMuiTheme } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/core/styles';
 import {
   Radio as MuiRadio,
   FormControlLabel,
   RadioGroup,
-  FormLabel,
 } from '@material-ui/core';
-
-const theme = createMuiTheme({
-  typography: {
-    fontFamily: 'Open Sans',
-    fontSize: 16,
-  },
-  palette: {
-    primary: {
-      main: '#00A3EA',
-    },
-  },
-  overrides: {
-    MuiFormControlLabel: {
-      root: {
-        lineHeight: '22px',
-        color: '#6A6A6A',
-      },
-    },
-  },
-});
+import styles from './style.module.scss';
 
 interface IRadioProps {
   options: string[];
@@ -35,20 +13,20 @@ interface IRadioProps {
 }
 
 const Radio: React.FC<IRadioProps> = ({ options, formLabel, onChange }) => (
-  <ThemeProvider theme={theme}>
-    <FormLabel component="legend">{formLabel}</FormLabel>
+  <div className={styles.container}>
+    <span className={styles.label}>{formLabel}</span>
     <RadioGroup aria-label="gender" name="gender1">
       {options.map((option: string, index: number) => (
         <FormControlLabel
           key={index}
           value={option}
-          control={<MuiRadio color="primary" />}
+          control={<MuiRadio color="secondary" />}
           label={option}
           onChange={onChange}
         />
       ))}
     </RadioGroup>
-  </ThemeProvider>
+  </div>
 );
 
 export default Radio;

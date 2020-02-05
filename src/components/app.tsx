@@ -9,7 +9,7 @@ const App: React.FC = () => {
     <React.Fragment>
       <Router>
         <Switch>
-          <Route path={Routes.LOGIN} component={LoginPage} exact />
+          <Route path={Routes.LOGIN} component={LoginPage} exact={true} />
           <Route path={Routes.DEFAULT} component={AuthorizedPage} />
         </Switch>
       </Router>
