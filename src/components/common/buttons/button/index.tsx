@@ -7,7 +7,7 @@ interface IButtonProps {
   color: 'primary' | 'secondary' | 'inherit' | 'default' | undefined;
   variant: 'text' | 'outlined' | 'contained' | undefined;
   type?: 'squared' | 'danger' | 'squaredOutlined';
-  icon?: JSX.Element;
+  icon?: any;
   onClick?: () => {};
 }
 
