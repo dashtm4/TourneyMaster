@@ -31,9 +31,12 @@ class LoginPage extends React.Component<RouteComponentProps, LoginPageState> {
 
     const { email, password } = this.state;
     const user = await Auth.signIn(email, password);
+    const userToken = user.signInUserSession.idToken.jwtToken;
 
-    if (user.signInUserSession.idToken.jwtToken) {
+    if (userToken) {
       this.props.history.push('/dashboard');
+
+      localStorage.setItem('token', userToken);
     }
   };
 

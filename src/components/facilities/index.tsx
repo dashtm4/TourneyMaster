@@ -4,6 +4,7 @@ import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Select from '../common/select';
 import FacilityDetails from './components/facility-details';
 import styles from './styles.module.scss';
+import Api from '../../api/api';
 
 interface State {
   facilitiesCount: number;
@@ -16,6 +17,12 @@ class Facilities extends React.Component<any, State> {
     this.state = {
       facilitiesCount: 1,
     };
+  }
+
+  async componentDidMount() {
+    const faсilities = await Api.get('/facilities');
+
+    console.log(faсilities);
   }
 
   onChangeFacilitiesCount = (evt: any) => {
