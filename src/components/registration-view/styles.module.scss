@@ -30,3 +30,15 @@
     padding-bottom: 7px;
   }
 }
+.tournament-content {
+  display: flex;
+  flex-wrap: wrap;
+  .tournament-content-item {
+    flex-grow: 1;
+    width: 33%;
+    color: #6a6a6a;
+  }
+  .tournament-content-title {
+    font-family: 'Open Sans SemiBold';
+  }
+}
