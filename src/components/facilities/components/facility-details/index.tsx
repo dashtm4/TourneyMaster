@@ -14,7 +14,7 @@ import styles from './styles.module.scss';
 
 interface Props {
   facilitiyNumber: number;
-  isOpen: boolean
+  isOpen: boolean;
 }
 
 interface State {
@@ -23,7 +23,7 @@ interface State {
   isParkingDetails: boolean;
 }
 
-class FacilitiesDetails extends React.Component<Props, State> {
+class FacilityDetails extends React.Component<Props, State> {
   constructor(props: any) {
     super(props);
 
@@ -147,4 +147,4 @@ class FacilitiesDetails extends React.Component<Props, State> {
   }
 }
 
-export default FacilitiesDetails;
+export default FacilityDetails;

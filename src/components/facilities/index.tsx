@@ -2,7 +2,7 @@ import React from 'react';
 import Navigation from './components/navigation';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Select from '../common/select';
-import FacilitiesDetails from './components/facilities-details';
+import FacilityDetails from './components/facility-details';
 import styles from './styles.module.scss';
 
 interface State {
@@ -46,10 +46,7 @@ class Facilities extends React.Component<any, State> {
           <ul className={styles.facilitiesList}>
             {Array.from(new Array(+facilitiesCount), (_, idx) => (
               <li className={styles.facilitiesItem} key={idx}>
-                <FacilitiesDetails
-                  isOpen={idx === 0}
-                  facilitiyNumber={idx + 1}
-                />
+                <FacilityDetails isOpen={idx === 0} facilitiyNumber={idx + 1} />
               </li>
             ))}
           </ul>
