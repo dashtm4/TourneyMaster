@@ -46,7 +46,10 @@ class Facilities extends React.Component<any, State> {
           <ul className={styles.facilitiesList}>
             {Array.from(new Array(+facilitiesCount), (_, idx) => (
               <li className={styles.facilitiesItem} key={idx}>
-                <FacilitiesDetails facilitiyNumber={idx + 1} />
+                <FacilitiesDetails
+                  isOpen={idx === 0}
+                  facilitiyNumber={idx + 1}
+                />
               </li>
             ))}
           </ul>

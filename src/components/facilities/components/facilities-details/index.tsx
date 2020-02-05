@@ -14,6 +14,7 @@ import styles from './styles.module.scss';
 
 interface Props {
   facilitiyNumber: number;
+  isOpen: boolean
 }
 
 interface State {
@@ -46,11 +47,11 @@ class FacilitiesDetails extends React.Component<Props, State> {
   };
 
   render() {
-    const { facilitiyNumber } = this.props;
+    const { facilitiyNumber, isOpen } = this.props;
     const { fieldCount, isRestroomDetails, isParkingDetails } = this.state;
 
     return (
-      <ExpansionPanelWrapped>
+      <ExpansionPanelWrapped expanded={isOpen}>
         <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
           <h2 className={styles.detailsSubtitle}>
             Facility {facilitiyNumber} Details
