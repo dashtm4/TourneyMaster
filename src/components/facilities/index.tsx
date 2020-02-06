@@ -1,40 +1,69 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { AppState } from './logic/reducer';
+import { addEmptyFacility, saveFacilities } from './logic/actions';
 import Navigation from './components/navigation';
+import FacilityDetails from './components/facility-details';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Select from '../common/select';
-import FacilityDetails from './components/facility-details';
+import { IFacility } from '../../common/models/facilities';
+import { BindingAction, BindingCbWithOne } from '../../common/models/callback';
 import styles from './styles.module.scss';
-import Api from '../../api/api';
+// import Api from '../../api/api';
 
-interface State {
-  facilitiesCount: number;
+interface Props {
+  facilities: IFacility[];
+  addEmptyFacility: BindingAction;
+  saveFacilities: BindingCbWithOne<any>;
 }
 
-class Facilities extends React.Component<any, State> {
-  constructor(props: any) {
+interface State {
+  isSaving: boolean;
+  updatedFacilities: any;
+}
+
+class Facilities extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
-      facilitiesCount: 1,
+      isSaving: false,
+      updatedFacilities: [],
     };
   }
 
-  async componentDidMount() {
-    const faсilities = await Api.get('/facilities');
+  onSavingFacilities = () => {
+    this.setState({ isSaving: true });
+  };
 
-    console.log(faсilities);
-  }
+  updateFacilities = (facility: IFacility) => {
+    // const { saveFacilities } = this.props;
+    // const { updatedFacilities } = this.state;
+
+    this.setState(({ updatedFacilities }) => ({
+      updatedFacilities: [...updatedFacilities, facility],
+    }));
+
+    // saveFacilities(updatedFacilities);
+
+    this.setState({ isSaving: false });
+  };
 
   onChangeFacilitiesCount = (evt: any) => {
-    this.setState({ facilitiesCount: evt.target.value });
+    const { facilities, addEmptyFacility } = this.props;
+
+    if (evt.target.value > facilities.length) {
+      addEmptyFacility();
+    }
   };
 
   render() {
-    const { facilitiesCount } = this.state;
+    const { facilities } = this.props;
+    const { isSaving } = this.state;
 
     return (
       <section>
-        <Navigation />
+        <Navigation onClick={this.onSavingFacilities} />
         <div className={styles.sectionWrapper}>
           <div className={styles.headingWrapper}>
             <HeadingLevelTwo>Facilities</HeadingLevelTwo>
@@ -45,15 +74,24 @@ class Facilities extends React.Component<any, State> {
             </span>
             <Select
               onChange={this.onChangeFacilitiesCount}
-              value={`${facilitiesCount}`}
-              options={['1', '2', '3']}
+              value={`${facilities.length}`}
+              options={Array.from(
+                new Array(facilities.length + 1),
+                (_, idx) => `${idx + 1}`
+              )}
               width="160px"
             />
           </div>
           <ul className={styles.facilitiesList}>
-            {Array.from(new Array(+facilitiesCount), (_, idx) => (
-              <li className={styles.facilitiesItem} key={idx}>
-                <FacilityDetails isOpen={idx === 0} facilitiyNumber={idx + 1} />
+            {facilities.map((it, idx) => (
+              <li className={styles.facilitiesItem} key={it.facilities_id}>
+                <FacilityDetails
+                  facility={it}
+                  isOpen={idx === 0}
+                  facilitiyNumber={idx + 1}
+                  isSavingFacility={isSaving}
+                  updateFacilities={this.updateFacilities}
+                />
               </li>
             ))}
           </ul>
@@ -63,4 +101,13 @@ class Facilities extends React.Component<any, State> {
   }
 }
 
-export default Facilities;
+interface IRootState {
+  facilities: AppState;
+}
+
+export default connect(
+  (state: IRootState) => ({
+    facilities: state.facilities.facilities,
+  }),
+  { addEmptyFacility, saveFacilities }
+)(Facilities);

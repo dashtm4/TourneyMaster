@@ -2,9 +2,14 @@ import React from 'react';
 import Button from '../../../common/buttons/button';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
+import { BindingAction } from '../../../../common/models/callback';
 import styles from './styles.module.scss';
 
-const Navigation = () => (
+interface Props {
+  onClick: BindingAction;
+}
+
+const Navigation = ({ onClick }: Props) => (
   <p className={styles.wrapper}>
     <span className={styles.linkWrapper}>
       <a href="#" className={styles.loadLink}>
@@ -16,7 +21,12 @@ const Navigation = () => (
         Upload From File
       </a>
     </span>
-    <Button label="Save" variant="contained" color="primary" />
+    <Button
+      onClick={onClick}
+      label="Save"
+      variant="contained"
+      color="primary"
+    />
   </p>
 );
 
