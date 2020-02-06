@@ -9,7 +9,7 @@ export interface EventDetailsDTO {
   time_zone_utc: number;
   event_tag: string;
   event_format_id: number;
-  event_status: 'Draft';
+  event_status: string;
   first_game_time: string;
   last_game_end: string;
   num_of_locations: number;
@@ -20,7 +20,7 @@ export interface EventDetailsDTO {
   exclusive_time_ranges_YN: number;
   tie_breaker_format_id: number;
   min_num_of_games: number;
-  event_type: 'Tournament';
+  event_type: string;
   playoffs_exist: number;
   max_num_of_divisions: number;
   ranking_factor_divisions: null;

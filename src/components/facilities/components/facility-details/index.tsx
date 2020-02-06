@@ -109,7 +109,7 @@ class FacilityDetails extends React.Component<Props, State> {
             >
               <Checkbox
                 onChange={this.onChangeRestroomDetails}
-                options={['Restroom Details']}
+                options={[{ label: 'Restroom Details', checked: false }]}
               />
               {isRestroomDetails && <TextField width="100%" />}
             </fieldset>
@@ -126,13 +126,15 @@ class FacilityDetails extends React.Component<Props, State> {
               </fieldset>
               <fieldset className={`${styles.filedset} ${styles.filedsetGolf}`}>
                 <legend className="visually-hidden">Golf Carts </legend>
-                <Checkbox options={['Golf Carts Available']} />
+                <Checkbox
+                  options={[{ label: 'Golf Carts Available', checked: false }]}
+                />
               </fieldset>
             </div>
             <fieldset className={`${styles.filedset} ${styles.parkingDetails}`}>
               <Checkbox
                 onChange={this.onChangeParkingDetails}
-                options={['Parking Details']}
+                options={[{ label: 'Parking Details', checked: false }]}
               />
               {isParkingDetails && <TextField width="100%" />}
             </fieldset>

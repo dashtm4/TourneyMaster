@@ -16,16 +16,26 @@ import { EventDetailsDTO } from '../logic/model';
 interface Props {
   eventData: Partial<EventDetailsDTO>;
   genderOptions: string[];
-  timeZoneOptions: string[];
   onChange: any;
 }
 
+enum sportsEnum {
+  'Lacrosse' = 1,
+  'Football' = 2,
+  'Baseball' = 3,
+}
+
+enum timeZoneEnum {
+  'Eastern Standart Time' = -5,
+  'Another Time' = -4,
+}
+
 const sportOptions = ['Lacrosse', 'Football', 'Baseball'];
+const timeZoneOptions = ['Eastern Standart Time', 'Another Time'];
 
 const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
   genderOptions,
-  timeZoneOptions,
   onChange,
 }: Props) => {
   const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -33,6 +43,21 @@ const PrimaryInformationSection: React.FC<Props> = ({
 
   const onTagChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('event_tag', e.target.value);
+
+  const onSportChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('sport_id', sportsEnum[e.target.value]);
+
+  const onStartDate = (e: Date | string) =>
+    !isNaN(Number(e)) && onChange('event_startdate', new Date(e).toISOString());
+
+  const onEndDate = (e: Date | string) =>
+    !isNaN(Number(e)) && onChange('event_enddate', new Date(e).toISOString());
+
+  const onTimeZone = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('time_zone_utc', timeZoneEnum[e.target.value]);
+
+  const onDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('event_description', e.target.value);
 
   return (
     <SectionDropdown type="section" padding="0">
@@ -59,8 +84,8 @@ const PrimaryInformationSection: React.FC<Props> = ({
             width="161px"
             options={sportOptions}
             label="Sport"
-            value={sportOptions[0]}
-            onChange={onChange}
+            value={sportsEnum[eventData.sport_id ?? 1]}
+            onChange={onSportChange}
           />
           <Select
             width="160px"
@@ -75,20 +100,21 @@ const PrimaryInformationSection: React.FC<Props> = ({
             label="Start Date"
             type="date"
             value={eventData.event_startdate}
-            onChange={onChange}
+            onChange={onStartDate}
           />
           <DatePicker
             width="161px"
             label="End Date"
             type="date"
             value={eventData.event_enddate}
-            onChange={onChange}
+            onChange={onEndDate}
           />
           <Select
             width="256px"
             options={timeZoneOptions}
             label="Time Zone"
-            value={timeZoneOptions[0]}
+            value={timeZoneEnum[eventData.time_zone_utc ?? -5]}
+            onChange={onTimeZone}
           />
         </div>
         <div className={styles['pi-details-third']}>
@@ -104,6 +130,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
               multiline={true}
               rows="4"
               value={eventData.event_description}
+              onChange={onDescriptionChange}
             />
             <div style={{ width: 164 }}>
               <Button

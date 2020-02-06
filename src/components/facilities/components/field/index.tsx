@@ -11,7 +11,12 @@ const Field = ({ fieldNumber }: Props) => (
   <fieldset className={styles.field}>
     <legend>Field {fieldNumber} Name</legend>
     <TextField placeholder={`Field ${fieldNumber}`} width="250px" />
-    <Checkbox options={['Illuminated', 'Premier Location']} />
+    <Checkbox
+      options={[
+        { label: 'Illuminated', checked: false },
+        { label: 'Premier Location', checked: false },
+      ]}
+    />
   </fieldset>
 );
 

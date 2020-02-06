@@ -11,13 +11,7 @@ import EventStructureSection from './event-structure';
 import MediaAssetsSection from './media-assets';
 import PlayoffsSection from './playoffs';
 
-import {
-  Button,
-  HeadingLevelTwo,
-  HeadingLevelThree,
-  SectionDropdown,
-  Paper,
-} from 'components/common';
+import { Button, HeadingLevelTwo, Paper } from 'components/common';
 import styles from './styles.module.scss';
 
 interface IMapStateProps {
@@ -29,22 +23,20 @@ interface Props extends IMapStateProps {
 }
 
 type State = {
-  event?: EventDetailsDTO;
-  eventToSubmit: Partial<EventDetailsDTO>;
+  event?: Partial<EventDetailsDTO>;
   error: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
   state: State = {
     event: undefined,
-    eventToSubmit: {},
     error: false,
   };
 
   onChange = (name: string, value: any) => {
-    this.setState(({ eventToSubmit }) => ({
-      eventToSubmit: {
-        ...eventToSubmit,
+    this.setState(({ event }) => ({
+      event: {
+        ...event,
         [name]: value,
       },
     }));
@@ -58,35 +50,22 @@ class EventDetails extends Component<Props, State> {
     nextProps: Props,
     prevState: State
   ): Partial<State> {
+    if (!prevState.event && nextProps.event.data) {
+      return {
+        event: nextProps.event.data,
+        error: nextProps.event.error,
+      };
+    }
     return {
-      event: nextProps.event?.data,
-      eventToSubmit:
-        !prevState.event && nextProps.event.data
-          ? nextProps.event?.data
-          : prevState.eventToSubmit,
-      error: nextProps.event?.error,
+      error: nextProps.event.error,
     };
   }
 
-  Loading = () => <div>Loading...</div>;
+  Loading = () => <div>Nice Loading...</div>;
 
   render() {
     const genderOptions = ['Male', 'Female', 'Attack Helicopter'];
-    const timeZoneOptions = [
-      'Eastern Standart Time',
-      'Another Time',
-      'Some Different Zone Idk',
-    ];
     const eventTypeOptions = ['Tournament', 'Showcase'];
-    const timeDivisionOptions = ['Halves (2)', 'Periods (3)', 'Quarters (4)'];
-    const resultsDisplayOptions = [
-      'Show Goals Scored',
-      'Show Goals Allowed',
-      'Show Goals Differential',
-      'Allow Ties',
-    ];
-    const totalRuntimeMin = '50';
-    const esDetailsOptions = ['Back to Back Game Warning', 'Require Waivers'];
     const bracketTypeOptions = [
       'Single Elimination',
       'Double Elimination',
@@ -94,7 +73,7 @@ class EventDetails extends Component<Props, State> {
     ];
     const topNumberOfTeams = ['2', '3', '4', '5', '6', '7', '8'];
 
-    const { eventToSubmit: event } = this.state;
+    const { event } = this.state;
 
     return !event ? (
       this.Loading()
@@ -110,16 +89,12 @@ class EventDetails extends Component<Props, State> {
         <PrimaryInformationSection
           eventData={event}
           genderOptions={genderOptions}
-          timeZoneOptions={timeZoneOptions}
           onChange={this.onChange}
         />
 
         <EventStructureSection
+          eventData={event}
           eventTypeOptions={eventTypeOptions}
-          timeDivisionOptions={timeDivisionOptions}
-          resultsDisplayOptions={resultsDisplayOptions}
-          totalRuntimeMin={totalRuntimeMin}
-          esDetailsOptions={esDetailsOptions}
           onChange={this.onChange}
         />
 
@@ -130,13 +105,6 @@ class EventDetails extends Component<Props, State> {
         />
 
         <MediaAssetsSection />
-
-        <SectionDropdown type="section" padding="0">
-          <HeadingLevelThree>
-            <span className={styles.blockHeading}>Advanced Settings</span>
-          </HeadingLevelThree>
-          <h2 />
-        </SectionDropdown>
       </div>
     );
   }
