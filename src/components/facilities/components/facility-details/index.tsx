@@ -28,7 +28,7 @@ class FacilityDetails extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      fieldCount: 0,
+      fieldCount: 1,
       isRestroomDetails: false,
       isParkingDetails: false,
     };
@@ -51,7 +51,7 @@ class FacilityDetails extends React.Component<Props, State> {
     const { fieldCount, isRestroomDetails, isParkingDetails } = this.state;
 
     return (
-      <ExpansionPanelWrapped expanded={isOpen}>
+      <ExpansionPanelWrapped defaultExpanded={isOpen}>
         <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
           <h2 className={styles.detailsSubtitle}>
             Facility {facilitiyNumber} Details
