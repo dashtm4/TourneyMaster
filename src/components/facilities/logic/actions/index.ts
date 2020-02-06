@@ -1,7 +1,8 @@
 import {
   EMPTY_FACILITY,
   ADD_EMPTY_FACILITY,
-  SAVE_FACILITIES,
+  // SAVE_FACILITIES,
+  UPDATE_FACILITY,
 } from '../constants/';
 import { IFacility } from '../../../../common/models/facilities';
 
@@ -12,11 +13,23 @@ const addEmptyFacility = () => ({
   },
 });
 
-const saveFacilities = (facilities: IFacility[]) => ({
-  type: SAVE_FACILITIES,
+const updateFacilities = (updatedFacility: IFacility) => ({
+  type: UPDATE_FACILITY,
   payload: {
-    facility: { facilities },
+    updatedFacility,
   },
 });
 
-export { addEmptyFacility, saveFacilities };
+const saveFacilities = (facilities: IFacility[]) => {
+  const savedFacilities = facilities.filter(it => {
+    const isChange = it.isChange;
+
+    delete it.isChange;
+
+    return isChange;
+  });
+
+  console.log(savedFacilities);
+};
+
+export { addEmptyFacility, updateFacilities, saveFacilities };

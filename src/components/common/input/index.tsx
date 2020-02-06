@@ -15,9 +15,8 @@ interface ITextFieldProps {
   value?: string;
   width?: string;
   placeholder?: string;
-  onChange?: (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => React.ChangeEvent<HTMLInputElement>;
+  onChange?: any;
+  name?: string;
 }
 
 const TextField: React.FC<ITextFieldProps> = ({
@@ -31,10 +30,12 @@ const TextField: React.FC<ITextFieldProps> = ({
   onChange,
   width,
   placeholder,
+  name,
 }) => (
   <div className={styles.container}>
     <span className={styles.label}>{label}</span>
     <MuiTextField
+      name={name}
       style={{ width: width || defaultWidth }}
       placeholder={placeholder}
       fullWidth={fullWidth}

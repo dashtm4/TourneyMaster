@@ -11,6 +11,8 @@ interface ICheckboxProps {
   checked?: boolean;
   formLabel?: string;
   onChange?: any;
+  name?: string;
+  value?: any;
 }
 
 const Checkbox: React.FC<ICheckboxProps> = ({
@@ -18,6 +20,8 @@ const Checkbox: React.FC<ICheckboxProps> = ({
   formLabel,
   onChange,
   checked,
+  name,
+  value,
 }) => (
   <div className={styles.container}>
     <span className={styles.label}>{formLabel}</span>
@@ -25,9 +29,10 @@ const Checkbox: React.FC<ICheckboxProps> = ({
       {options.map((option: string, index: number) => (
         <FormControlLabel
           key={index}
-          control={<MuiCheckbox value={option} color="secondary" />}
+          control={<MuiCheckbox value={value} color="secondary" />}
           label={option}
           onChange={onChange}
+          name={name}
           checked={checked}
         />
       ))}
