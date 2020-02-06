@@ -1,37 +1,15 @@
 import React from 'react';
-import { createMuiTheme } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/core/styles';
 import {
   Checkbox as MuiCheckbox,
   FormControlLabel,
   FormGroup,
-  FormLabel,
 } from '@material-ui/core';
-
-const theme = createMuiTheme({
-  typography: {
-    fontFamily: 'Open Sans',
-    fontSize: 16,
-  },
-  palette: {
-    primary: {
-      main: '#00A3EA',
-    },
-  },
-  overrides: {
-    MuiFormControlLabel: {
-      root: {
-        lineHeight: '22px',
-        color: '#6A6A6A',
-      },
-    },
-  },
-});
+import styles from './style.module.scss';
 
 interface ICheckboxProps {
   options: string[];
-  formLabel: string;
-  onChange: () => {};
+  formLabel?: string;
+  onChange?: any;
 }
 
 const Checkbox: React.FC<ICheckboxProps> = ({
@@ -39,19 +17,19 @@ const Checkbox: React.FC<ICheckboxProps> = ({
   formLabel,
   onChange,
 }) => (
-  <ThemeProvider theme={theme}>
-    <FormLabel component="legend">{formLabel}</FormLabel>
+  <div className={styles.container}>
+    <span className={styles.label}>{formLabel}</span>
     <FormGroup>
       {options.map((option: string, index: number) => (
         <FormControlLabel
           key={index}
-          control={<MuiCheckbox value={option} color="primary" />}
+          control={<MuiCheckbox value={option} color="secondary" />}
           label={option}
           onChange={onChange}
         />
       ))}
     </FormGroup>
-  </ThemeProvider>
+  </div>
 );
 
 export default Checkbox;

@@ -1,0 +1,32 @@
+:local(.sectionWrapper) {
+  max-width: 541px;
+}
+
+:local(.headingWrapper) {
+  margin-bottom: 25px;
+}
+
+:local(.facilitiesList) {
+  margin: 0;
+  padding: 0;
+}
+
+:local(.numberWrapper) {
+  display: flex;
+  flex-direction: column;
+
+  max-width: 250px;
+}
+
+:local(.numberTitleWrapper) {
+  margin-bottom: 5px;
+
+  color: #6a6a6a;
+  font-weight: bold;
+}
+
+:local(.facilitiesItem) {
+  margin-top: 25px;
+
+  border-top: 1px solid #d1d1d1;
+}

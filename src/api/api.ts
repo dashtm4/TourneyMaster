@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 
-const AUTH_TOKEN = 'Token';
-const BASE_URL = 'http://localhost:3000';
+const AUTH_TOKEN = localStorage.getItem('token');
+const BASE_URL = 'https://api.tourneymaster.org/v1';
 
 class Api {
   baseUrl: string;
@@ -14,8 +14,7 @@ class Api {
       baseURL: this.baseUrl,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        Authorization: AUTH_TOKEN,
+        Authorization: `Bearer ${AUTH_TOKEN}`,
       },
     });
   }

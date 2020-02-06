@@ -1,24 +1,13 @@
 import React from 'react';
-import { createMuiTheme } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/core/styles';
 import { TextField as MuiTextField, MenuItem } from '@material-ui/core';
-
-const theme = createMuiTheme({
-  typography: {
-    fontFamily: 'Open Sans',
-  },
-  palette: {
-    primary: {
-      main: '#00A3EA',
-    },
-  },
-});
+import styles from './style.module.scss';
 
 interface ISelectProps {
   options: string[];
-  label: string;
+  label?: string;
   value: string;
-  onChange?: () => {};
+  width?: string;
+  onChange?: any;
 }
 
 const Select: React.FC<ISelectProps> = ({
@@ -26,16 +15,19 @@ const Select: React.FC<ISelectProps> = ({
   label,
   value,
   onChange,
+  width,
 }) => (
-  <ThemeProvider theme={theme}>
+  <div className={styles.container}>
+    <span className={styles.label}>{label}</span>
     <MuiTextField
       id="select"
+      style={{ width: width || '100px' }}
       variant="outlined"
       size="small"
       select={true}
-      label={label}
       value={value}
       onChange={onChange}
+      fullWidth={true}
     >
       {options.map((option: string, index: number) => (
         <MenuItem key={index} value={option}>
@@ -43,7 +35,7 @@ const Select: React.FC<ISelectProps> = ({
         </MenuItem>
       ))}
     </MuiTextField>
-  </ThemeProvider>
+  </div>
 );
 
 export default Select;

@@ -1,8 +1,8 @@
 import React from 'react';
-import styles from './styles.module.scss';
 import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
 import WarningIcon from '@material-ui/icons/Warning';
 import { CardMessageTypes } from './Types';
+import styles from './styles.module.scss';
 
 interface Props {
   children: string;

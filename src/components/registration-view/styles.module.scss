@@ -1,0 +1,52 @@
+.libraryList {
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    border-top: 1px solid #d1d1d1;
+
+    margin-bottom: 5px;
+    padding-bottom: 7px;
+  }
+}
+.main-menu {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-right: 25px;
+}
+.heading {
+  margin: 24px 0;
+}
+.section-container {
+  max-width: 732px;
+}
+.section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  .section-first-row {
+    display: flex;
+  }
+  .section-second-row {
+    display: flex;
+  }
+  .section-item {
+    flex-grow: 0;
+    width: 191px;
+    color: #6a6a6a;
+    margin-bottom: 32px;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+    p {
+      margin-top: 4px;
+    }
+  }
+  .section-title {
+    font-weight: 600;
+  }
+}
