@@ -85,7 +85,7 @@ class FacilityDetails extends React.Component<Props, State> {
               <fieldset className={styles.filedset}>
                 <legend className={styles.fieldTitle}>Facility 1 Name</legend>
                 <TextField
-                  onChange={this.onChangeFacilitiesDescription}
+                  // onChange={this.onChangeFacilitiesDescription}
                   value={facilities_description || ''}
                   placeholder={'Main Stadium'}
                   width="350px"
