@@ -10,6 +10,20 @@ interface State {
   facilitiesCount: number;
 }
 
+const request = async () => {
+  const fas = {
+    facilities_id: '99',
+    event_id: 'ABC',
+    city: 'Pflugerville',
+    created_by: '4DC8A780',
+    created_datetime: '2020-01-01T12:00:00.000Z',
+  };
+
+  const req = await Api.post('/facilities', fas);
+
+  console.log(req);
+};
+
 class Facilities extends React.Component<any, State> {
   constructor(props: any) {
     super(props);
@@ -50,6 +64,7 @@ class Facilities extends React.Component<any, State> {
               width="160px"
             />
           </div>
+          <button onClick={() => request()}>REQ</button>
           <ul className={styles.facilitiesList}>
             {Array.from(new Array(+facilitiesCount), (_, idx) => (
               <li className={styles.facilitiesItem} key={idx}>
