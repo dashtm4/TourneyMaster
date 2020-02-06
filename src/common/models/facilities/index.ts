@@ -3,6 +3,7 @@ export interface IFacilityField {
 }
 
 export interface IFacility {
+  // isChange: boolean;
   facilities_id: string;
   facilities_description: string | null;
   num_fields: number | null;

@@ -12,16 +12,19 @@ import Select from '../../../common/select';
 import Checkbox from '../../../common/buttons/checkbox';
 import { IFacility } from '../../../../common/models/facilities';
 // import { IFacilityField } from '../../../../common/models/facilities';
+import { BindingCbWithOne } from '../../../../common/models/callback';
 import styles from './styles.module.scss';
 
 interface Props {
   facility: IFacility;
   facilitiyNumber: number;
   isOpen: boolean;
+  isSavingFacility: boolean;
+  updateFacilities: BindingCbWithOne<any>;
 }
 
 interface State {
-  facilities_description: string;
+  facilities_description: string | null;
 }
 
 class FacilityDetails extends React.Component<Props, State> {
@@ -29,13 +32,24 @@ class FacilityDetails extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      facilities_description: '',
+      facilities_description: this.props.facility.facilities_description,
     };
   }
 
-  // onChangeFieldCount = (evt: any) => {
-  //   this.setState({ fieldCount: evt.target.value });
-  // };
+  onChangeFacilitiesDescription = (evt: any) => {
+    console.log(evt.target.value);
+
+    this.setState({ facilities_description: evt.target.value });
+  };
+
+  componentDidUpdate() {
+    const { isSavingFacility, updateFacilities } = this.props;
+    const facility = this.state;
+
+    if (isSavingFacility) {
+      updateFacilities(Promise.resolve(facility));
+    }
+  }
 
   // onChangeRestroomDetails = (evt: any) => {
   //   this.setState({ isRestroomDetails: evt.target.checked });
@@ -48,6 +62,8 @@ class FacilityDetails extends React.Component<Props, State> {
   render() {
     const { facilitiyNumber, isOpen, facility } = this.props;
     // const { isRestroomDetails, isParkingDetails } = this.state;
+
+    const { facilities_description } = this.state;
 
     return (
       <ExpansionPanelWrapped defaultExpanded={isOpen}>
@@ -69,7 +85,8 @@ class FacilityDetails extends React.Component<Props, State> {
               <fieldset className={styles.filedset}>
                 <legend className={styles.fieldTitle}>Facility 1 Name</legend>
                 <TextField
-                  value={facility.facilities_description || ''}
+                  onChange={this.onChangeFacilitiesDescription}
+                  value={facilities_description || ''}
                   placeholder={'Main Stadium'}
                   width="350px"
                 />

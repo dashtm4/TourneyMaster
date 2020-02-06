@@ -15,7 +15,7 @@ interface ITextFieldProps {
   value?: string;
   width?: string;
   placeholder?: string;
-  onChange?: () => {};
+  onChange?: any;
 }
 
 const TextField: React.FC<ITextFieldProps> = ({

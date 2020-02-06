@@ -1,4 +1,9 @@
-import { EMPTY_FACILITY, ADD_EMPTY_FACILITY } from '../constants/';
+import {
+  EMPTY_FACILITY,
+  ADD_EMPTY_FACILITY,
+  SAVE_FACILITIES,
+} from '../constants/';
+import { IFacility } from '../../../../common/models/facilities';
 
 const addEmptyFacility = () => ({
   type: ADD_EMPTY_FACILITY,
@@ -7,4 +12,11 @@ const addEmptyFacility = () => ({
   },
 });
 
-export { addEmptyFacility };
+const saveFacilities = (facilities: IFacility[]) => ({
+  type: SAVE_FACILITIES,
+  payload: {
+    facility: { facilities },
+  },
+});
+
+export { addEmptyFacility, saveFacilities };
