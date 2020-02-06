@@ -15,7 +15,9 @@ interface ITextFieldProps {
   value?: string;
   width?: string;
   placeholder?: string;
-  onChange?: any;
+  onChange?: (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => React.ChangeEvent<HTMLInputElement>;
 }
 
 const TextField: React.FC<ITextFieldProps> = ({

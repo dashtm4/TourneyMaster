@@ -8,6 +8,7 @@ import MenuList from './constants/MenuList';
 import { Routes } from '../../common/constants';
 import styles from './styles.module.scss';
 import Dashboard from '../dashboard';
+import EventDetails from 'components/event-details';
 import Registration from '../registration-view';
 
 const AuthorizedPage = () => (
@@ -18,6 +19,7 @@ const AuthorizedPage = () => (
       <main className={styles.content}>
         <Switch>
           <Route path={Routes.DASHBOARD} component={Dashboard} />
+          <Route path={Routes.EVENT_DETAILS} component={EventDetails} />
           <Route path={Routes.LIBRARY_MANAGER} component={LibraryManager} />
           <Route path={Routes.FACILITIES} component={Facilities} />
           <Route path={Routes.REGISTRATION} component={Registration} />
