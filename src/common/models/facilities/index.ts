@@ -4,7 +4,7 @@ export interface IFacilityField {
 
 export interface IFacility {
   facilities_id: string;
-  facilities_description: string;
+  facilities_description: string | null;
   num_fields: number | null;
   restrooms: string | null;
   num_toilets: number | null;

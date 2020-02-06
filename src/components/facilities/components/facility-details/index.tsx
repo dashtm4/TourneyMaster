@@ -11,6 +11,7 @@ import TextField from '../../../common/input';
 import Select from '../../../common/select';
 import Checkbox from '../../../common/buttons/checkbox';
 import { IFacility } from '../../../../common/models/facilities';
+// import { IFacilityField } from '../../../../common/models/facilities';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -19,21 +20,17 @@ interface Props {
   isOpen: boolean;
 }
 
-// interface State {
-//   fieldCount: number;
-//   isRestroomDetails: boolean;
-//   isParkingDetails: boolean;
-// }
+interface State {
+  facilities_description: string;
+}
 
-class FacilityDetails extends React.Component<Props> {
+class FacilityDetails extends React.Component<Props, State> {
   constructor(props: any) {
     super(props);
 
-    // this.state = {
-    //   fieldCount: 1,
-    //   isRestroomDetails: false,
-    //   isParkingDetails: false,
-    // };
+    this.state = {
+      facilities_description: '',
+    };
   }
 
   // onChangeFieldCount = (evt: any) => {
@@ -72,7 +69,7 @@ class FacilityDetails extends React.Component<Props> {
               <fieldset className={styles.filedset}>
                 <legend className={styles.fieldTitle}>Facility 1 Name</legend>
                 <TextField
-                  value={facility.facilities_description}
+                  value={facility.facilities_description || ''}
                   placeholder={'Main Stadium'}
                   width="350px"
                 />

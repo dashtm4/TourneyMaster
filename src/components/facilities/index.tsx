@@ -1,31 +1,22 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { AppState } from './logic/reducer';
+import { addEmptyFacility } from './logic/actions';
 import Navigation from './components/navigation';
+import FacilityDetails from './components/facility-details';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Select from '../common/select';
-import FacilityDetails from './components/facility-details';
 import { IFacility } from '../../common/models/facilities';
+import { BindingAction } from '../../common/models/callback';
 import styles from './styles.module.scss';
 import Api from '../../api/api';
-import { mockedFacilities } from './mocks/facilities';
-
-interface State {
-  facilitiesCount: number;
-}
 
 interface Props {
   facilities: IFacility[];
+  addEmptyFacility: BindingAction;
 }
 
-class Facilities extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      facilitiesCount: props.facilities.length,
-    };
-  }
-
+class Facilities extends React.Component<Props> {
   async componentDidMount() {
     const allFaсilities = await Api.get('/facilities');
 
@@ -33,11 +24,14 @@ class Facilities extends React.Component<Props, State> {
   }
 
   onChangeFacilitiesCount = (evt: any) => {
-    this.setState({ facilitiesCount: evt.target.value });
+    const { facilities, addEmptyFacility } = this.props;
+
+    if (evt.target.value > facilities.length) {
+      addEmptyFacility();
+    }
   };
 
   render() {
-    const { facilitiesCount } = this.state;
     const { facilities } = this.props;
 
     return (
@@ -53,8 +47,11 @@ class Facilities extends React.Component<Props, State> {
             </span>
             <Select
               onChange={this.onChangeFacilitiesCount}
-              value={`${facilitiesCount}`}
-              options={['1', '2', '3']}
+              value={`${facilities.length}`}
+              options={Array.from(
+                new Array(facilities.length + 1),
+                (_, idx) => `${idx + 1}`
+              )}
               width="160px"
             />
           </div>
@@ -75,6 +72,13 @@ class Facilities extends React.Component<Props, State> {
   }
 }
 
-export default connect(() => ({
-  facilities: mockedFacilities,
-}))(Facilities);
+interface IRootState {
+  facilities: AppState;
+}
+
+export default connect(
+  (state: IRootState) => ({
+    facilities: state.facilities.facilities,
+  }),
+  { addEmptyFacility }
+)(Facilities);
