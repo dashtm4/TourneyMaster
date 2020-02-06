@@ -8,6 +8,7 @@ import styles from './style.module.scss';
 
 interface ICheckboxProps {
   options: string[];
+  checked?: boolean;
   formLabel?: string;
   onChange?: any;
 }
@@ -16,6 +17,7 @@ const Checkbox: React.FC<ICheckboxProps> = ({
   options,
   formLabel,
   onChange,
+  checked,
 }) => (
   <div className={styles.container}>
     <span className={styles.label}>{formLabel}</span>
@@ -26,6 +28,7 @@ const Checkbox: React.FC<ICheckboxProps> = ({
           control={<MuiCheckbox value={option} color="secondary" />}
           label={option}
           onChange={onChange}
+          checked={checked}
         />
       ))}
     </FormGroup>

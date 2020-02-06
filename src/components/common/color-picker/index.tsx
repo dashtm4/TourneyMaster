@@ -1,6 +1,6 @@
 import React from 'react';
 import { TwitterPicker } from 'react-color';
-import { BindingAction } from '../../../models/callback';
+import { BindingAction } from '../../../common/models/callback';
 import withSelectColor from './hocs/withSelectColor';
 import styles from './styles.module.scss';
 

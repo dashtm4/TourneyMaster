@@ -1,28 +1,35 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import Navigation from './components/navigation';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Select from '../common/select';
 import FacilityDetails from './components/facility-details';
+import { IFacility } from '../../common/models/facilities';
 import styles from './styles.module.scss';
 import Api from '../../api/api';
+import { mockedFacilities } from './mocks/facilities';
 
 interface State {
   facilitiesCount: number;
 }
 
-class Facilities extends React.Component<any, State> {
-  constructor(props: any) {
+interface Props {
+  facilities: IFacility[];
+}
+
+class Facilities extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
-      facilitiesCount: 1,
+      facilitiesCount: props.facilities.length,
     };
   }
 
   async componentDidMount() {
-    const faсilities = await Api.get('/facilities');
+    const allFaсilities = await Api.get('/facilities');
 
-    console.log(faсilities);
+    console.log(allFaсilities);
   }
 
   onChangeFacilitiesCount = (evt: any) => {
@@ -31,6 +38,7 @@ class Facilities extends React.Component<any, State> {
 
   render() {
     const { facilitiesCount } = this.state;
+    const { facilities } = this.props;
 
     return (
       <section>
@@ -51,9 +59,13 @@ class Facilities extends React.Component<any, State> {
             />
           </div>
           <ul className={styles.facilitiesList}>
-            {Array.from(new Array(+facilitiesCount), (_, idx) => (
-              <li className={styles.facilitiesItem} key={idx}>
-                <FacilityDetails isOpen={idx === 0} facilitiyNumber={idx + 1} />
+            {facilities.map((it, idx) => (
+              <li className={styles.facilitiesItem} key={it.facilities_id}>
+                <FacilityDetails
+                  facility={it}
+                  isOpen={idx === 0}
+                  facilitiyNumber={idx + 1}
+                />
               </li>
             ))}
           </ul>
@@ -63,4 +75,6 @@ class Facilities extends React.Component<any, State> {
   }
 }
 
-export default Facilities;
+export default connect(() => ({
+  facilities: mockedFacilities,
+}))(Facilities);
