@@ -16,7 +16,7 @@ interface Props {
   resultsDisplayOptions: string[];
   esDetailsOptions: string[];
   totalRuntimeMin: string | null | undefined;
-  onChange: () => {};
+  onChange: any;
 }
 
 const EventStructureSection: React.FC<Props> = ({

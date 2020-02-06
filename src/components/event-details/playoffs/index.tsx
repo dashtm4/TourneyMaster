@@ -12,7 +12,7 @@ import styles from '../styles.module.scss';
 interface Props {
   bracketTypeOptions: string[];
   topNumberOfTeams: string[];
-  onChange: () => {};
+  onChange: any;
 }
 
 const PlayoffsSection: React.FC<Props> = ({
