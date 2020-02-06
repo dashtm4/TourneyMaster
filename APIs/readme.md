@@ -46,7 +46,7 @@ ____
 
 #### Divisions (events.divisions)
 1. GET (all): https://api.tourneymaster.org/v1/divisions
-1. GET (specific event): https://api.tourneymaster.org/v1/divisions?division_id=[VARCHAR]
+1. GET (specific division): https://api.tourneymaster.org/v1/divisions?division_id=[VARCHAR]
 1. DELETE: https://api.tourneymaster.org/v1/events?event_id=[VARCHAR]
 1. POST: https://api.tourneymaster.org/v1/divisions
 1. TEST POST DATA: {"division_id": "99", "event_id": "ABC123", "long_name": "LONG NAME", "short_name": "SHORT NAME", "is_premier_YN": 0, "entry_fee": 9.99, "division_description": "divdesc", "division_tag": "TAG", "max_num_teams": 20, "teams_registered": 10, "teams_tentitive": 12, "num_pools": 2, "division_message": "message", "division_sort": 0, "latest_web_publish": "2020-01-01 12:00:00", "is_active_YN": 1, "is_library_YN": 0, "created_by": "4DC8A780", "created_datetime": "2020-01-01 12:00:00", "updated_by": "4DC8A780", "updated_datetime": "2020-01-01 12:00:00"}
@@ -86,7 +86,7 @@ ____
 
 #### Teams (events.teams)
 1. GET (all): https://api.tourneymaster.org/v1/teams
-1. GET (specific member): https://api.tourneymaster.org/v1/teams?team_id=[VARCHAR]
+1. GET (specific team): https://api.tourneymaster.org/v1/teams?team_id=[VARCHAR]
 1. DELETE: https://api.tourneymaster.org/v1/teams?team_id=[VARCHAR]
 1. POST: https://api.tourneymaster.org/v1/teams
 1. TEST POST DATA: {"team_id": "TEAM3", "event_id": "ABC123", "org_id": "1", "long_name": "LONG NAME", "short_name": "SHORT NAME", "team_tag": "TAG", "city": "City", "state": "ST", "level": "L", "contact_first_name": "Joe", "contact_last_name": "Smith", "phone_num": "123-123-1234",
