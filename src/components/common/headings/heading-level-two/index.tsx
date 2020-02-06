@@ -4,10 +4,11 @@ import styles from './styles.module.scss';
 
 interface Props {
   children: string;
+  margin?: string;
 }
 
-const HeadeingLevelTwo = ({ children }: Props) => (
-  <Typography className={styles.heading} component="h2">
+const HeadeingLevelTwo = ({ children, margin }: Props) => (
+  <Typography className={styles.heading} style={{ margin }} component="h2">
     {children}
   </Typography>
 );

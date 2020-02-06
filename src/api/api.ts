@@ -19,9 +19,9 @@ class Api {
     });
   }
 
-  async get(url: string, data?: any) {
+  async get(url: string, params?: any) {
     return await this.instance
-      .get(url, { data })
+      .get(url, { params })
       .then(this.handleResponse)
       .catch(this.handleError);
   }
