@@ -4,6 +4,7 @@ import LoginPage from './login-page';
 import AuthorizedPage from './authorized-page';
 import { Routes } from '../common/constants';
 import AuthorizedPageManagement from './authorized-page/authorized-manage-page';
+import Toastr from 'components/common/toastr';
 
 const App: React.FC = () => {
   return (
@@ -38,6 +39,7 @@ const App: React.FC = () => {
           />
         </Switch>
       </Router>
+      <Toastr />
     </React.Fragment>
   );
 };

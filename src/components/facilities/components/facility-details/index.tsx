@@ -11,7 +11,6 @@ import TextField from '../../../common/input';
 import Select from '../../../common/select';
 import Checkbox from '../../../common/buttons/checkbox';
 import { IFacility } from '../../../../common/models/facilities';
-// import { IFacilityField } from '../../../../common/models/facilities';
 import { BindingCbWithOne } from '../../../../common/models/callback';
 import styles from './styles.module.scss';
 
@@ -19,51 +18,33 @@ interface Props {
   facility: IFacility;
   facilitiyNumber: number;
   isOpen: boolean;
-  isSavingFacility: boolean;
-  updateFacilities: BindingCbWithOne<any>;
+  updateFacilities: BindingCbWithOne<IFacility>;
 }
 
 interface State {
-  facilities_description: string | null;
+  isEdit: boolean;
 }
 
 class FacilityDetails extends React.Component<Props, State> {
-  constructor(props: any) {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
-      facilities_description: this.props.facility.facilities_description,
+      isEdit: false,
     };
   }
 
-  onChangeFacilitiesDescription = (evt: any) => {
-    console.log(evt.target.value);
+  onChangeFacility = ({ target: { name, value } }: any) => {
+    const { facility, updateFacilities } = this.props;
 
-    this.setState({ facilities_description: evt.target.value });
+    updateFacilities({ ...facility, isChange: true, [name]: value });
   };
 
-  componentDidUpdate() {
-    const { isSavingFacility, updateFacilities } = this.props;
-    const facility = this.state;
-
-    if (isSavingFacility) {
-      updateFacilities(Promise.resolve(facility));
-    }
-  }
-
-  // onChangeRestroomDetails = (evt: any) => {
-  //   this.setState({ isRestroomDetails: evt.target.checked });
-  // };
-
-  // onChangeParkingDetails = (evt: any) => {
-  //   this.setState({ isParkingDetails: evt.target.checked });
-  // };
+  onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
 
   render() {
     const { facilitiyNumber, isOpen, facility } = this.props;
-    // const { isRestroomDetails, isParkingDetails } = this.state;
-
-    const { facilities_description } = this.state;
+    const { isEdit } = this.state;
 
     return (
       <ExpansionPanelWrapped defaultExpanded={isOpen}>
@@ -74,10 +55,18 @@ class FacilityDetails extends React.Component<Props, State> {
         </ExpansionPanelSummaryWrapped>
         <ExpansionPanelDetailsWrapped>
           <form className={styles.form}>
-            <h3 className={styles.detailsSubtitle}>Location 1</h3>
+            <h3 className={styles.detailsSubtitle}>
+              Location {facilitiyNumber}
+            </h3>
             <p className={styles.descripWrapper}>
               <span>The Proving Grounds</span>
-              <button className={styles.fromBtn} type="button">
+              <button
+                onClick={this.onEditClick}
+                className={`${styles.editBtn} ${
+                  isEdit ? styles.editBtnEdit : ''
+                }`}
+                type="button"
+              >
                 Edit
               </button>
             </p>
@@ -85,33 +74,38 @@ class FacilityDetails extends React.Component<Props, State> {
               <fieldset className={styles.filedset}>
                 <legend className={styles.fieldTitle}>Facility 1 Name</legend>
                 <TextField
-                  // onChange={this.onChangeFacilitiesDescription}
-                  value={facilities_description || ''}
+                  onChange={this.onChangeFacility}
+                  value={facility.facilities_description || ''}
+                  name="facilities_description"
                   placeholder={'Main Stadium'}
                   width="350px"
+                  disabled={!isEdit}
                 />
               </fieldset>
               <fieldset className={styles.filedset}>
                 <legend className={styles.fieldTitle}>Number of Fields</legend>
                 <Select
-                  value={`${facility.fields ? facility.fields.length : ''}`}
+                  onChange={this.onChangeFacility}
+                  value={`${facility.num_fields || ''}`}
+                  name="num_fields"
                   options={
-                    facility.fields
+                    facility.num_fields
                       ? Array.from(
-                          new Array(facility.fields.length + 1),
+                          new Array(+facility.num_fields + 1),
                           (_, idx) => `${idx + 1}`
                         )
                       : ['1']
                   }
                   width="160px"
+                  disabled={!isEdit}
                 />
               </fieldset>
             </div>
             <ul className={styles.fieldList}>
-              {facility.fields &&
-                facility.fields.map((it, idx) => (
-                  <li key={it.name}>
-                    <Field fieldNumber={idx + 1} />
+              {facility.num_fields &&
+                Array.from(new Array(+facility.num_fields), (_, idx) => (
+                  <li key={idx}>
+                    <Field fieldNumber={idx + 1} isEdit={isEdit} />
                   </li>
                 ))}
             </ul>
@@ -119,9 +113,12 @@ class FacilityDetails extends React.Component<Props, State> {
               <fieldset className={styles.filedset}>
                 <legend className={styles.fieldTitle}>Restrooms</legend>
                 <Select
+                  onChange={this.onChangeFacility}
                   value={facility.restrooms || 'In Facility'}
+                  name="restrooms"
                   options={['In Facility', 'Portable']}
                   width="255px"
+                  disabled={!isEdit}
                 />
               </fieldset>
               <fieldset className={styles.filedset}>
@@ -129,9 +126,12 @@ class FacilityDetails extends React.Component<Props, State> {
                   # Portable Toilets
                 </legend>
                 <TextField
+                  onChange={this.onChangeFacility}
                   value={facility.num_toilets ? `${facility.num_toilets}` : ''}
+                  name="num_toilets"
                   placeholder="5"
                   width="250px"
+                  disabled={!isEdit}
                 />
               </fieldset>
             </div>
@@ -139,20 +139,42 @@ class FacilityDetails extends React.Component<Props, State> {
               className={`${styles.filedset} ${styles.restroomDetails}`}
             >
               <Checkbox
-                options={['Restroom Details']}
-                checked={Boolean(facility.restroom_details)}
+                onChange={() =>
+                  this.onChangeFacility({
+                    target: {
+                      name: 'restroom_details',
+                      value: facility.restroom_details || ' ',
+                    },
+                  })
+                }
+                options={[
+                  {
+                    label: 'Restroom Details',
+                    checked: Boolean(facility.restroom_details),
+                    disabled: !isEdit,
+                  },
+                ]}
               />
               {facility.restroom_details && (
-                <TextField value={facility.restroom_details} width="100%" />
+                <TextField
+                  onChange={this.onChangeFacility}
+                  value={facility.restroom_details}
+                  name="restroom_details"
+                  width="100%"
+                  disabled={!isEdit}
+                />
               )}
             </fieldset>
             <div className={styles.parkingWrapper}>
               <fieldset className={styles.filedset}>
                 <legend className={styles.fieldTitle}>Parking Available</legend>
                 <Select
+                  onChange={this.onChangeFacility}
                   value={facility.parking_available || 'Ample'}
+                  name="parking_available"
                   options={['Ample', 'AmAmple', 'AmAmAmple']}
                   width="160px"
+                  disabled={!isEdit}
                 />
               </fieldset>
               <fieldset className={styles.filedset}>
@@ -160,33 +182,68 @@ class FacilityDetails extends React.Component<Props, State> {
                   Distance to Fields
                 </legend>
                 <TextField
+                  onChange={this.onChangeFacility}
                   value={
                     facility.parking_proximity
                       ? `${facility.parking_proximity}`
                       : ''
                   }
+                  name="parking_proximity"
                   placeholder="Metres"
                   width="160px"
+                  disabled={!isEdit}
                 />
               </fieldset>
               <fieldset className={`${styles.filedset} ${styles.filedsetGolf}`}>
                 <legend className="visually-hidden">Golf Carts </legend>
                 <Checkbox
-                  options={['Golf Carts Available']}
-                  checked={Boolean(facility.golf_carts_availabe)}
+                  onChange={() =>
+                    this.onChangeFacility({
+                      target: {
+                        name: 'golf_carts_availabe',
+                        value: facility.golf_carts_availabe ? null : true,
+                      },
+                    })
+                  }
+                  options={[
+                    {
+                      label: 'Golf Carts Available',
+                      checked: Boolean(facility.golf_carts_availabe),
+                      disabled: !isEdit,
+                    },
+                  ]}
                 />
               </fieldset>
             </div>
             <fieldset className={`${styles.filedset} ${styles.parkingDetails}`}>
               <Checkbox
-                options={['Parking Details']}
-                checked={Boolean(facility.parking_details)}
+                onChange={() =>
+                  this.onChangeFacility({
+                    target: {
+                      name: 'parking_details',
+                      value: facility.parking_details || ' ',
+                    },
+                  })
+                }
+                options={[
+                  {
+                    label: 'Parking Details',
+                    checked: Boolean(facility.parking_details),
+                    disabled: !isEdit,
+                  },
+                ]}
               />
               {facility.parking_details && (
-                <TextField value={facility.parking_details} width="100%" />
+                <TextField
+                  onChange={this.onChangeFacility}
+                  value={facility.parking_details}
+                  name="parking_details"
+                  width="100%"
+                  disabled={!isEdit}
+                />
               )}
             </fieldset>
-            <button className={styles.fromBtn} type="button">
+            <button className={styles.mapBtn} type="button" disabled={!isEdit}>
               <PublishIcon />
               Upload Field Maps
             </button>

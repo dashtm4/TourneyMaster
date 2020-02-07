@@ -28,7 +28,7 @@ const PlayoffsSection: React.FC<Props> = ({
       <div className={styles['pd-first']}>
         <Checkbox
           formLabel=""
-          options={['Event has Playoffs']}
+          options={[{ label: 'Event has Playoffs', checked: false }]}
           onChange={onChange}
         />
         <CardMessage type="info">
