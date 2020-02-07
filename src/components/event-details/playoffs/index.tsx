@@ -6,6 +6,7 @@ import {
   CardMessage,
   Radio,
   Select,
+  Input,
 } from 'components/common';
 import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
@@ -19,6 +20,13 @@ const bracketTypeOptions = [
 ];
 
 const topNumberOfTeams = ['2', '3', '4', '5', '6', '7', '8'];
+
+const bracketGameDurationOpts = [
+  {
+    label: 'Bracket Games have Different Game Durations',
+    checked: false,
+  },
+];
 
 enum bracketTypesEnum {
   'Single Elimination' = 1,
@@ -102,6 +110,40 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
             />
           </div>
         )}
+        <div className={styles['pd-third']}>
+          <CardMessage type="info">
+            Dran n Drop to reorder Ranking Factors
+          </CardMessage>
+          <Checkbox options={bracketGameDurationOpts} />
+        </div>
+        <div className={styles['pd-fourth']}>
+          <Input
+            width="170px"
+            fullWidth={true}
+            endAdornment="Minutes"
+            label="Pregame Warmup"
+            value="0"
+          />
+          <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
+          <Input
+            width="170px"
+            fullWidth={true}
+            endAdornment="Minutes"
+            label="Time Division Duration"
+            value="0"
+          />
+          <span className={styles.innerSpanText}>&nbsp;(0)&nbsp;+&nbsp;</span>
+          <Input
+            width="170px"
+            fullWidth={true}
+            endAdornment="Minutes"
+            label="Time Between Periods"
+            value="0"
+          />
+          <span className={styles.innerSpanText}>
+            &nbsp;=&nbsp;0&nbsp; Minutes Total Runtime
+          </span>
+        </div>
       </div>
     </SectionDropdown>
   );

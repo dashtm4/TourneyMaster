@@ -101,5 +101,16 @@ $sectionBodyPadding: 20px 0;
       justify-content: space-between;
       width: 560px;
     }
+
+    .pd-third {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pd-fourth {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
   }
 }
