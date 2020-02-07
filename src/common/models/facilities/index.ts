@@ -14,5 +14,4 @@ export interface IFacility {
   parking_details: string | null;
   parking_proximity: number | null;
   golf_carts_availabe: boolean | null;
-  fields: IFacilityField[] | null;
 }

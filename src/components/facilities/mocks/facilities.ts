@@ -10,11 +10,6 @@ const mockedFacilities = [
     parking_details: 'parking_details',
     parking_proximity: 300,
     golf_carts_availabe: true,
-    fields: [
-      {
-        name: 'Field name',
-      },
-    ],
   },
   {
     facilities_id: '2',
@@ -22,7 +17,6 @@ const mockedFacilities = [
     num_fields: null,
     restrooms: null,
     num_toilets: null,
-    fields: null,
     restroom_details: null,
     parking_available: null,
     parking_details: null,

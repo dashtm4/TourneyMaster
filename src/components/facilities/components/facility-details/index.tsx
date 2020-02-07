@@ -25,6 +25,9 @@ class FacilityDetails extends React.Component<Props> {
   onChangeFacility = ({ target: { name, value } }: any) => {
     const { facility, updateFacilities } = this.props;
 
+    console.log(name);
+    console.log(value);
+
     updateFacilities({ ...facility, isChange: true, [name]: value });
   };
 
@@ -64,12 +67,12 @@ class FacilityDetails extends React.Component<Props> {
                 <legend className={styles.fieldTitle}>Number of Fields</legend>
                 <Select
                   onChange={this.onChangeFacility}
-                  value={`${facility.fields ? facility.fields.length : ''}`}
+                  value={`${facility.num_fields || ''}`}
                   name="num_fields"
                   options={
-                    facility.fields
+                    facility.num_fields
                       ? Array.from(
-                          new Array(facility.fields.length + 1),
+                          new Array(+facility.num_fields + 1),
                           (_, idx) => `${idx + 1}`
                         )
                       : ['1']
@@ -79,9 +82,9 @@ class FacilityDetails extends React.Component<Props> {
               </fieldset>
             </div>
             <ul className={styles.fieldList}>
-              {facility.fields &&
-                facility.fields.map((it, idx) => (
-                  <li key={it.name}>
+              {facility.num_fields &&
+                Array.from(new Array(+facility.num_fields), (_, idx) => (
+                  <li key={idx}>
                     <Field fieldNumber={idx + 1} />
                   </li>
                 ))}
@@ -122,8 +125,12 @@ class FacilityDetails extends React.Component<Props> {
                     },
                   })
                 }
-                options={['Restroom Details']}
-                checked={Boolean(facility.restroom_details)}
+                options={[
+                  {
+                    label: 'Restroom Details',
+                    checked: Boolean(facility.restroom_details),
+                  },
+                ]}
               />
               {facility.restroom_details && (
                 <TextField
@@ -172,8 +179,12 @@ class FacilityDetails extends React.Component<Props> {
                       },
                     })
                   }
-                  options={['Golf Carts Available']}
-                  checked={Boolean(facility.golf_carts_availabe)}
+                  options={[
+                    {
+                      label: 'Golf Carts Available',
+                      checked: Boolean(facility.golf_carts_availabe),
+                    },
+                  ]}
                 />
               </fieldset>
             </div>
@@ -187,8 +198,12 @@ class FacilityDetails extends React.Component<Props> {
                     },
                   })
                 }
-                options={['Parking Details']}
-                checked={Boolean(facility.parking_details)}
+                options={[
+                  {
+                    label: 'Parking Details',
+                    checked: Boolean(facility.parking_details),
+                  },
+                ]}
               />
               {facility.parking_details && (
                 <TextField
