@@ -63,11 +63,9 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
             {event.event_status || '—'}{' '}
             <span
               className={styles['tournament-status']}
-              style={
-                event.event_status && {
-                  ...getTournamentStatusColor(event.event_status),
-                }
-              }
+              style={{
+                ...getTournamentStatusColor(event.event_status),
+              }}
             />
           </div>
           <div className={styles['tournament-content-item']}>
