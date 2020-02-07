@@ -187,7 +187,7 @@ const EventStructureSection: React.FC<Props> = ({
                 getTimeFromString(period_duration!, 'minutes') +
                 getTimeFromString(pre_game_warmup!, 'minutes') +
                 getTimeFromString(time_btwn_periods!, 'minutes')}
-            Minutes Total Runtime
+            &nbsp; Minutes Total Runtime
           </span>
         </div>
         <div className={styles['es-details-third']}>

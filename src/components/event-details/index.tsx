@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { getEventDetails } from './logic/actions';
+import { getEventDetails, saveEventDetails } from './logic/actions';
 import { EventDetailsDTO } from './logic/model';
 import { IAppState } from './logic/reducer';
 
@@ -20,6 +20,7 @@ interface IMapStateProps {
 
 interface Props extends IMapStateProps {
   getEventDetails: (eventId: string) => void;
+  saveEventDetails: (event: Partial<EventDetailsDTO>) => void;
 }
 
 type State = {
@@ -33,6 +34,23 @@ class EventDetails extends Component<Props, State> {
     error: false,
   };
 
+  async componentDidMount() {
+    this.props.getEventDetails('ABC123');
+  }
+
+  static getDerivedStateFromProps(
+    nextProps: Props,
+    prevState: State
+  ): Partial<State> | null {
+    if (!prevState.event && nextProps.event.data) {
+      return {
+        event: nextProps.event.data,
+        error: nextProps.event.error,
+      };
+    }
+    return null;
+  }
+
   onChange = (name: string, value: any) => {
     this.setState(({ event }) => ({
       event: {
@@ -42,24 +60,12 @@ class EventDetails extends Component<Props, State> {
     }));
   };
 
-  async componentDidMount() {
-    this.props.getEventDetails('ABC123');
-  }
-
-  static getDerivedStateFromProps(
-    nextProps: Props,
-    prevState: State
-  ): Partial<State> {
-    if (!prevState.event && nextProps.event.data) {
-      return {
-        event: nextProps.event.data,
-        error: nextProps.event.error,
-      };
+  onSave = () => {
+    const { event } = this.state;
+    if (event) {
+      this.props.saveEventDetails(event);
     }
-    return {
-      error: nextProps.event.error,
-    };
-  }
+  };
 
   Loading = () => <div>Nice Loading...</div>;
 
@@ -81,7 +87,12 @@ class EventDetails extends Component<Props, State> {
       <div className={styles.container}>
         <Paper>
           <div className={styles.paperWrapper}>
-            <Button label="Save" color="primary" variant="contained" />
+            <Button
+              label="Save"
+              color="primary"
+              variant="contained"
+              onClick={this.onSave}
+            />
           </div>
         </Paper>
         <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
@@ -119,6 +130,6 @@ const mapStateToProps = (state: IRootState): IMapStateProps => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
-  bindActionCreators({ getEventDetails }, dispatch);
+  bindActionCreators({ getEventDetails, saveEventDetails }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(EventDetails);
