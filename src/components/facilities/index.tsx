@@ -16,6 +16,14 @@ import { IFacility } from '../../common/models/facilities';
 import { BindingAction, BindingCbWithOne } from '../../common/models/callback';
 import styles from './styles.module.scss';
 
+import Api from 'api/api';
+
+const delFac = async () => {
+  const fac = await Api.get('/facilities');
+
+  console.log(fac);
+};
+
 interface Props {
   facilities: IFacility[];
   loadFacilities: BindingAction;
@@ -54,6 +62,7 @@ class Facilities extends React.Component<Props, any> {
         <div className={styles.sectionWrapper}>
           <div className={styles.headingWrapper}>
             <HeadingLevelTwo>Facilities</HeadingLevelTwo>
+            <button onClick={delFac}>Req</button>
           </div>
           <div className={styles.numberWrapper}>
             <span className={styles.numberTitleWrapper}>
