@@ -8,11 +8,17 @@ import styles from './style.module.scss';
 
 interface IRadioProps {
   options: string[];
+  checked: string;
   formLabel: string;
-  onChange: () => {};
+  onChange: any;
 }
 
-const Radio: React.FC<IRadioProps> = ({ options, formLabel, onChange }) => (
+const Radio: React.FC<IRadioProps> = ({
+  options,
+  formLabel,
+  checked,
+  onChange,
+}) => (
   <div className={styles.container}>
     <span className={styles.label}>{formLabel}</span>
     <RadioGroup aria-label="gender" name="gender1">
@@ -20,7 +26,7 @@ const Radio: React.FC<IRadioProps> = ({ options, formLabel, onChange }) => (
         <FormControlLabel
           key={index}
           value={option}
-          control={<MuiRadio color="secondary" />}
+          control={<MuiRadio checked={option === checked} color="secondary" />}
           label={option}
           onChange={onChange}
         />

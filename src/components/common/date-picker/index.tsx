@@ -15,7 +15,7 @@ interface IDatePickerProps {
   value?: string;
   type: string;
   width?: string;
-  onChange: () => {};
+  onChange: any;
 }
 
 const DatePicker: React.FC<IDatePickerProps> = ({
