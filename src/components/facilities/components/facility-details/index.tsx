@@ -139,7 +139,7 @@ class FacilityDetails extends React.Component<Props, State> {
               className={`${styles.filedset} ${styles.restroomDetails}`}
             >
               <Checkbox
-                onChange={this.onChangeRestroomDetails}
+                // onChange={this.onChangeRestroomDetails}
                 options={[{ label: 'Restroom Details', checked: false }]}
               />
               {facility.restroom_details && (
@@ -178,7 +178,7 @@ class FacilityDetails extends React.Component<Props, State> {
             </div>
             <fieldset className={`${styles.filedset} ${styles.parkingDetails}`}>
               <Checkbox
-                onChange={this.onChangeParkingDetails}
+                // onChange={this.onChangeParkingDetails}
                 options={[{ label: 'Parking Details', checked: false }]}
               />
               {facility.parking_details && (

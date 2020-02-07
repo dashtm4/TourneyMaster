@@ -2,6 +2,9 @@ const getTimeFromString = (
   time: string,
   type: 'hours' | 'minutes' | 'seconds'
 ): number => {
+  if (!time) {
+    return 0;
+  }
   const divides = time.split(':').map((timeDiv: string) => Number(timeDiv));
   const [hours, minutes, seconds] = divides;
 

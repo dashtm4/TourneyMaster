@@ -63,6 +63,12 @@ const EventStructureSection: React.FC<Props> = ({
       eventData[esDetailsEnum[e.target.value]] ? 0 : 1
     );
 
+  const onPregameWarmupChange = (e: InputTargetValue) => {
+    const value = e.target.value;
+    const timeInString: string = timeToString(Number(value));
+    return onChange('pre_game_warmup', timeInString);
+  };
+
   const onTimeDivisionDuration = (e: InputTargetValue) => {
     const value = e.target.value;
     const timeInString: string = timeToString(Number(value));
@@ -81,6 +87,10 @@ const EventStructureSection: React.FC<Props> = ({
     show_goals_diff,
     back_to_back_warning,
     tie_breaker_format_id,
+    period_duration,
+    time_btwn_periods,
+    pre_game_warmup,
+    periods_per_game,
   } = eventData;
 
   const resultsDisplayOptions = [
@@ -147,7 +157,8 @@ const EventStructureSection: React.FC<Props> = ({
             fullWidth={true}
             endAdornment="Minutes"
             label="Pregame Warmup"
-            value="0"
+            value={getTimeFromString(pre_game_warmup!, 'minutes').toString()}
+            onChange={onPregameWarmupChange}
           />
           <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
           <Input
@@ -155,32 +166,27 @@ const EventStructureSection: React.FC<Props> = ({
             fullWidth={true}
             endAdornment="Minutes"
             label="Time Division Duration"
-            value={getTimeFromString(
-              eventData.period_duration || '0',
-              'minutes'
-            ).toString()}
+            value={getTimeFromString(period_duration!, 'minutes').toString()}
             onChange={onTimeDivisionDuration}
           />
           <span className={styles.innerSpanText}>
-            &nbsp;({eventData.periods_per_game})&nbsp;+&nbsp;
+            &nbsp;({periods_per_game})&nbsp;+&nbsp;
           </span>
           <Input
             width="170px"
             fullWidth={true}
             endAdornment="Minutes"
             label="Time Between Periods"
-            value={getTimeFromString(
-              eventData.time_btwn_periods || '0',
-              'minutes'
-            ).toString()}
+            value={getTimeFromString(time_btwn_periods!, 'minutes').toString()}
             onChange={onTimeBtwnPeriodsDuration}
           />
           <span className={styles.innerSpanText}>
             &nbsp;=&nbsp;
             {eventData &&
-              eventData.periods_per_game! *
-                getTimeFromString(eventData.period_duration!, 'minutes') +
-                getTimeFromString(eventData.time_btwn_periods!, 'minutes')}
+              periods_per_game! *
+                getTimeFromString(period_duration!, 'minutes') +
+                getTimeFromString(pre_game_warmup!, 'minutes') +
+                getTimeFromString(time_btwn_periods!, 'minutes')}
             Minutes Total Runtime
           </span>
         </div>

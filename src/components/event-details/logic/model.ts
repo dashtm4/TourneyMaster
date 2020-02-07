@@ -14,6 +14,7 @@ export interface EventDetailsDTO {
   last_game_end: string;
   num_of_locations: number;
   primary_location_desc: string;
+  pre_game_warmup: string | null;
   period_duration: string;
   time_btwn_periods: string;
   periods_per_game: number;
@@ -36,7 +37,7 @@ export interface EventDetailsDTO {
   event_logo_path: string;
   mobile_icon_URL: string;
   desktop_icon_URL: string;
-  back_to_back_warning: null;
+  back_to_back_warning: true | null;
   is_active_YN: number;
   is_library_YN: number;
   num_games_completed: number;

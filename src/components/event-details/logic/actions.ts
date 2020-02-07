@@ -28,5 +28,9 @@ export const getEventDetails: ActionCreator<ThunkAction<
   EventDetailsAction
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   const eventDetails = await api.get('/events', { event_id: eventId });
-  dispatch(eventDetailsFetchSuccess(eventDetails));
+  if (eventDetails) {
+    dispatch(eventDetailsFetchSuccess(eventDetails));
+  } else {
+    dispatch(eventDetailsFetchFailure());
+  }
 };
