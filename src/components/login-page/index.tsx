@@ -33,9 +33,9 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
     const userToken = user.signInUserSession.idToken.jwtToken;
 
     if (userToken) {
-      this.props.history.push('/dashboard');
-
       localStorage.setItem('token', userToken);
+
+      this.props.history.push('/dashboard');
     }
   };
 
