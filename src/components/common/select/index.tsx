@@ -9,6 +9,7 @@ interface ISelectProps {
   width?: string;
   onChange?: any;
   name?: string;
+  disabled?: boolean;
 }
 
 const Select: React.FC<ISelectProps> = ({
@@ -18,6 +19,7 @@ const Select: React.FC<ISelectProps> = ({
   onChange,
   width,
   name,
+  disabled,
 }) => (
   <div className={styles.container}>
     <span className={styles.label}>{label}</span>
@@ -31,6 +33,7 @@ const Select: React.FC<ISelectProps> = ({
       onChange={onChange}
       fullWidth={true}
       name={name}
+      disabled={disabled}
     >
       {options.map((option: string, index: number) => (
         <MenuItem key={index} value={option}>

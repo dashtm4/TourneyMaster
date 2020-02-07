@@ -10,6 +10,7 @@ interface IOption {
   label: string;
   checked: boolean;
   name?: string;
+  disabled?: boolean;
 }
 
 interface ICheckboxProps {
@@ -34,6 +35,7 @@ const Checkbox: React.FC<ICheckboxProps> = ({
               value={option.label}
               color="secondary"
               checked={option.checked}
+              disabled={option.disabled}
             />
           }
           label={option.label}

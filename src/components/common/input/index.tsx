@@ -17,6 +17,7 @@ interface ITextFieldProps {
   placeholder?: string;
   onChange?: any;
   name?: string;
+  disabled?: boolean;
 }
 
 const TextField: React.FC<ITextFieldProps> = ({
@@ -31,6 +32,7 @@ const TextField: React.FC<ITextFieldProps> = ({
   width,
   placeholder,
   name,
+  disabled,
 }) => (
   <div className={styles.container}>
     <span className={styles.label}>{label}</span>
@@ -42,6 +44,7 @@ const TextField: React.FC<ITextFieldProps> = ({
       variant="outlined"
       size="small"
       multiline={multiline}
+      disabled={disabled}
       rows={rows}
       value={value}
       onChange={onChange}

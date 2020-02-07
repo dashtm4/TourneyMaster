@@ -21,7 +21,19 @@ interface Props {
   updateFacilities: BindingCbWithOne<IFacility>;
 }
 
-class FacilityDetails extends React.Component<Props> {
+interface State {
+  isEdit: boolean;
+}
+
+class FacilityDetails extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      isEdit: false,
+    };
+  }
+
   onChangeFacility = ({ target: { name, value } }: any) => {
     const { facility, updateFacilities } = this.props;
 
@@ -31,8 +43,11 @@ class FacilityDetails extends React.Component<Props> {
     updateFacilities({ ...facility, isChange: true, [name]: value });
   };
 
+  onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
+
   render() {
     const { facilitiyNumber, isOpen, facility } = this.props;
+    const { isEdit } = this.state;
 
     return (
       <ExpansionPanelWrapped defaultExpanded={isOpen}>
@@ -48,7 +63,13 @@ class FacilityDetails extends React.Component<Props> {
             </h3>
             <p className={styles.descripWrapper}>
               <span>The Proving Grounds</span>
-              <button className={styles.fromBtn} type="button">
+              <button
+                onClick={this.onEditClick}
+                className={`${styles.editBtn} ${
+                  isEdit ? styles.editBtnEdit : ''
+                }`}
+                type="button"
+              >
                 Edit
               </button>
             </p>
@@ -61,6 +82,7 @@ class FacilityDetails extends React.Component<Props> {
                   name="facilities_description"
                   placeholder={'Main Stadium'}
                   width="350px"
+                  disabled={!isEdit}
                 />
               </fieldset>
               <fieldset className={styles.filedset}>
@@ -78,6 +100,7 @@ class FacilityDetails extends React.Component<Props> {
                       : ['1']
                   }
                   width="160px"
+                  disabled={!isEdit}
                 />
               </fieldset>
             </div>
@@ -85,7 +108,7 @@ class FacilityDetails extends React.Component<Props> {
               {facility.num_fields &&
                 Array.from(new Array(+facility.num_fields), (_, idx) => (
                   <li key={idx}>
-                    <Field fieldNumber={idx + 1} />
+                    <Field fieldNumber={idx + 1} isEdit={isEdit} />
                   </li>
                 ))}
             </ul>
@@ -98,6 +121,7 @@ class FacilityDetails extends React.Component<Props> {
                   name="restrooms"
                   options={['In Facility', 'Portable']}
                   width="255px"
+                  disabled={!isEdit}
                 />
               </fieldset>
               <fieldset className={styles.filedset}>
@@ -110,6 +134,7 @@ class FacilityDetails extends React.Component<Props> {
                   name="num_toilets"
                   placeholder="5"
                   width="250px"
+                  disabled={!isEdit}
                 />
               </fieldset>
             </div>
@@ -129,6 +154,7 @@ class FacilityDetails extends React.Component<Props> {
                   {
                     label: 'Restroom Details',
                     checked: Boolean(facility.restroom_details),
+                    disabled: !isEdit,
                   },
                 ]}
               />
@@ -138,6 +164,7 @@ class FacilityDetails extends React.Component<Props> {
                   value={facility.restroom_details}
                   name="restroom_details"
                   width="100%"
+                  disabled={!isEdit}
                 />
               )}
             </fieldset>
@@ -150,6 +177,7 @@ class FacilityDetails extends React.Component<Props> {
                   name="parking_available"
                   options={['Ample', 'AmAmple', 'AmAmAmple']}
                   width="160px"
+                  disabled={!isEdit}
                 />
               </fieldset>
               <fieldset className={styles.filedset}>
@@ -166,6 +194,7 @@ class FacilityDetails extends React.Component<Props> {
                   name="parking_proximity"
                   placeholder="Metres"
                   width="160px"
+                  disabled={!isEdit}
                 />
               </fieldset>
               <fieldset className={`${styles.filedset} ${styles.filedsetGolf}`}>
@@ -183,6 +212,7 @@ class FacilityDetails extends React.Component<Props> {
                     {
                       label: 'Golf Carts Available',
                       checked: Boolean(facility.golf_carts_availabe),
+                      disabled: !isEdit,
                     },
                   ]}
                 />
@@ -202,6 +232,7 @@ class FacilityDetails extends React.Component<Props> {
                   {
                     label: 'Parking Details',
                     checked: Boolean(facility.parking_details),
+                    disabled: !isEdit,
                   },
                 ]}
               />
@@ -211,10 +242,11 @@ class FacilityDetails extends React.Component<Props> {
                   value={facility.parking_details}
                   name="parking_details"
                   width="100%"
+                  disabled={!isEdit}
                 />
               )}
             </fieldset>
-            <button className={styles.fromBtn} type="button">
+            <button className={styles.mapBtn} type="button" disabled={!isEdit}>
               <PublishIcon />
               Upload Field Maps
             </button>
