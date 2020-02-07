@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { History } from 'history';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import EditIcon from '@material-ui/icons/Edit';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -58,6 +59,7 @@ const notificationData = [
 ];
 
 interface IDashboardProps {
+  history: History;
   events: EventDetailsDTO[];
   getEvents: () => void;
 }
@@ -66,6 +68,10 @@ class Dashboard extends React.Component<IDashboardProps> {
   async componentDidMount() {
     this.props.getEvents();
   }
+
+  onCreateTournament = () => {
+    this.props.history.push('/event-details');
+  };
 
   render() {
     return (
@@ -82,6 +88,7 @@ class Dashboard extends React.Component<IDashboardProps> {
               label="Create tournament"
               variant="contained"
               color="primary"
+              onClick={this.onCreateTournament}
             />
           </div>
         </Paper>
@@ -147,7 +154,11 @@ class Dashboard extends React.Component<IDashboardProps> {
           <div className={styles['tournaments-list-container']}>
             {this.props.events.length ? (
               this.props.events.map((event: EventDetailsDTO) => (
-                <TournamentCard key={event.event_id} event={event} />
+                <TournamentCard
+                  key={event.event_id}
+                  event={event}
+                  history={this.props.history}
+                />
               ))
             ) : (
               <CircularProgress />
