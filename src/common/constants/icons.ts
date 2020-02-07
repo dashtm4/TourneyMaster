@@ -8,6 +8,12 @@ enum Icons {
   SETTINGS = 'settings',
   ERROR = 'error',
   PIN = 'pin',
+  CLOCK = 'clock',
+  REPORT = 'report',
+  LIST = 'list',
+  TEAM = 'team',
+  PLACE = 'place',
+  SCORING = 'scoring',
 }
 
 export { Icons };

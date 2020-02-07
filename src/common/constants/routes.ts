@@ -11,6 +11,11 @@ enum Routes {
   EVENT_DETAILS = '/event-details',
   FACILITIES = '/facilities',
   REGISTRATION = '/registration',
+  DIVISIONS_AND_POOLS = '/divisions-and-pools',
+  TEAMS = '/teams',
+  SCHEDULING = '/scheduling',
+  SCORING = '/scoring',
+  REPORTING = 'reporting',
 }
 
 export { Routes };
