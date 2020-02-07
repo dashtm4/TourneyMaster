@@ -161,7 +161,9 @@ class Dashboard extends React.Component<IDashboardProps> {
                 />
               ))
             ) : (
-              <CircularProgress />
+              <div className={styles['spinner-container']}>
+                <CircularProgress />
+              </div>
             )}
           </div>
         </div>

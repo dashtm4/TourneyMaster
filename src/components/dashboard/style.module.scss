@@ -44,7 +44,7 @@
   margin-bottom: 16px;
 }
 .tournaments-list-container {
-  max-height: 600px;
+  height: 600px;
   overflow-y: auto;
   & > * {
     margin: 16px 0;
@@ -79,4 +79,8 @@
   align-self: flex-end;
   height: 303px;
   width: 344px;
+}
+.spinner-container {
+  display: flex;
+  justify-content: center;
 }
