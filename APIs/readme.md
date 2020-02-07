@@ -70,10 +70,18 @@ ____
 
 #### Fields (events.fields)
 1. GET (all): https://api.tourneymaster.org/v1/fields
-1. GET (specific facility): https://api.tourneymaster.org/v1/fields?fields_id=[VARCHAR]
+1. GET (specific field): https://api.tourneymaster.org/v1/fields?fields_id=[VARCHAR]
 1. DELETE: https://api.tourneymaster.org/v1/fields?fields_id=[VARCHAR]
 1. POST: https://api.tourneymaster.org/v1/fields
 1. TEST POST DATA: {"field_id": "ABC123", "facilities_id": "1", "field_name": "MAIN", "field_abbreviation": "M", "field_opentime": "10:00:00", "field_closetime": "22:00:00", "field_notes": "Notes", "field_sort": 0, "is_active_YN": 1, "is_library_YN": 0, "created_by": "4DC8A780", "created_datetime": "2020-01-01 12:00:00", "updated_by": "4DC8A780", "updated_datetime": "2020-01-01 12:00:00"}
+
+
+#### Games (events.games)
+1. GET (all): https://api.tourneymaster.org/v1/games
+1. GET (specific game): https://api.tourneymaster.org/v1/games?game_id=[VARCHAR]
+1. DELETE: https://api.tourneymaster.org/v1/games?game_id=[VARCHAR]
+1. POST: https://api.tourneymaster.org/v1/games
+1. TEST POST DATA: {"game_id": "GM99","event_id": "ABC123","schedule_id": "SCD001","sport_id": 1,"facilities_id": 1,"field_id": "ABC122","game_date": "1-1-2020"}
 
 
 #### Members (events.members)
@@ -84,9 +92,33 @@ ____
 1. TEST POST DATA: {"member_id": "ABC123", "first_name": "Joe", "last_name": "Smith", "member_tag": "TAG", "is_active_YN": 1, "email_address": "joe@someemail.xyz", "cognito_sub": "ABC", "access_token_ios": "IOS AT", "access_token_android": "ANDROID AT", "created_by": "4DC8A780", "created_datetime": "2020-01-01 12:00:00", "updated_by": "4DC8A780", "updated_datetime": "2020-01-01 12:00:00"}
 
 
+#### Orgs (events.organizations)
+1. GET (all): https://api.tourneymaster.org/v1/orgs
+1. GET (specific organization): https://api.tourneymaster.org/v1/orgs?org_id=[VARCHAR]
+1. DELETE: https://api.tourneymaster.org/v1/orgs?org_id=[VARCHAR]
+1. POST: https://api.tourneymaster.org/v1/orgs
+1. TEST POST DATA:   {"org_id": "ORG123","org_name": "CIVITAN","org_tag": "TAG","city": "Philadelphia","state": "PA","is_active_YN": 1, "created_by": "SF7654AA","created_datetime": "2020-01-01 12:00:00"}
+
+
+#### Registrations (events.registrations)
+1. GET (all): https://api.tourneymaster.org/v1/registrations
+1. GET (specific registration): https://api.tourneymaster.org/v1/registrations?registration_id=[VARCHAR]
+1. DELETE: https://api.tourneymaster.org/v1/registrations?registration_id=[VARCHAR]
+1. POST: https://api.tourneymaster.org/v1/registrations
+1. TEST POST DATA:  {"registration_id": "REG123","event_id": "ABC123","entry_fee": 99.99,"entry_deposit": 33.33,"registration_start": "2020-01-01 12:00:00","registration_end": "2020-01-01 12:00:00","entry_name_label": "label","division_name_label": "label","division_name_requested_YN": 0,"division_name_required_YN": 0,"contact1_label": "AAA","contact1_name_requested_YN": 0,"contact1_name_required_YN": 0,"contact2_label": "BBB","contact2_name_requested_YN": 0,"contact2_name_required_YN": 0,"contact3_label": "CCC","contact3_name_requested_YN": 0,"contact3_name_required_YN": 0,"max_teams_per_division": 30,"min_players_per_roster": 10,"max_players_per_roster": 20,"request_athlete_birthdate": 0,"request_athlete_jersey_number": 0,"request_athlete_email": 0,"disclaimer": "XYZ","registration_information": "INFO","is_active_YN": 0,"is_library_YN": 1,"created_by": "ABC","created_datetime": "2020-01-01 12:00:00","updated_by": "ABC","updated_datetime": "2020-01-01 12:00:00"}
+
+
+#### Requests (events.requests)
+1. GET (all): https://api.tourneymaster.org/v1/requests
+1. GET (specific schedule): https://api.tourneymaster.org/v1/requests?request_id=[VARCHAR]
+1. DELETE: https://api.tourneymaster.org/v1/requestss?request_id=[VARCHAR]
+1. POST: https://api.tourneymaster.org/v1/requests
+1. TEST POST DATA:    {"request_id": "REQ123","event_id": "ABC123","member_id": "SF7654AA","request_type": "ASDF","request_description": "request","assigned_to": "ABC","follow_up_date": "2020-01-01 12:00:00","relates_to": "ZZZ","request_tag1": "RT1","is_active_YN": 0,"is_library_YN": 1,"created_by": "SF7654AA","created_datetime": "2020-01-01 12:00:00","updated_by": "SF7654AA","updated_datetime": "2020-01-01 12:00:00"}
+
+
 #### Schedules (events.schedules)
 1. GET (all): https://api.tourneymaster.org/v1/schedules
-1. GET (specific member): https://api.tourneymaster.org/v1/schedules?schedule_id=[VARCHAR]
+1. GET (specific schedule): https://api.tourneymaster.org/v1/schedules?schedule_id=[VARCHAR]
 1. DELETE: https://api.tourneymaster.org/v1/schedules?schedule_id=[VARCHAR]
 1. POST: https://api.tourneymaster.org/v1/schedules
 1. TEST POST DATA:  {"schedule_id": "SCD001", "event_id": "ABC123", "member_id": "4DC8A780", "num_divisions": 5, "num_teams": 24, "schedule_status": "STATUS", "last_web_publish": "2020-01-01 12:00:00", "is_active_YN": 1, "is_library_YN": 0, "created_by": "4DC8A780", "created_datetime": "2020-01-01 12:00:00", "updated_by": "4DC8A780", "updated_datetime": "2020-01-01 12:00:00"}
@@ -94,7 +126,7 @@ ____
 
 #### Sports (events.sports)
 1. GET (all): https://api.tourneymaster.org/v1/sports
-1. GET (specific member): https://api.tourneymaster.org/v1/sports?sport_id=[NUMBER]
+1. GET (specific sport): https://api.tourneymaster.org/v1/sports?sport_id=[NUMBER]
 1. DELETE: https://api.tourneymaster.org/v1/sports?sport_id=[NUMBER]
 1. POST: https://api.tourneymaster.org/v1/sports
 1. TEST POST DATA: {"sport_id": 99, "sport_description": "Kickball", "is_active_YN": 0, "created_by": "4DC8A780", "created_datetime": "2020-01-01 12:00:00", "updated_by": "4DC8A780","updated_datetime": "2020-01-01 12:00:00"}
