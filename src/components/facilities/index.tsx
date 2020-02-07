@@ -1,7 +1,9 @@
 import React from 'react';
+import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { AppState } from './logic/reducer';
 import {
+  loadFacilities,
   addEmptyFacility,
   saveFacilities,
   updateFacilities,
@@ -17,6 +19,7 @@ import styles from './styles.module.scss';
 
 interface Props {
   facilities: IFacility[];
+  loadFacilities: BindingAction;
   addEmptyFacility: BindingAction;
   updateFacilities: BindingCbWithOne<IFacility>;
   saveFacilities: BindingCbWithOne<any>;
@@ -42,19 +45,7 @@ const postRequest = async () => {
   console.log(req);
 };
 
-const memeberRequest = async () => {
-  const req = await Api.get('/members');
-
-  console.log(req);
-};
-
 class Facilities extends React.Component<Props, any> {
-  async componentDidMount() {
-    const facls = await Api.get('/facilities');
-
-    console.log(facls);
-  }
-
   onChangeFacilitiesCount = (evt: any) => {
     const { facilities, addEmptyFacility } = this.props;
 
@@ -70,7 +61,9 @@ class Facilities extends React.Component<Props, any> {
   };
 
   render() {
-    const { facilities, updateFacilities } = this.props;
+    const { facilities, loadFacilities, updateFacilities } = this.props;
+
+    loadFacilities();
 
     return (
       <section>
@@ -80,7 +73,6 @@ class Facilities extends React.Component<Props, any> {
             <HeadingLevelTwo>Facilities</HeadingLevelTwo>
           </div>
           <button onClick={postRequest}>REQ</button>
-          <button onClick={memeberRequest}>Member</button>
           <div className={styles.numberWrapper}>
             <span className={styles.numberTitleWrapper}>
               Number of Facilities
@@ -121,5 +113,9 @@ export default connect(
   (state: IRootState) => ({
     facilities: state.facilities.facilities,
   }),
-  { addEmptyFacility, saveFacilities, updateFacilities }
+  (dispatch: Dispatch) =>
+    bindActionCreators(
+      { loadFacilities, addEmptyFacility, saveFacilities, updateFacilities },
+      dispatch
+    )
 )(Facilities);

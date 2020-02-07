@@ -37,9 +37,6 @@ class FacilityDetails extends React.Component<Props, State> {
   onChangeFacility = ({ target: { name, value } }: any) => {
     const { facility, updateFacilities } = this.props;
 
-    console.log(name);
-    console.log(value);
-
     updateFacilities({ ...facility, isChange: true, [name]: value });
   };
 
