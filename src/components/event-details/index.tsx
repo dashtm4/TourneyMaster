@@ -72,14 +72,10 @@ class EventDetails extends Component<Props, State> {
   render() {
     const genderOptions = ['Male', 'Female', 'Attack Helicopter'];
     const eventTypeOptions = ['Tournament', 'Showcase'];
-    const bracketTypeOptions = [
-      'Single Elimination',
-      'Double Elimination',
-      '3 Game Guarantee',
-    ];
-    const topNumberOfTeams = ['2', '3', '4', '5', '6', '7', '8'];
 
     const { event } = this.state;
+
+    console.log(event);
 
     return !event ? (
       this.Loading()
@@ -109,11 +105,7 @@ class EventDetails extends Component<Props, State> {
           onChange={this.onChange}
         />
 
-        <PlayoffsSection
-          bracketTypeOptions={bracketTypeOptions}
-          topNumberOfTeams={topNumberOfTeams}
-          onChange={this.onChange}
-        />
+        <PlayoffsSection eventData={event} onChange={this.onChange} />
 
         <MediaAssetsSection />
       </div>
