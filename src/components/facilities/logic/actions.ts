@@ -7,7 +7,7 @@ import {
   ADD_EMPTY_FACILITY,
   LOAD_FACILITIES,
   UPDATE_FACILITY,
-  // SAVE_FACILITIES,
+  SAVE_FACILITIES,
 } from './action-types';
 import { FacilitiesAction } from './action-types';
 import { IFacility } from '../../../common/models/facilities';
@@ -36,7 +36,12 @@ const loadFacilities: ActionCreator<ThunkAction<
 const addEmptyFacility = (): FacilitiesAction => ({
   type: ADD_EMPTY_FACILITY,
   payload: {
-    facility: { ...EMPTY_FACILITY, facilities_id: `${Math.random()}` },
+    facility: {
+      ...EMPTY_FACILITY,
+      facilities_id: `${Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000}`,
+      event_id: 'ABC123',
+      created_by: '4DC8A780',
+    },
   },
 });
 
@@ -47,7 +52,12 @@ const updateFacilities = (updatedFacility: IFacility): FacilitiesAction => ({
   },
 });
 
-const saveFacilities = (facilities: IFacility[]) => {
+const saveFacilities: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  FacilitiesAction
+>> = (facilities: IFacility[]) => async (dispatch: Dispatch) => {
   const savedFacilities = facilities.filter(it => {
     const isChange = it.isChange;
 
@@ -56,7 +66,21 @@ const saveFacilities = (facilities: IFacility[]) => {
     return isChange;
   });
 
-  console.log(savedFacilities);
+  if (savedFacilities.length === 0) return;
+
+  try {
+    for await (let facility of savedFacilities) {
+      Api.post('/facilities', facility);
+    }
+
+    dispatch({
+      type: SAVE_FACILITIES + SUCCESS,
+    });
+  } catch {
+    dispatch({
+      type: SAVE_FACILITIES + FAILURE,
+    });
+  }
 };
 
 export { loadFacilities, addEmptyFacility, updateFacilities, saveFacilities };

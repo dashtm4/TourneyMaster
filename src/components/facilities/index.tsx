@@ -14,7 +14,6 @@ import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Select from '../common/select';
 import { IFacility } from '../../common/models/facilities';
 import { BindingAction, BindingCbWithOne } from '../../common/models/callback';
-import Api from '../../api/api';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -22,30 +21,16 @@ interface Props {
   loadFacilities: BindingAction;
   addEmptyFacility: BindingAction;
   updateFacilities: BindingCbWithOne<IFacility>;
-  saveFacilities: BindingCbWithOne<any>;
+  saveFacilities: BindingCbWithOne<IFacility[]>;
 }
 
-const postRequest = async () => {
-  const fac = {
-    event_id: 'ABC123',
-    facilities_description: 'BIG',
-    num_fields: null,
-    restrooms: null,
-    num_toilets: null,
-    restroom_details: null,
-    parking_available: null,
-    parking_details: null,
-    parking_proximity: null,
-    golf_carts_availabe: null,
-    created_by: '4DC8A780',
-  };
-
-  const req = await Api.post('/facilities', fac);
-
-  console.log(req);
-};
-
 class Facilities extends React.Component<Props, any> {
+  componentDidMount() {
+    const { loadFacilities } = this.props;
+
+    loadFacilities();
+  }
+
   onChangeFacilitiesCount = (evt: any) => {
     const { facilities, addEmptyFacility } = this.props;
 
@@ -55,15 +40,13 @@ class Facilities extends React.Component<Props, any> {
   };
 
   savingFacilities = () => {
-    const { facilities } = this.props;
+    const { facilities, saveFacilities } = this.props;
 
     saveFacilities(facilities);
   };
 
   render() {
-    const { facilities, loadFacilities, updateFacilities } = this.props;
-
-    loadFacilities();
+    const { facilities, updateFacilities } = this.props;
 
     return (
       <section>
@@ -72,7 +55,6 @@ class Facilities extends React.Component<Props, any> {
           <div className={styles.headingWrapper}>
             <HeadingLevelTwo>Facilities</HeadingLevelTwo>
           </div>
-          <button onClick={postRequest}>REQ</button>
           <div className={styles.numberWrapper}>
             <span className={styles.numberTitleWrapper}>
               Number of Facilities
@@ -115,7 +97,7 @@ export default connect(
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadFacilities, addEmptyFacility, saveFacilities, updateFacilities },
+      { saveFacilities, loadFacilities, addEmptyFacility, updateFacilities },
       dispatch
     )
 )(Facilities);
