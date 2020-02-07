@@ -84,6 +84,22 @@ ____
 1. TEST POST DATA: {"member_id": "ABC123", "first_name": "Joe", "last_name": "Smith", "member_tag": "TAG", "is_active_YN": 1, "email_address": "joe@someemail.xyz", "cognito_sub": "ABC", "access_token_ios": "IOS AT", "access_token_android": "ANDROID AT", "created_by": "4DC8A780", "created_datetime": "2020-01-01 12:00:00", "updated_by": "4DC8A780", "updated_datetime": "2020-01-01 12:00:00"}
 
 
+#### Schedules (events.schedules)
+1. GET (all): https://api.tourneymaster.org/v1/schedules
+1. GET (specific member): https://api.tourneymaster.org/v1/schedules?schedule_id=[VARCHAR]
+1. DELETE: https://api.tourneymaster.org/v1/schedules?schedule_id=[VARCHAR]
+1. POST: https://api.tourneymaster.org/v1/schedules
+1. TEST POST DATA:  {"schedule_id": "SCD001", "event_id": "ABC123", "member_id": "4DC8A780", "num_divisions": 5, "num_teams": 24, "schedule_status": "STATUS", "last_web_publish": "2020-01-01 12:00:00", "is_active_YN": 1, "is_library_YN": 0, "created_by": "4DC8A780", "created_datetime": "2020-01-01 12:00:00", "updated_by": "4DC8A780", "updated_datetime": "2020-01-01 12:00:00"}
+
+
+#### Sports (events.sports)
+1. GET (all): https://api.tourneymaster.org/v1/sports
+1. GET (specific member): https://api.tourneymaster.org/v1/sports?sport_id=[NUMBER]
+1. DELETE: https://api.tourneymaster.org/v1/sports?sport_id=[NUMBER]
+1. POST: https://api.tourneymaster.org/v1/sports
+1. TEST POST DATA: {"sport_id": 99, "sport_description": "Kickball", "is_active_YN": 0, "created_by": "4DC8A780", "created_datetime": "2020-01-01 12:00:00", "updated_by": "4DC8A780","updated_datetime": "2020-01-01 12:00:00"}
+
+
 #### Teams (events.teams)
 1. GET (all): https://api.tourneymaster.org/v1/teams
 1. GET (specific team): https://api.tourneymaster.org/v1/teams?team_id=[VARCHAR]
