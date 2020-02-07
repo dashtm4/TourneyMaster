@@ -12,6 +12,7 @@ import Paper from './paper';
 import SectionDropdown from './section-dropdown';
 import Select from './select';
 import Tooltip from './tooltip-message';
+import * as Toasts from './toastr/showToasts';
 
 export {
   Button,
@@ -28,4 +29,5 @@ export {
   SectionDropdown,
   Select,
   Tooltip,
+  Toasts,
 };

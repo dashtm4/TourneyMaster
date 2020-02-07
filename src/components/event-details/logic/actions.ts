@@ -9,6 +9,7 @@ import {
 
 import api from 'api/api';
 import { EventDetailsDTO } from './model';
+import { Toasts } from 'components/common';
 
 export const eventDetailsFetchSuccess = (
   payload: EventDetailsDTO[]
@@ -28,5 +29,24 @@ export const getEventDetails: ActionCreator<ThunkAction<
   EventDetailsAction
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   const eventDetails = await api.get('/events', { event_id: eventId });
-  dispatch(eventDetailsFetchSuccess(eventDetails));
+  if (eventDetails) {
+    dispatch(eventDetailsFetchSuccess(eventDetails));
+  } else {
+    dispatch(eventDetailsFetchFailure());
+  }
+};
+
+export const saveEventDetails: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  EventDetailsAction
+>> = (eventDetails: EventDetailsDTO) => async (/* dispatch: Dispatch */) => {
+  const response = await api.post(`/events`, eventDetails);
+
+  if (response?.errorType === 'Error') {
+    return Toasts.errorToast("Couldn't save the changes");
+  }
+
+  Toasts.successToast('Changes successfully saved');
 };

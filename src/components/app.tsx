@@ -5,6 +5,7 @@ import withUnprotectedRoute from '../hocs/withUnprotectedRoute';
 import LoginPage from './login-page';
 import AuthorizedPage from './authorized-page';
 import { Routes } from '../common/constants';
+import Toastr from 'components/common/toastr';
 
 const LoginPageWrapped = withUnprotectedRoute(LoginPage);
 const AuthorizedPageWrapped = withProtectedRoute(AuthorizedPage);
@@ -22,6 +23,7 @@ const App: React.FC = () => {
           <Route path={Routes.DEFAULT} component={AuthorizedPageWrapped} />
         </Switch>
       </Router>
+      <Toastr />
     </React.Fragment>
   );
 };

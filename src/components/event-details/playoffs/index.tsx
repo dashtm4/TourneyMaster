@@ -26,7 +26,11 @@ const PlayoffsSection: React.FC<Props> = ({
     </HeadingLevelThree>
     <div className={styles['playoffs-details']}>
       <div className={styles['pd-first']}>
-        <Checkbox formLabel="" options={[]} onChange={onChange} />
+        <Checkbox
+          formLabel=""
+          options={[{ label: 'Event has Playoffs', checked: false }]}
+          onChange={onChange}
+        />
         <CardMessage type="info">
           Playoff settings include Bracket Type, # of Teams, and Ranking Factors
         </CardMessage>
