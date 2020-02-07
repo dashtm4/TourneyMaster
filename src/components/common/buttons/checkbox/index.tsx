@@ -6,13 +6,15 @@ import {
 } from '@material-ui/core';
 import styles from './style.module.scss';
 
-type Option = {
+interface IOption {
   label: string;
   checked: boolean;
-};
+  name?: string;
+  disabled?: boolean;
+}
 
 interface ICheckboxProps {
-  options: Option[];
+  options: IOption[];
   formLabel?: string;
   onChange?: any;
 }
@@ -25,18 +27,20 @@ const Checkbox: React.FC<ICheckboxProps> = ({
   <div className={styles.container}>
     <span className={styles.label}>{formLabel}</span>
     <FormGroup>
-      {options.map((option: Option, index: number) => (
+      {options.map((option: IOption, index: number) => (
         <FormControlLabel
           key={index}
           control={
             <MuiCheckbox
-              checked={option.checked}
               value={option.label}
               color="secondary"
+              checked={option.checked}
+              disabled={option.disabled}
             />
           }
           label={option.label}
           onChange={onChange}
+          name={option.name}
         />
       ))}
     </FormGroup>
