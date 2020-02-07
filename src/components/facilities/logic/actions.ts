@@ -8,10 +8,11 @@ import {
   LOAD_FACILITIES,
   UPDATE_FACILITY,
   SAVE_FACILITIES,
+  FacilitiesAction,
 } from './action-types';
-import { FacilitiesAction } from './action-types';
-import { IFacility } from '../../../common/models/facilities';
 import Api from 'api/api';
+import { getVarcharEight } from '../../../helpers';
+import { IFacility } from '../../../common/models/facilities';
 
 const loadFacilities: ActionCreator<ThunkAction<
   void,
@@ -38,7 +39,7 @@ const addEmptyFacility = (): FacilitiesAction => ({
   payload: {
     facility: {
       ...EMPTY_FACILITY,
-      facilities_id: `${Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000}`,
+      facilities_id: getVarcharEight(),
       event_id: 'ABC123',
       created_by: '4DC8A780',
     },
