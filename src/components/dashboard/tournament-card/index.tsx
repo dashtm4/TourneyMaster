@@ -2,17 +2,29 @@ import React from 'react';
 import Paper from '../../common/paper';
 import styles from './style.module.scss';
 import Button from '../../common/buttons/button';
+import tournamentLogoExample from '../../../assets/tournamentLogoExample.svg';
 import { getTournamentStatusColor } from '../../../helpers/getTournamentStatusColor';
+import moment from 'moment';
+import { EventDetailsDTO } from 'components/event-details/logic/model';
 
-const TournamentCard = ({ data }: any) => (
+const TournamentCard = ({ event }: { event: EventDetailsDTO }) => (
   <Paper>
     <div className={styles['tournament-header']}>
       <div className={styles['card-image']}>
-        <img src={data.logo} />
+        <img
+          src={
+            event.event_logo_path === 'logopath'
+              ? tournamentLogoExample
+              : event.event_logo_path
+          }
+        />
       </div>
       <div className={styles['card-header']}>
-        <h2 className={styles['card-title']}>{data.title}</h2>
-        <div className={styles['additional-message']}>{data.date}</div>
+        <h2 className={styles['card-title']}>{event.event_name}</h2>
+        <div className={styles['additional-message']}>
+          {moment(event.event_startdate).format('DD.MM.YYYY')} -{' '}
+          {moment(event.event_enddate).format('DD.MM.YYYY')}
+        </div>
       </div>
       <div className={styles['buttons-group']}>
         <Button label="Manage" variant="contained" color="primary" />
@@ -21,32 +33,32 @@ const TournamentCard = ({ data }: any) => (
     </div>
     <div className={styles['tournament-content']}>
       <div className={styles['tournament-content-item']}>
-        <span className={styles['tournament-content-title']}>Teams RSVP:</span>{' '}
-        {data.teamsRsvp}
+        <span className={styles['tournament-content-title']}>Teams:</span>{' '}
       </div>
       <div className={styles['tournament-content-item']}>
         <span className={styles['tournament-content-title']}>Locations:</span>{' '}
-        {data.locations}
+        {event.num_of_locations}
       </div>
       <div className={styles['tournament-content-item']}>
         <span className={styles['tournament-content-title']}>Status:</span>{' '}
-        {data.status}{' '}
+        {event.event_status || '—'}{' '}
         <span
           className={styles['tournament-status']}
-          style={{ ...getTournamentStatusColor(data.status) }}
+          style={
+            event.event_status && {
+              ...getTournamentStatusColor(event.event_status),
+            }
+          }
         />
       </div>
       <div className={styles['tournament-content-item']}>
         <span className={styles['tournament-content-title']}>Players:</span>{' '}
-        {data.players}
       </div>
       <div className={styles['tournament-content-item']}>
         <span className={styles['tournament-content-title']}>Fields:</span>{' '}
-        {data.fields}
       </div>
       <div className={styles['tournament-content-item']}>
         <span className={styles['tournament-content-title']}>Schedule:</span>{' '}
-        {data.schedule}
       </div>
     </div>
   </Paper>

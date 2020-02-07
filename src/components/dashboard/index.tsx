@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import EditIcon from '@material-ui/icons/Edit';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -12,9 +13,11 @@ import TimelineCard from './timeline-card';
 import NotificationsCard from './notifications-card';
 import InfoCard from './info-card';
 import TournamentCard from './tournament-card';
-import tournamentLogoExample from '../../assets/tournamentLogoExample.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
+import { getEvents } from './logic/actions';
+import { EventDetailsDTO } from 'components/event-details/logic/model';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const data = [
   { message: 'Publish', link: 'Men’s Spring Thaw', date: '01/14/20' },
@@ -54,34 +57,16 @@ const notificationData = [
   },
 ];
 
-const tournamentsData = [
-  {
-    id: '1',
-    logo: tournamentLogoExample,
-    title: 'Field Hockey I',
-    date: '01/02/10-01/03/21',
-    teamsRsvp: '2/8',
-    locations: 1,
-    status: 'Published',
-    players: 122,
-    fields: 2,
-    schedule: 'Available',
-  },
-  {
-    id: '2',
-    logo: tournamentLogoExample,
-    title: 'Field Hockey I',
-    date: '01/02/10-01/03/21',
-    teamsRsvp: '2/8',
-    locations: 1,
-    status: 'Draft',
-    players: 122,
-    fields: 2,
-    schedule: 'Available',
-  },
-];
+interface IDashboardProps {
+  events: EventDetailsDTO[];
+  getEvents: () => void;
+}
 
-class Dashboard extends React.Component {
+class Dashboard extends React.Component<IDashboardProps> {
+  async componentDidMount() {
+    this.props.getEvents();
+  }
+
   render() {
     return (
       <div className={styles.main}>
@@ -159,13 +144,30 @@ class Dashboard extends React.Component {
               />
             </div>
           </div>
-          {tournamentsData.map((tournament: any) => (
-            <TournamentCard key={tournament.id} data={tournament} />
-          ))}
+          <div className={styles['tournaments-list-container']}>
+            {this.props.events.length ? (
+              this.props.events.map((event: EventDetailsDTO) => (
+                <TournamentCard key={event.event_id} event={event} />
+              ))
+            ) : (
+              <CircularProgress />
+            )}
+          </div>
         </div>
       </div>
     );
   }
 }
+interface IState {
+  events: { data: EventDetailsDTO[] };
+}
 
-export default Dashboard;
+const mapStateToProps = (state: IState) => ({
+  events: state.events.data,
+});
+
+const mapDispatchToProps = {
+  getEvents,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
