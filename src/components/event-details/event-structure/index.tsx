@@ -22,9 +22,9 @@ interface Props {
 const EventStructureSection: React.FC<Props> = ({
   eventTypeOptions,
   timeDivisionOptions,
-  resultsDisplayOptions,
+  // resultsDisplayOptions,
   totalRuntimeMin,
-  esDetailsOptions,
+  // esDetailsOptions,
   onChange,
 }: Props) => (
   <SectionDropdown type="section" padding="0">
@@ -49,7 +49,7 @@ const EventStructureSection: React.FC<Props> = ({
         </div>
         <div className={styles.column}>
           <Checkbox
-            options={resultsDisplayOptions}
+            options={[]}
             formLabel="Results Display"
             onChange={onChange}
           />
@@ -83,7 +83,7 @@ const EventStructureSection: React.FC<Props> = ({
       </div>
       <div className={styles['es-details-third']}>
         <Checkbox
-          options={esDetailsOptions}
+          options={[]}
           formLabel="Results Display"
           onChange={onChange}
         />
