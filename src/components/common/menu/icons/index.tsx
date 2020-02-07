@@ -15,6 +15,7 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import RoomIcon from '@material-ui/icons/Room';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import CreateIcon from '@material-ui/icons/Create';
 
 const getIcon = (icon: string) => {
   switch (icon) {
@@ -46,6 +47,8 @@ const getIcon = (icon: string) => {
       return <GroupAddIcon className={styles.itemTitleIcon} />;
     case Icons.PLACE:
       return <RoomIcon className={styles.itemTitleIcon} />;
+    case Icons.SCORING:
+      return <CreateIcon className={styles.itemTitleIcon} />;
   }
 
   return null;

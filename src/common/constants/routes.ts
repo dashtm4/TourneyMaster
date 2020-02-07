@@ -15,7 +15,7 @@ enum Routes {
   TEAMS = '/teams',
   SCHEDULING = '/scheduling',
   SCORING = '/scoring',
-  REPORTING = 'reporting',
+  REPORTING = '/reporting',
 }
 
 export { Routes };
