@@ -53,6 +53,7 @@ const FormSignUp = ({
         name={FormFilds.NAME}
         type="text"
         placeholder="Name"
+        minLength={4}
         required
       />
       <span className="visually-hidden">Your name</span>
