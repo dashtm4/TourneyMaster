@@ -77,7 +77,7 @@ class Dashboard extends React.Component<IDashboardProps> {
     return (
       <div className={styles.main}>
         <Paper>
-          <div className={styles['main-menu']}>
+          <div className={styles.mainMenu}>
             <Button
               label="Edit Dashboard Layout"
               variant="text"
@@ -95,7 +95,7 @@ class Dashboard extends React.Component<IDashboardProps> {
         <div className={styles.heading}>
           <HeadingLevelTwo>My Dashboard</HeadingLevelTwo>
         </div>
-        <div className={styles['dashboard-cards-container']}>
+        <div className={styles.dashboardCardsContainer}>
           <InfoCard
             icon={<AlternateEmailIcon fontSize="large" />}
             info="0 Team Mentions"
@@ -109,19 +109,15 @@ class Dashboard extends React.Component<IDashboardProps> {
             info="2 Pending Tasks"
           />
         </div>
-        <div className={styles['timeline-container']}>
+        <div className={styles.timelineContainer}>
           <TimelineCard data={data} />
-          <img
-            src={schedule}
-            alt="schedule"
-            className={styles['schedule-image']}
-          />
+          <img src={schedule} alt="schedule" className={styles.scheduleImage} />
         </div>
         <NotificationsCard data={notificationData} />
-        <div className={styles['tournaments-container']}>
-          <div className={styles['tournaments-heading']}>
-            <div className={styles['card-header']}>
-              <div className={styles['card-title']}>
+        <div className={styles.tournamentsContainer}>
+          <div className={styles.tournamentsHeading}>
+            <div className={styles.cardHeader}>
+              <div className={styles.cardTitle}>
                 <FontAwesomeIcon
                   size="xs"
                   icon={faTrophy}
@@ -130,7 +126,7 @@ class Dashboard extends React.Component<IDashboardProps> {
                 Tournaments
               </div>
             </div>
-            <div className={styles['buttons-group']}>
+            <div className={styles.buttonsGroup}>
               <Button
                 label="Published(1)"
                 variant="contained"
@@ -151,7 +147,7 @@ class Dashboard extends React.Component<IDashboardProps> {
               />
             </div>
           </div>
-          <div className={styles['tournaments-list-container']}>
+          <div className={styles.tournamentsListContainer}>
             {this.props.events.length ? (
               this.props.events.map((event: EventDetailsDTO) => (
                 <TournamentCard
@@ -161,7 +157,7 @@ class Dashboard extends React.Component<IDashboardProps> {
                 />
               ))
             ) : (
-              <div className={styles['spinner-container']}>
+              <div className={styles.spinnerContainer}>
                 <CircularProgress />
               </div>
             )}

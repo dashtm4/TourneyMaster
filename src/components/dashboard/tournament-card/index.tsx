@@ -17,12 +17,13 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
   const onTournamentManage = () => {
     history.push(`event/event-details/${event.event_id}`);
   };
-
+  const startDate = moment(event.event_startdate).format('DD.MM.YYYY');
+  const endDate = moment(event.event_enddate).format('DD.MM.YYYY');
   return (
-    <div className={styles['tournament-container']}>
+    <div className={styles.tournamentContainer}>
       <Paper>
-        <div className={styles['tournament-header']}>
-          <div className={styles['card-image']}>
+        <div className={styles.tournamentHeader}>
+          <div className={styles.cardImage}>
             <img
               src={
                 event.event_logo_path === 'logopath'
@@ -31,14 +32,13 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
               }
             />
           </div>
-          <div className={styles['card-header']}>
-            <h2 className={styles['card-title']}>{event.event_name}</h2>
-            <div className={styles['additional-message']}>
-              {moment(event.event_startdate).format('DD.MM.YYYY')} -{' '}
-              {moment(event.event_enddate).format('DD.MM.YYYY')}
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>{event.event_name}</h2>
+            <div className={styles.additionalMessage}>
+              {`${startDate} - ${endDate}`}
             </div>
           </div>
-          <div className={styles['buttons-group']}>
+          <div className={styles.buttonsGroup}>
             <Button
               label="Manage"
               variant="contained"
@@ -48,36 +48,32 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
             <Button label="Duplicate" variant="text" color="secondary" />
           </div>
         </div>
-        <div className={styles['tournament-content']}>
-          <div className={styles['tournament-content-item']}>
-            <span className={styles['tournament-content-title']}>Teams:</span>{' '}
+        <div className={styles.tournamentContent}>
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Teams:</span>{' '}
           </div>
-          <div className={styles['tournament-content-item']}>
-            <span className={styles['tournament-content-title']}>
-              Locations:
-            </span>{' '}
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Locations:</span>{' '}
             {event.num_of_locations}
           </div>
-          <div className={styles['tournament-content-item']}>
-            <span className={styles['tournament-content-title']}>Status:</span>{' '}
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Status:</span>{' '}
             {event.event_status || '—'}{' '}
             <span
-              className={styles['tournament-status']}
+              className={styles.tournamentStatus}
               style={{
                 ...getTournamentStatusColor(event.event_status),
               }}
             />
           </div>
-          <div className={styles['tournament-content-item']}>
-            <span className={styles['tournament-content-title']}>Players:</span>{' '}
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Players:</span>{' '}
           </div>
-          <div className={styles['tournament-content-item']}>
-            <span className={styles['tournament-content-title']}>Fields:</span>{' '}
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Fields:</span>{' '}
           </div>
-          <div className={styles['tournament-content-item']}>
-            <span className={styles['tournament-content-title']}>
-              Schedule:
-            </span>{' '}
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Schedule:</span>{' '}
           </div>
         </div>
       </Paper>

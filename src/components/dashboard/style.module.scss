@@ -6,19 +6,19 @@
   margin: 24px 0;
 }
 
-.timeline-container {
+.timelineContainer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin-bottom: 16px;
 }
 
-.card-header {
+.cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.card-title {
+.cardTitle {
   display: flex;
   align-items: center;
   color: #1c315f;
@@ -26,24 +26,24 @@
   font-weight: 600;
 }
 
-.main-menu {
+.mainMenu {
   width: 100%;
   display: flex;
   justify-content: space-between;
   padding-right: 25px;
 }
 
-.buttons-group {
+.buttonsGroup {
   display: flex;
   flex-direction: row;
 }
 
-.dashboard-cards-container {
+.dashboardCardsContainer {
   display: flex;
   justify-content: space-between;
   margin-bottom: 16px;
 }
-.tournaments-list-container {
+.tournamentsListContainer {
   height: 600px;
   overflow-y: auto;
   & > * {
@@ -59,28 +59,28 @@
   }
 }
 
-.tournaments-heading {
+.tournamentsHeading {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   margin: 12px 0;
-  .card-header {
+  .cardHeader {
     flex-grow: 1;
     width: 437px;
   }
-  .buttons-group {
+  .buttonsGroup {
     flex-grow: 1;
     width: 388px;
     justify-content: space-between;
   }
 }
-.schedule-image {
+.scheduleImage {
   align-self: flex-end;
   height: 303px;
   width: 344px;
 }
-.spinner-container {
+.spinnerContainer {
   display: flex;
   justify-content: center;
 }
