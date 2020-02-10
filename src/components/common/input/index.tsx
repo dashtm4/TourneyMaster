@@ -18,6 +18,7 @@ interface ITextFieldProps {
   onChange?: any;
   name?: string;
   disabled?: boolean;
+  type?: 'text' | 'number';
 }
 
 const TextField: React.FC<ITextFieldProps> = ({
@@ -33,11 +34,13 @@ const TextField: React.FC<ITextFieldProps> = ({
   placeholder,
   name,
   disabled,
+  type,
 }) => (
   <div className={styles.container}>
     <span className={styles.label}>{label}</span>
     <MuiTextField
       name={name}
+      type={type || 'text'}
       style={{ width: width || defaultWidth }}
       placeholder={placeholder}
       fullWidth={fullWidth}
