@@ -19,7 +19,7 @@ interface MenuItem {
 
 interface Props {
   list: MenuItem[];
-  id?: string;
+  eventId?: string;
 }
 
 class Menu extends React.Component<Props> {
@@ -38,7 +38,11 @@ class Menu extends React.Component<Props> {
   renderMenuLink(menuItem: MenuItem, menuSubItem?: string) {
     return (
       <Link
-        to={this.props.id ? `${menuItem.link}/${this.props.id}` : menuItem.link}
+        to={
+          this.props.eventId
+            ? `${menuItem.link}/${this.props.eventId}`
+            : menuItem.link
+        }
         className={styles.itemTitle}
       >
         {menuSubItem || menuItem.title}
