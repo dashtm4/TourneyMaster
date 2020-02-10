@@ -16,7 +16,6 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
 
   const onMenuClick = (item: string) => {
     return item;
-    // console.log('item:', item);
   };
 
   const onLogoClick = () => {
@@ -24,27 +23,29 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   return (
-    <div className={styles.container}>
-      <img
-        src={logo}
-        onClick={onLogoClick}
-        className={styles.logo}
-        alt="logo"
-      />
-      <div className={styles['list-wrapper']}>
-        <ul className={styles.list}>
-          {menuItems.map((item: string, index: number) => (
-            <li
-              className={styles['list-item']}
-              onClick={onMenuClick.bind(undefined, item)}
-              key={index}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
+    <div className={styles.wrapper}>
+      <div className={styles.container}>
+        <img
+          src={logo}
+          onClick={onLogoClick}
+          className={styles.logo}
+          alt="logo"
+        />
+        <div className={styles['list-wrapper']}>
+          <ul className={styles.list}>
+            {menuItems.map((item: string, index: number) => (
+              <li
+                className={styles['list-item']}
+                onClick={onMenuClick.bind(undefined, item)}
+                key={index}
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <UserInfo />
       </div>
-      <UserInfo />
     </div>
   );
 };
