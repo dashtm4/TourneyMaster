@@ -8,7 +8,7 @@ enum Routes {
   CALENDAR = '/calendar',
   UTILITIES = '/utilities',
   EVENT_DAY_COMPLEXITIES = '/event-day-complexities',
-  EVENT_DETAILS = `/event-details/:id?`,
+  EVENT_DETAILS = `/event/event-details/:id?`,
   FACILITIES = '/facilities',
   REGISTRATION = '/registration',
 }

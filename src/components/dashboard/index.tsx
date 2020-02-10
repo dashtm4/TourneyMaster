@@ -70,7 +70,7 @@ class Dashboard extends React.Component<IDashboardProps> {
   }
 
   onCreateTournament = () => {
-    this.props.history.push('/event-details');
+    this.props.history.push('event/event-details');
   };
 
   render() {

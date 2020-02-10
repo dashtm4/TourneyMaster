@@ -15,7 +15,7 @@ interface ITournamentCardProps {
 
 const TournamentCard = ({ event, history }: ITournamentCardProps) => {
   const onTournamentManage = () => {
-    history.push(`/event-details/${event.event_id}`);
+    history.push(`event/event-details/${event.event_id}`);
   };
 
   return (
