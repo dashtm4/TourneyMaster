@@ -2,14 +2,11 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Header from '../header';
 import Menu from '../common/menu';
-import LibraryManager from '../library-manager';
-import Facilities from '../facilities';
-import MenuList from './constants/MenuList';
+import { MenuList } from './constants/MenuList';
 import { Routes } from '../../common/constants';
 import styles from './styles.module.scss';
 import Dashboard from '../dashboard';
-import EventDetails from 'components/event-details';
-import Registration from '../registration-view';
+import LibraryManager from '../library-manager';
 
 const AuthorizedPage = () => (
   <>
@@ -19,10 +16,7 @@ const AuthorizedPage = () => (
       <main className={styles.content}>
         <Switch>
           <Route path={Routes.DASHBOARD} component={Dashboard} />
-          <Route path={Routes.EVENT_DETAILS} component={EventDetails} />
           <Route path={Routes.LIBRARY_MANAGER} component={LibraryManager} />
-          <Route path={Routes.FACILITIES} component={Facilities} />
-          <Route path={Routes.REGISTRATION} component={Registration} />
           <Route path={Routes.DEFAULT} component={Dashboard} />
         </Switch>
       </main>
