@@ -31,11 +31,11 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
           className={styles.logo}
           alt="logo"
         />
-        <div className={styles['list-wrapper']}>
+        <div className={styles.listWrapper}>
           <ul className={styles.list}>
             {menuItems.map((item: string, index: number) => (
               <li
-                className={styles['list-item']}
+                className={styles.listItem}
                 onClick={onMenuClick.bind(undefined, item)}
                 key={index}
               >

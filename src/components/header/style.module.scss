@@ -39,7 +39,7 @@ $transition: 0.125s ease-in-out;
       }
     }
 
-    .list-wrapper {
+    .listWrapper {
       width: calc(100% - 61px - 50px);
     }
 
@@ -48,7 +48,7 @@ $transition: 0.125s ease-in-out;
       justify-content: space-evenly;
       padding: 0 $horizontalPadding / 2;
 
-      .list-item {
+      .listItem {
         color: #6a6a6a;
         padding-right: 10px;
         white-space: nowrap;
