@@ -39,8 +39,20 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
     }
   };
 
-  onRegistrationSubmit = (name: string, email: string, password: string) => {
-    console.log(name, email, password);
+  onRegistrationSubmit = async (
+    name: string,
+    email: string,
+    password: string
+  ) => {
+    const user = await Auth.signUp({
+      username: email,
+      password,
+      attributes: {
+        name,
+      },
+    });
+
+    console.log(user);
   };
 
   onGoogleSignIn = async () => {
@@ -84,6 +96,7 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
                 <button
                   onClick={this.onSignToggle}
                   className={styles.registerBtn}
+                  type="button"
                 >
                   Sign Up
                 </button>
@@ -106,6 +119,7 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
                 <button
                   onClick={this.onSignToggle}
                   className={styles.registerBtn}
+                  type="button"
                 >
                   Sign IN
                 </button>

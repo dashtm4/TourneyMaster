@@ -39,9 +39,9 @@ const FormSignUp = ({
   >
     <h2 className={styles.loginTitle}>Create Account</h2>
     <button
-      type="button"
-      onClick={onGoogleSignIn}
       className={styles.googleButton}
+      onClick={onGoogleSignIn}
+      type="button"
     >
       Sign in with Google
     </button>
