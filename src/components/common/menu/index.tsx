@@ -19,6 +19,7 @@ interface MenuItem {
 
 interface Props {
   list: MenuItem[];
+  id?: string;
 }
 
 class Menu extends React.Component<Props> {
@@ -34,6 +35,17 @@ class Menu extends React.Component<Props> {
     this.setState({ isCollapsible: !this.state.isCollapsible });
   };
 
+  renderMenuLink(menuItem: MenuItem, menuSubItem?: string) {
+    return (
+      <Link
+        to={this.props.id ? `${menuItem.link}/${this.props.id}` : menuItem.link}
+        className={styles.itemTitle}
+      >
+        {menuSubItem || menuItem.title}
+      </Link>
+    );
+  }
+
   renderMenu() {
     return (
       <aside className={styles.dashboardMenu} onMouseLeave={this.onCollapse}>
@@ -44,17 +56,13 @@ class Menu extends React.Component<Props> {
                 <ExpansionPanelWrapped>
                   <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
                     {getIcon(menuItem.icon)}
-                    <Link to={menuItem.link} className={styles.itemTitle}>
-                      {menuItem.title}
-                    </Link>
+                    {this.renderMenuLink(menuItem)}
                   </ExpansionPanelSummaryWrapped>
                   <ExpansionPanelDetailsWrapper>
                     <ul className={styles.list}>
                       {menuItem.children.map(menuSubItem => (
                         <li className={styles.itemSubTitle} key={menuSubItem}>
-                          <Link to={menuSubItem} className={styles.itemTitle}>
-                            {menuSubItem}
-                          </Link>
+                          {this.renderMenuLink(menuItem, menuSubItem)}
                         </li>
                       ))}
                     </ul>
@@ -67,7 +75,7 @@ class Menu extends React.Component<Props> {
                 key={menuItem.title}
               >
                 {getIcon(menuItem.icon)}
-                <Link to={menuItem.link}>{menuItem.title}</Link>
+                {this.renderMenuLink(menuItem)}
               </li>
             )
           )}

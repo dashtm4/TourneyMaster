@@ -57,7 +57,7 @@ export const MenuListForEvent = [
   {
     title: 'Event Details',
     icon: Icons.PERSON,
-    link: Routes.EVENT_DETAILS,
+    link: '/event/event-details',
     children: [
       'Primary Information',
       'Event Structure',
@@ -69,42 +69,42 @@ export const MenuListForEvent = [
   {
     title: 'Facilities',
     icon: Icons.PLACE,
-    link: Routes.FACILITIES,
+    link: '/event/facilities',
     children: null,
   },
   {
     title: 'Registration',
     icon: Icons.LIST,
-    link: Routes.REGISTRATION,
+    link: '/event/registration',
     children: ['Primary Information', 'Teams & Athletes', 'Main Contact'],
   },
   {
     title: 'Divisions & Pools',
     icon: Icons.PEOPLE,
-    link: Routes.DIVISIONS_AND_POOLS,
+    link: '/event/divisions-and-pools',
     children: null,
   },
   {
     title: 'Teams',
     icon: Icons.TEAM,
-    link: Routes.TEAMS,
+    link: '/event/teams',
     children: ['Team Management', 'Request Manager'],
   },
   {
     title: 'Scheduling',
     icon: Icons.CLOCK,
-    link: Routes.SCHEDULING,
+    link: '/event/scheduling',
     children: ['Tournament Play', 'Brackets'],
   },
   {
     title: 'Scoring',
-    link: Routes.SCORING,
+    link: '/event/scoring',
     icon: Icons.SCORING,
     children: null,
   },
   {
     title: 'Reporting',
-    link: Routes.REPORTING,
+    link: '/event/reporting',
     icon: Icons.REPORT,
     children: null,
   },
