@@ -146,6 +146,7 @@ const EventStructureSection: React.FC<Props> = ({
           <Input
             width="250px"
             fullWidth={true}
+            type="number"
             label="Min # of Game Guarantee"
             value={String(eventData.min_num_of_games)}
             onChange={onGameNumChange}
@@ -157,6 +158,7 @@ const EventStructureSection: React.FC<Props> = ({
             fullWidth={true}
             endAdornment="Minutes"
             label="Pregame Warmup"
+            type="number"
             value={getTimeFromString(pre_game_warmup!, 'minutes').toString()}
             onChange={onPregameWarmupChange}
           />
@@ -166,6 +168,7 @@ const EventStructureSection: React.FC<Props> = ({
             fullWidth={true}
             endAdornment="Minutes"
             label="Time Division Duration"
+            type="number"
             value={getTimeFromString(period_duration!, 'minutes').toString()}
             onChange={onTimeDivisionDuration}
           />
@@ -177,6 +180,7 @@ const EventStructureSection: React.FC<Props> = ({
             fullWidth={true}
             endAdornment="Minutes"
             label="Time Between Periods"
+            type="number"
             value={getTimeFromString(time_btwn_periods!, 'minutes').toString()}
             onChange={onTimeBtwnPeriodsDuration}
           />
