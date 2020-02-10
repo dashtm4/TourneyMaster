@@ -53,7 +53,7 @@ export const MenuList = [
   },
 ];
 
-export const MenuListForManagement = [
+export const MenuListForEvent = [
   {
     title: 'Event Details',
     icon: Icons.PERSON,

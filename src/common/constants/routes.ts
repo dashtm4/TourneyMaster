@@ -8,14 +8,15 @@ enum Routes {
   CALENDAR = '/calendar',
   UTILITIES = '/utilities',
   EVENT_DAY_COMPLEXITIES = '/event-day-complexities',
-  EVENT_DETAILS = '/event-details',
-  FACILITIES = '/facilities',
-  REGISTRATION = '/registration',
-  DIVISIONS_AND_POOLS = '/divisions-and-pools',
-  TEAMS = '/teams',
-  SCHEDULING = '/scheduling',
-  SCORING = '/scoring',
-  REPORTING = '/reporting',
+  EVENT = '/event/',
+  EVENT_DETAILS = '/event/event-details',
+  FACILITIES = '/event/facilities',
+  REGISTRATION = '/event/registration',
+  DIVISIONS_AND_POOLS = '/event/divisions-and-pools',
+  TEAMS = '/event/teams',
+  SCHEDULING = '/event/scheduling',
+  SCORING = '/event/scoring',
+  REPORTING = '/event/reporting',
 }
 
 export { Routes };

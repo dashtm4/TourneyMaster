@@ -3,17 +3,17 @@ import { Switch, Route } from 'react-router-dom';
 import Header from '../../header';
 import Menu from '../../common/menu';
 import Facilities from '../../facilities';
-import { MenuListForManagement } from '../constants/MenuList';
+import { MenuListForEvent } from '../constants/MenuList';
 import { Routes } from '../../../common/constants';
 import styles from '../styles.module.scss';
 import EventDetails from '../../event-details';
 import Registration from '../../registration-view';
 
-const AuthorizedPageManagement = () => (
+const AuthorizedPageEvent = () => (
   <>
     <Header />
     <div className={styles.page}>
-      <Menu list={MenuListForManagement} />
+      <Menu list={MenuListForEvent} />
       <main className={styles.content}>
         <Switch>
           <Route path={Routes.EVENT_DETAILS} component={EventDetails} />
@@ -26,4 +26,4 @@ const AuthorizedPageManagement = () => (
   </>
 );
 
-export default AuthorizedPageManagement;
+export default AuthorizedPageEvent;
