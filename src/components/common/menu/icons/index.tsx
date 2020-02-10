@@ -10,6 +10,12 @@ import ErrorIcon from '@material-ui/icons/Error';
 import PinIcon from './icon-pin-material';
 import { Icons } from '../../../../common/constants';
 import styles from './styles.module.scss';
+import WatchLaterIcon from '@material-ui/icons/WatchLater';
+import DescriptionIcon from '@material-ui/icons/Description';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import RoomIcon from '@material-ui/icons/Room';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import CreateIcon from '@material-ui/icons/Create';
 
 const getIcon = (icon: string) => {
   switch (icon) {
@@ -31,6 +37,18 @@ const getIcon = (icon: string) => {
       return <ErrorIcon className={styles.itemTitleIcon} />;
     case Icons.PIN:
       return <PinIcon />;
+    case Icons.CLOCK:
+      return <WatchLaterIcon className={styles.itemTitleIcon} />;
+    case Icons.REPORT:
+      return <DescriptionIcon className={styles.itemTitleIcon} />;
+    case Icons.LIST:
+      return <FormatListBulletedIcon className={styles.itemTitleIcon} />;
+    case Icons.TEAM:
+      return <GroupAddIcon className={styles.itemTitleIcon} />;
+    case Icons.PLACE:
+      return <RoomIcon className={styles.itemTitleIcon} />;
+    case Icons.SCORING:
+      return <CreateIcon className={styles.itemTitleIcon} />;
   }
 
   return null;
