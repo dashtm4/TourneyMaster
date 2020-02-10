@@ -1,6 +1,6 @@
 import { Icons, Routes } from '../../../common/constants';
 
-const MenuList = [
+export const MenuList = [
   {
     title: 'My Dashboard',
     icon: Icons.PERSON,
@@ -15,7 +15,7 @@ const MenuList = [
       'Tournaments',
       'Facilities',
       'Registration',
-      'Divisions &amp; Pools',
+      'Divisions & Pools',
       'Team Management',
       'Scheduling',
       'Messaging',
@@ -53,4 +53,59 @@ const MenuList = [
   },
 ];
 
-export default MenuList;
+export const MenuListForEvent = [
+  {
+    title: 'Event Details',
+    icon: Icons.PERSON,
+    link: Routes.EVENT_DETAILS,
+    children: [
+      'Primary Information',
+      'Event Structure',
+      'Playoffs',
+      'Media Assets',
+      'Advanced Settings',
+    ],
+  },
+  {
+    title: 'Facilities',
+    icon: Icons.PLACE,
+    link: Routes.FACILITIES,
+    children: null,
+  },
+  {
+    title: 'Registration',
+    icon: Icons.LIST,
+    link: Routes.REGISTRATION,
+    children: ['Primary Information', 'Teams & Athletes', 'Main Contact'],
+  },
+  {
+    title: 'Divisions & Pools',
+    icon: Icons.PEOPLE,
+    link: Routes.DIVISIONS_AND_POOLS,
+    children: null,
+  },
+  {
+    title: 'Teams',
+    icon: Icons.TEAM,
+    link: Routes.TEAMS,
+    children: ['Team Management', 'Request Manager'],
+  },
+  {
+    title: 'Scheduling',
+    icon: Icons.CLOCK,
+    link: Routes.SCHEDULING,
+    children: ['Tournament Play', 'Brackets'],
+  },
+  {
+    title: 'Scoring',
+    link: Routes.SCORING,
+    icon: Icons.SCORING,
+    children: null,
+  },
+  {
+    title: 'Reporting',
+    link: Routes.REPORTING,
+    icon: Icons.REPORT,
+    children: null,
+  },
+];
