@@ -22,7 +22,6 @@ const App: React.FC = () => {
             component={LoginPageWrapped}
             exact={true}
           />
-          <Route path={Routes.LOGIN} component={LoginPage} exact={true} />
           <Route
             path={[
               Routes.DASHBOARD,
@@ -35,7 +34,19 @@ const App: React.FC = () => {
             ]}
             component={AuthorizedPageWrapped}
           />
-          <Route path={Routes.EVENT} component={AuthorizedPageEventWrapped} />
+          <Route
+            path={[
+              Routes.EVENT_DETAILS,
+              Routes.FACILITIES,
+              Routes.REGISTRATION,
+              Routes.DIVISIONS_AND_POOLS,
+              Routes.TEAMS,
+              Routes.SCHEDULING,
+              Routes.SCORING,
+              Routes.REPORTING,
+            ]}
+            component={AuthorizedPageEventWrapped}
+          />
           <Route path={Routes.DEFAULT} component={AuthorizedPageWrapped} />
         </Switch>
       </Router>

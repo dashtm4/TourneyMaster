@@ -1,55 +1,83 @@
 import React from 'react';
+import { History } from 'history';
 import Paper from '../../common/paper';
 import styles from './style.module.scss';
 import Button from '../../common/buttons/button';
+import tournamentLogoExample from '../../../assets/tournamentLogoExample.svg';
 import { getTournamentStatusColor } from '../../../helpers/getTournamentStatusColor';
+import moment from 'moment';
+import { EventDetailsDTO } from 'components/event-details/logic/model';
 
-const TournamentCard = ({ data }: any) => (
-  <Paper>
-    <div className={styles['tournament-header']}>
-      <div className={styles['card-image']}>
-        <img src={data.logo} />
-      </div>
-      <div className={styles['card-header']}>
-        <h2 className={styles['card-title']}>{data.title}</h2>
-        <div className={styles['additional-message']}>{data.date}</div>
-      </div>
-      <div className={styles['buttons-group']}>
-        <Button label="Manage" variant="contained" color="primary" />
-        <Button label="Duplicate" variant="text" color="secondary" />
-      </div>
-    </div>
-    <div className={styles['tournament-content']}>
-      <div className={styles['tournament-content-item']}>
-        <span className={styles['tournament-content-title']}>Teams RSVP:</span>{' '}
-        {data.teamsRsvp}
-      </div>
-      <div className={styles['tournament-content-item']}>
-        <span className={styles['tournament-content-title']}>Locations:</span>{' '}
-        {data.locations}
-      </div>
-      <div className={styles['tournament-content-item']}>
-        <span className={styles['tournament-content-title']}>Status:</span>{' '}
-        {data.status}{' '}
-        <span
-          className={styles['tournament-status']}
-          style={{ ...getTournamentStatusColor(data.status) }}
-        />
-      </div>
-      <div className={styles['tournament-content-item']}>
-        <span className={styles['tournament-content-title']}>Players:</span>{' '}
-        {data.players}
-      </div>
-      <div className={styles['tournament-content-item']}>
-        <span className={styles['tournament-content-title']}>Fields:</span>{' '}
-        {data.fields}
-      </div>
-      <div className={styles['tournament-content-item']}>
-        <span className={styles['tournament-content-title']}>Schedule:</span>{' '}
-        {data.schedule}
-      </div>
-    </div>
-  </Paper>
-);
+interface ITournamentCardProps {
+  event: EventDetailsDTO;
+  history: History;
+}
 
+const TournamentCard = ({ event, history }: ITournamentCardProps) => {
+  const onTournamentManage = () => {
+    history.push(`event/event-details/${event.event_id}`);
+  };
+  const startDate = moment(event.event_startdate).format('DD.MM.YYYY');
+  const endDate = moment(event.event_enddate).format('DD.MM.YYYY');
+  return (
+    <div className={styles.tournamentContainer}>
+      <Paper>
+        <div className={styles.tournamentHeader}>
+          <div className={styles.cardImage}>
+            <img
+              src={
+                event.event_logo_path === 'logopath'
+                  ? tournamentLogoExample
+                  : event.event_logo_path
+              }
+            />
+          </div>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>{event.event_name}</h2>
+            <div className={styles.additionalMessage}>
+              {`${startDate} - ${endDate}`}
+            </div>
+          </div>
+          <div className={styles.buttonsGroup}>
+            <Button
+              label="Manage"
+              variant="contained"
+              color="primary"
+              onClick={onTournamentManage}
+            />
+            <Button label="Duplicate" variant="text" color="secondary" />
+          </div>
+        </div>
+        <div className={styles.tournamentContent}>
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Teams:</span>{' '}
+          </div>
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Locations:</span>{' '}
+            {event.num_of_locations}
+          </div>
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Status:</span>{' '}
+            {event.event_status || '—'}{' '}
+            <span
+              className={styles.tournamentStatus}
+              style={{
+                ...getTournamentStatusColor(event.event_status),
+              }}
+            />
+          </div>
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Players:</span>{' '}
+          </div>
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Fields:</span>{' '}
+          </div>
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Schedule:</span>{' '}
+          </div>
+        </div>
+      </Paper>
+    </div>
+  );
+};
 export default TournamentCard;

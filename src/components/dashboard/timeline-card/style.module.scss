@@ -1,20 +1,20 @@
-.card-container {
+.cardContainer {
   height: 315px;
   width: 445px;
 }
-.card-header {
+.cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.card-title {
+.cardTitle {
   display: flex;
   align-items: center;
   color: #1c315f;
   font-size: 24px;
   font-weight: 600;
 }
-.notifications-list {
+.notificationsList {
   padding: 0;
 }
 .notification {
@@ -22,18 +22,18 @@
   flex-direction: row;
   margin: 0;
 }
-.notification-message {
+.notificationMessage {
   color: #6a6a6a;
   font-weight: 600;
   font-size: 16px;
   padding-top: 8px;
-  .additional-message {
+  .additionalMessage {
     font-weight: normal;
     color: #6a6a6a;
     font-size: 12px;
     padding-bottom: 8px;
   }
-  .message-link {
+  .messageLink {
     font-weight: normal;
     color: #11a8ea;
     cursor: pointer;
@@ -44,7 +44,7 @@
   color: #11a8ea;
   cursor: pointer;
 }
-.card-icon {
+.cardIcon {
   margin-right: 5px;
 }
 .expand {

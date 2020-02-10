@@ -6,23 +6,21 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const NotificationsCard = ({ data }: any) => (
   <Paper>
-    <div className={styles['card-header']}>
-      <div className={styles['card-title']}>
-        <NotificationsIcon fontSize="small" className={styles['card-icon']} />
+    <div className={styles.cardHeader}>
+      <div className={styles.cardTitle}>
+        <NotificationsIcon fontSize="small" className={styles.cardIcon} />
         Notifications
       </div>
     </div>
     <ul>
       {data.map((notification: any, index: number) => (
         <li key={index} className={styles.notification}>
-          <div className={styles['notification-message']}>
+          <div className={styles.notificationMessage}>
             <div>
               {notification.message}
-              <a className={styles['message-link']}>{notification.link}</a>
+              <a className={styles.messageLink}>{notification.link}</a>
             </div>
-            <div className={styles['additional-message']}>
-              {notification.date}
-            </div>
+            <div className={styles.additionalMessage}>{notification.date}</div>
           </div>
         </li>
       ))}

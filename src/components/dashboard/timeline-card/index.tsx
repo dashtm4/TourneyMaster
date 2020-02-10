@@ -8,12 +8,12 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const TimelineCard = ({ data }: any) => (
   <Paper>
-    <div className={styles['card-container']}>
-      <div className={styles['card-header']}>
-        <div className={styles['card-title']}>
+    <div className={styles.cardContainer}>
+      <div className={styles.cardHeader}>
+        <div className={styles.cardTitle}>
           <FormatListBulletedIcon
             fontSize="small"
-            className={styles['card-icon']}
+            className={styles.cardIcon}
           />
           Timeline
         </div>
@@ -24,17 +24,17 @@ const TimelineCard = ({ data }: any) => (
           icon={<CalendarTodayIcon fontSize="small" />}
         />
       </div>
-      <ul className={styles['notifications-list']}>
+      <ul className={styles.notificationsList}>
         {data.map((event: any, index: number) => (
           <li key={index} className={styles.notification}>
             <div className={styles.line} />
             <div className={styles.oval} />
-            <div className={styles['notification-message']}>
+            <div className={styles.notificationMessage}>
               <div>
                 {event.message}
-                <a className={styles['message-link']}>{event.link}</a>
+                <a className={styles.messageLink}>{event.link}</a>
               </div>
-              <div className={styles['additional-message']}>{event.date}</div>
+              <div className={styles.additionalMessage}>{event.date}</div>
             </div>
           </li>
         ))}
