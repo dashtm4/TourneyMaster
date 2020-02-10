@@ -1,6 +1,7 @@
 import React from 'react';
-import { Auth } from 'aws-amplify';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { Auth } from 'aws-amplify';
+import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth/lib/types';
 import WithEditingForm from './hocs/withEditingForm';
 import FormSignUp from './components/form-sign-up';
 import FormSignIn from './components/form-sign-in';
@@ -49,9 +50,10 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
     });
   };
 
-  onGoogleSignIn = async () => {
-    // const token = await Auth.federatedSignIn({ provider: 'Google' });
-    // console.log(token);
+  onGoogleSignIn = () => {
+    Auth.federatedSignIn({
+      provider: CognitoHostedUIIdentityProvider.Google,
+    });
   };
 
   onGoogleSignUp = async () => {};
