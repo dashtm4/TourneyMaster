@@ -36,15 +36,12 @@ class Menu extends React.Component<Props> {
   };
 
   renderMenuLink(menuItem: MenuItem, menuSubItem?: string) {
+    const path = this.props.eventId
+      ? `${menuItem.link}/${this.props.eventId}`
+      : menuItem.link;
+
     return (
-      <Link
-        to={
-          this.props.eventId
-            ? `${menuItem.link}/${this.props.eventId}`
-            : menuItem.link
-        }
-        className={styles.itemTitle}
-      >
+      <Link to={path} className={styles.itemTitle}>
         {menuSubItem || menuItem.title}
       </Link>
     );
