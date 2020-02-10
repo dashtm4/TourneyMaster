@@ -20,7 +20,7 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onLogoClick = () => {
-    history.push('/dashboard');
+    history.push('/');
   };
 
   return (
