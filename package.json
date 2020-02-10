@@ -32,11 +32,8 @@
     "aws-amplify": "^2.2.2",
     "axios": "^0.19.2",
     "date-fns": "^2.9.0",
-<<<<<<< HEAD
     "history": "^4.10.1",
-=======
     "immutability-helper": "^3.0.1",
->>>>>>> development
     "lodash-es": "^4.17.15",
     "node-sass": "^4.13.1",
     "react": "^16.12.0",
