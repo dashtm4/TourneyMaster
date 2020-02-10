@@ -11,6 +11,10 @@ import {
 import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
 
+import Dnd from '../dnd';
+import { DndProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 const bracketTypeOptions = [
@@ -44,6 +48,22 @@ interface Props {
   onChange: any;
 }
 
+const rankingFactorDivisions = [
+  { id: 1, text: 'Best record' },
+  { id: 2, text: 'Head to Head' },
+  { id: 3, text: 'Goal Difference' },
+  { id: 4, text: 'Goals Scored' },
+  { id: 5, text: 'Goals Allowed' },
+];
+
+const rankingFactorPools = [
+  { id: 1, text: 'Best record' },
+  { id: 2, text: 'Head to Head' },
+  { id: 3, text: 'Goal Difference' },
+  { id: 4, text: 'Goals Scored' },
+  { id: 5, text: 'Goals Allowed' },
+];
+
 const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
   const { playoffs_exist, bracket_type, num_teams_bracket } = eventData;
 
@@ -67,6 +87,10 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
     if (playoffs_exist && !bracket_type)
       onChange('bracket_type', bracketTypesEnum['Single Elimination']);
   });
+
+  const onUpdateCards = (name: string, cards: any) => {
+    console.log('cards:', name, cards);
+  };
 
   return (
     <SectionDropdown type="section" padding="0">
@@ -111,8 +135,29 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
           </div>
         )}
         <div className={styles['pd-third']}>
+          <div className={styles.dndTitleWrapper}>
+            <span>Ranking Factors (in Divisions)</span>
+            <span>Ranking Factors (in Pools)</span>
+          </div>
+          <div className={styles.dndWrapper}>
+            <DndProvider backend={HTML5Backend}>
+              <Dnd
+                name="rankingFactorDivisions"
+                cards={rankingFactorDivisions}
+                onUpdate={onUpdateCards.bind(
+                  undefined,
+                  'rankingFactorDivisions'
+                )}
+              />
+              <Dnd
+                name="rankingFactorPools"
+                cards={rankingFactorPools}
+                onUpdate={onUpdateCards.bind(undefined, 'rankingFactorPools')}
+              />
+            </DndProvider>
+          </div>
           <CardMessage type="info">
-            Dran n Drop to reorder Ranking Factors
+            Dran and Drop to reorder Ranking Factors
           </CardMessage>
           <Checkbox options={bracketGameDurationOpts} />
         </div>
