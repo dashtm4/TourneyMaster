@@ -8,12 +8,17 @@ import { Routes } from '../../../common/constants';
 import styles from '../styles.module.scss';
 import EventDetails from '../../event-details';
 import Registration from '../../registration-view';
+import { RouteComponentProps } from 'react-router-dom';
 
-const AuthorizedPageEvent = () => (
+interface MatchParams {
+  eventId?: string;
+}
+
+const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
   <>
     <Header />
     <div className={styles.page}>
-      <Menu list={MenuListForEvent} />
+      <Menu list={MenuListForEvent} eventId={props.match.params.eventId} />
       <main className={styles.content}>
         <Switch>
           <Route path={Routes.EVENT_DETAILS} component={EventDetails} />

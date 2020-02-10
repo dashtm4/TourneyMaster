@@ -28,6 +28,9 @@ export default () =>
           '&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
             borderColor: '#00A3EA',
           },
+          '& input::-webkit-clear-button, & input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+            display: 'none',
+          },
         },
       },
       MuiOutlinedInput: {

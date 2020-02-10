@@ -5,6 +5,6 @@ export const getTournamentStatusColor = (status: string) => {
     case 'Published':
       return { backgroundColor: '#00cc47' };
     default:
-      return { backgroundColor: '#888' };
+      return null;
   }
 };

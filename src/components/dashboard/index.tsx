@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { History } from 'history';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import EditIcon from '@material-ui/icons/Edit';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -12,9 +14,11 @@ import TimelineCard from './timeline-card';
 import NotificationsCard from './notifications-card';
 import InfoCard from './info-card';
 import TournamentCard from './tournament-card';
-import tournamentLogoExample from '../../assets/tournamentLogoExample.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
+import { getEvents } from './logic/actions';
+import { EventDetailsDTO } from 'components/event-details/logic/model';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const data = [
   { message: 'Publish', link: 'Men’s Spring Thaw', date: '01/14/20' },
@@ -54,39 +58,26 @@ const notificationData = [
   },
 ];
 
-const tournamentsData = [
-  {
-    id: '1',
-    logo: tournamentLogoExample,
-    title: 'Field Hockey I',
-    date: '01/02/10-01/03/21',
-    teamsRsvp: '2/8',
-    locations: 1,
-    status: 'Published',
-    players: 122,
-    fields: 2,
-    schedule: 'Available',
-  },
-  {
-    id: '2',
-    logo: tournamentLogoExample,
-    title: 'Field Hockey I',
-    date: '01/02/10-01/03/21',
-    teamsRsvp: '2/8',
-    locations: 1,
-    status: 'Draft',
-    players: 122,
-    fields: 2,
-    schedule: 'Available',
-  },
-];
+interface IDashboardProps {
+  history: History;
+  events: EventDetailsDTO[];
+  getEvents: () => void;
+}
 
-class Dashboard extends React.Component {
+class Dashboard extends React.Component<IDashboardProps> {
+  async componentDidMount() {
+    this.props.getEvents();
+  }
+
+  onCreateTournament = () => {
+    this.props.history.push('event/event-details');
+  };
+
   render() {
     return (
       <div className={styles.main}>
         <Paper>
-          <div className={styles['main-menu']}>
+          <div className={styles.mainMenu}>
             <Button
               label="Edit Dashboard Layout"
               variant="text"
@@ -97,13 +88,14 @@ class Dashboard extends React.Component {
               label="Create tournament"
               variant="contained"
               color="primary"
+              onClick={this.onCreateTournament}
             />
           </div>
         </Paper>
         <div className={styles.heading}>
           <HeadingLevelTwo>My Dashboard</HeadingLevelTwo>
         </div>
-        <div className={styles['dashboard-cards-container']}>
+        <div className={styles.dashboardCardsContainer}>
           <InfoCard
             icon={<AlternateEmailIcon fontSize="large" />}
             info="0 Team Mentions"
@@ -117,19 +109,15 @@ class Dashboard extends React.Component {
             info="2 Pending Tasks"
           />
         </div>
-        <div className={styles['timeline-container']}>
+        <div className={styles.timelineContainer}>
           <TimelineCard data={data} />
-          <img
-            src={schedule}
-            alt="schedule"
-            className={styles['schedule-image']}
-          />
+          <img src={schedule} alt="schedule" className={styles.scheduleImage} />
         </div>
         <NotificationsCard data={notificationData} />
-        <div className={styles['tournaments-container']}>
-          <div className={styles['tournaments-heading']}>
-            <div className={styles['card-header']}>
-              <div className={styles['card-title']}>
+        <div className={styles.tournamentsContainer}>
+          <div className={styles.tournamentsHeading}>
+            <div className={styles.cardHeader}>
+              <div className={styles.cardTitle}>
                 <FontAwesomeIcon
                   size="xs"
                   icon={faTrophy}
@@ -138,7 +126,7 @@ class Dashboard extends React.Component {
                 Tournaments
               </div>
             </div>
-            <div className={styles['buttons-group']}>
+            <div className={styles.buttonsGroup}>
               <Button
                 label="Published(1)"
                 variant="contained"
@@ -159,13 +147,36 @@ class Dashboard extends React.Component {
               />
             </div>
           </div>
-          {tournamentsData.map((tournament: any) => (
-            <TournamentCard key={tournament.id} data={tournament} />
-          ))}
+          <div className={styles.tournamentsListContainer}>
+            {this.props.events.length ? (
+              this.props.events.map((event: EventDetailsDTO) => (
+                <TournamentCard
+                  key={event.event_id}
+                  event={event}
+                  history={this.props.history}
+                />
+              ))
+            ) : (
+              <div className={styles.spinnerContainer}>
+                <CircularProgress />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
   }
 }
+interface IState {
+  events: { data: EventDetailsDTO[] };
+}
 
-export default Dashboard;
+const mapStateToProps = (state: IState) => ({
+  events: state.events.data,
+});
+
+const mapDispatchToProps = {
+  getEvents,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
