@@ -5,9 +5,9 @@ import { Routes } from '../../common/constants';
 const withUnprotectedRoute = (Component: React.ComponentType<any>) => (
   props: any
 ) => {
-  const userToket = localStorage.getItem('token');
+  const userToken = localStorage.getItem('token');
 
-  return Boolean(userToket) ? (
+  return Boolean(userToken) ? (
     <Redirect to={Routes.DEFAULT} />
   ) : (
     <Component {...props} />
