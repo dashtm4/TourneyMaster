@@ -4,6 +4,8 @@ import {
   BindingAction,
   BindingCbWithTwo,
 } from '../../../../common/models/callback';
+import { Auth } from 'aws-amplify';
+import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth/lib/types';
 
 enum FormFilds {
   EMAIL = 'email',
@@ -23,7 +25,7 @@ const FormSignIn = ({
   email,
   password,
   onChange,
-  onGoogleSignIn,
+  // onGoogleSignIn,
   onAuthSubmit,
 }: Props) => (
   <form
@@ -37,7 +39,11 @@ const FormSignIn = ({
     <h2 className={styles.loginTitle}>Sign in</h2>
     <button
       type="button"
-      onClick={onGoogleSignIn}
+      onClick={() =>
+        Auth.federatedSignIn({
+          provider: CognitoHostedUIIdentityProvider.Google,
+        })
+      }
       className={styles.googleButton}
     >
       Sign in with Google

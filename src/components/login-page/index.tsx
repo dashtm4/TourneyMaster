@@ -39,27 +39,22 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
     }
   };
 
-  onRegistrationSubmit = async (
-    name: string,
-    email: string,
-    password: string
-  ) => {
-    const user = await Auth.signUp({
+  onRegistrationSubmit = (name: string, email: string, password: string) => {
+    Auth.signUp({
       username: email,
       password,
       attributes: {
         name,
       },
     });
-
-    console.log(user);
   };
 
   onGoogleSignIn = async () => {
-    const token = await Auth.federatedSignIn();
-
-    console.log(token);
+    // const token = await Auth.federatedSignIn({ provider: 'Google' });
+    // console.log(token);
   };
+
+  onGoogleSignUp = async () => {};
 
   render() {
     const { isSignUpOpen } = this.state;
@@ -72,7 +67,7 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
         >
           <FormSignUpWrapped
             onRegistrationSubmit={this.onRegistrationSubmit}
-            onGoogleSignIn={this.onGoogleSignIn}
+            onGoogleSignUp={this.onGoogleSignUp}
           />
           <FormSignInWrapped
             onAuthSubmit={this.onAuthSubmit}
