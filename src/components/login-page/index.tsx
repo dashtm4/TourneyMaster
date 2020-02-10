@@ -1,6 +1,7 @@
 import React from 'react';
-import { Auth } from 'aws-amplify';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { Auth } from 'aws-amplify';
+import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth/lib/types';
 import WithEditingForm from './hocs/withEditingForm';
 import FormSignUp from './components/form-sign-up';
 import FormSignIn from './components/form-sign-in';
@@ -40,14 +41,22 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
   };
 
   onRegistrationSubmit = (name: string, email: string, password: string) => {
-    console.log(name, email, password);
+    Auth.signUp({
+      username: email,
+      password,
+      attributes: {
+        name,
+      },
+    });
   };
 
-  onGoogleSignIn = async () => {
-    const token = await Auth.federatedSignIn();
-
-    console.log(token);
+  onGoogleSignIn = () => {
+    Auth.federatedSignIn({
+      provider: CognitoHostedUIIdentityProvider.Google,
+    });
   };
+
+  onGoogleSignUp = async () => {};
 
   render() {
     const { isSignUpOpen } = this.state;
@@ -60,7 +69,7 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
         >
           <FormSignUpWrapped
             onRegistrationSubmit={this.onRegistrationSubmit}
-            onGoogleSignIn={this.onGoogleSignIn}
+            onGoogleSignUp={this.onGoogleSignUp}
           />
           <FormSignInWrapped
             onAuthSubmit={this.onAuthSubmit}
@@ -84,6 +93,7 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
                 <button
                   onClick={this.onSignToggle}
                   className={styles.registerBtn}
+                  type="button"
                 >
                   Sign Up
                 </button>
@@ -106,6 +116,7 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
                 <button
                   onClick={this.onSignToggle}
                   className={styles.registerBtn}
+                  type="button"
                 >
                   Sign IN
                 </button>
