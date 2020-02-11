@@ -12,7 +12,7 @@ const MediaAssetsSection: React.FC = () => {
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Media Assets</span>
       </HeadingLevelThree>
-      <div className={styles['ma-details']}>
+      <div className={styles.maDetails}>
         <div className={styles.uploadWrapper}>
           <div className={styles.uploadBlock}>
             <span className={styles.uploadBlockTitle}>Desktop Icon</span>
