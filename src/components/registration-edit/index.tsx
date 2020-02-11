@@ -81,7 +81,7 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
     return (
       <section>
         <Paper>
-          <div className={styles['main-menu']}>
+          <div className={styles.mainMenu}>
             <div>
               <Button
                 label="Cancel"
@@ -98,7 +98,7 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
             </div>
           </div>
         </Paper>
-        <div className={styles['section-container']}>
+        <div className={styles.sectionContainer}>
           <div className={styles.heading}>
             <HeadingLevelTwo>Registration</HeadingLevelTwo>
           </div>

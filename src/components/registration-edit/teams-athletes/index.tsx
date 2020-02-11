@@ -33,8 +33,8 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
 
   return (
     <div className={styles.section}>
-      <div className={styles['section-first-row']}>
-        <div className={styles['section-item']}>
+      <div className={styles.sectionFirstRow}>
+        <div className={styles.sectionItem}>
           <Input
             width="161px"
             label="Max Teams Per Division"
@@ -43,7 +43,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             onChange={onMaxTeamsPerDivisionChange}
           />
         </div>
-        <div className={styles['section-item']}>
+        <div className={styles.sectionItem}>
           <Input
             width="161px"
             label="Min Athletes on Roster"
@@ -52,7 +52,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             onChange={onMinAthletesOnRosterChange}
           />
         </div>
-        <div className={styles['section-item']}>
+        <div className={styles.sectionItem}>
           <Input
             width="161px"
             label="Max Athletes on Roster"
@@ -62,8 +62,8 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
           />
         </div>
       </div>
-      <div className={styles['section-second-row']}>
-        <div className={styles['section-item']}>
+      <div className={styles.sectionSecondRow}>
+        <div className={styles.sectionItem}>
           <Radio
             options={options}
             formLabel="Athlete Birth Date"
@@ -71,7 +71,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             checked={OptionsEnum[data.request_athlete_birthdate || 2]}
           />
         </div>
-        <div className={styles['section-item']}>
+        <div className={styles.sectionItem}>
           <Radio
             options={options}
             formLabel="Athlete Jersey Number"
@@ -79,7 +79,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             checked={OptionsEnum[data.request_athlete_jersey_number || 2]}
           />
         </div>
-        <div className={styles['section-item']}>
+        <div className={styles.sectionItem}>
           <Radio
             options={options}
             formLabel="Athlete Email"

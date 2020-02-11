@@ -11,7 +11,7 @@
     padding-bottom: 7px;
   }
 }
-.main-menu {
+.mainMenu {
   width: 100%;
   display: flex;
   justify-content: flex-end;
@@ -20,7 +20,7 @@
 .heading {
   margin: 24px 0;
 }
-.section-container {
+.sectionContainer {
   max-width: 732px;
 }
 .section {
@@ -28,26 +28,26 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  .section-first-row {
+  .sectionFirstRow {
     display: flex;
   }
-  .section-second-row {
+  .sectionSecondRow {
     display: flex;
   }
-  .section-item {
+  .sectionItem {
     flex-grow: 0;
     width: 191px;
     color: #6a6a6a;
     margin-bottom: 32px;
   }
-  .section-label {
+  .sectionLabel {
     font-size: 16px;
     font-weight: 600;
     color: #6a6a6a;
     margin-bottom: 7px;
     white-space: nowrap;
   }
-  .division-link {
+  .divisionLink {
     color: #11a8ea;
     text-decoration: none;
   }

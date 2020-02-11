@@ -25,13 +25,13 @@ const PrimaryInformation = ({ data, onChange }: any) => {
 
   return (
     <div className={styles.section}>
-      <div className={styles['section-first-row']}>
-        <div className={styles['section-item']}>
-          <p className={styles['section-label']}>Division</p>
-          <span className={styles['division-link']}>{data.division || ''}</span>
+      <div className={styles.sectionFirstRow}>
+        <div className={styles.sectionItem}>
+          <p className={styles.sectionLabel}>Division</p>
+          <span className={styles.divisionLink}>{data.division || ''}</span>
         </div>
-        <div className={styles['section-item']} />
-        <div className={styles['section-item']}>
+        <div className={styles.sectionItem} />
+        <div className={styles.sectionItem}>
           <DatePicker
             width="161px"
             label="Open Date"
@@ -40,7 +40,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             onChange={onOpenDateChange}
           />
         </div>
-        <div className={styles['section-item']}>
+        <div className={styles.sectionItem}>
           <DatePicker
             width="161px"
             label="Close Date"
@@ -50,8 +50,8 @@ const PrimaryInformation = ({ data, onChange }: any) => {
           />
         </div>
       </div>
-      <div className={styles['section-second-row']}>
-        <div className={styles['section-item']}>
+      <div className={styles.sectionSecondRow}>
+        <div className={styles.sectionItem}>
           <Input
             width="161px"
             label="Entry Fee"
@@ -61,7 +61,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             onChange={onEntryFeeChange}
           />
         </div>
-        <div className={styles['section-item']}>
+        <div className={styles.sectionItem}>
           <Input
             width="161px"
             label="Deposit Fee"
@@ -71,7 +71,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             onChange={onDepositFeeChange}
           />
         </div>
-        <div className={styles['section-item']}>
+        <div className={styles.sectionItem}>
           <Input
             width="161px"
             fullWidth={true}
@@ -81,7 +81,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             onChange={onEarlyBirdDiscountChange}
           />
         </div>
-        <div className={styles['section-item']}>
+        <div className={styles.sectionItem}>
           <DatePicker
             width="161px"
             label="Discount End Date"

@@ -21,8 +21,8 @@ const MainContact = ({ onChange }: any) => {
 
   return (
     <div className={styles.section}>
-      <div className={styles['section-first-row']}>
-        <div className={styles['section-item']}>
+      <div className={styles.sectionFirstRow}>
+        <div className={styles.sectionItem}>
           <Input
             width="161px"
             label="First"
@@ -30,7 +30,7 @@ const MainContact = ({ onChange }: any) => {
             onChange={onFirstNameChange}
           />
         </div>
-        <div className={styles['section-item']}>
+        <div className={styles.sectionItem}>
           <Input
             width="161px"
             label="Last"
@@ -38,8 +38,8 @@ const MainContact = ({ onChange }: any) => {
             onChange={onLastNameChange}
           />
         </div>
-        <div className={styles['section-item']}>
-          <span className={styles['section-title']}>Role</span>
+        <div className={styles.sectionItem}>
+          <span className={styles.sectionTitle}>Role</span>
           <Select
             width="161px"
             label=""
@@ -47,9 +47,9 @@ const MainContact = ({ onChange }: any) => {
             value=""
             // onChange={onChangeMaxTeamNumber}
           />
-          <span className={styles['tournament-status']} />
+          <span className={styles.tournamentStatus} />
         </div>
-        <div className={styles['section-item']}>
+        <div className={styles.sectionItem}>
           <Input
             width="161px"
             label="Email"
@@ -58,8 +58,8 @@ const MainContact = ({ onChange }: any) => {
           />
         </div>
       </div>
-      <div className={styles['section-second-row']}>
-        <div className={styles['section-item']}>
+      <div className={styles.sectionSecondRow}>
+        <div className={styles.sectionItem}>
           <Input
             width="161px"
             label="Mobile Number"
@@ -68,7 +68,7 @@ const MainContact = ({ onChange }: any) => {
             onChange={onMobileNumberChange}
           />
         </div>
-        <div className={styles['section-item']} style={{ marginTop: '20px' }}>
+        <div className={styles.sectionItem} style={{ marginTop: '20px' }}>
           <Checkbox
             formLabel=""
             options={[{ label: 'Permission to Text', checked: Boolean(0) }]}
