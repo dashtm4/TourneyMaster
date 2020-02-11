@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import Header from '../../header';
 import Menu from '../../common/menu';
 import Facilities from '../../facilities';
+import Sсoring from '../../scoring';
 import { MenuListForEvent } from '../constants/MenuList';
 import { Routes } from '../../../common/constants';
 import styles from '../styles.module.scss';
@@ -24,6 +25,7 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
           <Route path={Routes.EVENT_DETAILS} component={EventDetails} />
           <Route path={Routes.FACILITIES} component={Facilities} />
           <Route path={Routes.REGISTRATION} component={Registration} />
+          <Route path={Routes.SCORING} component={Sсoring} />
           <Route path={Routes.DEFAULT} component={EventDetails} />
         </Switch>
       </main>
