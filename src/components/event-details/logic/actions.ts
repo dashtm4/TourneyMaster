@@ -1,5 +1,7 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
+import { Storage } from 'aws-amplify';
+import uuidv4 from 'uuid/v4';
 
 import {
   EVENT_DETAILS_FETCH_SUCCESS,
@@ -8,7 +10,7 @@ import {
 } from './actionTypes';
 
 import api from 'api/api';
-import { EventDetailsDTO } from './model';
+import { EventDetailsDTO, IIconFile } from './model';
 import { Toasts } from 'components/common';
 
 export const eventDetailsFetchSuccess = (
@@ -49,4 +51,19 @@ export const saveEventDetails: ActionCreator<ThunkAction<
   }
 
   Toasts.successToast('Changes successfully saved');
+};
+
+export const uploadFiles = (files: IIconFile[]) => () => {
+  if (!files || !files.length) return;
+
+  files.forEach((fileObject: IIconFile) => {
+    const { file, destinationType } = fileObject;
+    const uuid = uuidv4();
+    const saveFilePath = `event_media_files/${destinationType}_${uuid}_${file.name}`;
+    const config = { contentType: file.type };
+
+    Storage.put(saveFilePath, file, config)
+      .then(() => Toasts.successToast(`${file.name} was successfully uploaded`))
+      .catch(() => Toasts.errorToast(`${file.name} couldn't be uploaded`));
+  });
 };

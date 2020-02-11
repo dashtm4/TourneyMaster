@@ -49,3 +49,8 @@ export interface EventDetailsDTO {
   updated_by: string;
   updated_datetime: string;
 }
+
+export interface IIconFile {
+  file: File;
+  destinationType: string;
+}

@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { getEventDetails, saveEventDetails } from './logic/actions';
-import { EventDetailsDTO } from './logic/model';
+import {
+  getEventDetails,
+  saveEventDetails,
+  uploadFiles,
+} from './logic/actions';
+import { EventDetailsDTO, IIconFile } from './logic/model';
 import { IAppState } from './logic/reducer';
 
 import PrimaryInformationSection from './primary-information';
@@ -21,6 +25,7 @@ interface IMapStateProps {
 interface Props extends IMapStateProps {
   getEventDetails: (eventId: string) => void;
   saveEventDetails: (event: Partial<EventDetailsDTO>) => void;
+  uploadFiles: (files: IIconFile[]) => void;
 }
 
 type State = {
@@ -58,6 +63,10 @@ class EventDetails extends Component<Props, State> {
         [name]: value,
       },
     }));
+  };
+
+  onFileUpload = (files: IIconFile[]) => {
+    this.props.uploadFiles(files);
   };
 
   onSave = () => {
@@ -102,7 +111,7 @@ class EventDetails extends Component<Props, State> {
 
         <PlayoffsSection eventData={event} onChange={this.onChange} />
 
-        <MediaAssetsSection />
+        <MediaAssetsSection onFileUpload={this.onFileUpload} />
       </div>
     );
   }
@@ -117,6 +126,9 @@ const mapStateToProps = (state: IRootState): IMapStateProps => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
-  bindActionCreators({ getEventDetails, saveEventDetails }, dispatch);
+  bindActionCreators(
+    { getEventDetails, saveEventDetails, uploadFiles },
+    dispatch
+  );
 
 export default connect(mapStateToProps, mapDispatchToProps)(EventDetails);
