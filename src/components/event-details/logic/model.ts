@@ -26,6 +26,7 @@ export interface EventDetailsDTO {
   max_num_of_divisions: number;
   ranking_factor_divisions: null;
   bracket_type: null;
+  bracket_durations_vary: number | null;
   ranking_factor_pools: null;
   num_teams_bracket: null;
   max_num_teams_per_division: number;
@@ -37,6 +38,7 @@ export interface EventDetailsDTO {
   event_logo_path: string;
   mobile_icon_URL: string;
   desktop_icon_URL: string;
+  waivers_required: number | null;
   back_to_back_warning: true | null;
   is_active_YN: number;
   is_library_YN: number;

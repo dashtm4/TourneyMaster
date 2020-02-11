@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CodeIcon from '@material-ui/icons/Code';
 
 import {
@@ -13,38 +13,52 @@ import {
 import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
 
+type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
+
 interface Props {
   eventData: Partial<EventDetailsDTO>;
-  genderOptions: string[];
   onChange: any;
 }
 
 enum sportsEnum {
   'Lacrosse' = 1,
-  'Football' = 2,
-  'Baseball' = 3,
+  'Field Hockey' = 2,
 }
 
 enum timeZoneEnum {
   'Eastern Standart Time' = -5,
-  'Another Time' = -4,
+  'Central Standart Time' = -6,
+  'Mountain Standart Time' = -7,
+  'Pacific Standart Time' = -8,
 }
 
-const sportOptions = ['Lacrosse', 'Football', 'Baseball'];
-const timeZoneOptions = ['Eastern Standart Time', 'Another Time'];
+const sportOptions = ['Lacrosse', 'Field Hockey'];
+const timeZoneOptions = [
+  'Eastern Standart Time',
+  'Central Standart Time',
+  'Mountain Standart Time',
+  'Pacific Standart Time',
+];
+const genderOptions = ['Male', 'Female'];
 
 const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
-  genderOptions,
   onChange,
 }: Props) => {
-  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  useEffect(() => {
+    if (!eventData?.time_zone_utc)
+      onChange('time_zone_utc', timeZoneEnum[timeZoneOptions[0]]);
+
+    if (!eventData?.sport_id) onChange('sport_id', sportsEnum[sportOptions[0]]);
+  });
+
+  const onNameChange = (e: InputTargetValue) =>
     onChange('event_name', e.target.value);
 
-  const onTagChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onTagChange = (e: InputTargetValue) =>
     onChange('event_tag', e.target.value);
 
-  const onSportChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onSportChange = (e: InputTargetValue) =>
     onChange('sport_id', sportsEnum[e.target.value]);
 
   const onStartDate = (e: Date | string) =>
@@ -53,19 +67,22 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const onEndDate = (e: Date | string) =>
     !isNaN(Number(e)) && onChange('event_enddate', new Date(e).toISOString());
 
-  const onTimeZone = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onTimeZone = (e: InputTargetValue) =>
     onChange('time_zone_utc', timeZoneEnum[e.target.value]);
 
-  const onDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onDescriptionChange = (e: InputTargetValue) =>
     onChange('event_description', e.target.value);
+
+  const onPrimaryLocation = (e: InputTargetValue) =>
+    onChange('primary_location_desc', e.target.value);
 
   return (
     <SectionDropdown type="section" padding="0">
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Primary Information</span>
       </HeadingLevelThree>
-      <div className={styles['pi-details']}>
-        <div className={styles['pi-details-first']}>
+      <div className={styles.piDetails}>
+        <div className={styles.piDetailsFirst}>
           <Input
             width="256px"
             fullWidth={true}
@@ -84,7 +101,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             width="161px"
             options={sportOptions}
             label="Sport"
-            value={sportsEnum[eventData.sport_id ?? 1]}
+            value={sportsEnum[eventData.sport_id!]}
             onChange={onSportChange}
           />
           <Select
@@ -94,7 +111,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             value={genderOptions[0]}
           />
         </div>
-        <div className={styles['pi-details-second']}>
+        <div className={styles.piDetailsSecond}>
           <DatePicker
             width="160px"
             label="Start Date"
@@ -113,17 +130,19 @@ const PrimaryInformationSection: React.FC<Props> = ({
             width="256px"
             options={timeZoneOptions}
             label="Time Zone"
-            value={timeZoneEnum[eventData.time_zone_utc ?? -5]}
+            value={timeZoneEnum[eventData.time_zone_utc!]}
             onChange={onTimeZone}
           />
         </div>
-        <div className={styles['pi-details-third']}>
+        <div className={styles.piDetailsThird}>
           <Input
             width="635px"
             label="General Location"
             placeholder="Search google maps"
+            value={eventData.primary_location_desc}
+            onChange={onPrimaryLocation}
           />
-          <div className={styles['pi-details-third-area']}>
+          <div className={styles.piDetailsThirdArea}>
             <Input
               width="635px"
               label="Description"

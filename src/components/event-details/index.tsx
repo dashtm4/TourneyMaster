@@ -70,7 +70,6 @@ class EventDetails extends Component<Props, State> {
   Loading = () => <div>Nice Loading...</div>;
 
   render() {
-    const genderOptions = ['Male', 'Female', 'Attack Helicopter'];
     const eventTypeOptions = ['Tournament', 'Showcase'];
 
     const { event } = this.state;
@@ -93,11 +92,7 @@ class EventDetails extends Component<Props, State> {
         </Paper>
         <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
 
-        <PrimaryInformationSection
-          eventData={event}
-          genderOptions={genderOptions}
-          onChange={this.onChange}
-        />
+        <PrimaryInformationSection eventData={event} onChange={this.onChange} />
 
         <EventStructureSection
           eventData={event}

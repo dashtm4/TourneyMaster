@@ -16,6 +16,7 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 enum esDetailsEnum {
   'Back to Back Game Warning' = 'back_to_back_warning',
+  'Require Waivers' = 'waivers_required',
 }
 
 enum timeDivisionEnum {
@@ -91,6 +92,7 @@ const EventStructureSection: React.FC<Props> = ({
     time_btwn_periods,
     pre_game_warmup,
     periods_per_game,
+    waivers_required,
   } = eventData;
 
   const resultsDisplayOptions = [
@@ -109,7 +111,7 @@ const EventStructureSection: React.FC<Props> = ({
     },
     {
       label: 'Require Waivers',
-      checked: false,
+      checked: Boolean(waivers_required),
     },
   ];
 
@@ -118,8 +120,8 @@ const EventStructureSection: React.FC<Props> = ({
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Event Structure</span>
       </HeadingLevelThree>
-      <div className={styles['es-details']}>
-        <div className={styles['es-details-first']}>
+      <div className={styles.esDetails}>
+        <div className={styles.esDetailsFirst}>
           <div className={styles.column}>
             <Radio
               options={eventTypeOptions}
@@ -152,7 +154,7 @@ const EventStructureSection: React.FC<Props> = ({
             onChange={onGameNumChange}
           />
         </div>
-        <div className={styles['es-details-second']}>
+        <div className={styles.esDetailsSecond}>
           <Input
             width="170px"
             fullWidth={true}
@@ -194,7 +196,7 @@ const EventStructureSection: React.FC<Props> = ({
             &nbsp; Minutes Total Runtime
           </span>
         </div>
-        <div className={styles['es-details-third']}>
+        <div>
           <Checkbox
             options={esDetailsOptions}
             formLabel=""
