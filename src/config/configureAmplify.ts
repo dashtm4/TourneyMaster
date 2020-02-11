@@ -11,7 +11,7 @@ export default () => {
         domain: process.env.REACT_APP_AWS_COGNITO_DOMAIN,
         redirectSignIn: 'http://localhost:3000/',
         redirectSignOut: 'http://localhost:3000/',
-        responseType: 'token',
+        responseType: 'code',
       },
     },
   });

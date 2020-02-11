@@ -2,7 +2,14 @@ import { Auth } from 'aws-amplify';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 
 const BASE_URL = 'https://api.tourneymaster.org/v1';
-const getToken = () => localStorage.getItem('token');
+
+const getToken = async () => {
+  const userToken = (await Auth.currentSession()).getIdToken().getJwtToken();
+
+  localStorage.setItem('token', userToken);
+
+  return localStorage.getItem('token');
+};
 
 class Api {
   baseUrl: string;
@@ -10,70 +17,57 @@ class Api {
 
   constructor() {
     this.baseUrl = BASE_URL;
-
-    this.instance = {};
+    this.instance = axios.create({
+      baseURL: BASE_URL,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
 
   async get(url: string, params?: any) {
-    this.checkAuthToken();
-
-    return await axios
-      .create({
-        baseURL: BASE_URL,
+    return await this.instance
+      .get(url, {
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getToken()}`,
+          Authorization: `Bearer ${await getToken()}`,
         },
+        params,
       })
-      .get(url, { params })
       .then(this.handleResponse)
       .catch(this.handleError);
   }
 
   async post(url: string, data: any) {
-    this.checkAuthToken();
-
-    return await axios
-      .create({
-        baseURL: BASE_URL,
+    return await this.instance
+      .post(url, {
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getToken()}`,
+          Authorization: `Bearer ${await getToken()}`,
         },
+        data,
       })
-      .post(url, data)
       .then(this.handleResponse)
       .catch(this.handleError);
   }
 
   async put(url: string, data: any) {
-    this.checkAuthToken();
-
-    return await axios
-      .create({
-        baseURL: BASE_URL,
+    return await this.instance
+      .put(url, {
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getToken()}`,
+          Authorization: `Bearer ${await getToken()}`,
         },
+        data,
       })
-      .put(url, data)
       .then(this.handleResponse)
       .catch(this.handleError);
   }
 
   async delete(url: string) {
-    this.checkAuthToken();
-
-    return await axios
-      .create({
-        baseURL: BASE_URL,
+    return await this.instance
+      .delete(url, {
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getToken()}`,
+          Authorization: `Bearer ${await getToken()}`,
         },
       })
-      .delete(url)
       .then(this.handleResponse)
       .catch(this.handleError);
   }
@@ -87,23 +81,23 @@ class Api {
     console.error('Error:', err);
   }
 
-  private async checkAuthToken() {
-    try {
-      const cognitoUser = await Auth.currentAuthenticatedUser();
-      const currentSession = await Auth.currentSession();
+  // private async checkAuthToken() {
+  //   try {
+  //     const cognitoUser = await Auth.currentAuthenticatedUser();
+  //     const currentSession = await Auth.currentSession();
 
-      cognitoUser.refreshSession(
-        currentSession.getRefreshToken(),
-        (_: any, session: any) => {
-          const { idToken } = session;
+  //     cognitoUser.refreshSession(
+  //       currentSession.getRefreshToken(),
+  //       (_: any, session: any) => {
+  //         const { idToken } = session;
 
-          localStorage.setItem('token', idToken.jwtToken);
-        }
-      );
-    } catch (error) {
-      console.error('Unable to refresh Token', error);
-    }
-  }
+  //         localStorage.setItem('token', idToken.jwtToken);
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.error('Unable to refresh Token', error);
+  //   }
+  // }
 }
 
 export default new Api();

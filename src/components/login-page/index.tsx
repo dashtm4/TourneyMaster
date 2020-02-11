@@ -35,7 +35,6 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
 
     if (userToken) {
       localStorage.setItem('token', userToken);
-
       this.props.history.push('/dashboard');
     }
   };
@@ -50,11 +49,11 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
     });
   };
 
-  onGoogleSignIn = () => {
+  onGoogleSignIn() {
     Auth.federatedSignIn({
       provider: CognitoHostedUIIdentityProvider.Google,
     });
-  };
+  }
 
   onGoogleSignUp = async () => {};
 
