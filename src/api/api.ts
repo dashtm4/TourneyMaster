@@ -1,19 +1,12 @@
+import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import { Auth } from 'aws-amplify';
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import { getToken } from './api.helpers';
 
 const BASE_URL = 'https://api.tourneymaster.org/v1';
 
-const getToken = async () => {
-  const userToken = (await Auth.currentSession()).getIdToken().getJwtToken();
-
-  localStorage.setItem('token', userToken);
-
-  return localStorage.getItem('token');
-};
-
 class Api {
   baseUrl: string;
-  instance: any;
+  instance: AxiosInstance;
 
   constructor() {
     this.baseUrl = BASE_URL;
@@ -26,6 +19,8 @@ class Api {
   }
 
   async get(url: string, params?: any) {
+    await this.checkAuthToken();
+
     return await this.instance
       .get(url, {
         headers: {
@@ -81,23 +76,23 @@ class Api {
     console.error('Error:', err);
   }
 
-  // private async checkAuthToken() {
-  //   try {
-  //     const cognitoUser = await Auth.currentAuthenticatedUser();
-  //     const currentSession = await Auth.currentSession();
+  private async checkAuthToken() {
+    try {
+      const cognitoUser = await Auth.currentAuthenticatedUser();
+      const currentSession = await Auth.currentSession();
 
-  //     cognitoUser.refreshSession(
-  //       currentSession.getRefreshToken(),
-  //       (_: any, session: any) => {
-  //         const { idToken } = session;
+      cognitoUser.refreshSession(
+        currentSession.getRefreshToken(),
+        (_: any, session: any) => {
+          const { idToken } = session;
 
-  //         localStorage.setItem('token', idToken.jwtToken);
-  //       }
-  //     );
-  //   } catch (error) {
-  //     console.error('Unable to refresh Token', error);
-  //   }
-  // }
+          localStorage.setItem('token', idToken.jwtToken);
+        }
+      );
+    } catch (error) {
+      console.error('Unable to refresh Token', error);
+    }
+  }
 }
 
 export default new Api();
