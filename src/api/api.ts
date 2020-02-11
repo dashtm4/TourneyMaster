@@ -2,6 +2,7 @@ import { Auth } from 'aws-amplify';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 
 const BASE_URL = 'https://api.tourneymaster.org/v1';
+const getToken = () => localStorage.getItem('token');
 
 class Api {
   baseUrl: string;
@@ -21,7 +22,7 @@ class Api {
         baseURL: BASE_URL,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       })
       .get(url, { params })
@@ -37,7 +38,7 @@ class Api {
         baseURL: BASE_URL,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       })
       .post(url, data)
@@ -53,7 +54,7 @@ class Api {
         baseURL: BASE_URL,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       })
       .put(url, data)
@@ -69,7 +70,7 @@ class Api {
         baseURL: BASE_URL,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       })
       .delete(url)
