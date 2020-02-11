@@ -1,29 +1,29 @@
 import { Auth } from 'aws-amplify';
-import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 
-const USER_TOKEN = localStorage.getItem('token');
 const BASE_URL = 'https://api.tourneymaster.org/v1';
 
 class Api {
   baseUrl: string;
-  instance: AxiosInstance;
+  instance: any;
 
   constructor() {
     this.baseUrl = BASE_URL;
 
-    this.instance = axios.create({
-      baseURL: BASE_URL,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${USER_TOKEN}`,
-      },
-    });
+    this.instance = {};
   }
 
   async get(url: string, params?: any) {
     this.checkAuthToken();
 
-    return await this.instance
+    return await axios
+      .create({
+        baseURL: BASE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
       .get(url, { params })
       .then(this.handleResponse)
       .catch(this.handleError);
@@ -32,7 +32,14 @@ class Api {
   async post(url: string, data: any) {
     this.checkAuthToken();
 
-    return await this.instance
+    return await axios
+      .create({
+        baseURL: BASE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
       .post(url, data)
       .then(this.handleResponse)
       .catch(this.handleError);
@@ -41,7 +48,14 @@ class Api {
   async put(url: string, data: any) {
     this.checkAuthToken();
 
-    return await this.instance
+    return await axios
+      .create({
+        baseURL: BASE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
       .put(url, data)
       .then(this.handleResponse)
       .catch(this.handleError);
@@ -50,7 +64,14 @@ class Api {
   async delete(url: string) {
     this.checkAuthToken();
 
-    return await this.instance
+    return await axios
+      .create({
+        baseURL: BASE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
       .delete(url)
       .then(this.handleResponse)
       .catch(this.handleError);
@@ -65,7 +86,7 @@ class Api {
     console.error('Error:', err);
   }
 
-  private checkAuthToken = async () => {
+  private async checkAuthToken() {
     try {
       const cognitoUser = await Auth.currentAuthenticatedUser();
       const currentSession = await Auth.currentSession();
@@ -81,7 +102,7 @@ class Api {
     } catch (error) {
       console.error('Unable to refresh Token', error);
     }
-  };
+  }
 }
 
 export default new Api();
