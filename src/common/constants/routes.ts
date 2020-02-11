@@ -11,6 +11,7 @@ enum Routes {
   EVENT_DETAILS = '/event/event-details/:eventId?',
   FACILITIES = '/event/facilities/:eventId?',
   REGISTRATION = '/event/registration/:eventId?',
+  REGISTRATION_EDIT = '/event/registration-edit/:eventId?',
   DIVISIONS_AND_POOLS = '/event/divisions-and-pools/:eventId?',
   TEAMS = '/event/teams/:eventId?',
   SCHEDULING = '/event/scheduling/:eventId?',
