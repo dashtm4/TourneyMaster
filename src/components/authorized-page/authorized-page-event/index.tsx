@@ -10,6 +10,7 @@ import styles from '../styles.module.scss';
 import EventDetails from '../../event-details';
 import Registration from '../../registration-view';
 import { RouteComponentProps } from 'react-router-dom';
+import RegistrationEdit from '../../registration-edit';
 
 interface MatchParams {
   eventId?: string;
@@ -26,6 +27,7 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
           <Route path={Routes.FACILITIES} component={Facilities} />
           <Route path={Routes.REGISTRATION} component={Registration} />
           <Route path={Routes.SCORING} component={Sсoring} />
+          <Route path={Routes.REGISTRATION_EDIT} component={RegistrationEdit} />
           <Route path={Routes.DEFAULT} component={EventDetails} />
         </Switch>
       </main>

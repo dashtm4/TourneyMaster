@@ -3,6 +3,7 @@ import Amplify from 'aws-amplify';
 export default () => {
   Amplify.configure({
     Auth: {
+      identityPoolId: process.env.REACT_APP_AWS_IDENTITY_POOL_ID,
       mandatorySignId: true,
       region: process.env.REACT_APP_AWS_REGION,
       userPoolId: process.env.REACT_APP_AWS_USER_POOL_ID,
@@ -13,6 +14,11 @@ export default () => {
         redirectSignOut: 'http://localhost:3000/',
         responseType: 'code',
       },
+    },
+    Storage: {
+      bucket: 'tourneymaster',
+      region: process.env.REACT_APP_AWS_REGION,
+      identityPoolId: process.env.REACT_APP_AWS_IDENTITY_POOL_ID,
     },
   });
 };
