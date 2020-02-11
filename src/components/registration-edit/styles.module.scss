@@ -14,7 +14,7 @@
 .mainMenu {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding-right: 25px;
 }
 .heading {
@@ -39,14 +39,16 @@
     width: 191px;
     color: #6a6a6a;
     margin-bottom: 32px;
-    &:last-of-type {
-      margin-bottom: 0;
-    }
-    p {
-      margin-top: 4px;
-    }
   }
-  .sectionTitle {
+  .sectionLabel {
+    font-size: 16px;
     font-weight: 600;
+    color: #6a6a6a;
+    margin-bottom: 7px;
+    white-space: nowrap;
+  }
+  .divisionLink {
+    color: #11a8ea;
+    text-decoration: none;
   }
 }
