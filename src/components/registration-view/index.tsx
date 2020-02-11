@@ -46,7 +46,7 @@ const RegistrationView = (props: any) => {
   return (
     <section>
       <Paper>
-        <div className={styles['main-menu']}>
+        <div className={styles.mainMenu}>
           <Button label="+ Add to Library" variant="text" color="secondary" />
           <Button
             label="Edit"
@@ -56,7 +56,7 @@ const RegistrationView = (props: any) => {
           />
         </div>
       </Paper>
-      <div className={styles['section-container']}>
+      <div className={styles.sectionContainer}>
         <div className={styles.heading}>
           <HeadingLevelTwo>Registration</HeadingLevelTwo>
         </div>
