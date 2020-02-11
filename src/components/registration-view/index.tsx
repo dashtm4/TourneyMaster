@@ -35,40 +35,54 @@ const mainContact = {
   permissionToText: 'No',
 };
 
-const RegistrationView = () => (
-  <section>
-    <Paper>
-      <div className={styles['main-menu']}>
-        <Button label="+ Add to Library" variant="text" color="secondary" />
-        <Button label="Edit" variant="contained" color="primary" />
+const RegistrationView = (props: any) => {
+  const onRegistrationEdit = () => {
+    const eventId = props.match.params.eventId;
+    const path = eventId
+      ? `/event/registration-edit/${eventId}`
+      : '/event/registration-edit';
+    props.history.push(path);
+  };
+  return (
+    <section>
+      <Paper>
+        <div className={styles.mainMenu}>
+          <Button label="+ Add to Library" variant="text" color="secondary" />
+          <Button
+            label="Edit"
+            variant="contained"
+            color="primary"
+            onClick={onRegistrationEdit}
+          />
+        </div>
+      </Paper>
+      <div className={styles.sectionContainer}>
+        <div className={styles.heading}>
+          <HeadingLevelTwo>Registration</HeadingLevelTwo>
+        </div>
+        <ul className={styles.libraryList}>
+          <li>
+            <SectionDropdown type="section" padding="0">
+              <span>Primary Information</span>
+              <PrimaryInformation data={primaryInformation} />
+            </SectionDropdown>
+          </li>
+          <li>
+            <SectionDropdown type="section" padding="0">
+              <span>Teams & Athletes</span>
+              <TeamsAthletesInfo data={teamsInfo} />
+            </SectionDropdown>
+          </li>
+          <li>
+            <SectionDropdown type="section" padding="0">
+              <span>Main Contact</span>
+              <MainContact data={mainContact} />
+            </SectionDropdown>
+          </li>
+        </ul>
       </div>
-    </Paper>
-    <div className={styles['section-container']}>
-      <div className={styles.heading}>
-        <HeadingLevelTwo>Registration</HeadingLevelTwo>
-      </div>
-      <ul className={styles.libraryList}>
-        <li>
-          <SectionDropdown type="section" padding="0">
-            <span>Primary Information</span>
-            <PrimaryInformation data={primaryInformation} />
-          </SectionDropdown>
-        </li>
-        <li>
-          <SectionDropdown type="section" padding="0">
-            <span>Teams & Athletes</span>
-            <TeamsAthletesInfo data={teamsInfo} />
-          </SectionDropdown>
-        </li>
-        <li>
-          <SectionDropdown type="section" padding="0">
-            <span>Main Contact</span>
-            <MainContact data={mainContact} />
-          </SectionDropdown>
-        </li>
-      </ul>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export default RegistrationView;
