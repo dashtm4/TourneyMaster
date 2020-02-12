@@ -59,25 +59,41 @@ const saveFacilities: ActionCreator<ThunkAction<
   null,
   FacilitiesAction
 >> = (facilities: IFacility[]) => async (dispatch: Dispatch) => {
-  const savedFacilities = facilities.filter(it => {
+  const editedFacilities = facilities.filter(it => {
     const isChange = it.isChange;
 
+    if (it.isNew) return false;
+
     delete it.isChange;
+    delete it.isNew;
 
     return isChange;
   });
 
-  if (savedFacilities.length === 0) return;
+  const newFacilities = facilities.filter(it => {
+    const isNew = it.isNew;
+
+    delete it.isChange;
+    delete it.isNew;
+
+    return isNew;
+  });
+
+  if (editedFacilities.length === 0 && newFacilities.length === 0) return;
 
   try {
-    for await (let facility of savedFacilities) {
+    for await (let facility of editedFacilities) {
+      Api.put(`/facilities?facilities_id=${facility.facilities_id}`, facility);
+    }
+
+    for await (let facility of newFacilities) {
       Api.post('/facilities', facility);
     }
 
     dispatch({
       type: SAVE_FACILITIES + SUCCESS,
     });
-  } catch {
+  } catch (e) {
     dispatch({
       type: SAVE_FACILITIES + FAILURE,
     });

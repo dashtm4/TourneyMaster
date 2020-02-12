@@ -22,17 +22,27 @@ const setStyleOnType = (type?: DropdownType) =>
         background: 'transparent',
         boxShadow: 'none',
       }
-    : {};
+    : {
+        background: '#F4F4F4',
+        boxShadow: '0 1px 10px 0 rgba(0,0,0,0.1)',
+      };
+
+const setExpandIcon = (type?: DropdownType) =>
+  type && type === 'section' ? (
+    <ExpandMoreIcon />
+  ) : (
+    <ExpandMoreIcon color="primary" fontSize="large" />
+  );
 
 const setPanelSummaryStyle = (type?: DropdownType) =>
   type && type === 'section' ? { paddingLeft: 0 } : {};
 
 const SectionDropdown = ({ children, padding, type }: Props) => (
-  <section className={styles.section}>
+  <section className={type === 'section' ? styles.section : styles.block}>
     <ExpansionPanel style={setStyleOnType(type)}>
       <ExpansionPanelSummary
         style={setPanelSummaryStyle(type)}
-        expandIcon={<ExpandMoreIcon />}
+        expandIcon={setExpandIcon(type)}
         aria-controls="panel1a-content"
         id="panel1a-header"
       >

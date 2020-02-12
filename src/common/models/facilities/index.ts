@@ -3,6 +3,7 @@ export interface IFacilityField {
 }
 
 export interface IFacility {
+  isNew?: boolean;
   isChange?: boolean;
   event_id: string;
   facilities_id: string;
