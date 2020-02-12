@@ -11,6 +11,7 @@ import './styles.scss';
 
 interface State {
   isSignUpOpen: boolean;
+  user: any;
 }
 
 const FormSignUpWrapped = WithEditingForm(FormSignUp);
@@ -22,7 +23,20 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
 
     this.state = {
       isSignUpOpen: false,
+      user: false,
     };
+  }
+
+  componentDidMount() {
+    Auth.currentAuthenticatedUser().then(user => {
+      const userToken = user.signInUserSession.idToken.jwtToken;
+
+      if (userToken) {
+        localStorage.setItem('token', userToken);
+
+        this.props.history.push('/dashboard');
+      }
+    });
   }
 
   onSignToggle = () => {
@@ -50,13 +64,11 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
     });
   };
 
-  onGoogleSignIn = () => {
+  onGoogleLogin = () => {
     Auth.federatedSignIn({
       provider: CognitoHostedUIIdentityProvider.Google,
     });
   };
-
-  onGoogleSignUp = async () => {};
 
   render() {
     const { isSignUpOpen } = this.state;
@@ -69,11 +81,11 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
         >
           <FormSignUpWrapped
             onRegistrationSubmit={this.onRegistrationSubmit}
-            onGoogleSignUp={this.onGoogleSignUp}
+            onGoogleLogin={this.onGoogleLogin}
           />
           <FormSignInWrapped
             onAuthSubmit={this.onAuthSubmit}
-            onGoogleSignIn={this.onGoogleSignIn}
+            onGoogleLogin={this.onGoogleLogin}
           />
           <div className="sign-form__overlay">
             <div className="sign-form__overlay-wrapper">

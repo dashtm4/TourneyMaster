@@ -24,7 +24,7 @@ interface Props {
   saveFacilities: BindingCbWithOne<IFacility[]>;
 }
 
-class Facilities extends React.Component<Props, any> {
+class Facilities extends React.Component<Props> {
   componentDidMount() {
     const { loadFacilities } = this.props;
 

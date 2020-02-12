@@ -1,7 +1,7 @@
-import { Auth } from 'aws-amplify';
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import { Auth } from 'aws-amplify';
+import { getToken } from './api.helpers';
 
-const USER_TOKEN = localStorage.getItem('token');
 const BASE_URL = 'https://api.tourneymaster.org/v1';
 
 class Api {
@@ -10,48 +10,59 @@ class Api {
 
   constructor() {
     this.baseUrl = BASE_URL;
-
     this.instance = axios.create({
       baseURL: BASE_URL,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${USER_TOKEN}`,
       },
     });
   }
 
   async get(url: string, params?: any) {
-    this.checkAuthToken();
+    await this.checkAuthToken();
 
     return await this.instance
-      .get(url, { params })
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+        params,
+      })
       .then(this.handleResponse)
       .catch(this.handleError);
   }
 
   async post(url: string, data: any) {
-    this.checkAuthToken();
-
     return await this.instance
-      .post(url, data)
+      .post(url, {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+        data,
+      })
       .then(this.handleResponse)
       .catch(this.handleError);
   }
 
   async put(url: string, data: any) {
-    this.checkAuthToken();
-
     return await this.instance
-      .put(url, data)
+      .put(url, {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+        data,
+      })
       .then(this.handleResponse)
       .catch(this.handleError);
   }
 
   async delete(url: string) {
-    this.checkAuthToken();
-
     return await this.instance
-      .delete(url)
+      .delete(url, {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+      })
       .then(this.handleResponse)
       .catch(this.handleError);
   }
@@ -65,7 +76,7 @@ class Api {
     console.error('Error:', err);
   }
 
-  private checkAuthToken = async () => {
+  private async checkAuthToken() {
     try {
       const cognitoUser = await Auth.currentAuthenticatedUser();
       const currentSession = await Auth.currentSession();
@@ -81,7 +92,7 @@ class Api {
     } catch (error) {
       console.error('Unable to refresh Token', error);
     }
-  };
+  }
 }
 
 export default new Api();

@@ -16,7 +16,7 @@ interface Props {
   email: string;
   password: string;
   onChange: BindingAction;
-  onGoogleSignUp: BindingAction;
+  onGoogleLogin: BindingAction;
   onRegistrationSubmit: BindingCbWithThree<string, string, string>;
 }
 
@@ -25,7 +25,7 @@ const FormSignUp = ({
   email,
   password,
   onChange,
-  onGoogleSignUp,
+  onGoogleLogin,
   onRegistrationSubmit,
 }: Props) => (
   <form
@@ -40,7 +40,7 @@ const FormSignUp = ({
     <h2 className={styles.loginTitle}>Create Account</h2>
     <button
       className={styles.googleButton}
-      onClick={onGoogleSignUp}
+      onClick={onGoogleLogin}
       type="button"
     >
       Sign in with Google
