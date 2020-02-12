@@ -26,7 +26,11 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
           <Route path={Routes.EVENT_DETAILS} component={EventDetails} />
           <Route path={Routes.FACILITIES} component={Facilities} />
           <Route path={Routes.REGISTRATION} component={Registration} />
-          <Route path={Routes.SCORING} component={Sсoring} />
+          <Route
+            path={Routes.SCORING}
+            eventId={props.match.params.eventId}
+            component={Sсoring}
+          />
           <Route path={Routes.REGISTRATION_EDIT} component={RegistrationEdit} />
           <Route path={Routes.DEFAULT} component={EventDetails} />
         </Switch>

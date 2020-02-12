@@ -5,7 +5,7 @@ import styles from './styles.module.scss';
 
 const ScoringItem = () => (
   <li>
-    <SectionDropdown isDefaultExpanded={true}>
+    <SectionDropdown isDefaultExpanded={true} headingColor={'#1C315F'}>
       <span>Men’s Spring Thaw (Division: 2020, 2021)</span>
       <div>
         <ul className={styles.statisticList}>
@@ -24,6 +24,7 @@ const ScoringItem = () => (
           </li>
         </ul>
         <ul className={styles.groupList}>
+          <GroupItem />
           <GroupItem />
         </ul>
       </div>

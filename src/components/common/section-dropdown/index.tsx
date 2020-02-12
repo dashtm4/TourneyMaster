@@ -15,6 +15,7 @@ interface Props {
   padding?: string;
   type?: DropdownType;
   isDefaultExpanded?: boolean;
+  headingColor?: string;
 }
 
 const setStyleOnType = (type?: DropdownType) => {
@@ -39,6 +40,7 @@ const SectionDropdown = ({
   children,
   padding,
   type,
+  headingColor,
   isDefaultExpanded,
 }: Props) => (
   <section className={styles.section}>
@@ -52,7 +54,9 @@ const SectionDropdown = ({
         aria-controls="panel1a-content"
         id="panel1a-header"
       >
-        <HeadeingLevelThree>{children[0]}</HeadeingLevelThree>
+        <HeadeingLevelThree color={headingColor}>
+          {children[0]}
+        </HeadeingLevelThree>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails style={{ padding }}>
         {children[1]}
