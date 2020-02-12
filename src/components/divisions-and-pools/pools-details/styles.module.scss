@@ -1,0 +1,27 @@
+.headingContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 16px 0;
+  .title {
+    font-size: 21px;
+    font-weight: 600;
+    color: #1c315f;
+    align-self: center;
+  }
+}
+.poolsContainer {
+  display: flex;
+  flex-direction: row;
+  ul {
+    padding: 0;
+  }
+  .pool {
+    width: 33%;
+    color: #6a6a6a;
+    .poolTitle {
+      font-weight: 600;
+      padding-bottom: 6px;
+    }
+  }
+}

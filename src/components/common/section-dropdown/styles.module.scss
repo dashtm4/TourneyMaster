@@ -4,6 +4,10 @@
   border-top: 1px solid #d1d1d1;
 }
 
+:local(.block) {
+  min-width: 450px;
+}
+
 :local(.headerWrapper) {
   display: flex;
   justify-content: space-between;
