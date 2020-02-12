@@ -9,7 +9,6 @@ import DivisionDetails from './division-details';
 import PoolsDetails from './pools-details';
 import CreateIcon from '@material-ui/icons/Create';
 import { getDivisions } from './logic/actions';
-import ColorPicker from '../common/color-picker';
 
 const divisionData = {
   long_name: '2020',
@@ -73,7 +72,6 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
               </li>
             ))}
           </ul>
-          <ColorPicker />
         </div>
       </section>
     );
