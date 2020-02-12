@@ -1,4 +1,4 @@
-:local(.navWrapper) {
+.navWrapper {
   display: flex;
   justify-content: flex-end;
 
@@ -13,11 +13,11 @@
   box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.1);
 }
 
-:local(.headingWrapper) {
+.headingWrapper {
   margin-bottom: 25px;
 }
 
-:local(.scoringList) {
+.scoringList {
   margin: 25px 0 0;
   padding: 0;
 
