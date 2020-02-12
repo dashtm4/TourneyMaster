@@ -34,11 +34,10 @@ class Api {
 
   async post(url: string, data: any) {
     return await this.instance
-      .post(url, {
+      .post(url, data, {
         headers: {
           Authorization: `Bearer ${await getToken()}`,
         },
-        data,
       })
       .then(this.handleResponse)
       .catch(this.handleError);
@@ -46,11 +45,10 @@ class Api {
 
   async put(url: string, data: any) {
     return await this.instance
-      .put(url, {
+      .put(url, data, {
         headers: {
           Authorization: `Bearer ${await getToken()}`,
         },
-        data,
       })
       .then(this.handleResponse)
       .catch(this.handleError);
