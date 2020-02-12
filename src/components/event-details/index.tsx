@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import {
   getEventDetails,
   saveEventDetails,
+  createEvent,
   uploadFiles,
 } from './logic/actions';
 import { EventDetailsDTO, IIconFile } from './logic/model';
@@ -17,30 +18,35 @@ import PlayoffsSection from './playoffs';
 
 import { Button, HeadingLevelTwo, Paper } from 'components/common';
 import styles from './styles.module.scss';
+import { eventState } from './state';
 
 interface IMapStateProps {
   event: IAppState;
 }
 
 interface Props extends IMapStateProps {
+  match: any;
   getEventDetails: (eventId: string) => void;
   saveEventDetails: (event: Partial<EventDetailsDTO>) => void;
+  createEvent: (event: Partial<EventDetailsDTO>) => void;
   uploadFiles: (files: IIconFile[]) => void;
 }
 
 type State = {
+  eventId: string | undefined;
   event?: Partial<EventDetailsDTO>;
   error: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
   state: State = {
+    eventId: undefined,
     event: undefined,
     error: false,
   };
 
   async componentDidMount() {
-    this.props.getEventDetails('ABC123');
+    this.checkEventExistence();
   }
 
   static getDerivedStateFromProps(
@@ -56,6 +62,20 @@ class EventDetails extends Component<Props, State> {
     return null;
   }
 
+  checkEventExistence = () => {
+    const { eventId } = this.props.match?.params;
+
+    if (eventId) {
+      this.setState({ eventId });
+      this.props.getEventDetails(eventId);
+      return;
+    }
+
+    this.setState({
+      event: eventState(),
+    });
+  };
+
   onChange = (name: string, value: any) => {
     this.setState(({ event }) => ({
       event: {
@@ -70,10 +90,15 @@ class EventDetails extends Component<Props, State> {
   };
 
   onSave = () => {
-    const { event } = this.state;
-    if (event) {
+    const { event, eventId } = this.state;
+    if (!event) return;
+
+    if (eventId) {
       this.props.saveEventDetails(event);
+      return;
     }
+
+    this.props.createEvent(event);
   };
 
   Loading = () => <div>Nice Loading...</div>;
@@ -82,8 +107,6 @@ class EventDetails extends Component<Props, State> {
     const eventTypeOptions = ['Tournament', 'Showcase'];
 
     const { event } = this.state;
-
-    console.log(event);
 
     return !event ? (
       this.Loading()
@@ -127,7 +150,12 @@ const mapStateToProps = (state: IRootState): IMapStateProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
-    { getEventDetails, saveEventDetails, uploadFiles },
+    {
+      getEventDetails,
+      saveEventDetails,
+      createEvent,
+      uploadFiles,
+    },
     dispatch
   );
 

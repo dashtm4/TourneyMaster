@@ -33,6 +33,13 @@ const setStyleOnType = (type?: DropdownType) => {
   }
 };
 
+const setExpandIcon = (type?: DropdownType) =>
+  type && type === 'section' ? (
+    <ExpandMoreIcon />
+  ) : (
+    <ExpandMoreIcon color="primary" fontSize="large" />
+  );
+
 const setPanelSummaryStyle = (type?: DropdownType) =>
   type && type === 'section' ? { paddingLeft: 0 } : {};
 
@@ -50,7 +57,7 @@ const SectionDropdown = ({
     >
       <ExpansionPanelSummary
         style={setPanelSummaryStyle(type)}
-        expandIcon={<ExpandMoreIcon />}
+        expandIcon={setExpandIcon(type)}
         aria-controls="panel1a-content"
         id="panel1a-header"
       >

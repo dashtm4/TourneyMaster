@@ -4,7 +4,7 @@ import Button from '../common/buttons/button';
 import ScoringItem from './components/scoring-Item';
 import { RouteComponentProps } from 'react-router-dom';
 import styles from './styles.module.scss';
-import Api from 'api/api';
+// import Api from 'api/api';
 
 interface MatchParams {
   eventId?: string;

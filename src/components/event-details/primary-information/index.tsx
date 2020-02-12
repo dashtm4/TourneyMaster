@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import CodeIcon from '@material-ui/icons/Code';
 
 import {
@@ -40,17 +40,16 @@ const timeZoneOptions = [
   'Pacific Standart Time',
 ];
 const genderOptions = ['Male', 'Female'];
+enum genderEnum {
+  'Male' = 1,
+  'Female' = 2,
+}
 
 const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
   onChange,
 }: Props) => {
-  useEffect(() => {
-    if (!eventData?.time_zone_utc)
-      onChange('time_zone_utc', timeZoneEnum[timeZoneOptions[0]]);
-
-    if (!eventData?.sport_id) onChange('sport_id', sportsEnum[sportOptions[0]]);
-  });
+  const { time_zone_utc, sport_id, event_startdate, event_enddate } = eventData;
 
   const onNameChange = (e: InputTargetValue) =>
     onChange('event_name', e.target.value);
@@ -60,6 +59,9 @@ const PrimaryInformationSection: React.FC<Props> = ({
 
   const onSportChange = (e: InputTargetValue) =>
     onChange('sport_id', sportsEnum[e.target.value]);
+
+  const onGenderChange = (e: InputTargetValue) =>
+    onChange('gender_id', genderEnum[e.target.value]);
 
   const onStartDate = (e: Date | string) =>
     !isNaN(Number(e)) && onChange('event_startdate', new Date(e).toISOString());
@@ -101,7 +103,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             width="161px"
             options={sportOptions}
             label="Sport"
-            value={sportsEnum[eventData.sport_id!]}
+            value={sport_id ? sportsEnum[sport_id!] : ''}
             onChange={onSportChange}
           />
           <Select
@@ -109,6 +111,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             options={genderOptions}
             label="Gender"
             value={genderOptions[0]}
+            onChange={onGenderChange}
           />
         </div>
         <div className={styles.piDetailsSecond}>
@@ -116,21 +119,21 @@ const PrimaryInformationSection: React.FC<Props> = ({
             width="160px"
             label="Start Date"
             type="date"
-            value={eventData.event_startdate}
+            value={event_startdate}
             onChange={onStartDate}
           />
           <DatePicker
             width="161px"
             label="End Date"
             type="date"
-            value={eventData.event_enddate}
+            value={event_enddate}
             onChange={onEndDate}
           />
           <Select
             width="256px"
             options={timeZoneOptions}
             label="Time Zone"
-            value={timeZoneEnum[eventData.time_zone_utc!]}
+            value={time_zone_utc ? timeZoneEnum[time_zone_utc!] : ''}
             onChange={onTimeZone}
           />
         </div>
