@@ -1,5 +1,5 @@
 import React from 'react';
-import { Props } from '../../index';
+import { Props } from '../../';
 
 interface State {
   activeColor: string;
