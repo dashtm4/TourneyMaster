@@ -8,7 +8,7 @@ interface IButtonProps {
   variant: 'text' | 'outlined' | 'contained' | undefined;
   type?: 'squared' | 'danger' | 'squaredOutlined';
   icon?: any;
-  onClick?: any;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 const Button: React.FC<IButtonProps> = ({
