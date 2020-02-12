@@ -66,7 +66,7 @@ const FormSignIn = ({
       />
       <span className="visually-hidden">Password</span>
     </label>
-    <span className={styles.forgotPassword}>Forgot your password?</span>
+    {/* <span className={styles.forgotPassword}>Forgot your password?</span> */}
     <button className={styles.signIn} type="submit">
       Sign In
     </button>
