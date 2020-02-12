@@ -6,14 +6,21 @@ import { RouteComponentProps } from 'react-router-dom';
 import styles from './styles.module.scss';
 // import Api from 'api/api';
 
+import Modal from '../common/modal';
+
 interface MatchParams {
   eventId?: string;
 }
 
 interface Props {}
 
+interface State {
+  isModalOpen: boolean;
+}
+
 class Sсoring extends React.Component<
-  Props & RouteComponentProps<MatchParams>
+  Props & RouteComponentProps<MatchParams>,
+  State
 > {
   // async componentDidMount() {
   //   const eventId = this.props.match.params.eventId;
@@ -23,9 +30,23 @@ class Sсoring extends React.Component<
   //   console.log(game);
   // }
 
+  constructor(props: Props & RouteComponentProps<MatchParams>) {
+    super(props);
+
+    this.state = {
+      isModalOpen: false,
+    };
+  }
+
+  onToggleModal = () =>
+    this.setState(({ isModalOpen }) => ({ isModalOpen: !isModalOpen }));
+
   render() {
+    const { isModalOpen } = this.state;
+
     return (
       <section>
+        <button onClick={this.onToggleModal}>open modal</button>
         <p className={styles.navWrapper}>
           <Button label="Record Scores" variant="contained" color="primary" />
         </p>
@@ -35,6 +56,10 @@ class Sсoring extends React.Component<
             <ScoringItem />
           </ul>
         </div>
+
+        <Modal isOpen={isModalOpen} onClose={this.onToggleModal}>
+          <p>1</p>
+        </Modal>
       </section>
     );
   }
