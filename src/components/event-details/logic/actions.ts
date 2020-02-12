@@ -11,6 +11,7 @@ import {
 
 import api from 'api/api';
 import { EventDetailsDTO, IIconFile } from './model';
+import { requiredFieldsNotEmpty } from '../state';
 import { Toasts } from 'components/common';
 
 export const eventDetailsFetchSuccess = (
@@ -43,12 +44,39 @@ export const saveEventDetails: ActionCreator<ThunkAction<
   {},
   null,
   EventDetailsAction
->> = (eventDetails: EventDetailsDTO) => async (/* dispatch: Dispatch */) => {
-  const response = await api.post(`/events`, eventDetails);
+>> = (eventDetails: EventDetailsDTO) => async () => {
+  const allRequiredFields = requiredFieldsNotEmpty(eventDetails);
 
-  if (response?.errorType === 'Error') {
+  if (!allRequiredFields)
+    return Toasts.errorToast('All required fields must be filled');
+
+  const response = await api.put(
+    `/events?event_id=${eventDetails.event_id}`,
+    eventDetails
+  );
+
+  if (response?.errorType !== undefined) {
     return Toasts.errorToast("Couldn't save the changes");
   }
+
+  Toasts.successToast('Changes successfully saved');
+};
+
+export const createEvent: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  EventDetailsAction
+>> = (eventDetails: EventDetailsDTO) => async () => {
+  const allRequiredFields = requiredFieldsNotEmpty(eventDetails);
+
+  if (!allRequiredFields)
+    return Toasts.errorToast('All required fields must be filled');
+
+  const response = await api.post('/events', eventDetails);
+
+  if (response?.errorType !== undefined)
+    return Toasts.errorToast("Couldn't save the changes");
 
   Toasts.successToast('Changes successfully saved');
 };
