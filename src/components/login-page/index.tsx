@@ -1,6 +1,6 @@
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Auth } from 'aws-amplify';
+import { Auth, Hub } from 'aws-amplify';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth/lib/types';
 import WithEditingForm from './hocs/withEditingForm';
 import FormSignUp from './components/form-sign-up';
@@ -11,7 +11,6 @@ import './styles.scss';
 
 interface State {
   isSignUpOpen: boolean;
-  user: any;
 }
 
 const FormSignUpWrapped = WithEditingForm(FormSignUp);
@@ -23,18 +22,21 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
 
     this.state = {
       isSignUpOpen: false,
-      user: false,
     };
   }
 
   componentDidMount() {
-    Auth.currentAuthenticatedUser().then(user => {
-      const userToken = user.signInUserSession.idToken.jwtToken;
+    Hub.listen('auth', async ({ payload: { event, data } }) => {
+      switch (event) {
+        case 'signIn':
+          const user = await data;
+          const userToken = await data.signInUserSession.idToken.jwtToken;
 
-      if (userToken) {
-        localStorage.setItem('token', userToken);
+          if (user && userToken) {
+            localStorage.setItem('token', userToken);
 
-        this.props.history.push('/dashboard');
+            this.props.history.push('/dashboard');
+          }
       }
     });
   }
