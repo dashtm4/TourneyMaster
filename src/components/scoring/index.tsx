@@ -39,7 +39,7 @@ class Sсoring extends React.Component<
     super(props);
 
     this.state = {
-      isModalOpen: true,
+      isModalOpen: false,
       isEdit: false,
       changeableTeam: teams[0],
     };
@@ -49,7 +49,7 @@ class Sсoring extends React.Component<
     this.setState({ changeableTeam: null, isModalOpen: false, isEdit: false });
 
   onEditTeam = () => {
-    this.setState({ isEdit: true });
+    this.setState({ isModalOpen: true, isEdit: true });
   };
 
   onOpenTeamDetails = (team: ITeam) => {
