@@ -12,14 +12,18 @@ interface Props {
 const Navigation = ({ onClick }: Props) => (
   <p className={styles.wrapper}>
     <span className={styles.linkWrapper}>
-      <a href="#" className={styles.loadLink}>
-        <GetAppIcon />
-        Load From Library
-      </a>
-      <a href="#" className={styles.uploadLink}>
-        <PublishIcon />
-        Upload From File
-      </a>
+      <Button
+        icon={<GetAppIcon />}
+        label="Load From Library"
+        variant="text"
+        color="secondary"
+      />
+      <Button
+        icon={<PublishIcon />}
+        label="Upload From File"
+        variant="text"
+        color="secondary"
+      />
     </span>
     <Button
       onClick={onClick}

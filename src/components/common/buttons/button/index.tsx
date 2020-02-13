@@ -6,7 +6,7 @@ interface IButtonProps {
   label: string;
   color: 'primary' | 'secondary' | 'inherit' | 'default' | undefined;
   variant: 'text' | 'outlined' | 'contained' | undefined;
-  type?: 'squared' | 'danger' | 'squaredOutlined';
+  type?: 'squared' | 'danger' | 'squaredOutlined' | undefined;
   icon?: JSX.Element;
   onClick?: (e: React.MouseEvent) => void;
 }
