@@ -1,12 +1,15 @@
 import React from 'react';
+import TeamDetailsPopup from './components/team-details-popup';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Button from '../common/buttons/button';
+import Modal from '../common/modal';
 import ScoringItem from './components/scoring-Item';
 import { RouteComponentProps } from 'react-router-dom';
 import styles from './styles.module.scss';
+import { ITeam } from '../../common/models/teams';
 // import Api from 'api/api';
 
-import Modal from '../common/modal';
+import { teams } from './mocks/teams';
 
 interface MatchParams {
   eventId?: string;
@@ -15,7 +18,9 @@ interface MatchParams {
 interface Props {}
 
 interface State {
+  changeableTeam: ITeam | null;
   isModalOpen: boolean;
+  isEdit: boolean;
 }
 
 class Sсoring extends React.Component<
@@ -34,31 +39,39 @@ class Sсoring extends React.Component<
     super(props);
 
     this.state = {
-      isModalOpen: false,
+      isModalOpen: true,
+      isEdit: false,
+      changeableTeam: teams[0],
     };
   }
 
-  onToggleModal = () =>
-    this.setState(({ isModalOpen }) => ({ isModalOpen: !isModalOpen }));
+  onCloseModal = () =>
+    this.setState({ changeableTeam: null, isModalOpen: false, isEdit: false });
+
+  onEditTeam = () => {
+    this.setState({ isEdit: true });
+  };
+
+  onOpenTeamDetails = (team: ITeam) => {
+    this.setState({ isModalOpen: true, changeableTeam: team });
+  };
 
   render() {
-    const { isModalOpen } = this.state;
+    const { isModalOpen, changeableTeam } = this.state;
 
     return (
       <section>
-        <button onClick={this.onToggleModal}>open modal</button>
         <p className={styles.navWrapper}>
           <Button label="Record Scores" variant="contained" color="primary" />
         </p>
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>Scoring</HeadingLevelTwo>
           <ul className={styles.scoringList}>
-            <ScoringItem />
+            <ScoringItem onOpenTeamDetails={this.onOpenTeamDetails} />
           </ul>
         </div>
-
-        <Modal isOpen={isModalOpen} onClose={this.onToggleModal}>
-          <p>1</p>
+        <Modal isOpen={isModalOpen} onClose={this.onCloseModal}>
+          <TeamDetailsPopup team={changeableTeam} />
         </Modal>
       </section>
     );

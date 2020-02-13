@@ -1,4 +1,4 @@
-export interface ITeams {
+export interface ITeam {
   team_id: string;
   event_id: string;
   org_id: number;
