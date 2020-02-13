@@ -56,7 +56,10 @@ const SectionDropdown = ({
       defaultExpanded={isDefaultExpanded}
     >
       <ExpansionPanelSummary
-        style={setPanelSummaryStyle(type)}
+        style={{
+          borderTop: '1px solid #d1d1d1',
+          ...setPanelSummaryStyle(type),
+        }}
         expandIcon={setExpandIcon(type)}
         aria-controls="panel1a-content"
         id="panel1a-header"
