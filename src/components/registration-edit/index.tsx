@@ -104,7 +104,11 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
           </div>
           <ul className={styles.libraryList}>
             <li>
-              <SectionDropdown type="section" padding="0">
+              <SectionDropdown
+                type="section"
+                padding="0"
+                isDefaultExpanded={true}
+              >
                 <span>Primary Information</span>
                 <PrimaryInformation
                   data={primaryInformation}
@@ -113,13 +117,21 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
               </SectionDropdown>
             </li>
             <li>
-              <SectionDropdown type="section" padding="0">
+              <SectionDropdown
+                type="section"
+                padding="0"
+                isDefaultExpanded={true}
+              >
                 <span>Teams & Athletes</span>
                 <TeamsAthletesInfo data={teamsInfo} onChange={this.onChange} />
               </SectionDropdown>
             </li>
             <li>
-              <SectionDropdown type="section" padding="0">
+              <SectionDropdown
+                type="section"
+                padding="0"
+                isDefaultExpanded={true}
+              >
                 <span>Main Contact</span>
                 <MainContact data={mainContact} onChange={this.onChange} />
               </SectionDropdown>

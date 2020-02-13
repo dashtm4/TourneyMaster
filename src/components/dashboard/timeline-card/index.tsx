@@ -32,7 +32,12 @@ const TimelineCard = ({ data }: any) => (
             <div className={styles.notificationMessage}>
               <div>
                 {event.message}
-                <a className={styles.messageLink}>{event.link}</a>
+                <a
+                  href={process.env.REACT_APP_REDIRECT_URL}
+                  className={styles.messageLink}
+                >
+                  {event.link}
+                </a>
               </div>
               <div className={styles.additionalMessage}>{event.date}</div>
             </div>

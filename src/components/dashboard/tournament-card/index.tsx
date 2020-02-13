@@ -17,6 +17,7 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
   const onTournamentManage = () => {
     history.push(`event/event-details/${event.event_id}`);
   };
+
   const startDate = moment(event.event_startdate).format('DD.MM.YYYY');
   const endDate = moment(event.event_enddate).format('DD.MM.YYYY');
   return (
@@ -25,6 +26,7 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
         <div className={styles.tournamentHeader}>
           <div className={styles.cardImage}>
             <img
+              alt="logo"
               src={
                 event.event_logo_path === 'logopath'
                   ? tournamentLogoExample

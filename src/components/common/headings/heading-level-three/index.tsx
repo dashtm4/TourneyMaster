@@ -4,10 +4,15 @@ import styles from './styles.module.scss';
 
 interface Props {
   children: React.ReactElement;
+  color?: string;
 }
 
-const HeadeingLevelThree = ({ children }: Props) => (
-  <Typography className={styles.heading} component="span">
+const HeadeingLevelThree = ({ children, color }: Props) => (
+  <Typography
+    className={styles.heading}
+    style={{ color: color }}
+    component="span"
+  >
     {children}
   </Typography>
 );

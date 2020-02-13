@@ -1,0 +1,31 @@
+.teamItem {
+  .teamItemTitle {
+    position: relative;
+
+    padding-left: 30px;
+
+    button {
+      color: #00a3ea;
+
+      background-color: transparent;
+
+      border: 0;
+
+      cursor: pointer;
+    }
+  }
+
+  .teamItemTitle::before {
+    position: absolute;
+    top: 7px;
+    left: 7px;
+
+    content: '';
+    width: 17px;
+    height: 17px;
+
+    border-radius: 50%;
+
+    background-color: #cdcfd2;
+  }
+}

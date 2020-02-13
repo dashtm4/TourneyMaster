@@ -18,7 +18,12 @@ const NotificationsCard = ({ data }: any) => (
           <div className={styles.notificationMessage}>
             <div>
               {notification.message}
-              <a className={styles.messageLink}>{notification.link}</a>
+              <a
+                href={process.env.REACT_APP_REDIRECT_URL}
+                className={styles.messageLink}
+              >
+                {notification.link}
+              </a>
             </div>
             <div className={styles.additionalMessage}>{notification.date}</div>
           </div>

@@ -18,6 +18,7 @@ const FileUpload: React.FC<IProps> = ({ onUpload }) => {
   const onDrop = useCallback((uploadedFiles: File[]) => {
     setFiles(uploadedFiles);
     onUpload(uploadedFiles);
+    // eslint-disable-next-line
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
