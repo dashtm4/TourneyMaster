@@ -1,0 +1,31 @@
+.groupItem {
+  width: 370px;
+}
+
+.groupTable {
+  color: #6a6a6a;
+
+  width: 350px;
+  margin: 0 -15px;
+
+  background-color: #ffffff;
+
+  thead {
+    font-weight: bold;
+  }
+
+  td {
+    width: 40px;
+    padding: 5px 10px;
+
+    text-align: center;
+
+    border: 2px solid #f4f4f4;
+  }
+
+  tr td:first-child {
+    width: 165px;
+
+    text-align: left;
+  }
+}
