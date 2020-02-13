@@ -15,6 +15,7 @@ enum Icons {
   PLACE = 'place',
   SCORING = 'scoring',
   EDIT = 'edit',
+  DELETE = 'delete',
 }
 
 export { Icons };
