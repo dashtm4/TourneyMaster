@@ -3,6 +3,7 @@ import {
   KeyboardDatePicker,
   KeyboardTimePicker,
   MuiPickersUtilsProvider,
+  DatePickerView,
 } from '@material-ui/pickers';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
@@ -16,6 +17,8 @@ interface IDatePickerProps {
   type: string;
   width?: string;
   onChange: any;
+  views?: DatePickerView[];
+  dateFormat?: string;
 }
 
 const DatePicker: React.FC<IDatePickerProps> = ({
@@ -24,15 +27,18 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   onChange,
   type,
   width,
+  views,
+  dateFormat,
 }) => {
   const renderDatePicker = () => (
     <KeyboardDatePicker
+      views={views}
       style={{ width: width || defaultWidth }}
       variant="inline"
       size="small"
       inputVariant="outlined"
       value={value}
-      format="yyyy/MM/dd"
+      format={dateFormat || 'yyyy/MM/dd'}
       onChange={onChange}
     />
   );
