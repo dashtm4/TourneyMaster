@@ -4,7 +4,15 @@
 
     padding-left: 30px;
 
-    color: #00a3ea;
+    button {
+      color: #00a3ea;
+
+      background-color: transparent;
+
+      border: 0;
+
+      cursor: pointer;
+    }
   }
 
   .teamItemTitle::before {
