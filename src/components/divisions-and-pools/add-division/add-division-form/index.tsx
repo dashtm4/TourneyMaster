@@ -6,7 +6,12 @@ import styles from '../styles.module.scss';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
-class AddDivisionForm extends React.Component<any, any> {
+interface IAddDivisionFormState {
+  hasUniqueGameDurations: boolean;
+  hasMessage: boolean;
+}
+
+class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
   state = { hasUniqueGameDurations: false, hasMessage: true };
 
   onLongNameChange = (e: InputTargetValue) =>
@@ -30,7 +35,7 @@ class AddDivisionForm extends React.Component<any, any> {
   onDivisionMessageChange = (e: InputTargetValue) =>
     this.props.onChange('division_message', e.target.value);
 
-  onColorChange = (value: any) => this.props.onChange('division_color', value);
+  onColorChange = (value: string) => this.props.onChange('division_hex', value);
 
   onHasMessageChange = () => {
     this.setState({

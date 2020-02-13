@@ -7,12 +7,32 @@ import AddDivisionForm from './add-division-form';
 import { saveDivision } from './add-division-form/logic/actions';
 import { connect } from 'react-redux';
 
-interface IAddDivisionState {
-  division: any;
+interface IDivision {
+  long_name?: string;
+  short_name?: string;
+  division_tag?: string;
+  entry_fee?: number;
+  division_description?: string;
+  max_num_teams?: number;
+  division_message?: string;
+  division_hex?: string;
 }
 
-class AddDivision extends React.Component<any, IAddDivisionState> {
-  state = { division: { event_id: this.props.match.params.event_id } };
+interface IAddDivisionState {
+  division: IDivision;
+}
+
+interface IDivisionProps {
+  history: any;
+  saveDivision: (division: IDivision) => void;
+}
+
+class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
+  state = { division: {} };
+
+  componentDidMount() {
+    // this.props.getDivision();
+  }
 
   onChange = (name: string, value: any) => {
     this.setState(({ division }) => ({
@@ -23,8 +43,13 @@ class AddDivision extends React.Component<any, IAddDivisionState> {
     }));
   };
 
+  onCancel = () => {
+    this.props.history.goBack();
+  };
+
   onSave = () => {
     this.props.saveDivision(this.state.division);
+    this.props.history.goBack();
   };
 
   render() {
@@ -37,7 +62,7 @@ class AddDivision extends React.Component<any, IAddDivisionState> {
                 label="Cancel"
                 variant="text"
                 color="secondary"
-                // onClick={this.onCancelClick}
+                onClick={this.onCancel}
               />
               <Button
                 label="Save"

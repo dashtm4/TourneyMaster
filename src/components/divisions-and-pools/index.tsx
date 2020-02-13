@@ -43,6 +43,7 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
       : '/event/divisions-and-pools-add';
     this.props.history.push(path);
   };
+
   render() {
     return (
       <section>
