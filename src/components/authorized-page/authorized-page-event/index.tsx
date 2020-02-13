@@ -17,6 +17,10 @@ interface MatchParams {
   eventId?: string;
 }
 
+export const EmptyPage: React.FC = () => {
+  return <span> Not implemented yet</span>;
+};
+
 const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
   <>
     <Header />
@@ -37,6 +41,11 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
             path={Routes.DIVISIONS_AND_POOLS}
             component={DivisionsAndPools}
           />
+          <Route path={Routes.TEAMS} component={EmptyPage} />
+          <Route path={Routes.SCHEDULING} component={EmptyPage} />
+          <Route path={Routes.SCORING} component={EmptyPage} />
+          <Route path={Routes.REPORTING} component={EmptyPage} />
+
           <Route path={Routes.DEFAULT} component={EventDetails} />
         </Switch>
       </main>
