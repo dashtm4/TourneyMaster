@@ -6,8 +6,8 @@ import {
   ExpansionPanelDetailsWrapper,
 } from './expansion-panel-material';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import PinIcon from './icons/icon-pin-material';
-import { getIcon } from './icons';
+import { getIcon } from '../../../helpers/get-icon.helper';
+import { Icons } from '../../../common/constants/icons';
 import styles from './styles.module.scss';
 
 interface MenuItem {
@@ -82,7 +82,7 @@ class Menu extends React.Component<Props> {
           )}
         </ul>
         <button className={styles.pinBtn} onClick={this.onSetCollapsibility}>
-          <PinIcon />
+          {getIcon(Icons.PIN)}
           {this.state.isCollapsible ? 'Pin' : 'Unpin'} Menu
         </button>
       </aside>

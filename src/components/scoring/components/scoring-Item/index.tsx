@@ -2,8 +2,16 @@ import React from 'react';
 import SectionDropdown from '../../../common/section-dropdown';
 import GroupItem from '../group-item';
 import styles from './styles.module.scss';
+import { BindingCbWithOne } from '../../../../common/models/callback';
+import { ITeam } from '../../../../common/models/teams';
 
-const ScoringItem = () => (
+import { teams } from '../../mocks/teams';
+
+interface Props {
+  onOpenTeamDetails: BindingCbWithOne<ITeam>;
+}
+
+const ScoringItem = ({ onOpenTeamDetails }: Props) => (
   <li>
     <SectionDropdown isDefaultExpanded={true} headingColor={'#1C315F'}>
       <span>Men’s Spring Thaw (Division: 2020, 2021)</span>
@@ -24,8 +32,7 @@ const ScoringItem = () => (
           </li>
         </ul>
         <ul className={styles.groupList}>
-          <GroupItem />
-          <GroupItem />
+          <GroupItem teams={teams} onOpenTeamDetails={onOpenTeamDetails} />
         </ul>
       </div>
     </SectionDropdown>

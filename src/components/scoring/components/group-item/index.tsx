@@ -2,8 +2,15 @@ import React from 'react';
 import SectionDropdown from '../../../common/section-dropdown';
 import TeamItem from '../team-item';
 import styles from './styles.module.scss';
+import { BindingCbWithOne } from '../../../../common/models/callback';
+import { ITeam } from '../../../../common/models/teams';
 
-const GroupItem = () => (
+interface Props {
+  teams: ITeam[];
+  onOpenTeamDetails: BindingCbWithOne<ITeam>;
+}
+
+const GroupItem = ({ teams, onOpenTeamDetails }: Props) => (
   <li className={styles.groupItem}>
     <SectionDropdown isDefaultExpanded={true} headingColor={'#1C315F'}>
       <span>2020: East</span>
@@ -18,7 +25,9 @@ const GroupItem = () => (
           </tr>
         </thead>
         <tbody>
-          <TeamItem />
+          {teams.map(it => (
+            <TeamItem team={it} onOpenTeamDetails={onOpenTeamDetails} />
+          ))}
         </tbody>
       </table>
     </SectionDropdown>
