@@ -79,7 +79,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
     onChange('primary_location_desc', e.target.value);
 
   return (
-    <SectionDropdown type="section" padding="0">
+    <SectionDropdown type="section" padding="0" isDefaultExpanded={true}>
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Primary Information</span>
       </HeadingLevelThree>
