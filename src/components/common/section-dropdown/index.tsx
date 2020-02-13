@@ -14,18 +14,24 @@ interface Props {
   children: React.ReactElement[];
   padding?: string;
   type?: DropdownType;
+  isDefaultExpanded?: boolean;
+  headingColor?: string;
 }
 
-const setStyleOnType = (type?: DropdownType) =>
-  type && type === 'section'
-    ? {
+const setStyleOnType = (type?: DropdownType) => {
+  switch (type) {
+    case 'section':
+      return {
         background: 'transparent',
         boxShadow: 'none',
-      }
-    : {
+      };
+    default:
+      return {
         background: '#F4F4F4',
         boxShadow: '0 1px 10px 0 rgba(0,0,0,0.1)',
       };
+  }
+};
 
 const setExpandIcon = (type?: DropdownType) =>
   type && type === 'section' ? (
@@ -37,16 +43,27 @@ const setExpandIcon = (type?: DropdownType) =>
 const setPanelSummaryStyle = (type?: DropdownType) =>
   type && type === 'section' ? { paddingLeft: 0 } : {};
 
-const SectionDropdown = ({ children, padding, type }: Props) => (
-  <section className={type === 'section' ? styles.section : styles.block}>
-    <ExpansionPanel style={setStyleOnType(type)}>
+const SectionDropdown = ({
+  children,
+  padding,
+  type,
+  headingColor,
+  isDefaultExpanded,
+}: Props) => (
+  <section className={styles.section}>
+    <ExpansionPanel
+      style={setStyleOnType(type)}
+      defaultExpanded={isDefaultExpanded}
+    >
       <ExpansionPanelSummary
         style={setPanelSummaryStyle(type)}
         expandIcon={setExpandIcon(type)}
         aria-controls="panel1a-content"
         id="panel1a-header"
       >
-        <HeadeingLevelThree>{children[0]}</HeadeingLevelThree>
+        <HeadeingLevelThree color={headingColor}>
+          {children[0]}
+        </HeadeingLevelThree>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails style={{ padding }}>
         {children[1]}

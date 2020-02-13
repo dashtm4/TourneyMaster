@@ -12,4 +12,4 @@ const PinIcon = () => (
   </SvgIcon>
 );
 
-export default PinIcon;
+export { PinIcon };

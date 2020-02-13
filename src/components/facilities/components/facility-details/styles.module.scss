@@ -1,13 +1,13 @@
-:local(.form) {
+.form {
   width: 100%;
 }
 
-:local(.detailsSubtitle) {
+.detailsSubtitle {
   font-weight: 600;
   color: #6a6a6a;
 }
 
-:local(.descripWrapper) {
+.descripWrapper {
   display: flex;
   justify-content: space-between;
 
@@ -16,39 +16,14 @@
   color: #6a6a6a;
 }
 
-:local(.fromBtn) {
-  display: flex;
-  align-items: center;
-
-  color: #00a3ea;
-
-  background-color: transparent;
-
-  border: 0;
-
-  cursor: pointer;
-
-  svg {
-    fill: #00a3ea;
-  }
-}
-
-:local(.editBtn) {
-  @extend :local(.fromBtn);
-
-  &.editBtnEdit {
-    color: red;
-  }
-}
-
-:local(.nameWrapper) {
+.nameWrapper {
   display: flex;
   justify-content: space-between;
 
   margin-top: 15px;
 }
 
-:local(.filedset) {
+.filedset {
   margin: 0;
   padding: 0;
 
@@ -57,15 +32,31 @@
   legend {
     margin-bottom: 5px;
   }
+
+  &Name,
+  &Restrooms {
+    width: 75%;
+    margin-right: 20px;
+  }
+
+  &ParkingAvailable {
+    width: 33%;
+    margin-right: 15px;
+  }
+
+  &DistanceFields {
+    width: 33%;
+    margin-right: 15px;
+  }
 }
 
-:local(.fieldTitle) {
+.fieldTitle {
   font-size: 16px;
   font-weight: bold;
   color: #6a6a6a;
 }
 
-:local(.fieldList) {
+.fieldList {
   display: flex;
   flex-wrap: wrap;
 
@@ -80,40 +71,26 @@
   }
 }
 
-:local(.restroomWrapper) {
+.restroomWrapper {
   display: flex;
   justify-content: space-between;
 
   margin-bottom: 15px;
 }
 
-:local(.filedsetGolf) {
+.filedsetGolf {
   padding-top: 25px;
 }
 
-:local(.restroomDetails) {
+.restroomDetails {
   margin-bottom: 25px;
 }
 
-:local(.parkingWrapper) {
+.parkingWrapper {
   display: flex;
   justify-content: space-between;
 }
 
 :local(.parkingDetails) {
   margin-bottom: 25px;
-}
-
-:local(.mapBtn) {
-  @extend :local(.fromBtn);
-
-  &:disabled {
-    color: #6a6a6a;
-
-    cursor: default;
-
-    svg {
-      fill: #6a6a6a;
-    }
-  }
 }

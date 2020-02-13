@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   SectionDropdown,
@@ -43,6 +43,27 @@ const EventStructureSection: React.FC<Props> = ({
   eventData,
   onChange,
 }: Props) => {
+  const {
+    show_goals_scored,
+    show_goals_allowed,
+    show_goals_diff,
+    back_to_back_warning,
+    tie_breaker_format_id,
+    period_duration,
+    time_btwn_periods,
+    pre_game_warmup,
+    periods_per_game,
+    event_type,
+    min_num_of_games,
+    waivers_required,
+  } = eventData;
+
+  useEffect(() => {
+    if (!event_type) onChange('event_type', eventTypeOptions[0]);
+
+    if (!periods_per_game) onChange('periods_per_game', 2);
+  });
+
   const onEventTypeChange = (e: InputTargetValue) =>
     onChange('event_type', e.target.value);
 
@@ -82,19 +103,6 @@ const EventStructureSection: React.FC<Props> = ({
     return onChange('time_btwn_periods', timeInString);
   };
 
-  const {
-    show_goals_scored,
-    show_goals_allowed,
-    show_goals_diff,
-    back_to_back_warning,
-    tie_breaker_format_id,
-    period_duration,
-    time_btwn_periods,
-    pre_game_warmup,
-    periods_per_game,
-    waivers_required,
-  } = eventData;
-
   const resultsDisplayOptions = [
     { label: 'Show Goals Scored', checked: Boolean(show_goals_scored) },
     { label: 'Show Goals Allowed', checked: Boolean(show_goals_allowed) },
@@ -127,7 +135,7 @@ const EventStructureSection: React.FC<Props> = ({
               options={eventTypeOptions}
               formLabel="Event Type"
               onChange={onEventTypeChange}
-              checked={eventData.event_type || ''}
+              checked={event_type || ''}
             />
           </div>
           <div className={styles.column}>
@@ -135,7 +143,7 @@ const EventStructureSection: React.FC<Props> = ({
               options={timeDivisionOptions}
               formLabel="Time Division"
               onChange={onChangePeriod}
-              checked={timeDivisionEnum[eventData.periods_per_game || 2]}
+              checked={timeDivisionEnum[periods_per_game!] || ''}
             />
           </div>
           <div className={styles.column}>
@@ -150,7 +158,7 @@ const EventStructureSection: React.FC<Props> = ({
             fullWidth={true}
             type="number"
             label="Min # of Game Guarantee"
-            value={String(eventData.min_num_of_games)}
+            value={min_num_of_games || ''}
             onChange={onGameNumChange}
           />
         </div>

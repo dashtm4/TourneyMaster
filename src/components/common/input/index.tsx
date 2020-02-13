@@ -12,7 +12,7 @@ interface ITextFieldProps {
   fullWidth?: boolean;
   multiline?: boolean;
   rows?: string;
-  value?: string;
+  value?: string | number;
   width?: string;
   placeholder?: string;
   onChange?: any;
