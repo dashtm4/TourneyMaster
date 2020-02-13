@@ -22,6 +22,7 @@ jobs:
           REACT_APP_AWS_REGION: ${{ secrets.REACT_APP_AWS_REGION }}
           REACT_APP_AWS_USER_POOL_WEB_CLIENT_ID: ${{ secrets.REACT_APP_AWS_USER_POOL_WEB_CLIENT_ID }}
           GENERATE_SOURCEMAP: 'false'
+          REACT_APP_REDIRECT_URL: 'https://members.tourneymaster.org/'
       - name: Enable Amazon
         uses: chrislennon/action-aws-cli@v1.1
       - name: Amazon Push
