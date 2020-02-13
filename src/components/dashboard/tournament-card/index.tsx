@@ -26,6 +26,7 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
         <div className={styles.tournamentHeader}>
           <div className={styles.cardImage}>
             <img
+              alt="logo"
               src={
                 event.event_logo_path === 'logopath'
                   ? tournamentLogoExample

@@ -193,7 +193,7 @@ class FacilityDetails extends React.Component<Props, State> {
                       : ''
                   }
                   name="parking_proximity"
-                  placeholder="Metres"
+                  placeholder="Meters"
                   width="100%"
                   disabled={!isEdit}
                 />

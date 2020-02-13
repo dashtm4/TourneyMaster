@@ -23,6 +23,8 @@ const divisions = [divisionData, divisionData];
 
 interface IDivisionsAndPoolsProps {
   divisions: any;
+  history: any;
+  match: any;
   getDivisions: () => void;
 }
 
@@ -32,6 +34,14 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
   }
   onEditDivisionDetails = (e: React.MouseEvent) => {
     e.stopPropagation();
+  };
+
+  onAddDivision = () => {
+    const eventId = this.props.match.params.eventId;
+    const path = eventId
+      ? `/event/divisions-and-pools-add/${eventId}`
+      : '/event/divisions-and-pools-add';
+    this.props.history.push(path);
   };
   render() {
     return (
@@ -43,6 +53,7 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
               label="+ Add Division"
               variant="contained"
               color="primary"
+              onClick={this.onAddDivision}
             />
           </div>
         </Paper>

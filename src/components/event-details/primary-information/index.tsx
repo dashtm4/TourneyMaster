@@ -26,18 +26,18 @@ enum sportsEnum {
 }
 
 enum timeZoneEnum {
-  'Eastern Standart Time' = -5,
-  'Central Standart Time' = -6,
-  'Mountain Standart Time' = -7,
-  'Pacific Standart Time' = -8,
+  'Eastern Standard Time' = -5,
+  'Central Standard Time' = -6,
+  'Mountain Standard Time' = -7,
+  'Pacific Standard Time' = -8,
 }
 
 const sportOptions = ['Lacrosse', 'Field Hockey'];
 const timeZoneOptions = [
-  'Eastern Standart Time',
-  'Central Standart Time',
-  'Mountain Standart Time',
-  'Pacific Standart Time',
+  'Eastern Standard Time',
+  'Central Standard Time',
+  'Mountain Standard Time',
+  'Pacific Standard Time',
 ];
 const genderOptions = ['Male', 'Female'];
 enum genderEnum {
@@ -79,7 +79,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
     onChange('primary_location_desc', e.target.value);
 
   return (
-    <SectionDropdown type="section" padding="0">
+    <SectionDropdown type="section" padding="0" isDefaultExpanded={true}>
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Primary Information</span>
       </HeadingLevelThree>

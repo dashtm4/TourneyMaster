@@ -101,7 +101,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
   };
 
   return (
-    <SectionDropdown type="section" padding="0">
+    <SectionDropdown type="section" padding="0" isDefaultExpanded={true}>
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Playoffs</span>
       </HeadingLevelThree>
@@ -168,7 +168,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
                 </DndProvider>
               </div>
               <CardMessage type="info">
-                Dran and Drop to reorder Ranking Factors
+                Drag and Drop to reorder Ranking Factors
               </CardMessage>
               <Checkbox
                 options={bracketGameDurationOpts}
