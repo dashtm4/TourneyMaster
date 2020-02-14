@@ -5,13 +5,12 @@ import styles from './styles.module.scss';
 import { BindingCbWithOne } from '../../../../common/models/callback';
 import { ITeam } from '../../../../common/models/teams';
 
-import { teams } from '../../mocks/teams';
-
 interface Props {
+  teams: ITeam[];
   onOpenTeamDetails: BindingCbWithOne<ITeam>;
 }
 
-const ScoringItem = ({ onOpenTeamDetails }: Props) => (
+const ScoringItem = ({ teams, onOpenTeamDetails }: Props) => (
   <li>
     <SectionDropdown isDefaultExpanded={true} headingColor={'#1C315F'}>
       <span>Men’s Spring Thaw (Division: 2020, 2021)</span>

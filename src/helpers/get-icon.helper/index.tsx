@@ -15,6 +15,7 @@ import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import CreateIcon from '@material-ui/icons/Create';
 import EditIcon from '@material-ui/icons/Edit';
 import ClearIcon from '@material-ui/icons/Clear';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { PinIcon } from './own-icons';
 import { Icons } from '../../common/constants/icons';
 import styles from './styles.module.scss';
@@ -54,6 +55,13 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
     case Icons.EDIT:
       return (
         <EditIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles && iconStyles}
+        />
+      );
+    case Icons.DELETE:
+      return (
+        <DeleteIcon
           className={iconStyles ? '' : styles.icon}
           style={iconStyles && iconStyles}
         />

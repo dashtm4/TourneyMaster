@@ -26,7 +26,11 @@ const GroupItem = ({ teams, onOpenTeamDetails }: Props) => (
         </thead>
         <tbody>
           {teams.map(it => (
-            <TeamItem team={it} onOpenTeamDetails={onOpenTeamDetails} />
+            <TeamItem
+              team={it}
+              key={it.team_id}
+              onOpenTeamDetails={onOpenTeamDetails}
+            />
           ))}
         </tbody>
       </table>
