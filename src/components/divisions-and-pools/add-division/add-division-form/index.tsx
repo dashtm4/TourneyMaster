@@ -15,27 +15,32 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
   state = { hasUniqueGameDurations: false, hasMessage: true };
 
   onLongNameChange = (e: InputTargetValue) =>
-    this.props.onChange('long_name', e.target.value);
+    this.props.onChange('long_name', e.target.value, this.props.index);
 
   onShortNameChange = (e: InputTargetValue) =>
-    this.props.onChange('short_name', e.target.value);
+    this.props.onChange('short_name', e.target.value, this.props.index);
 
   onTagChange = (e: InputTargetValue) =>
-    this.props.onChange('division_tag', e.target.value);
+    this.props.onChange('division_tag', e.target.value, this.props.index);
 
   onEntryFeeChange = (e: InputTargetValue) =>
-    this.props.onChange('entry_fee', e.target.value);
+    this.props.onChange('entry_fee', e.target.value, this.props.index);
 
   onDescChange = (e: InputTargetValue) =>
-    this.props.onChange('division_description', e.target.value);
+    this.props.onChange(
+      'division_description',
+      e.target.value,
+      this.props.index
+    );
 
   onMaxNumOfTeamsChange = (e: InputTargetValue) =>
-    this.props.onChange('max_num_teams', e.target.value);
+    this.props.onChange('max_num_teams', e.target.value, this.props.index);
 
   onDivisionMessageChange = (e: InputTargetValue) =>
-    this.props.onChange('division_message', e.target.value);
+    this.props.onChange('division_message', e.target.value, this.props.index);
 
-  onColorChange = (value: string) => this.props.onChange('division_hex', value);
+  onColorChange = (value: string) =>
+    this.props.onChange('division_hex', value, this.props.index);
 
   onHasMessageChange = () => {
     this.setState({
@@ -48,6 +53,7 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
       hasUniqueGameDurations: !this.state.hasUniqueGameDurations,
     });
   };
+
   render() {
     const {
       long_name,
@@ -140,7 +146,7 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
                 <Input
                   width="541px"
                   multiline={true}
-                  rows="4"
+                  rows="5"
                   value={division_message || ''}
                   onChange={this.onDivisionMessageChange}
                 />

@@ -1,45 +1,34 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { History } from 'history';
 import styles from './styles.module.scss';
 import Paper from '../../common/paper';
 import Button from '../../common/buttons/button';
 import HeadingLevelTwo from '../../common/headings/heading-level-two';
 import AddDivisionForm from './add-division-form';
-import { saveDivision } from './add-division-form/logic/actions';
-import { connect } from 'react-redux';
-
-interface IDivision {
-  long_name?: string;
-  short_name?: string;
-  division_tag?: string;
-  entry_fee?: number;
-  division_description?: string;
-  max_num_teams?: number;
-  division_message?: string;
-  division_hex?: string;
-}
+import { saveDivisions } from './add-division-form/logic/actions';
+import { IDivision } from 'common/models/divisions';
+import { BindingCbWithOne } from 'common/models/callback';
 
 interface IAddDivisionState {
-  division: IDivision;
+  divisions: Partial<IDivision>[];
 }
 
 interface IDivisionProps {
-  history: any;
-  saveDivision: (division: IDivision) => void;
+  history: History;
+  saveDivisions: BindingCbWithOne<Partial<IDivision>[]>;
 }
 
 class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
-  state = { division: {} };
+  state = { divisions: [{}] };
 
-  componentDidMount() {
-    // this.props.getDivision();
-  }
-
-  onChange = (name: string, value: any) => {
-    this.setState(({ division }) => ({
-      division: {
-        ...division,
-        [name]: value,
-      },
+  onChange = (name: string, value: any, index: number) => {
+    this.setState(({ divisions }) => ({
+      divisions: divisions.map(division =>
+        division === divisions[index]
+          ? { ...division, [name]: value }
+          : division
+      ),
     }));
   };
 
@@ -48,8 +37,12 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   };
 
   onSave = () => {
-    this.props.saveDivision(this.state.division);
+    this.props.saveDivisions(this.state.divisions);
     this.props.history.goBack();
+  };
+
+  onAddDivision = () => {
+    this.setState({ divisions: [...this.state.divisions, {}] });
   };
 
   render() {
@@ -76,23 +69,27 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
         <div className={styles.heading}>
           <HeadingLevelTwo>Add Division</HeadingLevelTwo>
         </div>
-        <AddDivisionForm
-          onChange={this.onChange}
-          division={this.state.division}
-        />
-        {/* <Button
+        {this.state.divisions.map((_division, index) => (
+          <AddDivisionForm
+            key={index}
+            index={index}
+            onChange={this.onChange}
+            division={this.state.divisions[index]}
+          />
+        ))}
+        <Button
           label="+ Add Additional Division"
           variant="text"
           color="secondary"
-          // onClick={this.onAddDivision}
-        /> */}
+          onClick={this.onAddDivision}
+        />
       </section>
     );
   }
 }
 
 const mapDispatchToProps = {
-  saveDivision,
+  saveDivisions,
 };
 
 export default connect(null, mapDispatchToProps)(AddDivision);
