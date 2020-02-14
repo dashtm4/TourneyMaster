@@ -1,4 +1,10 @@
-import { TeamsAction, SUCCESS, LOAD_TEAMS, DELETE_TEAM } from './action-types';
+import {
+  TeamsAction,
+  SUCCESS,
+  LOAD_TEAMS,
+  EDIT_TEAM,
+  DELETE_TEAM,
+} from './action-types';
 import { ITeam } from '../../../common/models/teams';
 
 const initialState = {
@@ -16,9 +22,18 @@ const scoringReducer = (
   switch (action.type) {
     case LOAD_TEAMS + SUCCESS:
       return { ...state, teams: action.payload };
-    case DELETE_TEAM + SUCCESS:
-      console.log(action.payload);
+    case EDIT_TEAM + SUCCESS:
+      const editedTeam = action.payload as ITeam;
 
+      console.log(editedTeam);
+
+      return {
+        ...state,
+        teams: state.teams.map(it =>
+          it.team_id === editedTeam.team_id ? editedTeam : it
+        ),
+      };
+    case DELETE_TEAM + SUCCESS:
       return {
         ...state,
         teams: state.teams.filter(it => it.team_id !== action.payload),

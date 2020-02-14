@@ -5,8 +5,10 @@ import {
   SUCCESS,
   FAILURE,
   LOAD_TEAMS,
+  EDIT_TEAM,
   DELETE_TEAM,
 } from './action-types';
+import { ITeam } from '../../../common/models/teams';
 // import Api from 'api/api';
 
 import { teams } from '../mocks/teams';
@@ -31,6 +33,23 @@ const loadTeams: ActionCreator<ThunkAction<
   }
 };
 
+const editTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
+  team: ITeam
+) => async (dispatch: Dispatch) => {
+  try {
+    // await Api.put('');
+
+    dispatch({
+      type: EDIT_TEAM + SUCCESS,
+      payload: team,
+    });
+  } catch {
+    dispatch({
+      type: EDIT_TEAM + FAILURE,
+    });
+  }
+};
+
 const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   teamId: string
 ) => async (dispatch: Dispatch) => {
@@ -48,4 +67,4 @@ const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-export { loadTeams, deleteTeam };
+export { loadTeams, editTeam, deleteTeam };

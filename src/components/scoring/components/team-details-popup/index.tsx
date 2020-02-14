@@ -36,6 +36,7 @@ interface Props {
   team: ITeam | null;
   isEdit: boolean;
   onEditTeamClick: BindingAction;
+  onSaveTeamClick: BindingAction;
   onDeleteTeamClick: BindingCbWithOne<string>;
   onChangeTeam: any;
   onCloseModal: BindingAction;
@@ -45,6 +46,7 @@ const TeamDetailsPopup = ({
   team,
   isEdit,
   onEditTeamClick,
+  onSaveTeamClick,
   onDeleteTeamClick,
   onChangeTeam,
   onCloseModal,
@@ -233,7 +235,12 @@ const TeamDetailsPopup = ({
               variant="text"
               color="secondary"
             />
-            <Button label="Save" variant="contained" color="primary" />
+            <Button
+              onClick={onSaveTeamClick}
+              label="Save"
+              variant="contained"
+              color="primary"
+            />
           </p>
         </div>
       </form>

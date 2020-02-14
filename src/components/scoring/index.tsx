@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dispatch, bindActionCreators } from 'redux';
-import { loadTeams, deleteTeam } from './logic/actions';
+import { loadTeams, editTeam, deleteTeam } from './logic/actions';
 import ScoringItem from './components/scoring-Item';
 import TeamDetailsPopup from './components/team-details-popup';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
@@ -21,6 +21,7 @@ interface MatchParams {
 interface Props {
   teams: ITeam[];
   loadTeams: BindingAction;
+  editTeam: BindingCbWithOne<ITeam>;
   deleteTeam: BindingCbWithOne<string>;
 }
 
@@ -58,6 +59,15 @@ class Sсoring extends React.Component<
 
   onEditTeam = () => {
     this.setState({ isModalOpen: true, isEdit: true });
+  };
+
+  onSaveTeam = () => {
+    const { changeableTeam } = this.state;
+    const { editTeam } = this.props;
+
+    if (changeableTeam) editTeam(changeableTeam);
+
+    this.onCloseModal();
   };
 
   onDeleteTeam = (teamId: string) => {
@@ -108,6 +118,7 @@ class Sсoring extends React.Component<
             team={changeableTeam}
             isEdit={isEdit}
             onEditTeamClick={this.onEditTeam}
+            onSaveTeamClick={this.onSaveTeam}
             onDeleteTeamClick={this.onDeleteTeam}
             onChangeTeam={this.onChangeTeam}
             onCloseModal={this.onCloseModal}
@@ -127,5 +138,5 @@ export default connect(
     teams: state.scoring.teams,
   }),
   (dispatch: Dispatch) =>
-    bindActionCreators({ loadTeams, deleteTeam }, dispatch)
+    bindActionCreators({ loadTeams, deleteTeam, editTeam }, dispatch)
 )(Sсoring);
