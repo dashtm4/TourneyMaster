@@ -8,6 +8,7 @@ interface IButtonProps {
   variant: 'text' | 'outlined' | 'contained' | undefined;
   type?: 'squared' | 'danger' | 'squaredOutlined' | undefined;
   icon?: JSX.Element;
+  disabled?: boolean;
   onClick?: (e: React.MouseEvent) => void;
 }
 
@@ -18,8 +19,10 @@ const Button: React.FC<IButtonProps> = ({
   type,
   onClick,
   icon,
+  disabled,
 }) => (
   <MuiButton
+    disabled={disabled}
     variant={variant}
     color={color}
     className={type && styles[`${type}Btn`]}

@@ -6,38 +6,19 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { capitalize } from 'lodash-es';
 
-import { getViewType, buttonTypeView, ViewType } from './calendar.helper';
+import { getViewType, buttonTypeView, ViewType } from '../calendar.helper';
 import { DatePicker, Button } from 'components/common';
 import styles from './styles.module.scss';
+import { IEvent } from 'common/models/calendar';
 import './main.scss';
 
 interface IProps {
-  onCreate: () => void;
+  onCreatePressed: () => void;
+  eventsList?: IEvent[];
 }
 
 export default (props: IProps) => {
-  const { onCreate } = props;
-
-  const eventsList = [
-    {
-      title: 'Event Number One',
-      start: '2020-02-01T10:00:00',
-      end: '2020-02-05T12:00:00',
-      className: 'event',
-    },
-    {
-      title: 'Reminder Number One',
-      start: '2020-02-07T18:35:00',
-      end: '2020-02-07T20:10:00',
-      className: 'reminder',
-    },
-    {
-      title: 'Task Number One',
-      start: '2020-02-10T11:00:00',
-      end: '2020-02-12T23:10:00',
-      className: 'task',
-    },
-  ];
+  const { eventsList, onCreatePressed } = props;
 
   const header = {
     left: '',
@@ -110,7 +91,7 @@ export default (props: IProps) => {
           label="Create +"
           color="primary"
           variant="contained"
-          onClick={onCreate}
+          onClick={onCreatePressed}
         />
         <DatePicker
           views={['month']}
@@ -138,7 +119,6 @@ export default (props: IProps) => {
           plugins={plugins}
           header={header}
           events={eventsList}
-          // Callbacks
           ref={calendarRef}
           dateClick={handleDateClick}
           eventClick={handleEventClick}

@@ -1,5 +1,6 @@
 export type ViewType = 'day' | 'week' | 'month';
-type buttonVariantType = 'squared' | 'squaredOutlined' | undefined;
+type ButtonVariantType = 'squared' | 'squaredOutlined' | undefined;
+export type ButtonTypeEvent = 'event' | 'reminder' | 'task';
 
 export const getViewType = (view: 'day' | 'week' | 'month') => {
   switch (view) {
@@ -15,5 +16,10 @@ export const getViewType = (view: 'day' | 'week' | 'month') => {
 export const buttonTypeView = (
   currentType: ViewType,
   currentView: ViewType
-): buttonVariantType =>
+): ButtonVariantType =>
   currentView === currentType ? 'squared' : 'squaredOutlined';
+
+export const buttonTypeEvent = (
+  type: ButtonTypeEvent,
+  currentType: ButtonTypeEvent
+) => (type === currentType ? 'squared' : 'squaredOutlined');

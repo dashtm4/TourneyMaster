@@ -1,18 +1,19 @@
 import { combineReducers } from 'redux';
-import user from './user';
-import facilitiesReducer from '../components/facilities/logic/reducer';
+
+import facilities from 'components/facilities/logic/reducer';
 import event from 'components/event-details/logic/reducer';
-import events from '../components/dashboard/logic/reducer';
-import registration from '../components/registration-edit/logic/reducer';
-import divisions from '../components/divisions-and-pools/logic/reducer';
+import events from 'components/dashboard/logic/reducer';
+import registration from 'components/registration-edit/logic/reducer';
+import divisions from 'components/divisions-and-pools/logic/reducer';
+import calendar from 'components/calendar/logic/reducer';
 
 const rootReducer = combineReducers({
-  user,
-  facilities: facilitiesReducer,
+  facilities,
   event,
   events,
   registration,
   divisions,
+  calendar,
 });
 
 export default rootReducer;

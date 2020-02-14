@@ -1,18 +1,55 @@
 import React, { Component } from 'react';
+import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
 import { Button, Paper, HeadingLevelTwo } from 'components/common';
-import CalendarBody from './body';
+import { ICalendarEvent, IEvent } from 'common/models/calendar';
+import CreateDialog from './create-dialog';
 import styles from './styles.module.scss';
+import CalendarBody from './body';
 
-class Calendar extends Component {
-  onSave() {
-    console.log('onSave pressed!');
+import { getCalendarEvents, createCalendarEvent } from './logic/actions';
+
+interface IProps {
+  eventsList?: IEvent[];
+  createCalendarEvent: (event: ICalendarEvent) => void;
+  getCalendarEvents: () => void;
+}
+
+interface IState {
+  dialogOpen: boolean;
+}
+
+class Calendar extends Component<IProps, IState> {
+  state = {
+    dialogOpen: false,
+  };
+
+  componentDidMount() {
+    this.props.getCalendarEvents();
   }
 
-  onCreate = () => {};
+  onSave() {
+    console.log('SAVE');
+  }
+
+  onCreatePressed = () => {
+    this.setState({ dialogOpen: true });
+  };
+
+  onDialogClose = () => {
+    this.setState({ dialogOpen: false });
+  };
+
+  onCalendarEvent = (calendarEvent: ICalendarEvent) => {
+    this.onDialogClose();
+    this.props.createCalendarEvent(calendarEvent);
+  };
 
   render() {
+    const { dialogOpen } = this.state;
+    const { eventsList } = this.props;
+
     return (
       <div className={styles.container}>
         <Paper>
@@ -28,16 +65,32 @@ class Calendar extends Component {
 
         <HeadingLevelTwo margin="24px 0">Calendar</HeadingLevelTwo>
 
-        {/* Calendar manipuation here */}
+        <CreateDialog
+          dialogOpen={dialogOpen}
+          onDialogClose={this.onDialogClose}
+          onSave={this.onCalendarEvent}
+        />
 
-        {/* Calendar body here */}
-        <CalendarBody onCreate={this.onCreate} />
+        <CalendarBody
+          eventsList={eventsList}
+          onCreatePressed={this.onCreatePressed}
+        />
       </div>
     );
   }
 }
 
-const mapStateToProps = () => ({});
-const mapDispatchToProps = () => ({});
+interface IRootState {
+  calendar: {
+    events?: IEvent[];
+  };
+}
+
+const mapStateToProps = (state: IRootState) => ({
+  eventsList: state.calendar.events,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators({ getCalendarEvents, createCalendarEvent }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar);
