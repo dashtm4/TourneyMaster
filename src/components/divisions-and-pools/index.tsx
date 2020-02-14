@@ -11,6 +11,7 @@ import CreateIcon from '@material-ui/icons/Create';
 import { getDivisions } from './logic/actions';
 
 const divisionData = {
+  division_id: '110AFC3B',
   long_name: '2020',
   max_num_teams: 32,
   entry_fee: 9.99,
@@ -32,8 +33,13 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
   componentDidMount() {
     this.props.getDivisions();
   }
-  onEditDivisionDetails = (e: React.MouseEvent) => {
+  onEditDivisionDetails = (e: React.MouseEvent, divisionId: string) => {
     e.stopPropagation();
+    const eventId = this.props.match.params.eventId;
+    const path = eventId
+      ? `/event/divisions-and-pools-edit/${eventId}`
+      : '/event/divisions-and-pools-edit';
+    this.props.history.push({ pathname: path, state: { divisionId } });
   };
 
   onAddDivision = () => {
@@ -73,7 +79,9 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
                       variant="text"
                       color="secondary"
                       icon={<CreateIcon />}
-                      onClick={this.onEditDivisionDetails}
+                      onClick={e =>
+                        this.onEditDivisionDetails(e, division.division_id)
+                      }
                     />
                   </div>
                   <div className={styles.sectionContent}>

@@ -39,6 +39,7 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
           />
           <Route path={Routes.REGISTRATION_EDIT} component={RegistrationEdit} />
           <Route path={Routes.ADD_DIVISION} component={AddDivision} />
+          <Route path={Routes.EDIT_DIVISION} component={AddDivision} />
           <Route
             path={Routes.DIVISIONS_AND_POOLS}
             component={DivisionsAndPools}
