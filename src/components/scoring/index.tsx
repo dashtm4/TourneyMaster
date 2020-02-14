@@ -37,10 +37,8 @@ class Sсoring extends React.Component<
 > {
   async componentDidMount() {
     // const eventId = this.props.match.params.eventId;
-
-    // const game = await Api.get(`/divisions?division_id=${eventId}`);
-
-    // console.log(game);
+    // const pools = await Api.get(`/pools`);
+    // console.log(pools);
 
     const { loadTeams } = this.props;
 
