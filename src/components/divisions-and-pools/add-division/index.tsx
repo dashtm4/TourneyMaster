@@ -14,6 +14,8 @@ import {
 import { IDivision } from 'common/models/divisions';
 import { BindingCbWithOne, BindingCbWithTwo } from 'common/models/callback';
 import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteDivision from '../add-division/delete-division';
+import Modal from 'components/common/modal';
 
 interface ILocationState {
   divisionId: string;
@@ -21,6 +23,7 @@ interface ILocationState {
 
 interface IAddDivisionState {
   divisions: Partial<IDivision>[];
+  isModalOpen: boolean;
 }
 
 interface IDivisionProps {
@@ -33,7 +36,7 @@ interface IDivisionProps {
 
 class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   divisionId = this.props.location.state?.divisionId;
-  state = { divisions: [{}] };
+  state = { divisions: [{}], isModalOpen: false };
 
   componentDidMount() {
     if (this.divisionId) {
@@ -67,6 +70,14 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     this.setState({ divisions: [...this.state.divisions, {}] });
   };
 
+  onDeleteDivision = () => {
+    this.setState({ isModalOpen: true });
+  };
+
+  onModalClose = () => {
+    this.setState({ isModalOpen: false });
+  };
+
   renderHeading = () => {
     const text = this.divisionId ? 'Edit Division' : 'Add Division';
     return <HeadingLevelTwo>{text}</HeadingLevelTwo>;
@@ -78,8 +89,9 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
         label="Delete Division"
         variant="text"
         color="secondary"
-        icon={<DeleteIcon />}
-        // onClick={this.onAddDivision}
+        type="dangerLink"
+        icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
+        onClick={this.onDeleteDivision}
       />
     ) : (
       <Button
@@ -124,6 +136,9 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
           />
         ))}
         {this.renderButton()}
+        <Modal isOpen={this.state.isModalOpen} onClose={this.onModalClose}>
+          <DeleteDivision onClose={this.onModalClose} />
+        </Modal>
       </section>
     );
   }
