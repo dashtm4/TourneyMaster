@@ -3,7 +3,10 @@ import HeadingLevelThree from '../../../common/headings/heading-level-three';
 import Button from '../../../common/buttons/button';
 import FieldItem from '../field-item';
 import { getIcon } from '../../../../helpers/get-icon.helper';
-import { BindingAction } from '../../../../common/models/callback';
+import {
+  BindingAction,
+  BindingCbWithOne,
+} from '../../../../common/models/callback';
 import { ITeam } from '../../../../common/models/teams';
 import { Icons } from '../../../../common/constants/icons';
 import styles from './styles.module.scss';
@@ -33,6 +36,8 @@ interface Props {
   team: ITeam | null;
   isEdit: boolean;
   onEditTeamClick: BindingAction;
+  onSaveTeamClick: BindingAction;
+  onDeleteTeamClick: BindingCbWithOne<string>;
   onChangeTeam: any;
   onCloseModal: BindingAction;
 }
@@ -41,6 +46,8 @@ const TeamDetailsPopup = ({
   team,
   isEdit,
   onEditTeamClick,
+  onSaveTeamClick,
+  onDeleteTeamClick,
   onChangeTeam,
   onCloseModal,
 }: Props) => {
@@ -214,6 +221,7 @@ const TeamDetailsPopup = ({
         <div className={styles.btnsWrapper}>
           <span className={styles.BtnDeleteWrapper}>
             <Button
+              onClick={() => onDeleteTeamClick(team.team_id)}
               icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
               label="Delete Team"
               variant="text"
@@ -227,7 +235,12 @@ const TeamDetailsPopup = ({
               variant="text"
               color="secondary"
             />
-            <Button label="Save" variant="contained" color="primary" />
+            <Button
+              onClick={onSaveTeamClick}
+              label="Save"
+              variant="contained"
+              color="primary"
+            />
           </p>
         </div>
       </form>
