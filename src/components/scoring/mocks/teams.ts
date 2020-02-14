@@ -26,7 +26,7 @@ const teams = [
     event_id: 'ABC123',
     org_id: 1,
     long_name: 'LONG NAME',
-    short_name: 'SHORT NAME',
+    short_name: 'WORT NAME',
     team_tag: 'TAG',
     city: 'City',
     state: 'ST',
