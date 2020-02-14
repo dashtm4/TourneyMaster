@@ -11,33 +11,6 @@ import { connect } from 'react-redux';
 import { getRegistration } from './logic/actions';
 import { History } from 'history';
 
-const primaryInformation = {
-  division: '2020, 2021',
-  openDate: '01/01/20',
-  closeDate: '01/31/20',
-  entryFee: '$100.00',
-  depositFee: '$25.00',
-  earlyBirdDiscount: 'None',
-  discountEndDate: '',
-};
-const teamsInfo = {
-  maxTeamsPerDiv: '',
-  minOnRoster: '',
-  maxOnRoster: '',
-  athleteBirth: 'Require',
-  athleteJersey: 'Require',
-  athleteEmail: 'Require',
-};
-
-const mainContact = {
-  first: 'John',
-  last: 'Anderson',
-  role: 'None',
-  email: 'janderson@gmail.com',
-  mobile: '612-456-8203',
-  permissionToText: 'No',
-};
-
 interface IRegistrationEditState {
   registration: any;
 }
@@ -76,9 +49,22 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
     this.props.history.goBack();
   };
 
+  static getDerivedStateFromProps(
+    nextProps: any,
+    prevState: any
+  ): Partial<any> | null {
+    if (!prevState.registration && nextProps.registration[0]) {
+      return {
+        registration: nextProps.registration[0],
+        error: nextProps.registration.error,
+      };
+    }
+    return null;
+  }
+
   render() {
     console.log(this.state.registration);
-    return (
+    return this.state.registration ? (
       <section>
         <Paper>
           <div className={styles.mainMenu}>
@@ -107,7 +93,7 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
               <SectionDropdown type="section" padding="0">
                 <span>Primary Information</span>
                 <PrimaryInformation
-                  data={primaryInformation}
+                  data={this.state.registration}
                   onChange={this.onChange}
                 />
               </SectionDropdown>
@@ -115,18 +101,26 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
             <li>
               <SectionDropdown type="section" padding="0">
                 <span>Teams & Athletes</span>
-                <TeamsAthletesInfo data={teamsInfo} onChange={this.onChange} />
+                <TeamsAthletesInfo
+                  data={this.state.registration}
+                  onChange={this.onChange}
+                />
               </SectionDropdown>
             </li>
             <li>
               <SectionDropdown type="section" padding="0">
                 <span>Main Contact</span>
-                <MainContact data={mainContact} onChange={this.onChange} />
+                <MainContact
+                  data={this.state.registration}
+                  onChange={this.onChange}
+                />
               </SectionDropdown>
             </li>
           </ul>
         </div>
       </section>
+    ) : (
+      <div>Loading</div>
     );
   }
 }

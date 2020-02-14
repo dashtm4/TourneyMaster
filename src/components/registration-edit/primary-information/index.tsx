@@ -36,7 +36,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             width="161px"
             label="Open Date"
             type="date"
-            // value={data.registration_start || new Date()}
+            value={data.registration_start || new Date()}
             onChange={onOpenDateChange}
           />
         </div>
@@ -45,7 +45,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             width="161px"
             label="Close Date"
             type="date"
-            // value={data.registration_end || new Date()}
+            value={data.registration_end || new Date()}
             onChange={onCloseDateChange}
           />
         </div>
@@ -57,7 +57,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             label="Entry Fee"
             startAdornment="$"
             type="number"
-            // value={data.entry_fee || ''}
+            value={data.entry_fee || ''}
             onChange={onEntryFeeChange}
           />
         </div>
@@ -67,7 +67,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             label="Deposit Fee"
             startAdornment="$"
             type="number"
-            // value={data.entry_deposit || ''}
+            value={data.entry_deposit || ''}
             onChange={onDepositFeeChange}
           />
         </div>
@@ -77,7 +77,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Early Bird Discount"
             type="number"
-            // value={data.early_discount || ''}
+            value={data.early_discount || ''}
             onChange={onEarlyBirdDiscountChange}
           />
         </div>
@@ -86,7 +86,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             width="161px"
             label="Discount End Date"
             type="date"
-            // value={data.discount_end || new Date()}
+            value={data.discount_end || new Date()}
             onChange={onDiscountEndDateChange}
           />
         </div>
