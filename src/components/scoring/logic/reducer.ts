@@ -25,8 +25,6 @@ const scoringReducer = (
     case EDIT_TEAM + SUCCESS:
       const editedTeam = action.payload as ITeam;
 
-      console.log(editedTeam);
-
       return {
         ...state,
         teams: state.teams.map(it =>
