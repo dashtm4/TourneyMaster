@@ -23,6 +23,7 @@ const useStyles = makeStyles(
       backgroundColor: '#F4F4F4',
       borderRadius: '5px',
       boxShadow: 'box-shadow: 0 1px 10px 0 rgba(0,0,0,0.1)',
+      outline: 'none',
     },
   })
 );

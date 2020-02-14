@@ -9,6 +9,8 @@ import DivisionDetails from './division-details';
 import PoolsDetails from './pools-details';
 import CreateIcon from '@material-ui/icons/Create';
 import { getDivisions } from './logic/actions';
+import Modal from '../common/modal';
+import AddPool from './add-pool';
 
 const divisionData = {
   division_id: '110AFC3B',
@@ -29,7 +31,9 @@ interface IDivisionsAndPoolsProps {
   getDivisions: () => void;
 }
 
-class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
+class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, any> {
+  state = { isModalOpen: false };
+
   componentDidMount() {
     this.props.getDivisions();
   }
@@ -49,6 +53,14 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
       ? `/event/divisions-and-pools-edit/${eventId}`
       : '/event/divisions-and-pools-edit';
     this.props.history.push({ pathname: path, state: { divisionId } });
+  };
+
+  onAddPool = () => {
+    this.setState({ isModalOpen: true });
+  };
+
+  onModalClose = () => {
+    this.setState({ isModalOpen: false });
   };
 
   render() {
@@ -85,7 +97,17 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
                   </div>
                   <div className={styles.sectionContent}>
                     <DivisionDetails data={division} />
-                    <PoolsDetails />
+                    <PoolsDetails onAddPool={this.onAddPool} />
+                    <Modal
+                      isOpen={this.state.isModalOpen}
+                      onClose={this.onModalClose}
+                    >
+                      <AddPool
+                        division={division.long_name}
+                        teams={division.teams_registered}
+                        onClose={this.onModalClose}
+                      />
+                    </Modal>
                   </div>
                 </SectionDropdown>
               </li>

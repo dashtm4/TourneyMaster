@@ -3,12 +3,17 @@ import styles from './styles.module.scss';
 import Button from '../../common/buttons/button';
 import CreateIcon from '@material-ui/icons/Create';
 
-const PoolsDetails = () => (
+const PoolsDetails = ({ onAddPool }: any) => (
   <div>
     <div className={styles.headingContainer}>
       <span className={styles.title}>Pools</span>
       <div>
-        <Button label="+ Add Pool" variant="text" color="secondary" />
+        <Button
+          label="+ Add Pool"
+          variant="text"
+          color="secondary"
+          onClick={onAddPool}
+        />
         <Button
           label="Edit Pool Details"
           variant="text"
