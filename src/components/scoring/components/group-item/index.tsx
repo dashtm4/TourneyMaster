@@ -11,7 +11,9 @@ interface Props {
 }
 
 const GroupItem = ({ teams, onOpenTeamDetails }: Props) => {
-  if (teams.length === 0) return null;
+  if (teams.length === 0) {
+    return null;
+  }
 
   return (
     <li className={styles.groupItem}>

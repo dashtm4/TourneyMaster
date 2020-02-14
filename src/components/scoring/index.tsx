@@ -65,7 +65,9 @@ class Sсoring extends React.Component<
     const { changeableTeam } = this.state;
     const { editTeam } = this.props;
 
-    if (changeableTeam) editTeam(changeableTeam);
+    if (changeableTeam) {
+      editTeam(changeableTeam);
+    }
 
     this.onCloseModal();
   };
