@@ -57,7 +57,6 @@ const SectionDropdown = ({
     >
       <ExpansionPanelSummary
         style={{
-          borderTop: '1px solid #d1d1d1',
           ...setPanelSummaryStyle(type),
         }}
         expandIcon={setExpandIcon(type)}

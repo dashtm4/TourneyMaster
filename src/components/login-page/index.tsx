@@ -5,6 +5,7 @@ import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth/lib/types';
 import WithEditingForm from './hocs/withEditingForm';
 import FormSignUp from './components/form-sign-up';
 import FormSignIn from './components/form-sign-in';
+import { Toasts } from '../common';
 import logo from '../../assets/logo.png';
 import styles from './style.module.scss';
 import './styles.scss';
@@ -27,16 +28,20 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
 
   componentDidMount() {
     Hub.listen('auth', async ({ payload: { event, data } }) => {
-      switch (event) {
-        case 'signIn':
-          const user = await data;
-          const userToken = await data.signInUserSession.idToken.jwtToken;
+      try {
+        switch (event) {
+          case 'signIn':
+            const user = await data;
+            const userToken = await data.signInUserSession.idToken.jwtToken;
 
-          if (user && userToken) {
-            localStorage.setItem('token', userToken);
+            if (user && userToken) {
+              localStorage.setItem('token', userToken);
 
-            this.props.history.push('/dashboard');
-          }
+              this.props.history.push('/dashboard');
+            }
+        }
+      } catch (err) {
+        Toasts.errorToast(`${err.message}`);
       }
     });
   }
@@ -46,30 +51,46 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
   };
 
   onAuthSubmit = async (email: string, password: string) => {
-    const user = await Auth.signIn(email, password);
-    const userToken = user.signInUserSession.idToken.jwtToken;
+    try {
+      const user = await Auth.signIn(email, password);
+      const userToken = user.signInUserSession.idToken.jwtToken;
 
-    if (userToken) {
-      localStorage.setItem('token', userToken);
+      if (userToken) {
+        localStorage.setItem('token', userToken);
 
-      this.props.history.push('/dashboard');
+        this.props.history.push('/dashboard');
+      }
+    } catch (err) {
+      Toasts.errorToast(`${err.message}`);
     }
   };
 
-  onRegistrationSubmit = (name: string, email: string, password: string) => {
-    Auth.signUp({
-      username: email,
-      password,
-      attributes: {
-        name,
-      },
-    });
+  onRegistrationSubmit = async (
+    name: string,
+    email: string,
+    password: string
+  ) => {
+    try {
+      await Auth.signUp({
+        username: email,
+        password,
+        attributes: {
+          name,
+        },
+      });
+    } catch (err) {
+      Toasts.errorToast(`${err.message}`);
+    }
   };
 
-  onGoogleLogin = () => {
-    Auth.federatedSignIn({
-      provider: CognitoHostedUIIdentityProvider.Google,
-    });
+  onGoogleLogin = async () => {
+    try {
+      await Auth.federatedSignIn({
+        provider: CognitoHostedUIIdentityProvider.Google,
+      });
+    } catch (err) {
+      Toasts.errorToast(`${err.message}`);
+    }
   };
 
   render() {

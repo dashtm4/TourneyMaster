@@ -6,6 +6,7 @@ import events from 'components/dashboard/logic/reducer';
 import registration from 'components/registration-edit/logic/reducer';
 import divisions from 'components/divisions-and-pools/logic/reducer';
 import calendar from 'components/calendar/logic/reducer';
+import scoring from 'components/scoring/logic/reducer';
 
 const rootReducer = combineReducers({
   facilities,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   registration,
   divisions,
   calendar,
+  scoring,
 });
 
 export default rootReducer;

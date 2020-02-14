@@ -1,21 +1,29 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { RouteComponentProps } from 'react-router-dom';
+import { Dispatch, bindActionCreators } from 'redux';
+import { loadTeams, editTeam, deleteTeam } from './logic/actions';
+import ScoringItem from './components/scoring-Item';
 import TeamDetailsPopup from './components/team-details-popup';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Button from '../common/buttons/button';
 import Modal from '../common/modal';
-import ScoringItem from './components/scoring-Item';
-import { RouteComponentProps } from 'react-router-dom';
-import styles from './styles.module.scss';
+import { AppState } from './logic/reducer';
 import { ITeam } from '../../common/models/teams';
+import { BindingAction, BindingCbWithOne } from '../../common/models/callback';
+import styles from './styles.module.scss';
 // import Api from 'api/api';
-
-import { teams } from './mocks/teams';
 
 interface MatchParams {
   eventId?: string;
 }
 
-interface Props {}
+interface Props {
+  teams: ITeam[];
+  loadTeams: BindingAction;
+  editTeam: BindingCbWithOne<ITeam>;
+  deleteTeam: BindingCbWithOne<string>;
+}
 
 interface State {
   changeableTeam: ITeam | null;
@@ -27,13 +35,15 @@ class Sсoring extends React.Component<
   Props & RouteComponentProps<MatchParams>,
   State
 > {
-  // async componentDidMount() {
-  //   const eventId = this.props.match.params.eventId;
+  async componentDidMount() {
+    // const eventId = this.props.match.params.eventId;
+    // const pools = await Api.get(`/pools`);
+    // console.log(pools);
 
-  //   const game = await Api.get(`/divisions?division_id=${eventId}`);
+    const { loadTeams } = this.props;
 
-  //   console.log(game);
-  // }
+    loadTeams();
+  }
 
   constructor(props: Props & RouteComponentProps<MatchParams>) {
     super(props);
@@ -41,23 +51,53 @@ class Sсoring extends React.Component<
     this.state = {
       isModalOpen: false,
       isEdit: false,
-      changeableTeam: teams[0],
+      changeableTeam: null,
     };
   }
 
-  onCloseModal = () =>
-    this.setState({ changeableTeam: null, isModalOpen: false, isEdit: false });
-
   onEditTeam = () => {
     this.setState({ isModalOpen: true, isEdit: true });
+  };
+
+  onSaveTeam = () => {
+    const { changeableTeam } = this.state;
+    const { editTeam } = this.props;
+
+    if (changeableTeam) {
+      editTeam(changeableTeam);
+    }
+
+    this.onCloseModal();
+  };
+
+  onDeleteTeam = (teamId: string) => {
+    const { deleteTeam } = this.props;
+
+    deleteTeam(teamId);
+
+    this.onCloseModal();
+  };
+
+  onChangeTeam = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const {
+      target: { value, name },
+    } = evt;
+
+    this.setState(({ changeableTeam }) => ({
+      changeableTeam: { ...(changeableTeam as ITeam), [name]: value },
+    }));
   };
 
   onOpenTeamDetails = (team: ITeam) => {
     this.setState({ isModalOpen: true, changeableTeam: team });
   };
 
+  onCloseModal = () =>
+    this.setState({ changeableTeam: null, isModalOpen: false, isEdit: false });
+
   render() {
-    const { isModalOpen, changeableTeam } = this.state;
+    const { isModalOpen, isEdit, changeableTeam } = this.state;
+    const { teams } = this.props;
 
     return (
       <section>
@@ -67,15 +107,36 @@ class Sсoring extends React.Component<
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>Scoring</HeadingLevelTwo>
           <ul className={styles.scoringList}>
-            <ScoringItem onOpenTeamDetails={this.onOpenTeamDetails} />
+            <ScoringItem
+              teams={teams}
+              onOpenTeamDetails={this.onOpenTeamDetails}
+            />
           </ul>
         </div>
         <Modal isOpen={isModalOpen} onClose={this.onCloseModal}>
-          <TeamDetailsPopup team={changeableTeam} />
+          <TeamDetailsPopup
+            team={changeableTeam}
+            isEdit={isEdit}
+            onEditTeamClick={this.onEditTeam}
+            onSaveTeamClick={this.onSaveTeam}
+            onDeleteTeamClick={this.onDeleteTeam}
+            onChangeTeam={this.onChangeTeam}
+            onCloseModal={this.onCloseModal}
+          />
         </Modal>
       </section>
     );
   }
 }
 
-export default Sсoring;
+interface IRootState {
+  scoring: AppState;
+}
+
+export default connect(
+  (state: IRootState) => ({
+    teams: state.scoring.teams,
+  }),
+  (dispatch: Dispatch) =>
+    bindActionCreators({ loadTeams, deleteTeam, editTeam }, dispatch)
+)(Sсoring);

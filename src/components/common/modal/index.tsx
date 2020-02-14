@@ -22,7 +22,8 @@ const useStyles = makeStyles(
       padding: '25px 35px',
       backgroundColor: '#F4F4F4',
       borderRadius: '5px',
-      boxShadow: 'box-shadow: 0 1px 10px 0 rgba(0,0,0,0.1)',
+      boxShadow: '0 1px 10px 0 rgba(0,0,0,0.1)',
+      outline: '0',
     },
   })
 );
@@ -35,11 +36,12 @@ const ModalRoot = ({ isOpen, onClose, children }: Props) => {
       className={styles.modal}
       onClose={onClose}
       open={isOpen}
-      closeAfterTransition
+      closeAfterTransition={false}
       BackdropComponent={Backdrop}
       BackdropProps={{ timeout: 500 }}
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
+      disableAutoFocus={true}
     >
       <Fade in={isOpen}>
         <div className={styles.modalWrapper}>{children}</div>
