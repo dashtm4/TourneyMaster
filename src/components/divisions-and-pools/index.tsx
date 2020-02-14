@@ -33,14 +33,6 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
   componentDidMount() {
     this.props.getDivisions();
   }
-  onEditDivisionDetails = (e: React.MouseEvent, divisionId: string) => {
-    e.stopPropagation();
-    const eventId = this.props.match.params.eventId;
-    const path = eventId
-      ? `/event/divisions-and-pools-edit/${eventId}`
-      : '/event/divisions-and-pools-edit';
-    this.props.history.push({ pathname: path, state: { divisionId } });
-  };
 
   onAddDivision = () => {
     const eventId = this.props.match.params.eventId;
@@ -48,6 +40,15 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
       ? `/event/divisions-and-pools-add/${eventId}`
       : '/event/divisions-and-pools-add';
     this.props.history.push(path);
+  };
+
+  onEditDivisionDetails = (divisionId: string) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const eventId = this.props.match.params.eventId;
+    const path = eventId
+      ? `/event/divisions-and-pools-edit/${eventId}`
+      : '/event/divisions-and-pools-edit';
+    this.props.history.push({ pathname: path, state: { divisionId } });
   };
 
   render() {
@@ -79,9 +80,7 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
                       variant="text"
                       color="secondary"
                       icon={<CreateIcon />}
-                      onClick={e =>
-                        this.onEditDivisionDetails(e, division.division_id)
-                      }
+                      onClick={this.onEditDivisionDetails(division.division_id)}
                     />
                   </div>
                   <div className={styles.sectionContent}>
