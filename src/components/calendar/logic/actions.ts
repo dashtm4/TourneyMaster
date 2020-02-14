@@ -2,29 +2,51 @@ import { Dispatch } from 'redux';
 import { ICalendarEvent } from 'common/models/calendar';
 import { Toasts } from 'components/common';
 
-import { CALENDAR_EVENT_FETCH_MULT } from './actionTypes';
+import {
+  CALENDAR_EVENT_FETCH_MULT,
+  CALENDAR_EVENT_CREATE_SUCC,
+} from './actionTypes';
 import { isCalendarEventValid } from './helper';
 
-const eventsList = [
+const eventsList: ICalendarEvent[] = [
   {
     title: 'Event Number One',
-    start: '2020-02-01T10:00:00',
-    end: '2020-02-05T12:00:00',
-    className: 'event',
+    dateFrom: '2020-02-01T10:00:00',
+    dateTo: '2020-02-05T12:00:00',
+    location: 'Some Location',
+    eventTag: 'Event tag',
+    type: 'event',
+    timeFrom: '2020-02-01T10:00:00',
+    timeTo: '2020-02-05T12:00:00',
+    description: 'Description',
+    setReminder: false,
   },
   {
     title: 'Reminder Number One',
-    start: '2020-02-07T18:35:00',
-    end: '2020-02-07T20:10:00',
-    className: 'reminder',
+    dateFrom: '2020-02-07T18:35:00',
+    dateTo: '2020-02-07T20:10:00',
+    location: 'Some Location',
+    eventTag: 'Event tag',
+    type: 'reminder',
+    timeFrom: '2020-02-07T18:35:00',
+    timeTo: '2020-02-07T20:10:00',
+    description: 'Description',
+    setReminder: false,
   },
   {
     title: 'Task Number One',
-    start: '2020-02-10T11:00:00',
-    end: '2020-02-12T23:10:00',
-    className: 'task',
+    dateFrom: '2020-02-10T11:00:00',
+    dateTo: '2020-02-12T23:10:00',
+    location: 'Some Location',
+    eventTag: 'Event tag',
+    type: 'task',
+    timeFrom: '2020-02-10T11:00:00',
+    timeTo: '2020-02-12T23:10:00',
+    description: 'Description',
+    setReminder: false,
   },
 ];
+
 /**
  * Fake api calls
  */
@@ -42,6 +64,10 @@ const fetchCalendarEvents = (payload: ICalendarEvent[]) => ({
   payload,
 });
 
+const calendarEventCreateSucc = () => ({
+  type: CALENDAR_EVENT_CREATE_SUCC,
+});
+
 export const getCalendarEvents = () => async (dispatch: Dispatch) => {
   const response = await get('/calendarEvents');
 
@@ -52,13 +78,17 @@ export const getCalendarEvents = () => async (dispatch: Dispatch) => {
   Toasts.errorToast("Couldn't load the events");
 };
 
-export const createCalendarEvent = (data: ICalendarEvent) => async () => {
+export const createCalendarEvent = (data: ICalendarEvent) => async (
+  dispatch: Dispatch
+) => {
   const isEventValid = isCalendarEventValid(data);
   if (!isEventValid) return Toasts.errorToast('Event data is invalid');
 
   const response = await post('/calendarEvents', data);
 
   if (response && !response.error) {
+    eventsList.push(data as any);
+    dispatch(calendarEventCreateSucc());
     return Toasts.successToast('Calendar event created successfully');
   }
 

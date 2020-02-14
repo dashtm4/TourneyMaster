@@ -3,15 +3,20 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
 import { Button, Paper, HeadingLevelTwo } from 'components/common';
-import { ICalendarEvent, IEvent } from 'common/models/calendar';
+import { ICalendarEvent } from 'common/models/calendar';
 import CreateDialog from './create-dialog';
 import styles from './styles.module.scss';
 import CalendarBody from './body';
 
 import { getCalendarEvents, createCalendarEvent } from './logic/actions';
+import { appropriateEvents } from './calendar.helper';
 
-interface IProps {
-  eventsList?: IEvent[];
+interface IMapStateToProps {
+  eventsList?: ICalendarEvent[];
+  calendarEventCreated: boolean;
+}
+
+interface IProps extends IMapStateToProps {
   createCalendarEvent: (event: ICalendarEvent) => void;
   getCalendarEvents: () => void;
 }
@@ -27,6 +32,17 @@ class Calendar extends Component<IProps, IState> {
 
   componentDidMount() {
     this.props.getCalendarEvents();
+  }
+
+  componentDidUpdate(prevProps: IProps) {
+    const { calendarEventCreated: prevEventCreated } = prevProps;
+    const { calendarEventCreated } = this.props;
+    if (
+      prevEventCreated !== calendarEventCreated &&
+      calendarEventCreated === true
+    ) {
+      this.props.getCalendarEvents();
+    }
   }
 
   onSave() {
@@ -72,7 +88,7 @@ class Calendar extends Component<IProps, IState> {
         />
 
         <CalendarBody
-          eventsList={eventsList}
+          eventsList={appropriateEvents(eventsList || [])}
           onCreatePressed={this.onCreatePressed}
         />
       </div>
@@ -82,12 +98,14 @@ class Calendar extends Component<IProps, IState> {
 
 interface IRootState {
   calendar: {
-    events?: IEvent[];
+    events?: ICalendarEvent[];
+    eventJustCreated: boolean;
   };
 }
 
-const mapStateToProps = (state: IRootState) => ({
+const mapStateToProps = (state: IRootState): IMapStateToProps => ({
   eventsList: state.calendar.events,
+  calendarEventCreated: state.calendar.eventJustCreated,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>

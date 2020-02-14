@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from '@material-ui/core';
 import { capitalize } from 'lodash-es';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -36,6 +36,11 @@ const defaultCalendarEvent = (): ICalendarEvent => ({
 export default (props: IProps) => {
   const { dialogOpen, onDialogClose, onSave } = props;
 
+  useEffect(() => {
+    if (!dialogOpen)
+      setTimeout(() => setCalendarEvent(defaultCalendarEvent()), 200);
+  });
+
   const [calendarEvent, setCalendarEvent] = useState<ICalendarEvent>(
     defaultCalendarEvent()
   );
@@ -70,11 +75,6 @@ export default (props: IProps) => {
     updateEvent('setReminder', !calendarEvent.setReminder);
 
   const onSaveClicked = () => onSave(calendarEvent);
-
-  const onCloseClicked = () => {
-    setTimeout(() => setCalendarEvent(defaultCalendarEvent()), 200);
-    onDialogClose();
-  };
 
   const renderButtons = (eventTypes: ButtonTypeEvent[]) =>
     eventTypes.map((el: ButtonTypeEvent) => (
@@ -192,7 +192,7 @@ export default (props: IProps) => {
         </div>
         <div className={styles.controlWrapper}>
           <Button
-            onClick={onCloseClicked}
+            onClick={onDialogClose}
             label="Cancel"
             variant="text"
             color="secondary"
