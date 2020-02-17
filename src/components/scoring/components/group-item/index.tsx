@@ -2,10 +2,10 @@ import React from 'react';
 import SectionDropdown from '../../../common/section-dropdown';
 import TeamItem from '../team-item';
 import styles from './styles.module.scss';
-import { BindingCbWithOne } from '../../../../common/models/callback';
-import { ITeam } from '../../../../common/models/teams';
+import { IPool, ITeam, BindingCbWithOne } from '../../../../common/models';
 
 interface Props {
+  pool: IPool;
   teams: ITeam[];
   onOpenTeamDetails: BindingCbWithOne<ITeam>;
 }

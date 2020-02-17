@@ -3,23 +3,38 @@ import moment from 'moment';
 import SectionDropdown from '../../../common/section-dropdown';
 import GroupItem from '../group-item';
 import styles from './styles.module.scss';
-import { IDisision, ITeam, BindingCbWithOne } from '../../../../common/models';
+import {
+  IDisision,
+  IPool,
+  ITeam,
+  BindingCbWithOne,
+} from '../../../../common/models';
 
 interface Props {
-  division: IDisision | null;
+  division: IDisision;
+  pools: IPool[];
   teams: ITeam[];
+  loadPools: (divisionId: string) => void;
   onOpenTeamDetails: BindingCbWithOne<ITeam>;
 }
 
-const ScoringItem = ({ division, teams, onOpenTeamDetails }: Props) => {
-  if (!division) {
-    return null;
+const ScoringItem = ({
+  division,
+  pools,
+  teams,
+  loadPools,
+  onOpenTeamDetails,
+}: Props) => {
+  if (pools.length === 0) {
+    loadPools(division.division_id);
   }
 
   return (
     <li>
       <SectionDropdown isDefaultExpanded={true} headingColor={'#1C315F'}>
-        <span>{division.long_name} (Division: 2020, 2021)</span>
+        <span>
+          {division.short_name} ({division.long_name})
+        </span>
         <div>
           <ul className={styles.statisticList}>
             <li>
@@ -44,7 +59,14 @@ const ScoringItem = ({ division, teams, onOpenTeamDetails }: Props) => {
             </li>
           </ul>
           <ul className={styles.groupList}>
-            <GroupItem teams={teams} onOpenTeamDetails={onOpenTeamDetails} />
+            {pools.map(it => (
+              <GroupItem
+                pool={it}
+                teams={teams}
+                onOpenTeamDetails={onOpenTeamDetails}
+                key={it.pool_id}
+              />
+            ))}
           </ul>
         </div>
       </SectionDropdown>

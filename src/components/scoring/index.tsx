@@ -2,7 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dispatch, bindActionCreators } from 'redux';
-import { loadDivision, loadTeams, editTeam, deleteTeam } from './logic/actions';
+import {
+  loadDivision,
+  loadPools,
+  loadTeams,
+  editTeam,
+  deleteTeam,
+} from './logic/actions';
 import ScoringItem from './components/scoring-Item';
 import TeamDetailsPopup from './components/team-details-popup';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
@@ -11,6 +17,7 @@ import Modal from '../common/modal';
 import { AppState } from './logic/reducer';
 import {
   IDisision,
+  IPool,
   ITeam,
   BindingAction,
   BindingCbWithOne,
@@ -22,9 +29,11 @@ interface MatchParams {
 }
 
 interface Props {
-  division: IDisision | null;
+  divisions: IDisision[];
+  pools: IPool[];
   teams: ITeam[];
   loadDivision: (eventId: string) => void;
+  loadPools: (divisionId: string) => void;
   loadTeams: BindingAction;
   editTeam: BindingCbWithOne<ITeam>;
   deleteTeam: (teamId: string) => void;
@@ -105,7 +114,7 @@ class Sсoring extends React.Component<
 
   render() {
     const { isModalOpen, isEdit, changeableTeam } = this.state;
-    const { teams, division } = this.props;
+    const { pools, teams, divisions, loadPools } = this.props;
 
     return (
       <section>
@@ -115,11 +124,22 @@ class Sсoring extends React.Component<
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>Scoring</HeadingLevelTwo>
           <ul className={styles.scoringList}>
-            <ScoringItem
-              division={division}
-              teams={teams}
-              onOpenTeamDetails={this.onOpenTeamDetails}
-            />
+            {divisions.map(division => (
+              <ScoringItem
+                division={division}
+                pools={pools.filter(pool => {
+                  console.log(pool.division_id);
+
+                  console.log(division.division_id);
+
+                  return pool.division_id === division.division_id;
+                })}
+                teams={teams}
+                loadPools={loadPools}
+                onOpenTeamDetails={this.onOpenTeamDetails}
+                key={division.division_id}
+              />
+            ))}
           </ul>
         </div>
         <Modal isOpen={isModalOpen} onClose={this.onCloseModal}>
@@ -144,12 +164,13 @@ interface IRootState {
 
 export default connect(
   (state: IRootState) => ({
-    division: state.scoring.division,
+    divisions: state.scoring.divisions,
+    pools: state.scoring.pools,
     teams: state.scoring.teams,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadDivision, loadTeams, deleteTeam, editTeam },
+      { loadDivision, loadPools, loadTeams, deleteTeam, editTeam },
       dispatch
     )
 )(Sсoring);

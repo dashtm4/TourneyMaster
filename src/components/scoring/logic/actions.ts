@@ -5,11 +5,12 @@ import {
   SUCCESS,
   FAILURE,
   LOAD_DIVISION,
+  LOAD_POOLS,
   LOAD_TEAMS,
   EDIT_TEAM,
   DELETE_TEAM,
 } from './action-types';
-import { IDisision, ITeam } from '../../../common/models';
+import { IDisision, IPool, ITeam } from '../../../common/models';
 import Api from 'api/api';
 
 import { teams } from '../mocks/teams';
@@ -19,17 +20,39 @@ const loadDivision: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
 ) => async (dispatch: Dispatch) => {
   try {
     const divisions = await Api.get('/divisions');
-    const currentDivision = divisions.find(
+    const currentEventDivisions = divisions.filter(
       (it: IDisision) => it.event_id === eventId
     );
 
     dispatch({
       type: LOAD_DIVISION + SUCCESS,
-      payload: currentDivision,
+      payload: currentEventDivisions,
     });
   } catch {
     dispatch({
       type: LOAD_DIVISION + FAILURE,
+    });
+  }
+};
+
+const loadPools: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
+  divisionId: string
+) => async (dispatch: Dispatch) => {
+  try {
+    const pools = await Api.get('/pools');
+    console.log(pools);
+
+    const currentDivisionPools = pools.filter(
+      (it: IPool) => it.division_id === divisionId
+    );
+
+    dispatch({
+      type: LOAD_POOLS + SUCCESS,
+      payload: currentDivisionPools,
+    });
+  } catch {
+    dispatch({
+      type: LOAD_POOLS + FAILURE,
     });
   }
 };
@@ -88,4 +111,4 @@ const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-export { loadDivision, loadTeams, editTeam, deleteTeam };
+export { loadDivision, loadPools, loadTeams, editTeam, deleteTeam };
