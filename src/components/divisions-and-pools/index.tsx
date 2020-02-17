@@ -24,6 +24,7 @@ interface IDivisionsAndPoolsProps {
 
 interface IDivisionAndPoolsState {
   isModalOpen: boolean;
+  selected: any;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -31,7 +32,7 @@ class DivisionsAndPools extends React.Component<
   IDivisionAndPoolsState
 > {
   eventId = this.props.match.params.eventId;
-  state = { isModalOpen: false };
+  state = { isModalOpen: false, selected: this.props.divisions[0] };
 
   componentDidMount() {
     this.props.getDivisions();
@@ -52,8 +53,8 @@ class DivisionsAndPools extends React.Component<
     this.props.history.push({ pathname: path, state: { divisionId } });
   };
 
-  onAddPool = () => {
-    this.setState({ isModalOpen: true });
+  onAddPool = (division: IDivision) => {
+    this.setState({ isModalOpen: true, selected: division });
   };
 
   onModalClose = () => {
@@ -62,6 +63,7 @@ class DivisionsAndPools extends React.Component<
 
   render() {
     const { divisions } = this.props;
+
     return (
       <section>
         <Paper>
@@ -81,38 +83,46 @@ class DivisionsAndPools extends React.Component<
           </div>
           {divisions.length ? (
             <ul className={styles.divisionsList}>
-              {divisions.map(division => (
-                <li key={division.division_id}>
-                  <SectionDropdown padding="0" isDefaultExpanded={true}>
-                    <div className={styles.sectionTitle}>
-                      <div>{`Division: ${division.long_name}`}</div>
-                      <Button
-                        label="Edit Division Details"
-                        variant="text"
-                        color="secondary"
-                        icon={<CreateIcon />}
-                        onClick={this.onEditDivisionDetails(
-                          division.division_id
-                        )}
-                      />
-                    </div>
-                    <div className={styles.sectionContent}>
-                      <DivisionDetails data={division} />
-                      <PoolsDetails onAddPool={this.onAddPool} />
-                      <Modal
-                        isOpen={this.state.isModalOpen}
-                        onClose={this.onModalClose}
-                      >
-                        <AddPool
-                          division={division.long_name}
-                          teams={division.teams_registered}
-                          onClose={this.onModalClose}
-                        />
-                      </Modal>
-                    </div>
-                  </SectionDropdown>
-                </li>
-              ))}
+              {divisions.map(
+                division =>
+                  division.event_id === this.eventId && (
+                    <li key={division.division_id}>
+                      <SectionDropdown padding="0" isDefaultExpanded={true}>
+                        <div className={styles.sectionTitle}>
+                          <div>{`Division: ${division.long_name}`}</div>
+                          <Button
+                            label="Edit Division Details"
+                            variant="text"
+                            color="secondary"
+                            icon={<CreateIcon />}
+                            onClick={this.onEditDivisionDetails(
+                              division.division_id
+                            )}
+                          />
+                        </div>
+                        <div className={styles.sectionContent}>
+                          <DivisionDetails data={division} />
+                          <PoolsDetails
+                            onAddPool={this.onAddPool}
+                            division={division}
+                          />
+                        </div>
+                      </SectionDropdown>
+                    </li>
+                  )
+              )}
+              {this.state.selected && (
+                <Modal
+                  isOpen={this.state.isModalOpen}
+                  onClose={this.onModalClose}
+                >
+                  <AddPool
+                    division={this.state.selected.long_name}
+                    teams={this.state.selected.teams_registered}
+                    onClose={this.onModalClose}
+                  />
+                </Modal>
+              )}
             </ul>
           ) : (
             <div>Loading</div>

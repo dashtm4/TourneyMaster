@@ -69,7 +69,6 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     this.divisionId
       ? this.props.updateDivision(this.state.divisions[0])
       : this.props.saveDivisions(this.state.divisions);
-
     // this.props.history.goBack();
   };
 
