@@ -9,7 +9,12 @@ import styles from './styles.module.scss';
 import CalendarBody from './body';
 
 import { getCalendarEvents, createCalendarEvent } from './logic/actions';
-import { appropriateEvents } from './calendar.helper';
+import {
+  appropriateEvents,
+  calculateDialogPosition,
+  setBlankNewEvent,
+} from './calendar.helper';
+import { IDateSelect } from './calendar.model';
 
 interface IMapStateToProps {
   eventsList?: ICalendarEvent[];
@@ -23,14 +28,23 @@ interface IProps extends IMapStateToProps {
 
 interface IState {
   dialogOpen: boolean;
+  blankNewEvent?: ICalendarEvent;
+  dateSelect: IDateSelect;
 }
 
 class Calendar extends Component<IProps, IState> {
   state = {
     dialogOpen: false,
+    blankNewEvent: undefined,
+    dateSelect: {
+      left: 0,
+      top: 0,
+      date: undefined,
+    },
   };
 
   componentDidMount() {
+    window.addEventListener('resize', this.updateDimensions);
     this.props.getCalendarEvents();
   }
 
@@ -45,16 +59,53 @@ class Calendar extends Component<IProps, IState> {
     }
   }
 
-  onSave() {
-    console.log('SAVE');
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateDimensions);
   }
 
+  updateDimensions = () => {
+    const left = window.innerWidth / 2 - 300 / 2;
+    const top = window.innerHeight / 2 - 134 / 2;
+    this.setState({ dateSelect: { left, top } });
+  };
+
+  onSave = () => {
+    console.log('SAVE');
+  };
+
+  onDatePressed = (dateSelect: IDateSelect) => {
+    const { left, top, date } = dateSelect;
+    const { leftPosition, topPosition } = calculateDialogPosition(left, top);
+
+    this.setState({
+      dateSelect: {
+        left: leftPosition,
+        top: topPosition,
+        date,
+      },
+    });
+
+    this.onDialogOpen();
+    this.setBlankEvent(date);
+  };
+
   onCreatePressed = () => {
+    this.updateDimensions();
+    this.onDialogOpen();
+  };
+
+  setBlankEvent = (date?: string) => {
+    this.setState({
+      blankNewEvent: setBlankNewEvent(date),
+    });
+  };
+
+  onDialogOpen = () => {
     this.setState({ dialogOpen: true });
   };
 
   onDialogClose = () => {
-    this.setState({ dialogOpen: false });
+    this.setState({ dialogOpen: false, blankNewEvent: undefined });
   };
 
   onCalendarEvent = (calendarEvent: ICalendarEvent) => {
@@ -63,8 +114,12 @@ class Calendar extends Component<IProps, IState> {
   };
 
   render() {
-    const { dialogOpen } = this.state;
+    const { dialogOpen, dateSelect, blankNewEvent } = this.state;
     const { eventsList } = this.props;
+
+    const events = blankNewEvent
+      ? eventsList?.concat(blankNewEvent!)
+      : eventsList;
 
     return (
       <div className={styles.container}>
@@ -83,12 +138,14 @@ class Calendar extends Component<IProps, IState> {
 
         <CreateDialog
           dialogOpen={dialogOpen}
+          dateSelect={dateSelect}
           onDialogClose={this.onDialogClose}
           onSave={this.onCalendarEvent}
         />
 
         <CalendarBody
-          eventsList={appropriateEvents(eventsList || [])}
+          eventsList={appropriateEvents(events || [])}
+          onDatePressed={this.onDatePressed}
           onCreatePressed={this.onCreatePressed}
         />
       </div>

@@ -1,9 +1,15 @@
 $containerWidth: 600px;
 $containerHeight: 268px;
 
+.dialogPaper {
+  position: absolute !important;
+  margin: 0 !important;
+  max-height: none !important;
+}
+
 .container {
-  width: 100%;
-  height: 100%;
+  width: $containerWidth;
+  height: $containerHeight;
 
   .wrapper {
     background-color: #ececec;
