@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  DatePicker as InputDatePicker,
+  TimePicker as InputTimePicker,
   KeyboardDatePicker,
   KeyboardTimePicker,
   MuiPickersUtilsProvider,
@@ -19,6 +21,7 @@ interface IDatePickerProps {
   onChange: any;
   views?: DatePickerView[];
   dateFormat?: string;
+  viewType?: 'default' | 'input';
 }
 
 const DatePicker: React.FC<IDatePickerProps> = ({
@@ -29,7 +32,20 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   width,
   views,
   dateFormat,
+  viewType,
 }) => {
+  const renderInputDatePicker = () => (
+    <InputDatePicker
+      views={views}
+      style={{ width: width || defaultWidth }}
+      variant="inline"
+      size="small"
+      inputVariant="outlined"
+      value={value}
+      format={dateFormat || 'yyyy/MM/dd'}
+      onChange={onChange}
+    />
+  );
   const renderDatePicker = () => (
     <KeyboardDatePicker
       views={views}
@@ -39,6 +55,17 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       inputVariant="outlined"
       value={value}
       format={dateFormat || 'yyyy/MM/dd'}
+      onChange={onChange}
+    />
+  );
+  const renderInputTimePicker = () => (
+    <InputTimePicker
+      style={{ width: width || defaultWidth }}
+      variant="inline"
+      size="small"
+      inputVariant="outlined"
+      placeholder="08:00 AM"
+      value={value}
       onChange={onChange}
     />
   );
@@ -54,11 +81,17 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       onChange={onChange}
     />
   );
+  const chooseDatePicker = () =>
+    viewType === 'input' ? renderInputDatePicker() : renderDatePicker();
+
+  const chooseTimePicker = () =>
+    viewType === 'input' ? renderInputTimePicker() : renderTimePicker();
+
   return (
     <div className={styles.container}>
       <span className={styles.label}>{label}</span>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        {type === 'date' ? renderDatePicker() : renderTimePicker()}
+        {type === 'date' ? chooseDatePicker() : chooseTimePicker()}
       </MuiPickersUtilsProvider>
     </div>
   );
