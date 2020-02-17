@@ -4,14 +4,54 @@ import {
   TeamsAction,
   SUCCESS,
   FAILURE,
+  LOAD_DIVISION,
+  LOAD_POOLS,
   LOAD_TEAMS,
   EDIT_TEAM,
   DELETE_TEAM,
 } from './action-types';
-import { ITeam } from '../../../common/models/teams';
-// import Api from 'api/api';
+import { IDisision, IPool, ITeam } from '../../../common/models';
+import Api from 'api/api';
 
-import { teams } from '../mocks/teams';
+const loadDivision: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
+  eventId: string
+) => async (dispatch: Dispatch) => {
+  try {
+    const divisions = await Api.get('/divisions');
+    const currentEventDivisions = divisions.filter(
+      (it: IDisision) => it.event_id === eventId
+    );
+
+    dispatch({
+      type: LOAD_DIVISION + SUCCESS,
+      payload: currentEventDivisions,
+    });
+  } catch {
+    dispatch({
+      type: LOAD_DIVISION + FAILURE,
+    });
+  }
+};
+
+const loadPools: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
+  divisionId: string
+) => async (dispatch: Dispatch) => {
+  try {
+    const pools = await Api.get('/pools');
+    const currentDivisionPools = pools.filter(
+      (it: IPool) => it.division_id === divisionId
+    );
+
+    dispatch({
+      type: LOAD_POOLS + SUCCESS,
+      payload: currentDivisionPools,
+    });
+  } catch {
+    dispatch({
+      type: LOAD_POOLS + FAILURE,
+    });
+  }
+};
 
 const loadTeams: ActionCreator<ThunkAction<
   void,
@@ -20,7 +60,7 @@ const loadTeams: ActionCreator<ThunkAction<
   TeamsAction
 >> = () => async (dispatch: Dispatch) => {
   try {
-    // const teams = await Api.get('');
+    const teams = await Api.get('/teams');
 
     dispatch({
       type: LOAD_TEAMS + SUCCESS,
@@ -37,7 +77,7 @@ const editTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   team: ITeam
 ) => async (dispatch: Dispatch) => {
   try {
-    // await Api.put('');
+    await Api.put(`/teams?team_id=${team.team_id}`, team);
 
     dispatch({
       type: EDIT_TEAM + SUCCESS,
@@ -54,7 +94,7 @@ const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   teamId: string
 ) => async (dispatch: Dispatch) => {
   try {
-    // await Api.delete('');
+    await Api.delete(`/teams?team_id=${teamId}`);
 
     dispatch({
       type: DELETE_TEAM + SUCCESS,
@@ -67,4 +107,4 @@ const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-export { loadTeams, editTeam, deleteTeam };
+export { loadDivision, loadPools, loadTeams, editTeam, deleteTeam };

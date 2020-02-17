@@ -1,17 +1,23 @@
 import {
   TeamsAction,
   SUCCESS,
+  LOAD_DIVISION,
+  LOAD_POOLS,
   LOAD_TEAMS,
   EDIT_TEAM,
   DELETE_TEAM,
 } from './action-types';
-import { ITeam } from '../../../common/models/teams';
+import { IDisision, IPool, ITeam } from '../../../common/models';
 
 const initialState = {
+  divisions: [],
+  pools: [],
   teams: [],
 };
 
 export interface AppState {
+  divisions: IDisision[];
+  pools: IPool[];
   teams: ITeam[];
 }
 
@@ -20,6 +26,13 @@ const scoringReducer = (
   action: TeamsAction
 ) => {
   switch (action.type) {
+    case LOAD_DIVISION + SUCCESS:
+      return { ...state, divisions: action.payload };
+    case LOAD_POOLS + SUCCESS:
+      return {
+        ...state,
+        pools: [...state.pools, ...(action.payload as IPool[])],
+      };
     case LOAD_TEAMS + SUCCESS:
       return { ...state, teams: action.payload };
     case EDIT_TEAM + SUCCESS:

@@ -1,16 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SectionDropdown from '../../../common/section-dropdown';
 import TeamItem from '../team-item';
 import styles from './styles.module.scss';
-import { BindingCbWithOne } from '../../../../common/models/callback';
-import { ITeam } from '../../../../common/models/teams';
+import {
+  IPool,
+  ITeam,
+  BindingAction,
+  BindingCbWithOne,
+} from '../../../../common/models';
 
 interface Props {
+  pool: IPool;
   teams: ITeam[];
+  loadTeams: BindingAction;
   onOpenTeamDetails: BindingCbWithOne<ITeam>;
 }
 
-const GroupItem = ({ teams, onOpenTeamDetails }: Props) => {
+const GroupItem = ({ pool, teams, loadTeams, onOpenTeamDetails }: Props) => {
+  useEffect(() => {
+    loadTeams();
+  }, []);
+
   if (teams.length === 0) {
     return null;
   }
@@ -18,7 +28,7 @@ const GroupItem = ({ teams, onOpenTeamDetails }: Props) => {
   return (
     <li className={styles.groupItem}>
       <SectionDropdown isDefaultExpanded={true} headingColor={'#1C315F'}>
-        <span>2020: East</span>
+        <span>{pool.pool_desc}</span>
         <table className={styles.groupTable}>
           <thead>
             <tr>
@@ -43,4 +53,5 @@ const GroupItem = ({ teams, onOpenTeamDetails }: Props) => {
     </li>
   );
 };
+
 export default GroupItem;
