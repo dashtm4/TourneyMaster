@@ -8,7 +8,7 @@ import CreateDialog from './create-dialog';
 import styles from './styles.module.scss';
 import CalendarBody from './body';
 
-import { getCalendarEvents, createCalendarEvent } from './logic/actions';
+import { getCalendarEvents, saveCalendar } from './logic/actions';
 import {
   appropriateEvents,
   calculateDialogPosition,
@@ -22,20 +22,22 @@ interface IMapStateToProps {
 }
 
 interface IProps extends IMapStateToProps {
-  createCalendarEvent: (event: ICalendarEvent) => void;
   getCalendarEvents: () => void;
+  saveCalendar: (data: ICalendarEvent[]) => void;
 }
 
 interface IState {
   dialogOpen: boolean;
   blankNewEvent?: ICalendarEvent;
   dateSelect: IDateSelect;
+  eventsList?: ICalendarEvent[];
 }
 
 class Calendar extends Component<IProps, IState> {
   state = {
     dialogOpen: false,
     blankNewEvent: undefined,
+    eventsList: this.props.eventsList,
     dateSelect: {
       left: 0,
       top: 0,
@@ -57,6 +59,12 @@ class Calendar extends Component<IProps, IState> {
     ) {
       this.props.getCalendarEvents();
     }
+
+    if (!prevProps.eventsList?.length && !this.state.eventsList) {
+      this.setState({
+        eventsList: this.props.eventsList,
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -70,7 +78,8 @@ class Calendar extends Component<IProps, IState> {
   };
 
   onSave = () => {
-    console.log('SAVE');
+    const { eventsList } = this.state;
+    this.props.saveCalendar(eventsList!);
   };
 
   onDatePressed = (dateSelect: IDateSelect) => {
@@ -110,12 +119,13 @@ class Calendar extends Component<IProps, IState> {
 
   onCalendarEvent = (calendarEvent: ICalendarEvent) => {
     this.onDialogClose();
-    this.props.createCalendarEvent(calendarEvent);
+    this.setState(({ eventsList }) => ({
+      eventsList: [...eventsList, calendarEvent],
+    }));
   };
 
   render() {
-    const { dialogOpen, dateSelect, blankNewEvent } = this.state;
-    const { eventsList } = this.props;
+    const { dialogOpen, dateSelect, blankNewEvent, eventsList } = this.state;
 
     const events = blankNewEvent
       ? eventsList?.concat(blankNewEvent!)
@@ -166,6 +176,6 @@ const mapStateToProps = (state: IRootState): IMapStateToProps => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
-  bindActionCreators({ getCalendarEvents, createCalendarEvent }, dispatch);
+  bindActionCreators({ getCalendarEvents, saveCalendar }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar);
