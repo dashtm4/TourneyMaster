@@ -67,6 +67,19 @@
   cursor: pointer;
 }
 
+:local(.fullnameWrapper) {
+  display: flex;
+  justify-content: space-between;
+
+  width: 100%;
+  margin: 0;
+
+  label {
+    width: 135px;
+    margin: 8px 0;
+  }
+}
+
 :local(.accountText) {
   color: #1c315f;
   font-size: 12px;
