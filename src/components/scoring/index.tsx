@@ -127,13 +127,9 @@ class Sсoring extends React.Component<
             {divisions.map(division => (
               <ScoringItem
                 division={division}
-                pools={pools.filter(pool => {
-                  console.log(pool.division_id);
-
-                  console.log(division.division_id);
-
-                  return pool.division_id === division.division_id;
-                })}
+                pools={pools.filter(
+                  pool => pool.division_id === division.division_id
+                )}
                 teams={teams}
                 loadPools={loadPools}
                 onOpenTeamDetails={this.onOpenTeamDetails}

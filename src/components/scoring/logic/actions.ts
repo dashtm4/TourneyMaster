@@ -40,8 +40,6 @@ const loadPools: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
 ) => async (dispatch: Dispatch) => {
   try {
     const pools = await Api.get('/pools');
-    console.log(pools);
-
     const currentDivisionPools = pools.filter(
       (it: IPool) => it.division_id === divisionId
     );

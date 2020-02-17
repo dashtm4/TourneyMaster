@@ -10,7 +10,7 @@ interface Props {
   onOpenTeamDetails: BindingCbWithOne<ITeam>;
 }
 
-const GroupItem = ({ teams, onOpenTeamDetails }: Props) => {
+const GroupItem = ({ pool, teams, onOpenTeamDetails }: Props) => {
   if (teams.length === 0) {
     return null;
   }
@@ -18,7 +18,7 @@ const GroupItem = ({ teams, onOpenTeamDetails }: Props) => {
   return (
     <li className={styles.groupItem}>
       <SectionDropdown isDefaultExpanded={true} headingColor={'#1C315F'}>
-        <span>2020: East</span>
+        <span>{pool.pool_desc}</span>
         <table className={styles.groupTable}>
           <thead>
             <tr>
