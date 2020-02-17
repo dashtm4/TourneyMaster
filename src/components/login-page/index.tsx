@@ -72,7 +72,7 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
   };
 
   onRegistrationSubmit = async (
-    name: string,
+    fullName: string,
     email: string,
     password: string
   ) => {
@@ -81,7 +81,7 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
         username: email,
         password,
         attributes: {
-          name,
+          name: fullName,
         },
       });
     } catch (err) {

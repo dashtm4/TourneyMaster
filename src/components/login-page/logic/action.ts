@@ -13,9 +13,9 @@ const createMemeber: ActionCreator<ThunkAction<
   {},
   null,
   MemberAction
->> = (name: string, email: string) => async () => {
+>> = (fullName: string, email: string) => async () => {
   try {
-    const memberFullName = name.split(' ');
+    const memberFullName = fullName.split(' ');
     const memberId = getVarcharEight();
     const members = await Api.get('/members');
     const isExistMember = members.some(
