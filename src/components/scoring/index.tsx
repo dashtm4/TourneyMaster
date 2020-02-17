@@ -56,10 +56,6 @@ class Sсoring extends React.Component<
     if (eventId) {
       loadDivision(eventId);
     }
-
-    const { loadTeams } = this.props;
-
-    loadTeams();
   }
 
   constructor(props: Props & RouteComponentProps<MatchParams>) {
@@ -114,7 +110,7 @@ class Sсoring extends React.Component<
 
   render() {
     const { isModalOpen, isEdit, changeableTeam } = this.state;
-    const { pools, teams, divisions, loadPools } = this.props;
+    const { pools, teams, divisions, loadPools, loadTeams } = this.props;
 
     return (
       <section>
@@ -132,6 +128,7 @@ class Sсoring extends React.Component<
                 )}
                 teams={teams}
                 loadPools={loadPools}
+                loadTeams={loadTeams}
                 onOpenTeamDetails={this.onOpenTeamDetails}
                 key={division.division_id}
               />

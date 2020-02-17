@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import moment from 'moment';
 import SectionDropdown from '../../../common/section-dropdown';
 import GroupItem from '../group-item';
@@ -7,6 +7,7 @@ import {
   IDisision,
   IPool,
   ITeam,
+  BindingAction,
   BindingCbWithOne,
 } from '../../../../common/models';
 
@@ -15,6 +16,7 @@ interface Props {
   pools: IPool[];
   teams: ITeam[];
   loadPools: (divisionId: string) => void;
+  loadTeams: BindingAction;
   onOpenTeamDetails: BindingCbWithOne<ITeam>;
 }
 
@@ -23,10 +25,15 @@ const ScoringItem = ({
   pools,
   teams,
   loadPools,
+  loadTeams,
   onOpenTeamDetails,
 }: Props) => {
-  if (pools.length === 0) {
+  useEffect(() => {
     loadPools(division.division_id);
+  }, []);
+
+  if (!division) {
+    return null;
   }
 
   return (
@@ -63,6 +70,7 @@ const ScoringItem = ({
               <GroupItem
                 pool={it}
                 teams={teams}
+                loadTeams={loadTeams}
                 onOpenTeamDetails={onOpenTeamDetails}
                 key={it.pool_id}
               />

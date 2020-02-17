@@ -13,8 +13,6 @@ import {
 import { IDisision, IPool, ITeam } from '../../../common/models';
 import Api from 'api/api';
 
-import { teams } from '../mocks/teams';
-
 const loadDivision: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   eventId: string
 ) => async (dispatch: Dispatch) => {
@@ -62,7 +60,7 @@ const loadTeams: ActionCreator<ThunkAction<
   TeamsAction
 >> = () => async (dispatch: Dispatch) => {
   try {
-    // const teams = await Api.get('');
+    const teams = await Api.get('/teams');
 
     dispatch({
       type: LOAD_TEAMS + SUCCESS,
@@ -79,7 +77,7 @@ const editTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   team: ITeam
 ) => async (dispatch: Dispatch) => {
   try {
-    // await Api.put('');
+    await Api.put(`/teams?team_id=${team.team_id}`, team);
 
     dispatch({
       type: EDIT_TEAM + SUCCESS,
@@ -96,7 +94,7 @@ const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   teamId: string
 ) => async (dispatch: Dispatch) => {
   try {
-    // await Api.delete('');
+    await Api.delete(`/teams?team_id=${teamId}`);
 
     dispatch({
       type: DELETE_TEAM + SUCCESS,
