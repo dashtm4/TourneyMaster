@@ -2,27 +2,32 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dispatch, bindActionCreators } from 'redux';
-import { loadTeams, editTeam, deleteTeam } from './logic/actions';
+import { loadDivision, loadTeams, editTeam, deleteTeam } from './logic/actions';
 import ScoringItem from './components/scoring-Item';
 import TeamDetailsPopup from './components/team-details-popup';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Button from '../common/buttons/button';
 import Modal from '../common/modal';
 import { AppState } from './logic/reducer';
-import { ITeam } from '../../common/models/teams';
-import { BindingAction, BindingCbWithOne } from '../../common/models/callback';
+import {
+  IDisision,
+  ITeam,
+  BindingAction,
+  BindingCbWithOne,
+} from '../../common/models';
 import styles from './styles.module.scss';
-// import Api from 'api/api';
 
 interface MatchParams {
   eventId?: string;
 }
 
 interface Props {
+  division: IDisision | null;
   teams: ITeam[];
+  loadDivision: (eventId: string) => void;
   loadTeams: BindingAction;
   editTeam: BindingCbWithOne<ITeam>;
-  deleteTeam: BindingCbWithOne<string>;
+  deleteTeam: (teamId: string) => void;
 }
 
 interface State {
@@ -36,9 +41,12 @@ class Sсoring extends React.Component<
   State
 > {
   async componentDidMount() {
-    // const eventId = this.props.match.params.eventId;
-    // const pools = await Api.get(`/pools`);
-    // console.log(pools);
+    const { loadDivision } = this.props;
+    const eventId = this.props.match.params.eventId;
+
+    if (eventId) {
+      loadDivision(eventId);
+    }
 
     const { loadTeams } = this.props;
 
@@ -97,7 +105,7 @@ class Sсoring extends React.Component<
 
   render() {
     const { isModalOpen, isEdit, changeableTeam } = this.state;
-    const { teams } = this.props;
+    const { teams, division } = this.props;
 
     return (
       <section>
@@ -108,6 +116,7 @@ class Sсoring extends React.Component<
           <HeadingLevelTwo>Scoring</HeadingLevelTwo>
           <ul className={styles.scoringList}>
             <ScoringItem
+              division={division}
               teams={teams}
               onOpenTeamDetails={this.onOpenTeamDetails}
             />
@@ -135,8 +144,12 @@ interface IRootState {
 
 export default connect(
   (state: IRootState) => ({
+    division: state.scoring.division,
     teams: state.scoring.teams,
   }),
   (dispatch: Dispatch) =>
-    bindActionCreators({ loadTeams, deleteTeam, editTeam }, dispatch)
+    bindActionCreators(
+      { loadDivision, loadTeams, deleteTeam, editTeam },
+      dispatch
+    )
 )(Sсoring);

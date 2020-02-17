@@ -4,14 +4,35 @@ import {
   TeamsAction,
   SUCCESS,
   FAILURE,
+  LOAD_DIVISION,
   LOAD_TEAMS,
   EDIT_TEAM,
   DELETE_TEAM,
 } from './action-types';
-import { ITeam } from '../../../common/models/teams';
-// import Api from 'api/api';
+import { IDisision, ITeam } from '../../../common/models';
+import Api from 'api/api';
 
 import { teams } from '../mocks/teams';
+
+const loadDivision: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
+  eventId: string
+) => async (dispatch: Dispatch) => {
+  try {
+    const divisions = await Api.get('/divisions');
+    const currentDivision = divisions.find(
+      (it: IDisision) => it.event_id === eventId
+    );
+
+    dispatch({
+      type: LOAD_DIVISION + SUCCESS,
+      payload: currentDivision,
+    });
+  } catch {
+    dispatch({
+      type: LOAD_DIVISION + FAILURE,
+    });
+  }
+};
 
 const loadTeams: ActionCreator<ThunkAction<
   void,
@@ -67,4 +88,4 @@ const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-export { loadTeams, editTeam, deleteTeam };
+export { loadDivision, loadTeams, editTeam, deleteTeam };
