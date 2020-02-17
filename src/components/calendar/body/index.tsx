@@ -1,24 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar } from '@fullcalendar/core';
+import { Calendar, View } from '@fullcalendar/core';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { capitalize } from 'lodash-es';
+import { format } from 'date-fns/esm';
 
 import { getViewType, buttonTypeView, ViewType } from '../calendar.helper';
 import { DatePicker, Button } from 'components/common';
 import styles from './styles.module.scss';
 import { IEvent } from 'common/models/calendar';
+import { IDateSelect } from '../calendar.model';
 import './main.scss';
 
 interface IProps {
   onCreatePressed: () => void;
   eventsList?: IEvent[];
+  onDatePressed: (dateSelect: IDateSelect) => void;
+}
+
+interface EventArg {
+  date: Date;
+  dateStr: string;
+  allDay: boolean;
+  resource?: any;
+  dayEl: HTMLElement;
+  jsEvent: MouseEvent;
+  view: View;
 }
 
 export default (props: IProps) => {
-  const { eventsList, onCreatePressed } = props;
+  const { eventsList, onCreatePressed, onDatePressed } = props;
 
   const header = {
     left: '',
@@ -57,8 +70,18 @@ export default (props: IProps) => {
     changeCurrentDate(date);
   };
 
-  const handleDateClick = (arg: any) => {
-    console.log(arg);
+  const handleDateClick = (arg: EventArg) => {
+    const left = arg.jsEvent.x;
+    const top = arg.jsEvent.y;
+    const date = format(arg.date, 'yyyy-MM-dd HH:mm:ss');
+
+    const dateSelect = {
+      left,
+      top,
+      date,
+    };
+
+    onDatePressed(dateSelect);
   };
 
   const handleEventClick = (arg: any) => {

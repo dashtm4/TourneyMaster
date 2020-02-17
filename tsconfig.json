@@ -24,6 +24,7 @@
     "rootDir": "src",
     "noImplicitAny": true,
     "noUnusedParameters": true,
+    "downlevelIteration": true,
     "importHelpers": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,

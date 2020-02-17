@@ -8,8 +8,13 @@ import CreateDialog from './create-dialog';
 import styles from './styles.module.scss';
 import CalendarBody from './body';
 
-import { getCalendarEvents, createCalendarEvent } from './logic/actions';
-import { appropriateEvents } from './calendar.helper';
+import { getCalendarEvents, saveCalendar } from './logic/actions';
+import {
+  appropriateEvents,
+  calculateDialogPosition,
+  setBlankNewEvent,
+} from './calendar.helper';
+import { IDateSelect } from './calendar.model';
 
 interface IMapStateToProps {
   eventsList?: ICalendarEvent[];
@@ -17,20 +22,31 @@ interface IMapStateToProps {
 }
 
 interface IProps extends IMapStateToProps {
-  createCalendarEvent: (event: ICalendarEvent) => void;
   getCalendarEvents: () => void;
+  saveCalendar: (data: ICalendarEvent[]) => void;
 }
 
 interface IState {
   dialogOpen: boolean;
+  blankNewEvent?: ICalendarEvent;
+  dateSelect: IDateSelect;
+  eventsList?: ICalendarEvent[];
 }
 
 class Calendar extends Component<IProps, IState> {
   state = {
     dialogOpen: false,
+    blankNewEvent: undefined,
+    eventsList: this.props.eventsList,
+    dateSelect: {
+      left: 0,
+      top: 0,
+      date: undefined,
+    },
   };
 
   componentDidMount() {
+    window.addEventListener('resize', this.updateDimensions);
     this.props.getCalendarEvents();
   }
 
@@ -43,28 +59,77 @@ class Calendar extends Component<IProps, IState> {
     ) {
       this.props.getCalendarEvents();
     }
+
+    if (!prevProps.eventsList?.length && !this.state.eventsList) {
+      this.setState({
+        eventsList: this.props.eventsList,
+      });
+    }
   }
 
-  onSave() {
-    console.log('SAVE');
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateDimensions);
   }
+
+  updateDimensions = () => {
+    const left = window.innerWidth / 2 - 300 / 2;
+    const top = window.innerHeight / 2 - 134 / 2;
+    this.setState({ dateSelect: { left, top } });
+  };
+
+  onSave = () => {
+    const { eventsList } = this.state;
+    this.props.saveCalendar(eventsList!);
+  };
+
+  onDatePressed = (dateSelect: IDateSelect) => {
+    const { left, top, date } = dateSelect;
+    const { leftPosition, topPosition } = calculateDialogPosition(left, top);
+
+    this.setState({
+      dateSelect: {
+        left: leftPosition,
+        top: topPosition,
+        date,
+      },
+    });
+
+    this.onDialogOpen();
+    this.setBlankEvent(date);
+  };
 
   onCreatePressed = () => {
+    this.updateDimensions();
+    this.onDialogOpen();
+  };
+
+  setBlankEvent = (date?: string) => {
+    this.setState({
+      blankNewEvent: setBlankNewEvent(date),
+    });
+  };
+
+  onDialogOpen = () => {
     this.setState({ dialogOpen: true });
   };
 
   onDialogClose = () => {
-    this.setState({ dialogOpen: false });
+    this.setState({ dialogOpen: false, blankNewEvent: undefined });
   };
 
   onCalendarEvent = (calendarEvent: ICalendarEvent) => {
     this.onDialogClose();
-    this.props.createCalendarEvent(calendarEvent);
+    this.setState(({ eventsList }) => ({
+      eventsList: [...eventsList, calendarEvent],
+    }));
   };
 
   render() {
-    const { dialogOpen } = this.state;
-    const { eventsList } = this.props;
+    const { dialogOpen, dateSelect, blankNewEvent, eventsList } = this.state;
+
+    const events = blankNewEvent
+      ? eventsList?.concat(blankNewEvent!)
+      : eventsList;
 
     return (
       <div className={styles.container}>
@@ -83,12 +148,14 @@ class Calendar extends Component<IProps, IState> {
 
         <CreateDialog
           dialogOpen={dialogOpen}
+          dateSelect={dateSelect}
           onDialogClose={this.onDialogClose}
           onSave={this.onCalendarEvent}
         />
 
         <CalendarBody
-          eventsList={appropriateEvents(eventsList || [])}
+          eventsList={appropriateEvents(events || [])}
+          onDatePressed={this.onDatePressed}
           onCreatePressed={this.onCreatePressed}
         />
       </div>
@@ -109,6 +176,6 @@ const mapStateToProps = (state: IRootState): IMapStateToProps => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
-  bindActionCreators({ getCalendarEvents, createCalendarEvent }, dispatch);
+  bindActionCreators({ getCalendarEvents, saveCalendar }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar);
