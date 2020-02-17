@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { History } from 'history';
 import styles from './styles.module.scss';
 import Paper from '../common/paper';
 import Button from '../common/buttons/button';
@@ -11,27 +12,25 @@ import CreateIcon from '@material-ui/icons/Create';
 import { getDivisions } from './logic/actions';
 import Modal from '../common/modal';
 import AddPool from './add-pool';
-
-const divisionData = {
-  division_id: '110AFC3B',
-  long_name: '2020',
-  max_num_teams: 32,
-  entry_fee: 9.99,
-  teams_registered: 10,
-  teams_tentitive: 12,
-  num_pools: 2,
-};
-
-const divisions = [divisionData, divisionData];
+import { IDivision } from 'common/models/divisions';
+import { BindingAction } from 'common/models/callback';
 
 interface IDivisionsAndPoolsProps {
-  divisions: any;
-  history: any;
+  divisions: IDivision[];
+  history: History;
   match: any;
-  getDivisions: () => void;
+  getDivisions: BindingAction;
 }
 
-class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, any> {
+interface IDivisionAndPoolsState {
+  isModalOpen: boolean;
+}
+
+class DivisionsAndPools extends React.Component<
+  IDivisionsAndPoolsProps,
+  IDivisionAndPoolsState
+> {
+  eventId = this.props.match.params.eventId;
   state = { isModalOpen: false };
 
   componentDidMount() {
@@ -39,18 +38,16 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, any> {
   }
 
   onAddDivision = () => {
-    const eventId = this.props.match.params.eventId;
-    const path = eventId
-      ? `/event/divisions-and-pools-add/${eventId}`
+    const path = this.eventId
+      ? `/event/divisions-and-pools-add/${this.eventId}`
       : '/event/divisions-and-pools-add';
     this.props.history.push(path);
   };
 
   onEditDivisionDetails = (divisionId: string) => (e: React.MouseEvent) => {
     e.stopPropagation();
-    const eventId = this.props.match.params.eventId;
-    const path = eventId
-      ? `/event/divisions-and-pools-edit/${eventId}`
+    const path = this.eventId
+      ? `/event/divisions-and-pools-edit/${this.eventId}`
       : '/event/divisions-and-pools-edit';
     this.props.history.push({ pathname: path, state: { divisionId } });
   };
@@ -64,6 +61,7 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, any> {
   };
 
   render() {
+    const { divisions } = this.props;
     return (
       <section>
         <Paper>
@@ -81,38 +79,44 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, any> {
           <div className={styles.headingContainer}>
             <HeadingLevelTwo>Divisions & Pools</HeadingLevelTwo>
           </div>
-          <ul className={styles.divisionsList}>
-            {divisions.map((division, index) => (
-              <li key={index}>
-                <SectionDropdown padding="0" isDefaultExpanded={true}>
-                  <div className={styles.sectionTitle}>
-                    <div>{`Division: ${division.long_name}`}</div>
-                    <Button
-                      label="Edit Division Details"
-                      variant="text"
-                      color="secondary"
-                      icon={<CreateIcon />}
-                      onClick={this.onEditDivisionDetails(division.division_id)}
-                    />
-                  </div>
-                  <div className={styles.sectionContent}>
-                    <DivisionDetails data={division} />
-                    <PoolsDetails onAddPool={this.onAddPool} />
-                    <Modal
-                      isOpen={this.state.isModalOpen}
-                      onClose={this.onModalClose}
-                    >
-                      <AddPool
-                        division={division.long_name}
-                        teams={division.teams_registered}
-                        onClose={this.onModalClose}
+          {divisions.length ? (
+            <ul className={styles.divisionsList}>
+              {divisions.map(division => (
+                <li key={division.division_id}>
+                  <SectionDropdown padding="0" isDefaultExpanded={true}>
+                    <div className={styles.sectionTitle}>
+                      <div>{`Division: ${division.long_name}`}</div>
+                      <Button
+                        label="Edit Division Details"
+                        variant="text"
+                        color="secondary"
+                        icon={<CreateIcon />}
+                        onClick={this.onEditDivisionDetails(
+                          division.division_id
+                        )}
                       />
-                    </Modal>
-                  </div>
-                </SectionDropdown>
-              </li>
-            ))}
-          </ul>
+                    </div>
+                    <div className={styles.sectionContent}>
+                      <DivisionDetails data={division} />
+                      <PoolsDetails onAddPool={this.onAddPool} />
+                      <Modal
+                        isOpen={this.state.isModalOpen}
+                        onClose={this.onModalClose}
+                      >
+                        <AddPool
+                          division={division.long_name}
+                          teams={division.teams_registered}
+                          onClose={this.onModalClose}
+                        />
+                      </Modal>
+                    </div>
+                  </SectionDropdown>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div>Loading</div>
+          )}
         </div>
       </section>
     );
@@ -120,7 +124,7 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, any> {
 }
 
 interface IState {
-  divisions: { data: any };
+  divisions: { data: IDivision[] };
 }
 
 const mapStateToProps = (state: IState) => ({

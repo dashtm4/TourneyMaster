@@ -10,9 +10,10 @@ import {
   saveDivisions,
   getDivision,
   updateDivision,
+  deleteDivision,
 } from './add-division-form/logic/actions';
 import { IDivision } from 'common/models/divisions';
-import { BindingCbWithOne, BindingCbWithTwo } from 'common/models/callback';
+import { BindingCbWithOne, BindingAction } from 'common/models/callback';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteDivision from '../add-division/delete-division';
 import Modal from 'components/common/modal';
@@ -29,9 +30,12 @@ interface IAddDivisionState {
 interface IDivisionProps {
   history: History;
   location: Location<ILocationState>;
+  match: any;
+  divisions: IDivision[];
   saveDivisions: BindingCbWithOne<Partial<IDivision>[]>;
   getDivision: BindingCbWithOne<string>;
-  updateDivision: BindingCbWithTwo<string, Partial<IDivision>[]>;
+  updateDivision: BindingCbWithOne<Partial<IDivision>>;
+  deleteDivision: BindingAction;
 }
 
 class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
@@ -40,7 +44,10 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
 
   componentDidMount() {
     if (this.divisionId) {
-      this.props.getDivision(this.divisionId);
+      const division: IDivision[] = this.props.divisions.filter(
+        div => div.division_id === this.divisionId
+      );
+      this.setState({ divisions: [division[0]] });
     }
   }
 
@@ -60,10 +67,10 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
 
   onSave = () => {
     this.divisionId
-      ? this.props.updateDivision(this.divisionId, this.state.divisions)
+      ? this.props.updateDivision(this.state.divisions[0])
       : this.props.saveDivisions(this.state.divisions);
 
-    this.props.history.goBack();
+    // this.props.history.goBack();
   };
 
   onAddDivision = () => {
@@ -104,8 +111,6 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   };
 
   render() {
-    console.log(this.state.divisions);
-    console.log(this.divisionId);
     return (
       <section className={styles.container}>
         <Paper>
@@ -137,17 +142,31 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
         ))}
         {this.renderButton()}
         <Modal isOpen={this.state.isModalOpen} onClose={this.onModalClose}>
-          <DeleteDivision onClose={this.onModalClose} />
+          <DeleteDivision
+            history={this.props.history}
+            divisionId={this.divisionId}
+            onClose={this.onModalClose}
+            deleteDivision={this.props.deleteDivision}
+          />
         </Modal>
       </section>
     );
   }
 }
 
+interface IState {
+  divisions: { data: any };
+}
+
+const mapStateToProps = (state: IState) => ({
+  divisions: state.divisions.data,
+});
+
 const mapDispatchToProps = {
   saveDivisions,
   updateDivision,
   getDivision,
+  deleteDivision,
 };
 
-export default connect(null, mapDispatchToProps)(AddDivision);
+export default connect(mapStateToProps, mapDispatchToProps)(AddDivision);

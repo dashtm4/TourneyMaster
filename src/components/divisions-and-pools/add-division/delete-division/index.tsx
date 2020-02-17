@@ -3,10 +3,16 @@ import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 import WarningIcon from '@material-ui/icons/Warning';
 
-const DeleteDivision = ({ onClose }: any) => {
-  const onDelete = () => {
-    // TODO Delete
+const DeleteDivision = ({
+  onClose,
+  deleteDivision,
+  divisionId,
+  history,
+}: any) => {
+  const onDeleteDivision = () => {
+    deleteDivision(divisionId);
     onClose();
+    history.goBack();
   };
 
   return (
@@ -39,7 +45,7 @@ const DeleteDivision = ({ onClose }: any) => {
             variant="contained"
             color="primary"
             type="danger"
-            onClick={onDelete}
+            onClick={onDeleteDivision}
           />
         </div>
       </div>

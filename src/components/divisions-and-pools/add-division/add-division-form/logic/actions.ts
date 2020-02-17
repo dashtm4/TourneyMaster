@@ -32,29 +32,17 @@ export const updateDivision: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (divisionId: string, divisions: Partial<IDivision>[]) => async (
-  _dispatch,
-  getState
-) => {
-  const {
-    event: {
-      data: { event_id, created_by },
-    },
-  }: any = getState();
-
-  const data = {
-    ...divisions[0],
-    event_id,
-    created_by,
-    division_id: divisionId,
-  };
-  const response = await api.put(`/divisions?division_id=${divisionId}`, data);
+>> = (division: Partial<IDivision>) => async () => {
+  const response = await api.put(
+    `/divisions?division_id=${division.division_id}`,
+    division
+  );
 
   if (response?.errorType === 'Error') {
-    return Toasts.errorToast("Couldn't add a division");
+    return Toasts.errorToast("Couldn't update a division");
   }
 
-  Toasts.successToast('Division is successfully added');
+  Toasts.successToast('Division is successfully updated');
 };
 
 export const saveDivisions: ActionCreator<ThunkAction<
@@ -77,10 +65,26 @@ export const saveDivisions: ActionCreator<ThunkAction<
       division_id: getVarcharEight(),
     };
     const response = await api.post(`/divisions`, data);
+
     if (response?.errorType === 'Error') {
       return Toasts.errorToast("Couldn't add a division");
     }
   });
 
   Toasts.successToast('Division is successfully added');
+};
+
+export const deleteDivision: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (divisionId: string) => async () => {
+  const response = await api.delete(`/divisions?division_id=${divisionId}`);
+
+  if (response?.errorType === 'Error') {
+    return Toasts.errorToast("Couldn't delete a division");
+  }
+
+  Toasts.successToast('Division is successfully deleted');
 };
