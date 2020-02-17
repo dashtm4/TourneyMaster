@@ -125,7 +125,7 @@ class EventDetails extends Component<Props, State> {
       this.Loading()
     ) : (
       <div className={styles.container}>
-        <Paper>
+        <Paper sticky={true}>
           <div className={styles.paperWrapper}>
             <Button
               label="Save"
