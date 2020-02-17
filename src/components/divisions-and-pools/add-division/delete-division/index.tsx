@@ -5,7 +5,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 
 const DeleteDivision = ({ onClose }: any) => {
   const onDelete = () => {
-    //TODO Delete
+    // TODO Delete
     onClose();
   };
 
@@ -13,7 +13,7 @@ const DeleteDivision = ({ onClose }: any) => {
     <div className={styles.container}>
       <div className={styles.sectionItemWarning}>
         <div className={styles.iconContainer}>
-          <WarningIcon style={{ fill: '#FF0F19' }} />
+          <WarningIcon style={{ fill: '#FFCB00' }} />
         </div>
         <div className={styles.title}>
           Deleting a division will also delete all pools inside the division.
