@@ -1,11 +1,20 @@
 import React from 'react';
+import { Auth } from 'aws-amplify';
 import styles from './style.module.scss';
 
 const UserInfo: React.FC = () => {
   const userLogo = '';
 
   return (
-    <div style={{ backgroundImage: userLogo }} className={styles.container} />
+    <div
+      onClick={() => {
+        Auth.signOut();
+
+        localStorage.removeItem('token');
+      }}
+      style={{ backgroundImage: userLogo }}
+      className={styles.container}
+    />
   );
 };
 
