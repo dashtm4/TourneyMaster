@@ -124,7 +124,11 @@ const EventStructureSection: React.FC<Props> = ({
   ];
 
   return (
-    <SectionDropdown type="section" padding="0" isDefaultExpanded={true}>
+    <SectionDropdown
+      type="section"
+      panelDetailsType="flat"
+      isDefaultExpanded={true}
+    >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Event Structure</span>
       </HeadingLevelThree>
