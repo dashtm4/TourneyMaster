@@ -40,7 +40,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
     <InputDatePicker
       fullWidth={fullWidth}
       views={views}
-      style={{ width: width }}
+      style={{ width }}
       variant="inline"
       size="small"
       inputVariant="outlined"
@@ -53,7 +53,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
     <KeyboardDatePicker
       fullWidth={fullWidth}
       views={views}
-      style={{ width: width }}
+      style={{ width }}
       variant="inline"
       size="small"
       inputVariant="outlined"
@@ -65,7 +65,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   const renderInputTimePicker = () => (
     <InputTimePicker
       fullWidth={fullWidth}
-      style={{ width: width }}
+      style={{ width }}
       variant="inline"
       size="small"
       inputVariant="outlined"
@@ -77,7 +77,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   const renderTimePicker = () => (
     <KeyboardTimePicker
       fullWidth={fullWidth}
-      style={{ width: width }}
+      style={{ width }}
       variant="inline"
       size="small"
       inputVariant="outlined"
