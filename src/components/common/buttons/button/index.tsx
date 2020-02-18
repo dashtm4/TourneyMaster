@@ -29,7 +29,8 @@ const Button: React.FC<IButtonProps> = ({
     onClick={onClick}
     style={{ fontSize: '16px' }}
   >
-    {icon} {label}
+    <div className={styles.iconWrapper}>{icon}</div>
+    {label}
   </MuiButton>
 );
 

@@ -1,0 +1,91 @@
+.container {
+  width: 100%;
+  height: 100%;
+
+  .paper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .errorMessage {
+    font-size: 17px;
+    color: red;
+
+    svg {
+      margin-right: 10px;
+    }
+  }
+
+  .header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 8px;
+  }
+
+  .tourneyArchitect {
+    .sectionCell {
+      font-size: 16px;
+      color: #6a6a6a;
+
+      span {
+        font-weight: 600;
+      }
+    }
+
+    .eventStructure {
+      .esFirst,
+      .esSecond,
+      .esFourth {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 10px 0;
+
+        .sectionCell {
+          width: 25%;
+        }
+      }
+
+      .esFourth {
+        padding-top: 15px;
+        .sectionCell {
+          width: 50%;
+
+          p {
+            padding-top: 5px;
+          }
+        }
+      }
+    }
+
+    .gamesStartOn {
+      display: flex;
+      padding: 20px 0;
+    }
+  }
+
+  .tournamentPlay,
+  .brackets {
+    .sectionCellHor {
+      display: flex;
+      font-size: 16px;
+      color: #6a6a6a;
+
+      span {
+        font-weight: 600;
+        margin-right: 8px;
+      }
+    }
+
+    .tnFirst,
+    .tnSecond,
+    .tnThird {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 0;
+    }
+  }
+}

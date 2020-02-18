@@ -13,6 +13,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import RegistrationEdit from '../../registration-edit';
 import DivisionsAndPools from '../../divisions-and-pools';
 import AddDivision from '../../divisions-and-pools/add-division';
+import Scheduling from 'components/scheduling';
 
 interface MatchParams {
   eventId?: string;
@@ -44,7 +45,7 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
             component={DivisionsAndPools}
           />
           <Route path={Routes.TEAMS} component={EmptyPage} />
-          <Route path={Routes.SCHEDULING} component={EmptyPage} />
+          <Route path={Routes.SCHEDULING} component={Scheduling} />
           <Route path={Routes.SCORING} component={EmptyPage} />
           <Route path={Routes.REPORTING} component={EmptyPage} />
 
