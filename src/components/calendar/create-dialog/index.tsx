@@ -8,6 +8,7 @@ import { faAt, faMapPin, faAlignLeft } from '@fortawesome/free-solid-svg-icons';
 import { Input, DatePicker, Button, Checkbox } from 'components/common';
 import { buttonTypeEvent, ButtonTypeEvent } from '../calendar.helper';
 import { ICalendarEvent } from 'common/models/calendar';
+import { IDateSelect } from '../calendar.model';
 import styles from './styles.module.scss';
 
 import { isCalendarEventValid } from '../logic/helper';
@@ -18,6 +19,7 @@ interface IProps {
   dialogOpen: boolean;
   onDialogClose: () => void;
   onSave: (data: ICalendarEvent) => void;
+  dateSelect: IDateSelect;
 }
 
 const defaultCalendarEvent = (): ICalendarEvent => ({
@@ -34,12 +36,23 @@ const defaultCalendarEvent = (): ICalendarEvent => ({
 });
 
 export default (props: IProps) => {
-  const { dialogOpen, onDialogClose, onSave } = props;
+  const { dialogOpen, onDialogClose, onSave, dateSelect } = props;
+  const { left, top, date } = dateSelect;
 
   useEffect(() => {
     if (!dialogOpen)
       setTimeout(() => setCalendarEvent(defaultCalendarEvent()), 200);
-  });
+  }, [dialogOpen]);
+
+  useEffect(
+    () =>
+      setCalendarEvent({
+        ...calendarEvent,
+        dateFrom: date!,
+        dateTo: date!,
+      }),
+    [dateSelect]
+  );
 
   const [calendarEvent, setCalendarEvent] = useState<ICalendarEvent>(
     defaultCalendarEvent()
@@ -92,6 +105,8 @@ export default (props: IProps) => {
     <Dialog
       className={styles.container}
       open={dialogOpen}
+      style={{ left, top }}
+      PaperProps={{ classes: { root: styles.dialogPaper } }}
       BackdropProps={{ invisible: true }}
     >
       <div className={styles.wrapper}>

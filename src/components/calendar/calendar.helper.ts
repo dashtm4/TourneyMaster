@@ -28,8 +28,6 @@ export const buttonTypeEvent = (
 ) => (type === currentType ? 'squared' : 'squaredOutlined');
 
 export const appropriateEvents = (events: ICalendarEvent[]): IEvent[] => {
-  console.log('events', events);
-
   const formatDate = (eventDate: string, eventTime: string) => {
     const date = new Date(eventDate);
     const time = new Date(eventTime);
@@ -48,3 +46,46 @@ export const appropriateEvents = (events: ICalendarEvent[]): IEvent[] => {
 
   return events.map(eventTypeToCalendar);
 };
+
+export const calculateDialogPosition = (left: number, top: number) => {
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+
+  const containerWidth = 600;
+  const containerHeight = 268;
+
+  const leftMiddlePositive = left + containerWidth / 2;
+  const leftMiddleNevagite = left - containerWidth / 2;
+
+  const leftPosition =
+    leftMiddlePositive > windowWidth
+      ? windowWidth - containerWidth
+      : leftMiddleNevagite;
+
+  const topMiddlePositive = top + containerHeight / 2;
+  const topMiddleNegative = top - containerHeight;
+  const topWindowNegative = windowHeight - containerHeight;
+  const minTopPosition = 90;
+
+  const topPosition =
+    topMiddlePositive > windowHeight
+      ? topWindowNegative
+      : top < containerHeight
+      ? minTopPosition
+      : topMiddleNegative;
+
+  return { leftPosition, topPosition };
+};
+
+export const setBlankNewEvent = (date?: string): ICalendarEvent => ({
+  title: 'New Event',
+  dateFrom: date || new Date().toISOString(),
+  dateTo: date || new Date().toISOString(),
+  location: '',
+  eventTag: '',
+  type: 'event',
+  timeFrom: new Date().toISOString(),
+  timeTo: new Date().toISOString(),
+  description: '',
+  setReminder: false,
+});

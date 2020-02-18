@@ -1,14 +1,22 @@
 import React from 'react';
+import { Dispatch, bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Auth, Hub } from 'aws-amplify';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth/lib/types';
+import { createMemeber } from './logic/action';
 import WithEditingForm from './hocs/withEditingForm';
 import FormSignUp from './components/form-sign-up';
 import FormSignIn from './components/form-sign-in';
+import { BindingCbWithTwo } from 'common/models/callback';
 import { Toasts } from '../common';
 import logo from '../../assets/logo.png';
 import styles from './style.module.scss';
 import './styles.scss';
+
+interface Props {
+  createMemeber: BindingCbWithTwo<string, string>;
+}
 
 interface State {
   isSignUpOpen: boolean;
@@ -17,8 +25,8 @@ interface State {
 const FormSignUpWrapped = WithEditingForm(FormSignUp);
 const FormSignInWrapped = WithEditingForm(FormSignIn);
 
-class LoginPage extends React.Component<RouteComponentProps, State> {
-  constructor(props: RouteComponentProps) {
+class LoginPage extends React.Component<Props & RouteComponentProps, State> {
+  constructor(props: Props & RouteComponentProps) {
     super(props);
 
     this.state = {
@@ -27,15 +35,20 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
   }
 
   componentDidMount() {
-    Hub.listen('auth', async ({ payload: { event, data } }) => {
+    const { createMemeber } = this.props;
+
+    Hub.listen('auth', async ({ payload: { event } }) => {
       try {
         switch (event) {
           case 'signIn':
-            const user = await data;
-            const userToken = await data.signInUserSession.idToken.jwtToken;
+            const currentSession = await Auth.currentSession();
+            const userToken = currentSession.getAccessToken().getJwtToken();
+            const userAttributes = currentSession.getIdToken().payload;
 
-            if (user && userToken) {
+            if (userToken) {
               localStorage.setItem('token', userToken);
+
+              createMemeber(userAttributes.name, userAttributes.email);
 
               this.props.history.push('/dashboard');
             }
@@ -52,21 +65,14 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
 
   onAuthSubmit = async (email: string, password: string) => {
     try {
-      const user = await Auth.signIn(email, password);
-      const userToken = user.signInUserSession.idToken.jwtToken;
-
-      if (userToken) {
-        localStorage.setItem('token', userToken);
-
-        this.props.history.push('/dashboard');
-      }
+      await Auth.signIn(email, password);
     } catch (err) {
       Toasts.errorToast(`${err.message}`);
     }
   };
 
   onRegistrationSubmit = async (
-    name: string,
+    fullName: string,
     email: string,
     password: string
   ) => {
@@ -75,7 +81,7 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
         username: email,
         password,
         attributes: {
-          name,
+          name: fullName,
         },
       });
     } catch (err) {
@@ -164,4 +170,6 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
   }
 }
 
-export default withRouter(LoginPage);
+export default connect(null, (dispatch: Dispatch) =>
+  bindActionCreators({ createMemeber }, dispatch)
+)(withRouter(LoginPage));

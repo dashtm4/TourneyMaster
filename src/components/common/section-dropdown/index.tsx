@@ -67,6 +67,7 @@ const SectionDropdown = ({
       <ExpansionPanelSummary
         style={{
           ...setPanelSummaryStyle(type),
+          display: 'flex',
         }}
         expandIcon={setExpandIcon(type)}
         aria-controls="panel1a-content"

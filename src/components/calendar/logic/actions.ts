@@ -78,19 +78,21 @@ export const getCalendarEvents = () => async (dispatch: Dispatch) => {
   Toasts.errorToast("Couldn't load the events");
 };
 
-export const createCalendarEvent = (data: ICalendarEvent) => async (
+export const saveCalendar = (data: ICalendarEvent[]) => async (
   dispatch: Dispatch
 ) => {
-  const isEventValid = isCalendarEventValid(data);
-  if (!isEventValid) return Toasts.errorToast('Event data is invalid');
+  const eventsAreValid = data.every((dataEl: ICalendarEvent) =>
+    isCalendarEventValid(dataEl)
+  );
+
+  if (!eventsAreValid) return Toasts.errorToast('Event data is invalid');
 
   const response = await post('/calendarEvents', data);
 
   if (response && !response.error) {
-    eventsList.push(data as any);
     dispatch(calendarEventCreateSucc());
-    return Toasts.successToast('Calendar event created successfully');
+    return Toasts.successToast('Calendar events saved successfully');
   }
 
-  Toasts.errorToast("Couldn't create event");
+  Toasts.errorToast("Couldn't save the data");
 };

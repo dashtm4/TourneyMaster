@@ -6,7 +6,8 @@
 }
 
 .sectionContainer {
-  width: 825px;
+  width: 100%;
+  min-width: 700px;
   .headingContainer {
     margin: 24px 0;
   }
@@ -25,7 +26,7 @@
     color: #1c315f;
     display: flex;
     justify-content: space-between;
-    width: 747px;
+    width: 100%;
   }
   .sectionContent {
     padding: 0 39px 39px 23px;

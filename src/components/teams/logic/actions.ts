@@ -6,6 +6,7 @@ import {
   FAILURE,
   LOAD_DIVISIONS,
   LOAD_POOLS,
+  LOAD_TEAMS,
 } from './action-types';
 import { IDisision, IPool, ITeam } from '../../../common/models';
 import Api from 'api/api';
@@ -17,6 +18,10 @@ const loadDivisions: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   eventId: string
 ) => async (dispatch: Dispatch) => {
   try {
+    const apiDiv = await Api.get(`/divisions?event_id=${eventId}`);
+
+    console.log(apiDiv);
+
     const divisions = await Api.get('/divisions');
     const currentEventDivisions = divisions.filter(
       (it: IDisision) => it.event_id === eventId
@@ -65,12 +70,12 @@ const loadTeams: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
     const currentPoolTeams = teams.filter((it: ITeam) => it.pool_id === poolId);
 
     dispatch({
-      type: LOAD_POOLS + SUCCESS,
+      type: LOAD_TEAMS + SUCCESS,
       payload: currentPoolTeams,
     });
   } catch {
     dispatch({
-      type: LOAD_POOLS + FAILURE,
+      type: LOAD_TEAMS + FAILURE,
     });
   }
 };

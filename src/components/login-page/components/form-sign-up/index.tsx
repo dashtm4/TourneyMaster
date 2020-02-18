@@ -7,12 +7,14 @@ import {
 
 enum FormFilds {
   NAME = 'name',
+  SURNAME = 'surname',
   EMAIL = 'email',
   PASSWORD = 'password',
 }
 
 interface Props {
   name: string;
+  surname: string;
   email: string;
   password: string;
   onChange: BindingAction;
@@ -23,6 +25,7 @@ interface Props {
 const FormSignUp = ({
   name,
   email,
+  surname,
   password,
   onChange,
   onGoogleLogin,
@@ -32,7 +35,7 @@ const FormSignUp = ({
     onSubmit={evt => {
       evt.preventDefault();
 
-      onRegistrationSubmit(name, email, password);
+      onRegistrationSubmit(`${name} ${surname}`, email, password);
     }}
     className="sign-form__create"
     autoComplete="off"
@@ -46,18 +49,32 @@ const FormSignUp = ({
       Sign in with Google
     </button>
     <p className={styles.accountText}>or use your email for registration</p>
-    <label className={styles.accountName}>
-      <input
-        onChange={onChange}
-        value={name}
-        name={FormFilds.NAME}
-        type="text"
-        placeholder="Name"
-        minLength={4}
-        required
-      />
-      <span className="visually-hidden">Your name</span>
-    </label>
+    <p className={styles.fullnameWrapper}>
+      <label className={styles.accountName}>
+        <input
+          onChange={onChange}
+          value={name}
+          name={FormFilds.NAME}
+          type="text"
+          placeholder="Name"
+          minLength={3}
+          required
+        />
+        <span className="visually-hidden">Your name</span>
+      </label>
+      <label className={styles.accountName}>
+        <input
+          onChange={onChange}
+          value={surname}
+          name={FormFilds.SURNAME}
+          type="text"
+          placeholder="Surname"
+          minLength={3}
+          required
+        />
+        <span className="visually-hidden">Your surname</span>
+      </label>
+    </p>
     <label className={styles.accountEmail}>
       <input
         onChange={onChange}

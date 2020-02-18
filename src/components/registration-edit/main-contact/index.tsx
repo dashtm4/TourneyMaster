@@ -24,7 +24,7 @@ const MainContact = ({ onChange }: any) => {
       <div className={styles.sectionFirstRow}>
         <div className={styles.sectionItem}>
           <Input
-            width="161px"
+            fullWidth={true}
             label="First"
             // value={data.first_name || ''}
             onChange={onFirstNameChange}
@@ -32,7 +32,7 @@ const MainContact = ({ onChange }: any) => {
         </div>
         <div className={styles.sectionItem}>
           <Input
-            width="161px"
+            fullWidth={true}
             label="Last"
             // value={data.last_name || ''}
             onChange={onLastNameChange}
@@ -41,7 +41,6 @@ const MainContact = ({ onChange }: any) => {
         <div className={styles.sectionItem}>
           <span className={styles.sectionTitle}>Role</span>
           <Select
-            width="161px"
             label=""
             options={roles}
             value=""
@@ -51,7 +50,7 @@ const MainContact = ({ onChange }: any) => {
         </div>
         <div className={styles.sectionItem}>
           <Input
-            width="161px"
+            fullWidth={true}
             label="Email"
             // value={data.email || ''}
             onChange={onEmailChange}
@@ -61,7 +60,7 @@ const MainContact = ({ onChange }: any) => {
       <div className={styles.sectionSecondRow}>
         <div className={styles.sectionItem}>
           <Input
-            width="161px"
+            fullWidth={true}
             label="Mobile Number"
             type="number"
             // value={data.mobile_number || ''}
@@ -75,6 +74,8 @@ const MainContact = ({ onChange }: any) => {
             onChange={onPermissionToTextChange}
           />
         </div>
+        <div className={styles.sectionItem} />
+        <div className={styles.sectionItem} />
       </div>
     </div>
   );
