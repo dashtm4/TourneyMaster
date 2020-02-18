@@ -1,20 +1,17 @@
-name: Development deployment
+name: Production deployment
 
 on:
   push:
     branches:
-      - development
+      - master
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-18.04]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: development
+          ref: master
       - name: Build
         run: |
           npm install
@@ -25,11 +22,11 @@ jobs:
           REACT_APP_AWS_REGION: ${{ secrets.REACT_APP_AWS_REGION }}
           REACT_APP_AWS_USER_POOL_WEB_CLIENT_ID: ${{ secrets.REACT_APP_AWS_USER_POOL_WEB_CLIENT_ID }}
           GENERATE_SOURCEMAP: 'false'
-          REACT_APP_REDIRECT_URL: 'https://staging.tourneymaster.org/'
+          REACT_APP_REDIRECT_URL: 'https://members.tourneymaster.org/'
       - name: Enable Amazon
         uses: chrislennon/action-aws-cli@v1.1
       - name: Amazon Push
-        run: aws s3 sync build/ s3://${{ secrets.S3_BUCKET_DEV }}
+        run: aws s3 sync build/ s3://${{ secrets.S3_BUCKET_PROD }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

@@ -1,0 +1,96 @@
+.form {
+  width: 100%;
+}
+
+.detailsSubtitle {
+  font-weight: 600;
+  color: #6a6a6a;
+}
+
+.descripWrapper {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 6px;
+
+  color: #6a6a6a;
+}
+
+.nameWrapper {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 15px;
+}
+
+.filedset {
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  legend {
+    margin-bottom: 5px;
+  }
+
+  &Name,
+  &Restrooms {
+    width: 75%;
+    margin-right: 20px;
+  }
+
+  &ParkingAvailable {
+    width: 33%;
+    margin-right: 15px;
+  }
+
+  &DistanceFields {
+    width: 33%;
+    margin-right: 15px;
+  }
+}
+
+.fieldTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: #6a6a6a;
+}
+
+.fieldList {
+  display: flex;
+  flex-wrap: wrap;
+
+  margin: 0 0 25px -30px;
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    width: 255px;
+    margin: 16px 0 0 30px;
+  }
+}
+
+.restroomWrapper {
+  display: flex;
+  justify-content: space-between;
+
+  margin-bottom: 15px;
+}
+
+.filedsetGolf {
+  padding-top: 25px;
+}
+
+.restroomDetails {
+  margin-bottom: 25px;
+}
+
+.parkingWrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+:local(.parkingDetails) {
+  margin-bottom: 25px;
+}

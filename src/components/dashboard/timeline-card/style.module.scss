@@ -1,0 +1,86 @@
+.cardContainer {
+  width: 65.5%;
+  min-width: 595px;
+}
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cardTitle {
+  display: flex;
+  align-items: center;
+  color: #1c315f;
+  font-size: 24px;
+  font-weight: 600;
+}
+.notificationsList {
+  padding: 0;
+}
+.notification {
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+}
+.notificationMessage {
+  color: #6a6a6a;
+  font-weight: 600;
+  font-size: 16px;
+  padding-top: 8px;
+  .additionalMessage {
+    font-weight: normal;
+    color: #6a6a6a;
+    font-size: 12px;
+    padding-bottom: 8px;
+  }
+  .messageLink {
+    font-weight: normal;
+    color: #11a8ea;
+    cursor: pointer;
+    padding-left: 3px;
+  }
+}
+.link {
+  color: #11a8ea;
+  cursor: pointer;
+}
+.cardIcon {
+  margin-right: 5px;
+}
+.expand {
+  color: #cdcfd2;
+  display: block !important;
+  margin: auto;
+  cursor: pointer;
+}
+.line {
+  position: relative;
+  left: 15px;
+  border-left: 5px solid#CDCFD2;
+}
+.oval {
+  align-self: center;
+  box-sizing: border-box;
+  height: 24px;
+  width: 24px;
+  border: 3px solid #ffcb00;
+  border-radius: 100%;
+  background-color: #f4f4f4;
+  z-index: 0;
+  margin-right: 15px;
+}
+.notification:nth-of-type(3n) {
+  .oval {
+    border-color: #ffcb00;
+  }
+}
+.notification:nth-of-type(3n + 1) {
+  .oval {
+    border-color: #00cc47;
+  }
+}
+.notification:nth-of-type(3n + 2) {
+  .oval {
+    border-color: red;
+  }
+}

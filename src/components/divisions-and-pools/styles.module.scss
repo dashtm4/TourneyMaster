@@ -1,0 +1,34 @@
+.mainMenu {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-right: 25px;
+}
+
+.sectionContainer {
+  width: 100%;
+  min-width: 700px;
+  .headingContainer {
+    margin: 24px 0;
+  }
+  .divisionsList {
+    margin: 0;
+    padding-left: 0;
+
+    list-style: none;
+
+    & > li {
+      margin-bottom: 5px;
+      padding-bottom: 7px;
+    }
+  }
+  .sectionTitle {
+    color: #1c315f;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .sectionContent {
+    padding: 0 39px 39px 23px;
+  }
+}

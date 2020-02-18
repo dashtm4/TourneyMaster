@@ -1,0 +1,88 @@
+.main {
+  width: 100%;
+}
+
+.heading {
+  margin: 24px 0;
+}
+
+.timelineContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cardTitle {
+  display: flex;
+  align-items: center;
+  color: #1c315f;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.mainMenu {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-right: 25px;
+}
+
+.buttonsGroup {
+  display: flex;
+  flex-direction: row;
+}
+
+.dashboardCardsContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.tournamentsListContainer {
+  height: 600px;
+  overflow-y: auto;
+  & > * {
+    margin: 16px 0;
+  }
+  &::-webkit-scrollbar {
+    color: #f4f4f4;
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ffffff;
+    border-radius: 5px;
+  }
+}
+
+.tournamentsHeading {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+  .cardHeader {
+    flex-grow: 1;
+    width: 65%;
+  }
+  .buttonsGroup {
+    flex-grow: 1;
+    // width: 388px;
+    justify-content: space-around;
+  }
+}
+.scheduleImage {
+  align-self: flex-end;
+  margin: 0 auto;
+  height: 303px;
+  width: 344px;
+}
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+}

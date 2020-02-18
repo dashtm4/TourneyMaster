@@ -1,0 +1,50 @@
+import React from 'react';
+import {
+  Checkbox as MuiCheckbox,
+  FormControlLabel,
+  FormGroup,
+} from '@material-ui/core';
+import styles from './style.module.scss';
+
+interface IOption {
+  label: string;
+  checked: boolean;
+  name?: string;
+  disabled?: boolean;
+}
+
+interface ICheckboxProps {
+  options: IOption[];
+  formLabel?: string;
+  onChange?: any;
+}
+
+const Checkbox: React.FC<ICheckboxProps> = ({
+  options,
+  formLabel,
+  onChange,
+}) => (
+  <div className={styles.container}>
+    <span className={styles.label}>{formLabel}</span>
+    <FormGroup>
+      {options.map((option: IOption, index: number) => (
+        <FormControlLabel
+          key={index}
+          control={
+            <MuiCheckbox
+              value={option.label}
+              color="secondary"
+              checked={option.checked}
+              disabled={option.disabled}
+            />
+          }
+          label={option.label}
+          onChange={onChange}
+          name={option.name}
+        />
+      ))}
+    </FormGroup>
+  </div>
+);
+
+export default Checkbox;

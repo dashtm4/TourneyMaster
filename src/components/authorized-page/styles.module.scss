@@ -1,0 +1,14 @@
+:local(.page) {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 15px 10% 0;
+  overflow: auto;
+  flex: 1 1 auto;
+}
+
+:local(.content) {
+  flex-grow: 1;
+
+  padding-left: 30px;
+}
