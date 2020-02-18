@@ -46,7 +46,7 @@ const ColorPicker = ({
             colors={colors}
             width={'170px'}
             onChangeComplete={onChange}
-            triangle={'top-right'}
+            triangle={'hide'}
           />
         )}
       </div>

@@ -76,7 +76,7 @@ class Dashboard extends React.Component<IDashboardProps> {
   render() {
     return (
       <div className={styles.main}>
-        <Paper>
+        <Paper sticky={true}>
           <div className={styles.mainMenu}>
             <Button
               label="Edit Dashboard Layout"

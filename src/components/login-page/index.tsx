@@ -1,13 +1,22 @@
 import React from 'react';
+import { Dispatch, bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Auth, Hub } from 'aws-amplify';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth/lib/types';
+import { createMemeber } from './logic/action';
 import WithEditingForm from './hocs/withEditingForm';
 import FormSignUp from './components/form-sign-up';
 import FormSignIn from './components/form-sign-in';
+import { BindingCbWithTwo } from 'common/models/callback';
+import { Toasts } from '../common';
 import logo from '../../assets/logo.png';
 import styles from './style.module.scss';
 import './styles.scss';
+
+interface Props {
+  createMemeber: BindingCbWithTwo<string, string>;
+}
 
 interface State {
   isSignUpOpen: boolean;
@@ -16,8 +25,8 @@ interface State {
 const FormSignUpWrapped = WithEditingForm(FormSignUp);
 const FormSignInWrapped = WithEditingForm(FormSignIn);
 
-class LoginPage extends React.Component<RouteComponentProps, State> {
-  constructor(props: RouteComponentProps) {
+class LoginPage extends React.Component<Props & RouteComponentProps, State> {
+  constructor(props: Props & RouteComponentProps) {
     super(props);
 
     this.state = {
@@ -26,17 +35,26 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
   }
 
   componentDidMount() {
-    Hub.listen('auth', async ({ payload: { event, data } }) => {
-      switch (event) {
-        case 'signIn':
-          const user = await data;
-          const userToken = await data.signInUserSession.idToken.jwtToken;
+    const { createMemeber } = this.props;
 
-          if (user && userToken) {
-            localStorage.setItem('token', userToken);
+    Hub.listen('auth', async ({ payload: { event } }) => {
+      try {
+        switch (event) {
+          case 'signIn':
+            const currentSession = await Auth.currentSession();
+            const userToken = currentSession.getAccessToken().getJwtToken();
+            const userAttributes = currentSession.getIdToken().payload;
 
-            this.props.history.push('/dashboard');
-          }
+            if (userToken) {
+              localStorage.setItem('token', userToken);
+
+              createMemeber(userAttributes.name, userAttributes.email);
+
+              this.props.history.push('/dashboard');
+            }
+        }
+      } catch (err) {
+        Toasts.errorToast(`${err.message}`);
       }
     });
   }
@@ -46,30 +64,39 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
   };
 
   onAuthSubmit = async (email: string, password: string) => {
-    const user = await Auth.signIn(email, password);
-    const userToken = user.signInUserSession.idToken.jwtToken;
-
-    if (userToken) {
-      localStorage.setItem('token', userToken);
-
-      this.props.history.push('/dashboard');
+    try {
+      await Auth.signIn(email, password);
+    } catch (err) {
+      Toasts.errorToast(`${err.message}`);
     }
   };
 
-  onRegistrationSubmit = (name: string, email: string, password: string) => {
-    Auth.signUp({
-      username: email,
-      password,
-      attributes: {
-        name,
-      },
-    });
+  onRegistrationSubmit = async (
+    fullName: string,
+    email: string,
+    password: string
+  ) => {
+    try {
+      await Auth.signUp({
+        username: email,
+        password,
+        attributes: {
+          name: fullName,
+        },
+      });
+    } catch (err) {
+      Toasts.errorToast(`${err.message}`);
+    }
   };
 
-  onGoogleLogin = () => {
-    Auth.federatedSignIn({
-      provider: CognitoHostedUIIdentityProvider.Google,
-    });
+  onGoogleLogin = async () => {
+    try {
+      await Auth.federatedSignIn({
+        provider: CognitoHostedUIIdentityProvider.Google,
+      });
+    } catch (err) {
+      Toasts.errorToast(`${err.message}`);
+    }
   };
 
   render() {
@@ -143,4 +170,6 @@ class LoginPage extends React.Component<RouteComponentProps, State> {
   }
 }
 
-export default withRouter(LoginPage);
+export default connect(null, (dispatch: Dispatch) =>
+  bindActionCreators({ createMemeber }, dispatch)
+)(withRouter(LoginPage));

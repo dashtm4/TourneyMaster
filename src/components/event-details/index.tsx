@@ -19,6 +19,7 @@ import PlayoffsSection from './playoffs';
 import { Button, HeadingLevelTwo, Paper } from 'components/common';
 import styles from './styles.module.scss';
 import { eventState } from './state';
+import { CircularProgress } from '@material-ui/core';
 
 interface IMapStateProps {
   event: IAppState;
@@ -101,7 +102,19 @@ class EventDetails extends Component<Props, State> {
     this.props.createEvent(event);
   };
 
-  Loading = () => <div>Nice Loading...</div>;
+  Loading = () => (
+    <div
+      style={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <CircularProgress />
+    </div>
+  );
 
   render() {
     const eventTypeOptions = ['Tournament', 'Showcase'];
@@ -112,7 +125,7 @@ class EventDetails extends Component<Props, State> {
       this.Loading()
     ) : (
       <div className={styles.container}>
-        <Paper>
+        <Paper sticky={true}>
           <div className={styles.paperWrapper}>
             <Button
               label="Save"

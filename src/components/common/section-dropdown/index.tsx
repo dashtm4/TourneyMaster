@@ -56,7 +56,10 @@ const SectionDropdown = ({
       defaultExpanded={isDefaultExpanded}
     >
       <ExpansionPanelSummary
-        style={setPanelSummaryStyle(type)}
+        style={{
+          ...setPanelSummaryStyle(type),
+          display: 'flex',
+        }}
         expandIcon={setExpandIcon(type)}
         aria-controls="panel1a-content"
         id="panel1a-header"
@@ -65,7 +68,7 @@ const SectionDropdown = ({
           {children[0]}
         </HeadeingLevelThree>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails style={{ padding }}>
+      <ExpansionPanelDetails style={{ padding, display: 'block' }}>
         {children[1]}
       </ExpansionPanelDetails>
     </ExpansionPanel>

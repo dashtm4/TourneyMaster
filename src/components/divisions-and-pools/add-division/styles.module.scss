@@ -1,6 +1,6 @@
 .sectionContainer {
-  width: 825px;
-  padding: 24px 0;
+  width: 100%;
+  padding-bottom: 23px;
   border-bottom: 1px solid #d1d1d1;
 }
 .mainMenu {
@@ -19,20 +19,24 @@
   flex-wrap: wrap;
   .sectionRow {
     display: flex;
+    justify-content: space-between;
+  }
+  .sectionRowColumn {
+    display: flex;
+    flex-direction: column;
   }
   .sectionItem {
     flex-grow: 0;
-    width: 161px;
+    width: 23%;
     color: #6a6a6a;
-    margin: 0 29px 16px 0;
   }
   .sectionItemLarge {
     @extend .sectionItem;
-    width: 351px;
+    width: 48.5%;
   }
   .sectionItemColorPicker {
     @extend .sectionItem;
-    width: 36px;
+    width: 23%;
     height: 36px;
     margin-top: 1px;
     z-index: 1;

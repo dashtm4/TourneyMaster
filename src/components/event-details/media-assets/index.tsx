@@ -21,7 +21,7 @@ const MediaAssetsSection: React.FC<IProps> = ({ onFileUpload }) => {
     );
 
   return (
-    <SectionDropdown type="section" padding="0">
+    <SectionDropdown type="section" padding="0" isDefaultExpanded={true}>
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Media Assets</span>
       </HeadingLevelThree>
