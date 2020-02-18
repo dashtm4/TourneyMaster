@@ -79,7 +79,9 @@ const saveFacilities: ActionCreator<ThunkAction<
     return isNew;
   });
 
-  if (editedFacilities.length === 0 && newFacilities.length === 0) return;
+  if (editedFacilities.length === 0 && newFacilities.length === 0) {
+    return;
+  }
 
   try {
     for await (let facility of editedFacilities) {
