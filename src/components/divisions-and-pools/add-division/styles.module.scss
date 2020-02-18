@@ -1,6 +1,6 @@
 .sectionContainer {
   width: 100%;
-  padding-bottom: 23px;
+  padding: 24px 0;
   border-bottom: 1px solid #d1d1d1;
 }
 .mainMenu {
@@ -29,6 +29,7 @@
     flex-grow: 0;
     width: 23%;
     color: #6a6a6a;
+    margin-bottom: 16px;
   }
   .sectionItemLarge {
     @extend .sectionItem;
