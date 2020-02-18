@@ -80,7 +80,7 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
     console.log(this.state.registration);
     return (
       <section>
-        <Paper>
+        <Paper sticky={true}>
           <div className={styles.mainMenu}>
             <div>
               <Button

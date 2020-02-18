@@ -178,7 +178,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
             {Boolean(bracket_durations_vary) && (
               <div className={styles.pdFourth}>
                 <Input
-                  width="170px"
+                  // width="170px"
                   fullWidth={true}
                   endAdornment="Minutes"
                   label="Pregame Warmup"
@@ -186,7 +186,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
                 />
                 <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
                 <Input
-                  width="170px"
+                  // width="170px"
                   fullWidth={true}
                   endAdornment="Minutes"
                   label="Time Division Duration"
@@ -196,7 +196,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
                   &nbsp;(0)&nbsp;+&nbsp;
                 </span>
                 <Input
-                  width="170px"
+                  // width="170px"
                   fullWidth={true}
                   endAdornment="Minutes"
                   label="Time Between Periods"

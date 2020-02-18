@@ -3,7 +3,7 @@ import styles from '../styles.module.scss';
 
 const MainContact = ({ data }: any) => (
   <div className={styles.section}>
-    <div className={styles.sectionFirstRow}>
+    <div className={styles.maSectionFirstRow}>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>First</span>
         <p>{data.first}</p>
@@ -22,7 +22,7 @@ const MainContact = ({ data }: any) => (
         <p>{data.email}</p>
       </div>
     </div>
-    <div className={styles.sectionSecondRow}>
+    <div className={styles.maSectionSecondRow}>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Mobile Number</span>
         <p>{data.mobile}</p>

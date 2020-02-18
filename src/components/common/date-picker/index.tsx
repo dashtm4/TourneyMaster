@@ -11,7 +11,7 @@ import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import styles from './style.module.scss';
 
-const defaultWidth = 100;
+// const defaultWidth = 100;
 
 interface IDatePickerProps {
   label: string;
@@ -22,6 +22,7 @@ interface IDatePickerProps {
   views?: DatePickerView[];
   dateFormat?: string;
   viewType?: 'default' | 'input';
+  fullWidth?: boolean;
 }
 
 const DatePicker: React.FC<IDatePickerProps> = ({
@@ -33,11 +34,13 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   views,
   dateFormat,
   viewType,
+  fullWidth,
 }) => {
   const renderInputDatePicker = () => (
     <InputDatePicker
+      fullWidth={fullWidth}
       views={views}
-      style={{ width: width || defaultWidth }}
+      style={{ width }}
       variant="inline"
       size="small"
       inputVariant="outlined"
@@ -48,8 +51,9 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   );
   const renderDatePicker = () => (
     <KeyboardDatePicker
+      fullWidth={fullWidth}
       views={views}
-      style={{ width: width || defaultWidth }}
+      style={{ width }}
       variant="inline"
       size="small"
       inputVariant="outlined"
@@ -60,7 +64,8 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   );
   const renderInputTimePicker = () => (
     <InputTimePicker
-      style={{ width: width || defaultWidth }}
+      fullWidth={fullWidth}
+      style={{ width }}
       variant="inline"
       size="small"
       inputVariant="outlined"
@@ -71,7 +76,8 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   );
   const renderTimePicker = () => (
     <KeyboardTimePicker
-      style={{ width: width || defaultWidth }}
+      fullWidth={fullWidth}
+      style={{ width }}
       variant="inline"
       size="small"
       inputVariant="outlined"

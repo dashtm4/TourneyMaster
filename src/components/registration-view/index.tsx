@@ -45,7 +45,7 @@ const RegistrationView = (props: any) => {
   };
   return (
     <section>
-      <Paper>
+      <Paper sticky={true}>
         <div className={styles.mainMenu}>
           <Button label="+ Add to Library" variant="text" color="secondary" />
           <Button

@@ -30,7 +30,7 @@ class AddDivision extends React.Component<any, IAddDivisionState> {
   render() {
     return (
       <section className={styles.container}>
-        <Paper>
+        <Paper sticky={true}>
           <div className={styles.mainMenu}>
             <div>
               <Button

@@ -8,13 +8,21 @@ const useStyles = makeStyles(() => ({
     backgroundColor: '#F4F4F4',
     boxShadow: '0 1px 10px 0 rgba(0,0,0,0.1)',
   },
+  sticky: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 2,
+  },
 }));
 
-const LightPaper = ({ children }: any) => {
+const LightPaper = ({ children, sticky }: any) => {
   const classes = useStyles();
 
   return (
-    <Paper elevation={3} className={classes.root}>
+    <Paper
+      elevation={3}
+      className={`${classes.root} ${sticky && classes.sticky}`}
+    >
       {children}
     </Paper>
   );

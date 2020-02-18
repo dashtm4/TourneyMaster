@@ -46,7 +46,7 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
   render() {
     return (
       <section>
-        <Paper>
+        <Paper sticky={true}>
           <div className={styles.mainMenu}>
             <div />
             <Button
