@@ -25,7 +25,7 @@ const Select: React.FC<ISelectProps> = ({
     <span className={styles.label}>{label}</span>
     <MuiTextField
       id="select"
-      style={{ width: width || '100px' }}
+      style={{ width }}
       variant="outlined"
       size="small"
       select={true}

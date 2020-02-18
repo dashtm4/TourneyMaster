@@ -62,7 +62,8 @@ class AddDivisionForm extends React.Component<any, any> {
           <div className={styles.sectionRow}>
             <div className={styles.sectionItemLarge}>
               <Input
-                width="351px"
+                // width="351px"
+                fullWidth={true}
                 label="Long Name"
                 value={long_name || ''}
                 onChange={this.onLongNameChange}
@@ -70,7 +71,8 @@ class AddDivisionForm extends React.Component<any, any> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                width="161px"
+                // width="161px"
+                fullWidth={true}
                 label="Short Name"
                 value={short_name || ''}
                 onChange={this.onShortNameChange}
@@ -78,7 +80,8 @@ class AddDivisionForm extends React.Component<any, any> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                width="161px"
+                // width="161px"
+                fullWidth={true}
                 label="Division Tag"
                 startAdornment="@"
                 value={division_tag || ''}
@@ -89,7 +92,8 @@ class AddDivisionForm extends React.Component<any, any> {
           <div className={styles.sectionRow}>
             <div className={styles.sectionItem}>
               <Input
-                width="161px"
+                // width="161px"
+                fullWidth={true}
                 label="Entry Fee"
                 startAdornment="$"
                 type="number"
@@ -99,7 +103,8 @@ class AddDivisionForm extends React.Component<any, any> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                width="161px"
+                // width="161px"
+                fullWidth={true}
                 label="Division Description"
                 value={division_description || ''}
                 onChange={this.onDescChange}
@@ -107,7 +112,8 @@ class AddDivisionForm extends React.Component<any, any> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                width="161px"
+                // width="161px"
+                fullWidth={true}
                 label="Max # of Teams"
                 type="number"
                 value={max_num_teams || ''}
@@ -122,7 +128,7 @@ class AddDivisionForm extends React.Component<any, any> {
               />
             </div>
           </div>
-          <div className={styles.sectionRow}>
+          <div className={styles.sectionRowColumn}>
             <div>
               <Checkbox
                 formLabel=""
@@ -131,9 +137,12 @@ class AddDivisionForm extends React.Component<any, any> {
                 ]}
                 onChange={this.onHasMessageChange}
               />
+            </div>
+            <div className={styles.sectionItemLarge}>
               {this.state.hasMessage && (
                 <Input
-                  width="541px"
+                  // width="541px"
+                  fullWidth={true}
                   multiline={true}
                   rows="4"
                   value={division_message || ''}
@@ -157,7 +166,7 @@ class AddDivisionForm extends React.Component<any, any> {
               {this.state.hasUniqueGameDurations && (
                 <div className={styles.sectionItemTime}>
                   <Input
-                    width="170px"
+                    // width="170px"
                     fullWidth={true}
                     endAdornment="Minutes"
                     label="Pregame Warmup"
@@ -165,7 +174,7 @@ class AddDivisionForm extends React.Component<any, any> {
                   />
                   <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
                   <Input
-                    width="170px"
+                    // width="170px"
                     fullWidth={true}
                     endAdornment="Minutes"
                     label="Time Division Duration"
@@ -175,7 +184,7 @@ class AddDivisionForm extends React.Component<any, any> {
                     &nbsp;(0)&nbsp;+&nbsp;
                   </span>
                   <Input
-                    width="170px"
+                    // width="170px"
                     fullWidth={true}
                     endAdornment="Minutes"
                     label="Time Between Periods"

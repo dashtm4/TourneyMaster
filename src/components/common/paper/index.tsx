@@ -11,7 +11,7 @@ const useStyles = makeStyles(() => ({
   sticky: {
     position: 'sticky',
     top: 0,
-    zIndex: 1,
+    zIndex: 2,
   },
 }));
 

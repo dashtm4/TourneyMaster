@@ -36,7 +36,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
       <div className={styles.sectionFirstRow}>
         <div className={styles.sectionItem}>
           <Input
-            width="161px"
+            fullWidth={true}
             label="Max Teams Per Division"
             type="number"
             // value={data.max_teams_per_division || ''}
@@ -45,7 +45,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
         </div>
         <div className={styles.sectionItem}>
           <Input
-            width="161px"
+            fullWidth={true}
             label="Min Athletes on Roster"
             type="number"
             // value={data.min_players_per_roster || ''}
@@ -54,13 +54,14 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
         </div>
         <div className={styles.sectionItem}>
           <Input
-            width="161px"
+            fullWidth={true}
             label="Max Athletes on Roster"
             type="number"
             // value={data.max_players_per_roster || ''}
             onChange={onMaxAthletesOnRosterChange}
           />
         </div>
+        <div className={styles.sectionItem} />
       </div>
       <div className={styles.sectionSecondRow}>
         <div className={styles.sectionItem}>
@@ -87,6 +88,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             checked={OptionsEnum[data.request_athlete_email || 2]}
           />
         </div>
+        <div className={styles.sectionItem} />
       </div>
     </div>
   );
