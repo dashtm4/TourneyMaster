@@ -11,7 +11,13 @@ import {
 } from 'components/common';
 import styles from '../styles.module.scss';
 
-export default () => {
+interface IProps {
+  onManageBrackets: () => void;
+}
+
+export default (props: IProps) => {
+  const { onManageBrackets } = props;
+
   return (
     <SectionDropdown
       type="section"
@@ -33,6 +39,7 @@ export default () => {
               label="Manage Bracket"
               color="secondary"
               variant="text"
+              onClick={onManageBrackets}
             />
           </div>
           <div className={styles.tournamentName}>

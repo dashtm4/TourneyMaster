@@ -20,10 +20,11 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 interface IProps {
   schedule?: ISchedule;
   onChange: (name: string, value: any) => void;
+  onViewEventMatrix: () => void;
 }
 
 export default (props: IProps) => {
-  const { schedule, onChange } = props;
+  const { schedule, onChange, onViewEventMatrix } = props;
   const gameStartOptions = ['10s'];
 
   const localChange = (event: InputTargetValue) => {
@@ -123,6 +124,7 @@ export default (props: IProps) => {
             icon={<FontAwesomeIcon icon={faEye} />}
             color="secondary"
             variant="text"
+            onClick={onViewEventMatrix}
           />
         </div>
       </div>

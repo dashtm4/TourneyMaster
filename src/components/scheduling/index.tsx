@@ -46,6 +46,14 @@ class Scheduling extends Component<IProps, IState> {
     console.log(name, value);
   };
 
+  onCallAction = () => {
+    console.log('Call action');
+  };
+
+  onCreateNew = () => {
+    console.log('Create New');
+  };
+
   render() {
     const { schedule } = this.state;
 
@@ -72,6 +80,7 @@ class Scheduling extends Component<IProps, IState> {
               label="Create New Version"
               color="primary"
               variant="contained"
+              onClick={this.onCreateNew}
             />
           </Paper>
         </section>
@@ -82,9 +91,17 @@ class Scheduling extends Component<IProps, IState> {
           </div>
         ) : (
           <>
-            <TourneyArchitect schedule={schedule} onChange={this.onChange} />
-            <TournamentPlay />
-            <Brackets />
+            <TourneyArchitect
+              schedule={schedule}
+              onChange={this.onChange}
+              onViewEventMatrix={this.onCallAction}
+            />
+            <TournamentPlay
+              onEditScheduleDetails={this.onCallAction}
+              onManageTournamentPlay={this.onCallAction}
+              onSaveScheduleCSV={this.onCallAction}
+            />
+            <Brackets onManageBrackets={this.onCallAction} />
           </>
         )}
       </div>

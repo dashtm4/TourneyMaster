@@ -17,7 +17,19 @@ import {
 } from 'components/common';
 import styles from '../styles.module.scss';
 
-export default () => {
+interface IProps {
+  onEditScheduleDetails: () => void;
+  onManageTournamentPlay: () => void;
+  onSaveScheduleCSV: () => void;
+}
+
+export default (props: IProps) => {
+  const {
+    onEditScheduleDetails,
+    onManageTournamentPlay,
+    onSaveScheduleCSV,
+  } = props;
+
   return (
     <SectionDropdown
       type="section"
@@ -39,6 +51,7 @@ export default () => {
               label="Edit Schedule Details"
               color="secondary"
               variant="text"
+              onClick={onEditScheduleDetails}
             />
           </div>
           <div className={styles.tournamentName}>
@@ -52,6 +65,7 @@ export default () => {
                 label="Manage Tournament Play"
                 color="secondary"
                 variant="text"
+                onClick={onManageTournamentPlay}
               />
             </div>
             <div className={styles.tnSecond}>
@@ -75,6 +89,7 @@ export default () => {
                 label="Save Schedule to CSV"
                 color="secondary"
                 variant="text"
+                onClick={onSaveScheduleCSV}
               />
             </div>
           </div>
