@@ -9,17 +9,23 @@ import SectionDropdown from '../common/section-dropdown';
 import DivisionDetails from './division-details';
 import PoolsDetails from './pools-details';
 import CreateIcon from '@material-ui/icons/Create';
-import { getDivisions } from './logic/actions';
+import { getDivisions, getPools, getTeams } from './logic/actions';
 import Modal from '../common/modal';
 import AddPool from './add-pool';
 import { IDivision } from 'common/models/divisions';
-import { BindingAction } from 'common/models/callback';
+import { BindingCbWithOne } from 'common/models/callback';
+import { ITeam, IPool } from 'common/models';
+// import { IPool } from 'common/models';
 
 interface IDivisionsAndPoolsProps {
   divisions: IDivision[];
+  pools: any;
+  teams: any;
   history: History;
   match: any;
-  getDivisions: BindingAction;
+  getDivisions: BindingCbWithOne<string>;
+  getPools: BindingCbWithOne<string>;
+  getTeams: BindingCbWithOne<string>;
 }
 
 interface IDivisionAndPoolsState {
@@ -35,7 +41,9 @@ class DivisionsAndPools extends React.Component<
   state = { isModalOpen: false, selected: this.props.divisions[0] };
 
   componentDidMount() {
-    this.props.getDivisions();
+    this.props.getDivisions(this.eventId);
+    // this.props.getPools(this.eventId);
+    // this.props.getTeams(this.eventId);
   }
 
   onAddDivision = () => {
@@ -62,7 +70,7 @@ class DivisionsAndPools extends React.Component<
   };
 
   render() {
-    const { divisions } = this.props;
+    const { divisions, pools, teams } = this.props;
 
     return (
       <section>
@@ -79,38 +87,43 @@ class DivisionsAndPools extends React.Component<
         </Paper>
         <div className={styles.sectionContainer}>
           <div className={styles.headingContainer}>
-            <HeadingLevelTwo>Divisions & Pools</HeadingLevelTwo>
+            <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>
           </div>
           {divisions.length ? (
             <ul className={styles.divisionsList}>
-              {divisions.map(
-                division =>
-                  division.event_id === this.eventId && (
-                    <li key={division.division_id}>
-                      <SectionDropdown padding="0" isDefaultExpanded={true}>
-                        <div className={styles.sectionTitle}>
-                          <div>{`Division: ${division.long_name}`}</div>
-                          <Button
-                            label="Edit Division Details"
-                            variant="text"
-                            color="secondary"
-                            icon={<CreateIcon />}
-                            onClick={this.onEditDivisionDetails(
-                              division.division_id
-                            )}
-                          />
-                        </div>
-                        <div className={styles.sectionContent}>
-                          <DivisionDetails data={division} />
-                          <PoolsDetails
-                            onAddPool={this.onAddPool}
-                            division={division}
-                          />
-                        </div>
-                      </SectionDropdown>
-                    </li>
-                  )
-              )}
+              {divisions.map(division => (
+                <li key={division.division_id}>
+                  <SectionDropdown padding="0" isDefaultExpanded={true}>
+                    <div className={styles.sectionTitle}>
+                      <div>{`Division: ${division.long_name}`}</div>
+                      <Button
+                        label="Edit Division Details"
+                        variant="text"
+                        color="secondary"
+                        icon={<CreateIcon />}
+                        onClick={this.onEditDivisionDetails(
+                          division.division_id
+                        )}
+                      />
+                    </div>
+                    <div className={styles.sectionContent}>
+                      <DivisionDetails data={division} />
+                      <PoolsDetails
+                        onAddPool={this.onAddPool}
+                        division={division}
+                        pools={pools.filter(
+                          (pool: IPool) =>
+                            pool.division_id === division.division_id
+                        )}
+                        teams={teams.filter(
+                          (team: ITeam) =>
+                            team.division_id === division.division_id
+                        )}
+                      />
+                    </div>
+                  </SectionDropdown>
+                </li>
+              ))}
               {this.state.selected && (
                 <Modal
                   isOpen={this.state.isModalOpen}
@@ -134,15 +147,19 @@ class DivisionsAndPools extends React.Component<
 }
 
 interface IState {
-  divisions: { data: IDivision[] };
+  divisions: { data: IDivision[]; pools: any; teams: any };
 }
 
 const mapStateToProps = (state: IState) => ({
   divisions: state.divisions.data,
+  pools: state.divisions.pools,
+  teams: state.divisions.teams,
 });
 
 const mapDispatchToProps = {
   getDivisions,
+  getPools,
+  getTeams,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DivisionsAndPools);
