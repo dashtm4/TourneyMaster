@@ -64,7 +64,10 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
           <ul className={styles.divisionsList}>
             {divisions.map((division, index) => (
               <li key={index}>
-                <SectionDropdown padding="0" isDefaultExpanded={true}>
+                <SectionDropdown
+                  panelDetailsType="flat"
+                  isDefaultExpanded={true}
+                >
                   <div className={styles.sectionTitle}>
                     <div>{`Division: ${division.long_name}`}</div>
                     <Button

@@ -12,10 +12,10 @@ type DropdownType = 'section' | 'block';
 
 interface Props {
   children: React.ReactElement[];
-  padding?: string;
   type?: DropdownType;
   isDefaultExpanded?: boolean;
   headingColor?: string;
+  panelDetailsType?: string;
 }
 
 const setStyleOnType = (type?: DropdownType) => {
@@ -33,6 +33,15 @@ const setStyleOnType = (type?: DropdownType) => {
   }
 };
 
+const setPanelDetailsStyle = (type: string) => {
+  switch (type) {
+    case 'flat':
+      return {
+        padding: '0',
+      };
+  }
+};
+
 const setExpandIcon = (type?: DropdownType) =>
   type && type === 'section' ? (
     <ExpandMoreIcon />
@@ -45,10 +54,10 @@ const setPanelSummaryStyle = (type?: DropdownType) =>
 
 const SectionDropdown = ({
   children,
-  padding,
   type,
   headingColor,
   isDefaultExpanded,
+  panelDetailsType,
 }: Props) => (
   <section className={styles.section}>
     <ExpansionPanel
@@ -68,7 +77,15 @@ const SectionDropdown = ({
           {children[0]}
         </HeadeingLevelThree>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails style={{ padding, display: 'block' }}>
+      <ExpansionPanelDetails
+        style={
+          panelDetailsType
+            ? {
+                ...setPanelDetailsStyle(panelDetailsType),
+              }
+            : {}
+        }
+      >
         {children[1]}
       </ExpansionPanelDetails>
     </ExpansionPanel>
