@@ -8,16 +8,16 @@ interface Props {
   divisions: IDisision[];
   pools: IPool[];
   teams: ITeam[];
-  loadPools: (divisionId: string) => void;
-  loadTeams: (poolId: string) => void;
+  isEdit: boolean;
+  changePool: (team: ITeam, poolId: string | null) => void;
 }
 
 const TeamManagement = ({
   divisions,
   teams,
   pools,
-  loadPools,
-  loadTeams,
+  isEdit,
+  changePool,
 }: Props) => (
   <li>
     <SectionDropdown type="section" isDefaultExpanded={true}>
@@ -28,8 +28,8 @@ const TeamManagement = ({
             division={division}
             pools={pools.filter(it => it.division_id === division.division_id)}
             teams={teams}
-            loadPools={loadPools}
-            loadTeams={loadTeams}
+            isEdit={isEdit}
+            changePool={changePool}
             key={division.division_id}
           />
         ))}

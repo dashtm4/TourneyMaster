@@ -1,5 +1,6 @@
 export interface IPool {
   pool_id: string;
+  event_id: string;
   division_id: string;
   pool_desc: string;
   is_active_YN: boolean;

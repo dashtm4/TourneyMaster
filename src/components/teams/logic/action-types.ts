@@ -5,6 +5,7 @@ export const FAILURE = '_FAILURE';
 export const LOAD_DIVISIONS = 'LOAD_DIVISIONS';
 export const LOAD_POOLS = 'LOAD_POOLS';
 export const LOAD_TEAMS = 'LOAD_TEAMS';
+export const CHANGE_POOL = 'CHANGE_POOL';
 
 export interface loadDivisionsSuccess {
   type: 'LOAD_DIVISIONS_SUCCESS';
@@ -21,7 +22,13 @@ export interface loadTeamsSuccess {
   payload: ITeam[];
 }
 
+export interface changePool {
+  type: 'CHANGE_POOL';
+  payload: ITeam;
+}
+
 export type TeamsAction =
   | loadDivisionsSuccess
   | loadPoolsSuccess
-  | loadTeamsSuccess;
+  | loadTeamsSuccess
+  | changePool;

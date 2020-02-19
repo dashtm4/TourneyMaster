@@ -12,6 +12,7 @@ import Paper from './paper';
 import SectionDropdown from './section-dropdown';
 import Select from './select';
 import Tooltip from './tooltip-message';
+import Modal from './modal';
 import * as Toasts from './toastr/showToasts';
 
 export {
@@ -30,4 +31,5 @@ export {
   Select,
   Tooltip,
   Toasts,
+  Modal,
 };

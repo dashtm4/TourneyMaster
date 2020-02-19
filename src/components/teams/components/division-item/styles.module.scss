@@ -1,6 +1,15 @@
 .poolList {
+  display: flex;
+  flex-wrap: wrap;
+
   margin: 0;
   padding: 0;
 
   list-style: none;
+
+  li {
+    width: 265px;
+
+    margin-right: 12px;
+  }
 }
