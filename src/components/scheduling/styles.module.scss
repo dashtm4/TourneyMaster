@@ -1,16 +1,32 @@
 .container {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+
+  .loader {
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
   .paper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    width: 100%;
+    top: 0;
+    z-index: 2;
+    position: sticky;
+
+    > div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
   }
 
   .errorMessage {
     font-size: 17px;
     color: red;
+    cursor: default;
 
     svg {
       margin-right: 10px;
@@ -29,40 +45,52 @@
       font-size: 16px;
       color: #6a6a6a;
 
+      div.sectionCellHeader {
+        display: flex;
+        align-items: baseline;
+        justify-content: flex-start;
+
+        svg {
+          margin-left: 8px;
+        }
+      }
+
       span {
         font-weight: 600;
+        padding-bottom: 5px;
       }
     }
-
-    .eventStructure {
-      .esFirst,
-      .esSecond,
-      .esFourth {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        padding: 10px 0;
-
-        .sectionCell {
-          width: 25%;
-        }
-      }
-
-      .esFourth {
-        padding-top: 15px;
-        .sectionCell {
-          width: 50%;
-
-          p {
-            padding-top: 5px;
-          }
-        }
-      }
-    }
-
-    .gamesStartOn {
+    .taFirst,
+    .taSecond,
+    .taThird {
       display: flex;
-      padding: 20px 0;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+
+    .taSecond {
+      .calculation {
+        display: flex;
+
+        .plainText {
+          color: #6a6a6a;
+          display: flex;
+          align-items: flex-end;
+          padding: 10px;
+        }
+      }
+    }
+
+    .taThird {
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-start;
+
+      .totalGameSlots {
+        color: #6a6a6a;
+        margin-right: 10px;
+      }
     }
   }
 

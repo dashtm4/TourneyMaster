@@ -19,7 +19,12 @@ import styles from '../styles.module.scss';
 
 export default () => {
   return (
-    <SectionDropdown type="section" padding="0" isDefaultExpanded={true}>
+    <SectionDropdown
+      type="section"
+      padding="0"
+      isDefaultExpanded={true}
+      useBorder={true}
+    >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Tournament Play</span>
       </HeadingLevelThree>

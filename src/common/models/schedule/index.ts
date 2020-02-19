@@ -6,6 +6,7 @@ export interface ISchedule {
   num_teams: number;
   schedule_status: string;
   last_web_publish: string;
+  games_start_on?: string | null;
   is_active_YN: number;
   is_library_YN: number;
   created_by: string;

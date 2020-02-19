@@ -1,25 +1,29 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import styles from '../styles.module.scss';
 import {
   SectionDropdown,
   HeadingLevelThree,
-  HeadingLevelFour,
   Button,
-  Paper,
   Select,
+  Input,
+  Tooltip,
 } from 'components/common';
+import { ISchedule } from 'common/models/schedule';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface IProps {
+  schedule?: ISchedule;
   onChange: (name: string, value: any) => void;
 }
 
 export default (props: IProps) => {
-  const { onChange } = props;
+  const { schedule, onChange } = props;
   const gameStartOptions = ['10s'];
 
   const localChange = (event: InputTargetValue) => {
@@ -27,90 +31,98 @@ export default (props: IProps) => {
     onChange(name, value);
   };
 
+  const renderSectionCell = (name: string, value: any, icon?: IconProp) => (
+    <div className={styles.sectionCell}>
+      <div className={styles.sectionCellHeader}>
+        <span>{name}</span>
+        {!!icon && (
+          <Tooltip
+            type="info"
+            title="Play Time is based on Facilities availability"
+          >
+            <div className={styles.infoCircle}>
+              <FontAwesomeIcon color="#00A3EA" icon={icon} />
+            </div>
+          </Tooltip>
+        )}
+      </div>
+      <p>{value}</p>
+    </div>
+  );
+
   return (
-    <SectionDropdown type="section" padding="0" isDefaultExpanded={false}>
+    <SectionDropdown
+      type="section"
+      padding="0"
+      isDefaultExpanded={true}
+      useBorder={true}
+    >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Tourney Architect</span>
       </HeadingLevelThree>
       <div className={styles.tourneyArchitect}>
-        <Paper padding={20}>
-          <div className={styles.header}>
-            <HeadingLevelFour>
-              <span>Event Structure</span>
-            </HeadingLevelFour>
-            <Button
-              icon={<FontAwesomeIcon icon={faEdit} />}
-              label="Edit Event Structure"
-              color="secondary"
-              variant="text"
+        <div className={styles.taFirst}>
+          {renderSectionCell('Play Time Window', '8:30 - 5:30', faInfoCircle)}
+          {renderSectionCell('Number of Fields', '8', faInfoCircle)}
+          {renderSectionCell('Min/Max # of Games', '3/5', faInfoCircle)}
+          {renderSectionCell(
+            'Teams Registered/Max',
+            `${schedule?.num_teams}/24`,
+            faInfoCircle
+          )}
+        </div>
+        <div className={styles.taSecond}>
+          <div className={styles.calculation}>
+            <Input
+              width="140px"
+              type="number"
+              endAdornment="Minutes"
+              label="Warmup"
             />
+            <span className={styles.plainText}>+</span>
+            <Input
+              width="140px"
+              type="number"
+              endAdornment="Minutes"
+              label="Division Duration"
+            />
+            <span className={styles.plainText}>
+              (2)&nbsp;
+              <Tooltip
+                type="info"
+                title="Play Time is based on Facilities availability"
+              >
+                <div className={styles.infoCircle}>
+                  <FontAwesomeIcon color="#00A3EA" icon={faInfoCircle} />
+                </div>
+              </Tooltip>
+              &nbsp;+
+            </span>
+            <Input
+              width="140px"
+              type="number"
+              endAdornment="Minutes"
+              label="Time Between Periods"
+            />
+            <span className={styles.plainText}>=&nbsp;50 Minutes</span>
           </div>
-          <div className={styles.eventStructure}>
-            <div className={styles.esFirst}>
-              <div className={styles.sectionCell}>
-                <span>Event Type</span>
-                <p>Tournament</p>
-              </div>
-              <div className={styles.sectionCell}>
-                <span>Time Division</span>
-                <p>Halves (2)</p>
-              </div>
-              <div className={styles.sectionCell}>
-                <span>Results Display</span>
-                <p>Show Goals Scored</p>
-              </div>
-              <div className={styles.sectionCell}>
-                <span>Playoff Games Needed</span>
-                <p>3</p>
-              </div>
-            </div>
-            <div className={styles.esSecond}>
-              <div className={styles.sectionCell}>
-                <span>Max # of Teams</span>
-                <p>12</p>
-              </div>
-              <div className={styles.sectionCell}>
-                <span>Max # of Games</span>
-                <p>8</p>
-              </div>
-              <div className={styles.sectionCell}>
-                <span>Max # of Days</span>
-                <p>4</p>
-              </div>
-              <div className={styles.sectionCell}>
-                <span>Min # of Game Guarantee</span>
-                <p>3</p>
-              </div>
-            </div>
-            <div className={styles.sectionCell}>
-              <span>Game Duration</span>
-              <p>
-                5 Min Warmup + 20 Min Divisions (2) + 5 Min Between Periods = 50
-                Minutes Total Runtime
-              </p>
-            </div>
-            <div className={styles.esFourth}>
-              <div className={styles.sectionCell}>
-                <span>Facilities Hours</span>
-                <p>The Proving Grounds:</p>
-                <p>Main Stadium: 8:00 AM - 8:00 PM</p>
-              </div>
-              <Button
-                icon={<FontAwesomeIcon icon={faEdit} />}
-                label="Edit Facilities"
-                color="secondary"
-                variant="text"
-              />
-            </div>
-          </div>
-        </Paper>
-        <div className={styles.gamesStartOn}>
           <Select
             options={gameStartOptions}
             value={gameStartOptions[0]}
             label="Games Start On"
             name="gamesStartOn"
             onChange={localChange}
+          />
+        </div>
+        <div className={styles.taThird}>
+          <span className={styles.totalGameSlots}>
+            =&nbsp;128 Total Game Slots
+          </span>
+          <Button
+            label="View Event Matrix"
+            icon={<FontAwesomeIcon icon={faEye} />}
+            color="secondary"
+            variant="text"
           />
         </div>
       </div>

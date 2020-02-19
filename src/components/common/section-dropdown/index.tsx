@@ -16,6 +16,7 @@ interface Props {
   type?: DropdownType;
   isDefaultExpanded?: boolean;
   headingColor?: string;
+  useBorder?: boolean;
 }
 
 const setStyleOnType = (type?: DropdownType) => {
@@ -49,8 +50,12 @@ const SectionDropdown = ({
   type,
   headingColor,
   isDefaultExpanded,
+  useBorder,
 }: Props) => (
-  <section className={styles.section}>
+  <section
+    className={styles.section}
+    style={{ borderTop: useBorder ? '1px solid #d1d1d1' : 'none' }}
+  >
     <ExpansionPanel
       style={setStyleOnType(type)}
       defaultExpanded={isDefaultExpanded}
