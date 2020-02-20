@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { DndProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import PoolItem from '../pool-item';
 import { SectionDropdown } from '../../../common';
 import { IDisision, IPool, ITeam } from '../../../../common/models';
@@ -8,21 +10,17 @@ interface Props {
   division: IDisision;
   pools: IPool[];
   teams: ITeam[];
-  loadPools: (divisionId: string) => void;
-  loadTeams: (poolId: string) => void;
+  isEdit: boolean;
+  changePool: (team: ITeam, poolId: string | null) => void;
 }
 
 const DivisionItem = ({
   division,
   pools,
   teams,
-  loadPools,
-  loadTeams,
+  isEdit,
+  changePool,
 }: Props) => {
-  useEffect(() => {
-    loadPools(division.division_id);
-  }, []);
-
   if (!division) {
     return null;
   }
@@ -36,16 +34,29 @@ const DivisionItem = ({
         headingColor="#1C315F"
       >
         <span>{division.long_name}</span>
-        <ul className={styles.poolList}>
-          {pools.map(pool => (
+        <DndProvider backend={HTML5Backend}>
+          <ul className={styles.poolList}>
+            {pools.map(pool => (
+              <PoolItem
+                pool={pool}
+                teams={teams.filter(it => it.pool_id === pool.pool_id)}
+                divisionId={division.division_id}
+                isEdit={isEdit}
+                changePool={changePool}
+                key={pool.pool_id}
+              />
+            ))}
             <PoolItem
-              pool={pool}
-              teams={teams.filter(it => it.pool_id === pool.pool_id)}
-              loadTeams={loadTeams}
-              key={pool.pool_id}
+              teams={teams.filter(
+                it => !it.pool_id && it.division_id === division.division_id
+              )}
+              divisionId={division.division_id}
+              isEdit={isEdit}
+              isUnassigned={true}
+              changePool={changePool}
             />
-          ))}
-        </ul>
+          </ul>
+        </DndProvider>
       </SectionDropdown>
     </li>
   );
