@@ -10,6 +10,8 @@ interface Props {
   teams: ITeam[];
   isEdit: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
+  onDeletePopupOpen: (team: ITeam) => void;
+  onEditPopupOpen: (team: ITeam) => void;
 }
 
 const TeamManagement = ({
@@ -18,6 +20,8 @@ const TeamManagement = ({
   pools,
   isEdit,
   changePool,
+  onDeletePopupOpen,
+  onEditPopupOpen,
 }: Props) => (
   <li>
     <SectionDropdown type="section" isDefaultExpanded={true}>
@@ -30,6 +34,8 @@ const TeamManagement = ({
             teams={teams}
             isEdit={isEdit}
             changePool={changePool}
+            onDeletePopupOpen={onDeletePopupOpen}
+            onEditPopupOpen={onEditPopupOpen}
             key={division.division_id}
           />
         ))}

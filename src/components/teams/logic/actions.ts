@@ -8,6 +8,7 @@ import {
   LOAD_POOLS,
   LOAD_TEAMS,
   CHANGE_POOL,
+  DELETE_TEAM,
 } from './action-types';
 import { IPool, ITeam } from '../../../common/models';
 import Api from 'api/api';
@@ -58,7 +59,7 @@ const loadTeams: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   eventId: string
 ) => async (dispatch: Dispatch) => {
   try {
-    // const teams = await Api.get(`/teams?event_id=${eventId}`);
+    // const teamsAP = await Api.get(`/teams?event_id=${eventId}`);
     const teams = mockTeams;
 
     const currentEventTeams = teams.filter(
@@ -85,4 +86,21 @@ const changePool = (team: ITeam, poolId: string | null) => {
   };
 };
 
-export { loadDivisions, loadPools, loadTeams, changePool };
+const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
+  team: ITeam
+) => async (dispatch: Dispatch) => {
+  try {
+    // const teamsAP = await Api.delete(`/teams?team_id=${team.team_id}`);
+
+    dispatch({
+      type: DELETE_TEAM + SUCCESS,
+      payload: team,
+    });
+  } catch {
+    dispatch({
+      type: DELETE_TEAM + FAILURE,
+    });
+  }
+};
+
+export { loadDivisions, loadPools, loadTeams, changePool, deleteTeam };

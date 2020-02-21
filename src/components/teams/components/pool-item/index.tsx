@@ -12,6 +12,8 @@ interface Props {
   isEdit: boolean;
   isUnassigned?: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
+  onDeletePopupOpen: (team: ITeam) => void;
+  onEditPopupOpen: (team: ITeam) => void;
 }
 
 const PoolItem = ({
@@ -21,6 +23,8 @@ const PoolItem = ({
   isUnassigned,
   isEdit,
   changePool,
+  onDeletePopupOpen,
+  onEditPopupOpen,
 }: Props) => {
   const [{}, drop] = useDrop({
     accept: DndItems.TEAM,
@@ -35,12 +39,14 @@ const PoolItem = ({
       <h5 className={styles.poolTitle}>
         {isUnassigned ? 'Unassigned' : pool?.pool_desc} ({teams.length})
       </h5>
-      <ul ref={drop} className={styles.teamList}>
+      <ul ref={isEdit ? drop : null} className={styles.teamList}>
         {teams.map(it => (
           <TeamItem
             team={it}
             isEdit={isEdit}
             changePool={changePool}
+            onDeletePopupOpen={onDeletePopupOpen}
+            onEditPopupOpen={onEditPopupOpen}
             key={it.team_id}
           />
         ))}

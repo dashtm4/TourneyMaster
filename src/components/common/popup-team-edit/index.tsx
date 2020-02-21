@@ -1,14 +1,10 @@
 import React from 'react';
-import HeadingLevelThree from '../../../common/headings/heading-level-three';
-import Button from '../../../common/buttons/button';
-import FieldItem from '../../../common/popup-team-edit/components/field-item';
-import { getIcon } from '../../../../helpers/get-icon.helper';
-import {
-  BindingAction,
-  BindingCbWithOne,
-} from '../../../../common/models/callback';
-import { ITeam } from '../../../../common/models/teams';
-import { Icons } from '../../../../common/constants/icons';
+import { HeadingLevelThree, Button } from '../../common';
+import FieldItem from './components/field-item';
+import { getIcon } from '../../../helpers/get-icon.helper';
+import { BindingAction } from '../../../common/models/callback';
+import { ITeam } from '../../../common/models/teams';
+import { Icons } from '../../../common/constants/icons';
 import styles from './styles.module.scss';
 
 const EDIT_ICON_STYLES = {
@@ -37,7 +33,7 @@ interface Props {
   isEdit: boolean;
   onEditTeamClick: BindingAction;
   onSaveTeamClick: BindingAction;
-  onDeleteTeamClick: BindingCbWithOne<string>;
+  onDeleteTeamClick: (team: ITeam) => void;
   onChangeTeam: any;
   onCloseModal: BindingAction;
 }
@@ -221,7 +217,7 @@ const TeamDetailsPopup = ({
         <div className={styles.btnsWrapper}>
           <span className={styles.BtnDeleteWrapper}>
             <Button
-              onClick={() => onDeleteTeamClick(team.team_id)}
+              onClick={() => onDeleteTeamClick(team)}
               icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
               label="Delete Team"
               variant="text"

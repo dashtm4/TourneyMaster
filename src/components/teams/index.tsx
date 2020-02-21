@@ -7,10 +7,12 @@ import {
   loadPools,
   loadTeams,
   changePool,
+  deleteTeam,
 } from './logic/actions';
 import Navigation from './components/navigation';
 import TeamManagement from './components/team-management';
-import { HeadingLevelTwo, Modal } from '../common';
+import PopupDeleteTeam from './components/popup-delete-team';
+import { HeadingLevelTwo, Modal, PopupTeamEdit } from '../common';
 import { AppState } from './logic/reducer';
 import { IDisision, IPool, ITeam } from '../../common/models';
 import styles from './styles.module.scss';
@@ -27,10 +29,13 @@ interface Props {
   loadPools: (divisionId: string) => void;
   loadTeams: (poolId: string) => void;
   changePool: (team: ITeam, poolId: string | null) => void;
+  deleteTeam: (team: ITeam) => void;
 }
 
 interface State {
+  configurableTeam: ITeam | null;
   isEdit: boolean;
+  isEditTeam: boolean;
   isEditPopupOpen: boolean;
   isDeletePopupOpen: boolean;
 }
@@ -43,7 +48,9 @@ class Teams extends React.Component<
     super(props);
 
     this.state = {
-      isEdit: false,
+      configurableTeam: null,
+      isEdit: true,
+      isEditTeam: false,
       isEditPopupOpen: false,
       isDeletePopupOpen: false,
     };
@@ -62,12 +69,46 @@ class Teams extends React.Component<
 
   onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
 
+  onDeletePopupOpen = (team: ITeam) =>
+    this.setState({ configurableTeam: team, isDeletePopupOpen: true });
+
+  onDeleteTeam = (team: ITeam) => {
+    const { deleteTeam } = this.props;
+
+    deleteTeam(team);
+
+    this.onCloseModal();
+  };
+
+  onEditPopupOpen = (team: ITeam) =>
+    this.setState({ configurableTeam: team, isEditPopupOpen: true });
+
+  onChangeTeam = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const {
+      target: { value, name },
+    } = evt;
+
+    this.setState(({ configurableTeam }) => ({
+      configurableTeam: { ...(configurableTeam as ITeam), [name]: value },
+    }));
+  };
+
   onCloseModal = () =>
-    this.setState({ isEditPopupOpen: false, isDeletePopupOpen: false });
+    this.setState({
+      configurableTeam: null,
+      isEditPopupOpen: false,
+      isDeletePopupOpen: false,
+    });
 
   render() {
     const { divisions, pools, teams, changePool } = this.props;
-    const { isEdit, isDeletePopupOpen } = this.state;
+    const {
+      configurableTeam,
+      isEdit,
+      isEditTeam,
+      isEditPopupOpen,
+      isDeletePopupOpen,
+    } = this.state;
 
     return (
       <>
@@ -83,11 +124,35 @@ class Teams extends React.Component<
               teams={teams}
               isEdit={isEdit}
               changePool={changePool}
+              onDeletePopupOpen={this.onDeletePopupOpen}
+              onEditPopupOpen={this.onEditPopupOpen}
             />
           </ul>
         </section>
-        <Modal isOpen={isDeletePopupOpen} onClose={this.onCloseModal}>
-          <div>{isDeletePopupOpen && <p>asd</p>}</div>
+        <Modal
+          isOpen={isDeletePopupOpen || isEditPopupOpen}
+          onClose={this.onCloseModal}
+        >
+          <>
+            {isEditPopupOpen && (
+              <PopupTeamEdit
+                team={configurableTeam}
+                isEdit={isEditTeam}
+                onChangeTeam={this.onChangeTeam}
+                onEditTeamClick={() => {}}
+                onSaveTeamClick={() => {}}
+                onDeleteTeamClick={this.onDeleteTeam}
+                onCloseModal={this.onCloseModal}
+              />
+            )}
+            {isDeletePopupOpen && (
+              <PopupDeleteTeam
+                team={configurableTeam}
+                onCloseModal={this.onCloseModal}
+                onDeleteClick={this.onDeleteTeam}
+              />
+            )}
+          </>
         </Modal>
       </>
     );
@@ -106,7 +171,7 @@ export default connect(
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadDivisions, loadPools, loadTeams, changePool },
+      { loadDivisions, loadPools, loadTeams, changePool, deleteTeam },
       dispatch
     )
 )(Teams);
