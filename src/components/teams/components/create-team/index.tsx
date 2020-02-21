@@ -14,9 +14,12 @@ import {
   ITeam,
   BindingCbWithTwo,
 } from 'common/models';
+import Modal from 'components/common/modal';
+import CancelPopup from './cancel-popup';
 
 interface ICreateTeamState {
   teams: Partial<ITeam>[];
+  isModalOpen: boolean;
 }
 
 interface ICreateTeamProps {
@@ -43,7 +46,12 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
   };
 
   onCancel = () => {
-    this.props.history.goBack();
+    const changesMade = Object.entries(this.state.teams[0]).length === 0;
+    if (!changesMade) {
+      this.setState({ isModalOpen: true });
+    } else {
+      this.props.history.goBack();
+    }
   };
 
   onSave = () => {
@@ -52,6 +60,10 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
 
   onAddTeam = () => {
     this.setState({ teams: [...this.state.teams, {}] });
+  };
+
+  onModalClose = () => {
+    this.setState({ isModalOpen: false });
   };
 
   render() {
@@ -93,6 +105,9 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
           color="secondary"
           onClick={this.onAddTeam}
         />
+        <Modal isOpen={this.state.isModalOpen} onClose={this.onModalClose}>
+          <CancelPopup onSave={this.onSave} history={this.props.history} />
+        </Modal>
       </section>
     );
   }
