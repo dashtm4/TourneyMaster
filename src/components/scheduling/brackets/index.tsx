@@ -19,12 +19,7 @@ export default (props: IProps) => {
   const { onManageBrackets } = props;
 
   return (
-    <SectionDropdown
-      type="section"
-      padding="0"
-      isDefaultExpanded={true}
-      useBorder={true}
-    >
+    <SectionDropdown type="section" isDefaultExpanded={true} useBorder={true}>
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Brackets</span>
       </HeadingLevelThree>

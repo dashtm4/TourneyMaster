@@ -52,12 +52,7 @@ export default (props: IProps) => {
   );
 
   return (
-    <SectionDropdown
-      type="section"
-      padding="0"
-      isDefaultExpanded={true}
-      useBorder={true}
-    >
+    <SectionDropdown type="section" isDefaultExpanded={true} useBorder={true}>
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Tourney Architect</span>
       </HeadingLevelThree>
