@@ -35,7 +35,6 @@ interface Props {
 interface State {
   configurableTeam: ITeam | null;
   isEdit: boolean;
-  isEditTeam: boolean;
   isEditPopupOpen: boolean;
   isDeletePopupOpen: boolean;
 }
@@ -50,7 +49,6 @@ class Teams extends React.Component<
     this.state = {
       configurableTeam: null,
       isEdit: true,
-      isEditTeam: false,
       isEditPopupOpen: false,
       isDeletePopupOpen: false,
     };
@@ -83,15 +81,12 @@ class Teams extends React.Component<
   onEditPopupOpen = (team: ITeam) =>
     this.setState({ configurableTeam: team, isEditPopupOpen: true });
 
-  onChangeTeam = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { value, name },
-    } = evt;
-
+  onChangeTeam = ({
+    target: { name, value },
+  }: React.ChangeEvent<HTMLInputElement>) =>
     this.setState(({ configurableTeam }) => ({
       configurableTeam: { ...(configurableTeam as ITeam), [name]: value },
     }));
-  };
 
   onCloseModal = () =>
     this.setState({
@@ -105,7 +100,6 @@ class Teams extends React.Component<
     const {
       configurableTeam,
       isEdit,
-      isEditTeam,
       isEditPopupOpen,
       isDeletePopupOpen,
     } = this.state;
@@ -137,9 +131,7 @@ class Teams extends React.Component<
             {isEditPopupOpen && (
               <PopupTeamEdit
                 team={configurableTeam}
-                isEdit={isEditTeam}
                 onChangeTeam={this.onChangeTeam}
-                onEditTeamClick={() => {}}
                 onSaveTeamClick={() => {}}
                 onDeleteTeamClick={this.onDeleteTeam}
                 onCloseModal={this.onCloseModal}
