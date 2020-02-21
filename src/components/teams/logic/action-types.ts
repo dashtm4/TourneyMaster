@@ -6,6 +6,7 @@ export const LOAD_DIVISIONS = 'LOAD_DIVISIONS';
 export const LOAD_POOLS = 'LOAD_POOLS';
 export const LOAD_TEAMS = 'LOAD_TEAMS';
 export const CHANGE_POOL = 'CHANGE_POOL';
+export const DELETE_TEAM = 'DELETE_TEAM';
 
 export interface loadDivisionsSuccess {
   type: 'LOAD_DIVISIONS_SUCCESS';
@@ -27,8 +28,14 @@ export interface changePool {
   payload: ITeam;
 }
 
+export interface deleteTeamSuccess {
+  type: 'DELETE_TEAM_SUCCESS';
+  payload: ITeam;
+}
+
 export type TeamsAction =
   | loadDivisionsSuccess
   | loadPoolsSuccess
   | loadTeamsSuccess
-  | changePool;
+  | changePool
+  | deleteTeamSuccess;

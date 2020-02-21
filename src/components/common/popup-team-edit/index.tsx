@@ -1,14 +1,10 @@
-import React from 'react';
-import HeadingLevelThree from '../../../common/headings/heading-level-three';
-import Button from '../../../common/buttons/button';
-import FieldItem from '../../../common/popup-team-edit/components/field-item';
-import { getIcon } from '../../../../helpers/get-icon.helper';
-import {
-  BindingAction,
-  BindingCbWithOne,
-} from '../../../../common/models/callback';
-import { ITeam } from '../../../../common/models/teams';
-import { Icons } from '../../../../common/constants/icons';
+import React, { useState } from 'react';
+import { HeadingLevelThree, Button } from '../../common';
+import FieldItem from './components/field-item';
+import { getIcon } from '../../../helpers/get-icon.helper';
+import { BindingAction } from '../../../common/models/callback';
+import { ITeam } from '../../../common/models/teams';
+import { Icons } from '../../../common/constants/icons';
 import styles from './styles.module.scss';
 
 const EDIT_ICON_STYLES = {
@@ -34,33 +30,33 @@ enum FORM_FIELDS {
 
 interface Props {
   team: ITeam | null;
-  isEdit: boolean;
-  onEditTeamClick: BindingAction;
   onSaveTeamClick: BindingAction;
-  onDeleteTeamClick: BindingCbWithOne<string>;
-  onChangeTeam: any;
+  onDeleteTeamClick: (team: ITeam) => void;
+  onChangeTeam: (evt: React.ChangeEvent<HTMLInputElement>) => void;
   onCloseModal: BindingAction;
 }
 
 const TeamDetailsPopup = ({
   team,
-  isEdit,
-  onEditTeamClick,
   onSaveTeamClick,
   onDeleteTeamClick,
   onChangeTeam,
   onCloseModal,
 }: Props) => {
-  if (!team) return null;
+  const [isEdit, onEditClick] = useState(false);
+
+  if (!team) {
+    return null;
+  }
 
   return (
     <div className={styles.popupWrapper}>
       <div className={styles.headerWrapper}>
         <HeadingLevelThree color="#1C315F">
-          <span>Big 4 HHH (2020, West)</span>
+          <span>{team.long_name} (2020, West)</span>
         </HeadingLevelThree>
         <Button
-          onClick={onEditTeamClick}
+          onClick={() => onEditClick(!isEdit)}
           icon={getIcon(Icons.EDIT, EDIT_ICON_STYLES)}
           label="Edit Team Details"
           variant="text"
@@ -77,7 +73,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.long_name}
+                      value={team.long_name || ''}
                       name={FORM_FIELDS.LONG_NAME}
                       type="text"
                     />
@@ -93,7 +89,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.short_name}
+                      value={team.short_name || ''}
                       name={FORM_FIELDS.SHORT_NAME}
                       type="text"
                     />
@@ -109,7 +105,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.team_tag}
+                      value={team.team_tag || ''}
                       name={FORM_FIELDS.TEAM_TAG}
                       type="text"
                     />
@@ -125,7 +121,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.state}
+                      value={team.state || ''}
                       name={FORM_FIELDS.STATE}
                       type="text"
                     />
@@ -141,7 +137,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.city}
+                      value={team.city || ''}
                       name={FORM_FIELDS.CITY}
                       type="text"
                     />
@@ -161,7 +157,7 @@ const TeamDetailsPopup = ({
                       <b>First Name: </b>
                       <input
                         onChange={onChangeTeam}
-                        value={team.contact_first_name}
+                        value={team.contact_first_name || ''}
                         name={FORM_FIELDS.CONTACT_FIRST_NAME}
                         type="text"
                       />
@@ -170,7 +166,7 @@ const TeamDetailsPopup = ({
                       <b>Last Name: </b>
                       <input
                         onChange={onChangeTeam}
-                        value={team.contact_last_name}
+                        value={team.contact_last_name || ''}
                         name={FORM_FIELDS.CONTACT_LAST_NAME}
                         type="text"
                       />
@@ -186,7 +182,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.phone_num}
+                      value={team.phone_num || ''}
                       name={FORM_FIELDS.PHONE_NUM}
                       type="text"
                     />
@@ -202,7 +198,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.contact_email}
+                      value={team.contact_email || ''}
                       name={FORM_FIELDS.CONCTACT_EMAIL}
                       type="text"
                     />
@@ -221,7 +217,7 @@ const TeamDetailsPopup = ({
         <div className={styles.btnsWrapper}>
           <span className={styles.BtnDeleteWrapper}>
             <Button
-              onClick={() => onDeleteTeamClick(team.team_id)}
+              onClick={() => onDeleteTeamClick(team)}
               icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
               label="Delete Team"
               variant="text"
