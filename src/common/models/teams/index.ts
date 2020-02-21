@@ -20,5 +20,5 @@ export interface ITeam {
   updated_by: string;
   updated_datetime: string;
   division_id: string;
-  pool_id: string;
+  pool_id: string | null;
 }

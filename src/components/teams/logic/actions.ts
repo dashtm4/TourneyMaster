@@ -7,8 +7,10 @@ import {
   LOAD_DIVISIONS,
   LOAD_POOLS,
   LOAD_TEAMS,
+  CHANGE_POOL,
+  DELETE_TEAM,
 } from './action-types';
-import { IDisision, IPool, ITeam } from '../../../common/models';
+import { IPool, ITeam } from '../../../common/models';
 import Api from 'api/api';
 
 import { mockPools } from '../mocks/pools';
@@ -18,18 +20,11 @@ const loadDivisions: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   eventId: string
 ) => async (dispatch: Dispatch) => {
   try {
-    const apiDiv = await Api.get(`/divisions?event_id=${eventId}`);
-
-    console.log(apiDiv);
-
-    const divisions = await Api.get('/divisions');
-    const currentEventDivisions = divisions.filter(
-      (it: IDisision) => it.event_id === eventId
-    );
+    const divisions = await Api.get(`/divisions?event_id=${eventId}`);
 
     dispatch({
       type: LOAD_DIVISIONS + SUCCESS,
-      payload: currentEventDivisions,
+      payload: divisions,
     });
   } catch {
     dispatch({
@@ -39,14 +34,14 @@ const loadDivisions: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
 };
 
 const loadPools: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
-  divisionId: string
+  eventId: string
 ) => async (dispatch: Dispatch) => {
   try {
-    // const poolsAPP = await Api.get(`/pools?division_id=${divisionId}`);
+    // const poolsAPP = await Api.get(`/pools?event_id=${eventId}`);
     const pools = mockPools;
 
     const currentDivisionPools = pools.filter(
-      (it: IPool) => it.division_id === divisionId
+      (it: IPool) => it.event_id === eventId
     );
 
     dispatch({
@@ -61,17 +56,19 @@ const loadPools: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
 };
 
 const loadTeams: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
-  poolId: string
+  eventId: string
 ) => async (dispatch: Dispatch) => {
   try {
-    // const pools = await Api.get(`/teams?pool_id=${poolId}`);
+    // const teamsAP = await Api.get(`/teams?event_id=${eventId}`);
     const teams = mockTeams;
 
-    const currentPoolTeams = teams.filter((it: ITeam) => it.pool_id === poolId);
+    const currentEventTeams = teams.filter(
+      (it: ITeam) => it.event_id === eventId
+    );
 
     dispatch({
       type: LOAD_TEAMS + SUCCESS,
-      payload: currentPoolTeams,
+      payload: currentEventTeams,
     });
   } catch {
     dispatch({
@@ -80,4 +77,30 @@ const loadTeams: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-export { loadDivisions, loadPools, loadTeams };
+const changePool = (team: ITeam, poolId: string | null) => {
+  const changedTeam = { ...team, pool_id: poolId, isChange: true };
+
+  return {
+    type: CHANGE_POOL,
+    payload: changedTeam,
+  };
+};
+
+const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
+  team: ITeam
+) => async (dispatch: Dispatch) => {
+  try {
+    // const teamsAP = await Api.delete(`/teams?team_id=${team.team_id}`);
+
+    dispatch({
+      type: DELETE_TEAM + SUCCESS,
+      payload: team,
+    });
+  } catch {
+    dispatch({
+      type: DELETE_TEAM + FAILURE,
+    });
+  }
+};
+
+export { loadDivisions, loadPools, loadTeams, changePool, deleteTeam };

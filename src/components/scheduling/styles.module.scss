@@ -1,0 +1,119 @@
+.container {
+  width: 100%;
+  height: 100vh;
+
+  .loader {
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .paper {
+    width: 100%;
+    top: 0;
+    z-index: 2;
+    position: sticky;
+
+    > div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .errorMessage {
+    font-size: 17px;
+    color: red;
+    cursor: default;
+
+    svg {
+      margin-right: 10px;
+    }
+  }
+
+  .header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 8px;
+  }
+
+  .tourneyArchitect {
+    .sectionCell {
+      font-size: 16px;
+      color: #6a6a6a;
+
+      div.sectionCellHeader {
+        display: flex;
+        align-items: baseline;
+        justify-content: flex-start;
+
+        svg {
+          margin-left: 8px;
+        }
+      }
+
+      span {
+        font-weight: 600;
+        padding-bottom: 5px;
+      }
+    }
+    .taFirst,
+    .taSecond,
+    .taThird {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+
+    .taSecond {
+      .calculation {
+        display: flex;
+
+        .plainText {
+          color: #6a6a6a;
+          display: flex;
+          align-items: flex-end;
+          padding: 10px;
+        }
+      }
+    }
+
+    .taThird {
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-start;
+
+      .totalGameSlots {
+        color: #6a6a6a;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .tournamentPlay,
+  .brackets {
+    .sectionCellHor {
+      display: flex;
+      font-size: 16px;
+      color: #6a6a6a;
+
+      span {
+        font-weight: 600;
+        margin-right: 8px;
+      }
+    }
+
+    .tnFirst,
+    .tnSecond,
+    .tnThird {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 0;
+    }
+  }
+}
