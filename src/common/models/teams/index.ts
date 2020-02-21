@@ -19,4 +19,6 @@ export interface ITeam {
   created_datetime: string;
   updated_by: string;
   updated_datetime: string;
+  division_id: string;
+  pool_id: string | null;
 }

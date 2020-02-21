@@ -64,7 +64,7 @@ const RegistrationView = (props: any) => {
           <li>
             <SectionDropdown
               type="section"
-              padding="0"
+              panelDetailsType="flat"
               isDefaultExpanded={true}
             >
               <span>Primary Information</span>
@@ -74,7 +74,7 @@ const RegistrationView = (props: any) => {
           <li>
             <SectionDropdown
               type="section"
-              padding="0"
+              panelDetailsType="flat"
               isDefaultExpanded={true}
             >
               <span>Teams & Athletes</span>
@@ -84,7 +84,7 @@ const RegistrationView = (props: any) => {
           <li>
             <SectionDropdown
               type="section"
-              padding="0"
+              panelDetailsType="flat"
               isDefaultExpanded={true}
             >
               <span>Main Contact</span>
