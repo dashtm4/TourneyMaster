@@ -40,9 +40,9 @@ const UserInfo: React.FC = () => {
         >
           <MenuItem
             onClick={() => {
-              Auth.signOut();
-
               localStorage.removeItem('token');
+
+              Auth.signOut({});
             }}
           >
             Sign out

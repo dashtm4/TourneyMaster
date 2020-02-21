@@ -12,6 +12,8 @@ interface Props {
   teams: ITeam[];
   isEdit: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
+  onDeletePopupOpen: (team: ITeam) => void;
+  onEditPopupOpen: (team: ITeam) => void;
 }
 
 const DivisionItem = ({
@@ -20,6 +22,8 @@ const DivisionItem = ({
   teams,
   isEdit,
   changePool,
+  onDeletePopupOpen,
+  onEditPopupOpen,
 }: Props) => {
   if (!division) {
     return null;
@@ -43,6 +47,8 @@ const DivisionItem = ({
                 divisionId={division.division_id}
                 isEdit={isEdit}
                 changePool={changePool}
+                onDeletePopupOpen={onDeletePopupOpen}
+                onEditPopupOpen={onEditPopupOpen}
                 key={pool.pool_id}
               />
             ))}
@@ -54,6 +60,8 @@ const DivisionItem = ({
               isEdit={isEdit}
               isUnassigned={true}
               changePool={changePool}
+              onDeletePopupOpen={onDeletePopupOpen}
+              onEditPopupOpen={onEditPopupOpen}
             />
           </ul>
         </DndProvider>

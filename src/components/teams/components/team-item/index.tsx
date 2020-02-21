@@ -25,9 +25,17 @@ interface Props {
   team: ITeam;
   isEdit: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
+  onDeletePopupOpen: (team: ITeam) => void;
+  onEditPopupOpen: (team: ITeam) => void;
 }
 
-const TeamItem = ({ team, isEdit, changePool }: Props) => {
+const TeamItem = ({
+  team,
+  isEdit,
+  changePool,
+  onDeletePopupOpen,
+  onEditPopupOpen,
+}: Props) => {
   const item = { type: DndItems.TEAM };
   const [, drag] = useDrag({
     item,
@@ -47,12 +55,13 @@ const TeamItem = ({ team, isEdit, changePool }: Props) => {
   });
 
   return (
-    <li ref={drag} className={styles.team}>
+    <li ref={isEdit ? drag : null} className={styles.team}>
       <span>{team.short_name}</span>
       {isEdit && (
         <p className={styles.btnsWrapper}>
           <span className={styles.delBtnWrapper}>
             <Button
+              onClick={() => onDeletePopupOpen(team)}
               icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
               label={<span className="visually-hidden">Delete team</span>}
               variant="text"
@@ -61,6 +70,7 @@ const TeamItem = ({ team, isEdit, changePool }: Props) => {
             />
           </span>
           <Button
+            onClick={() => onEditPopupOpen(team)}
             icon={getIcon(Icons.EDIT, EDIT_ICON_STYLES)}
             label={<span className="visually-hidden">Edit team</span>}
             variant="text"
