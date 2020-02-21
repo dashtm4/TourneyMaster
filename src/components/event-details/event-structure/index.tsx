@@ -128,6 +128,7 @@ const EventStructureSection: React.FC<Props> = ({
       type="section"
       panelDetailsType="flat"
       isDefaultExpanded={true}
+      useBorder={true}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Event Structure</span>
