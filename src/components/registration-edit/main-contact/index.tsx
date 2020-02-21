@@ -39,10 +39,9 @@ const MainContact = ({ onChange }: any) => {
           />
         </div>
         <div className={styles.sectionItem}>
-          <span className={styles.sectionTitle}>Role</span>
           <Select
-            label=""
-            options={roles}
+            label="Role"
+            options={roles.map(type => ({ label: type, value: type }))}
             value=""
             // onChange={onChangeMaxTeamNumber}
           />

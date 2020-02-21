@@ -1,30 +1,57 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { History } from 'history';
 import styles from './styles.module.scss';
 import Paper from 'components/common/paper';
 import Button from 'components/common/buttons/button';
 import HeadingLevelTwo from 'components/common/headings/heading-level-two';
-import AddDivisionForm from './add-division-form';
-import { saveDivision } from './add-division-form/logic/actions';
-import { connect } from 'react-redux';
+import AddTeamForm from './create-team-form';
+import { saveTeams } from './logic/actions';
+import { getDivisions } from 'components/divisions-and-pools/logic/actions';
+import {
+  BindingCbWithOne,
+  IDisision,
+  ITeam,
+  BindingCbWithTwo,
+} from 'common/models';
 
-interface IAddDivisionState {
-  division: any;
+interface ICreateTeamState {
+  teams: Partial<ITeam>[];
 }
 
-class AddDivision extends React.Component<any, IAddDivisionState> {
-  state = { division: { event_id: this.props.match.params.event_id } };
+interface ICreateTeamProps {
+  history: History;
+  match: any;
+  divisions: IDisision[];
+  saveTeams: BindingCbWithTwo<Partial<ITeam>[], History>;
+  getDivisions: BindingCbWithOne<string>;
+}
 
-  onChange = (name: string, value: any) => {
-    this.setState(({ division }) => ({
-      division: {
-        ...division,
-        [name]: value,
-      },
+class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
+  state = { teams: [{}], isModalOpen: false };
+
+  componentDidMount() {
+    this.props.getDivisions(this.props.match.params.eventId);
+  }
+
+  onChange = (name: string, value: any, index: number) => {
+    this.setState(({ teams }) => ({
+      teams: teams.map(team =>
+        team === teams[index] ? { ...team, [name]: value } : team
+      ),
     }));
   };
 
+  onCancel = () => {
+    this.props.history.goBack();
+  };
+
   onSave = () => {
-    this.props.saveDivision(this.state.division);
+    this.props.saveTeams(this.state.teams, this.props.history);
+  };
+
+  onAddTeam = () => {
+    this.setState({ teams: [...this.state.teams, {}] });
   };
 
   render() {
@@ -37,7 +64,7 @@ class AddDivision extends React.Component<any, IAddDivisionState> {
                 label="Cancel"
                 variant="text"
                 color="secondary"
-                // onClick={this.onCancelClick}
+                onClick={this.onCancel}
               />
               <Button
                 label="Save"
@@ -51,23 +78,37 @@ class AddDivision extends React.Component<any, IAddDivisionState> {
         <div className={styles.heading}>
           <HeadingLevelTwo>Create Team</HeadingLevelTwo>
         </div>
-        <AddDivisionForm
-          onChange={this.onChange}
-          division={this.state.division}
-        />
-        {/* <Button
-          label="+ Add Additional Division"
+        {this.state.teams.map((_team, index) => (
+          <AddTeamForm
+            key={index}
+            index={index}
+            onChange={this.onChange}
+            team={this.state.teams[index]}
+            divisions={this.props.divisions}
+          />
+        ))}
+        <Button
+          label="+ Add Additional Team"
           variant="text"
           color="secondary"
-          // onClick={this.onAddDivision}
-        /> */}
+          onClick={this.onAddTeam}
+        />
       </section>
     );
   }
 }
 
+interface IState {
+  divisions: { data: IDisision[] };
+}
+
+const mapStateToProps = (state: IState) => ({
+  divisions: state.divisions.data,
+});
+
 const mapDispatchToProps = {
-  saveDivision,
+  saveTeams,
+  getDivisions,
 };
 
-export default connect(null, mapDispatchToProps)(AddDivision);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateTeam);

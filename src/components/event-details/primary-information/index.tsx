@@ -105,14 +105,14 @@ const PrimaryInformationSection: React.FC<Props> = ({
           />
           <Select
             // width="161px"
-            options={sportOptions}
+            options={sportOptions.map(type => ({ label: type, value: type }))}
             label="Sport"
             value={sport_id ? sportsEnum[sport_id!] : ''}
             onChange={onSportChange}
           />
           <Select
             // width="160px"
-            options={genderOptions}
+            options={genderOptions.map(type => ({ label: type, value: type }))}
             label="Gender"
             value={genderOptions[0]}
             onChange={onGenderChange}
@@ -135,7 +135,10 @@ const PrimaryInformationSection: React.FC<Props> = ({
           />
           <Select
             // width="256px"
-            options={timeZoneOptions}
+            options={timeZoneOptions.map(type => ({
+              label: type,
+              value: type,
+            }))}
             label="Time Zone"
             value={time_zone_utc ? timeZoneEnum[time_zone_utc!] : ''}
             onChange={onTimeZone}

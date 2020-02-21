@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import { Auth } from 'aws-amplify';
 import { getToken } from './api.helpers';
 
-const BASE_URL = 'https://api.tourneymaster.org/v1';
+const BASE_URL = 'https://api.tourneymaster.org/v2';
 
 class Api {
   baseUrl: string;
