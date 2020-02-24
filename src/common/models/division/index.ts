@@ -24,4 +24,7 @@ export interface IDisision {
   created_datetime: string;
   updated_by: null;
   updated_datetime: null;
+  //optional
+  isPoolsLoading?: boolean;
+  isPoolsLoaded?: boolean;
 }

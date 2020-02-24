@@ -36,6 +36,8 @@ interface Props {
 
 interface State {
   configurableTeam: ITeam | null;
+  currentDivision: string | null;
+  currentPool: string | null;
   isEdit: boolean;
   isEditPopupOpen: boolean;
   isDeletePopupOpen: boolean;
@@ -50,6 +52,8 @@ class Teams extends React.Component<
 
     this.state = {
       configurableTeam: null,
+      currentDivision: null,
+      currentPool: null,
       isEdit: false,
       isEditPopupOpen: false,
       isDeletePopupOpen: false,
@@ -57,13 +61,11 @@ class Teams extends React.Component<
   }
 
   componentDidMount() {
-    const { loadDivisions, loadPools, loadTeams } = this.props;
+    const { loadDivisions } = this.props;
     const eventId = this.props.match.params.eventId;
 
     if (eventId) {
       loadDivisions(eventId);
-      loadTeams(eventId);
-      loadPools(eventId);
     }
   }
 
@@ -80,8 +82,13 @@ class Teams extends React.Component<
     this.onCloseModal();
   };
 
-  onEditPopupOpen = (team: ITeam) =>
-    this.setState({ configurableTeam: team, isEditPopupOpen: true });
+  onEditPopupOpen = (team: ITeam, divisionName: string, poolName: string) =>
+    this.setState({
+      isEditPopupOpen: true,
+      configurableTeam: team,
+      currentDivision: divisionName,
+      currentPool: poolName,
+    });
 
   onChangeTeam = ({
     target: { name, value },
@@ -104,14 +111,25 @@ class Teams extends React.Component<
   onCloseModal = () =>
     this.setState({
       configurableTeam: null,
+      currentDivision: null,
       isEditPopupOpen: false,
       isDeletePopupOpen: false,
     });
 
   render() {
-    const { divisions, pools, teams, changePool } = this.props;
+    const {
+      divisions,
+      pools,
+      teams,
+      changePool,
+      loadPools,
+      loadTeams,
+    } = this.props;
+
     const {
       configurableTeam,
+      currentDivision,
+      currentPool,
       isEdit,
       isEditPopupOpen,
       isDeletePopupOpen,
@@ -131,6 +149,8 @@ class Teams extends React.Component<
               teams={teams}
               isEdit={isEdit}
               changePool={changePool}
+              loadPools={loadPools}
+              loadTeams={loadTeams}
               onDeletePopupOpen={this.onDeletePopupOpen}
               onEditPopupOpen={this.onEditPopupOpen}
             />
@@ -144,6 +164,8 @@ class Teams extends React.Component<
             {isEditPopupOpen && (
               <PopupTeamEdit
                 team={configurableTeam}
+                division={currentDivision}
+                pool={currentPool}
                 onChangeTeam={this.onChangeTeam}
                 onSaveTeamClick={this.onSaveTeam}
                 onDeleteTeamClick={this.onDeleteTeam}

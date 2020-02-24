@@ -30,6 +30,8 @@ enum FORM_FIELDS {
 
 interface Props {
   team: ITeam | null;
+  division: string | null;
+  pool: string | null;
   onSaveTeamClick: BindingAction;
   onDeleteTeamClick: (team: ITeam) => void;
   onChangeTeam: (evt: React.ChangeEvent<HTMLInputElement>) => void;
@@ -38,6 +40,8 @@ interface Props {
 
 const TeamDetailsPopup = ({
   team,
+  division,
+  pool,
   onSaveTeamClick,
   onDeleteTeamClick,
   onChangeTeam,
@@ -50,21 +54,23 @@ const TeamDetailsPopup = ({
     return null;
   }
 
-  // const teamTitle = team?.long_name;;
-
   return (
     <div className={styles.popupWrapper}>
       <div className={styles.headerWrapper}>
         <HeadingLevelThree color="#1C315F">
-          <span>{teamTitle} (2020, West)</span>
+          <span>
+            {teamTitle} ({division}, {pool})
+          </span>
         </HeadingLevelThree>
-        <Button
-          onClick={() => onEditClick(!isEdit)}
-          icon={getIcon(Icons.EDIT, EDIT_ICON_STYLES)}
-          label="Edit Team Details"
-          variant="text"
-          color="secondary"
-        />
+        <p className={styles.editBtnWrapper}>
+          <Button
+            onClick={() => onEditClick(!isEdit)}
+            icon={getIcon(Icons.EDIT, EDIT_ICON_STYLES)}
+            label="Edit Team Details"
+            variant="text"
+            color="secondary"
+          />
+        </p>
       </div>
       <form autoComplete="off">
         <div className={styles.popupFormWrapper}>
@@ -176,7 +182,8 @@ const TeamDetailsPopup = ({
                     </label>
                   </p>
                 ) : (
-                  <span>{`${team.contact_first_name} ${team.contact_last_name}`}</span>
+                  <span>{`${team.contact_first_name ||
+                    ''} ${team.contact_last_name || ''}`}</span>
                 )}
               </li>
               <li>
