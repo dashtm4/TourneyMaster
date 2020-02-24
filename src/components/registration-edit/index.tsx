@@ -77,7 +77,6 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
   };
 
   render() {
-    console.log(this.state.registration);
     return (
       <section>
         <Paper sticky={true}>
