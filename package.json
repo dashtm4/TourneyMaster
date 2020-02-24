@@ -38,6 +38,7 @@
     "@types/uuid": "^3.4.7",
     "aws-amplify": "^2.2.2",
     "axios": "^0.19.2",
+    "connected-react-router": "^6.7.0",
     "date-fns": "^2.9.0",
     "history": "^4.10.1",
     "immutability-helper": "^3.0.1",
