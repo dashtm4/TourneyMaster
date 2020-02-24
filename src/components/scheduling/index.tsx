@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { getScheduling } from './logic/actions';
+import { getScheduling, createNewVersion, INewVersion } from './logic/actions';
 import { HeadingLevelTwo, Paper, Button } from 'components/common';
 import TourneyArchitect from './tourney-architect';
 import TournamentPlay from './tournament-play';
@@ -13,18 +13,22 @@ import styles from './styles.module.scss';
 import Brackets from './brackets';
 import { ISchedule } from 'common/models/schedule';
 import { ISchedulingState } from './logic/reducer';
+import CreateNewModal from './create-new-modal';
 
 interface IProps {
   getScheduling: () => void;
+  createNewVersion: (data: INewVersion) => void;
   schedule?: ISchedule;
 }
 
 interface IState {
+  createModalOpen: boolean;
   schedule?: ISchedule;
 }
 
 class Scheduling extends Component<IProps, IState> {
   state = {
+    createModalOpen: false,
     schedule: undefined,
   };
 
@@ -49,15 +53,30 @@ class Scheduling extends Component<IProps, IState> {
     console.log('Call action');
   };
 
-  onCreateNew = () => {
-    console.log('Create New');
+  onCreatePressed = () => {
+    this.setState({ createModalOpen: true });
+  };
+
+  onCreateNew = (data: INewVersion) => {
+    this.setState({ createModalOpen: false });
+    this.props.createNewVersion(data);
+    console.log('data', data);
+  };
+
+  onCreateClosed = () => {
+    this.setState({ createModalOpen: false });
   };
 
   render() {
-    const { schedule } = this.state;
+    const { schedule, createModalOpen } = this.state;
 
     return (
       <div className={styles.container}>
+        <CreateNewModal
+          isOpen={createModalOpen}
+          onSave={this.onCreateNew}
+          onClose={this.onCreateClosed}
+        />
         <section className={styles.paper}>
           <Paper>
             <div>
@@ -79,7 +98,7 @@ class Scheduling extends Component<IProps, IState> {
               label="Create New Version"
               color="primary"
               variant="contained"
-              onClick={this.onCreateNew}
+              onClick={this.onCreatePressed}
             />
           </Paper>
         </section>
@@ -117,6 +136,6 @@ const mapStateToProps = (store: IRootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
-  bindActionCreators({ getScheduling }, dispatch);
+  bindActionCreators({ getScheduling, createNewVersion }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Scheduling);
