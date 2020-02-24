@@ -8,6 +8,7 @@ import { createMemeber } from './logic/action';
 import WithEditingForm from './hocs/withEditingForm';
 import FormSignUp from './components/form-sign-up';
 import FormSignIn from './components/form-sign-in';
+import LoadingWrapper from './components/loading-wrapper';
 import { BindingCbWithTwo } from 'common/models/callback';
 import { Toasts } from '../common';
 import logo from '../../assets/logo.png';
@@ -20,6 +21,7 @@ interface Props {
 
 interface State {
   isSignUpOpen: boolean;
+  isLoading: boolean;
 }
 
 const FormSignUpWrapped = WithEditingForm(FormSignUp);
@@ -31,6 +33,7 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
 
     this.state = {
       isSignUpOpen: false,
+      isLoading: true,
     };
   }
 
@@ -44,6 +47,8 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
             const currentSession = await Auth.currentSession();
             const userToken = currentSession.getAccessToken().getJwtToken();
             const userAttributes = currentSession.getIdToken().payload;
+
+            this.setState({ isLoading: true });
 
             if (userToken) {
               localStorage.setItem('token', userToken);
@@ -116,6 +121,7 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
             onAuthSubmit={this.onAuthSubmit}
             onGoogleLogin={this.onGoogleLogin}
           />
+          <LoadingWrapper />
           <div className="sign-form__overlay">
             <div className="sign-form__overlay-wrapper">
               <div className="sign-form__register">
