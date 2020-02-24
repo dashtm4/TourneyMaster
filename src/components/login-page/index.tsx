@@ -107,8 +107,6 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
   render() {
     const { isSignUpOpen, isLoading } = this.state;
 
-    console.log(this.state);
-
     return (
       <main className={styles.page}>
         <h1 className="visually-hidden">Login or create account</h1>
