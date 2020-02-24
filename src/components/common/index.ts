@@ -14,6 +14,7 @@ import SectionDropdown from './section-dropdown';
 import Select from './select';
 import Tooltip from './tooltip-message';
 import Modal from './modal';
+import MultipleSearchSelect from './multiple-search-select';
 import PopupTeamEdit from './popup-team-edit';
 import * as Toasts from './toastr/showToasts';
 
@@ -35,5 +36,6 @@ export {
   Tooltip,
   Toasts,
   Modal,
+  MultipleSearchSelect,
   PopupTeamEdit,
 };
