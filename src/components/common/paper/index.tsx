@@ -15,13 +15,20 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const LightPaper = ({ children, sticky }: any) => {
+interface IProps {
+  children: any;
+  sticky?: boolean;
+  padding?: number;
+}
+
+const LightPaper = ({ children, sticky, padding }: IProps) => {
   const classes = useStyles();
 
   return (
     <Paper
       elevation={3}
       className={`${classes.root} ${sticky && classes.sticky}`}
+      style={{ padding }}
     >
       {children}
     </Paper>

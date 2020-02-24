@@ -1,5 +1,6 @@
 .main {
   width: 100%;
+  min-width: 792px;
 }
 
 .heading {
@@ -30,8 +31,7 @@
 .mainMenu {
   width: 100%;
   display: flex;
-  justify-content: space-between;
-  padding-right: 25px;
+  justify-content: flex-end;
 }
 
 .buttonsGroup {
@@ -66,14 +66,9 @@
   justify-content: space-between;
   align-items: center;
   margin: 12px 0;
-  .cardHeader {
-    flex-grow: 1;
-    width: 65%;
-  }
   .buttonsGroup {
-    flex-grow: 1;
-    // width: 388px;
-    justify-content: space-around;
+    width: 396px;
+    justify-content: space-between;
   }
 }
 .scheduleImage {

@@ -8,6 +8,7 @@ import { createMemeber } from './logic/action';
 import WithEditingForm from './hocs/withEditingForm';
 import FormSignUp from './components/form-sign-up';
 import FormSignIn from './components/form-sign-in';
+import LoadingWrapper from './components/loading-wrapper';
 import { BindingCbWithTwo } from 'common/models/callback';
 import { Toasts } from '../common';
 import logo from '../../assets/logo.png';
@@ -20,6 +21,7 @@ interface Props {
 
 interface State {
   isSignUpOpen: boolean;
+  isLoading: boolean;
 }
 
 const FormSignUpWrapped = WithEditingForm(FormSignUp);
@@ -31,6 +33,7 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
 
     this.state = {
       isSignUpOpen: false,
+      isLoading: false,
     };
   }
 
@@ -38,6 +41,8 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
     const { createMemeber } = this.props;
 
     Hub.listen('auth', async ({ payload: { event } }) => {
+      this.setState({ isLoading: true });
+
       try {
         switch (event) {
           case 'signIn':
@@ -100,7 +105,7 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
   };
 
   render() {
-    const { isSignUpOpen } = this.state;
+    const { isSignUpOpen, isLoading } = this.state;
 
     return (
       <main className={styles.page}>
@@ -116,6 +121,7 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
             onAuthSubmit={this.onAuthSubmit}
             onGoogleLogin={this.onGoogleLogin}
           />
+          {isLoading && <LoadingWrapper />}
           <div className="sign-form__overlay">
             <div className="sign-form__overlay-wrapper">
               <div className="sign-form__register">

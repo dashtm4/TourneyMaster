@@ -65,7 +65,7 @@ class FacilityDetails extends React.Component<Props, State> {
               <Button
                 onClick={this.onEditClick}
                 label="Edit"
-                variant="text"
+                variant={isEdit ? 'contained' : 'text'}
                 color="secondary"
                 type={isEdit ? 'danger' : undefined}
               />
