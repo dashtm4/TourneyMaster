@@ -13,7 +13,8 @@ export default () => {
         redirectSignIn:
           process.env.REACT_APP_REDIRECT_URL || 'http://localhost:3000/',
         redirectSignOut:
-          process.env.REACT_APP_REDIRECT_URL || 'http://localhost:3000/',
+          `${process.env.REACT_APP_REDIRECT_URL}/logout` ||
+          'http://localhost:3000/',
         responseType: 'code',
       },
     },

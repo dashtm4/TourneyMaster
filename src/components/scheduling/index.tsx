@@ -32,10 +32,9 @@ class Scheduling extends Component<IProps, IState> {
     this.props.getScheduling();
   }
 
-  componentDidUpdate(prevProps: IProps) {
+  componentDidUpdate() {
     const { schedule } = this.props;
-
-    if (!prevProps?.schedule && !this.state.schedule) {
+    if (schedule && !this.state.schedule) {
       this.setState({
         schedule,
       });

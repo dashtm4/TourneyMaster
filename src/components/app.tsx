@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import withProtectedRoute from '../hocs/withProtectedRoute';
 import withUnprotectedRoute from '../hocs/withUnprotectedRoute';
 import LoginPage from './login-page';
@@ -15,42 +15,36 @@ const AuthorizedPageEventWrapped = withProtectedRoute(AuthorizedPageEvent);
 const App: React.FC = () => {
   return (
     <React.Fragment>
-      <Router>
-        <Switch>
-          <Route
-            path={Routes.LOGIN}
-            component={LoginPageWrapped}
-            exact={true}
-          />
-          <Route
-            path={[
-              Routes.DASHBOARD,
-              Routes.LIBRARY_MANAGER,
-              Routes.EVENT_LINK,
-              Routes.COLLABORATION,
-              Routes.CALENDAR,
-              Routes.UTILITIES,
-              Routes.EVENT_DAY_COMPLEXITIES,
-            ]}
-            component={AuthorizedPageWrapped}
-          />
-          <Route
-            path={[
-              Routes.EVENT_DETAILS,
-              Routes.FACILITIES,
-              Routes.REGISTRATION,
-              Routes.DIVISIONS_AND_POOLS,
-              Routes.ADD_DIVISION,
-              Routes.TEAMS,
-              Routes.SCHEDULING,
-              Routes.SCORING,
-              Routes.REPORTING,
-            ]}
-            component={AuthorizedPageEventWrapped}
-          />
-          <Route path={Routes.DEFAULT} component={AuthorizedPageWrapped} />
-        </Switch>
-      </Router>
+      <Switch>
+        <Route path={Routes.LOGIN} component={LoginPageWrapped} exact={true} />
+        <Route
+          path={[
+            Routes.DASHBOARD,
+            Routes.LIBRARY_MANAGER,
+            Routes.EVENT_LINK,
+            Routes.COLLABORATION,
+            Routes.CALENDAR,
+            Routes.UTILITIES,
+            Routes.EVENT_DAY_COMPLEXITIES,
+          ]}
+          component={AuthorizedPageWrapped}
+        />
+        <Route
+          path={[
+            Routes.EVENT_DETAILS,
+            Routes.FACILITIES,
+            Routes.REGISTRATION,
+            Routes.DIVISIONS_AND_POOLS,
+            Routes.ADD_DIVISION,
+            Routes.TEAMS,
+            Routes.SCHEDULING,
+            Routes.SCORING,
+            Routes.REPORTING,
+          ]}
+          component={AuthorizedPageEventWrapped}
+        />
+        <Route path={Routes.DEFAULT} component={AuthorizedPageWrapped} />
+      </Switch>
       <Toastr />
     </React.Fragment>
   );

@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import { connectRouter } from 'connected-react-router';
+import history from '../browserhistory';
 
 import facilities from 'components/facilities/logic/reducer';
 import event from 'components/event-details/logic/reducer';
@@ -11,6 +13,7 @@ import scheduling from 'components/scheduling/logic/reducer';
 import teams from 'components/teams/logic/reducer';
 
 const rootReducer = combineReducers({
+  router: connectRouter(history),
   facilities,
   event,
   events,

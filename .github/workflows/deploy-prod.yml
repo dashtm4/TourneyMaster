@@ -27,7 +27,9 @@ jobs:
       - name: Enable Amazon
         uses: chrislennon/action-aws-cli@v1.1
       - name: Amazon Push
-        run: aws s3 sync build/ s3://${{ secrets.S3_BUCKET_PROD }}
+        run: |
+          aws s3 rm --recursive s3://${{ secrets.S3_BUCKET_DEV }}
+          aws s3 sync build/ s3://${{ secrets.S3_BUCKET_PROD }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
