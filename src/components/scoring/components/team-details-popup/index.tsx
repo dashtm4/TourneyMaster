@@ -1,7 +1,7 @@
 import React from 'react';
 import HeadingLevelThree from '../../../common/headings/heading-level-three';
 import Button from '../../../common/buttons/button';
-import FieldItem from '../field-item';
+import FieldItem from '../../../common/popup-team-edit/components/field-item';
 import { getIcon } from '../../../../helpers/get-icon.helper';
 import {
   BindingAction,

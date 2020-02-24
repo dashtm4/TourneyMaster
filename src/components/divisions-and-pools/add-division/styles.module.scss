@@ -1,13 +1,13 @@
 .sectionContainer {
   width: 100%;
-  padding: 24px 0;
+  min-width: 792px;
+  padding-bottom: 23px;
   border-bottom: 1px solid #d1d1d1;
 }
 .mainMenu {
   width: 100%;
   display: flex;
   justify-content: flex-end;
-  padding-right: 25px;
 }
 .heading {
   margin-top: 24px;

@@ -77,7 +77,6 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
   };
 
   render() {
-    console.log(this.state.registration);
     return (
       <section>
         <Paper sticky={true}>
@@ -106,7 +105,7 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
             <li>
               <SectionDropdown
                 type="section"
-                padding="0"
+                panelDetailsType="flat"
                 isDefaultExpanded={true}
               >
                 <span>Primary Information</span>
@@ -119,7 +118,7 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
             <li>
               <SectionDropdown
                 type="section"
-                padding="0"
+                panelDetailsType="flat"
                 isDefaultExpanded={true}
               >
                 <span>Teams & Athletes</span>
@@ -129,7 +128,7 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, IState> {
             <li>
               <SectionDropdown
                 type="section"
-                padding="0"
+                panelDetailsType="flat"
                 isDefaultExpanded={true}
               >
                 <span>Main Contact</span>

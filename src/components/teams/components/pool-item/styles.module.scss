@@ -1,0 +1,22 @@
+.pool {
+  display: flex;
+  flex-direction: column;
+}
+
+.poolTitle {
+  margin: 0 0 8px;
+
+  font-size: 21px;
+  line-height: 28px;
+  font-weight: 600;
+  color: #1c315f;
+}
+
+.teamList {
+  height: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
