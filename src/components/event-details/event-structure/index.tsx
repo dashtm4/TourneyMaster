@@ -169,7 +169,6 @@ const EventStructureSection: React.FC<Props> = ({
         </div>
         <div className={styles.esDetailsSecond}>
           <Input
-            // width="170px"
             fullWidth={true}
             endAdornment="Minutes"
             label="Pregame Warmup"
@@ -179,7 +178,6 @@ const EventStructureSection: React.FC<Props> = ({
           />
           <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
           <Input
-            // width="170px"
             fullWidth={true}
             endAdornment="Minutes"
             label="Time Division Duration"
@@ -191,7 +189,6 @@ const EventStructureSection: React.FC<Props> = ({
             &nbsp;({periods_per_game})&nbsp;+&nbsp;
           </span>
           <Input
-            // width="170px"
             fullWidth={true}
             endAdornment="Minutes"
             label="Time Between Periods"
