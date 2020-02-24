@@ -2,6 +2,7 @@ import {
   REGISTRATION_FETCH_SUCCESS,
   REGISTRATION_FETCH_FAILURE,
   REGISTRATION_UPDATE_SUCCESS,
+  REGISTRATION_FETCH_START,
 } from './actionTypes';
 import api from 'api/api';
 import { ActionCreator, Dispatch } from 'redux';
@@ -9,6 +10,10 @@ import { ThunkAction } from 'redux-thunk';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
 import { IRegistration } from 'common/models/registration';
+
+export const registrationFetchStart = (): { type: string } => ({
+  type: REGISTRATION_FETCH_START,
+});
 
 export const registrationFetchSuccess = (
   payload: any
@@ -34,6 +39,7 @@ export const getRegistration: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (eventId: string) => async (dispatch: Dispatch) => {
+  dispatch(registrationFetchStart());
   const data = await api.get(`/registrations?event_id=${eventId}`);
   dispatch(registrationFetchSuccess(data));
 };
@@ -47,6 +53,7 @@ export const saveRegistration: ActionCreator<ThunkAction<
   dispatch: Dispatch
 ) => {
   if (registration.registration_id) {
+    dispatch(registrationFetchStart());
     const response = await api.put(
       `/registrations?registration_id=${registration.registration_id}`,
       registration
@@ -63,7 +70,7 @@ export const saveRegistration: ActionCreator<ThunkAction<
       event_id: eventId,
       registration_id: getVarcharEight(),
     };
-
+    dispatch(registrationFetchStart());
     const response = await api.post(`/registrations`, data);
 
     if (response?.errorType === 'Error') {

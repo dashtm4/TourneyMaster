@@ -32,6 +32,7 @@ interface IRegistrationProps {
   divisions: IDisision[];
   match: any;
   history: History;
+  isLoading: boolean;
 }
 
 class RegistrationView extends React.Component<
@@ -181,17 +182,23 @@ class RegistrationView extends React.Component<
 
   render() {
     const { registration } = this.props;
-    return registration ? this.renderView(registration) : this.Loading();
+    return (
+      <>
+        {this.props.isLoading && this.Loading()}
+        {registration && !this.props.isLoading && this.renderView(registration)}
+      </>
+    );
   }
 }
 
 interface IState {
-  registration: { data: IRegistration };
+  registration: { data: IRegistration; isLoading: boolean };
   divisions: { data: IDisision[] };
 }
 
 const mapStateToProps = (state: IState) => ({
   registration: state.registration.data,
+  isLoading: state.registration.isLoading,
   divisions: state.divisions.data,
 });
 
