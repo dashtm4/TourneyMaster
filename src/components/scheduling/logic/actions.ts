@@ -14,8 +14,8 @@ const scheduleFetchFailure = () => ({
 
 export const getScheduling = () => async (dispatch: Dispatch) => {
   const scheduleId = 'SCD001';
-  const response = await api.get(`/schedules?schedule_id?=${scheduleId}`);
-  const body = JSON.parse(response.body);
+  const response = await api.get(`/schedules?schedule_id=${scheduleId}`);
+  const body = response;
 
   if (!response.error && body?.length) {
     dispatch(scheduleFetchSuccess(body[0]));
