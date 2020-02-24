@@ -33,7 +33,7 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
 
     this.state = {
       isSignUpOpen: false,
-      isLoading: true,
+      isLoading: false,
     };
   }
 
@@ -41,14 +41,14 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
     const { createMemeber } = this.props;
 
     Hub.listen('auth', async ({ payload: { event } }) => {
+      this.setState({ isLoading: true });
+
       try {
         switch (event) {
           case 'signIn':
             const currentSession = await Auth.currentSession();
             const userToken = currentSession.getAccessToken().getJwtToken();
             const userAttributes = currentSession.getIdToken().payload;
-
-            this.setState({ isLoading: true });
 
             if (userToken) {
               localStorage.setItem('token', userToken);
@@ -105,7 +105,9 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
   };
 
   render() {
-    const { isSignUpOpen } = this.state;
+    const { isSignUpOpen, isLoading } = this.state;
+
+    console.log(this.state);
 
     return (
       <main className={styles.page}>
@@ -121,7 +123,7 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
             onAuthSubmit={this.onAuthSubmit}
             onGoogleLogin={this.onGoogleLogin}
           />
-          <LoadingWrapper />
+          {isLoading && <LoadingWrapper />}
           <div className="sign-form__overlay">
             <div className="sign-form__overlay-wrapper">
               <div className="sign-form__register">
