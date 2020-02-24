@@ -1,7 +1,6 @@
 import React from 'react';
 import styles from '../styles.module.scss';
 import { Input, DatePicker } from 'components/common';
-
 const PrimaryInformation = ({ data, onChange }: any) => {
   const onOpenDateChange = (e: Date | string) =>
     !isNaN(Number(e)) &&
@@ -18,18 +17,16 @@ const PrimaryInformation = ({ data, onChange }: any) => {
     onChange('entry_deposit', e.target.value);
 
   const onEarlyBirdDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('early_discount', e.target.value);
+    onChange('early_bird_discount', e.target.value);
 
   const onDiscountEndDateChange = (e: Date | string) =>
-    !isNaN(Number(e)) && onChange('discount_end', new Date(e).toISOString());
+    !isNaN(Number(e)) &&
+    onChange('discount_enddate', new Date(e).toISOString());
 
   return (
     <div className={styles.section}>
       <div className={styles.sectionFirstRow}>
-        <div className={styles.sectionItem}>
-          <p className={styles.sectionLabel}>Division</p>
-          <span className={styles.divisionLink}>{data.division || ''}</span>
-        </div>
+        <div className={styles.sectionItem} />
         <div className={styles.sectionItem} />
         <div className={styles.sectionItem}>
           <DatePicker
@@ -76,7 +73,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Early Bird Discount"
             type="number"
-            value={data.early_discount || ''}
+            value={data.early_bird_discount || ''}
             onChange={onEarlyBirdDiscountChange}
           />
         </div>
@@ -85,7 +82,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Discount End Date"
             type="date"
-            value={data.discount_end || new Date()}
+            value={data.discount_enddate || new Date()}
             onChange={onDiscountEndDateChange}
           />
         </div>

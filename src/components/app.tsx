@@ -39,7 +39,6 @@ const App: React.FC = () => {
               Routes.EVENT_DETAILS,
               Routes.FACILITIES,
               Routes.REGISTRATION,
-              Routes.REGISTRATION_EDIT,
               Routes.DIVISIONS_AND_POOLS,
               Routes.ADD_DIVISION,
               Routes.TEAMS,

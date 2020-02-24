@@ -1,15 +1,17 @@
 import {
   REGISTRATION_FETCH_SUCCESS,
   REGISTRATION_FETCH_FAILURE,
+  REGISTRATION_UPDATE_SUCCESS,
 } from './actionTypes';
+import { IRegistration } from 'common/models/registration';
 
 export interface IState {
-  data?: any;
+  data?: IRegistration;
   error: boolean;
 }
 
 const defaultState: IState = {
-  data: {},
+  data: undefined,
   error: false,
 };
 
@@ -21,13 +23,20 @@ export default (
     case REGISTRATION_FETCH_SUCCESS: {
       return {
         ...state,
-        data: action.payload,
+        data: { ...action.payload[0] },
         error: false,
       };
     }
     case REGISTRATION_FETCH_FAILURE: {
       return {
         ...state,
+        error: true,
+      };
+    }
+    case REGISTRATION_UPDATE_SUCCESS: {
+      return {
+        ...state,
+        data: action.payload,
         error: true,
       };
     }
