@@ -3,6 +3,7 @@ $sectionBodyPadding: 20px 0;
 .container {
   width: 100%;
   height: 100%;
+  min-width: 792px;
 
   .paperWrapper {
     display: flex;
@@ -19,6 +20,7 @@ $sectionBodyPadding: 20px 0;
   }
 
   .innerSpanText {
+    align-self: center;
     color: #6a6a6a;
     font-size: 16px;
     margin-top: 38px;
@@ -95,6 +97,7 @@ $sectionBodyPadding: 20px 0;
     .esDetailsSecond {
       display: flex;
       justify-content: space-between;
+      height: 120px;
     }
   }
 
@@ -170,12 +173,11 @@ $sectionBodyPadding: 20px 0;
 
     .uploadWrapper {
       display: flex;
-      justify-content: space-between;
-      width: 80%;
 
       .uploadBlock {
         display: flex;
         flex-direction: column;
+        padding-right: 50px;
 
         .uploadBlockTitle {
           font-size: 16px;
