@@ -13,16 +13,15 @@
 }
 .mainMenu {
   width: 100%;
+  min-width: 792px;
   display: flex;
   justify-content: flex-end;
-  padding-right: 25px;
 }
 .heading {
   margin: 24px 0;
 }
 .sectionContainer {
   width: 100%;
-  min-width: 905px;
 }
 .section {
   width: 100%;

@@ -83,6 +83,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
       type="section"
       panelDetailsType="flat"
       isDefaultExpanded={true}
+      useBorder={true}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Primary Information</span>
