@@ -1,4 +1,5 @@
 const EMPTY_FACILITY = {
+  isNew: true,
   facilities_description: null,
   num_fields: null,
   restrooms: null,

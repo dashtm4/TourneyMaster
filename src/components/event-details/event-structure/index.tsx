@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   SectionDropdown,
@@ -16,6 +16,7 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 enum esDetailsEnum {
   'Back to Back Game Warning' = 'back_to_back_warning',
+  'Require Waivers' = 'waivers_required',
 }
 
 enum timeDivisionEnum {
@@ -42,6 +43,27 @@ const EventStructureSection: React.FC<Props> = ({
   eventData,
   onChange,
 }: Props) => {
+  const {
+    show_goals_scored,
+    show_goals_allowed,
+    show_goals_diff,
+    back_to_back_warning,
+    tie_breaker_format_id,
+    period_duration,
+    time_btwn_periods,
+    pre_game_warmup,
+    periods_per_game,
+    event_type,
+    min_num_of_games,
+    waivers_required,
+  } = eventData;
+
+  useEffect(() => {
+    if (!event_type) onChange('event_type', eventTypeOptions[0]);
+
+    if (!periods_per_game) onChange('periods_per_game', 2);
+  });
+
   const onEventTypeChange = (e: InputTargetValue) =>
     onChange('event_type', e.target.value);
 
@@ -81,18 +103,6 @@ const EventStructureSection: React.FC<Props> = ({
     return onChange('time_btwn_periods', timeInString);
   };
 
-  const {
-    show_goals_scored,
-    show_goals_allowed,
-    show_goals_diff,
-    back_to_back_warning,
-    tie_breaker_format_id,
-    period_duration,
-    time_btwn_periods,
-    pre_game_warmup,
-    periods_per_game,
-  } = eventData;
-
   const resultsDisplayOptions = [
     { label: 'Show Goals Scored', checked: Boolean(show_goals_scored) },
     { label: 'Show Goals Allowed', checked: Boolean(show_goals_allowed) },
@@ -109,23 +119,27 @@ const EventStructureSection: React.FC<Props> = ({
     },
     {
       label: 'Require Waivers',
-      checked: false,
+      checked: Boolean(waivers_required),
     },
   ];
 
   return (
-    <SectionDropdown type="section" padding="0">
+    <SectionDropdown
+      type="section"
+      panelDetailsType="flat"
+      isDefaultExpanded={true}
+    >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Event Structure</span>
       </HeadingLevelThree>
-      <div className={styles['es-details']}>
-        <div className={styles['es-details-first']}>
+      <div className={styles.esDetails}>
+        <div className={styles.esDetailsFirst}>
           <div className={styles.column}>
             <Radio
               options={eventTypeOptions}
               formLabel="Event Type"
               onChange={onEventTypeChange}
-              checked={eventData.event_type || ''}
+              checked={event_type || ''}
             />
           </div>
           <div className={styles.column}>
@@ -133,7 +147,7 @@ const EventStructureSection: React.FC<Props> = ({
               options={timeDivisionOptions}
               formLabel="Time Division"
               onChange={onChangePeriod}
-              checked={timeDivisionEnum[eventData.periods_per_game || 2]}
+              checked={timeDivisionEnum[periods_per_game!] || ''}
             />
           </div>
           <div className={styles.column}>
@@ -144,17 +158,17 @@ const EventStructureSection: React.FC<Props> = ({
             />
           </div>
           <Input
-            width="250px"
+            // width="250px"
             fullWidth={true}
             type="number"
             label="Min # of Game Guarantee"
-            value={String(eventData.min_num_of_games)}
+            value={min_num_of_games || ''}
             onChange={onGameNumChange}
           />
         </div>
-        <div className={styles['es-details-second']}>
+        <div className={styles.esDetailsSecond}>
           <Input
-            width="170px"
+            // width="170px"
             fullWidth={true}
             endAdornment="Minutes"
             label="Pregame Warmup"
@@ -164,7 +178,7 @@ const EventStructureSection: React.FC<Props> = ({
           />
           <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
           <Input
-            width="170px"
+            // width="170px"
             fullWidth={true}
             endAdornment="Minutes"
             label="Time Division Duration"
@@ -176,7 +190,7 @@ const EventStructureSection: React.FC<Props> = ({
             &nbsp;({periods_per_game})&nbsp;+&nbsp;
           </span>
           <Input
-            width="170px"
+            // width="170px"
             fullWidth={true}
             endAdornment="Minutes"
             label="Time Between Periods"
@@ -194,7 +208,7 @@ const EventStructureSection: React.FC<Props> = ({
             &nbsp; Minutes Total Runtime
           </span>
         </div>
-        <div className={styles['es-details-third']}>
+        <div>
           <Checkbox
             options={esDetailsOptions}
             formLabel=""

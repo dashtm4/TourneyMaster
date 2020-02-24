@@ -31,6 +31,7 @@ const DndContainer: React.FC<IProps> = props => {
       setCards(updatedCards);
       props.onUpdate(updatedCards);
     },
+    // eslint-disable-next-line
     [cards]
   );
 

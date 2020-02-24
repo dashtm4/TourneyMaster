@@ -25,13 +25,6 @@ const bracketTypeOptions = [
 
 const topNumberOfTeams = ['2', '3', '4', '5', '6', '7', '8'];
 
-const bracketGameDurationOpts = [
-  {
-    label: 'Bracket Games have Different Game Durations',
-    checked: false,
-  },
-];
-
 enum bracketTypesEnum {
   'Single Elimination' = 1,
   'Double Elimination' = 2,
@@ -65,7 +58,19 @@ const rankingFactorPools = [
 ];
 
 const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
-  const { playoffs_exist, bracket_type, num_teams_bracket } = eventData;
+  const {
+    playoffs_exist,
+    bracket_type,
+    num_teams_bracket,
+    bracket_durations_vary,
+  } = eventData;
+
+  const bracketGameDurationOpts = [
+    {
+      label: 'Bracket Games have Different Game Durations',
+      checked: Boolean(bracket_durations_vary),
+    },
+  ];
 
   const onPlayoffs = () => onChange('playoffs_exist', playoffs_exist ? 0 : 1);
 
@@ -83,22 +88,29 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
   const onChangeMaxTeamNumber = (e: InputTargetValue) =>
     onChange('num_teams_bracket', Number(e.target.value));
 
+  const onBracketGameDuration = () =>
+    onChange('bracket_durations_vary', bracket_durations_vary ? 0 : 1);
+
   useEffect(() => {
     if (playoffs_exist && !bracket_type)
       onChange('bracket_type', bracketTypesEnum['Single Elimination']);
   });
 
-  const onUpdateCards = (name: string, cards: any) => {
+  const onRankingFactorReorder = (name: string, cards: any) => {
     console.log('cards:', name, cards);
   };
 
   return (
-    <SectionDropdown type="section" padding="0">
+    <SectionDropdown
+      type="section"
+      panelDetailsType="flat"
+      isDefaultExpanded={true}
+    >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Playoffs</span>
       </HeadingLevelThree>
-      <div className={styles['playoffs-details']}>
-        <div className={styles['pd-first']}>
+      <div className={styles.playoffsDetails}>
+        <div className={styles.pdFirst}>
           <Checkbox
             formLabel=""
             options={[
@@ -112,83 +124,95 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
           </CardMessage>
         </div>
         {Boolean(playoffs_exist) && (
-          <div className={styles['pd-second']}>
-            <Radio
-              formLabel="Bracket Type"
-              options={bracketTypeOptions}
-              onChange={onChangeBracketType}
-              checked={bracketTypesEnum[bracket_type!]}
-            />
-            <Radio
-              formLabel="# of Teams"
-              options={['Top:', 'All']}
-              onChange={onNumberOfTeamsChange}
-              checked={numTeamsBracketEnum[num_teams_bracket ? 1 : 2]}
-            />
-            <Select
-              label=""
-              disabled={!num_teams_bracket}
-              options={topNumberOfTeams}
-              value={String(num_teams_bracket || '')}
-              onChange={onChangeMaxTeamNumber}
-            />
-          </div>
+          <>
+            <div className={styles.pdSecond}>
+              <Radio
+                formLabel="Bracket Type"
+                options={bracketTypeOptions}
+                onChange={onChangeBracketType}
+                checked={bracketTypesEnum[bracket_type!]}
+              />
+              <Radio
+                formLabel="# of Teams"
+                options={['Top:', 'All']}
+                onChange={onNumberOfTeamsChange}
+                checked={numTeamsBracketEnum[num_teams_bracket ? 1 : 2]}
+              />
+              <Select
+                label=""
+                disabled={!num_teams_bracket}
+                options={topNumberOfTeams}
+                value={String(num_teams_bracket || '')}
+                onChange={onChangeMaxTeamNumber}
+              />
+            </div>
+            <div className={styles.pdThird}>
+              <div className={styles.dndTitleWrapper}>
+                <span>Ranking Factors (in Divisions)</span>
+                <span>Ranking Factors (in Pools)</span>
+              </div>
+              <div className={styles.dndWrapper}>
+                <DndProvider backend={HTML5Backend}>
+                  <Dnd
+                    name="rankingFactorDivisions"
+                    cards={rankingFactorDivisions}
+                    onUpdate={onRankingFactorReorder.bind(
+                      undefined,
+                      'rankingFactorDivisions'
+                    )}
+                  />
+                  <Dnd
+                    name="rankingFactorPools"
+                    cards={rankingFactorPools}
+                    onUpdate={onRankingFactorReorder.bind(
+                      undefined,
+                      'rankingFactorPools'
+                    )}
+                  />
+                </DndProvider>
+              </div>
+              <CardMessage type="info">
+                Drag and Drop to reorder Ranking Factors
+              </CardMessage>
+              <Checkbox
+                options={bracketGameDurationOpts}
+                onChange={onBracketGameDuration}
+              />
+            </div>
+            {Boolean(bracket_durations_vary) && (
+              <div className={styles.pdFourth}>
+                <Input
+                  // width="170px"
+                  fullWidth={true}
+                  endAdornment="Minutes"
+                  label="Pregame Warmup"
+                  value="0"
+                />
+                <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
+                <Input
+                  // width="170px"
+                  fullWidth={true}
+                  endAdornment="Minutes"
+                  label="Time Division Duration"
+                  value="0"
+                />
+                <span className={styles.innerSpanText}>
+                  &nbsp;(0)&nbsp;+&nbsp;
+                </span>
+                <Input
+                  // width="170px"
+                  fullWidth={true}
+                  endAdornment="Minutes"
+                  label="Time Between Periods"
+                  value="0"
+                />
+                <span className={styles.innerSpanText}>
+                  &nbsp;=&nbsp;0&nbsp; Minutes Total Runtime
+                </span>
+              </div>
+            )}
+          </>
         )}
-        <div className={styles['pd-third']}>
-          <div className={styles.dndTitleWrapper}>
-            <span>Ranking Factors (in Divisions)</span>
-            <span>Ranking Factors (in Pools)</span>
-          </div>
-          <div className={styles.dndWrapper}>
-            <DndProvider backend={HTML5Backend}>
-              <Dnd
-                name="rankingFactorDivisions"
-                cards={rankingFactorDivisions}
-                onUpdate={onUpdateCards.bind(
-                  undefined,
-                  'rankingFactorDivisions'
-                )}
-              />
-              <Dnd
-                name="rankingFactorPools"
-                cards={rankingFactorPools}
-                onUpdate={onUpdateCards.bind(undefined, 'rankingFactorPools')}
-              />
-            </DndProvider>
-          </div>
-          <CardMessage type="info">
-            Dran and Drop to reorder Ranking Factors
-          </CardMessage>
-          <Checkbox options={bracketGameDurationOpts} />
-        </div>
-        <div className={styles['pd-fourth']}>
-          <Input
-            width="170px"
-            fullWidth={true}
-            endAdornment="Minutes"
-            label="Pregame Warmup"
-            value="0"
-          />
-          <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
-          <Input
-            width="170px"
-            fullWidth={true}
-            endAdornment="Minutes"
-            label="Time Division Duration"
-            value="0"
-          />
-          <span className={styles.innerSpanText}>&nbsp;(0)&nbsp;+&nbsp;</span>
-          <Input
-            width="170px"
-            fullWidth={true}
-            endAdornment="Minutes"
-            label="Time Between Periods"
-            value="0"
-          />
-          <span className={styles.innerSpanText}>
-            &nbsp;=&nbsp;0&nbsp; Minutes Total Runtime
-          </span>
-        </div>
       </div>
     </SectionDropdown>
   );

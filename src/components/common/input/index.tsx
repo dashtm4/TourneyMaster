@@ -3,7 +3,7 @@ import { TextField as MuiTextField, InputAdornment } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import styles from './style.module.scss';
 
-const defaultWidth = 100;
+// const defaultWidth = 100;
 
 interface ITextFieldProps {
   endAdornment?: string;
@@ -12,7 +12,7 @@ interface ITextFieldProps {
   fullWidth?: boolean;
   multiline?: boolean;
   rows?: string;
-  value?: string;
+  value?: string | number;
   width?: string;
   placeholder?: string;
   onChange?: any;
@@ -41,7 +41,7 @@ const TextField: React.FC<ITextFieldProps> = ({
     <MuiTextField
       name={name}
       type={type || 'text'}
-      style={{ width: width || defaultWidth }}
+      style={{ width }}
       placeholder={placeholder}
       fullWidth={fullWidth}
       variant="outlined"

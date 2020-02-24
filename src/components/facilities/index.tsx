@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { RouteComponentProps } from 'react-router-dom';
 import { AppState } from './logic/reducer';
 import {
   loadFacilities,
@@ -16,6 +17,10 @@ import { IFacility } from '../../common/models/facilities';
 import { BindingAction, BindingCbWithOne } from '../../common/models/callback';
 import styles from './styles.module.scss';
 
+interface MatchParams {
+  eventId?: string;
+}
+
 interface Props {
   facilities: IFacility[];
   loadFacilities: BindingAction;
@@ -24,11 +29,14 @@ interface Props {
   saveFacilities: BindingCbWithOne<IFacility[]>;
 }
 
-class Facilities extends React.Component<Props, any> {
+class Facilities extends React.Component<
+  Props & RouteComponentProps<MatchParams>
+> {
   componentDidMount() {
-    const { loadFacilities } = this.props;
+    const { loadFacilities, addEmptyFacility } = this.props;
+    const eventId = this.props.match.params.eventId;
 
-    loadFacilities();
+    eventId ? loadFacilities() : addEmptyFacility();
   }
 
   onChangeFacilitiesCount = (evt: any) => {
@@ -74,7 +82,6 @@ class Facilities extends React.Component<Props, any> {
               <li className={styles.facilitiesItem} key={it.facilities_id}>
                 <FacilityDetails
                   facility={it}
-                  isOpen={idx === 0}
                   facilitiyNumber={idx + 1}
                   updateFacilities={updateFacilities}
                 />

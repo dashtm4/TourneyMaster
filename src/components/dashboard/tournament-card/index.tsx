@@ -17,6 +17,7 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
   const onTournamentManage = () => {
     history.push(`event/event-details/${event.event_id}`);
   };
+
   const startDate = moment(event.event_startdate).format('DD.MM.YYYY');
   const endDate = moment(event.event_enddate).format('DD.MM.YYYY');
   return (
@@ -25,15 +26,18 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
         <div className={styles.tournamentHeader}>
           <div className={styles.cardImage}>
             <img
+              alt="logo"
               src={
-                event.event_logo_path === 'logopath'
+                !event.event_logo_path || event.event_logo_path === 'logopath'
                   ? tournamentLogoExample
                   : event.event_logo_path
               }
             />
           </div>
           <div className={styles.cardHeader}>
-            <h2 className={styles.cardTitle}>{event.event_name}</h2>
+            <h2 className={styles.cardTitle}>
+              {event.event_name || 'Undefined Event'}
+            </h2>
             <div className={styles.additionalMessage}>
               {`${startDate} - ${endDate}`}
             </div>
@@ -50,11 +54,11 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
         </div>
         <div className={styles.tournamentContent}>
           <div className={styles.tournamentContentItem}>
-            <span className={styles.tournamentContentTitle}>Teams:</span>{' '}
+            <span className={styles.tournamentContentTitle}>Teams:</span> {'—'}
           </div>
           <div className={styles.tournamentContentItem}>
             <span className={styles.tournamentContentTitle}>Locations:</span>{' '}
-            {event.num_of_locations}
+            {event.num_of_locations || '—'}
           </div>
           <div className={styles.tournamentContentItem}>
             <span className={styles.tournamentContentTitle}>Status:</span>{' '}
@@ -68,12 +72,14 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
           </div>
           <div className={styles.tournamentContentItem}>
             <span className={styles.tournamentContentTitle}>Players:</span>{' '}
+            {'—'}
           </div>
           <div className={styles.tournamentContentItem}>
-            <span className={styles.tournamentContentTitle}>Fields:</span>{' '}
+            <span className={styles.tournamentContentTitle}>Fields:</span> {'—'}
           </div>
           <div className={styles.tournamentContentItem}>
             <span className={styles.tournamentContentTitle}>Schedule:</span>{' '}
+            {'—'}
           </div>
         </div>
       </Paper>

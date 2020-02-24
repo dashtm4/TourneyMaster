@@ -45,7 +45,7 @@ const RegistrationView = (props: any) => {
   };
   return (
     <section>
-      <Paper>
+      <Paper sticky={true}>
         <div className={styles.mainMenu}>
           <Button label="+ Add to Library" variant="text" color="secondary" />
           <Button
@@ -62,19 +62,31 @@ const RegistrationView = (props: any) => {
         </div>
         <ul className={styles.libraryList}>
           <li>
-            <SectionDropdown type="section" padding="0">
+            <SectionDropdown
+              type="section"
+              panelDetailsType="flat"
+              isDefaultExpanded={true}
+            >
               <span>Primary Information</span>
               <PrimaryInformation data={primaryInformation} />
             </SectionDropdown>
           </li>
           <li>
-            <SectionDropdown type="section" padding="0">
+            <SectionDropdown
+              type="section"
+              panelDetailsType="flat"
+              isDefaultExpanded={true}
+            >
               <span>Teams & Athletes</span>
               <TeamsAthletesInfo data={teamsInfo} />
             </SectionDropdown>
           </li>
           <li>
-            <SectionDropdown type="section" padding="0">
+            <SectionDropdown
+              type="section"
+              panelDetailsType="flat"
+              isDefaultExpanded={true}
+            >
               <span>Main Contact</span>
               <MainContact data={mainContact} />
             </SectionDropdown>

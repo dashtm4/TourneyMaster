@@ -3,7 +3,7 @@ import styles from '../styles.module.scss';
 
 const PrimaryInformation = ({ data }: any) => (
   <div className={styles.section}>
-    <div className={styles.sectionFirstRow}>
+    <div className={styles.piSectionFirstRow}>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Division</span>
         <p>{data.division}</p>
@@ -17,7 +17,7 @@ const PrimaryInformation = ({ data }: any) => (
         <p>{data.closeDate}</p>
       </div>
     </div>
-    <div className={styles.sectionSecondRow}>
+    <div className={styles.piSectionSecondRow}>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Entry Fee</span>
         <p>{data.entryFee}</p>

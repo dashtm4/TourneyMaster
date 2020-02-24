@@ -1,19 +1,28 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import Header from '../../header';
-import Menu from '../../common/menu';
-import Facilities from '../../facilities';
-import { MenuListForEvent } from '../constants/MenuList';
-import { Routes } from '../../../common/constants';
-import styles from '../styles.module.scss';
-import EventDetails from '../../event-details';
-import Registration from '../../registration-view';
+import Header from 'components/header';
+import Menu from 'components/common/menu';
+import Facilities from 'components/facilities';
+import Sсoring from 'components/scoring';
+import EventDetails from 'components/event-details';
+import Registration from 'components/registration-view';
 import { RouteComponentProps } from 'react-router-dom';
-import RegistrationEdit from '../../registration-edit';
+import RegistrationEdit from 'components/registration-edit';
+import DivisionsAndPools from 'components/divisions-and-pools';
+import AddDivision from 'components/divisions-and-pools/add-division';
+import Scheduling from 'components/scheduling';
+import Teams from 'components/teams';
+import { Routes } from 'common/constants';
+import { MenuListForEvent } from '../constants/MenuList';
+import styles from '../styles.module.scss';
 
 interface MatchParams {
   eventId?: string;
 }
+
+export const EmptyPage: React.FC = () => {
+  return <span> Not implemented yet</span>;
+};
 
 const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
   <>
@@ -25,7 +34,23 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
           <Route path={Routes.EVENT_DETAILS} component={EventDetails} />
           <Route path={Routes.FACILITIES} component={Facilities} />
           <Route path={Routes.REGISTRATION} component={Registration} />
+          <Route
+            path={Routes.SCORING}
+            eventId={props.match.params.eventId}
+            component={Sсoring}
+          />
           <Route path={Routes.REGISTRATION_EDIT} component={RegistrationEdit} />
+          <Route path={Routes.ADD_DIVISION} component={AddDivision} />
+          <Route
+            path={Routes.DIVISIONS_AND_POOLS}
+            component={DivisionsAndPools}
+          />
+          <Route path={Routes.TEAMS} component={Teams} />
+          <Route path={Routes.TEAMS} component={EmptyPage} />
+          <Route path={Routes.SCHEDULING} component={Scheduling} />
+          <Route path={Routes.SCORING} component={EmptyPage} />
+          <Route path={Routes.REPORTING} component={EmptyPage} />
+
           <Route path={Routes.DEFAULT} component={EventDetails} />
         </Switch>
       </main>

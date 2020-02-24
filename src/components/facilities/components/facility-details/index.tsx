@@ -10,6 +10,7 @@ import Field from '../field';
 import TextField from '../../../common/input';
 import Select from '../../../common/select';
 import Checkbox from '../../../common/buttons/checkbox';
+import Button from '../../../common/buttons/button';
 import { IFacility } from '../../../../common/models/facilities';
 import { BindingCbWithOne } from '../../../../common/models/callback';
 import styles from './styles.module.scss';
@@ -17,7 +18,6 @@ import styles from './styles.module.scss';
 interface Props {
   facility: IFacility;
   facilitiyNumber: number;
-  isOpen: boolean;
   updateFacilities: BindingCbWithOne<IFacility>;
 }
 
@@ -30,7 +30,7 @@ class FacilityDetails extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      isEdit: false,
+      isEdit: Boolean(props.facility.isNew),
     };
   }
 
@@ -43,43 +43,41 @@ class FacilityDetails extends React.Component<Props, State> {
   onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
 
   render() {
-    const { facilitiyNumber, isOpen, facility } = this.props;
+    const { facilitiyNumber, facility } = this.props;
     const { isEdit } = this.state;
 
     return (
-      <ExpansionPanelWrapped defaultExpanded={isOpen}>
+      <ExpansionPanelWrapped defaultExpanded>
         <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
           <h2 className={styles.detailsSubtitle}>
             Facility {facilitiyNumber} Details
           </h2>
         </ExpansionPanelSummaryWrapped>
         <ExpansionPanelDetailsWrapped>
-          <form className={styles.form}>
+          <form className={styles.form} autoComplete="off">
             <h3 className={styles.detailsSubtitle}>
               Location {facilitiyNumber}
             </h3>
             <p className={styles.descripWrapper}>
               <span>The Proving Grounds</span>
-              <button
+              <Button
                 onClick={this.onEditClick}
-                className={`${styles.editBtn} ${
-                  isEdit ? styles.editBtnEdit : ''
-                }`}
-                type="button"
-              >
-                Edit
-              </button>
+                label="Edit"
+                variant="text"
+                color="secondary"
+                type={isEdit ? 'danger' : undefined}
+              />
             </p>
             <div className={styles.nameWrapper}>
-              <fieldset className={styles.filedset}>
+              <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
                 <legend className={styles.fieldTitle}>Facility 1 Name</legend>
                 <TextField
                   onChange={this.onChangeFacility}
                   value={facility.facilities_description || ''}
                   name="facilities_description"
                   placeholder={'Main Stadium'}
-                  width="350px"
                   disabled={!isEdit}
+                  width={'100%'}
                 />
               </fieldset>
               <fieldset className={styles.filedset}>
@@ -110,14 +108,16 @@ class FacilityDetails extends React.Component<Props, State> {
                 ))}
             </ul>
             <div className={styles.restroomWrapper}>
-              <fieldset className={styles.filedset}>
+              <fieldset
+                className={`${styles.filedset} ${styles.filedsetRestrooms}`}
+              >
                 <legend className={styles.fieldTitle}>Restrooms</legend>
                 <Select
                   onChange={this.onChangeFacility}
                   value={facility.restrooms || 'In Facility'}
                   name="restrooms"
                   options={['In Facility', 'Portable']}
-                  width="255px"
+                  width="100%"
                   disabled={!isEdit}
                 />
               </fieldset>
@@ -166,18 +166,22 @@ class FacilityDetails extends React.Component<Props, State> {
               )}
             </fieldset>
             <div className={styles.parkingWrapper}>
-              <fieldset className={styles.filedset}>
+              <fieldset
+                className={`${styles.filedset} ${styles.filedsetParkingAvailable}`}
+              >
                 <legend className={styles.fieldTitle}>Parking Available</legend>
                 <Select
                   onChange={this.onChangeFacility}
                   value={facility.parking_available || 'Ample'}
                   name="parking_available"
                   options={['Ample', 'AmAmple', 'AmAmAmple']}
-                  width="160px"
+                  width="100%"
                   disabled={!isEdit}
                 />
               </fieldset>
-              <fieldset className={styles.filedset}>
+              <fieldset
+                className={`${styles.filedset} ${styles.filedsetDistanceFields}`}
+              >
                 <legend className={styles.fieldTitle}>
                   Distance to Fields
                 </legend>
@@ -189,8 +193,8 @@ class FacilityDetails extends React.Component<Props, State> {
                       : ''
                   }
                   name="parking_proximity"
-                  placeholder="Metres"
-                  width="160px"
+                  placeholder="Meters"
+                  width="100%"
                   disabled={!isEdit}
                 />
               </fieldset>
@@ -243,10 +247,12 @@ class FacilityDetails extends React.Component<Props, State> {
                 />
               )}
             </fieldset>
-            <button className={styles.mapBtn} type="button" disabled={!isEdit}>
-              <PublishIcon />
-              Upload Field Maps
-            </button>
+            <Button
+              icon={<PublishIcon />}
+              label="Upload Field Maps"
+              variant="text"
+              color="secondary"
+            />
           </form>
         </ExpansionPanelDetailsWrapped>
       </ExpansionPanelWrapped>

@@ -33,7 +33,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
         <div className={styles.sectionItem} />
         <div className={styles.sectionItem}>
           <DatePicker
-            width="161px"
+            fullWidth={true}
             label="Open Date"
             type="date"
             value={data.registration_start || new Date()}
@@ -42,7 +42,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
         </div>
         <div className={styles.sectionItem}>
           <DatePicker
-            width="161px"
+            fullWidth={true}
             label="Close Date"
             type="date"
             value={data.registration_end || new Date()}
@@ -53,7 +53,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
       <div className={styles.sectionSecondRow}>
         <div className={styles.sectionItem}>
           <Input
-            width="161px"
+            fullWidth={true}
             label="Entry Fee"
             startAdornment="$"
             type="number"
@@ -63,7 +63,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
         </div>
         <div className={styles.sectionItem}>
           <Input
-            width="161px"
+            fullWidth={true}
             label="Deposit Fee"
             startAdornment="$"
             type="number"
@@ -73,7 +73,6 @@ const PrimaryInformation = ({ data, onChange }: any) => {
         </div>
         <div className={styles.sectionItem}>
           <Input
-            width="161px"
             fullWidth={true}
             label="Early Bird Discount"
             type="number"
@@ -83,7 +82,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
         </div>
         <div className={styles.sectionItem}>
           <DatePicker
-            width="161px"
+            fullWidth={true}
             label="Discount End Date"
             type="date"
             value={data.discount_end || new Date()}
