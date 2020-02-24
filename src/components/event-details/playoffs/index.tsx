@@ -105,6 +105,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
       type="section"
       panelDetailsType="flat"
       isDefaultExpanded={true}
+      useBorder={true}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Playoffs</span>

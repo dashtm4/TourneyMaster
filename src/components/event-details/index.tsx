@@ -50,17 +50,12 @@ class EventDetails extends Component<Props, State> {
     this.checkEventExistence();
   }
 
-  static getDerivedStateFromProps(
-    nextProps: Props,
-    prevState: State
-  ): Partial<State> | null {
-    if (!prevState.event && nextProps.event.data) {
-      return {
-        event: nextProps.event.data,
-        error: nextProps.event.error,
-      };
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.event.data?.event_id !== prevProps.event.data?.event_id) {
+      this.setState({
+        event: this.props.event?.data,
+      });
     }
-    return null;
   }
 
   checkEventExistence = () => {
@@ -136,17 +131,13 @@ class EventDetails extends Component<Props, State> {
           </div>
         </Paper>
         <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
-
         <PrimaryInformationSection eventData={event} onChange={this.onChange} />
-
         <EventStructureSection
           eventData={event}
           eventTypeOptions={eventTypeOptions}
           onChange={this.onChange}
         />
-
         <PlayoffsSection eventData={event} onChange={this.onChange} />
-
         <MediaAssetsSection onFileUpload={this.onFileUpload} />
       </div>
     );

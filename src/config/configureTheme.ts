@@ -49,5 +49,47 @@ export default () =>
           color: '#6A6A6A',
         },
       },
+      MuiCheckbox: {
+        root: {
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.03)',
+          },
+          '& .MuiIconButton-label': {
+            position: 'relative',
+            zIndex: 0,
+          },
+          '&:not($checked) .MuiIconButton-label:after': {
+            content: '""',
+            left: 4,
+            top: 4,
+            height: 15,
+            width: 15,
+            position: 'absolute',
+            backgroundColor: 'white',
+            zIndex: -1,
+          },
+        },
+      },
+      MuiRadio: {
+        root: {
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.03)',
+          },
+          '& .MuiIconButton-label': {
+            position: 'relative',
+            zIndex: 0,
+          },
+          '&:not($checked) .MuiIconButton-label:after': {
+            content: '""',
+            left: 4,
+            top: 4,
+            height: 15,
+            width: 15,
+            position: 'absolute',
+            backgroundColor: 'white',
+            zIndex: -1,
+          },
+        },
+      },
     },
   });

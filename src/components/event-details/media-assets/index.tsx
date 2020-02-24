@@ -25,6 +25,7 @@ const MediaAssetsSection: React.FC<IProps> = ({ onFileUpload }) => {
       type="section"
       panelDetailsType="flat"
       isDefaultExpanded={true}
+      useBorder={true}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Media Assets</span>

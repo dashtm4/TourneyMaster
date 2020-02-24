@@ -4,6 +4,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { TooltipMessageTypes } from './Types';
 
 interface Props {
+  disabled?: boolean;
   children: React.ReactElement;
   title: string;
   type: string;
@@ -36,8 +37,9 @@ const getTooltipColor = (type: string) => {
   return 'inherit';
 };
 
-const TooltipMessage = ({ children, title, type }: Props) => (
+const TooltipMessage = ({ disabled, children, title, type }: Props) => (
   <TooltipWrapped
+    disableHoverListener={disabled}
     title={<span style={{ color: getTooltipColor(type) }}>{title}</span>}
     arrow
   >
