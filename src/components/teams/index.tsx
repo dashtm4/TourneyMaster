@@ -3,10 +3,11 @@ import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import {
+  changePool,
   loadDivisions,
   loadPools,
   loadTeams,
-  changePool,
+  editTeam,
   deleteTeam,
 } from './logic/actions';
 import Navigation from './components/navigation';
@@ -25,10 +26,11 @@ interface Props {
   divisions: IDisision[];
   pools: IPool[];
   teams: ITeam[];
+  changePool: (team: ITeam, poolId: string | null) => void;
   loadDivisions: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
   loadTeams: (poolId: string) => void;
-  changePool: (team: ITeam, poolId: string | null) => void;
+  editTeam: (team: ITeam) => void;
   deleteTeam: (team: ITeam) => void;
 }
 
@@ -48,7 +50,7 @@ class Teams extends React.Component<
 
     this.state = {
       configurableTeam: null,
-      isEdit: true,
+      isEdit: false,
       isEditPopupOpen: false,
       isDeletePopupOpen: false,
     };
@@ -87,6 +89,17 @@ class Teams extends React.Component<
     this.setState(({ configurableTeam }) => ({
       configurableTeam: { ...(configurableTeam as ITeam), [name]: value },
     }));
+
+  onSaveTeam = () => {
+    const { configurableTeam } = this.state;
+    const { editTeam } = this.props;
+
+    if (configurableTeam) {
+      editTeam(configurableTeam);
+    }
+
+    this.onCloseModal();
+  };
 
   onCloseModal = () =>
     this.setState({
@@ -132,7 +145,7 @@ class Teams extends React.Component<
               <PopupTeamEdit
                 team={configurableTeam}
                 onChangeTeam={this.onChangeTeam}
-                onSaveTeamClick={() => {}}
+                onSaveTeamClick={this.onSaveTeam}
                 onDeleteTeamClick={this.onDeleteTeam}
                 onCloseModal={this.onCloseModal}
               />
@@ -163,7 +176,7 @@ export default connect(
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadDivisions, loadPools, loadTeams, changePool, deleteTeam },
+      { changePool, loadDivisions, loadPools, loadTeams, editTeam, deleteTeam },
       dispatch
     )
 )(Teams);

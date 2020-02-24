@@ -44,16 +44,19 @@ const TeamDetailsPopup = ({
   onCloseModal,
 }: Props) => {
   const [isEdit, onEditClick] = useState(false);
+  const [teamTitle] = useState(team?.long_name);
 
   if (!team) {
     return null;
   }
 
+  // const teamTitle = team?.long_name;;
+
   return (
     <div className={styles.popupWrapper}>
       <div className={styles.headerWrapper}>
         <HeadingLevelThree color="#1C315F">
-          <span>{team.long_name} (2020, West)</span>
+          <span>{teamTitle} (2020, West)</span>
         </HeadingLevelThree>
         <Button
           onClick={() => onEditClick(!isEdit)}

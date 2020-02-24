@@ -7,6 +7,12 @@ export const LOAD_POOLS = 'LOAD_POOLS';
 export const LOAD_TEAMS = 'LOAD_TEAMS';
 export const CHANGE_POOL = 'CHANGE_POOL';
 export const DELETE_TEAM = 'DELETE_TEAM';
+export const EDIT_TEAM = 'EDIT_TEAM';
+
+export interface changePool {
+  type: 'CHANGE_POOL';
+  payload: ITeam;
+}
 
 export interface loadDivisionsSuccess {
   type: 'LOAD_DIVISIONS_SUCCESS';
@@ -23,8 +29,8 @@ export interface loadTeamsSuccess {
   payload: ITeam[];
 }
 
-export interface changePool {
-  type: 'CHANGE_POOL';
+export interface editTeamSuccess {
+  type: 'EDIT_TEAM_SUCCESS';
   payload: ITeam;
 }
 

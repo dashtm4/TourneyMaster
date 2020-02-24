@@ -1,10 +1,11 @@
 import {
   TeamsAction,
   SUCCESS,
+  CHANGE_POOL,
   LOAD_DIVISIONS,
   LOAD_POOLS,
   LOAD_TEAMS,
-  CHANGE_POOL,
+  EDIT_TEAM,
   DELETE_TEAM,
 } from './action-types';
 import { IDisision, IPool, ITeam } from '../../../common/models';
@@ -36,6 +37,15 @@ const teamsReducer = (state: AppState = initialState, action: TeamsAction) => {
         ...state,
         teams: state.teams.map(team =>
           team.team_id === changedTeam.team_id ? changedTeam : team
+        ),
+      };
+    case EDIT_TEAM + SUCCESS:
+      const editedTeam = action.payload as ITeam;
+
+      return {
+        ...state,
+        teams: state.teams.map(it =>
+          it.team_id === editedTeam.team_id ? editedTeam : it
         ),
       };
     case DELETE_TEAM + SUCCESS:
