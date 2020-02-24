@@ -11,20 +11,15 @@ export const saveTeams: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (teams: Partial<ITeam>[], history: History) => async (
-  _dispatch,
-  getState
-) => {
-  const {
-    event: {
-      data: { event_id },
-    },
-  }: any = getState();
-
+>> = (
+  teams: Partial<ITeam>[],
+  eventId: string,
+  history: History
+) => async () => {
   for await (const team of teams) {
     const data = {
       ...team,
-      event_id,
+      event_id: eventId,
       team_id: getVarcharEight(),
     };
     const response = await api.post(`/teams`, data);

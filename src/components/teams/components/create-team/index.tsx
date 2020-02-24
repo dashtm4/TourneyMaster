@@ -12,7 +12,7 @@ import {
   BindingCbWithOne,
   IDisision,
   ITeam,
-  BindingCbWithTwo,
+  BindingCbWithThree,
 } from 'common/models';
 import Modal from 'components/common/modal';
 import CancelPopup from './cancel-popup';
@@ -26,15 +26,16 @@ interface ICreateTeamProps {
   history: History;
   match: any;
   divisions: IDisision[];
-  saveTeams: BindingCbWithTwo<Partial<ITeam>[], History>;
+  saveTeams: BindingCbWithThree<Partial<ITeam>[], string, History>;
   getDivisions: BindingCbWithOne<string>;
 }
 
 class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
+  eventId = this.props.match.params.eventId;
   state = { teams: [{}], isModalOpen: false };
 
   componentDidMount() {
-    this.props.getDivisions(this.props.match.params.eventId);
+    this.props.getDivisions(this.eventId);
   }
 
   onChange = (name: string, value: any, index: number) => {
@@ -55,7 +56,7 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
   };
 
   onSave = () => {
-    this.props.saveTeams(this.state.teams, this.props.history);
+    this.props.saveTeams(this.state.teams, this.eventId, this.props.history);
   };
 
   onAddTeam = () => {
