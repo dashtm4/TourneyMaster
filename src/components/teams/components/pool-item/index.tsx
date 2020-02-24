@@ -26,7 +26,7 @@ const PoolItem = ({
   onDeletePopupOpen,
   onEditPopupOpen,
 }: Props) => {
-  const [{}, drop] = useDrop({
+  const [, drop] = useDrop({
     accept: DndItems.TEAM,
     drop: () => ({
       divisionId: divisionId,
