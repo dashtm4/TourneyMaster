@@ -78,12 +78,19 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
       schedule_restrictions,
     } = this.props.team;
 
-    const noneOption = { label: 'None', value: null };
+    const noneOption = { label: 'None', value: 'None' };
 
-    const divisionsOptions = this.props.divisions.map((division: any) => ({
-      label: division.long_name,
-      value: division.division_id,
-    }));
+    const divisionsOptions = this.props.divisions.map(
+      (division: IDisision) => ({
+        label: division.long_name,
+        value: division.division_id,
+      })
+    );
+
+    const levelOptions = [
+      { label: 'Level 1', value: '1' },
+      { label: 'Level 2', value: '2' },
+    ];
 
     return (
       <div className={styles.sectionContainer}>
@@ -126,12 +133,18 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
               />
             </div>
             <div className={styles.sectionItem}>
-              <Select
+              <Input
+                fullWidth={true}
+                label="State"
+                value={state || ''}
+                onChange={this.onStateChange}
+              />
+              {/* <Select
                 label="State"
                 options={[]}
                 value={state || ''}
                 onChange={this.onStateChange}
-              />
+              /> */}
             </div>
             <div className={styles.sectionItem}>
               <Select
@@ -144,7 +157,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Select
                 label="Level"
-                options={[]}
+                options={[...levelOptions, noneOption]}
                 value={level || ''}
                 onChange={this.onLevelChange}
               />
