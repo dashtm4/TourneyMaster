@@ -1,9 +1,8 @@
 import React from 'react';
-import { Auth } from 'aws-amplify';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-// import hisory from '../../../browserhistory';
-// import { Routes } from '../../../common/constants';
+import hisory from '../../../browserhistory';
+import { Routes } from '../../../common/constants';
 import styles from './style.module.scss';
 
 const USER_LOGO = '';
@@ -42,12 +41,9 @@ const UserInfo: React.FC = () => {
         >
           <MenuItem
             onClick={() => {
-              // localStorage.clear();
+              localStorage.clear();
 
-              // hisory.replace(Routes.LOGIN);
-
-              localStorage.removeItem('token');
-              Auth.signOut();
+              hisory.replace(Routes.LOGIN);
             }}
           >
             Sign out
