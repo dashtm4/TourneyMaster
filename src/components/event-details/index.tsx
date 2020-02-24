@@ -136,17 +136,13 @@ class EventDetails extends Component<Props, State> {
           </div>
         </Paper>
         <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
-
         <PrimaryInformationSection eventData={event} onChange={this.onChange} />
-
         <EventStructureSection
           eventData={event}
           eventTypeOptions={eventTypeOptions}
           onChange={this.onChange}
         />
-
         <PlayoffsSection eventData={event} onChange={this.onChange} />
-
         <MediaAssetsSection onFileUpload={this.onFileUpload} />
       </div>
     );

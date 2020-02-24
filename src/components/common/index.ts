@@ -1,6 +1,7 @@
 import Button from './buttons/button';
 import Radio from './buttons/radio';
 import Checkbox from './buttons/checkbox';
+import MenuButton from './buttons/menu-button';
 import CardMessage from './card-message';
 import ColorPicker from './color-picker';
 import DatePicker from './date-picker';
@@ -13,6 +14,7 @@ import SectionDropdown from './section-dropdown';
 import Select from './select';
 import Tooltip from './tooltip-message';
 import Modal from './modal';
+import MultipleSearchSelect from './multiple-search-select';
 import PopupTeamEdit from './popup-team-edit';
 import * as Toasts from './toastr/showToasts';
 
@@ -20,6 +22,7 @@ export {
   Button,
   Radio,
   Checkbox,
+  MenuButton,
   CardMessage,
   ColorPicker,
   DatePicker,
@@ -33,5 +36,6 @@ export {
   Tooltip,
   Toasts,
   Modal,
+  MultipleSearchSelect,
   PopupTeamEdit,
 };
