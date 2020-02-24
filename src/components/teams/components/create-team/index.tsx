@@ -46,8 +46,8 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
   };
 
   onCancel = () => {
-    const changesMade = Object.entries(this.state.teams[0]).length === 0;
-    if (!changesMade) {
+    const changesMade = Object.entries(this.state.teams[0]).length !== 0;
+    if (changesMade) {
       this.setState({ isModalOpen: true });
     } else {
       this.props.history.goBack();
