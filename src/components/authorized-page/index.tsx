@@ -9,6 +9,7 @@ import Dashboard from '../dashboard';
 import LibraryManager from '../library-manager';
 import Calendar from 'components/calendar';
 import { EmptyPage } from './authorized-page-event/index';
+import Schedules from 'components/schedules';
 
 const AuthorizedPage = () => (
   <>
@@ -17,6 +18,7 @@ const AuthorizedPage = () => (
       <Menu list={MenuList} />
       <main className={styles.content}>
         <Switch>
+          <Route path="/schedules" component={Schedules} />
           <Route path={Routes.DASHBOARD} component={Dashboard} />
           <Route path={Routes.LIBRARY_MANAGER} component={LibraryManager} />
           <Route path={Routes.EVENT_LINK} component={EmptyPage} />

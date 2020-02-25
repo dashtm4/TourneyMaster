@@ -1,0 +1,36 @@
+.table {
+  color: #f0f0f0;
+
+  .fieldTh {
+    background: #575757;
+    padding: 5px 10px;
+    border-radius: 2px;
+    font-size: 14px;
+    min-width: 100px;
+    border: 2px solid #383838;
+  }
+
+  .timeSlotRow {
+    th {
+      background: #1b1b1b;
+      padding: 10px;
+      min-width: 50px;
+      border-radius: 2px;
+      font-size: 14px;
+    }
+    td {
+      padding: 10px;
+      background: #383838;
+      border: 1px solid rgb(29, 29, 29);
+      font-size: 14px;
+      color: #d8d7d7;
+      min-width: 100px;
+      height: 63px;
+    }
+  }
+
+  .gameSlot {
+    display: flex;
+    flex-direction: column;
+  }
+}
