@@ -23,14 +23,22 @@ const BTN_STYLES = {
 
 interface Props {
   team: ITeam;
+  divisionName: string;
+  poolName?: string;
   isEdit: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
   onDeletePopupOpen: (team: ITeam) => void;
-  onEditPopupOpen: (team: ITeam) => void;
+  onEditPopupOpen: (
+    team: ITeam,
+    divisionName: string,
+    poolName: string
+  ) => void;
 }
 
 const TeamItem = ({
   team,
+  divisionName,
+  poolName,
   isEdit,
   changePool,
   onDeletePopupOpen,
@@ -70,7 +78,7 @@ const TeamItem = ({
             />
           </span>
           <Button
-            onClick={() => onEditPopupOpen(team)}
+            onClick={() => onEditPopupOpen(team, divisionName, poolName || '')}
             icon={getIcon(Icons.EDIT, EDIT_ICON_STYLES)}
             label={<span className="visually-hidden">Edit team</span>}
             variant="text"

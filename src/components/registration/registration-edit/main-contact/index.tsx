@@ -2,22 +2,25 @@ import React from 'react';
 import styles from '../styles.module.scss';
 import { Input, Select, Checkbox } from 'components/common';
 
-const MainContact = ({ onChange }: any) => {
-  const roles = ['Role1', 'Role2', 'Role3'];
+const MainContact = ({ data, onChange }: any) => {
+  const roles = ['1', '2', '3'];
 
   const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('first_name', e.target.value);
+    onChange('reg_first_name', e.target.value);
   const onLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('last_name', e.target.value);
+    onChange('reg_last_name', e.target.value);
 
   const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('email', e.target.value);
+    onChange('email_address', e.target.value);
 
   const onMobileNumberChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('mobile_number', e.target.value);
 
   const onPermissionToTextChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('permission_to_text', e.target.checked);
+    onChange('permission_to_text', e.target.checked ? 1 : 0);
+
+  const onRoleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('role', e.target.value);
 
   return (
     <div className={styles.section}>
@@ -26,7 +29,7 @@ const MainContact = ({ onChange }: any) => {
           <Input
             fullWidth={true}
             label="First"
-            // value={data.first_name || ''}
+            value={data.reg_first_name || ''}
             onChange={onFirstNameChange}
           />
         </div>
@@ -34,16 +37,19 @@ const MainContact = ({ onChange }: any) => {
           <Input
             fullWidth={true}
             label="Last"
-            // value={data.last_name || ''}
+            value={data.reg_last_name || ''}
             onChange={onLastNameChange}
           />
         </div>
         <div className={styles.sectionItem}>
           <Select
             label="Role"
-            options={roles.map(type => ({ label: type, value: type }))}
+            options={roles.map(type => ({
+              label: type,
+              value: type,
+            }))}
             value=""
-            // onChange={onChangeMaxTeamNumber}
+            onChange={onRoleChange}
           />
           <span className={styles.tournamentStatus} />
         </div>
@@ -51,7 +57,7 @@ const MainContact = ({ onChange }: any) => {
           <Input
             fullWidth={true}
             label="Email"
-            // value={data.email || ''}
+            value={data.email_address || ''}
             onChange={onEmailChange}
           />
         </div>
@@ -62,14 +68,19 @@ const MainContact = ({ onChange }: any) => {
             fullWidth={true}
             label="Mobile Number"
             type="number"
-            // value={data.mobile_number || ''}
+            value={data.mobile_number || ''}
             onChange={onMobileNumberChange}
           />
         </div>
         <div className={styles.sectionItem} style={{ marginTop: '20px' }}>
           <Checkbox
             formLabel=""
-            options={[{ label: 'Permission to Text', checked: Boolean(0) }]}
+            options={[
+              {
+                label: 'Permission to Text',
+                checked: Boolean(data.permission_to_text),
+              },
+            ]}
             onChange={onPermissionToTextChange}
           />
         </div>

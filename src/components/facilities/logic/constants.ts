@@ -9,6 +9,7 @@ const EMPTY_FACILITY = {
   parking_details: null,
   parking_proximity: null,
   golf_carts_availabe: null,
+  created_by: null,
 };
 
 export { EMPTY_FACILITY };

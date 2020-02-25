@@ -39,7 +39,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Max Teams Per Division"
             type="number"
-            // value={data.max_teams_per_division || ''}
+            value={data.max_teams_per_division || ''}
             onChange={onMaxTeamsPerDivisionChange}
           />
         </div>
@@ -48,7 +48,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Min Athletes on Roster"
             type="number"
-            // value={data.min_players_per_roster || ''}
+            value={data.min_players_per_roster || ''}
             onChange={onMinAthletesOnRosterChange}
           />
         </div>
@@ -57,7 +57,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Max Athletes on Roster"
             type="number"
-            // value={data.max_players_per_roster || ''}
+            value={data.max_players_per_roster || ''}
             onChange={onMaxAthletesOnRosterChange}
           />
         </div>
@@ -69,7 +69,9 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             options={options}
             formLabel="Athlete Birth Date"
             onChange={onAthleteBirthDateChange}
-            checked={OptionsEnum[data.request_athlete_birthdate || 2]}
+            checked={
+              OptionsEnum[data.request_athlete_birthdate] || OptionsEnum[2]
+            }
           />
         </div>
         <div className={styles.sectionItem}>
@@ -77,7 +79,9 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             options={options}
             formLabel="Athlete Jersey Number"
             onChange={onAthleteJerseyNumberChange}
-            checked={OptionsEnum[data.request_athlete_jersey_number || 2]}
+            checked={
+              OptionsEnum[data.request_athlete_jersey_number] || OptionsEnum[2]
+            }
           />
         </div>
         <div className={styles.sectionItem}>
@@ -85,7 +89,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             options={options}
             formLabel="Athlete Email"
             onChange={onAthleteEmailChange}
-            checked={OptionsEnum[data.request_athlete_email || 2]}
+            checked={OptionsEnum[data.request_athlete_email] || OptionsEnum[2]}
           />
         </div>
         <div className={styles.sectionItem} />
