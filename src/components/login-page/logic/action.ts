@@ -23,7 +23,6 @@ const createMemeber: ActionCreator<ThunkAction<
       await Api.post('/members', {
         ...EMPTY_MEMBER,
         member_id: memberId,
-        created_by: memberId,
         first_name: memberFullName[0],
         last_name: memberFullName[1],
         email_address: email,

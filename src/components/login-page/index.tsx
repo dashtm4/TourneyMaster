@@ -71,8 +71,12 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
 
   onAuthSubmit = async (email: string, password: string) => {
     try {
+      this.setState({ isLoading: true });
+
       await Auth.signIn(email, password);
     } catch (err) {
+      this.setState({ isLoading: false });
+
       Toasts.errorToast(`${err.message}`);
     }
   };
