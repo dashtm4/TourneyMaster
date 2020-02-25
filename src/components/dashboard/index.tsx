@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { History } from 'history';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
-import EditIcon from '@material-ui/icons/Edit';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import AlternateEmailIcon from '@material-ui/icons/AlternateEmail';
 import styles from './style.module.scss';
@@ -76,14 +75,8 @@ class Dashboard extends React.Component<IDashboardProps> {
   render() {
     return (
       <div className={styles.main}>
-        <Paper>
+        <Paper sticky={true}>
           <div className={styles.mainMenu}>
-            <Button
-              label="Edit Dashboard Layout"
-              variant="text"
-              color="secondary"
-              icon={<EditIcon fontSize="small" />}
-            />
             <Button
               label="Create tournament"
               variant="contained"

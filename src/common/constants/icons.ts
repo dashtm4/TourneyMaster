@@ -14,6 +14,10 @@ enum Icons {
   TEAM = 'team',
   PLACE = 'place',
   SCORING = 'scoring',
+  EDIT = 'edit',
+  DELETE = 'delete',
+  GET_APP = 'getApp',
+  PUBLISH = 'publish',
 }
 
 export { Icons };

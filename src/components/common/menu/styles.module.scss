@@ -1,5 +1,7 @@
 :local(.dashboardMenu) {
-  width: 255px;
+  position: sticky;
+  top: 0;
+  width: 270px;
   padding: 15px 23px;
 
   background-color: #073b65;
@@ -25,7 +27,7 @@
   align-items: center;
 
   white-space: nowrap;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 22px;
   font-weight: normal;
   color: #ffffff;

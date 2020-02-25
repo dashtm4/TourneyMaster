@@ -23,6 +23,8 @@ const divisions = [divisionData, divisionData];
 
 interface IDivisionsAndPoolsProps {
   divisions: any;
+  history: any;
+  match: any;
   getDivisions: () => void;
 }
 
@@ -33,16 +35,25 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
   onEditDivisionDetails = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
+
+  onAddDivision = () => {
+    const eventId = this.props.match.params.eventId;
+    const path = eventId
+      ? `/event/divisions-and-pools-add/${eventId}`
+      : '/event/divisions-and-pools-add';
+    this.props.history.push(path);
+  };
   render() {
     return (
       <section>
-        <Paper>
+        <Paper sticky={true}>
           <div className={styles.mainMenu}>
             <div />
             <Button
               label="+ Add Division"
               variant="contained"
               color="primary"
+              onClick={this.onAddDivision}
             />
           </div>
         </Paper>
@@ -53,7 +64,10 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
           <ul className={styles.divisionsList}>
             {divisions.map((division, index) => (
               <li key={index}>
-                <SectionDropdown padding="0">
+                <SectionDropdown
+                  panelDetailsType="flat"
+                  isDefaultExpanded={true}
+                >
                   <div className={styles.sectionTitle}>
                     <div>{`Division: ${division.long_name}`}</div>
                     <Button

@@ -20,7 +20,7 @@ const DivisionDetails = ({ data }: any) => (
       {data.teams_registered}
     </div>
     <div className={styles.divisionItem}>
-      <span className={styles.divisionTitle}>Teams Tentetive:</span>{' '}
+      <span className={styles.divisionTitle}>Teams Tentative:</span>{' '}
       {data.teams_tentitive}
     </div>
     <div className={styles.divisionItem}>

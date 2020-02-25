@@ -19,6 +19,7 @@ import PlayoffsSection from './playoffs';
 import { Button, HeadingLevelTwo, Paper } from 'components/common';
 import styles from './styles.module.scss';
 import { eventState } from './state';
+import { CircularProgress } from '@material-ui/core';
 
 interface IMapStateProps {
   event: IAppState;
@@ -49,17 +50,12 @@ class EventDetails extends Component<Props, State> {
     this.checkEventExistence();
   }
 
-  static getDerivedStateFromProps(
-    nextProps: Props,
-    prevState: State
-  ): Partial<State> | null {
-    if (!prevState.event && nextProps.event.data) {
-      return {
-        event: nextProps.event.data,
-        error: nextProps.event.error,
-      };
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.event.data?.event_id !== prevProps.event.data?.event_id) {
+      this.setState({
+        event: this.props.event?.data,
+      });
     }
-    return null;
   }
 
   checkEventExistence = () => {
@@ -101,7 +97,19 @@ class EventDetails extends Component<Props, State> {
     this.props.createEvent(event);
   };
 
-  Loading = () => <div>Nice Loading...</div>;
+  Loading = () => (
+    <div
+      style={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <CircularProgress />
+    </div>
+  );
 
   render() {
     const eventTypeOptions = ['Tournament', 'Showcase'];
@@ -112,7 +120,7 @@ class EventDetails extends Component<Props, State> {
       this.Loading()
     ) : (
       <div className={styles.container}>
-        <Paper>
+        <Paper sticky={true}>
           <div className={styles.paperWrapper}>
             <Button
               label="Save"
@@ -123,17 +131,13 @@ class EventDetails extends Component<Props, State> {
           </div>
         </Paper>
         <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
-
         <PrimaryInformationSection eventData={event} onChange={this.onChange} />
-
         <EventStructureSection
           eventData={event}
           eventTypeOptions={eventTypeOptions}
           onChange={this.onChange}
         />
-
         <PlayoffsSection eventData={event} onChange={this.onChange} />
-
         <MediaAssetsSection onFileUpload={this.onFileUpload} />
       </div>
     );

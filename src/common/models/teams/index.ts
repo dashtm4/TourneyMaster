@@ -1,4 +1,4 @@
-export interface ITeams {
+export interface ITeam {
   team_id: string;
   event_id: string;
   org_id: number;
@@ -19,4 +19,6 @@ export interface ITeams {
   created_datetime: string;
   updated_by: string;
   updated_datetime: string;
+  division_id: string;
+  pool_id: string | null;
 }

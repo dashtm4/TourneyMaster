@@ -10,8 +10,11 @@ export default () => {
       userPoolWebClientId: process.env.REACT_APP_AWS_USER_POOL_WEB_CLIENT_ID,
       oauth: {
         domain: process.env.REACT_APP_AWS_COGNITO_DOMAIN,
-        redirectSignIn: 'http://localhost:3000/',
-        redirectSignOut: 'http://localhost:3000/',
+        redirectSignIn:
+          process.env.REACT_APP_REDIRECT_URL || 'http://localhost:3000/',
+        redirectSignOut:
+          `${process.env.REACT_APP_REDIRECT_URL}/logout` ||
+          'http://localhost:3000/',
         responseType: 'code',
       },
     },

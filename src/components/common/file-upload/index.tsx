@@ -3,62 +3,69 @@ import { useDropzone } from 'react-dropzone';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { Button, Tooltip } from 'components/common';
-import { TooltipMessageTypes } from 'components/common/tooltip-message/Types';
-
+import { Button } from 'components/common';
 import styles from './styles.module.scss';
 
 interface IProps {
+  icomingFiles?: File[];
   onUpload: (files: File[]) => void;
 }
 
-const FileUpload: React.FC<IProps> = ({ onUpload }) => {
-  const [files, setFiles] = useState<File[] | null>(null);
+const FileUpload: React.FC<IProps> = ({ icomingFiles, onUpload }) => {
+  const [files, setFiles] = useState<File[] | null>(icomingFiles || null);
 
   const onDrop = useCallback((uploadedFiles: File[]) => {
     setFiles(uploadedFiles);
     onUpload(uploadedFiles);
+    // eslint-disable-next-line
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    multiple: false,
   });
 
   const showFiles = (): string => {
     return files ? files.map((file: File) => file.name).join(', ') : '';
   };
 
+  const renderFiles = () => (
+    <div className={styles.uploadedWrapper}>
+      <span>Uploaded File:</span>
+      {showFiles()}
+    </div>
+  );
+
+  const renderWhileDragging = () => <span>Drop files here</span>;
+
+  const renderUploader = () =>
+    isDragActive ? (
+      renderWhileDragging()
+    ) : (
+      <>
+        <span>Drag & Drop files here</span>
+        <span>or</span>
+
+        <Button
+          label="Browse files"
+          color="primary"
+          variant="contained"
+          type="squared"
+        />
+      </>
+    );
+
   return (
     <div className={styles.wrapper}>
       <div {...getRootProps()} className={styles.container}>
-        <FontAwesomeIcon icon={faUpload} />
+        {Boolean(!files?.length) && <FontAwesomeIcon icon={faUpload} />}
 
-        {isDragActive ? (
-          <span>Drop files here</span>
-        ) : (
-          <>
-            <span>Drag & Drop files here</span>
-            <span>or</span>
+        {Boolean(files?.length) && renderFiles()}
 
-            <Button
-              label="Browse files"
-              color="primary"
-              variant="contained"
-              type="squared"
-            />
-          </>
-        )}
+        {Boolean(!files?.length) && renderUploader()}
 
         <input {...getInputProps()} />
       </div>
-      {files?.length && (
-        <Tooltip title={showFiles()} type={TooltipMessageTypes.INFO}>
-          <div className={styles.filesWrapper}>
-            <span>Files:&nbsp;</span>
-            <span>{showFiles()}</span>
-          </div>
-        </Tooltip>
-      )}
     </div>
   );
 };

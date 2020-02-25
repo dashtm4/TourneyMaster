@@ -22,7 +22,7 @@ export const getDivisions: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = () => async (dispatch: Dispatch) => {
-  const data = await api.get('/divisions');
+>> = (eventId: string) => async (dispatch: Dispatch) => {
+  const data = await api.get(`/divisions?event_id=${eventId}`);
   dispatch(divisionsFetchSuccess(data));
 };

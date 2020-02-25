@@ -11,13 +11,17 @@ import TextField from '../../../common/input';
 import Select from '../../../common/select';
 import Checkbox from '../../../common/buttons/checkbox';
 import Button from '../../../common/buttons/button';
-import { IFacility } from '../../../../common/models/facilities';
+import { IFacility, IField } from '../../../../common/models';
 import { BindingCbWithOne } from '../../../../common/models/callback';
 import styles from './styles.module.scss';
 
 interface Props {
   facility: IFacility;
+  fields: IField[];
   facilitiyNumber: number;
+  loadFields: (facilityId: string) => void;
+  addEmptyField: (facilityId: string) => void;
+  updateField: BindingCbWithOne<IField>;
   updateFacilities: BindingCbWithOne<IFacility>;
 }
 
@@ -25,26 +29,64 @@ interface State {
   isEdit: boolean;
 }
 
+enum FormFields {
+  FACILITIES_DESCRIPTION = 'facilities_description',
+  NUM_FIELDS = 'num_fields',
+  RESTROOM = 'restrooms',
+  NUM_TOILETS = 'num_toilets',
+  RESTROOM_DETAILS = 'restroom_details',
+  PARKING_AVAILABLE = 'parking_available',
+  PARKING_PROXIMITY = 'parking_proximity',
+  GOLF_CARTS_AVAILABE = 'golf_carts_availabe',
+  PARKING_DETAILS = 'parking_details',
+}
+
 class FacilityDetails extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      isEdit: Boolean(props.facility.isNew),
+      // isEdit: Boolean(props.facility.isNew),
+      isEdit: true,
     };
   }
 
   onChangeFacility = ({ target: { name, value } }: any) => {
     const { facility, updateFacilities } = this.props;
 
-    updateFacilities({ ...facility, isChange: true, [name]: value });
+    updateFacilities({ ...facility, [name]: value });
+  };
+
+  onChangeField = (
+    field: IField,
+    {
+      target: { name, type, value, checked },
+    }: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { updateField } = this.props;
+
+    updateField({ ...field, [name]: type === 'checkbox' ? +checked : value });
   };
 
   onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
 
   render() {
-    const { facilitiyNumber, facility } = this.props;
+    const {
+      facility,
+      fields,
+      facilitiyNumber,
+      loadFields,
+      addEmptyField,
+    } = this.props;
     const { isEdit } = this.state;
+
+    if (
+      !facility.isNew &&
+      !facility.isFieldsLoading &&
+      !facility.isFieldsLoaded
+    ) {
+      loadFields(facility.facilities_id);
+    }
 
     return (
       <ExpansionPanelWrapped defaultExpanded>
@@ -63,18 +105,20 @@ class FacilityDetails extends React.Component<Props, State> {
               <Button
                 onClick={this.onEditClick}
                 label="Edit"
-                variant="text"
+                variant={isEdit ? 'contained' : 'text'}
                 color="secondary"
                 type={isEdit ? 'danger' : undefined}
               />
             </p>
             <div className={styles.nameWrapper}>
               <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
-                <legend className={styles.fieldTitle}>Facility 1 Name</legend>
+                <legend className={styles.fieldTitle}>
+                  Facility {facilitiyNumber} Name
+                </legend>
                 <TextField
                   onChange={this.onChangeFacility}
                   value={facility.facilities_description || ''}
-                  name="facilities_description"
+                  name={FormFields.FACILITIES_DESCRIPTION}
                   placeholder={'Main Stadium'}
                   disabled={!isEdit}
                   width={'100%'}
@@ -83,29 +127,34 @@ class FacilityDetails extends React.Component<Props, State> {
               <fieldset className={styles.filedset}>
                 <legend className={styles.fieldTitle}>Number of Fields</legend>
                 <Select
-                  onChange={this.onChangeFacility}
-                  value={`${facility.num_fields || ''}`}
-                  name="num_fields"
-                  options={
-                    facility.num_fields
-                      ? Array.from(
-                          new Array(+facility.num_fields + 1),
-                          (_, idx) => `${idx + 1}`
-                        )
-                      : ['1']
-                  }
+                  onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
+                    if (evt.target.value > fields.length.toString()) {
+                      this.onChangeFacility(evt);
+                      addEmptyField(facility.facilities_id);
+                    }
+                  }}
+                  value={`${fields.length || ''}`}
+                  name={FormFields.NUM_FIELDS}
+                  options={Array.from(
+                    new Array(fields.length + 1),
+                    (_, idx) => `${idx + 1}`
+                  )}
                   width="160px"
                   disabled={!isEdit}
                 />
               </fieldset>
             </div>
             <ul className={styles.fieldList}>
-              {facility.num_fields &&
-                Array.from(new Array(+facility.num_fields), (_, idx) => (
-                  <li key={idx}>
-                    <Field fieldNumber={idx + 1} isEdit={isEdit} />
-                  </li>
-                ))}
+              {fields.map((it, idx) => (
+                <li key={it.field_id}>
+                  <Field
+                    field={it}
+                    fieldNumber={idx + 1}
+                    isEdit={isEdit}
+                    onChange={this.onChangeField}
+                  />
+                </li>
+              ))}
             </ul>
             <div className={styles.restroomWrapper}>
               <fieldset
@@ -114,8 +163,8 @@ class FacilityDetails extends React.Component<Props, State> {
                 <legend className={styles.fieldTitle}>Restrooms</legend>
                 <Select
                   onChange={this.onChangeFacility}
-                  value={facility.restrooms || 'In Facility'}
-                  name="restrooms"
+                  value={facility.restrooms || ''}
+                  name={FormFields.RESTROOM}
                   options={['In Facility', 'Portable']}
                   width="100%"
                   disabled={!isEdit}
@@ -128,7 +177,7 @@ class FacilityDetails extends React.Component<Props, State> {
                 <TextField
                   onChange={this.onChangeFacility}
                   value={facility.num_toilets ? `${facility.num_toilets}` : ''}
-                  name="num_toilets"
+                  name={FormFields.NUM_TOILETS}
                   placeholder="5"
                   width="250px"
                   disabled={!isEdit}
@@ -142,7 +191,7 @@ class FacilityDetails extends React.Component<Props, State> {
                 onChange={() =>
                   this.onChangeFacility({
                     target: {
-                      name: 'restroom_details',
+                      name: FormFields.RESTROOM_DETAILS,
                       value: facility.restroom_details || ' ',
                     },
                   })
@@ -159,7 +208,7 @@ class FacilityDetails extends React.Component<Props, State> {
                 <TextField
                   onChange={this.onChangeFacility}
                   value={facility.restroom_details}
-                  name="restroom_details"
+                  name={FormFields.RESTROOM_DETAILS}
                   width="100%"
                   disabled={!isEdit}
                 />
@@ -172,8 +221,8 @@ class FacilityDetails extends React.Component<Props, State> {
                 <legend className={styles.fieldTitle}>Parking Available</legend>
                 <Select
                   onChange={this.onChangeFacility}
-                  value={facility.parking_available || 'Ample'}
-                  name="parking_available"
+                  value={facility.parking_available || ''}
+                  name={FormFields.PARKING_AVAILABLE}
                   options={['Ample', 'AmAmple', 'AmAmAmple']}
                   width="100%"
                   disabled={!isEdit}
@@ -192,8 +241,8 @@ class FacilityDetails extends React.Component<Props, State> {
                       ? `${facility.parking_proximity}`
                       : ''
                   }
-                  name="parking_proximity"
-                  placeholder="Metres"
+                  name={FormFields.PARKING_PROXIMITY}
+                  placeholder="Meters"
                   width="100%"
                   disabled={!isEdit}
                 />
@@ -204,7 +253,7 @@ class FacilityDetails extends React.Component<Props, State> {
                   onChange={() =>
                     this.onChangeFacility({
                       target: {
-                        name: 'golf_carts_availabe',
+                        name: FormFields.GOLF_CARTS_AVAILABE,
                         value: facility.golf_carts_availabe ? null : true,
                       },
                     })
@@ -224,7 +273,7 @@ class FacilityDetails extends React.Component<Props, State> {
                 onChange={() =>
                   this.onChangeFacility({
                     target: {
-                      name: 'parking_details',
+                      name: FormFields.PARKING_DETAILS,
                       value: facility.parking_details || ' ',
                     },
                   })
@@ -241,7 +290,7 @@ class FacilityDetails extends React.Component<Props, State> {
                 <TextField
                   onChange={this.onChangeFacility}
                   value={facility.parking_details}
-                  name="parking_details"
+                  name={FormFields.PARKING_DETAILS}
                   width="100%"
                   disabled={!isEdit}
                 />

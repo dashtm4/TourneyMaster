@@ -8,14 +8,14 @@ import withSelectColor from './hocs/withSelectColor';
 import styles from './styles.module.scss';
 
 export interface Props {
-  activeColor: string;
+  value: string;
   displayColorPicker: boolean;
   onClick: () => void;
   onChange: BindingAction | BindingCbWithOne<{ hex: string }>;
 }
 
 const ColorPicker = ({
-  activeColor,
+  value,
   onChange,
   displayColorPicker,
   onClick,
@@ -37,7 +37,7 @@ const ColorPicker = ({
     <div className={styles.ColorPickerWrapper}>
       <button
         className={styles.ColorPickerBtn}
-        style={{ backgroundColor: activeColor }}
+        style={{ backgroundColor: value }}
         onClick={onClick}
       >
         <span className="visually-hidden">Select Color</span>
@@ -48,7 +48,7 @@ const ColorPicker = ({
             colors={colors}
             width={'204px'}
             onChangeComplete={onChange}
-            triangle={'top-right'}
+            triangle={'hide'}
           />
         )}
       </div>
