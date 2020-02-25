@@ -41,7 +41,6 @@ export const getDivisions: ActionCreator<ThunkAction<
   { type: string }
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   const data = await api.get(`/divisions?event_id=${eventId}`);
-  console.log(data);
   dispatch(divisionsFetchSuccess(data));
 };
 

@@ -49,15 +49,6 @@ class Sсoring extends React.Component<
   Props & RouteComponentProps<MatchParams>,
   State
 > {
-  async componentDidMount() {
-    const { loadDivision } = this.props;
-    const eventId = this.props.match.params.eventId;
-
-    if (eventId) {
-      loadDivision(eventId);
-    }
-  }
-
   constructor(props: Props & RouteComponentProps<MatchParams>) {
     super(props);
 
@@ -66,6 +57,15 @@ class Sсoring extends React.Component<
       isEdit: false,
       changeableTeam: null,
     };
+  }
+
+  componentDidMount() {
+    const { loadDivision } = this.props;
+    const eventId = this.props.match.params.eventId;
+
+    if (eventId) {
+      loadDivision(eventId);
+    }
   }
 
   onEditTeam = () => {

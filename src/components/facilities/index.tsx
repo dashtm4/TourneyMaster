@@ -55,7 +55,6 @@ class Facilities extends React.Component<
 
   render() {
     const { facilities, updateFacilities } = this.props;
-
     return (
       <section>
         <Navigation onClick={this.savingFacilities} />
@@ -69,10 +68,10 @@ class Facilities extends React.Component<
             </span>
             <Select
               onChange={this.onChangeFacilitiesCount}
-              value={`${facilities.length}`}
+              value={`${facilities.length || ''}`}
               options={Array.from(
                 new Array(facilities.length + 1),
-                (_, idx) => `${idx + 1}`
+                (_, idx) => ({ label: `${idx + 1}`, value: `${idx + 1}` })
               )}
               width="160px"
             />

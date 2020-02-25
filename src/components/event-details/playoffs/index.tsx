@@ -101,7 +101,12 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
   };
 
   return (
-    <SectionDropdown type="section" padding="0" isDefaultExpanded={true}>
+    <SectionDropdown
+      type="section"
+      panelDetailsType="flat"
+      isDefaultExpanded={true}
+      useBorder={true}
+    >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Playoffs</span>
       </HeadingLevelThree>
@@ -137,7 +142,10 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
               <Select
                 label=""
                 disabled={!num_teams_bracket}
-                options={topNumberOfTeams}
+                options={topNumberOfTeams.map(type => ({
+                  label: type,
+                  value: type,
+                }))}
                 value={String(num_teams_bracket || '')}
                 onChange={onChangeMaxTeamNumber}
               />

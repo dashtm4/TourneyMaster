@@ -46,6 +46,8 @@ class FacilityDetails extends React.Component<Props, State> {
     const { facilitiyNumber, facility } = this.props;
     const { isEdit } = this.state;
 
+    console.log(facility.restrooms);
+
     return (
       <ExpansionPanelWrapped defaultExpanded>
         <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
@@ -63,7 +65,7 @@ class FacilityDetails extends React.Component<Props, State> {
               <Button
                 onClick={this.onEditClick}
                 label="Edit"
-                variant="text"
+                variant={isEdit ? 'contained' : 'text'}
                 color="secondary"
                 type={isEdit ? 'danger' : undefined}
               />
@@ -90,9 +92,12 @@ class FacilityDetails extends React.Component<Props, State> {
                     facility.num_fields
                       ? Array.from(
                           new Array(+facility.num_fields + 1),
-                          (_, idx) => `${idx + 1}`
+                          (_, idx) => ({
+                            label: `${idx + 1}`,
+                            value: `${idx + 1}`,
+                          })
                         )
-                      : ['1']
+                      : [{ label: '1', value: '1' }]
                   }
                   width="160px"
                   disabled={!isEdit}
@@ -114,9 +119,12 @@ class FacilityDetails extends React.Component<Props, State> {
                 <legend className={styles.fieldTitle}>Restrooms</legend>
                 <Select
                   onChange={this.onChangeFacility}
-                  value={facility.restrooms || 'In Facility'}
+                  value={facility.restrooms || ''}
                   name="restrooms"
-                  options={['In Facility', 'Portable']}
+                  options={['In Facility', 'Portable'].map(type => ({
+                    label: type,
+                    value: type,
+                  }))}
                   width="100%"
                   disabled={!isEdit}
                 />
@@ -172,9 +180,12 @@ class FacilityDetails extends React.Component<Props, State> {
                 <legend className={styles.fieldTitle}>Parking Available</legend>
                 <Select
                   onChange={this.onChangeFacility}
-                  value={facility.parking_available || 'Ample'}
+                  value={facility.parking_available || ''}
                   name="parking_available"
-                  options={['Ample', 'AmAmple', 'AmAmAmple']}
+                  options={['Ample', 'AmAmple', 'AmAmAmple'].map(type => ({
+                    label: type,
+                    value: type,
+                  }))}
                   width="100%"
                   disabled={!isEdit}
                 />

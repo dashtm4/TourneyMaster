@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Calendar, View } from '@fullcalendar/core';
 import FullCalendar from '@fullcalendar/react';
