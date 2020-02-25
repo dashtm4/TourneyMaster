@@ -4,7 +4,11 @@ import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 
 class AddPool extends React.Component<any> {
-  state = { name: '', tag: '' };
+  state = {
+    division_id: this.props.division.division_id,
+    name: '',
+    tag: '',
+  };
 
   onNameChange = (e: any) => {
     this.setState({ name: e.target.value });
@@ -15,12 +19,12 @@ class AddPool extends React.Component<any> {
   };
 
   onSave = () => {
-    // TODO save pool
+    this.props.savePool(this.state);
     this.props.onClose();
   };
 
   render() {
-    const { division, teams } = this.props;
+    const { division } = this.props;
     const { name, tag } = this.state;
     return (
       <div className={styles.container}>
@@ -41,10 +45,12 @@ class AddPool extends React.Component<any> {
           />
         </div>
         <div className={styles.sectionItem}>
-          <span className={styles.title}>Division:</span> {division || '—'}
+          <span className={styles.title}>Division:</span>{' '}
+          {division.long_name || '—'}
         </div>
         <div className={styles.sectionItem}>
-          <span className={styles.title}>Teams:</span> {teams || '—'}
+          <span className={styles.title}>Teams:</span>{' '}
+          {division.teams_registered || '—'}
         </div>
         <div className={styles.buttonsGroup}>
           <div>

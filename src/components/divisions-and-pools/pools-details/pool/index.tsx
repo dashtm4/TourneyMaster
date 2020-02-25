@@ -4,14 +4,14 @@ import styles from '../styles.module.scss';
 class Pool extends React.Component<any> {
   render() {
     const { pool, teams } = this.props;
-    console.log(pool);
     return (
       <div className={styles.pool}>
-        {/* <p className={styles.poolTitle}>{pool.long_name}</p> */}
-        <p className={styles.poolTitle}>West</p>
+        <p className={styles.poolTitle}>
+          {pool ? pool.pool_desc : 'Unassigned'}
+        </p>
         <ul>
           {teams.map((team: any) => (
-            <li>{team.long_name}</li>
+            <li key={team.team_id}>{team.long_name}</li>
           ))}
         </ul>
       </div>

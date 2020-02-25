@@ -3,25 +3,29 @@ import styles from './styles.module.scss';
 import Button from '../../common/buttons/button';
 import CreateIcon from '@material-ui/icons/Create';
 import Pool from './pool';
-import { ITeam } from 'common/models';
 
 interface IPoolsDetails {
   onAddPool: any;
+  getPools: any;
+  getTeams: any;
   division: any;
   pools: any;
   teams: any;
 }
 
 class PoolsDetails extends React.Component<IPoolsDetails, any> {
+  componentDidMount() {
+    if (!this.props.teams.length) {
+      this.props.getPools(this.props.division.division_id);
+      this.props.getTeams(this.props.division.division_id);
+    }
+  }
   onAdd = () => {
     this.props.onAddPool(this.props.division);
   };
 
   render() {
     const { pools, teams } = this.props;
-    console.log(pools);
-    const poolsMOCK = [{ pool_id: 1 }, { pool_id: 2 }];
-
     return (
       <div>
         <div className={styles.headingContainer}>
@@ -42,21 +46,14 @@ class PoolsDetails extends React.Component<IPoolsDetails, any> {
           </div>
         </div>
         <div className={styles.poolsContainer}>
-          {poolsMOCK.map((pool: any) => (
+          {pools.map((pool: any) => (
             <Pool
               key={pool.pool_id}
               pool={pool}
-              teams={teams.filter(
-                (team: ITeam) => team.pool_id === pool.pool_id
-              )}
+              teams={teams.filter((team: any) => team.pool_id === pool.pool_id)}
             />
           ))}
-          <div className={styles.pool}>
-            <p className={styles.poolTitle}>Unassigned</p>
-            <ul>
-              <li>None</li>
-            </ul>
-          </div>
+          <Pool teams={teams.filter((team: any) => !team.pool_id)} />
         </div>
       </div>
     );

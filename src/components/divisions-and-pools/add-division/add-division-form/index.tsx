@@ -73,7 +73,6 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
           <div className={styles.sectionRow}>
             <div className={styles.sectionItemLarge}>
               <Input
-                // width="351px"
                 fullWidth={true}
                 label="Long Name"
                 value={long_name || ''}
@@ -82,7 +81,6 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                // width="161px"
                 fullWidth={true}
                 label="Short Name"
                 value={short_name || ''}
@@ -91,7 +89,6 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                // width="161px"
                 fullWidth={true}
                 label="Division Tag"
                 startAdornment="@"
@@ -103,7 +100,6 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
           <div className={styles.sectionRow}>
             <div className={styles.sectionItem}>
               <Input
-                // width="161px"
                 fullWidth={true}
                 label="Entry Fee"
                 startAdornment="$"
@@ -114,7 +110,6 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                // width="161px"
                 fullWidth={true}
                 label="Division Description"
                 value={division_description || ''}
@@ -123,7 +118,6 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                // width="161px"
                 fullWidth={true}
                 label="Max # of Teams"
                 type="number"
@@ -152,7 +146,6 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
             <div className={styles.sectionItemLarge}>
               {this.state.hasMessage && (
                 <Input
-                  // width="541px"
                   fullWidth={true}
                   multiline={true}
                   rows="5"
@@ -177,7 +170,6 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
               {this.state.hasUniqueGameDurations && (
                 <div className={styles.sectionItemTime}>
                   <Input
-                    // width="170px"
                     fullWidth={true}
                     endAdornment="Minutes"
                     label="Pregame Warmup"
@@ -185,7 +177,6 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
                   />
                   <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
                   <Input
-                    // width="170px"
                     fullWidth={true}
                     endAdornment="Minutes"
                     label="Time Division Duration"
@@ -195,7 +186,6 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
                     &nbsp;(0)&nbsp;+&nbsp;
                   </span>
                   <Input
-                    // width="170px"
                     fullWidth={true}
                     endAdornment="Minutes"
                     label="Time Between Periods"

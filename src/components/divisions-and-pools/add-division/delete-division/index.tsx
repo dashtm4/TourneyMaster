@@ -3,16 +3,10 @@ import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 import WarningIcon from '@material-ui/icons/Warning';
 
-const DeleteDivision = ({
-  onClose,
-  deleteDivision,
-  divisionId,
-  history,
-}: any) => {
+const DeleteDivision = ({ onClose, deleteDivision, divisionId }: any) => {
   const onDeleteDivision = () => {
     deleteDivision(divisionId);
     onClose();
-    history.goBack();
   };
 
   return (

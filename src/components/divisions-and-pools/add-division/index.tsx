@@ -8,12 +8,15 @@ import HeadingLevelTwo from '../../common/headings/heading-level-two';
 import AddDivisionForm from './add-division-form';
 import {
   saveDivisions,
-  getDivision,
   updateDivision,
   deleteDivision,
-} from './add-division-form/logic/actions';
+} from '../logic/actions';
 import { IDivision } from 'common/models/divisions';
-import { BindingCbWithOne, BindingAction } from 'common/models/callback';
+import {
+  BindingCbWithOne,
+  BindingAction,
+  BindingCbWithTwo,
+} from 'common/models/callback';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteDivision from '../add-division/delete-division';
 import Modal from 'components/common/modal';
@@ -32,7 +35,7 @@ interface IDivisionProps {
   location: Location<ILocationState>;
   match: any;
   divisions: IDivision[];
-  saveDivisions: BindingCbWithOne<Partial<IDivision>[]>;
+  saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
   getDivision: BindingCbWithOne<string>;
   updateDivision: BindingCbWithOne<Partial<IDivision>>;
   deleteDivision: BindingAction;
@@ -40,6 +43,7 @@ interface IDivisionProps {
 
 class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   divisionId = this.props.location.state?.divisionId;
+  eventId = this.props.match.params.eventId;
   state = { divisions: [{}], isModalOpen: false };
 
   componentDidMount() {
@@ -68,8 +72,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   onSave = () => {
     this.divisionId
       ? this.props.updateDivision(this.state.divisions[0])
-      : this.props.saveDivisions(this.state.divisions);
-    // this.props.history.goBack();
+      : this.props.saveDivisions(this.state.divisions, this.eventId);
   };
 
   onAddDivision = () => {
@@ -164,7 +167,6 @@ const mapStateToProps = (state: IState) => ({
 const mapDispatchToProps = {
   saveDivisions,
   updateDivision,
-  getDivision,
   deleteDivision,
 };
 
