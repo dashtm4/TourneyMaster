@@ -1,5 +1,4 @@
 const EMPTY_FACILITY = {
-  isNew: true,
   facilities_description: null,
   num_fields: null,
   restrooms: null,
@@ -12,4 +11,21 @@ const EMPTY_FACILITY = {
   created_by: null,
 };
 
-export { EMPTY_FACILITY };
+const EMPTY_FIELD = {
+  field_name: null,
+  field_abbreviation: null,
+  field_opentime: null,
+  field_closetime: null,
+  field_notes: null,
+  field_sort: null,
+  is_active_YN: null,
+  is_library_YN: null,
+  is_illuminated_YN: null,
+  is_premier_YN: null,
+  created_by: null,
+  created_datetime: null,
+  updated_by: null,
+  updated_datetime: null,
+};
+
+export { EMPTY_FACILITY, EMPTY_FIELD };

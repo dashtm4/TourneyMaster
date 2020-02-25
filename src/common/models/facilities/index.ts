@@ -3,8 +3,6 @@ export interface IFacilityField {
 }
 
 export interface IFacility {
-  isNew?: boolean;
-  isChange?: boolean;
   event_id: string;
   facilities_id: string;
   facilities_description: string | null;
@@ -17,4 +15,9 @@ export interface IFacility {
   parking_proximity: number | null;
   golf_carts_availabe: boolean | null;
   created_by: string | null;
+  //optional
+  isNew?: boolean;
+  isChange?: boolean;
+  isFieldsLoading?: boolean;
+  isFieldsLoaded?: boolean;
 }

@@ -15,9 +15,9 @@ const createMemeber: ActionCreator<ThunkAction<
   MemberAction
 >> = (fullName: string, email: string) => async () => {
   try {
+    const members = await Api.get('/members');
     const memberFullName = fullName.split(' ');
     const memberId = getVarcharEight();
-    const members = await Api.get('/members');
     const isExistMember = members.some(
       (it: IMember) => it.email_address === email
     );
@@ -26,7 +26,6 @@ const createMemeber: ActionCreator<ThunkAction<
       await Api.post('/members', {
         ...EMPTY_MEMBER,
         member_id: memberId,
-        created_by: memberId,
         first_name: memberFullName[0],
         last_name: memberFullName[1],
         email_address: email,
