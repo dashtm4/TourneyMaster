@@ -20,13 +20,15 @@ const PrimaryInformation = ({
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Division</span>
         <div>
-          {divisions.map(division => (
+          {divisions.map((division, index: number) => (
             <Link
               to={`/event/divisions-and-pools/${eventId}`}
               key={division.id}
               className={styles.link}
             >
-              <span className={styles.divisionLink}>{division.name}</span>
+              <span>{`${division.name}${
+                index === divisions.length - 1 ? '' : ', '
+              }`}</span>
             </Link>
           ))}
         </div>
