@@ -14,6 +14,7 @@ enum Routes {
   DIVISIONS_AND_POOLS = '/event/divisions-and-pools/:eventId?',
   ADD_DIVISION = '/event/divisions-and-pools-add/:eventId?',
   TEAMS = '/event/teams/:eventId?',
+  CREATE_TEAM = '/event/teams-create/:eventId?',
   SCHEDULING = '/event/scheduling/:eventId?',
   SCORING = '/event/scoring/:eventId?',
   REPORTING = '/event/reporting/:eventId?',

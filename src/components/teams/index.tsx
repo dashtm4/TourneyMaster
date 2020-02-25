@@ -138,7 +138,12 @@ class Teams extends React.Component<
     return (
       <>
         <section>
-          <Navigation isEdit={isEdit} onEditClick={this.onEditClick} />
+          <Navigation
+            isEdit={isEdit}
+            onEditClick={this.onEditClick}
+            history={this.props.history}
+            eventId={this.props.match.params.eventId}
+          />
           <div className={styles.headingWrapper}>
             <HeadingLevelTwo>Teams</HeadingLevelTwo>
           </div>

@@ -14,6 +14,7 @@ import Teams from 'components/teams';
 import { Routes } from 'common/constants';
 import { MenuListForEvent } from '../constants/MenuList';
 import styles from '../styles.module.scss';
+import CreateTeam from '../../teams/components/create-team';
 
 interface MatchParams {
   eventId?: string;
@@ -45,6 +46,7 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
           />
           <Route path={Routes.TEAMS} component={Teams} />
           <Route path={Routes.TEAMS} component={EmptyPage} />
+          <Route path={Routes.CREATE_TEAM} component={CreateTeam} />
           <Route path={Routes.SCHEDULING} component={Scheduling} />
           <Route path={Routes.SCORING} component={EmptyPage} />
           <Route path={Routes.REPORTING} component={EmptyPage} />

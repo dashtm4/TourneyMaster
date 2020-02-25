@@ -137,7 +137,10 @@ class FacilityDetails extends React.Component<Props, State> {
                   name={FormFields.NUM_FIELDS}
                   options={Array.from(
                     new Array(fields.length + 1),
-                    (_, idx) => `${idx + 1}`
+                    (_, idx) => ({
+                      label: `${idx + 1}`,
+                      value: `${idx + 1}`,
+                    })
                   )}
                   width="160px"
                   disabled={!isEdit}
@@ -164,8 +167,11 @@ class FacilityDetails extends React.Component<Props, State> {
                 <Select
                   onChange={this.onChangeFacility}
                   value={facility.restrooms || ''}
-                  name={FormFields.RESTROOM}
-                  options={['In Facility', 'Portable']}
+                  name="restrooms"
+                  options={['In Facility', 'Portable'].map(type => ({
+                    label: type,
+                    value: type,
+                  }))}
                   width="100%"
                   disabled={!isEdit}
                 />
@@ -222,8 +228,11 @@ class FacilityDetails extends React.Component<Props, State> {
                 <Select
                   onChange={this.onChangeFacility}
                   value={facility.parking_available || ''}
-                  name={FormFields.PARKING_AVAILABLE}
-                  options={['Ample', 'AmAmple', 'AmAmAmple']}
+                  name="parking_available"
+                  options={['Ample', 'AmAmple', 'AmAmAmple'].map(type => ({
+                    label: type,
+                    value: type,
+                  }))}
                   width="100%"
                   disabled={!isEdit}
                 />

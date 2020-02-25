@@ -3,12 +3,6 @@ import styles from '../styles.module.scss';
 import { Input, Select, Checkbox } from 'components/common';
 
 const MainContact = ({ data, onChange }: any) => {
-  // const roles = [
-  //   { label: 'Role1', value: 'role1' },
-  //   { label: 'Role1', value: 'role1' },
-  //   { label: 'Role1', value: 'role1' },
-  //   { label: 'None', value: 'None' },
-  // ];
   const roles = ['1', '2', '3'];
 
   const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -48,8 +42,15 @@ const MainContact = ({ data, onChange }: any) => {
           />
         </div>
         <div className={styles.sectionItem}>
-          <span className={styles.sectionTitle}>Role</span>
-          <Select label="" options={roles} value="" onChange={onRoleChange} />
+          <Select
+            label="Role"
+            options={roles.map(type => ({
+              label: type,
+              value: type,
+            }))}
+            value=""
+            onChange={onRoleChange}
+          />
           <span className={styles.tournamentStatus} />
         </div>
         <div className={styles.sectionItem}>
