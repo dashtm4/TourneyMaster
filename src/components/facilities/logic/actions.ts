@@ -1,5 +1,6 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
+import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
   SUCCESS,
@@ -155,6 +156,8 @@ const saveFacilities: ActionCreator<ThunkAction<
     dispatch({
       type: SAVE_FACILITIES + SUCCESS,
     });
+
+    Toasts.successToast('Saved ❤️');
   } catch {
     dispatch({
       type: SAVE_FACILITIES + FAILURE,
