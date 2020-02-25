@@ -15,6 +15,7 @@ import { IDivision } from 'common/models/divisions';
 import history from '../../../browserhistory';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
+import { IPool, ITeam } from 'common/models';
 
 export const fetchStart = (): { type: string } => ({
   type: FETCH_START,
@@ -33,14 +34,14 @@ export const divisionsFetchFailure = (): { type: string } => ({
 
 export const addDivisionSuccess = (
   payload: IDivision
-): { type: string; payload: any } => ({
+): { type: string; payload: IDivision } => ({
   type: ADD_DIVISION_SUCCESS,
   payload,
 });
 
 export const updateDivisionSuccess = (
   payload: IDivision
-): { type: string; payload: any } => ({
+): { type: string; payload: IDivision } => ({
   type: UPDATE_DIVISION_SUCCESS,
   payload,
 });
@@ -52,15 +53,15 @@ export const deleteDivisionSuccess = (
   payload,
 });
 export const poolsFetchSuccess = (
-  payload: any
-): { type: string; payload: any } => ({
+  payload: IPool[]
+): { type: string; payload: IPool[] } => ({
   type: POOLS_FETCH_SUCCESS,
   payload,
 });
 
 export const teamsFetchSuccess = (
-  payload: any
-): { type: string; payload: any } => ({
+  payload: ITeam[]
+): { type: string; payload: ITeam[] } => ({
   type: TEAMS_FETCH_SUCCESS,
   payload,
 });

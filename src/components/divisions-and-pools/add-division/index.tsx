@@ -145,7 +145,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
         {this.renderButton()}
         <Modal isOpen={this.state.isModalOpen} onClose={this.onModalClose}>
           <DeleteDivision
-            history={this.props.history}
+            division={this.state.divisions[0]}
             divisionId={this.divisionId}
             onClose={this.onModalClose}
             deleteDivision={this.props.deleteDivision}

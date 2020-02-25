@@ -15,25 +15,25 @@ import AddPool from './add-pool';
 import { IDivision } from 'common/models/divisions';
 import { BindingCbWithOne } from 'common/models/callback';
 import { ITeam } from 'common/models';
-// import { IPool } from 'common/models';
+import { IPool } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
 
 interface IDivisionsAndPoolsProps {
   divisions: IDivision[];
-  pools: any;
-  teams: any;
+  pools: Partial<IPool>[];
+  teams: Partial<ITeam>[];
   isLoading: boolean;
   history: History;
   match: any;
   getDivisions: BindingCbWithOne<string>;
   getPools: BindingCbWithOne<string>;
   getTeams: BindingCbWithOne<string>;
-  savePool: BindingCbWithOne<any>;
+  savePool: BindingCbWithOne<Partial<IPool>>;
 }
 
 interface IDivisionAndPoolsState {
   isModalOpen: boolean;
-  selected: any;
+  selected: Partial<IDivision>;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -134,12 +134,10 @@ class DivisionsAndPools extends React.Component<
                         getPools={this.props.getPools}
                         getTeams={this.props.getTeams}
                         pools={pools.filter(
-                          (pool: any) =>
-                            pool.division_id === division.division_id
+                          pool => pool.division_id === division.division_id
                         )}
                         teams={teams.filter(
-                          (team: ITeam) =>
-                            team.division_id === division.division_id
+                          team => team.division_id === division.division_id
                         )}
                       />
                     </div>
@@ -167,7 +165,12 @@ class DivisionsAndPools extends React.Component<
 }
 
 interface IState {
-  divisions: { data: IDivision[]; pools: any; teams: any; isLoading: boolean };
+  divisions: {
+    data: IDivision[];
+    pools: IPool[];
+    teams: ITeam[];
+    isLoading: boolean;
+  };
 }
 
 const mapStateToProps = (state: IState) => ({

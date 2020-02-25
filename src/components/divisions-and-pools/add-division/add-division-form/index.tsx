@@ -3,6 +3,7 @@ import Input from '../../../common/input';
 import ColorPicker from '../../../common/color-picker';
 import Checkbox from '../../../common/buttons/checkbox';
 import styles from '../styles.module.scss';
+import { IDivision } from 'common/models/divisions';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -10,8 +11,16 @@ interface IAddDivisionFormState {
   hasUniqueGameDurations: boolean;
   hasMessage: boolean;
 }
+interface IAddDivisionFormProps {
+  onChange: any;
+  index: number;
+  division: Partial<IDivision>;
+}
 
-class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
+class AddDivisionForm extends React.Component<
+  IAddDivisionFormProps,
+  IAddDivisionFormState
+> {
   state = { hasUniqueGameDurations: false, hasMessage: true };
 
   onLongNameChange = (e: InputTargetValue) =>
@@ -63,7 +72,7 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
       division_description,
       max_num_teams,
       division_message,
-      division_color,
+      division_hex,
     } = this.props.division;
     const defaultDivisionColor = '#1C315F';
 
@@ -128,7 +137,7 @@ class AddDivisionForm extends React.Component<any, IAddDivisionFormState> {
             <div className={styles.sectionItemColorPicker}>
               <p className={styles.sectionLabel}>Color</p>
               <ColorPicker
-                value={division_color || defaultDivisionColor}
+                value={division_hex || defaultDivisionColor}
                 onChange={this.onColorChange}
               />
             </div>
