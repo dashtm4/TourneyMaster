@@ -103,7 +103,10 @@ export default (props: IProps) => {
             <span className={styles.plainText}>=&nbsp;50 Minutes</span>
           </div>
           <Select
-            options={gameStartOptions}
+            options={gameStartOptions.map(option => ({
+              label: option,
+              value: option,
+            }))}
             value={gameStartOptions[0]}
             label="Games Start On"
             name="gamesStartOn"

@@ -71,7 +71,7 @@ class Facilities extends React.Component<
               value={`${facilities.length || ''}`}
               options={Array.from(
                 new Array(facilities.length + 1),
-                (_, idx) => `${idx + 1}`
+                (_, idx) => ({ label: `${idx + 1}`, value: `${idx + 1}` })
               )}
               width="160px"
             />
