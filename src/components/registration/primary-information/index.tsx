@@ -26,7 +26,7 @@ const PrimaryInformation = ({
               key={division.id}
               className={styles.link}
             >
-              {division.name}
+              <span className={styles.divisionLink}>{division.name}</span>
             </Link>
           ))}
         </div>
