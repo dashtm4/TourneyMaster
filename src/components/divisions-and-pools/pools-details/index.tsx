@@ -53,7 +53,9 @@ class PoolsDetails extends React.Component<IPoolsDetails, any> {
               teams={teams.filter((team: any) => team.pool_id === pool.pool_id)}
             />
           ))}
-          <Pool teams={teams.filter((team: any) => !team.pool_id)} />
+          {pools.length !== 0 && (
+            <Pool teams={teams.filter((team: any) => !team.pool_id)} />
+          )}
         </div>
       </div>
     );
