@@ -22,6 +22,7 @@
 }
 .sectionContainer {
   width: 100%;
+  min-width: 792px;
 }
 .section {
   width: 100%;
@@ -62,4 +63,8 @@
   .sectionTitle {
     font-weight: 600;
   }
+}
+.link {
+  color: #11a8ea;
+  text-decoration: none;
 }

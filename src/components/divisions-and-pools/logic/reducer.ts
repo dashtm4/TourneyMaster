@@ -9,7 +9,7 @@ export interface IState {
 }
 
 const defaultState: IState = {
-  data: {},
+  data: [],
   error: false,
 };
 

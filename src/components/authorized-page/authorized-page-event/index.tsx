@@ -5,9 +5,8 @@ import Menu from 'components/common/menu';
 import Facilities from 'components/facilities';
 import Sсoring from 'components/scoring';
 import EventDetails from 'components/event-details';
-import Registration from 'components/registration-view';
+import Registration from 'components/registration';
 import { RouteComponentProps } from 'react-router-dom';
-import RegistrationEdit from 'components/registration-edit';
 import DivisionsAndPools from 'components/divisions-and-pools';
 import AddDivision from 'components/divisions-and-pools/add-division';
 import Scheduling from 'components/scheduling';
@@ -39,7 +38,6 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
             eventId={props.match.params.eventId}
             component={Sсoring}
           />
-          <Route path={Routes.REGISTRATION_EDIT} component={RegistrationEdit} />
           <Route path={Routes.ADD_DIVISION} component={AddDivision} />
           <Route
             path={Routes.DIVISIONS_AND_POOLS}
