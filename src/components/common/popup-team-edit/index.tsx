@@ -30,6 +30,8 @@ enum FORM_FIELDS {
 
 interface Props {
   team: ITeam | null;
+  division: string | null;
+  pool: string | null;
   onSaveTeamClick: BindingAction;
   onDeleteTeamClick: (team: ITeam) => void;
   onChangeTeam: (evt: React.ChangeEvent<HTMLInputElement>) => void;
@@ -38,12 +40,15 @@ interface Props {
 
 const TeamDetailsPopup = ({
   team,
+  division,
+  pool,
   onSaveTeamClick,
   onDeleteTeamClick,
   onChangeTeam,
   onCloseModal,
 }: Props) => {
   const [isEdit, onEditClick] = useState(false);
+  const [teamTitle] = useState(team?.long_name);
 
   if (!team) {
     return null;
@@ -53,15 +58,19 @@ const TeamDetailsPopup = ({
     <div className={styles.popupWrapper}>
       <div className={styles.headerWrapper}>
         <HeadingLevelThree color="#1C315F">
-          <span>{team.long_name} (2020, West)</span>
+          <span>
+            {teamTitle} ({division}, {pool})
+          </span>
         </HeadingLevelThree>
-        <Button
-          onClick={() => onEditClick(!isEdit)}
-          icon={getIcon(Icons.EDIT, EDIT_ICON_STYLES)}
-          label="Edit Team Details"
-          variant="text"
-          color="secondary"
-        />
+        <p className={styles.editBtnWrapper}>
+          <Button
+            onClick={() => onEditClick(!isEdit)}
+            icon={getIcon(Icons.EDIT, EDIT_ICON_STYLES)}
+            label="Edit Team Details"
+            variant="text"
+            color="secondary"
+          />
+        </p>
       </div>
       <form autoComplete="off">
         <div className={styles.popupFormWrapper}>
@@ -173,7 +182,8 @@ const TeamDetailsPopup = ({
                     </label>
                   </p>
                 ) : (
-                  <span>{`${team.contact_first_name} ${team.contact_last_name}`}</span>
+                  <span>{`${team.contact_first_name ||
+                    ''} ${team.contact_last_name || ''}`}</span>
                 )}
               </li>
               <li>

@@ -12,8 +12,14 @@ interface Props {
   teams: ITeam[];
   isEdit: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
+  loadPools: (divisionId: string) => void;
+  loadTeams: (poolId: string) => void;
   onDeletePopupOpen: (team: ITeam) => void;
-  onEditPopupOpen: (team: ITeam) => void;
+  onEditPopupOpen: (
+    team: ITeam,
+    divisionName: string,
+    poolName: string
+  ) => void;
 }
 
 const DivisionItem = ({
@@ -22,11 +28,13 @@ const DivisionItem = ({
   teams,
   isEdit,
   changePool,
+  loadPools,
+  loadTeams,
   onDeletePopupOpen,
   onEditPopupOpen,
 }: Props) => {
-  if (!division) {
-    return null;
+  if (!division.isPoolsLoading && !division.isPoolsLoaded) {
+    loadPools(division.division_id);
   }
 
   return (
@@ -37,16 +45,17 @@ const DivisionItem = ({
         panelDetailsType="flat"
         headingColor="#1C315F"
       >
-        <span>{division.long_name}</span>
+        <span>Division: {division.long_name}</span>
         <DndProvider backend={HTML5Backend}>
           <ul className={styles.poolList}>
             {pools.map(pool => (
               <PoolItem
                 pool={pool}
                 teams={teams.filter(it => it.pool_id === pool.pool_id)}
-                divisionId={division.division_id}
+                division={division}
                 isEdit={isEdit}
                 changePool={changePool}
+                loadTeams={loadTeams}
                 onDeletePopupOpen={onDeletePopupOpen}
                 onEditPopupOpen={onEditPopupOpen}
                 key={pool.pool_id}
@@ -56,10 +65,11 @@ const DivisionItem = ({
               teams={teams.filter(
                 it => !it.pool_id && it.division_id === division.division_id
               )}
-              divisionId={division.division_id}
+              division={division}
               isEdit={isEdit}
               isUnassigned={true}
               changePool={changePool}
+              loadTeams={loadTeams}
               onDeletePopupOpen={onDeletePopupOpen}
               onEditPopupOpen={onEditPopupOpen}
             />

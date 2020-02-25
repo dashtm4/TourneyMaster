@@ -8,4 +8,7 @@ export interface IPool {
   created_datetime: string;
   updated_by: string;
   updated_datetime: string;
+  //optional
+  isTeamsLoading?: boolean;
+  isTeamsLoaded?: boolean;
 }

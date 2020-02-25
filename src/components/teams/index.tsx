@@ -3,10 +3,11 @@ import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import {
+  changePool,
   loadDivisions,
   loadPools,
   loadTeams,
-  changePool,
+  editTeam,
   deleteTeam,
 } from './logic/actions';
 import Navigation from './components/navigation';
@@ -25,15 +26,18 @@ interface Props {
   divisions: IDisision[];
   pools: IPool[];
   teams: ITeam[];
+  changePool: (team: ITeam, poolId: string | null) => void;
   loadDivisions: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
   loadTeams: (poolId: string) => void;
-  changePool: (team: ITeam, poolId: string | null) => void;
+  editTeam: (team: ITeam) => void;
   deleteTeam: (team: ITeam) => void;
 }
 
 interface State {
   configurableTeam: ITeam | null;
+  currentDivision: string | null;
+  currentPool: string | null;
   isEdit: boolean;
   isEditPopupOpen: boolean;
   isDeletePopupOpen: boolean;
@@ -48,20 +52,20 @@ class Teams extends React.Component<
 
     this.state = {
       configurableTeam: null,
-      isEdit: true,
+      currentDivision: null,
+      currentPool: null,
+      isEdit: false,
       isEditPopupOpen: false,
       isDeletePopupOpen: false,
     };
   }
 
   componentDidMount() {
-    const { loadDivisions, loadPools, loadTeams } = this.props;
+    const { loadDivisions } = this.props;
     const eventId = this.props.match.params.eventId;
 
     if (eventId) {
       loadDivisions(eventId);
-      loadTeams(eventId);
-      loadPools(eventId);
     }
   }
 
@@ -78,8 +82,13 @@ class Teams extends React.Component<
     this.onCloseModal();
   };
 
-  onEditPopupOpen = (team: ITeam) =>
-    this.setState({ configurableTeam: team, isEditPopupOpen: true });
+  onEditPopupOpen = (team: ITeam, divisionName: string, poolName: string) =>
+    this.setState({
+      isEditPopupOpen: true,
+      configurableTeam: team,
+      currentDivision: divisionName,
+      currentPool: poolName,
+    });
 
   onChangeTeam = ({
     target: { name, value },
@@ -88,17 +97,39 @@ class Teams extends React.Component<
       configurableTeam: { ...(configurableTeam as ITeam), [name]: value },
     }));
 
+  onSaveTeam = () => {
+    const { configurableTeam } = this.state;
+    const { editTeam } = this.props;
+
+    if (configurableTeam) {
+      editTeam(configurableTeam);
+    }
+
+    this.onCloseModal();
+  };
+
   onCloseModal = () =>
     this.setState({
       configurableTeam: null,
+      currentDivision: null,
       isEditPopupOpen: false,
       isDeletePopupOpen: false,
     });
 
   render() {
-    const { divisions, pools, teams, changePool } = this.props;
+    const {
+      divisions,
+      pools,
+      teams,
+      changePool,
+      loadPools,
+      loadTeams,
+    } = this.props;
+
     const {
       configurableTeam,
+      currentDivision,
+      currentPool,
       isEdit,
       isEditPopupOpen,
       isDeletePopupOpen,
@@ -118,6 +149,8 @@ class Teams extends React.Component<
               teams={teams}
               isEdit={isEdit}
               changePool={changePool}
+              loadPools={loadPools}
+              loadTeams={loadTeams}
               onDeletePopupOpen={this.onDeletePopupOpen}
               onEditPopupOpen={this.onEditPopupOpen}
             />
@@ -131,8 +164,10 @@ class Teams extends React.Component<
             {isEditPopupOpen && (
               <PopupTeamEdit
                 team={configurableTeam}
+                division={currentDivision}
+                pool={currentPool}
                 onChangeTeam={this.onChangeTeam}
-                onSaveTeamClick={() => {}}
+                onSaveTeamClick={this.onSaveTeam}
                 onDeleteTeamClick={this.onDeleteTeam}
                 onCloseModal={this.onCloseModal}
               />
@@ -163,7 +198,7 @@ export default connect(
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadDivisions, loadPools, loadTeams, changePool, deleteTeam },
+      { changePool, loadDivisions, loadPools, loadTeams, editTeam, deleteTeam },
       dispatch
     )
 )(Teams);

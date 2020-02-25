@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import SectionDropdown from '../../../common/section-dropdown';
 import TeamItem from '../team-item';

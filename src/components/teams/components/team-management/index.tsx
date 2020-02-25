@@ -10,8 +10,14 @@ interface Props {
   teams: ITeam[];
   isEdit: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
+  loadPools: (divisionId: string) => void;
+  loadTeams: (poolId: string) => void;
   onDeletePopupOpen: (team: ITeam) => void;
-  onEditPopupOpen: (team: ITeam) => void;
+  onEditPopupOpen: (
+    team: ITeam,
+    divisionName: string,
+    poolName: string
+  ) => void;
 }
 
 const TeamManagement = ({
@@ -20,6 +26,8 @@ const TeamManagement = ({
   pools,
   isEdit,
   changePool,
+  loadPools,
+  loadTeams,
   onDeletePopupOpen,
   onEditPopupOpen,
 }: Props) => (
@@ -30,10 +38,14 @@ const TeamManagement = ({
         {divisions.map(division => (
           <DivisionItem
             division={division}
-            pools={pools.filter(it => it.division_id === division.division_id)}
+            pools={pools.filter(
+              pool => pool.division_id === division.division_id
+            )}
             teams={teams}
             isEdit={isEdit}
             changePool={changePool}
+            loadPools={loadPools}
+            loadTeams={loadTeams}
             onDeletePopupOpen={onDeletePopupOpen}
             onEditPopupOpen={onEditPopupOpen}
             key={division.division_id}

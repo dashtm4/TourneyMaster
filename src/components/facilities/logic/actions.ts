@@ -41,7 +41,6 @@ const addEmptyFacility = (): FacilitiesAction => ({
       ...EMPTY_FACILITY,
       facilities_id: getVarcharEight(),
       event_id: 'ABC123',
-      created_by: '4DC8A780',
     },
   },
 });
@@ -62,7 +61,9 @@ const saveFacilities: ActionCreator<ThunkAction<
   const editedFacilities = facilities.filter(it => {
     const isChange = it.isChange;
 
-    if (it.isNew) return false;
+    if (it.isNew) {
+      return false;
+    }
 
     delete it.isChange;
     delete it.isNew;
