@@ -141,7 +141,7 @@ const saveFacilities: ActionCreator<ThunkAction<
       if (field.isChange && !field.isNew) {
         delete field.isChange;
 
-        Api.put(`/fields?fields_id=${field.field_id}`, field);
+        Api.put(`/fields?field_id=${field.field_id}`, field);
       }
 
       if (field.isNew) {

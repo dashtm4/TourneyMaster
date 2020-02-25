@@ -46,8 +46,7 @@ class FacilityDetails extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      // isEdit: Boolean(props.facility.isNew),
-      isEdit: true,
+      isEdit: Boolean(props.facility.isNew),
     };
   }
 
