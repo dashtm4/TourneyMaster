@@ -55,7 +55,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     }
   }
 
-  onChange = (name: string, value: any, index: number) => {
+  onChange = (name: string, value: string | number, index: number) => {
     this.setState(({ divisions }) => ({
       divisions: divisions.map(division =>
         division === divisions[index]
