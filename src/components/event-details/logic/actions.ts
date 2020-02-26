@@ -4,6 +4,7 @@ import { Storage } from 'aws-amplify';
 import uuidv4 from 'uuid/v4';
 
 import {
+  EVENT_DETAILS_FETCH_START,
   EVENT_DETAILS_FETCH_SUCCESS,
   EVENT_DETAILS_FETCH_FAILURE,
   EventDetailsAction,
@@ -14,6 +15,10 @@ import { EventDetailsDTO, IIconFile } from './model';
 import { requiredFieldsNotEmpty } from '../state';
 import history from 'browserhistory';
 import { Toasts } from 'components/common';
+
+export const eventDetailsFetchStart = () => ({
+  type: EVENT_DETAILS_FETCH_START,
+});
 
 export const eventDetailsFetchSuccess = (
   payload: EventDetailsDTO[]
@@ -32,7 +37,10 @@ export const getEventDetails: ActionCreator<ThunkAction<
   null,
   EventDetailsAction
 >> = (eventId: string) => async (dispatch: Dispatch) => {
+  dispatch(eventDetailsFetchStart());
+
   const eventDetails = await api.get('/events', { event_id: eventId });
+
   if (eventDetails) {
     dispatch(eventDetailsFetchSuccess(eventDetails));
   } else {

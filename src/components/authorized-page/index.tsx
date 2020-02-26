@@ -15,7 +15,7 @@ const AuthorizedPage = () => (
   <>
     <Header />
     <div className={styles.page}>
-      <Menu list={MenuList} />
+      <Menu list={MenuList} isAllowEdit={true} />
       <main className={styles.content}>
         <Switch>
           <Route path={Routes.DASHBOARD} component={Dashboard} />
