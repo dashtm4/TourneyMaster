@@ -69,6 +69,7 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
       org_id: this.state.invitationCode,
     };
     await api.post('/org_members', data);
+    await this.getAllAvailableOrganizations();
   }
 
   onOrgNameChange(ev: any) {
