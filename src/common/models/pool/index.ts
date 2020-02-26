@@ -3,6 +3,8 @@ export interface IPool {
   event_id: string;
   division_id: string;
   pool_desc: string;
+  pool_name: string;
+  pool_tag: string;
   is_active_YN: boolean;
   created_by: string;
   created_datetime: string;

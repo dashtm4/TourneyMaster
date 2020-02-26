@@ -3,34 +3,53 @@ import Input from '../../../common/input';
 import ColorPicker from '../../../common/color-picker';
 import Checkbox from '../../../common/buttons/checkbox';
 import styles from '../styles.module.scss';
+import { BindingCbWithThree, IDisision } from 'common/models';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
-class AddDivisionForm extends React.Component<any, any> {
+interface IAddDivisionFormState {
+  hasUniqueGameDurations: boolean;
+  hasMessage: boolean;
+}
+interface IAddDivisionFormProps {
+  onChange: BindingCbWithThree<string, string, number>;
+  index: number;
+  division: Partial<IDisision>;
+}
+
+class AddDivisionForm extends React.Component<
+  IAddDivisionFormProps,
+  IAddDivisionFormState
+> {
   state = { hasUniqueGameDurations: false, hasMessage: true };
 
   onLongNameChange = (e: InputTargetValue) =>
-    this.props.onChange('long_name', e.target.value);
+    this.props.onChange('long_name', e.target.value, this.props.index);
 
   onShortNameChange = (e: InputTargetValue) =>
-    this.props.onChange('short_name', e.target.value);
+    this.props.onChange('short_name', e.target.value, this.props.index);
 
   onTagChange = (e: InputTargetValue) =>
-    this.props.onChange('division_tag', e.target.value);
+    this.props.onChange('division_tag', e.target.value, this.props.index);
 
   onEntryFeeChange = (e: InputTargetValue) =>
-    this.props.onChange('entry_fee', e.target.value);
+    this.props.onChange('entry_fee', e.target.value, this.props.index);
 
   onDescChange = (e: InputTargetValue) =>
-    this.props.onChange('division_description', e.target.value);
+    this.props.onChange(
+      'division_description',
+      e.target.value,
+      this.props.index
+    );
 
   onMaxNumOfTeamsChange = (e: InputTargetValue) =>
-    this.props.onChange('max_num_teams', e.target.value);
+    this.props.onChange('max_num_teams', e.target.value, this.props.index);
 
   onDivisionMessageChange = (e: InputTargetValue) =>
-    this.props.onChange('division_message', e.target.value);
+    this.props.onChange('division_message', e.target.value, this.props.index);
 
-  onColorChange = (value: any) => this.props.onChange('division_color', value);
+  onColorChange = (value: string) =>
+    this.props.onChange('division_hex', value, this.props.index);
 
   onHasMessageChange = () => {
     this.setState({
@@ -43,6 +62,7 @@ class AddDivisionForm extends React.Component<any, any> {
       hasUniqueGameDurations: !this.state.hasUniqueGameDurations,
     });
   };
+
   render() {
     const {
       long_name,
@@ -52,7 +72,7 @@ class AddDivisionForm extends React.Component<any, any> {
       division_description,
       max_num_teams,
       division_message,
-      division_color,
+      division_hex,
     } = this.props.division;
     const defaultDivisionColor = '#1C315F';
 
@@ -62,7 +82,6 @@ class AddDivisionForm extends React.Component<any, any> {
           <div className={styles.sectionRow}>
             <div className={styles.sectionItemLarge}>
               <Input
-                // width="351px"
                 fullWidth={true}
                 label="Long Name"
                 value={long_name || ''}
@@ -71,7 +90,6 @@ class AddDivisionForm extends React.Component<any, any> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                // width="161px"
                 fullWidth={true}
                 label="Short Name"
                 value={short_name || ''}
@@ -80,7 +98,6 @@ class AddDivisionForm extends React.Component<any, any> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                // width="161px"
                 fullWidth={true}
                 label="Division Tag"
                 startAdornment="@"
@@ -92,7 +109,6 @@ class AddDivisionForm extends React.Component<any, any> {
           <div className={styles.sectionRow}>
             <div className={styles.sectionItem}>
               <Input
-                // width="161px"
                 fullWidth={true}
                 label="Entry Fee"
                 startAdornment="$"
@@ -103,7 +119,6 @@ class AddDivisionForm extends React.Component<any, any> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                // width="161px"
                 fullWidth={true}
                 label="Division Description"
                 value={division_description || ''}
@@ -112,7 +127,6 @@ class AddDivisionForm extends React.Component<any, any> {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                // width="161px"
                 fullWidth={true}
                 label="Max # of Teams"
                 type="number"
@@ -123,7 +137,7 @@ class AddDivisionForm extends React.Component<any, any> {
             <div className={styles.sectionItemColorPicker}>
               <p className={styles.sectionLabel}>Color</p>
               <ColorPicker
-                value={division_color || defaultDivisionColor}
+                value={division_hex || defaultDivisionColor}
                 onChange={this.onColorChange}
               />
             </div>
@@ -141,10 +155,9 @@ class AddDivisionForm extends React.Component<any, any> {
             <div className={styles.sectionItemLarge}>
               {this.state.hasMessage && (
                 <Input
-                  // width="541px"
                   fullWidth={true}
                   multiline={true}
-                  rows="4"
+                  rows="5"
                   value={division_message || ''}
                   onChange={this.onDivisionMessageChange}
                 />
@@ -166,7 +179,6 @@ class AddDivisionForm extends React.Component<any, any> {
               {this.state.hasUniqueGameDurations && (
                 <div className={styles.sectionItemTime}>
                   <Input
-                    // width="170px"
                     fullWidth={true}
                     endAdornment="Minutes"
                     label="Pregame Warmup"
@@ -174,7 +186,6 @@ class AddDivisionForm extends React.Component<any, any> {
                   />
                   <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
                   <Input
-                    // width="170px"
                     fullWidth={true}
                     endAdornment="Minutes"
                     label="Time Division Duration"
@@ -184,7 +195,6 @@ class AddDivisionForm extends React.Component<any, any> {
                     &nbsp;(0)&nbsp;+&nbsp;
                   </span>
                   <Input
-                    // width="170px"
                     fullWidth={true}
                     endAdornment="Minutes"
                     label="Time Between Periods"

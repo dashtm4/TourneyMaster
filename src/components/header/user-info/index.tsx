@@ -41,6 +41,13 @@ const UserInfo: React.FC = () => {
         >
           <MenuItem
             onClick={() => {
+              hisory.replace(Routes.ORGANIZATIONS_MANAGEMENT);
+            }}
+          >
+            Organizations Management
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
               localStorage.clear();
 
               hisory.replace(Routes.LOGIN);

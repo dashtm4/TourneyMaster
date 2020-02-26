@@ -26,6 +26,7 @@ const App: React.FC = () => {
             Routes.CALENDAR,
             Routes.UTILITIES,
             Routes.EVENT_DAY_COMPLEXITIES,
+            Routes.ORGANIZATIONS_MANAGEMENT,
           ]}
           component={AuthorizedPageWrapped}
         />
@@ -36,6 +37,7 @@ const App: React.FC = () => {
             Routes.REGISTRATION,
             Routes.DIVISIONS_AND_POOLS,
             Routes.ADD_DIVISION,
+            Routes.EDIT_DIVISION,
             Routes.TEAMS,
             Routes.CREATE_TEAM,
             Routes.SCHEDULING,

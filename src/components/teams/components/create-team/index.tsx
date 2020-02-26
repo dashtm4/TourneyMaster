@@ -38,7 +38,7 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
     this.props.getDivisions(this.eventId);
   }
 
-  onChange = (name: string, value: any, index: number) => {
+  onChange = (name: string, value: string | number, index: number) => {
     this.setState(({ teams }) => ({
       teams: teams.map(team =>
         team === teams[index] ? { ...team, [name]: value } : team

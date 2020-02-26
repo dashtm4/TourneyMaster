@@ -30,7 +30,7 @@ const MainContact = ({ data }: { data: Partial<IRegistration> }) => (
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Permission to Text</span>
-        <p>{data.permission_to_text || '—'}</p>
+        <p>{data.permission_to_text === 1 ? 'Allowed' : '—'}</p>
       </div>
     </div>
   </div>

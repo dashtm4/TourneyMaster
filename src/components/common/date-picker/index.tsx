@@ -15,7 +15,7 @@ import styles from './style.module.scss';
 
 interface IDatePickerProps {
   label: string;
-  value?: string;
+  value?: string | Date;
   type: string;
   width?: string;
   onChange: any;

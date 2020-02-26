@@ -2,51 +2,66 @@ import React from 'react';
 import styles from './styles.module.scss';
 import Button from '../../common/buttons/button';
 import CreateIcon from '@material-ui/icons/Create';
+import Pool from './pool';
+import { IPool, ITeam, BindingCbWithOne, IDisision } from 'common/models';
 
-const PoolsDetails = () => (
-  <div>
-    <div className={styles.headingContainer}>
-      <span className={styles.title}>Pools</span>
+interface IPoolsDetailsProps {
+  onAddPool: BindingCbWithOne<IDisision>;
+  getPools: BindingCbWithOne<string>;
+  getTeams: BindingCbWithOne<string>;
+  division: IDisision;
+  pools: IPool[];
+  teams: ITeam[];
+}
+
+class PoolsDetails extends React.Component<IPoolsDetailsProps> {
+  componentDidMount() {
+    if (!this.props.pools.length) {
+      this.props.getPools(this.props.division.division_id);
+      this.props.getTeams(this.props.division.division_id);
+    }
+  }
+  onAdd = () => {
+    this.props.onAddPool(this.props.division);
+  };
+
+  render() {
+    const { pools, teams } = this.props;
+    return (
       <div>
-        <Button label="+ Add Pool" variant="text" color="secondary" />
-        <Button
-          label="Edit Pool Details"
-          variant="text"
-          color="secondary"
-          icon={<CreateIcon />}
-        />
+        <div className={styles.headingContainer}>
+          <span className={styles.title}>Pools</span>
+          <div>
+            <Button
+              label="+ Add Pool"
+              variant="text"
+              color="secondary"
+              onClick={this.onAdd}
+            />
+            <Button
+              label="Edit Pool Details"
+              variant="text"
+              color="secondary"
+              disabled={true}
+              icon={<CreateIcon />}
+            />
+          </div>
+        </div>
+        <div className={styles.poolsContainer}>
+          {pools.map(pool => (
+            <Pool
+              key={pool.pool_id}
+              pool={pool}
+              teams={teams.filter(team => team.pool_id === pool.pool_id)}
+            />
+          ))}
+          {teams.length !== 0 && (
+            <Pool teams={teams.filter(team => !team.pool_id)} />
+          )}
+        </div>
       </div>
-    </div>
-    <div className={styles.poolsContainer}>
-      <div className={styles.pool}>
-        <p className={styles.poolTitle}>East</p>
-        <ul>
-          <li>1</li>
-          <li>2</li>
-          <li>3</li>
-          <li>4</li>
-          <li>5</li>
-          <li>6</li>
-        </ul>
-      </div>
-      <div className={styles.pool}>
-        <p className={styles.poolTitle}>West</p>
-        <ul>
-          <li>1</li>
-          <li>2</li>
-          <li>3</li>
-          <li>4</li>
-          <li>5</li>
-        </ul>
-      </div>
-      <div className={styles.pool}>
-        <p className={styles.poolTitle}>Unassigned</p>
-        <ul>
-          <li>None</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-);
+    );
+  }
+}
 
 export default PoolsDetails;
