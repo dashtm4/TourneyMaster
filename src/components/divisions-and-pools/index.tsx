@@ -103,7 +103,7 @@ class DivisionsAndPools extends React.Component<
             <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>
           </div>
           {isLoading && this.Loading()}
-          {divisions && !isLoading && (
+          {divisions.length && !isLoading ? (
             <ul className={styles.divisionsList}>
               {divisions.map(division => (
                 <li key={division.division_id}>
@@ -156,6 +156,12 @@ class DivisionsAndPools extends React.Component<
                 </Modal>
               )}
             </ul>
+          ) : (
+            !isLoading && (
+              <div className={styles.noFoundWrapper}>
+                <span>There are no divisions yet.</span>
+              </div>
+            )
           )}
         </div>
       </section>
