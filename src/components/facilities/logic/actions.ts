@@ -167,19 +167,21 @@ const saveFacilities: ActionCreator<ThunkAction<
   }
 };
 
-const uploadFileMap = (fileMap: IFileMap) => () => {
-  if (!fileMap) {
-    return;
-  }
+const uploadFileMap = (files: IFileMap[]) => () => {
+  if (!files || !files.length) {
+    return
+  };
 
-  const { file, destinationType } = fileMap;
-  const uuid = uuidv4();
-  const saveFilePath = `event_media_files/${destinationType}_${uuid}_${file.name}`;
-  const config = { contentType: file.type };
+  files.forEach((fileObject: IFileMap) => {
+    const { file, destinationType } = fileObject;
+    const uuid = uuidv4();
+    const saveFilePath = `event_media_files/${destinationType}_${uuid}_${file.name}`;
+    const config = { contentType: file.type };
 
-  Storage.put(saveFilePath, file, config)
-    .then(() => Toasts.successToast(`${file.name} was successfully uploaded`))
-    .catch(() => Toasts.errorToast(`${file.name} couldn't be uploaded`));
+    Storage.put(saveFilePath, file, config)
+      .then(() => Toasts.successToast(`${file.name} was successfully uploaded`))
+      .catch(() => Toasts.errorToast(`${file.name} couldn't be uploaded`));
+  });
 };
 
 export {

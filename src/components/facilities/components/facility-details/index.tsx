@@ -6,19 +6,22 @@ import {
 } from './expansion-panel-material';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Field from '../field';
-import TextField from '../../../common/input';
-import Select from '../../../common/select';
-import Checkbox from '../../../common/buttons/checkbox';
-import Button from '../../../common/buttons/button';
-import Loader from '../../../common/loader';
-import { IFacility, IField, BindingCbWithOne } from '../../../../common/models';
-import { getIcon } from '../../../../helpers/get-icon.helper';
-import { Icons } from 'common/constants';
+import {
+  Select,
+  Checkbox,
+  Button,
+  Loader,
+  Input,
+  FileUpload,
+} from '../../../common';
+import { FileUploadTypes, AcceptFileTypes } from '../../../common/file-upload';
+import {
+  IFacility,
+  IField,
+  IFileMap,
+  BindingCbWithOne,
+} from '../../../../common/models';
 import styles from './styles.module.scss';
-
-const STYLES_PUBLISH_ICON = {
-  marginRight: '5px',
-};
 
 interface Props {
   facility: IFacility;
@@ -28,6 +31,7 @@ interface Props {
   addEmptyField: (facilityId: string) => void;
   updateField: BindingCbWithOne<IField>;
   updateFacilities: BindingCbWithOne<IFacility>;
+  uploadFileMap: (files: IFileMap[]) => void;
 }
 
 interface State {
@@ -74,6 +78,14 @@ class FacilityDetails extends React.Component<Props, State> {
 
   onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
 
+  onMapFileUpload = (files: File[]) => {
+    const { uploadFileMap } = this.props;
+
+    uploadFileMap(
+      files?.map((file: File) => ({ file, destinationType: 'facility_map' }))
+    );
+  };
+
   render() {
     const {
       facility,
@@ -119,7 +131,7 @@ class FacilityDetails extends React.Component<Props, State> {
                 <legend className={styles.fieldTitle}>
                   Facility {facilitiyNumber} Name
                 </legend>
-                <TextField
+                <Input
                   onChange={this.onChangeFacility}
                   value={facility.facilities_description || ''}
                   name={FormFields.FACILITIES_DESCRIPTION}
@@ -188,7 +200,7 @@ class FacilityDetails extends React.Component<Props, State> {
                 <legend className={styles.fieldTitle}>
                   # Portable Toilets
                 </legend>
-                <TextField
+                <Input
                   onChange={this.onChangeFacility}
                   value={facility.num_toilets ? `${facility.num_toilets}` : ''}
                   name={FormFields.NUM_TOILETS}
@@ -219,7 +231,7 @@ class FacilityDetails extends React.Component<Props, State> {
                 ]}
               />
               {facility.restroom_details && (
-                <TextField
+                <Input
                   onChange={this.onChangeFacility}
                   value={facility.restroom_details}
                   name={FormFields.RESTROOM_DETAILS}
@@ -251,7 +263,7 @@ class FacilityDetails extends React.Component<Props, State> {
                 <legend className={styles.fieldTitle}>
                   Distance to Fields
                 </legend>
-                <TextField
+                <Input
                   onChange={this.onChangeFacility}
                   value={
                     facility.parking_proximity
@@ -304,7 +316,7 @@ class FacilityDetails extends React.Component<Props, State> {
                 ]}
               />
               {facility.parking_details && (
-                <TextField
+                <Input
                   onChange={this.onChangeFacility}
                   value={facility.parking_details}
                   name={FormFields.PARKING_DETAILS}
@@ -313,11 +325,11 @@ class FacilityDetails extends React.Component<Props, State> {
                 />
               )}
             </fieldset>
-            <label className={styles.loadBtn}>
-              <input className="visually-hidden" type="file" accept=".pdf" />
-              {getIcon(Icons.PUBLISH, STYLES_PUBLISH_ICON)}
-              Upload Field Map
-            </label>
+            <FileUpload
+              type={FileUploadTypes.BUTTON}
+              acceptTypes={[AcceptFileTypes.PDF]}
+              onUpload={this.onMapFileUpload}
+            />
           </form>
         </ExpansionPanelDetailsWrapped>
       </ExpansionPanelWrapped>

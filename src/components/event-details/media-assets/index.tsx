@@ -1,7 +1,10 @@
 import React from 'react';
 import { SectionDropdown, HeadingLevelThree } from 'components/common';
 
-import FileUpload from 'components/common/file-upload';
+import FileUpload, {
+  FileUploadTypes,
+  AcceptFileTypes,
+} from 'components/common/file-upload';
 import { IIconFile } from '../logic/model';
 import styles from '../styles.module.scss';
 
@@ -34,11 +37,27 @@ const MediaAssetsSection: React.FC<IProps> = ({ onFileUpload }) => {
         <div className={styles.uploadWrapper}>
           <div className={styles.uploadBlock}>
             <span className={styles.uploadBlockTitle}>Desktop Icon</span>
-            <FileUpload onUpload={onDesktopFileUpload} />
+            <FileUpload
+              type={FileUploadTypes.SECTION}
+              acceptTypes={[
+                AcceptFileTypes.JPG,
+                AcceptFileTypes.PNG,
+                AcceptFileTypes.SVG,
+              ]}
+              onUpload={onDesktopFileUpload}
+            />
           </div>
           <div className={styles.uploadBlock}>
             <span className={styles.uploadBlockTitle}>Mobile Icon</span>
-            <FileUpload onUpload={onMobileFileUpload} />
+            <FileUpload
+              type={FileUploadTypes.SECTION}
+              acceptTypes={[
+                AcceptFileTypes.JPG,
+                AcceptFileTypes.PNG,
+                AcceptFileTypes.SVG,
+              ]}
+              onUpload={onMobileFileUpload}
+            />
           </div>
         </div>
       </div>

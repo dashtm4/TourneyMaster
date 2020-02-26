@@ -40,7 +40,7 @@ interface Props {
   updateFacilities: BindingCbWithOne<IFacility>;
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
-  uploadFileMap: (fileMap: IFileMap) => void;
+  uploadFileMap: (files: IFileMap[]) => void;
 }
 
 class Facilities extends React.Component<
@@ -76,6 +76,7 @@ class Facilities extends React.Component<
       addEmptyField,
       updateFacilities,
       updateField,
+      uploadFileMap,
     } = this.props;
 
     return (
@@ -115,6 +116,7 @@ class Facilities extends React.Component<
                   addEmptyField={addEmptyField}
                   updateFacilities={updateFacilities}
                   updateField={updateField}
+                  uploadFileMap={uploadFileMap}
                 />
               </li>
             ))}
