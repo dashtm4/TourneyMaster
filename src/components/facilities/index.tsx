@@ -8,15 +8,16 @@ import {
   loadFields,
   addEmptyFacility,
   addEmptyField,
-  saveFacilities,
   updateFacilities,
   updateField,
+  uploadFileMap,
+  saveFacilities,
 } from './logic/actions';
 import Navigation from './components/navigation';
 import FacilityDetails from './components/facility-details';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Select from '../common/select';
-import { IFacility, IField } from '../../common/models';
+import { IFacility, IField, IFileMap } from '../../common/models';
 import {
   BindingCbWithOne,
   BindingCbWithTwo,
@@ -39,6 +40,7 @@ interface Props {
   updateFacilities: BindingCbWithOne<IFacility>;
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
+  uploadFileMap: (fileMap: IFileMap) => void;
 }
 
 class Facilities extends React.Component<
@@ -142,6 +144,7 @@ export default connect(
         updateFacilities,
         updateField,
         saveFacilities,
+        uploadFileMap,
       },
       dispatch
     )

@@ -5,16 +5,20 @@ import {
   ExpansionPanelDetailsWrapped,
 } from './expansion-panel-material';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import PublishIcon from '@material-ui/icons/Publish';
 import Field from '../field';
 import TextField from '../../../common/input';
 import Select from '../../../common/select';
 import Checkbox from '../../../common/buttons/checkbox';
 import Button from '../../../common/buttons/button';
 import Loader from '../../../common/loader';
-import { IFacility, IField } from '../../../../common/models';
-import { BindingCbWithOne } from '../../../../common/models/callback';
+import { IFacility, IField, BindingCbWithOne } from '../../../../common/models';
+import { getIcon } from '../../../../helpers/get-icon.helper';
+import { Icons } from 'common/constants';
 import styles from './styles.module.scss';
+
+const STYLES_PUBLISH_ICON = {
+  marginRight: '5px',
+};
 
 interface Props {
   facility: IFacility;
@@ -309,12 +313,11 @@ class FacilityDetails extends React.Component<Props, State> {
                 />
               )}
             </fieldset>
-            <Button
-              icon={<PublishIcon />}
-              label="Upload Field Maps"
-              variant="text"
-              color="secondary"
-            />
+            <label className={styles.loadBtn}>
+              <input className="visually-hidden" type="file" accept=".pdf" />
+              {getIcon(Icons.PUBLISH, STYLES_PUBLISH_ICON)}
+              Upload Field Map
+            </label>
           </form>
         </ExpansionPanelDetailsWrapped>
       </ExpansionPanelWrapped>

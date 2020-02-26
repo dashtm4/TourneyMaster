@@ -94,3 +94,12 @@
 :local(.parkingDetails) {
   margin-bottom: 25px;
 }
+
+:local(.loadBtn) {
+  display: flex;
+  align-items: center;
+
+  color: #00a3ea;
+
+  cursor: pointer;
+}
