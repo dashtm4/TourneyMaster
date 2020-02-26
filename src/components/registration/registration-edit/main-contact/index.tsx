@@ -1,8 +1,15 @@
 import React from 'react';
 import styles from '../styles.module.scss';
 import { Input, Select, Checkbox } from 'components/common';
+import { BindingCbWithTwo } from 'common/models';
+import { IRegistration } from 'common/models/registration';
 
-const MainContact = ({ data, onChange }: any) => {
+interface IMainContactProps {
+  data?: IRegistration;
+  onChange: BindingCbWithTwo<string, string | number>;
+}
+
+const MainContact = ({ data, onChange }: IMainContactProps) => {
   const roles = ['1', '2', '3'];
 
   const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -29,7 +36,7 @@ const MainContact = ({ data, onChange }: any) => {
           <Input
             fullWidth={true}
             label="First"
-            value={data.reg_first_name || ''}
+            value={data ? data.reg_first_name : ''}
             onChange={onFirstNameChange}
           />
         </div>
@@ -37,7 +44,7 @@ const MainContact = ({ data, onChange }: any) => {
           <Input
             fullWidth={true}
             label="Last"
-            value={data.reg_last_name || ''}
+            value={data ? data.reg_last_name : ''}
             onChange={onLastNameChange}
           />
         </div>
@@ -57,7 +64,7 @@ const MainContact = ({ data, onChange }: any) => {
           <Input
             fullWidth={true}
             label="Email"
-            value={data.email_address || ''}
+            value={data ? data.email_address : ''}
             onChange={onEmailChange}
           />
         </div>
@@ -68,7 +75,7 @@ const MainContact = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Mobile Number"
             type="number"
-            value={data.mobile_number || ''}
+            value={data ? data.mobile_number : ''}
             onChange={onMobileNumberChange}
           />
         </div>
@@ -78,7 +85,7 @@ const MainContact = ({ data, onChange }: any) => {
             options={[
               {
                 label: 'Permission to Text',
-                checked: Boolean(data.permission_to_text),
+                checked: data ? Boolean(data.permission_to_text) : Boolean(0),
               },
             ]}
             onChange={onPermissionToTextChange}

@@ -2,14 +2,13 @@ import React from 'react';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 import WarningIcon from '@material-ui/icons/Warning';
-import { BindingAction, BindingCbWithOne } from 'common/models';
-import { IDivision } from 'common/models/divisions';
+import { BindingAction, BindingCbWithOne, IDisision } from 'common/models';
 
 interface IDeleteDivisionProps {
   onClose: BindingAction;
   deleteDivision: BindingCbWithOne<string>;
   divisionId: string;
-  division: Partial<IDivision>;
+  division: Partial<IDisision>;
 }
 
 const DeleteDivision = ({

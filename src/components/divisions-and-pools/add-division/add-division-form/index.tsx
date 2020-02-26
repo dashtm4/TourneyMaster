@@ -3,7 +3,7 @@ import Input from '../../../common/input';
 import ColorPicker from '../../../common/color-picker';
 import Checkbox from '../../../common/buttons/checkbox';
 import styles from '../styles.module.scss';
-import { IDivision } from 'common/models/divisions';
+import { BindingCbWithThree, IDisision } from 'common/models';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -12,9 +12,9 @@ interface IAddDivisionFormState {
   hasMessage: boolean;
 }
 interface IAddDivisionFormProps {
-  onChange: any;
+  onChange: BindingCbWithThree<string, string, number>;
   index: number;
-  division: Partial<IDivision>;
+  division: Partial<IDisision>;
 }
 
 class AddDivisionForm extends React.Component<
