@@ -22,15 +22,13 @@ const ColorPicker = ({
 }: Props) => {
   const colors = [
     '#1C315F',
-    '#00A3EA',
-    '#FF6900',
-    '#FCB900',
-    '#00D084',
-    '#000000',
-    '#ABB8C3',
-    '#EB144C',
-    '#F78DA7',
-    '#9900EF',
+    '#00A259',
+    '#C9CACA',
+    '#0081B9',
+    '#8B8B8C',
+    '#DFE3EE',
+    '#F7F7F7',
+    '#FFFFFF',
   ];
 
   return (
@@ -46,7 +44,7 @@ const ColorPicker = ({
         {displayColorPicker && (
           <TwitterPicker
             colors={colors}
-            width={'204px'}
+            width={'170px'}
             onChangeComplete={onChange}
             triangle={'hide'}
           />

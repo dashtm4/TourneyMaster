@@ -1,30 +1,115 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { History, Location } from 'history';
 import styles from './styles.module.scss';
 import Paper from '../../common/paper';
 import Button from '../../common/buttons/button';
 import HeadingLevelTwo from '../../common/headings/heading-level-two';
 import AddDivisionForm from './add-division-form';
-import { saveDivision } from './add-division-form/logic/actions';
-import { connect } from 'react-redux';
+import {
+  saveDivisions,
+  updateDivision,
+  deleteDivision,
+} from '../logic/actions';
+import { IDivision } from 'common/models/divisions';
+import {
+  BindingCbWithOne,
+  BindingAction,
+  BindingCbWithTwo,
+} from 'common/models/callback';
+import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteDivision from '../add-division/delete-division';
+import Modal from 'components/common/modal';
 
-interface IAddDivisionState {
-  division: any;
+interface ILocationState {
+  divisionId: string;
 }
 
-class AddDivision extends React.Component<any, IAddDivisionState> {
-  state = { division: { event_id: this.props.match.params.event_id } };
+interface IAddDivisionState {
+  divisions: Partial<IDivision>[];
+  isModalOpen: boolean;
+}
 
-  onChange = (name: string, value: any) => {
-    this.setState(({ division }) => ({
-      division: {
-        ...division,
-        [name]: value,
-      },
+interface IDivisionProps {
+  history: History;
+  location: Location<ILocationState>;
+  match: any;
+  divisions: IDivision[];
+  saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
+  getDivision: BindingCbWithOne<string>;
+  updateDivision: BindingCbWithOne<Partial<IDivision>>;
+  deleteDivision: BindingAction;
+}
+
+class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
+  divisionId = this.props.location.state?.divisionId;
+  eventId = this.props.match.params.eventId;
+  state = { divisions: [{}], isModalOpen: false };
+
+  componentDidMount() {
+    if (this.divisionId) {
+      const division: IDivision[] = this.props.divisions.filter(
+        div => div.division_id === this.divisionId
+      );
+      this.setState({ divisions: [division[0]] });
+    }
+  }
+
+  onChange = (name: string, value: any, index: number) => {
+    this.setState(({ divisions }) => ({
+      divisions: divisions.map(division =>
+        division === divisions[index]
+          ? { ...division, [name]: value }
+          : division
+      ),
     }));
   };
 
+  onCancel = () => {
+    this.props.history.goBack();
+  };
+
   onSave = () => {
-    this.props.saveDivision(this.state.division);
+    this.divisionId
+      ? this.props.updateDivision(this.state.divisions[0])
+      : this.props.saveDivisions(this.state.divisions, this.eventId);
+  };
+
+  onAddDivision = () => {
+    this.setState({ divisions: [...this.state.divisions, {}] });
+  };
+
+  onDeleteDivision = () => {
+    this.setState({ isModalOpen: true });
+  };
+
+  onModalClose = () => {
+    this.setState({ isModalOpen: false });
+  };
+
+  renderHeading = () => {
+    const text = this.divisionId ? 'Edit Division' : 'Add Division';
+    return <HeadingLevelTwo>{text}</HeadingLevelTwo>;
+  };
+
+  renderButton = () => {
+    return this.divisionId ? (
+      <Button
+        label="Delete Division"
+        variant="text"
+        color="secondary"
+        type="dangerLink"
+        icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
+        onClick={this.onDeleteDivision}
+      />
+    ) : (
+      <Button
+        label="+ Add Additional Division"
+        variant="text"
+        color="secondary"
+        onClick={this.onAddDivision}
+      />
+    );
   };
 
   render() {
@@ -37,7 +122,7 @@ class AddDivision extends React.Component<any, IAddDivisionState> {
                 label="Cancel"
                 variant="text"
                 color="secondary"
-                // onClick={this.onCancelClick}
+                onClick={this.onCancel}
               />
               <Button
                 label="Save"
@@ -48,26 +133,41 @@ class AddDivision extends React.Component<any, IAddDivisionState> {
             </div>
           </div>
         </Paper>
-        <div className={styles.heading}>
-          <HeadingLevelTwo>Add Division</HeadingLevelTwo>
-        </div>
-        <AddDivisionForm
-          onChange={this.onChange}
-          division={this.state.division}
-        />
-        {/* <Button
-          label="+ Add Additional Division"
-          variant="text"
-          color="secondary"
-          // onClick={this.onAddDivision}
-        /> */}
+        <div className={styles.heading}>{this.renderHeading()}</div>
+        {this.state.divisions.map((_division, index) => (
+          <AddDivisionForm
+            key={index}
+            index={index}
+            onChange={this.onChange}
+            division={this.state.divisions[index]}
+          />
+        ))}
+        {this.renderButton()}
+        <Modal isOpen={this.state.isModalOpen} onClose={this.onModalClose}>
+          <DeleteDivision
+            division={this.state.divisions[0]}
+            divisionId={this.divisionId}
+            onClose={this.onModalClose}
+            deleteDivision={this.props.deleteDivision}
+          />
+        </Modal>
       </section>
     );
   }
 }
 
+interface IState {
+  divisions: { data: any };
+}
+
+const mapStateToProps = (state: IState) => ({
+  divisions: state.divisions.data,
+});
+
 const mapDispatchToProps = {
-  saveDivision,
+  saveDivisions,
+  updateDivision,
+  deleteDivision,
 };
 
-export default connect(null, mapDispatchToProps)(AddDivision);
+export default connect(mapStateToProps, mapDispatchToProps)(AddDivision);

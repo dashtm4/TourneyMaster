@@ -13,6 +13,7 @@
 .poolsContainer {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   ul {
     padding: 0;
   }
