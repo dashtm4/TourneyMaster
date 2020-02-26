@@ -11,6 +11,7 @@ import TextField from '../../../common/input';
 import Select from '../../../common/select';
 import Checkbox from '../../../common/buttons/checkbox';
 import Button from '../../../common/buttons/button';
+import Loader from '../../../common/loader';
 import { IFacility, IField } from '../../../../common/models';
 import { BindingCbWithOne } from '../../../../common/models/callback';
 import styles from './styles.module.scss';
@@ -46,8 +47,7 @@ class FacilityDetails extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      // isEdit: Boolean(props.facility.isNew),
-      isEdit: true,
+      isEdit: Boolean(props.facility.isNew),
     };
   }
 
@@ -148,16 +148,20 @@ class FacilityDetails extends React.Component<Props, State> {
               </fieldset>
             </div>
             <ul className={styles.fieldList}>
-              {fields.map((it, idx) => (
-                <li key={it.field_id}>
-                  <Field
-                    field={it}
-                    fieldNumber={idx + 1}
-                    isEdit={isEdit}
-                    onChange={this.onChangeField}
-                  />
-                </li>
-              ))}
+              {facility.isFieldsLoading ? (
+                <Loader />
+              ) : (
+                fields.map((it, idx) => (
+                  <li key={it.field_id}>
+                    <Field
+                      field={it}
+                      fieldNumber={idx + 1}
+                      isEdit={isEdit}
+                      onChange={this.onChangeField}
+                    />
+                  </li>
+                ))
+              )}
             </ul>
             <div className={styles.restroomWrapper}>
               <fieldset
