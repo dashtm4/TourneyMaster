@@ -52,3 +52,20 @@ $containerWidth: 370px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.btnWrapper {
+  .uploadedWrapper {
+    padding-left: 6px;
+  }
+}
+
+.loadBtn {
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 20px;
+
+  color: #00a3ea;
+
+  cursor: pointer;
+}

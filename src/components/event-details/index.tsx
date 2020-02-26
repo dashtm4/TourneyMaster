@@ -46,13 +46,14 @@ class EventDetails extends Component<Props, State> {
     error: false,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     this.checkEventExistence();
   }
 
   componentDidUpdate(prevProps: Props) {
     if (this.props.event.data?.event_id !== prevProps.event.data?.event_id) {
       this.setState({
+        eventId: this.props.event.data?.event_id,
         event: this.props.event?.data,
       });
     }
