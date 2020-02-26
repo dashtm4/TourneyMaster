@@ -1,9 +1,9 @@
 import React from 'react';
 import styles from './styles.module.scss';
-import { IDivision } from 'common/models/divisions';
+import { IDisision } from 'common/models';
 
 interface IDivisionDetailProps {
-  data: IDivision;
+  data: IDisision;
 }
 
 const DivisionDetails = ({ data }: IDivisionDetailProps) => (

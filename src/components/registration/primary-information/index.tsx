@@ -53,15 +53,15 @@ const PrimaryInformation = ({
     <div className={styles.piSectionSecondRow}>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Entry Fee</span>
-        <p>{data.entry_fee || '—'}</p>
+        <p>{data.entry_fee ? `$${data.entry_fee}` : '—'}</p>
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Deposit Fee</span>
-        <p>{data.entry_deposit || '—'}</p>
+        <p>{data.entry_deposit ? `$${data.entry_deposit}` : '—'}</p>
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Early Bird Discount</span>
-        <p>{data.early_bird_discount || '—'}</p>
+        <p>{data.early_bird_discount ? `$${data.early_bird_discount}` : '—'}</p>
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Discount End Date</span>
