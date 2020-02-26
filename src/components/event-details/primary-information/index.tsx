@@ -91,28 +91,24 @@ const PrimaryInformationSection: React.FC<Props> = ({
       <div className={styles.piDetails}>
         <div className={styles.piDetailsFirst}>
           <Input
-            // width="256px"
             fullWidth={true}
             label="Event Name"
             value={eventData.event_name || ''}
             onChange={onNameChange}
           />
           <Input
-            // width="161px"
             fullWidth={true}
             label="Event Tag"
             value={eventData.event_tag || ''}
             onChange={onTagChange}
           />
           <Select
-            // width="161px"
             options={sportOptions.map(type => ({ label: type, value: type }))}
             label="Sport"
             value={sport_id ? sportsEnum[sport_id!] : ''}
             onChange={onSportChange}
           />
           <Select
-            // width="160px"
             options={genderOptions.map(type => ({ label: type, value: type }))}
             label="Gender"
             value={genderOptions[0]}
@@ -121,21 +117,18 @@ const PrimaryInformationSection: React.FC<Props> = ({
         </div>
         <div className={styles.piDetailsSecond}>
           <DatePicker
-            // width="160px"
             label="Start Date"
             type="date"
             value={event_startdate}
             onChange={onStartDate}
           />
           <DatePicker
-            // width="161px"
             label="End Date"
             type="date"
             value={event_enddate}
             onChange={onEndDate}
           />
           <Select
-            // width="256px"
             options={timeZoneOptions.map(type => ({
               label: type,
               value: type,
@@ -147,16 +140,14 @@ const PrimaryInformationSection: React.FC<Props> = ({
         </div>
         <div className={styles.piDetailsThird}>
           <Input
-            // width="635px"
             label="General Location"
-            placeholder="Search google maps"
+            placeholder="Search Google Maps"
             value={eventData.primary_location_desc}
             onChange={onPrimaryLocation}
           />
         </div>
         <div className={styles.piDetailsThirdArea}>
           <Input
-            // width="635px"
             fullWidth={true}
             label="Description"
             multiline={true}
