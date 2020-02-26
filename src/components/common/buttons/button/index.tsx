@@ -6,7 +6,7 @@ interface IButtonProps {
   label: string | JSX.Element;
   color: 'primary' | 'secondary' | 'inherit' | 'default' | undefined;
   variant: 'text' | 'outlined' | 'contained' | undefined;
-  type?: 'squared' | 'danger' | 'squaredOutlined' | undefined;
+  type?: 'squared' | 'danger' | 'squaredOutlined' | 'dangerLink' | undefined;
   btnStyles?: object;
   icon?: JSX.Element;
   disabled?: boolean;

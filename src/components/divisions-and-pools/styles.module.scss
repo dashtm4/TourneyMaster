@@ -27,6 +27,9 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
+    & > div {
+      align-self: center;
+    }
   }
   .sectionContent {
     padding: 0 39px 39px 23px;

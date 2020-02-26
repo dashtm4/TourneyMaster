@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { History } from 'history';
 import styles from './styles.module.scss';
 import Paper from '../common/paper';
 import Button from '../common/buttons/button';
@@ -8,42 +9,83 @@ import SectionDropdown from '../common/section-dropdown';
 import DivisionDetails from './division-details';
 import PoolsDetails from './pools-details';
 import CreateIcon from '@material-ui/icons/Create';
-import { getDivisions } from './logic/actions';
-
-const divisionData = {
-  long_name: '2020',
-  max_num_teams: 32,
-  entry_fee: 9.99,
-  teams_registered: 10,
-  teams_tentitive: 12,
-  num_pools: 2,
-};
-
-const divisions = [divisionData, divisionData];
+import { getDivisions, getPools, getTeams, savePool } from './logic/actions';
+import Modal from '../common/modal';
+import AddPool from './add-pool';
+import { IDivision } from 'common/models/divisions';
+import { BindingCbWithOne } from 'common/models/callback';
+import { ITeam } from 'common/models';
+import { IPool } from 'common/models';
+import { CircularProgress } from '@material-ui/core';
 
 interface IDivisionsAndPoolsProps {
-  divisions: any;
-  history: any;
+  divisions: IDivision[];
+  pools: Partial<IPool>[];
+  teams: Partial<ITeam>[];
+  isLoading: boolean;
+  history: History;
   match: any;
-  getDivisions: () => void;
+  getDivisions: BindingCbWithOne<string>;
+  getPools: BindingCbWithOne<string>;
+  getTeams: BindingCbWithOne<string>;
+  savePool: BindingCbWithOne<Partial<IPool>>;
 }
 
-class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
+interface IDivisionAndPoolsState {
+  isModalOpen: boolean;
+  selected: Partial<IDivision>;
+}
+
+class DivisionsAndPools extends React.Component<
+  IDivisionsAndPoolsProps,
+  IDivisionAndPoolsState
+> {
+  eventId = this.props.match.params.eventId;
+  state = { isModalOpen: false, selected: this.props.divisions[0] };
+
   componentDidMount() {
-    this.props.getDivisions();
+    this.props.getDivisions(this.eventId);
   }
-  onEditDivisionDetails = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
 
   onAddDivision = () => {
-    const eventId = this.props.match.params.eventId;
-    const path = eventId
-      ? `/event/divisions-and-pools-add/${eventId}`
+    const path = this.eventId
+      ? `/event/divisions-and-pools-add/${this.eventId}`
       : '/event/divisions-and-pools-add';
     this.props.history.push(path);
   };
+
+  onEditDivisionDetails = (divisionId: string) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const path = this.eventId
+      ? `/event/divisions-and-pools-edit/${this.eventId}`
+      : '/event/divisions-and-pools-edit';
+    this.props.history.push({ pathname: path, state: { divisionId } });
+  };
+
+  onAddPool = (_division: IDivision) => {
+    // this.setState({ isModalOpen: true, selected: division });
+  };
+
+  onModalClose = () => {
+    this.setState({ isModalOpen: false });
+  };
+
+  Loading = () => (
+    <div
+      style={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <CircularProgress />
+    </div>
+  );
+
   render() {
+    const { divisions, pools, teams, isLoading } = this.props;
     return (
       <section>
         <Paper sticky={true}>
@@ -59,33 +101,63 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
         </Paper>
         <div className={styles.sectionContainer}>
           <div className={styles.headingContainer}>
-            <HeadingLevelTwo>Divisions & Pools</HeadingLevelTwo>
+            <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>
           </div>
-          <ul className={styles.divisionsList}>
-            {divisions.map((division, index) => (
-              <li key={index}>
-                <SectionDropdown
-                  panelDetailsType="flat"
-                  isDefaultExpanded={true}
+          {isLoading && this.Loading()}
+          {divisions && !isLoading && (
+            <ul className={styles.divisionsList}>
+              {divisions.map(division => (
+                <li key={division.division_id}>
+                  <SectionDropdown
+                    isDefaultExpanded={true}
+                    panelDetailsType="flat"
+                  >
+                    <div className={styles.sectionTitle}>
+                      <div>{`Division: ${division.long_name}`}</div>
+                      <div>
+                        <Button
+                          label="Edit Division Details"
+                          variant="text"
+                          color="secondary"
+                          icon={<CreateIcon />}
+                          onClick={this.onEditDivisionDetails(
+                            division.division_id
+                          )}
+                        />
+                      </div>
+                    </div>
+                    <div className={styles.sectionContent}>
+                      <DivisionDetails data={division} />
+                      <PoolsDetails
+                        onAddPool={this.onAddPool}
+                        division={division}
+                        getPools={this.props.getPools}
+                        getTeams={this.props.getTeams}
+                        pools={pools.filter(
+                          pool => pool.division_id === division.division_id
+                        )}
+                        teams={teams.filter(
+                          team => team.division_id === division.division_id
+                        )}
+                      />
+                    </div>
+                  </SectionDropdown>
+                </li>
+              ))}
+              {this.state.selected && (
+                <Modal
+                  isOpen={this.state.isModalOpen}
+                  onClose={this.onModalClose}
                 >
-                  <div className={styles.sectionTitle}>
-                    <div>{`Division: ${division.long_name}`}</div>
-                    <Button
-                      label="Edit Division Details"
-                      variant="text"
-                      color="secondary"
-                      icon={<CreateIcon />}
-                      onClick={this.onEditDivisionDetails}
-                    />
-                  </div>
-                  <div className={styles.sectionContent}>
-                    <DivisionDetails data={division} />
-                    <PoolsDetails />
-                  </div>
-                </SectionDropdown>
-              </li>
-            ))}
-          </ul>
+                  <AddPool
+                    division={this.state.selected}
+                    onClose={this.onModalClose}
+                    savePool={this.props.savePool}
+                  />
+                </Modal>
+              )}
+            </ul>
+          )}
         </div>
       </section>
     );
@@ -93,15 +165,26 @@ class DivisionsAndPools extends React.Component<IDivisionsAndPoolsProps, {}> {
 }
 
 interface IState {
-  divisions: { data: any };
+  divisions: {
+    data: IDivision[];
+    pools: IPool[];
+    teams: ITeam[];
+    isLoading: boolean;
+  };
 }
 
 const mapStateToProps = (state: IState) => ({
   divisions: state.divisions.data,
+  pools: state.divisions.pools,
+  teams: state.divisions.teams,
+  isLoading: state.divisions.isLoading,
 });
 
 const mapDispatchToProps = {
   getDivisions,
+  getPools,
+  getTeams,
+  savePool,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DivisionsAndPools);
