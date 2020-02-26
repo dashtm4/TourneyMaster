@@ -4,7 +4,7 @@ enum Routes {
   DASHBOARD = '/dashboard',
   LIBRARY_MANAGER = '/library-manager',
   EVENT_LINK = '/event-link',
-  COLLABORATION = '/colaboration',
+  COLLABORATION = '/collaboration',
   CALENDAR = '/calendar',
   UTILITIES = '/utilities',
   EVENT_DAY_COMPLEXITIES = '/event-day-complexities',

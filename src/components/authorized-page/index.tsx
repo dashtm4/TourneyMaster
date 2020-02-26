@@ -21,7 +21,10 @@ const AuthorizedPage = () => (
           <Route path={Routes.DASHBOARD} component={Dashboard} />
           <Route path={Routes.LIBRARY_MANAGER} component={LibraryManager} />
           <Route path={Routes.EVENT_LINK} component={EmptyPage} />
-          <Route path={Routes.COLLABORATION} component={EmptyPage} />
+          <Route
+            path={Routes.COLLABORATION}
+            component={OrganizationsManagement}
+          />
           <Route path={Routes.CALENDAR} component={Calendar} />
           <Route path={Routes.UTILITIES} component={EmptyPage} />
           <Route path={Routes.EVENT_DAY_COMPLEXITIES} component={EmptyPage} />
