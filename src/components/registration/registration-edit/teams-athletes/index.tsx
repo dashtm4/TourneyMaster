@@ -1,6 +1,8 @@
 import React from 'react';
 import styles from '../styles.module.scss';
 import { Input, Radio } from 'components/common';
+import { IRegistration } from 'common/models/registration';
+import { BindingCbWithTwo } from 'common/models';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -10,7 +12,12 @@ enum OptionsEnum {
   'None' = 0,
 }
 
-const TeamsAthletesInfo = ({ data, onChange }: any) => {
+interface ITeamsAthletesInfoProps {
+  data?: IRegistration;
+  onChange: BindingCbWithTwo<string, string>;
+}
+
+const TeamsAthletesInfo = ({ data, onChange }: ITeamsAthletesInfoProps) => {
   const options = ['Require', 'Request', 'None'];
 
   const onMaxTeamsPerDivisionChange = (e: InputTargetValue) =>
@@ -39,7 +46,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Max Teams Per Division"
             type="number"
-            value={data.max_teams_per_division || ''}
+            value={data ? data.max_teams_per_division : ''}
             onChange={onMaxTeamsPerDivisionChange}
           />
         </div>
@@ -48,7 +55,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Min Athletes on Roster"
             type="number"
-            value={data.min_players_per_roster || ''}
+            value={data ? data.min_players_per_roster : ''}
             onChange={onMinAthletesOnRosterChange}
           />
         </div>
@@ -57,7 +64,7 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Max Athletes on Roster"
             type="number"
-            value={data.max_players_per_roster || ''}
+            value={data ? data.max_players_per_roster : ''}
             onChange={onMaxAthletesOnRosterChange}
           />
         </div>
@@ -70,7 +77,8 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             formLabel="Athlete Birth Date"
             onChange={onAthleteBirthDateChange}
             checked={
-              OptionsEnum[data.request_athlete_birthdate] || OptionsEnum[2]
+              (data && OptionsEnum[data.request_athlete_birthdate]) ||
+              OptionsEnum[2]
             }
           />
         </div>
@@ -80,7 +88,8 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             formLabel="Athlete Jersey Number"
             onChange={onAthleteJerseyNumberChange}
             checked={
-              OptionsEnum[data.request_athlete_jersey_number] || OptionsEnum[2]
+              (data && OptionsEnum[data.request_athlete_jersey_number]) ||
+              OptionsEnum[2]
             }
           />
         </div>
@@ -89,7 +98,10 @@ const TeamsAthletesInfo = ({ data, onChange }: any) => {
             options={options}
             formLabel="Athlete Email"
             onChange={onAthleteEmailChange}
-            checked={OptionsEnum[data.request_athlete_email] || OptionsEnum[2]}
+            checked={
+              (data && OptionsEnum[data.request_athlete_email]) ||
+              OptionsEnum[2]
+            }
           />
         </div>
         <div className={styles.sectionItem} />

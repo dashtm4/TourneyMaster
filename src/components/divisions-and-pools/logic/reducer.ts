@@ -7,12 +7,12 @@ import {
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
+  ADD_POOL_SUCCESS,
 } from './actionTypes';
-import { IDivision } from 'common/models/divisions';
-import { IPool, ITeam } from 'common/models';
+import { IPool, ITeam, IDisision } from 'common/models';
 
 export interface IState {
-  data?: Partial<IDivision>[];
+  data?: Partial<IDisision>[];
   pools: IPool[];
   teams: ITeam[];
   isLoading: boolean;
@@ -83,6 +83,14 @@ export default (
             division => division.division_id !== action.payload
           ),
         ],
+        isLoading: false,
+        error: false,
+      };
+    }
+    case ADD_POOL_SUCCESS: {
+      return {
+        ...state,
+        pools: [...state.pools, action.payload],
         isLoading: false,
         error: false,
       };

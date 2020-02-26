@@ -59,7 +59,7 @@ class RegistrationView extends React.Component<
     this.setState({ isEdit: true });
   };
 
-  onChange = (name: string, value: any) => {
+  onChange = (name: string, value: string | number) => {
     this.setState(({ registration }) => ({
       registration: {
         ...registration,

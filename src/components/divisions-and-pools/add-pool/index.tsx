@@ -2,20 +2,33 @@ import React from 'react';
 import Input from 'components/common/input';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
+import { BindingCbWithOne, BindingAction, IDisision } from 'common/models';
 
-class AddPool extends React.Component<any> {
+interface IAddPoolState {
+  divisions_id?: string;
+  pool_name: string;
+  pool_tag: string;
+}
+
+interface IAddPoolProps {
+  division: IDisision;
+  savePool: BindingCbWithOne<IAddPoolState>;
+  onClose: BindingAction;
+}
+
+class AddPool extends React.Component<IAddPoolProps, IAddPoolState> {
   state = {
     division_id: this.props.division.division_id,
-    name: '',
-    tag: '',
+    pool_name: '',
+    pool_tag: '',
   };
 
-  onNameChange = (e: any) => {
-    this.setState({ name: e.target.value });
+  onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ pool_name: e.target.value });
   };
 
-  onTagChange = (e: any) => {
-    this.setState({ tag: e.target.value });
+  onTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ pool_tag: e.target.value });
   };
 
   onSave = () => {
@@ -25,7 +38,7 @@ class AddPool extends React.Component<any> {
 
   render() {
     const { division } = this.props;
-    const { name, tag } = this.state;
+    const { pool_name, pool_tag } = this.state;
     return (
       <div className={styles.container}>
         <div className={styles.sectionTitle}>Add Pool</div>
@@ -33,14 +46,14 @@ class AddPool extends React.Component<any> {
           <Input
             width="221px"
             label="Name"
-            value={name || ''}
+            value={pool_name || ''}
             onChange={this.onNameChange}
           />
           <Input
             width="221px"
             label="Tag"
             startAdornment="@"
-            value={tag || ''}
+            value={pool_tag || ''}
             onChange={this.onTagChange}
           />
         </div>

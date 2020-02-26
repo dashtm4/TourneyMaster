@@ -7,23 +7,23 @@ import {
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
+  ADD_POOL_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { IDivision } from 'common/models/divisions';
 import history from '../../../browserhistory';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
-import { IPool, ITeam } from 'common/models';
+import { IPool, ITeam, IDisision } from 'common/models';
 
 export const fetchStart = (): { type: string } => ({
   type: FETCH_START,
 });
 
 export const divisionsFetchSuccess = (
-  payload: IDivision
-): { type: string; payload: IDivision } => ({
+  payload: IDisision
+): { type: string; payload: IDisision } => ({
   type: DIVISIONS_FETCH_SUCCESS,
   payload,
 });
@@ -33,15 +33,15 @@ export const divisionsFetchFailure = (): { type: string } => ({
 });
 
 export const addDivisionSuccess = (
-  payload: IDivision
-): { type: string; payload: IDivision } => ({
+  payload: IDisision
+): { type: string; payload: IDisision } => ({
   type: ADD_DIVISION_SUCCESS,
   payload,
 });
 
 export const updateDivisionSuccess = (
-  payload: IDivision
-): { type: string; payload: IDivision } => ({
+  payload: IDisision
+): { type: string; payload: IDisision } => ({
   type: UPDATE_DIVISION_SUCCESS,
   payload,
 });
@@ -52,6 +52,14 @@ export const deleteDivisionSuccess = (
   type: DELETE_DIVISION_SUCCESS,
   payload,
 });
+
+export const addPoolSuccess = (
+  payload: IPool
+): { type: string; payload: IPool } => ({
+  type: ADD_POOL_SUCCESS,
+  payload,
+});
+
 export const poolsFetchSuccess = (
   payload: IPool[]
 ): { type: string; payload: IPool[] } => ({
@@ -102,7 +110,7 @@ export const updateDivision: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (division: IDivision) => async (dispatch: Dispatch) => {
+>> = (division: IDisision) => async (dispatch: Dispatch) => {
   const response = await api.put(
     `/divisions?division_id=${division.division_id}`,
     division
@@ -124,7 +132,7 @@ export const saveDivisions: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (divisions: IDivision[], eventId: string) => async (
+>> = (divisions: IDisision[], eventId: string) => async (
   dispatch: Dispatch
 ) => {
   for await (const division of divisions) {
@@ -171,7 +179,7 @@ export const savePool: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (pool: any) => async () => {
+>> = (pool: IPool) => async (dispatch: Dispatch) => {
   const data = {
     ...pool,
     pool_id: getVarcharEight(),
@@ -180,8 +188,10 @@ export const savePool: ActionCreator<ThunkAction<
   const response = await api.post(`/pools`, data);
 
   if (response?.errorType === 'Error') {
-    return Toasts.errorToast("Couldn't add a division");
+    return Toasts.errorToast("Couldn't add a pool division");
   }
 
-  Toasts.successToast('Division is successfully added');
+  dispatch(addPoolSuccess(data));
+
+  Toasts.successToast('Pool is successfully added');
 };

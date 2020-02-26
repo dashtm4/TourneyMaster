@@ -12,16 +12,15 @@ import CreateIcon from '@material-ui/icons/Create';
 import { getDivisions, getPools, getTeams, savePool } from './logic/actions';
 import Modal from '../common/modal';
 import AddPool from './add-pool';
-import { IDivision } from 'common/models/divisions';
 import { BindingCbWithOne } from 'common/models/callback';
-import { ITeam } from 'common/models';
+import { ITeam, IDisision } from 'common/models';
 import { IPool } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
 
 interface IDivisionsAndPoolsProps {
-  divisions: IDivision[];
-  pools: Partial<IPool>[];
-  teams: Partial<ITeam>[];
+  divisions: IDisision[];
+  pools: IPool[];
+  teams: ITeam[];
   isLoading: boolean;
   history: History;
   match: any;
@@ -33,7 +32,7 @@ interface IDivisionsAndPoolsProps {
 
 interface IDivisionAndPoolsState {
   isModalOpen: boolean;
-  selected: Partial<IDivision>;
+  selected: Partial<IDisision>;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -62,8 +61,8 @@ class DivisionsAndPools extends React.Component<
     this.props.history.push({ pathname: path, state: { divisionId } });
   };
 
-  onAddPool = (_division: IDivision) => {
-    // this.setState({ isModalOpen: true, selected: division });
+  onAddPool = (division: IDisision) => {
+    this.setState({ isModalOpen: true, selected: division });
   };
 
   onModalClose = () => {
@@ -104,7 +103,7 @@ class DivisionsAndPools extends React.Component<
             <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>
           </div>
           {isLoading && this.Loading()}
-          {divisions && !isLoading && (
+          {divisions.length && !isLoading ? (
             <ul className={styles.divisionsList}>
               {divisions.map(division => (
                 <li key={division.division_id}>
@@ -157,6 +156,12 @@ class DivisionsAndPools extends React.Component<
                 </Modal>
               )}
             </ul>
+          ) : (
+            !isLoading && (
+              <div className={styles.noFoundWrapper}>
+                <span>There are no divisions yet.</span>
+              </div>
+            )
           )}
         </div>
       </section>
@@ -166,7 +171,7 @@ class DivisionsAndPools extends React.Component<
 
 interface IState {
   divisions: {
-    data: IDivision[];
+    data: IDisision[];
     pools: IPool[];
     teams: ITeam[];
     isLoading: boolean;
