@@ -13,6 +13,8 @@ import {
 import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
 
+import Map from '../map';
+
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
@@ -115,55 +117,61 @@ const PrimaryInformationSection: React.FC<Props> = ({
             onChange={onGenderChange}
           />
         </div>
-        <div className={styles.piDetailsSecond}>
-          <DatePicker
-            label="Start Date"
-            type="date"
-            value={event_startdate}
-            onChange={onStartDate}
-          />
-          <DatePicker
-            label="End Date"
-            type="date"
-            value={event_enddate}
-            onChange={onEndDate}
-          />
-          <Select
-            options={timeZoneOptions.map(type => ({
-              label: type,
-              value: type,
-            }))}
-            label="Time Zone"
-            value={time_zone_utc ? timeZoneEnum[time_zone_utc!] : ''}
-            onChange={onTimeZone}
-          />
-        </div>
-        <div className={styles.piDetailsThird}>
-          <Input
-            label="General Location"
-            placeholder="Search Google Maps"
-            value={eventData.primary_location_desc}
-            onChange={onPrimaryLocation}
-          />
-        </div>
-        <div className={styles.piDetailsThirdArea}>
-          <Input
-            fullWidth={true}
-            label="Description"
-            multiline={true}
-            rows="4"
-            value={eventData.event_description}
-            onChange={onDescriptionChange}
-          />
-          <div className={styles.embedBtn}>
-            <Button
-              label="Embed Code"
-              icon={<CodeIcon />}
-              color="secondary"
-              variant="text"
-            />
+        <div className={styles.piSectionContainer}>
+          <div className={styles.piSection}>
+            <div className={styles.piDetailsSecond}>
+              <DatePicker
+                label="Start Date"
+                type="date"
+                value={event_startdate}
+                onChange={onStartDate}
+              />
+              <DatePicker
+                label="End Date"
+                type="date"
+                value={event_enddate}
+                onChange={onEndDate}
+              />
+              <Select
+                options={timeZoneOptions.map(type => ({
+                  label: type,
+                  value: type,
+                }))}
+                label="Time Zone"
+                value={time_zone_utc ? timeZoneEnum[time_zone_utc!] : ''}
+                onChange={onTimeZone}
+              />
+            </div>
+            <div className={styles.piDetailsThird}>
+              <Input
+                label="General Location"
+                placeholder="Search Google Maps"
+                value={eventData.primary_location_desc}
+                onChange={onPrimaryLocation}
+              />
+            </div>
+
+            <div className={styles.piDetailsThirdArea}>
+              <Input
+                fullWidth={true}
+                label="Description"
+                multiline={true}
+                rows="4"
+                value={eventData.event_description}
+                onChange={onDescriptionChange}
+              />
+            </div>
+          </div>
+          <div className={styles.mapContainer}>
+            <Map />
           </div>
         </div>
+        <Button
+          label="Embed Code"
+          icon={<CodeIcon />}
+          color="secondary"
+          variant="text"
+        />
       </div>
     </SectionDropdown>
   );
