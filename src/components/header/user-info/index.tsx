@@ -42,6 +42,7 @@ const UserInfo: React.FC = () => {
           <MenuItem
             id="org-management"
             onClick={() => {
+              console.log('management');
               hisory.replace(Routes.ORGANIZATIONS_MANAGEMENT);
             }}
           >
