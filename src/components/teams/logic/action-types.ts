@@ -41,14 +41,14 @@ export interface loadPoolsSuccess {
 export interface loadTeamsStart {
   type: 'TEAMS:LOAD_TEAMS_START';
   payload: {
-    poolId: string;
+    divisionId: string;
   };
 }
 
 export interface loadTeamsSuccess {
   type: 'TEAMS:LOAD_TEAMS_SUCCESS';
   payload: {
-    poolId: string;
+    divisionId: string;
     teams: ITeam[];
   };
 }

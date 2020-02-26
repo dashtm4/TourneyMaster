@@ -12,7 +12,6 @@ interface Props {
   isEdit: boolean;
   isUnassigned?: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
-  loadTeams: (poolId: string) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
@@ -28,14 +27,9 @@ const PoolItem = ({
   isUnassigned,
   isEdit,
   changePool,
-  loadTeams,
   onDeletePopupOpen,
   onEditPopupOpen,
 }: Props) => {
-  if (pool && !pool.isTeamsLoading && !pool.isTeamsLoaded) {
-    loadTeams(pool.pool_id);
-  }
-
   const [, drop] = useDrop({
     accept: DndItems.TEAM,
     drop: () => ({
@@ -51,7 +45,7 @@ const PoolItem = ({
   return (
     <li className={styles.pool}>
       <h5 className={styles.poolTitle}>
-        {isUnassigned ? 'Unassigned' : pool?.pool_desc} ({teams.length})
+        {isUnassigned ? 'Unassigned' : pool?.pool_name} ({teams.length})
       </h5>
       <ul ref={isEdit ? drop : null} className={styles.teamList}>
         {teams.map(it => (

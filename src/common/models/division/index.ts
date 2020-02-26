@@ -27,4 +27,6 @@ export interface IDisision {
   //optional
   isPoolsLoading?: boolean;
   isPoolsLoaded?: boolean;
+  isTeamsLoading?: boolean;
+  isTeamsLoaded?: boolean;
 }

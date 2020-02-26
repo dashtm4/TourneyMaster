@@ -29,7 +29,7 @@ interface Props {
   changePool: (team: ITeam, poolId: string | null) => void;
   loadDivisions: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
-  loadTeams: (poolId: string) => void;
+  loadTeams: (divisionId: string) => void;
   editTeam: (team: ITeam) => void;
   deleteTeam: (team: ITeam) => void;
 }

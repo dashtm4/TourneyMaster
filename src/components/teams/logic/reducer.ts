@@ -52,22 +52,22 @@ const teamsReducer = (state: AppState = initialState, action: TeamsAction) => {
       };
     }
     case LOAD_TEAMS_START: {
-      const { poolId } = action.payload;
+      const { divisionId } = action.payload;
 
       return {
         ...state,
-        pools: state.pools.map(it =>
-          it.pool_id === poolId ? { ...it, isTeamsLoading: true } : it
+        divisions: state.divisions.map(it =>
+          it.division_id === divisionId ? { ...it, isTeamsLoading: true } : it
         ),
       };
     }
     case LOAD_TEAMS_SUCCESS:
-      const { teams, poolId } = action.payload;
+      const { teams, divisionId } = action.payload;
 
       return {
         ...state,
-        pools: state.pools.map(it =>
-          it.pool_id === poolId
+        divisions: state.divisions.map(it =>
+          it.division_id === divisionId
             ? { ...it, isTeamsLoading: false, isTeamsLoaded: true }
             : it
         ),

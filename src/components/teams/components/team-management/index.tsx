@@ -11,7 +11,7 @@ interface Props {
   isEdit: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
   loadPools: (divisionId: string) => void;
-  loadTeams: (poolId: string) => void;
+  loadTeams: (divisionId: string) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,

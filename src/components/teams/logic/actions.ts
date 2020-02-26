@@ -72,22 +72,22 @@ const loadPools: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
 };
 
 const loadTeams: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
-  poolId: string
+  divisionId: string
 ) => async (dispatch: Dispatch) => {
   try {
     dispatch({
       type: LOAD_TEAMS_START,
       payload: {
-        poolId,
+        divisionId,
       },
     });
 
-    const teams = await Api.get(`/teams?pool_id=${poolId}`);
+    const teams = await Api.get(`/teams?division_id=${divisionId}`);
 
     dispatch({
       type: LOAD_TEAMS_SUCCESS,
       payload: {
-        poolId,
+        divisionId,
         teams,
       },
     });

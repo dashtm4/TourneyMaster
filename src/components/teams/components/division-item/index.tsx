@@ -13,7 +13,7 @@ interface Props {
   isEdit: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
   loadPools: (divisionId: string) => void;
-  loadTeams: (poolId: string) => void;
+  loadTeams: (divisionId: string) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
@@ -37,6 +37,10 @@ const DivisionItem = ({
     loadPools(division.division_id);
   }
 
+  if (!division.isTeamsLoading && !division.isTeamsLoaded) {
+    loadTeams(division.division_id);
+  }
+
   return (
     <li className={styles.divisionItem}>
       <SectionDropdown
@@ -55,7 +59,6 @@ const DivisionItem = ({
                 division={division}
                 isEdit={isEdit}
                 changePool={changePool}
-                loadTeams={loadTeams}
                 onDeletePopupOpen={onDeletePopupOpen}
                 onEditPopupOpen={onEditPopupOpen}
                 key={pool.pool_id}
@@ -69,7 +72,6 @@ const DivisionItem = ({
               isEdit={isEdit}
               isUnassigned={true}
               changePool={changePool}
-              loadTeams={loadTeams}
               onDeletePopupOpen={onDeletePopupOpen}
               onEditPopupOpen={onEditPopupOpen}
             />
