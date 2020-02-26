@@ -7,6 +7,7 @@ import { Routes } from '../../common/constants';
 import styles from './styles.module.scss';
 import Dashboard from '../dashboard';
 import LibraryManager from '../library-manager';
+import OrganizationsManagement from '../organizations-management';
 import Calendar from 'components/calendar';
 import { EmptyPage } from './authorized-page-event/index';
 
@@ -24,6 +25,10 @@ const AuthorizedPage = () => (
           <Route path={Routes.CALENDAR} component={Calendar} />
           <Route path={Routes.UTILITIES} component={EmptyPage} />
           <Route path={Routes.EVENT_DAY_COMPLEXITIES} component={EmptyPage} />
+          <Route
+            path={Routes.ORGANIZATIONS_MANAGEMENT}
+            component={OrganizationsManagement}
+          />
           <Route path={Routes.DEFAULT} component={Dashboard} />
         </Switch>
       </main>

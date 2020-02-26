@@ -26,6 +26,7 @@ const App: React.FC = () => {
             Routes.CALENDAR,
             Routes.UTILITIES,
             Routes.EVENT_DAY_COMPLEXITIES,
+            Routes.ORGANIZATIONS_MANAGEMENT,
           ]}
           component={AuthorizedPageWrapped}
         />
