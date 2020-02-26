@@ -67,6 +67,7 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
     const data = {
       member_id: member.member_id,
       org_id: this.state.invitationCode,
+      org_member_id: getVarcharEight(),
     };
     await api.post('/org_members', data);
     await this.getAllAvailableOrganizations();
