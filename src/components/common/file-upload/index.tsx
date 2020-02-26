@@ -3,16 +3,41 @@ import { useDropzone } from 'react-dropzone';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import { getIcon } from '../../../helpers/get-icon.helper';
+import { Icons } from 'common/constants';
 import { Button } from 'components/common';
 import styles from './styles.module.scss';
 
-interface IProps {
-  icomingFiles?: File[];
-  onUpload: (files: File[]) => void;
+const STYLES_PUBLISH_ICON = {
+  marginRight: '5px',
+};
+
+enum FileUploadTypes {
+  BUTTON = 'button',
+  SECTION = 'section',
 }
 
-const FileUpload: React.FC<IProps> = ({ icomingFiles, onUpload }) => {
-  const [files, setFiles] = useState<File[] | null>(icomingFiles || null);
+enum AcceptFileTypes {
+  JPG = '.jpg',
+  PNG = '.png',
+  SVG = '.svg',
+  PDF = '.pdf',
+}
+
+interface IProps {
+  type: FileUploadTypes;
+  incomingFiles?: File[];
+  onUpload: (files: File[]) => void;
+  acceptTypes: AcceptFileTypes[];
+}
+
+const FileUpload: React.FC<IProps> = ({
+  type,
+  acceptTypes,
+  incomingFiles,
+  onUpload,
+}) => {
+  const [files, setFiles] = useState<File[] | null>(incomingFiles || null);
 
   const onDrop = useCallback((uploadedFiles: File[]) => {
     setFiles(uploadedFiles);
@@ -23,6 +48,7 @@ const FileUpload: React.FC<IProps> = ({ icomingFiles, onUpload }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: false,
+    accept: acceptTypes.join(''),
   });
 
   const showFiles = (): string => {
@@ -31,7 +57,7 @@ const FileUpload: React.FC<IProps> = ({ icomingFiles, onUpload }) => {
 
   const renderFiles = () => (
     <div className={styles.uploadedWrapper}>
-      <span>Uploaded File:</span>
+      <span>Uploaded File: </span>
       {showFiles()}
     </div>
   );
@@ -55,19 +81,41 @@ const FileUpload: React.FC<IProps> = ({ icomingFiles, onUpload }) => {
       </>
     );
 
-  return (
-    <div className={styles.wrapper}>
-      <div {...getRootProps()} className={styles.container}>
-        {Boolean(!files?.length) && <FontAwesomeIcon icon={faUpload} />}
+  const renderUploaderType = (
+    type: FileUploadTypes.BUTTON | FileUploadTypes.SECTION
+  ) => {
+    switch (type) {
+      case FileUploadTypes.SECTION:
+        return (
+          <div className={styles.wrapper}>
+            <div {...getRootProps()} className={styles.container}>
+              {Boolean(!files?.length) && <FontAwesomeIcon icon={faUpload} />}
 
-        {Boolean(files?.length) && renderFiles()}
+              {Boolean(files?.length) && renderFiles()}
 
-        {Boolean(!files?.length) && renderUploader()}
+              {Boolean(!files?.length) && renderUploader()}
 
-        <input {...getInputProps()} />
-      </div>
-    </div>
-  );
+              <input {...getInputProps()} />
+            </div>
+          </div>
+        );
+      case FileUploadTypes.BUTTON:
+        return (
+          <div className={styles.btnWrapper}>
+            <label className={styles.loadBtn}>
+              <input {...getInputProps()} />
+              {getIcon(Icons.PUBLISH, STYLES_PUBLISH_ICON)}
+              Upload Field Map
+            </label>
+            {Boolean(files?.length) && renderFiles()}
+          </div>
+        );
+    }
+  };
+
+  return renderUploaderType(type);
 };
+
+export { FileUploadTypes, AcceptFileTypes };
 
 export default FileUpload;

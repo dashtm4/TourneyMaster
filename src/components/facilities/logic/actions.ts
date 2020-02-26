@@ -1,5 +1,7 @@
-import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
+import { ThunkAction } from 'redux-thunk';
+import { Storage } from 'aws-amplify';
+import uuidv4 from 'uuid/v4';
 import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
@@ -18,7 +20,7 @@ import {
 } from './action-types';
 import Api from 'api/api';
 import { getVarcharEight } from '../../../helpers';
-import { IFacility, IField } from '../../../common/models';
+import { IFacility, IField, IFileMap } from '../../../common/models';
 
 const loadFacilities: ActionCreator<ThunkAction<
   void,
@@ -165,6 +167,23 @@ const saveFacilities: ActionCreator<ThunkAction<
   }
 };
 
+const uploadFileMap = (files: IFileMap[]) => () => {
+  if (!files || !files.length) {
+    return
+  };
+
+  files.forEach((fileObject: IFileMap) => {
+    const { file, destinationType } = fileObject;
+    const uuid = uuidv4();
+    const saveFilePath = `event_media_files/${destinationType}_${uuid}_${file.name}`;
+    const config = { contentType: file.type };
+
+    Storage.put(saveFilePath, file, config)
+      .then(() => Toasts.successToast(`${file.name} was successfully uploaded`))
+      .catch(() => Toasts.errorToast(`${file.name} couldn't be uploaded`));
+  });
+};
+
 export {
   loadFacilities,
   loadFields,
@@ -173,4 +192,5 @@ export {
   updateFacilities,
   updateField,
   saveFacilities,
+  uploadFileMap
 };
