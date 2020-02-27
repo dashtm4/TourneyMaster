@@ -14,6 +14,7 @@ import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
 
 import Map from '../map';
+import Places from '../map/autocomplete';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -78,8 +79,8 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const onDescriptionChange = (e: InputTargetValue) =>
     onChange('event_description', e.target.value);
 
-  const onPrimaryLocation = (e: InputTargetValue) =>
-    onChange('primary_location_desc', e.target.value);
+  // const onPrimaryLocation = (e: InputTargetValue) =>
+  //   onChange('primary_location_desc', e.target.value);
 
   return (
     <SectionDropdown
@@ -144,12 +145,13 @@ const PrimaryInformationSection: React.FC<Props> = ({
               />
             </div>
             <div className={styles.piDetailsThird}>
-              <Input
+              <Places />
+              {/* <Input
                 label="General Location"
                 placeholder="Search Google Maps"
                 value={eventData.primary_location_desc}
                 onChange={onPrimaryLocation}
-              />
+              /> */}
             </div>
 
             <div className={styles.piDetailsThirdArea}>
