@@ -1,11 +1,26 @@
 import React, { useCallback, useState } from 'react';
-import update from 'immutability-helper';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { IField, ITeam, ITimeSlot } from '..';
+import {
+  IGame,
+  defineGames,
+  IDefinedGames,
+  updateTeamCards,
+  selectProperGamesPerTimeSlot,
+  settleTeamsPerGames,
+} from './helper';
+import TeamCard from './dnd/drag';
+import RenderFieldHeader from './field-header';
+import RenderTimeSlot from './time-slot';
+import { DropParams } from './dnd/drop';
 import styles from './styles.module.scss';
-import { IGame, defineGames, IDefinedGames } from './helper';
-import GameDrop from './dnd/drop';
+
+export interface ITeamCard extends ITeam {
+  fieldId?: number;
+  timeSlotId?: number;
+  teamPosition?: number;
+}
 
 interface IProps {
   timeSlots: ITimeSlot[];
@@ -13,88 +28,44 @@ interface IProps {
   teams: ITeam[];
 }
 
-const renderFieldHeader = (field: IField) => (
-  <th key={field.id} className={styles.fieldTh}>
-    {field.name}
-  </th>
-);
-
-const renderGameSlot = (game: IGame, moveCard: any) => (
-  <td key={game.id}>
-    <div className={styles.gameSlot}>
-      <GameDrop
-        accept="teamdrop"
-        // index={game.awayTeam?.id || game.id}
-        id={game.awayTeam?.id || game.id}
-        text={game.awayTeam?.name!}
-        onDrop={moveCard}
-      />
-      <GameDrop
-        accept="teamdrop"
-        // index={game.homeTeam?.id || game.id + 1000}
-        id={game.homeTeam?.id || game.id + 1000}
-        text={game.homeTeam?.name!}
-        onDrop={moveCard}
-      />
-    </div>
-  </td>
-);
-
-const renderTimeSlot = (timeSlot: ITimeSlot, games: IGame[], moveCard: any) => (
-  <tr key={timeSlot.id} className={styles.timeSlotRow}>
-    <th>{timeSlot.time}</th>
-    {games.map((game: IGame) => renderGameSlot(game, moveCard))}
-  </tr>
-);
-
-const selectProperGamesPerTimeSlot = (timeSlot: ITimeSlot, games: IGame[]) =>
-  games.filter((game: IGame) => game.timeSlotId === timeSlot.id);
-
 const SchedulesMatrix = (props: IProps) => {
   const { fields, timeSlots, teams } = props;
-  const definedGames: IDefinedGames = defineGames(fields, timeSlots, teams);
-  const { gameFields } = definedGames;
-  // console.log('DefinedGames:', gameFields, gameTimeSlots, definedGames.games);
+  const [teamCards, setTeamCards] = useState<ITeamCard[]>(teams);
 
-  const [teamCards, setTeamCards] = useState(teams);
+  const definedGames: IDefinedGames = defineGames(fields, timeSlots, teams);
+  const { gameFields, games } = definedGames;
 
   const moveCard = useCallback(
-    (dragIndex: any, hoverIndex: number) => {
-      console.log('moveCard', dragIndex, hoverIndex);
-      const dragCard = teamCards[dragIndex.id];
-      const updatedCards = update(teamCards, {
-        $splice: [
-          [dragIndex, 1],
-          [hoverIndex, 0, dragCard],
-        ],
-      });
-
-      setTeamCards(updatedCards);
-      console.log('teamCards:', teamCards);
-    },
+    (params: DropParams) => setTeamCards(updateTeamCards(params, teamCards)),
     [teamCards]
   );
 
+  const allocatedGames: IGame[] = settleTeamsPerGames(games, teamCards);
+
   return (
-    <table className={styles.table}>
-      <tbody>
-        <tr>
-          <td />
-          {fields
-            .slice(0, gameFields)
-            .map((field: any) => renderFieldHeader(field))}
-        </tr>
-        <DndProvider backend={HTML5Backend}>
-          {timeSlots.map((timeSlot: ITimeSlot) =>
-            renderTimeSlot(
-              timeSlot,
-              selectProperGamesPerTimeSlot(timeSlot, definedGames.games),
-              moveCard
-            )
-          )}
-        </DndProvider>
-      </tbody>
-    </table>
+    <DndProvider backend={HTML5Backend}>
+      <table className={styles.table}>
+        <tbody>
+          <tr>
+            <td />
+            {fields.slice(0, gameFields).map((field: any) => (
+              <RenderFieldHeader key={field.id} field={field} />
+            ))}
+          </tr>
+          {timeSlots.map((timeSlot: ITimeSlot) => (
+            <RenderTimeSlot
+              key={timeSlot.id}
+              timeSlot={timeSlot}
+              games={selectProperGamesPerTimeSlot(timeSlot, allocatedGames)}
+              moveCard={moveCard}
+            />
+          ))}
+        </tbody>
+      </table>
+      {teamCards.map((card: ITeam) => (
+        <TeamCard type="teamdrop" text={card.name} id={card.id} key={card.id} />
+      ))}
+    </DndProvider>
   );
 };
 
