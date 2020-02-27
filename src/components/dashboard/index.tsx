@@ -17,7 +17,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
 import { getEvents } from './logic/actions';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
-import CircularProgress from '@material-ui/core/CircularProgress';
+// import CircularProgress from '@material-ui/core/CircularProgress';
+import { Loader } from 'components/common';
 
 const data = [
   { message: 'Publish', link: 'Men’s Spring Thaw', date: '01/14/20' },
@@ -60,6 +61,7 @@ const notificationData = [
 interface IDashboardProps {
   history: History;
   events: EventDetailsDTO[];
+  isLoading: boolean;
   getEvents: () => void;
 }
 
@@ -78,7 +80,7 @@ class Dashboard extends React.Component<IDashboardProps> {
         <Paper sticky={true}>
           <div className={styles.mainMenu}>
             <Button
-              label="Create tournament"
+              label="Create Tournament"
               variant="contained"
               color="primary"
               onClick={this.onCreateTournament}
@@ -121,7 +123,7 @@ class Dashboard extends React.Component<IDashboardProps> {
             </div>
             <div className={styles.buttonsGroup}>
               <Button
-                label="Published(1)"
+                label="Published (1)"
                 variant="contained"
                 type="squared"
                 color="primary"
@@ -141,19 +143,20 @@ class Dashboard extends React.Component<IDashboardProps> {
             </div>
           </div>
           <div className={styles.tournamentsListContainer}>
-            {this.props.events.length ? (
-              this.props.events.map((event: EventDetailsDTO) => (
-                <TournamentCard
-                  key={event.event_id}
-                  event={event}
-                  history={this.props.history}
-                />
-              ))
-            ) : (
-              <div className={styles.spinnerContainer}>
-                <CircularProgress />
-              </div>
-            )}
+            {this.props.isLoading && <Loader />}
+            {this.props.events?.length
+              ? this.props.events.map((event: EventDetailsDTO) => (
+                  <TournamentCard
+                    key={event.event_id}
+                    event={event}
+                    history={this.props.history}
+                  />
+                ))
+              : !this.props.isLoading && (
+                  <div className={styles.noFoundWrapper}>
+                    <span>There are no tournaments yet.</span>
+                  </div>
+                )}
           </div>
         </div>
       </div>
@@ -161,11 +164,12 @@ class Dashboard extends React.Component<IDashboardProps> {
   }
 }
 interface IState {
-  events: { data: EventDetailsDTO[] };
+  events: { data: EventDetailsDTO[]; isLoading: boolean };
 }
 
 const mapStateToProps = (state: IState) => ({
   events: state.events.data,
+  isLoading: state.events.isLoading,
 });
 
 const mapDispatchToProps = {
