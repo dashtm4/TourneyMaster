@@ -2,13 +2,7 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
-import {
-  loadDivisionsTeams,
-  changePool,
-  loadPools,
-  editTeam,
-  deleteTeam,
-} from './logic/actions';
+import { loadDivisionsTeams, loadPools, saveTeams } from './logic/actions';
 import Navigation from './components/navigation';
 import TeamManagement from './components/team-management';
 import PopupDeleteTeam from './components/popup-delete-team';
@@ -23,21 +17,17 @@ interface MatchParams {
 
 interface Props {
   isLoading: boolean;
+  isLoaded: boolean;
   divisions: IDisision[];
   pools: IPool[];
   teams: ITeam[];
-  changePool: (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => void;
   loadDivisionsTeams: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
-  editTeam: (team: ITeam) => void;
-  deleteTeam: (team: ITeam) => void;
+  saveTeams: (teams: ITeam[]) => void;
 }
 
 interface State {
+  teams: ITeam[];
   configurableTeam: ITeam | null;
   currentDivision: string | null;
   currentPool: string | null;
@@ -54,6 +44,7 @@ class Teams extends React.Component<
     super(props);
 
     this.state = {
+      teams: [],
       configurableTeam: null,
       currentDivision: null,
       currentPool: null,
@@ -72,15 +63,49 @@ class Teams extends React.Component<
     }
   }
 
+  componentDidUpdate(PrevProps: Props) {
+    const { isLoading, teams } = this.props;
+
+    if (PrevProps.isLoading !== isLoading) {
+      this.setState({ teams: teams });
+    }
+  }
+
+  changePool = (
+    team: ITeam,
+    divisionId: string | null,
+    poolId: string | null
+  ) => {
+    const changedTeam = {
+      ...team,
+      division_id: divisionId,
+      pool_id: poolId,
+      isChange: true,
+    };
+
+    this.setState(({ teams }) => ({
+      teams: teams.map(it =>
+        it.team_id === changedTeam.team_id ? changedTeam : it
+      ),
+    }));
+  };
+
   onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
+
+  onSaveClick = () => {
+    const { saveTeams } = this.props;
+    const { teams } = this.state;
+
+    saveTeams(teams);
+  };
 
   onDeletePopupOpen = (team: ITeam) =>
     this.setState({ configurableTeam: team, isDeletePopupOpen: true });
 
   onDeleteTeam = (team: ITeam) => {
-    const { deleteTeam } = this.props;
-
-    deleteTeam(team);
+    this.setState(({ teams }) => ({
+      teams: teams.filter(it => it.team_id !== team.team_id),
+    }));
 
     this.onCloseModal();
   };
@@ -97,15 +122,22 @@ class Teams extends React.Component<
     target: { name, value },
   }: React.ChangeEvent<HTMLInputElement>) =>
     this.setState(({ configurableTeam }) => ({
-      configurableTeam: { ...(configurableTeam as ITeam), [name]: value },
+      configurableTeam: {
+        ...(configurableTeam as ITeam),
+        [name]: value,
+        isChange: true,
+      },
     }));
 
   onSaveTeam = () => {
     const { configurableTeam } = this.state;
-    const { editTeam } = this.props;
 
     if (configurableTeam) {
-      editTeam(configurableTeam);
+      this.setState(({ teams }) => ({
+        teams: teams.map(it =>
+          it.team_id === configurableTeam.team_id ? configurableTeam : it
+        ),
+      }));
     }
 
     this.onCloseModal();
@@ -120,16 +152,10 @@ class Teams extends React.Component<
     });
 
   render() {
-    const {
-      isLoading,
-      divisions,
-      pools,
-      teams,
-      changePool,
-      loadPools,
-    } = this.props;
+    const { isLoading, divisions, pools, loadPools } = this.props;
 
     const {
+      teams,
       configurableTeam,
       currentDivision,
       currentPool,
@@ -148,6 +174,7 @@ class Teams extends React.Component<
           <Navigation
             isEdit={isEdit}
             onEditClick={this.onEditClick}
+            onSaveClick={this.onSaveClick}
             history={this.props.history}
             eventId={this.props.match.params.eventId}
           />
@@ -160,7 +187,7 @@ class Teams extends React.Component<
               pools={pools}
               teams={teams}
               isEdit={isEdit}
-              changePool={changePool}
+              changePool={this.changePool}
               loadPools={loadPools}
               onDeletePopupOpen={this.onDeletePopupOpen}
               onEditPopupOpen={this.onEditPopupOpen}
@@ -204,13 +231,11 @@ interface IRootState {
 export default connect(
   (state: IRootState) => ({
     isLoading: state.teams.isLoading,
+    isLoaded: state.teams.isLoaded,
     divisions: state.teams.divisions,
     pools: state.teams.pools,
     teams: state.teams.teams,
   }),
   (dispatch: Dispatch) =>
-    bindActionCreators(
-      { loadDivisionsTeams, changePool, loadPools, editTeam, deleteTeam },
-      dispatch
-    )
+    bindActionCreators({ loadDivisionsTeams, loadPools, saveTeams }, dispatch)
 )(Teams);

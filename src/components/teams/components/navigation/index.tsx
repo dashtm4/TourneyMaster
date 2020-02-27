@@ -13,11 +13,18 @@ const ICON_STYLES = {
 interface Props {
   isEdit: boolean;
   onEditClick: BindingAction;
+  onSaveClick: BindingAction;
   eventId: string | undefined;
   history: History;
 }
 
-const Navigation = ({ isEdit, onEditClick, eventId, history }: Props) => {
+const Navigation = ({
+  isEdit,
+  onEditClick,
+  onSaveClick,
+  eventId,
+  history,
+}: Props) => {
   const onCreateTeam = () => {
     const path = eventId
       ? `/event/teams-create/${eventId}`
@@ -50,7 +57,12 @@ const Navigation = ({ isEdit, onEditClick, eventId, history }: Props) => {
             color="secondary"
           />
           <span className={styles.btnWrapper}>
-            <Button label="Save" variant="contained" color="primary" />
+            <Button
+              onClick={onSaveClick}
+              label="Save"
+              variant="contained"
+              color="primary"
+            />
           </span>
         </p>
       ) : (

@@ -10,20 +10,9 @@ export const LOAD_POOLS_START = 'TEAMS:LOAD_POOLS_START';
 export const LOAD_POOLS_SUCCESS = 'TEAMS:LOAD_POOLS_SUCCESS';
 export const LOAD_POOLS_FAILURE = 'TEAMS:LOAD_POOLS_FAILURE';
 
-export const CHANGE_POOL = 'CHANGE_POOL';
-
-export const DELETE_TEAM_SUCCESS = 'TEAMS:DELETE_TEAM_SUCCESS';
-export const DELETE_TEAM_FAILURE = 'TEAMS:DELETE_TEAM_FAILURE';
-
-export const EDIT_TEAM_SUCCESS = 'TEAMS:EDIT_TEAM_SUCCESS';
-export const EDIT_TEAM_FAILURE = 'TEAMS:EDIT_TEAM_FAILURE';
-
-export interface changePool {
-  type: 'CHANGE_POOL';
-  payload: {
-    changedTeam: ITeam;
-  };
-}
+export const SAVE_TEAMS_START = 'TEAMS:SAVE_TEAMS_START';
+export const SAVE_TEAMS_SUCCESS = 'TEAMS:SAVE_TEAMS_SUCCESS';
+export const SAVE_TEAMS_FAILURE = 'TEAMS:SAVE_TEAMS_FAILURE';
 
 export interface loadDivisionsTeamsStart {
   type: 'TEAMS:LOAD_DIVISIONS_TEAMS_START';
@@ -52,25 +41,16 @@ export interface loadPoolsSuccess {
   };
 }
 
-export interface editTeamSuccess {
-  type: 'TEAMS:EDIT_TEAM_SUCCESS';
+export interface saveTeamsSuccess {
+  type: 'TEAMS:SAVE_TEAMS_SUCCESS';
   payload: {
-    team: ITeam;
-  };
-}
-
-export interface deleteTeamSuccess {
-  type: 'TEAMS:DELETE_TEAM_SUCCESS';
-  payload: {
-    team: ITeam;
+    teams: ITeam[];
   };
 }
 
 export type TeamsAction =
-  | changePool
   | loadDivisionsTeamsStart
   | loadDivisionsTeamsSuccess
   | loadPoolsStart
   | loadPoolsSuccess
-  | editTeamSuccess
-  | deleteTeamSuccess;
+  | saveTeamsSuccess;
