@@ -21,19 +21,6 @@ export interface ITimeSlot {
   time: string;
 }
 
-// interface IDivision {
-//   id: number;
-//   facilityId?: number;
-//   warmup: number;
-//   divisionDuration: number;
-//   timeBtwPeriods: number;
-//   timeDivision: 2 | 3 | 4;
-// }
-
-// interface IFacility {
-//   id: number;
-// }
-
 const fields: IField[] = [
   {
     id: 0,
@@ -198,10 +185,6 @@ const timeSlots: ITimeSlot[] = [
     time: '15:00',
   },
 ];
-
-// const divisions: IDivision[] = [{ id: 0 }, { id: 1 }];
-
-// const facilities: IFacility[] = [{ id: 0 }, { id: 1 }];
 
 class Schedules extends Component {
   render() {
