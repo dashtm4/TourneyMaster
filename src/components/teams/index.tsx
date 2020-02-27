@@ -26,7 +26,11 @@ interface Props {
   divisions: IDisision[];
   pools: IPool[];
   teams: ITeam[];
-  changePool: (team: ITeam, poolId: string | null) => void;
+  changePool: (
+    team: ITeam,
+    divisionId: string | null,
+    poolId: string | null
+  ) => void;
   loadDivisionsTeams: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
   editTeam: (team: ITeam) => void;

@@ -7,11 +7,16 @@ import { IDisision, IPool, ITeam } from '../../../../common/models';
 import styles from './styles.module.scss';
 
 interface Props {
-  division: IDisision;
+  division?: IDisision;
   pools: IPool[];
   teams: ITeam[];
   isEdit: boolean;
-  changePool: (team: ITeam, poolId: string | null) => void;
+  isUnassigned: boolean;
+  changePool: (
+    team: ITeam,
+    divisionId: string | null,
+    poolId: string | null
+  ) => void;
   loadPools: (divisionId: string) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
@@ -26,16 +31,17 @@ const DivisionItem = ({
   pools,
   teams,
   isEdit,
+  isUnassigned,
   changePool,
   loadPools,
   onDeletePopupOpen,
   onEditPopupOpen,
 }: Props) => {
-  if (!division.isPoolsLoading && !division.isPoolsLoaded) {
+  if (division && !division.isPoolsLoading && !division.isPoolsLoaded) {
     loadPools(division.division_id);
   }
 
-  if (division.isPoolsLoading) {
+  if (division && division.isPoolsLoading) {
     return <Loader />;
   }
 
@@ -47,26 +53,33 @@ const DivisionItem = ({
         panelDetailsType="flat"
         headingColor="#1C315F"
       >
-        <span>Division: {division.long_name}</span>
+        <span>
+          {isUnassigned ? 'Unassigned' : `Division: ${division?.long_name}`}{' '}
+        </span>
         <DndProvider backend={HTML5Backend}>
           <ul className={styles.poolList}>
-            {pools.map(pool => (
-              <PoolItem
-                pool={pool}
-                teams={teams.filter(it => it.pool_id === pool.pool_id)}
-                division={division}
-                isEdit={isEdit}
-                changePool={changePool}
-                onDeletePopupOpen={onDeletePopupOpen}
-                onEditPopupOpen={onEditPopupOpen}
-                key={pool.pool_id}
-              />
-            ))}
+            {division &&
+              pools.map(pool => (
+                <PoolItem
+                  pool={pool}
+                  teams={teams.filter(it => it.pool_id === pool.pool_id)}
+                  division={division}
+                  isEdit={isEdit}
+                  changePool={changePool}
+                  onDeletePopupOpen={onDeletePopupOpen}
+                  onEditPopupOpen={onEditPopupOpen}
+                  key={pool.pool_id}
+                />
+              ))}
             <PoolItem
               teams={teams.filter(
-                it => !it.pool_id && it.division_id === division.division_id
+                it =>
+                  (!division && it.division_id === null) ||
+                  (division &&
+                    !it.pool_id &&
+                    it.division_id === division.division_id)
               )}
-              division={division}
+              division={division || null}
               isEdit={isEdit}
               isUnassigned={true}
               changePool={changePool}

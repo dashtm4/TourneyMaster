@@ -8,10 +8,14 @@ import styles from './styles.module.scss';
 interface Props {
   pool?: IPool;
   teams: ITeam[];
-  division: IDisision;
+  division: IDisision | null;
   isEdit: boolean;
   isUnassigned?: boolean;
-  changePool: (team: ITeam, poolId: string | null) => void;
+  changePool: (
+    team: ITeam,
+    divisionId: string | null,
+    poolId: string | null
+  ) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
@@ -33,21 +37,23 @@ const PoolItem = ({
   const [, drop] = useDrop({
     accept: DndItems.TEAM,
     drop: () => ({
-      divisionId: division.division_id,
+      divisionId: division ? division.division_id : null,
       poolId: pool ? pool.pool_id : null,
     }),
   });
 
   return (
     <li className={styles.pool}>
-      <h5 className={styles.poolTitle}>
-        {isUnassigned ? 'Unassigned' : pool?.pool_name} ({teams.length})
-      </h5>
+      {division && (
+        <h5 className={styles.poolTitle}>
+          {isUnassigned ? 'Unassigned' : pool?.pool_name} ({teams.length})
+        </h5>
+      )}
       <ul ref={isEdit ? drop : null} className={styles.teamList}>
         {teams.map(it => (
           <TeamItem
             team={it}
-            divisionName={division.long_name}
+            divisionName={division ? division.long_name : ''}
             poolName={pool?.pool_desc}
             isEdit={isEdit}
             changePool={changePool}

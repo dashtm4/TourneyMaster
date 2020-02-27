@@ -17,8 +17,17 @@ import {
 import { ITeam } from '../../../common/models';
 import Api from 'api/api';
 
-const changePool = (team: ITeam, poolId: string | null) => {
-  const changedTeam = { ...team, pool_id: poolId, isChange: true };
+const changePool = (
+  team: ITeam,
+  divisionId: string | null,
+  poolId: string | null
+) => {
+  const changedTeam = {
+    ...team,
+    division_id: divisionId,
+    pool_id: poolId,
+    isChange: true,
+  };
 
   return {
     type: CHANGE_POOL,
@@ -46,7 +55,7 @@ const loadDivisionsTeams: ActionCreator<ThunkAction<
       type: LOAD_DIVISIONS_TEAMS_SUCCESS,
       payload: {
         divisions,
-        teams
+        teams,
       },
     });
   } catch {
@@ -121,10 +130,4 @@ const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-export {
-  loadDivisionsTeams,
-  changePool,
-  loadPools,
-  editTeam,
-  deleteTeam,
-};
+export { loadDivisionsTeams, changePool, loadPools, editTeam, deleteTeam };
