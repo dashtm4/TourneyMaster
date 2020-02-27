@@ -6,7 +6,7 @@ import {
   LOAD_POOLS_SUCCESS,
   SAVE_TEAMS_SUCCESS,
 } from './action-types';
-import { IDisision, IPool, ITeam } from '../../../common/models';
+import { IDivision, IPool, ITeam } from '../../../common/models';
 
 const initialState = {
   divisions: [],
@@ -17,7 +17,7 @@ const initialState = {
 };
 
 export interface AppState {
-  divisions: IDisision[];
+  divisions: IDivision[];
   pools: IPool[];
   teams: ITeam[];
   isLoading: boolean;

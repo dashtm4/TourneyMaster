@@ -1,4 +1,4 @@
-import { IDisision, IPool, ITeam } from '../../../common/models';
+import { IDivision, IPool, ITeam } from '../../../common/models';
 
 export const LOAD_DIVISIONS_TEAMS_START = 'TEAMS:LOAD_DIVISIONS_TEAMS_START';
 export const LOAD_DIVISIONS_TEAMS_SUCCESS =
@@ -21,7 +21,7 @@ export interface loadDivisionsTeamsStart {
 export interface loadDivisionsTeamsSuccess {
   type: 'TEAMS:LOAD_DIVISIONS_TEAMS_SUCCESS';
   payload: {
-    divisions: IDisision[];
+    divisions: IDivision[];
     teams: ITeam[];
   };
 }

@@ -61,8 +61,6 @@ const TeamItem = ({
       const { poolId, divisionId } = dropResult;
 
       if (poolId !== team.pool_id || divisionId !== team.division_id) {
-        console.log(1);
-
         changePool(team, divisionId, poolId);
       }
     },

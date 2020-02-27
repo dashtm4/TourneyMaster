@@ -13,12 +13,12 @@ import { getDivisions, getPools, getTeams, savePool } from './logic/actions';
 import Modal from '../common/modal';
 import AddPool from './add-pool';
 import { BindingCbWithOne } from 'common/models/callback';
-import { ITeam, IDisision } from 'common/models';
+import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
 
 interface IDivisionsAndPoolsProps {
-  divisions: IDisision[];
+  divisions: IDivision[];
   pools: IPool[];
   teams: ITeam[];
   isLoading: boolean;
@@ -32,7 +32,7 @@ interface IDivisionsAndPoolsProps {
 
 interface IDivisionAndPoolsState {
   isModalOpen: boolean;
-  selected: Partial<IDisision>;
+  selected: Partial<IDivision>;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -61,7 +61,7 @@ class DivisionsAndPools extends React.Component<
     this.props.history.push({ pathname: path, state: { divisionId } });
   };
 
-  onAddPool = (division: IDisision) => {
+  onAddPool = (division: IDivision) => {
     this.setState({ isModalOpen: true, selected: division });
   };
 
@@ -171,7 +171,7 @@ class DivisionsAndPools extends React.Component<
 
 interface IState {
   divisions: {
-    data: IDisision[];
+    data: IDivision[];
     pools: IPool[];
     teams: ITeam[];
     isLoading: boolean;

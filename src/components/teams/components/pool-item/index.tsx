@@ -1,14 +1,14 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
 import TeamItem from '../team-item';
-import { IPool, ITeam, IDisision } from '../../../../common/models';
+import { IPool, ITeam, IDivision } from '../../../../common/models';
 import { DndItems } from '../../types';
 import styles from './styles.module.scss';
 
 interface Props {
   pool?: IPool;
   teams: ITeam[];
-  division: IDisision | null;
+  division: IDivision | null;
   isEdit: boolean;
   isUnassigned?: boolean;
   changePool: (

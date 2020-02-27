@@ -3,11 +3,11 @@ import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import PoolItem from '../pool-item';
 import { SectionDropdown, Loader } from '../../../common';
-import { IDisision, IPool, ITeam } from '../../../../common/models';
+import { IDivision, IPool, ITeam } from '../../../../common/models';
 import styles from './styles.module.scss';
 
 interface Props {
-  division?: IDisision;
+  division?: IDivision;
   pools: IPool[];
   teams: ITeam[];
   isEdit: boolean;

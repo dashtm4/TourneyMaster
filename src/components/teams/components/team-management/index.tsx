@@ -1,11 +1,11 @@
 import React from 'react';
 import DivisionItem from '../division-item';
 import { SectionDropdown } from '../../../common';
-import { IDisision, IPool, ITeam } from '../../../../common/models';
+import { IDivision, IPool, ITeam } from '../../../../common/models';
 import styles from './styles.module.scss';
 
 interface Props {
-  divisions: IDisision[];
+  divisions: IDivision[];
   pools: IPool[];
   teams: ITeam[];
   isEdit: boolean;
