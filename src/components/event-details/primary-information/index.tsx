@@ -51,6 +51,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
   onChange,
 }: Props) => {
+  //@ts-ignore
   const { time_zone_utc, sport_id, event_startdate, event_enddate } = eventData;
 
   const onNameChange = (e: InputTargetValue) =>

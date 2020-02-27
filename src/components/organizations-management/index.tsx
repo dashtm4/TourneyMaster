@@ -41,19 +41,21 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
   }
 
   async addOrganization() {
+    const orgId = getVarcharEight();
     const data = {
       org_name: this.state.orgName,
       org_tag: this.state.orgTag,
-      org_id: getVarcharEight(),
+      org_id: orgId,
       city: this.state.city,
       state: this.state.state,
       is_active_YN: 1,
     };
     await api.post('/organizations', data);
+    await this.addUserToOrg(orgId);
     await this.getAllAvailableOrganizations();
   }
 
-  async applyInvitation() {
+  async addUserToOrg(orgId?: string) {
     const token = localStorage.getItem('token') || '';
     if (!token) {
       return;
@@ -66,7 +68,8 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
     );
     const data = {
       member_id: member.member_id,
-      org_id: this.state.invitationCode,
+      org_member_id: getVarcharEight(),
+      org_id: orgId || this.state.invitationCode,
     };
     await api.post('/org_members', data);
     await this.getAllAvailableOrganizations();
@@ -235,7 +238,7 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
               variant="contained"
               color="primary"
               // tslint:disable-next-line: jsx-no-lambda
-              onClick={() => this.applyInvitation()}
+              onClick={() => this.addUserToOrg()}
             />
           </div>
         </div>
