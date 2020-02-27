@@ -49,6 +49,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
   onChange,
 }: Props) => {
+  //@ts-ignore
   const { time_zone_utc, sport_id, event_startdate, event_enddate } = eventData;
 
   const onNameChange = (e: InputTargetValue) =>
@@ -150,7 +151,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             // width="635px"
             label="General Location"
             placeholder="Search google maps"
-            value={eventData.primary_location_desc}
+            value={eventData.primary_location_desc || ''}
             onChange={onPrimaryLocation}
           />
         </div>
@@ -161,7 +162,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             label="Description"
             multiline={true}
             rows="4"
-            value={eventData.event_description}
+            value={eventData.event_description || ''}
             onChange={onDescriptionChange}
           />
           <div className={styles.embedBtn}>

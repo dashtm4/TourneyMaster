@@ -34,8 +34,15 @@
       width: 2%;
     }
     width: 24%;
+    align-items: center;
+    display: flex;
   }
 }
 .heading {
   margin: 24px 0;
+}
+.copyIcon {
+  cursor: pointer;
+  margin-left: 5px;
+  font-size: 1rem !important;
 }

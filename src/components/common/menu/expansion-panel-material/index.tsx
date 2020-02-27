@@ -11,21 +11,34 @@ const ExpansionPanelWrapped = withStyles({
     backgroundColor: 'transparent',
     borderRadius: 0,
     boxShadow: 'none',
+    marginBottom: '2px!important',
+    '&:not(:last-child)': {
+      borderBottom: 2,
+    },
+    '&:before': {
+      display: 'none',
+    },
+    '&$expanded': {
+      margin: 'auto',
+    },
+  },
+  expanded: {
+    marginBottom: 2,
   },
 })(ExpansionPanel);
 
 const ExpansionPanelSummaryWrapped = withStyles({
   root: {
     padding: 0,
-    margin: 0,
+    marginBottom: -1,
+    minHeight: 48,
     '&$expanded': {
-      minHeight: 'unset',
+      minHeight: 48,
     },
   },
   content: {
-    margin: 0,
     '&$expanded': {
-      margin: 0,
+      margin: '12px 0',
     },
   },
   expanded: {},

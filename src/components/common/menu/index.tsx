@@ -11,6 +11,7 @@ import { Icons } from '../../../common/constants/icons';
 import styles from './styles.module.scss';
 
 interface MenuItem {
+  isAllow: boolean;
   title: string;
   icon: string;
   link: string;
@@ -20,10 +21,23 @@ interface MenuItem {
 interface Props {
   list: MenuItem[];
   eventId?: string;
+  isAllowEdit: boolean;
 }
 
-class Menu extends React.Component<Props> {
-  state = { isCollapsible: false, collapsed: false };
+interface State {
+  isCollapsible: boolean;
+  collapsed: boolean;
+}
+
+class Menu extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      isCollapsible: false,
+      collapsed: false,
+    };
+  }
 
   onCollapse = () => {
     if (this.state.isCollapsible) {
@@ -48,13 +62,17 @@ class Menu extends React.Component<Props> {
   }
 
   renderMenu() {
+    const { isAllowEdit } = this.props;
+
     return (
       <aside className={styles.dashboardMenu} onMouseLeave={this.onCollapse}>
         <ul className={styles.list}>
           {this.props.list.map(menuItem =>
             menuItem.children ? (
               <li className={styles.itemTitle} key={menuItem.title}>
-                <ExpansionPanelWrapped>
+                <ExpansionPanelWrapped
+                  disabled={!menuItem.isAllow && !isAllowEdit}
+                >
                   <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
                     {getIcon(menuItem.icon)}
                     {this.renderMenuLink(menuItem)}
@@ -75,8 +93,14 @@ class Menu extends React.Component<Props> {
                 className={`${styles.itemTitle} ${styles.itemTitleAlone}`}
                 key={menuItem.title}
               >
-                {getIcon(menuItem.icon)}
-                {this.renderMenuLink(menuItem)}
+                <ExpansionPanelWrapped
+                  disabled={!menuItem.isAllow && !isAllowEdit}
+                >
+                  <ExpansionPanelSummaryWrapped>
+                    {getIcon(menuItem.icon)}
+                    {this.renderMenuLink(menuItem)}
+                  </ExpansionPanelSummaryWrapped>
+                </ExpansionPanelWrapped>
               </li>
             )
           )}
@@ -108,6 +132,7 @@ class Menu extends React.Component<Props> {
 
   render() {
     const { collapsed } = this.state;
+
     return <>{collapsed ? this.renderCollapsedMenu() : this.renderMenu()}</>;
   }
 }

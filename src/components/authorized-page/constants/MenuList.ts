@@ -2,12 +2,14 @@ import { Icons, Routes } from '../../../common/constants';
 
 export const MenuList = [
   {
+    isAllow: true,
     title: 'My Dashboard',
     icon: Icons.PERSON,
     link: Routes.DASHBOARD,
     children: null,
   },
   {
+    isAllow: true,
     title: 'Library Manager',
     icon: Icons.INSERT_DRIVE,
     link: Routes.LIBRARY_MANAGER,
@@ -22,30 +24,35 @@ export const MenuList = [
     ],
   },
   {
+    isAllow: true,
     title: 'EventLink',
     icon: Icons.EMAIL,
     link: Routes.EVENT_LINK,
     children: ['Messaging', 'Schedule Review'],
   },
   {
+    isAllow: true,
     title: 'Collaboration',
     icon: Icons.PEOPLE,
     link: Routes.COLLABORATION,
     children: null,
   },
   {
+    isAllow: true,
     title: 'Calendar',
     icon: Icons.CALENDAR,
     link: Routes.CALENDAR,
     children: null,
   },
   {
+    isAllow: true,
     title: 'Utilities',
     icon: Icons.SETTINGS,
     link: Routes.UTILITIES,
     children: ['Edit Profile', 'Email Setup'],
   },
   {
+    isAllow: true,
     title: 'Event Day Complexities',
     link: Routes.EVENT_DAY_COMPLEXITIES,
     icon: Icons.ERROR,
@@ -55,6 +62,7 @@ export const MenuList = [
 
 export const MenuListForEvent = [
   {
+    isAllow: true,
     title: 'Event Details',
     icon: Icons.PERSON,
     link: '/event/event-details',
@@ -67,42 +75,49 @@ export const MenuListForEvent = [
     ],
   },
   {
+    isAllow: false,
     title: 'Facilities',
     icon: Icons.PLACE,
     link: '/event/facilities',
     children: null,
   },
   {
+    isAllow: false,
     title: 'Registration',
     icon: Icons.LIST,
     link: '/event/registration',
     children: ['Primary Information', 'Teams & Athletes', 'Main Contact'],
   },
   {
+    isAllow: false,
     title: 'Divisions & Pools',
     icon: Icons.PEOPLE,
     link: '/event/divisions-and-pools',
     children: null,
   },
   {
+    isAllow: false,
     title: 'Teams',
     icon: Icons.TEAM,
     link: '/event/teams',
     children: ['Team Management', 'Request Manager'],
   },
   {
+    isAllow: false,
     title: 'Scheduling',
     icon: Icons.CLOCK,
     link: '/event/scheduling',
     children: ['Tournament Play', 'Brackets'],
   },
   {
+    isAllow: false,
     title: 'Scoring',
     link: '/event/scoring',
     icon: Icons.SCORING,
     children: null,
   },
   {
+    isAllow: false,
     title: 'Reporting',
     link: '/event/reporting',
     icon: Icons.REPORT,

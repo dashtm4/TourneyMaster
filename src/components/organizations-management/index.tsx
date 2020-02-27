@@ -4,10 +4,11 @@ import { getVarcharEight } from 'helpers';
 import { IMember } from 'common/models/member';
 import jwt_decode from 'jwt-decode';
 import SectionDropdown from '../common/section-dropdown';
-import { HeadingLevelThree, HeadingLevelTwo } from 'components/common';
+import { HeadingLevelThree, HeadingLevelTwo, Toasts } from 'components/common';
 import Button from '../common/buttons/button';
 import { Input } from 'components/common';
 import styles from './styles.module.scss';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 interface IState {
   organizations: any[];
@@ -95,6 +96,17 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
     this.setState({ state: ev.target.value });
   }
 
+  copyToClipboard(id: string) {
+    const tempInput = document.createElement('input');
+    tempInput.value = id;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+
+    Toasts.successToast('The invitation code was successfully copied');
+  }
+
   renderOrganization() {
     const { organizations } = this.state;
     return (
@@ -105,18 +117,18 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
         panelDetailsType="flat"
       >
         <HeadingLevelThree>
-          <span>Organizations list</span>
+          <span>Organizations List</span>
         </HeadingLevelThree>
         <div className={styles.listContainer}>
           {organizations.length > 0 && (
             <div>
               <p className={styles.title}>
-                You are a part of such organizations:
+                Organizations to which you currently belong
               </p>
               <ul className={styles.listItem}>
-                <li className={styles.title}>#</li>
+                <li className={styles.title}>{''}</li>
                 <li className={styles.title}>Name</li>
-                <li className={styles.title}>Tag</li>
+                <li className={styles.title}>@Tag</li>
                 <li className={styles.title}>City</li>
                 <li className={styles.title}>State</li>
                 <li className={styles.title}>Invitation Code</li>
@@ -132,7 +144,14 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
                   <li>{organization?.org_tag}</li>
                   <li>{organization?.city}</li>
                   <li>{organization?.state}</li>
-                  <li>{organization?.org_id}</li>
+                  <li>
+                    {organization?.org_id}
+                    <FileCopyIcon
+                      className={styles.copyIcon}
+                      // tslint:disable-next-line: jsx-no-lambda
+                      onClick={() => this.copyToClipboard(organization?.org_id)}
+                    />
+                  </li>
                 </ul>
               </>
             );
@@ -153,11 +172,11 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
       <SectionDropdown
         type="section"
         useBorder={true}
-        isDefaultExpanded={true}
+        isDefaultExpanded={false}
         panelDetailsType="flat"
       >
         <HeadingLevelThree>
-          <span>Add organization</span>
+          <span>Add Organization</span>
         </HeadingLevelThree>
         <div className={styles.section}>
           <div className={styles.sectionItem}>
@@ -199,7 +218,7 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
           </div>
           <div className={styles.sectionItem}>
             <Button
-              label="Add organization"
+              label="Add Organization"
               variant="contained"
               color="primary"
               // tslint:disable-next-line: jsx-no-lambda
@@ -216,11 +235,11 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
       <SectionDropdown
         type="section"
         useBorder={true}
-        isDefaultExpanded={true}
+        isDefaultExpanded={false}
         panelDetailsType="flat"
       >
         <HeadingLevelThree>
-          <span>Apply invitation</span>
+          <span>Apply Invitation</span>
         </HeadingLevelThree>
         <div className={styles.section}>
           <div className={styles.sectionItem}>
@@ -234,7 +253,7 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
           </div>
           <div className={styles.sectionItem}>
             <Button
-              label="Apply invitation"
+              label="Apply Invitation"
               variant="contained"
               color="primary"
               // tslint:disable-next-line: jsx-no-lambda
