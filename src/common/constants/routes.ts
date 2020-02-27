@@ -20,6 +20,7 @@ enum Routes {
   SCHEDULING = '/event/scheduling/:eventId?',
   SCORING = '/event/scoring/',
   SCORING_ID = '/event/scoring/:eventId?',
+  SCHEDULES = '/schedules/',
   REPORTING = '/event/reporting/:eventId?',
   RECORD_SCORES = '/event/record-scores/',
   RECORD_SCORES_ID = '/event/record-scores/:eventId?',

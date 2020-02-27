@@ -3,6 +3,7 @@ import api from 'api/api';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import { Toasts } from 'components/common';
 
 export const eventsFetchSuccess = (
   payload: EventDetailsDTO[]
@@ -22,5 +23,10 @@ export const getEvents: ActionCreator<ThunkAction<
   { type: string }
 >> = () => async (dispatch: Dispatch) => {
   const data = await api.get('/events');
+  if (!data) {
+    dispatch(eventDetailsFetchFailure());
+    return Toasts.errorToast("Couldn't load tournaments");
+  }
+
   dispatch(eventsFetchSuccess(data));
 };
