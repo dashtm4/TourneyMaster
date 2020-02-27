@@ -6,15 +6,23 @@ interface Props {
   selectedDivision: string;
   selectedTeam: string;
   selectedField: string;
+  onChangeSelect: (evt: React.ChangeEvent<HTMLInputElement>) => void;
+  // onChangeDay: (day: DayTypes) => void;
 }
 
-const Scoring = ({ selectedDivision, selectedTeam, selectedField }: Props) => (
+const Scoring = ({
+  selectedDivision,
+  selectedTeam,
+  selectedField,
+  onChangeSelect,
+}: Props) => (
   <section className={styles.scoringWrapper}>
     <h2 className="visually-hidden">Scoring</h2>
     <ScoringFilter
       selectedDivision={selectedDivision}
       selectedTeam={selectedTeam}
       selectedField={selectedField}
+      onChangeSelect={onChangeSelect}
     />
   </section>
 );
