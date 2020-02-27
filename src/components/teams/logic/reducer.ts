@@ -1,14 +1,12 @@
 import {
   TeamsAction,
-  SUCCESS,
   CHANGE_POOL,
-  LOAD_DIVISIONS,
+  LOAD_DIVISIONS_TEAMS_START,
+  LOAD_DIVISIONS_TEAMS_SUCCESS,
   LOAD_POOLS_START,
   LOAD_POOLS_SUCCESS,
-  LOAD_TEAMS_START,
-  LOAD_TEAMS_SUCCESS,
-  EDIT_TEAM,
-  DELETE_TEAM,
+  EDIT_TEAM_SUCCESS,
+  DELETE_TEAM_SUCCESS,
 } from './action-types';
 import { IDisision, IPool, ITeam } from '../../../common/models';
 
@@ -16,18 +14,34 @@ const initialState = {
   divisions: [],
   pools: [],
   teams: [],
+  isLoading: false,
+  isLoaded: false,
 };
 
 export interface AppState {
   divisions: IDisision[];
   pools: IPool[];
   teams: ITeam[];
+  isLoading: boolean;
+  isLoaded: boolean;
 }
 
 const teamsReducer = (state: AppState = initialState, action: TeamsAction) => {
   switch (action.type) {
-    case LOAD_DIVISIONS + SUCCESS:
-      return { ...state, divisions: action.payload };
+    case LOAD_DIVISIONS_TEAMS_START: {
+      return { ...initialState, isLoading: true };
+    }
+    case LOAD_DIVISIONS_TEAMS_SUCCESS: {
+      const { divisions, teams } = action.payload;
+
+      return {
+        ...state,
+        divisions: divisions,
+        teams: teams,
+        isLoading: false,
+        isLoaded: true,
+      };
+    }
     case LOAD_POOLS_START: {
       const { divisionId } = action.payload;
 
@@ -51,53 +65,32 @@ const teamsReducer = (state: AppState = initialState, action: TeamsAction) => {
         pools: [...state.pools, ...pools],
       };
     }
-    case LOAD_TEAMS_START: {
-      const { divisionId } = action.payload;
-
-      return {
-        ...state,
-        divisions: state.divisions.map(it =>
-          it.division_id === divisionId ? { ...it, isTeamsLoading: true } : it
-        ),
-      };
-    }
-    case LOAD_TEAMS_SUCCESS:
-      const { teams, divisionId } = action.payload;
-
-      return {
-        ...state,
-        divisions: state.divisions.map(it =>
-          it.division_id === divisionId
-            ? { ...it, isTeamsLoading: false, isTeamsLoaded: true }
-            : it
-        ),
-        teams: [...state.teams, ...teams],
-      };
-    case CHANGE_POOL:
-      const changedTeam = action.payload;
-
-      return {
-        ...state,
-        teams: state.teams.map(team =>
-          team.team_id === changedTeam.team_id ? changedTeam : team
-        ),
-      };
-    case EDIT_TEAM + SUCCESS:
-      const editedTeam = action.payload as ITeam;
+    case CHANGE_POOL: {
+      const { changedTeam } = action.payload;
 
       return {
         ...state,
         teams: state.teams.map(it =>
-          it.team_id === editedTeam.team_id ? editedTeam : it
+          it.team_id === changedTeam.team_id ? changedTeam : it
         ),
       };
-    case DELETE_TEAM + SUCCESS:
-      const removedTeam = action.payload as ITeam;
+    }
+    case EDIT_TEAM_SUCCESS: {
+      const { team } = action.payload;
 
       return {
         ...state,
-        teams: state.teams.filter(it => it.team_id !== removedTeam.team_id),
+        teams: state.teams.map(it => (it.team_id === team.team_id ? team : it)),
       };
+    }
+    case DELETE_TEAM_SUCCESS: {
+      const { team } = action.payload;
+
+      return {
+        ...state,
+        teams: state.teams.filter(it => it.team_id !== team.team_id),
+      };
+    }
     default:
       return state;
   }

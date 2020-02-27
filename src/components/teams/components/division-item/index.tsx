@@ -2,7 +2,7 @@ import React from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import PoolItem from '../pool-item';
-import { SectionDropdown } from '../../../common';
+import { SectionDropdown, Loader } from '../../../common';
 import { IDisision, IPool, ITeam } from '../../../../common/models';
 import styles from './styles.module.scss';
 
@@ -13,7 +13,6 @@ interface Props {
   isEdit: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
   loadPools: (divisionId: string) => void;
-  loadTeams: (divisionId: string) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
@@ -29,7 +28,6 @@ const DivisionItem = ({
   isEdit,
   changePool,
   loadPools,
-  loadTeams,
   onDeletePopupOpen,
   onEditPopupOpen,
 }: Props) => {
@@ -37,8 +35,8 @@ const DivisionItem = ({
     loadPools(division.division_id);
   }
 
-  if (!division.isTeamsLoading && !division.isTeamsLoaded) {
-    loadTeams(division.division_id);
+  if (division.isPoolsLoading) {
+    return <Loader />;
   }
 
   return (

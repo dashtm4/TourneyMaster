@@ -11,7 +11,6 @@ interface Props {
   isEdit: boolean;
   changePool: (team: ITeam, poolId: string | null) => void;
   loadPools: (divisionId: string) => void;
-  loadTeams: (divisionId: string) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
@@ -27,7 +26,6 @@ const TeamManagement = ({
   isEdit,
   changePool,
   loadPools,
-  loadTeams,
   onDeletePopupOpen,
   onEditPopupOpen,
 }: Props) => (
@@ -45,7 +43,6 @@ const TeamManagement = ({
             isEdit={isEdit}
             changePool={changePool}
             loadPools={loadPools}
-            loadTeams={loadTeams}
             onDeletePopupOpen={onDeletePopupOpen}
             onEditPopupOpen={onEditPopupOpen}
             key={division.division_id}

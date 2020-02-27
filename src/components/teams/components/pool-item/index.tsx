@@ -38,10 +38,6 @@ const PoolItem = ({
     }),
   });
 
-  // if (pool && pool.isTeamsLoading) {
-  //   return <p>'Loading...'</p>;
-  // }
-
   return (
     <li className={styles.pool}>
       <h5 className={styles.poolTitle}>

@@ -1,26 +1,40 @@
 import { IDisision, IPool, ITeam } from '../../../common/models';
 
-export const SUCCESS = '_SUCCESS';
-export const FAILURE = '_FAILURE';
-export const LOAD_DIVISIONS = 'LOAD_DIVISIONS';
+export const LOAD_DIVISIONS_TEAMS_START = 'TEAMS:LOAD_DIVISIONS_TEAMS_START';
+export const LOAD_DIVISIONS_TEAMS_SUCCESS =
+  'TEAMS:LOAD_DIVISIONS_TEAMS_SUCCESS';
+export const LOAD_DIVISIONS_TEAMS_FAILURE =
+  'TEAMS:LOAD_DIVISIONS_TEAMS_FAILURE';
+
 export const LOAD_POOLS_START = 'TEAMS:LOAD_POOLS_START';
 export const LOAD_POOLS_SUCCESS = 'TEAMS:LOAD_POOLS_SUCCESS';
 export const LOAD_POOLS_FAILURE = 'TEAMS:LOAD_POOLS_FAILURE';
-export const LOAD_TEAMS_START = 'TEAMS:LOAD_TEAMS_START';
-export const LOAD_TEAMS_SUCCESS = 'TEAMS:LOAD_TEAMS_SUCCESS';
-export const LOAD_TEAMS_FAILURE = 'TEAMS:LOAD_TEAMS_FAILURE';
+
 export const CHANGE_POOL = 'CHANGE_POOL';
-export const DELETE_TEAM = 'DELETE_TEAM';
-export const EDIT_TEAM = 'EDIT_TEAM';
+
+export const DELETE_TEAM_SUCCESS = 'TEAMS:DELETE_TEAM_SUCCESS';
+export const DELETE_TEAM_FAILURE = 'TEAMS:DELETE_TEAM_FAILURE';
+
+export const EDIT_TEAM_SUCCESS = 'TEAMS:EDIT_TEAM_SUCCESS';
+export const EDIT_TEAM_FAILURE = 'TEAMS:EDIT_TEAM_FAILURE';
 
 export interface changePool {
   type: 'CHANGE_POOL';
-  payload: ITeam;
+  payload: {
+    changedTeam: ITeam;
+  };
 }
 
-export interface loadDivisionsSuccess {
-  type: 'LOAD_DIVISIONS_SUCCESS';
-  payload: IDisision[];
+export interface loadDivisionsTeamsStart {
+  type: 'TEAMS:LOAD_DIVISIONS_TEAMS_START';
+}
+
+export interface loadDivisionsTeamsSuccess {
+  type: 'TEAMS:LOAD_DIVISIONS_TEAMS_SUCCESS';
+  payload: {
+    divisions: IDisision[];
+    teams: ITeam[];
+  };
 }
 
 export interface loadPoolsStart {
@@ -38,36 +52,25 @@ export interface loadPoolsSuccess {
   };
 }
 
-export interface loadTeamsStart {
-  type: 'TEAMS:LOAD_TEAMS_START';
-  payload: {
-    divisionId: string;
-  };
-}
-
-export interface loadTeamsSuccess {
-  type: 'TEAMS:LOAD_TEAMS_SUCCESS';
-  payload: {
-    divisionId: string;
-    teams: ITeam[];
-  };
-}
-
 export interface editTeamSuccess {
-  type: 'EDIT_TEAM_SUCCESS';
-  payload: ITeam;
+  type: 'TEAMS:EDIT_TEAM_SUCCESS';
+  payload: {
+    team: ITeam;
+  };
 }
 
 export interface deleteTeamSuccess {
-  type: 'DELETE_TEAM_SUCCESS';
-  payload: ITeam;
+  type: 'TEAMS:DELETE_TEAM_SUCCESS';
+  payload: {
+    team: ITeam;
+  };
 }
 
 export type TeamsAction =
-  | loadDivisionsSuccess
+  | changePool
+  | loadDivisionsTeamsStart
+  | loadDivisionsTeamsSuccess
   | loadPoolsStart
   | loadPoolsSuccess
-  | loadTeamsStart
-  | loadTeamsSuccess
-  | changePool
+  | editTeamSuccess
   | deleteTeamSuccess;
