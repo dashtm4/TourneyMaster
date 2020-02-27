@@ -1,5 +1,6 @@
 import React from 'react';
 import ScoringFilter from '../scoring-filter/index';
+import { DayTypes } from '../../index';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
   selectedTeam: string;
   selectedField: string;
   onChangeSelect: (evt: React.ChangeEvent<HTMLInputElement>) => void;
-  // onChangeDay: (day: DayTypes) => void;
+  onChangeDay: (day: DayTypes) => void;
 }
 
 const Scoring = ({

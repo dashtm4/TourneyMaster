@@ -75,6 +75,6 @@ class RecordScores extends React.Component<
   }
 }
 
-export { ViewTypes };
+export { ViewTypes, DayTypes };
 
 export default RecordScores;
