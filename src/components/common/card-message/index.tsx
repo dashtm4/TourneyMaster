@@ -7,6 +7,7 @@ import styles from './styles.module.scss';
 interface Props {
   children: string;
   type: string;
+  style?: object;
 }
 
 const getIcon = (type: string) => {
@@ -20,8 +21,8 @@ const getIcon = (type: string) => {
   return null;
 };
 
-const CardMessage = ({ children, type }: Props) => (
-  <p className={styles.CardMessage}>
+const CardMessage = ({ children, type, style }: Props) => (
+  <p className={styles.CardMessage} style={style}>
     {getIcon(type)}
     {children}
   </p>
