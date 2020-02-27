@@ -93,10 +93,19 @@ class Teams extends React.Component<
   onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
 
   onSaveClick = () => {
+    const eventId = this.props.match.params.eventId;
     const { saveTeams } = this.props;
     const { teams } = this.state;
 
-    saveTeams(teams);
+    if (eventId) {
+      saveTeams(teams);
+    }
+  };
+
+  onCancelClick = () => {
+    const { teams } = this.props;
+
+    this.setState({ isEdit: false, teams });
   };
 
   onDeletePopupOpen = (team: ITeam) =>
@@ -175,6 +184,7 @@ class Teams extends React.Component<
             isEdit={isEdit}
             onEditClick={this.onEditClick}
             onSaveClick={this.onSaveClick}
+            onCancelClick={this.onCancelClick}
             history={this.props.history}
             eventId={this.props.match.params.eventId}
           />

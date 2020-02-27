@@ -14,6 +14,7 @@ interface Props {
   isEdit: boolean;
   onEditClick: BindingAction;
   onSaveClick: BindingAction;
+  onCancelClick: BindingAction;
   eventId: string | undefined;
   history: History;
 }
@@ -22,6 +23,7 @@ const Navigation = ({
   isEdit,
   onEditClick,
   onSaveClick,
+  onCancelClick,
   eventId,
   history,
 }: Props) => {
@@ -51,7 +53,7 @@ const Navigation = ({
       {isEdit ? (
         <p>
           <Button
-            onClick={onEditClick}
+            onClick={onCancelClick}
             label="Cancel"
             variant="text"
             color="secondary"
