@@ -28,7 +28,11 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
   <>
     <Header />
     <div className={styles.page}>
-      <Menu list={MenuListForEvent} eventId={props.match.params.eventId} />
+      <Menu
+        list={MenuListForEvent}
+        eventId={props.match.params.eventId}
+        isAllowEdit={Boolean(props.match.params.eventId)}
+      />
       <main className={styles.content}>
         <Switch>
           <Route path={Routes.EVENT_DETAILS} component={EventDetails} />
