@@ -1,6 +1,7 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import Navigation from './components/navigation';
+import Scoring from './components/scoring';
 
 interface Props {}
 
@@ -15,6 +16,7 @@ class RecordScores extends React.Component<
     return (
       <>
         <Navigation eventId={this.props.match.params.eventId} />
+        <Scoring />
       </>
     );
   }
