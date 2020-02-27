@@ -9,14 +9,13 @@ import WithEditingForm from './hocs/withEditingForm';
 import FormSignUp from './components/form-sign-up';
 import FormSignIn from './components/form-sign-in';
 import LoadingWrapper from './components/loading-wrapper';
-import { BindingCbWithTwo } from 'common/models/callback';
 import { Toasts } from '../common';
 import logo from '../../assets/logo.png';
 import styles from './style.module.scss';
 import './styles.scss';
 
 interface Props {
-  createMemeber: BindingCbWithTwo<string, string>;
+  createMemeber: (fullName: string, email: string, sub: string) => void;
 }
 
 interface State {
@@ -51,9 +50,11 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
             const userAttributes = currentSession.getIdToken().payload;
 
             if (userToken) {
+              const { name, email, sub } = userAttributes;
+
               localStorage.setItem('token', userToken);
 
-              createMemeber(userAttributes.name, userAttributes.email);
+              createMemeber(name, email, sub);
 
               this.props.history.push('/dashboard');
             }
@@ -70,8 +71,12 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
 
   onAuthSubmit = async (email: string, password: string) => {
     try {
+      this.setState({ isLoading: true });
+
       await Auth.signIn(email, password);
     } catch (err) {
+      this.setState({ isLoading: false });
+
       Toasts.errorToast(`${err.message}`);
     }
   };

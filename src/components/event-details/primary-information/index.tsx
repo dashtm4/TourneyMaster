@@ -49,6 +49,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
   onChange,
 }: Props) => {
+  //@ts-ignore
   const { time_zone_utc, sport_id, event_startdate, event_enddate } = eventData;
 
   const onNameChange = (e: InputTargetValue) =>
@@ -106,14 +107,14 @@ const PrimaryInformationSection: React.FC<Props> = ({
           />
           <Select
             // width="161px"
-            options={sportOptions}
+            options={sportOptions.map(type => ({ label: type, value: type }))}
             label="Sport"
             value={sport_id ? sportsEnum[sport_id!] : ''}
             onChange={onSportChange}
           />
           <Select
             // width="160px"
-            options={genderOptions}
+            options={genderOptions.map(type => ({ label: type, value: type }))}
             label="Gender"
             value={genderOptions[0]}
             onChange={onGenderChange}
@@ -136,7 +137,10 @@ const PrimaryInformationSection: React.FC<Props> = ({
           />
           <Select
             // width="256px"
-            options={timeZoneOptions}
+            options={timeZoneOptions.map(type => ({
+              label: type,
+              value: type,
+            }))}
             label="Time Zone"
             value={time_zone_utc ? timeZoneEnum[time_zone_utc!] : ''}
             onChange={onTimeZone}
@@ -147,7 +151,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             // width="635px"
             label="General Location"
             placeholder="Search google maps"
-            value={eventData.primary_location_desc}
+            value={eventData.primary_location_desc || ''}
             onChange={onPrimaryLocation}
           />
         </div>
@@ -158,7 +162,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             label="Description"
             multiline={true}
             rows="4"
-            value={eventData.event_description}
+            value={eventData.event_description || ''}
             onChange={onDescriptionChange}
           />
           <div className={styles.embedBtn}>

@@ -1,7 +1,15 @@
 import React from 'react';
 import styles from '../styles.module.scss';
 import { Input, DatePicker } from 'components/common';
-const PrimaryInformation = ({ data, onChange }: any) => {
+import { IRegistration } from 'common/models/registration';
+import { BindingCbWithTwo } from 'common/models';
+
+interface IPrimaryInformationProps {
+  data?: IRegistration;
+  onChange: BindingCbWithTwo<string, string>;
+}
+
+const PrimaryInformation = ({ data, onChange }: IPrimaryInformationProps) => {
   const onOpenDateChange = (e: Date | string) =>
     !isNaN(Number(e)) &&
     onChange('registration_start', new Date(e).toISOString());
@@ -33,7 +41,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Open Date"
             type="date"
-            value={data.registration_start || new Date()}
+            value={data ? data.registration_start : new Date()}
             onChange={onOpenDateChange}
           />
         </div>
@@ -42,7 +50,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Close Date"
             type="date"
-            value={data.registration_end || new Date()}
+            value={data ? data.registration_end : new Date()}
             onChange={onCloseDateChange}
           />
         </div>
@@ -54,7 +62,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             label="Entry Fee"
             startAdornment="$"
             type="number"
-            value={data.entry_fee || ''}
+            value={data ? data.entry_fee : ''}
             onChange={onEntryFeeChange}
           />
         </div>
@@ -64,7 +72,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             label="Deposit Fee"
             startAdornment="$"
             type="number"
-            value={data.entry_deposit || ''}
+            value={data ? data.entry_deposit : ''}
             onChange={onDepositFeeChange}
           />
         </div>
@@ -73,7 +81,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Early Bird Discount"
             type="number"
-            value={data.early_bird_discount || ''}
+            value={data ? data.early_bird_discount : ''}
             onChange={onEarlyBirdDiscountChange}
           />
         </div>
@@ -82,7 +90,7 @@ const PrimaryInformation = ({ data, onChange }: any) => {
             fullWidth={true}
             label="Discount End Date"
             type="date"
-            value={data.discount_enddate || new Date()}
+            value={data ? data.discount_enddate : new Date()}
             onChange={onDiscountEndDateChange}
           />
         </div>

@@ -14,6 +14,7 @@ import Teams from 'components/teams';
 import { Routes } from 'common/constants';
 import { MenuListForEvent } from '../constants/MenuList';
 import styles from '../styles.module.scss';
+import CreateTeam from '../../teams/components/create-team';
 
 interface MatchParams {
   eventId?: string;
@@ -27,7 +28,11 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
   <>
     <Header />
     <div className={styles.page}>
-      <Menu list={MenuListForEvent} eventId={props.match.params.eventId} />
+      <Menu
+        list={MenuListForEvent}
+        eventId={props.match.params.eventId}
+        isAllowEdit={Boolean(props.match.params.eventId)}
+      />
       <main className={styles.content}>
         <Switch>
           <Route path={Routes.EVENT_DETAILS} component={EventDetails} />
@@ -39,12 +44,14 @@ const AuthorizedPageEvent = (props: RouteComponentProps<MatchParams>) => (
             component={Sсoring}
           />
           <Route path={Routes.ADD_DIVISION} component={AddDivision} />
+          <Route path={Routes.EDIT_DIVISION} component={AddDivision} />
           <Route
             path={Routes.DIVISIONS_AND_POOLS}
             component={DivisionsAndPools}
           />
           <Route path={Routes.TEAMS} component={Teams} />
           <Route path={Routes.TEAMS} component={EmptyPage} />
+          <Route path={Routes.CREATE_TEAM} component={CreateTeam} />
           <Route path={Routes.SCHEDULING} component={Scheduling} />
           <Route path={Routes.SCORING} component={EmptyPage} />
           <Route path={Routes.REPORTING} component={EmptyPage} />

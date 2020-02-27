@@ -4,6 +4,7 @@ import { Storage } from 'aws-amplify';
 import uuidv4 from 'uuid/v4';
 
 import {
+  EVENT_DETAILS_FETCH_START,
   EVENT_DETAILS_FETCH_SUCCESS,
   EVENT_DETAILS_FETCH_FAILURE,
   EventDetailsAction,
@@ -12,7 +13,12 @@ import {
 import api from 'api/api';
 import { EventDetailsDTO, IIconFile } from './model';
 import { requiredFieldsNotEmpty } from '../state';
+import history from 'browserhistory';
 import { Toasts } from 'components/common';
+
+export const eventDetailsFetchStart = () => ({
+  type: EVENT_DETAILS_FETCH_START,
+});
 
 export const eventDetailsFetchSuccess = (
   payload: EventDetailsDTO[]
@@ -31,7 +37,10 @@ export const getEventDetails: ActionCreator<ThunkAction<
   null,
   EventDetailsAction
 >> = (eventId: string) => async (dispatch: Dispatch) => {
+  dispatch(eventDetailsFetchStart());
+
   const eventDetails = await api.get('/events', { event_id: eventId });
+
   if (eventDetails) {
     dispatch(eventDetailsFetchSuccess(eventDetails));
   } else {
@@ -44,7 +53,7 @@ export const saveEventDetails: ActionCreator<ThunkAction<
   {},
   null,
   EventDetailsAction
->> = (eventDetails: EventDetailsDTO) => async () => {
+>> = (eventDetails: EventDetailsDTO) => async (dispatch: Dispatch) => {
   const allRequiredFields = requiredFieldsNotEmpty(eventDetails);
 
   if (!allRequiredFields)
@@ -60,6 +69,8 @@ export const saveEventDetails: ActionCreator<ThunkAction<
   }
 
   Toasts.successToast('Changes successfully saved');
+
+  dispatch<any>(getEventDetails(eventDetails.event_id));
 };
 
 export const createEvent: ActionCreator<ThunkAction<
@@ -67,7 +78,7 @@ export const createEvent: ActionCreator<ThunkAction<
   {},
   null,
   EventDetailsAction
->> = (eventDetails: EventDetailsDTO) => async () => {
+>> = (eventDetails: EventDetailsDTO) => async (dispatch: Dispatch) => {
   const allRequiredFields = requiredFieldsNotEmpty(eventDetails);
 
   if (!allRequiredFields)
@@ -79,6 +90,10 @@ export const createEvent: ActionCreator<ThunkAction<
     return Toasts.errorToast("Couldn't save the changes");
 
   Toasts.successToast('Changes successfully saved');
+
+  history.replace(`/event/event-details/${eventDetails.event_id}`);
+
+  dispatch<any>(getEventDetails(eventDetails.event_id));
 };
 
 export const uploadFiles = (files: IIconFile[]) => () => {

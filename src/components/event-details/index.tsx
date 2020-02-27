@@ -16,10 +16,9 @@ import EventStructureSection from './event-structure';
 import MediaAssetsSection from './media-assets';
 import PlayoffsSection from './playoffs';
 
-import { Button, HeadingLevelTwo, Paper } from 'components/common';
+import { Button, HeadingLevelTwo, Paper, Loader } from 'components/common';
 import styles from './styles.module.scss';
 import { eventState } from './state';
-import { CircularProgress } from '@material-ui/core';
 
 interface IMapStateProps {
   event: IAppState;
@@ -46,14 +45,17 @@ class EventDetails extends Component<Props, State> {
     error: false,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     this.checkEventExistence();
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (this.props.event.data?.event_id !== prevProps.event.data?.event_id) {
+    const { data, isEventLoading } = this.props.event;
+
+    if (isEventLoading !== prevProps.event.isEventLoading) {
       this.setState({
-        event: this.props.event?.data,
+        eventId: data?.event_id,
+        event: data,
       });
     }
   }
@@ -63,7 +65,9 @@ class EventDetails extends Component<Props, State> {
 
     if (eventId) {
       this.setState({ eventId });
+
       this.props.getEventDetails(eventId);
+
       return;
     }
 
@@ -97,27 +101,14 @@ class EventDetails extends Component<Props, State> {
     this.props.createEvent(event);
   };
 
-  Loading = () => (
-    <div
-      style={{
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <CircularProgress />
-    </div>
-  );
-
   render() {
     const eventTypeOptions = ['Tournament', 'Showcase'];
 
     const { event } = this.state;
+    const { isEventLoading } = this.props.event;
 
-    return !event ? (
-      this.Loading()
+    return !event || isEventLoading ? (
+      <Loader />
     ) : (
       <div className={styles.container}>
         <Paper sticky={true}>

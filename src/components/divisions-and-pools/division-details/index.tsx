@@ -1,31 +1,36 @@
 import React from 'react';
 import styles from './styles.module.scss';
+import { IDisision } from 'common/models';
 
-const DivisionDetails = ({ data }: any) => (
+interface IDivisionDetailProps {
+  data: IDisision;
+}
+
+const DivisionDetails = ({ data }: IDivisionDetailProps) => (
   <div className={styles.divisionDetailsContainer}>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Max Team Registration:</span>{' '}
-      {data.max_num_teams}
+      {data.max_num_teams || '—'}
     </div>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Teams Paid:</span>{' '}
-      {data.teams_paid || '—'}
+      {/* {data.teams_paid || '—'} */}
     </div>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Entry Fee:</span>{' '}
-      {`$${data.entry_fee}`}
+      {(data.entry_fee && `$${data.entry_fee}`) || '—'}
     </div>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Teams Registered:</span>{' '}
-      {data.teams_registered}
+      {data.teams_registered || '—'}
     </div>
     <div className={styles.divisionItem}>
-      <span className={styles.divisionTitle}>Teams Tentative:</span>{' '}
-      {data.teams_tentitive}
+      <span className={styles.divisionTitle}>Teams Tentitive:</span>{' '}
+      {data.teams_tentitive || '—'}
     </div>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Number of Pools:</span>{' '}
-      {data.num_pools}
+      {data.num_pools || '—'}
     </div>
   </div>
 );

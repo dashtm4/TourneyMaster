@@ -16,6 +16,8 @@ import Tooltip from './tooltip-message';
 import Modal from './modal';
 import MultipleSearchSelect from './multiple-search-select';
 import PopupTeamEdit from './popup-team-edit';
+import Loader from './loader';
+import FileUpload from './file-upload';
 import * as Toasts from './toastr/showToasts';
 
 export {
@@ -38,4 +40,6 @@ export {
   Modal,
   MultipleSearchSelect,
   PopupTeamEdit,
+  Loader,
+  FileUpload,
 };
