@@ -105,7 +105,7 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
         panelDetailsType="flat"
       >
         <HeadingLevelThree>
-          <span>Organizations list</span>
+          <span>Organizations List</span>
         </HeadingLevelThree>
         <div className={styles.listContainer}>
           {organizations.length > 0 && (
@@ -157,7 +157,7 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
         panelDetailsType="flat"
       >
         <HeadingLevelThree>
-          <span>Add organization</span>
+          <span>Add Organization</span>
         </HeadingLevelThree>
         <div className={styles.section}>
           <div className={styles.sectionItem}>
@@ -199,7 +199,7 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
           </div>
           <div className={styles.sectionItem}>
             <Button
-              label="Add organization"
+              label="Add Organization"
               variant="contained"
               color="primary"
               // tslint:disable-next-line: jsx-no-lambda
@@ -220,7 +220,7 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
         panelDetailsType="flat"
       >
         <HeadingLevelThree>
-          <span>Apply invitation</span>
+          <span>Apply Invitation</span>
         </HeadingLevelThree>
         <div className={styles.section}>
           <div className={styles.sectionItem}>
@@ -234,7 +234,7 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
           </div>
           <div className={styles.sectionItem}>
             <Button
-              label="Apply invitation"
+              label="Apply Invitation"
               variant="contained"
               color="primary"
               // tslint:disable-next-line: jsx-no-lambda

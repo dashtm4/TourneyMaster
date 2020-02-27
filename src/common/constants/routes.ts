@@ -18,6 +18,7 @@ enum Routes {
   TEAMS = '/event/teams/:eventId?',
   CREATE_TEAM = '/event/teams-create/:eventId?',
   SCHEDULING = '/event/scheduling/:eventId?',
+  SCHEDULES = '/schedules/',
   SCORING = '/event/scoring/:eventId?',
   REPORTING = '/event/reporting/:eventId?',
 }
