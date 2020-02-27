@@ -106,7 +106,6 @@ class EventDetails extends Component<Props, State> {
 
     const { event } = this.state;
     const { isEventLoading } = this.props.event;
-
     return !event || isEventLoading ? (
       <Loader />
     ) : (

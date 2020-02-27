@@ -9,18 +9,20 @@ import {
   Button,
   DatePicker,
 } from 'components/common';
+import { IPosition } from './map/autocomplete';
 
 import styles from '../styles.module.scss';
-import { EventDetailsDTO } from '../logic/model';
+// import { EventDetailsDTO } from '../logic/model';
 
-import Map from '../map';
-import Places from '../map/autocomplete';
+import Map from './map';
+import PlacesAutocompleteInput from './map/autocomplete';
+import { BindingCbWithTwo } from 'common/models';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
-  eventData: Partial<EventDetailsDTO>;
-  onChange: any;
+  eventData: any;
+  onChange: BindingCbWithTwo<string, string | number>;
 }
 
 enum sportsEnum {
@@ -79,8 +81,15 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const onDescriptionChange = (e: InputTargetValue) =>
     onChange('event_description', e.target.value);
 
-  // const onPrimaryLocation = (e: InputTargetValue) =>
-  //   onChange('primary_location_desc', e.target.value);
+  const onPrimaryLocation = (address: string) =>
+    onChange('primary_location_desc', address);
+
+  const onGeneralLocationSelect = (position: IPosition) => {
+    onChange('primary_location_lat', position.lat);
+    onChange('primary_location_lng', position.lng);
+  };
+
+  const { primary_location_lat: lat, primary_location_lng: lng } = eventData;
 
   return (
     <SectionDropdown
@@ -145,15 +154,12 @@ const PrimaryInformationSection: React.FC<Props> = ({
               />
             </div>
             <div className={styles.piDetailsThird}>
-              <Places />
-              {/* <Input
-                label="General Location"
-                placeholder="Search Google Maps"
-                value={eventData.primary_location_desc}
+              <PlacesAutocompleteInput
+                onSelect={onGeneralLocationSelect}
                 onChange={onPrimaryLocation}
-              /> */}
+                address={eventData.primary_location_desc || ''}
+              />
             </div>
-
             <div className={styles.piDetailsThirdArea}>
               <Input
                 fullWidth={true}
@@ -166,7 +172,14 @@ const PrimaryInformationSection: React.FC<Props> = ({
             </div>
           </div>
           <div className={styles.mapContainer}>
-            <Map />
+            {lat && lng && (
+              <Map
+                position={{
+                  lat,
+                  lng,
+                }}
+              />
+            )}
           </div>
         </div>
         <Button
