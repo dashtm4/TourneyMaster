@@ -25,6 +25,7 @@ const Navigation = ({ isEdit, onEditClick, eventId, history }: Props) => {
 
     history.push(path);
   };
+  
   return (
     <div className={styles.navWrapper}>
       <p>

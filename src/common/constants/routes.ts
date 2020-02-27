@@ -4,7 +4,7 @@ enum Routes {
   DASHBOARD = '/dashboard',
   LIBRARY_MANAGER = '/library-manager',
   EVENT_LINK = '/event-link',
-  COLLABORATION = '/colaboration',
+  COLLABORATION = '/collaboration',
   CALENDAR = '/calendar',
   UTILITIES = '/utilities',
   EVENT_DAY_COMPLEXITIES = '/event-day-complexities',
@@ -18,8 +18,11 @@ enum Routes {
   TEAMS = '/event/teams/:eventId?',
   CREATE_TEAM = '/event/teams-create/:eventId?',
   SCHEDULING = '/event/scheduling/:eventId?',
-  SCORING = '/event/scoring/:eventId?',
+  SCORING = '/event/scoring/',
+  SCORING_ID = '/event/scoring/:eventId?',
   REPORTING = '/event/reporting/:eventId?',
+  RECORD_SCORES = '/event/record-scores/',
+  RECORD_SCORES_ID = '/event/record-scores/:eventId?',
 }
 
 export { Routes };
