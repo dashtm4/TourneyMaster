@@ -17,7 +17,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
 import { getEvents } from './logic/actions';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
-// import CircularProgress from '@material-ui/core/CircularProgress';
 import { Loader } from 'components/common';
 
 const data = [
