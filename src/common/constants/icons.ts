@@ -18,6 +18,8 @@ enum Icons {
   DELETE = 'delete',
   GET_APP = 'getApp',
   PUBLISH = 'publish',
+  EMODJI_OBJECTS = 'emodjiObjects',
+  WARNING = 'warning',
 }
 
 export { Icons };

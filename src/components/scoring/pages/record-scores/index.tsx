@@ -1,13 +1,15 @@
 import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { RouteComponentProps } from 'react-router-dom';
+import History from 'browserhistory';
 import { loadScoresData } from './logic/actions';
 import { AppState } from './logic/reducer';
-import { RouteComponentProps } from 'react-router-dom';
 import Navigation from './components/navigation';
 import Scoring from './components/scoring';
-import { Loader } from 'components/common';
+import { Loader, PopupExposure } from 'components/common';
 import { IDivision, ITeam, IField } from 'common/models';
+import { Routes } from 'common/constants';
 import { DefaulSelectFalues } from './types';
 
 enum DayTypes {
@@ -35,6 +37,7 @@ interface Props {
 }
 
 interface State {
+  isExposurePopupOpen: boolean;
   view: ViewTypes;
   selectedDay: DayTypes;
   selectedDivision: string;
@@ -55,6 +58,7 @@ class RecordScores extends React.Component<
       selectedDivision: DefaulSelectFalues.ALL,
       selectedTeam: DefaulSelectFalues.ALL,
       selectedField: DefaulSelectFalues.ALL,
+      isExposurePopupOpen: false,
     };
   }
 
@@ -70,11 +74,29 @@ class RecordScores extends React.Component<
   onChangeSelect = ({
     target: { name, value },
   }: React.ChangeEvent<HTMLInputElement>) =>
-    this.setState({ [name]: value } as Pick<State, keyof State>);
+    this.setState({ [name]: value } as Pick<any, keyof State>);
 
   onChangeView = (type: ViewTypes) => this.setState({ view: type });
 
   onChangeDay = (day: DayTypes) => this.setState({ selectedDay: day });
+
+  leavePage = () => {
+    const eventId = this.props.match.params.eventId;
+
+    History.push(`${Routes.SCORING}${eventId || ''}`);
+  };
+
+  onLeavePage = () => {
+    const { teams } = this.props;
+    const isTeamChange = teams.some(it => it.isChange);
+
+    // ! change in future
+    !isTeamChange
+      ? this.setState({ isExposurePopupOpen: true })
+      : this.leavePage();
+  };
+
+  onClosePopup = () => this.setState({ isExposurePopupOpen: false });
 
   render() {
     const {
@@ -83,6 +105,7 @@ class RecordScores extends React.Component<
       selectedDivision,
       selectedTeam,
       selectedField,
+      isExposurePopupOpen,
     } = this.state;
 
     const { isLoading, divisions, teams, fields } = this.props;
@@ -95,7 +118,7 @@ class RecordScores extends React.Component<
       <>
         <Navigation
           view={view}
-          eventId={this.props.match.params.eventId}
+          onLeavePage={this.onLeavePage}
           onChangeView={this.onChangeView}
         />
         <Scoring
@@ -108,6 +131,12 @@ class RecordScores extends React.Component<
           selectedField={selectedField}
           onChangeSelect={this.onChangeSelect}
           onChangeDay={this.onChangeDay}
+        />
+        <PopupExposure
+          isOpen={isExposurePopupOpen}
+          onClose={this.onClosePopup}
+          onExitClick={this.leavePage}
+          onSaveClick={() => {}}
         />
       </>
     );

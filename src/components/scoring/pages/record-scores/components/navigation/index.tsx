@@ -1,18 +1,17 @@
 import React from 'react';
 import { Button } from 'components/common';
-import history from 'browserhistory';
-import { Routes } from 'common/constants';
 import { ButtonTypes } from 'common/enums';
 import { ViewTypes } from '../../index';
+import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 
 interface Props {
   view: ViewTypes;
-  eventId?: string;
   onChangeView: (type: ViewTypes) => void;
+  onLeavePage: BindingAction;
 }
 
-const Navigation = ({ view, eventId, onChangeView }: Props) => (
+const Navigation = ({ view, onChangeView, onLeavePage }: Props) => (
   <div className={styles.navWrapper}>
     <p className={styles.btnsViewWrapper}>
       <span className={styles.btnWrapper}>
@@ -43,7 +42,7 @@ const Navigation = ({ view, eventId, onChangeView }: Props) => (
     <p className={styles.btnsSaveWrapper}>
       <span className={styles.btnWrapper}>
         <Button
-          onClick={() => history.push(`${Routes.SCORING}${eventId || ''}`)}
+          onClick={onLeavePage}
           label="Close"
           variant="text"
           color="secondary"

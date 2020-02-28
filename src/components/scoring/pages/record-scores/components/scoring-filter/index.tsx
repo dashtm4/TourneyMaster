@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Select, CardMessage } from 'components/common';
-import { CardMessageTypes } from 'components/common/card-message/Types';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import { ISelectOption } from 'components/common/select';
 import { DayTypes } from '../../index';
 import { ButtonTypes } from 'common/enums';
@@ -116,7 +116,10 @@ const ScoringFilter = ({
           ]}
         />
       </fieldset>
-      <CardMessage type={CardMessageTypes.INFO} style={CARD_MESSAGE_STYLES}>
+      <CardMessage
+        type={CardMessageTypes.EMODJI_OBJECTS}
+        style={CARD_MESSAGE_STYLES}
+      >
         Drag, drop, and zoom to navigate the schedule
       </CardMessage>
     </form>
