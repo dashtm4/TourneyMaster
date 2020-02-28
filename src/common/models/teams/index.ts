@@ -22,5 +22,6 @@ export interface ITeam {
   division_id: string | null;
   pool_id: string | null;
   //Optional
-  isChange: boolean
+  isChange: boolean,
+  isDelete: boolean
 }
