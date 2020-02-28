@@ -1,4 +1,4 @@
-export interface IDisision {
+export interface IDivision {
   division_id: string;
   event_id: string;
   long_name: string;

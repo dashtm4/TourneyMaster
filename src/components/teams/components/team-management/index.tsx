@@ -1,17 +1,20 @@
 import React from 'react';
 import DivisionItem from '../division-item';
 import { SectionDropdown } from '../../../common';
-import { IDisision, IPool, ITeam } from '../../../../common/models';
+import { IDivision, IPool, ITeam } from '../../../../common/models';
 import styles from './styles.module.scss';
 
 interface Props {
-  divisions: IDisision[];
+  divisions: IDivision[];
   pools: IPool[];
   teams: ITeam[];
   isEdit: boolean;
-  changePool: (team: ITeam, poolId: string | null) => void;
+  changePool: (
+    team: ITeam,
+    divisionId: string | null,
+    poolId: string | null
+  ) => void;
   loadPools: (divisionId: string) => void;
-  loadTeams: (divisionId: string) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
@@ -27,7 +30,6 @@ const TeamManagement = ({
   isEdit,
   changePool,
   loadPools,
-  loadTeams,
   onDeletePopupOpen,
   onEditPopupOpen,
 }: Props) => (
@@ -43,14 +45,24 @@ const TeamManagement = ({
             )}
             teams={teams}
             isEdit={isEdit}
+            isUnassigned={false}
             changePool={changePool}
             loadPools={loadPools}
-            loadTeams={loadTeams}
             onDeletePopupOpen={onDeletePopupOpen}
             onEditPopupOpen={onEditPopupOpen}
             key={division.division_id}
           />
         ))}
+        <DivisionItem
+          teams={teams}
+          pools={[]}
+          isEdit={isEdit}
+          isUnassigned={true}
+          changePool={changePool}
+          loadPools={loadPools}
+          onDeletePopupOpen={onDeletePopupOpen}
+          onEditPopupOpen={onEditPopupOpen}
+        />
       </ul>
     </SectionDropdown>
   </li>

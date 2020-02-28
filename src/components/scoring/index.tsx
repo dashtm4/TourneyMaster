@@ -10,17 +10,11 @@ import {
   deleteTeam,
 } from './logic/actions';
 import Navigation from './components/navigation';
+import { AppState } from './logic/reducer';
 import ScoringItem from './components/scoring-Item';
 import TeamDetailsPopup from './components/team-details-popup';
-import { HeadingLevelTwo, Modal } from '../common';
-import { AppState } from './logic/reducer';
-import {
-  IDisision,
-  IPool,
-  ITeam,
-  BindingAction,
-  BindingCbWithOne,
-} from '../../common/models';
+import { HeadingLevelTwo, Modal, Loader } from '../common';
+import { IDivision, IPool, ITeam, BindingCbWithOne } from '../../common/models';
 import styles from './styles.module.scss';
 
 interface MatchParams {
@@ -28,12 +22,14 @@ interface MatchParams {
 }
 
 interface Props {
-  divisions: IDisision[];
+  isLoading: boolean;
+  isLoaded: boolean;
+  divisions: IDivision[];
   pools: IPool[];
   teams: ITeam[];
   loadDivision: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
-  loadTeams: BindingAction;
+  loadTeams: (poolId: string) => void;
   editTeam: BindingCbWithOne<ITeam>;
   deleteTeam: (teamId: string) => void;
 }
@@ -109,7 +105,18 @@ class Sсoring extends React.Component<
 
   render() {
     const { isModalOpen, isEdit, changeableTeam } = this.state;
-    const { pools, teams, divisions, loadPools, loadTeams } = this.props;
+    const {
+      isLoading,
+      pools,
+      teams,
+      divisions,
+      loadPools,
+      loadTeams,
+    } = this.props;
+
+    if (isLoading) {
+      return <Loader />;
+    }
 
     return (
       <section>
@@ -154,6 +161,8 @@ interface IRootState {
 
 export default connect(
   (state: IRootState) => ({
+    isLoading: state.scoring.isLoading,
+    isLoaded: state.scoring.isLoaded,
     divisions: state.scoring.divisions,
     pools: state.scoring.pools,
     teams: state.scoring.teams,

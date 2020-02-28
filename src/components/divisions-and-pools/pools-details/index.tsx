@@ -3,13 +3,13 @@ import styles from './styles.module.scss';
 import Button from '../../common/buttons/button';
 import CreateIcon from '@material-ui/icons/Create';
 import Pool from './pool';
-import { IPool, ITeam, BindingCbWithOne, IDisision } from 'common/models';
+import { IPool, ITeam, BindingCbWithOne, IDivision } from 'common/models';
 
 interface IPoolsDetailsProps {
-  onAddPool: BindingCbWithOne<IDisision>;
+  onAddPool: BindingCbWithOne<IDivision>;
   getPools: BindingCbWithOne<string>;
   getTeams: BindingCbWithOne<string>;
-  division: IDisision;
+  division: IDivision;
   pools: IPool[];
   teams: ITeam[];
 }
