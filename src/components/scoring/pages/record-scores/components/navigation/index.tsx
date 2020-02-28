@@ -2,13 +2,9 @@ import React from 'react';
 import { Button } from 'components/common';
 import history from 'browserhistory';
 import { Routes } from 'common/constants';
+import { ButtonTypes } from 'common/enums';
 import { ViewTypes } from '../../index';
 import styles from './styles.module.scss';
-
-enum ButtonTypes {
-  SQUARED = 'squared',
-  SQUARED_OUTLINED = 'squaredOutlined',
-}
 
 interface Props {
   view: ViewTypes;

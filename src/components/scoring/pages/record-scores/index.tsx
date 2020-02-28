@@ -54,7 +54,13 @@ class RecordScores extends React.Component<
   onChangeDay = (day: DayTypes) => this.setState({ selectedDay: day });
 
   render() {
-    const { view, selectedDivision, selectedTeam, selectedField } = this.state;
+    const {
+      view,
+      selectedDay,
+      selectedDivision,
+      selectedTeam,
+      selectedField,
+    } = this.state;
 
     return (
       <>
@@ -64,6 +70,7 @@ class RecordScores extends React.Component<
           onChangeView={this.onChangeView}
         />
         <Scoring
+          selectedDay={selectedDay}
           selectedDivision={selectedDivision}
           selectedTeam={selectedTeam}
           selectedField={selectedField}

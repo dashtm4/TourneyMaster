@@ -1,6 +1,8 @@
 import React from 'react';
 import { Button, Select, CardMessage } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/Types';
+import { DayTypes } from '../../index';
+import { ButtonTypes } from 'common/enums';
 import styles from './styles.module.scss';
 
 const CARD_MESSAGE_STYLES = {
@@ -14,38 +16,38 @@ enum FormFields {
 }
 
 interface Props {
+  selectedDay: DayTypes;
   selectedDivision: string;
   selectedTeam: string;
   selectedField: string;
   onChangeSelect: (evt: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeDay: (day: DayTypes) => void;
 }
 
 const ScoringFilter = ({
+  selectedDay,
   selectedDivision,
   selectedTeam,
   selectedField,
   onChangeSelect,
+  onChangeDay,
 }: Props) => (
   <form className={styles.scoringForm}>
     <h3 className="visually-hidden">Scoring filters</h3>
-    <Button
-      label="Day 1"
-      variant="contained"
-      color="primary"
-      type="squaredOutlined"
-    />
-    <Button
-      label="Day 2"
-      variant="contained"
-      color="primary"
-      type="squaredOutlined"
-    />
-    <Button
-      label="Day 3"
-      variant="contained"
-      color="primary"
-      type="squaredOutlined"
-    />
+    {Object.keys(DayTypes).map(it => (
+      <Button
+        onClick={() => onChangeDay(DayTypes[it])}
+        label={DayTypes[it]}
+        variant="contained"
+        color="primary"
+        type={
+          selectedDay === DayTypes[it]
+            ? ButtonTypes.SQUARED
+            : ButtonTypes.SQUARED_OUTLINED
+        }
+        key={it}
+      />
+    ))}
     <fieldset className={styles.selectWrapper}>
       <legend className={styles.selectTitle}>Division</legend>
       <Select
