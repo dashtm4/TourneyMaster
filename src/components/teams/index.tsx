@@ -113,7 +113,9 @@ class Teams extends React.Component<
 
   onDeleteTeam = (team: ITeam) => {
     this.setState(({ teams }) => ({
-      teams: teams.filter(it => it.team_id !== team.team_id),
+      teams: teams.map(it =>
+        it.team_id === team.team_id ? { ...it, isDelete: true } : it
+      ),
     }));
 
     this.onCloseModal();
@@ -195,7 +197,7 @@ class Teams extends React.Component<
             <TeamManagement
               divisions={divisions}
               pools={pools}
-              teams={teams}
+              teams={teams.filter(it => !it.isDelete)}
               isEdit={isEdit}
               changePool={this.changePool}
               loadPools={loadPools}

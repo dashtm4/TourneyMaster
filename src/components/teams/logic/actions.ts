@@ -75,7 +75,11 @@ const saveTeams: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
 ) => async (dispatch: Dispatch) => {
   try {
     for await (let team of teams) {
-      if (team.isChange) {
+      if (team.isDelete) {
+        await Api.delete(`/teams?team_id=${team.team_id}`);
+      }
+
+      if (team.isChange && !team.isDelete) {
         delete team.isChange;
 
         await Api.put(`/teams?team_id=${team.team_id}`, team);

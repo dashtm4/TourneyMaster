@@ -12,8 +12,7 @@ import {
 import Navigation from './components/navigation';
 import { AppState } from './logic/reducer';
 import ScoringItem from './components/scoring-Item';
-import TeamDetailsPopup from './components/team-details-popup';
-import { HeadingLevelTwo, Modal, Loader } from '../common';
+import { HeadingLevelTwo, Modal, Loader, PopupTeamEdit } from '../common';
 import { IDivision, IPool, ITeam, BindingCbWithOne } from '../../common/models';
 import styles from './styles.module.scss';
 
@@ -36,8 +35,9 @@ interface Props {
 
 interface State {
   changeableTeam: ITeam | null;
+  currentDivision: string | null;
+  currentPool: string | null;
   isModalOpen: boolean;
-  isEdit: boolean;
 }
 
 class Sсoring extends React.Component<
@@ -48,9 +48,10 @@ class Sсoring extends React.Component<
     super(props);
 
     this.state = {
-      isModalOpen: false,
-      isEdit: false,
+      currentDivision: null,
+      currentPool: null,
       changeableTeam: null,
+      isModalOpen: false,
     };
   }
 
@@ -63,10 +64,6 @@ class Sсoring extends React.Component<
     }
   }
 
-  onEditTeam = () => {
-    this.setState({ isModalOpen: true, isEdit: true });
-  };
-
   onSaveTeam = () => {
     const { changeableTeam } = this.state;
     const { editTeam } = this.props;
@@ -78,10 +75,10 @@ class Sсoring extends React.Component<
     this.onCloseModal();
   };
 
-  onDeleteTeam = (teamId: string) => {
+  onDeleteTeam = (team: ITeam) => {
     const { deleteTeam } = this.props;
 
-    deleteTeam(teamId);
+    deleteTeam(team.team_id);
 
     this.onCloseModal();
   };
@@ -96,15 +93,31 @@ class Sсoring extends React.Component<
     }));
   };
 
-  onOpenTeamDetails = (team: ITeam) => {
-    this.setState({ isModalOpen: true, changeableTeam: team });
+  onOpenTeamDetails = (team: ITeam, divisionName: string, poolName: string) => {
+    this.setState({
+      isModalOpen: true,
+      changeableTeam: team,
+      currentDivision: divisionName,
+      currentPool: poolName,
+    });
   };
 
   onCloseModal = () =>
-    this.setState({ changeableTeam: null, isModalOpen: false, isEdit: false });
+    this.setState({
+      isModalOpen: false,
+      changeableTeam: null,
+      currentDivision: null,
+      currentPool: null,
+    });
 
   render() {
-    const { isModalOpen, isEdit, changeableTeam } = this.state;
+    const {
+      isModalOpen,
+      changeableTeam,
+      currentDivision,
+      currentPool,
+    } = this.state;
+
     const {
       isLoading,
       pools,
@@ -140,10 +153,10 @@ class Sсoring extends React.Component<
           </ul>
         </div>
         <Modal isOpen={isModalOpen} onClose={this.onCloseModal}>
-          <TeamDetailsPopup
+          <PopupTeamEdit
             team={changeableTeam}
-            isEdit={isEdit}
-            onEditTeamClick={this.onEditTeam}
+            division={currentDivision}
+            pool={currentPool}
             onSaveTeamClick={this.onSaveTeam}
             onDeleteTeamClick={this.onDeleteTeam}
             onChangeTeam={this.onChangeTeam}
