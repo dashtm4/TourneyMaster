@@ -1,0 +1,22 @@
+.scoringForm {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  margin-bottom: 25px;
+}
+
+.selectWrapper {
+  width: 190px;
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+}
+
+.selectTitle {
+  color: #6a6a6a;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 19px;
+}

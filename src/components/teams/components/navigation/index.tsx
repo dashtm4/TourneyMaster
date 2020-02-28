@@ -34,6 +34,7 @@ const Navigation = ({
 
     history.push(path);
   };
+  
   return (
     <div className={styles.navWrapper}>
       <p>

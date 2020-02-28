@@ -9,15 +9,10 @@ import {
   editTeam,
   deleteTeam,
 } from './logic/actions';
+import Navigation from './components/navigation';
 import { AppState } from './logic/reducer';
 import ScoringItem from './components/scoring-Item';
-import {
-  HeadingLevelTwo,
-  Button,
-  Modal,
-  Loader,
-  PopupTeamEdit,
-} from '../common';
+import { HeadingLevelTwo, Modal, Loader, PopupTeamEdit } from '../common';
 import { IDivision, IPool, ITeam, BindingCbWithOne } from '../../common/models';
 import styles from './styles.module.scss';
 
@@ -138,9 +133,7 @@ class Sсoring extends React.Component<
 
     return (
       <section>
-        <p className={styles.navWrapper}>
-          <Button label="Record Scores" variant="contained" color="primary" />
-        </p>
+        <Navigation eventId={this.props.match.params.eventId} />
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>Scoring</HeadingLevelTwo>
           <ul className={styles.scoringList}>
