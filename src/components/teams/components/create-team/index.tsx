@@ -10,7 +10,7 @@ import { saveTeams } from './logic/actions';
 import { getDivisions } from 'components/divisions-and-pools/logic/actions';
 import {
   BindingCbWithOne,
-  IDisision,
+  IDivision,
   ITeam,
   BindingCbWithThree,
 } from 'common/models';
@@ -25,7 +25,7 @@ interface ICreateTeamState {
 interface ICreateTeamProps {
   history: History;
   match: any;
-  divisions: IDisision[];
+  divisions: IDivision[];
   saveTeams: BindingCbWithThree<Partial<ITeam>[], string, History>;
   getDivisions: BindingCbWithOne<string>;
 }
@@ -115,7 +115,7 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
 }
 
 interface IState {
-  divisions: { data: IDisision[] };
+  divisions: { data: IDivision[] };
 }
 
 const mapStateToProps = (state: IState) => ({

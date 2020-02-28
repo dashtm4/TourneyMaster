@@ -2,7 +2,7 @@ import React from 'react';
 import Input from 'components/common/input';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
-import { BindingCbWithOne, BindingAction, IDisision } from 'common/models';
+import { BindingCbWithOne, BindingAction, IDivision } from 'common/models';
 
 interface IAddPoolState {
   divisions_id?: string;
@@ -11,7 +11,7 @@ interface IAddPoolState {
 }
 
 interface IAddPoolProps {
-  division: IDisision;
+  division: IDivision;
   savePool: BindingCbWithOne<IAddPoolState>;
   onClose: BindingAction;
 }

@@ -1,35 +1,30 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
-import SectionDropdown from '../../../common/section-dropdown';
+import React from 'react';
+import { SectionDropdown, Loader } from '../../../common';
 import TeamItem from '../team-item';
 import styles from './styles.module.scss';
-import {
-  IPool,
-  ITeam,
-  BindingAction,
-  BindingCbWithOne,
-} from '../../../../common/models';
+import { IPool, ITeam, BindingCbWithOne } from '../../../../common/models';
 
 interface Props {
   pool: IPool;
   teams: ITeam[];
-  loadTeams: BindingAction;
+  loadTeams: (poolId: string) => void;
   onOpenTeamDetails: BindingCbWithOne<ITeam>;
 }
 
 const GroupItem = ({ pool, teams, loadTeams, onOpenTeamDetails }: Props) => {
-  useEffect(() => {
-    loadTeams();
-  }, []);
+  if (!pool.isTeamsLoading && !pool.isTeamsLoaded) {
+    loadTeams(pool.pool_id);
+  }
 
-  if (teams.length === 0) {
-    return null;
+  if (pool.isTeamsLoading) {
+    return <Loader />;
   }
 
   return (
     <li className={styles.groupItem}>
       <SectionDropdown isDefaultExpanded={true} headingColor={'#1C315F'}>
-        <span>{pool.pool_desc}</span>
+        <span>{pool.pool_name}</span>
         <table className={styles.groupTable}>
           <thead>
             <tr>

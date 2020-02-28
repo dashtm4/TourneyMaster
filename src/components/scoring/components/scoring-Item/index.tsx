@@ -1,23 +1,21 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
+import React from 'react';
 import moment from 'moment';
-import SectionDropdown from '../../../common/section-dropdown';
+import { SectionDropdown, Loader } from '../../../common';
 import GroupItem from '../group-item';
 import styles from './styles.module.scss';
 import {
-  IDisision,
+  IDivision,
   IPool,
   ITeam,
-  BindingAction,
   BindingCbWithOne,
 } from '../../../../common/models';
 
 interface Props {
-  division: IDisision;
+  division: IDivision;
   pools: IPool[];
   teams: ITeam[];
   loadPools: (divisionId: string) => void;
-  loadTeams: BindingAction;
+  loadTeams: (poolId: string) => void;
   onOpenTeamDetails: BindingCbWithOne<ITeam>;
 }
 
@@ -29,12 +27,12 @@ const ScoringItem = ({
   loadTeams,
   onOpenTeamDetails,
 }: Props) => {
-  useEffect(() => {
+  if (!division.isPoolsLoading && !division.isPoolsLoaded) {
     loadPools(division.division_id);
-  }, []);
+  }
 
-  if (!division) {
-    return null;
+  if (division.isPoolsLoading) {
+    return <Loader />;
   }
 
   return (

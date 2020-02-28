@@ -15,15 +15,15 @@ import { ThunkAction } from 'redux-thunk';
 import history from '../../../browserhistory';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
-import { IPool, ITeam, IDisision } from 'common/models';
+import { IPool, ITeam, IDivision } from 'common/models';
 
 export const fetchStart = (): { type: string } => ({
   type: FETCH_START,
 });
 
 export const divisionsFetchSuccess = (
-  payload: IDisision
-): { type: string; payload: IDisision } => ({
+  payload: IDivision
+): { type: string; payload: IDivision } => ({
   type: DIVISIONS_FETCH_SUCCESS,
   payload,
 });
@@ -33,15 +33,15 @@ export const divisionsFetchFailure = (): { type: string } => ({
 });
 
 export const addDivisionSuccess = (
-  payload: IDisision
-): { type: string; payload: IDisision } => ({
+  payload: IDivision
+): { type: string; payload: IDivision } => ({
   type: ADD_DIVISION_SUCCESS,
   payload,
 });
 
 export const updateDivisionSuccess = (
-  payload: IDisision
-): { type: string; payload: IDisision } => ({
+  payload: IDivision
+): { type: string; payload: IDivision } => ({
   type: UPDATE_DIVISION_SUCCESS,
   payload,
 });
@@ -110,7 +110,7 @@ export const updateDivision: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (division: IDisision) => async (dispatch: Dispatch) => {
+>> = (division: IDivision) => async (dispatch: Dispatch) => {
   const response = await api.put(
     `/divisions?division_id=${division.division_id}`,
     division
@@ -132,7 +132,7 @@ export const saveDivisions: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (divisions: IDisision[], eventId: string) => async (
+>> = (divisions: IDivision[], eventId: string) => async (
   dispatch: Dispatch
 ) => {
   for await (const division of divisions) {

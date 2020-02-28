@@ -77,7 +77,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.long_name}
+                      value={team.long_name || ''}
                       name={FORM_FIELDS.LONG_NAME}
                       type="text"
                     />
@@ -93,7 +93,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.short_name}
+                      value={team.short_name || ''}
                       name={FORM_FIELDS.SHORT_NAME}
                       type="text"
                     />
@@ -109,7 +109,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.team_tag}
+                      value={team.team_tag || ''}
                       name={FORM_FIELDS.TEAM_TAG}
                       type="text"
                     />
@@ -125,7 +125,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.state}
+                      value={team.state || ''}
                       name={FORM_FIELDS.STATE}
                       type="text"
                     />
@@ -141,7 +141,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.city}
+                      value={team.city || ''}
                       name={FORM_FIELDS.CITY}
                       type="text"
                     />
@@ -161,7 +161,7 @@ const TeamDetailsPopup = ({
                       <b>First Name: </b>
                       <input
                         onChange={onChangeTeam}
-                        value={team.contact_first_name}
+                        value={team.contact_first_name || ''}
                         name={FORM_FIELDS.CONTACT_FIRST_NAME}
                         type="text"
                       />
@@ -170,7 +170,7 @@ const TeamDetailsPopup = ({
                       <b>Last Name: </b>
                       <input
                         onChange={onChangeTeam}
-                        value={team.contact_last_name}
+                        value={team.contact_last_name || ''}
                         name={FORM_FIELDS.CONTACT_LAST_NAME}
                         type="text"
                       />
@@ -186,7 +186,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.phone_num}
+                      value={team.phone_num || ''}
                       name={FORM_FIELDS.PHONE_NUM}
                       type="text"
                     />
@@ -202,7 +202,7 @@ const TeamDetailsPopup = ({
                   <label>
                     <input
                       onChange={onChangeTeam}
-                      value={team.contact_email}
+                      value={team.contact_email || ''}
                       name={FORM_FIELDS.CONCTACT_EMAIL}
                       type="text"
                     />

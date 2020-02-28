@@ -3,7 +3,9 @@ import { IFacility, IField } from '../../../common/models';
 export const SUCCESS = '_SUCCESS';
 export const FAILURE = '_FAILURE';
 
-export const LOAD_FACILITIES = 'LOAD_FACILITIES';
+export const LOAD_FACILITIES_START = 'FACILITIES:LOAD_FACILITIES_START';
+export const LOAD_FACILITIES_SUCCESS = 'FACILITIES:LOAD_FACILITIES_SUCCESS';
+export const LOAD_FACILITIES_FAILURE = 'FACILITIES:LOAD_FACILITIES_FAILURE';
 
 export const LOAD_FIELDS_START = 'FACILITIES:LOAD_FIELDS_START';
 export const LOAD_FIELDS_SUCCESS = 'FACILITIES:LOAD_FIELDS_SUCCESS';
@@ -19,8 +21,12 @@ export const UPDATE_FIELD = 'UPDATE_FIELD';
 
 export const SAVE_FACILITIES = 'SAVE_FACILITIES';
 
+export interface loadFacilitiesStart {
+  type: 'FACILITIES:LOAD_FACILITIES_START';
+}
+
 export interface loadFacilitiesSuccess {
-  type: 'LOAD_FACILITIES_SUCCESS';
+  type: 'FACILITIES:LOAD_FACILITIES_SUCCESS';
   payload: {
     facilities: IFacility[];
   };
@@ -77,6 +83,7 @@ export interface saveFacilities {
 }
 
 export type FacilitiesAction =
+  | loadFacilitiesStart
   | loadFacilitiesSuccess
   | loadFieldsStart
   | loadFieldsSuccess
