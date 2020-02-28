@@ -17,6 +17,7 @@ import {
   DELETE_TEAM_FAILURE,
 } from './action-types';
 import { ITeam } from '../../../common/models';
+import { Toasts } from 'components/common';
 import Api from 'api/api';
 
 const loadDivision: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
@@ -74,12 +75,12 @@ const loadTeams: ActionCreator<ThunkAction<
   {},
   null,
   TeamsAction
->> = (poolId) => async (dispatch: Dispatch) => {
+>> = poolId => async (dispatch: Dispatch) => {
   try {
     dispatch({
       type: LOAD_TEAMS_START,
       payload: {
-        poolId
+        poolId,
       },
     });
 
@@ -111,6 +112,8 @@ const editTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
         team,
       },
     });
+
+    Toasts.successToast('Saved ❤️');
   } catch {
     dispatch({
       type: EDIT_TEAM_FAILURE,

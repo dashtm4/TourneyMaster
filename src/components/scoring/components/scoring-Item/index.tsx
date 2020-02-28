@@ -3,12 +3,7 @@ import moment from 'moment';
 import { SectionDropdown, Loader } from '../../../common';
 import GroupItem from '../group-item';
 import styles from './styles.module.scss';
-import {
-  IDivision,
-  IPool,
-  ITeam,
-  BindingCbWithOne,
-} from '../../../../common/models';
+import { IDivision, IPool, ITeam } from '../../../../common/models';
 
 interface Props {
   division: IDivision;
@@ -16,7 +11,11 @@ interface Props {
   teams: ITeam[];
   loadPools: (divisionId: string) => void;
   loadTeams: (poolId: string) => void;
-  onOpenTeamDetails: BindingCbWithOne<ITeam>;
+  onOpenTeamDetails: (
+    team: ITeam,
+    divisionName: string,
+    poolName: string
+  ) => void;
 }
 
 const ScoringItem = ({
@@ -67,6 +66,7 @@ const ScoringItem = ({
           <ul className={styles.groupList}>
             {pools.map(it => (
               <GroupItem
+                division={division}
                 pool={it}
                 teams={teams}
                 loadTeams={loadTeams}
