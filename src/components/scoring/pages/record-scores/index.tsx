@@ -1,7 +1,14 @@
 import React from 'react';
+import { Dispatch, bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { loadScoresData } from './logic/actions';
+import { AppState } from './logic/reducer';
 import { RouteComponentProps } from 'react-router-dom';
 import Navigation from './components/navigation';
 import Scoring from './components/scoring';
+import { Loader } from 'components/common';
+import { IDivision, ITeam, IField } from 'common/models';
+import { DefaulSelectFalues } from './types';
 
 enum DayTypes {
   DAY_ONE = 'Day 1',
@@ -18,7 +25,14 @@ interface MatchParams {
   eventId?: string;
 }
 
-interface Props {}
+interface Props {
+  isLoading: boolean;
+  isLoaded: boolean;
+  divisions: IDivision[];
+  teams: ITeam[];
+  fields: IField[];
+  loadScoresData: (eventId: string) => void;
+}
 
 interface State {
   view: ViewTypes;
@@ -38,10 +52,19 @@ class RecordScores extends React.Component<
     this.state = {
       view: ViewTypes.VIEW_ONLY,
       selectedDay: DayTypes.DAY_ONE,
-      selectedDivision: 'all',
-      selectedTeam: 'all',
-      selectedField: 'all',
+      selectedDivision: DefaulSelectFalues.ALL,
+      selectedTeam: DefaulSelectFalues.ALL,
+      selectedField: DefaulSelectFalues.ALL,
     };
+  }
+
+  componentDidMount() {
+    const { loadScoresData } = this.props;
+    const eventId = this.props.match.params.eventId;
+
+    if (eventId) {
+      loadScoresData(eventId);
+    }
   }
 
   onChangeSelect = ({
@@ -62,6 +85,12 @@ class RecordScores extends React.Component<
       selectedField,
     } = this.state;
 
+    const { isLoading, divisions, teams, fields } = this.props;
+
+    if (isLoading) {
+      return <Loader />;
+    }
+
     return (
       <>
         <Navigation
@@ -70,6 +99,9 @@ class RecordScores extends React.Component<
           onChangeView={this.onChangeView}
         />
         <Scoring
+          divisions={divisions}
+          teams={teams}
+          fields={fields}
           selectedDay={selectedDay}
           selectedDivision={selectedDivision}
           selectedTeam={selectedTeam}
@@ -82,6 +114,19 @@ class RecordScores extends React.Component<
   }
 }
 
+interface IRootState {
+  recordScores: AppState;
+}
+
 export { ViewTypes, DayTypes };
 
-export default RecordScores;
+export default connect(
+  ({ recordScores }: IRootState) => ({
+    isLoading: recordScores.isLoading,
+    isLoaded: recordScores.isLoaded,
+    divisions: recordScores.divisions,
+    teams: recordScores.teams,
+    fields: recordScores.fields,
+  }),
+  (dispatch: Dispatch) => bindActionCreators({ loadScoresData }, dispatch)
+)(RecordScores);

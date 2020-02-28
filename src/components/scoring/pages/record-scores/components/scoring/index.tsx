@@ -1,9 +1,13 @@
 import React from 'react';
 import ScoringFilter from '../scoring-filter/index';
 import { DayTypes } from '../../index';
+import { IDivision, ITeam, IField } from 'common/models';
 import styles from './styles.module.scss';
 
 interface Props {
+  divisions: IDivision[];
+  teams: ITeam[];
+  fields: IField[];
   selectedDay: DayTypes;
   selectedDivision: string;
   selectedTeam: string;
@@ -13,6 +17,9 @@ interface Props {
 }
 
 const Scoring = ({
+  divisions,
+  teams,
+  fields,
   selectedDay,
   selectedDivision,
   selectedTeam,
@@ -23,6 +30,9 @@ const Scoring = ({
   <section className={styles.scoringWrapper}>
     <h2 className="visually-hidden">Scoring</h2>
     <ScoringFilter
+      divisions={divisions}
+      teams={teams}
+      fields={fields}
       selectedDay={selectedDay}
       selectedDivision={selectedDivision}
       selectedTeam={selectedTeam}
