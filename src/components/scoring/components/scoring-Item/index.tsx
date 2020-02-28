@@ -64,14 +64,14 @@ const ScoringItem = ({
             </li>
           </ul>
           <ul className={styles.groupList}>
-            {pools.map(it => (
+            {pools.map(pool => (
               <GroupItem
                 division={division}
-                pool={it}
-                teams={teams}
+                pool={pool}
+                teams={teams.filter(it => it.pool_id === pool.pool_id)}
                 loadTeams={loadTeams}
                 onOpenTeamDetails={onOpenTeamDetails}
-                key={it.pool_id}
+                key={pool.pool_id}
               />
             ))}
           </ul>
