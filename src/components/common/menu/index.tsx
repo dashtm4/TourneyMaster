@@ -120,6 +120,7 @@ class Menu extends React.Component<Props, State> {
           {this.props.list.map(menuItem => (
             <li
               className={`${styles.itemTitle} ${styles.itemTitleAlone}`}
+              style={{ margin: '16px 0' }}
               key={menuItem.title}
             >
               {getIcon(menuItem.icon)}
