@@ -59,7 +59,12 @@ const TeamDetailsPopup = ({
       <div className={styles.headerWrapper}>
         <HeadingLevelThree color="#1C315F">
           <span>
-            {teamTitle} ({division}, {pool})
+            {teamTitle}
+            {division
+              ? ` (${
+                  division && pool ? `${division}, ${pool}` : `${division}`
+                })`
+              : ''}
           </span>
         </HeadingLevelThree>
         <p className={styles.editBtnWrapper}>

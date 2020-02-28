@@ -54,7 +54,7 @@ const PoolItem = ({
           <TeamItem
             team={it}
             divisionName={division ? division.long_name : ''}
-            poolName={pool?.pool_desc}
+            poolName={pool?.pool_name}
             isEdit={isEdit}
             changePool={changePool}
             onDeletePopupOpen={onDeletePopupOpen}
