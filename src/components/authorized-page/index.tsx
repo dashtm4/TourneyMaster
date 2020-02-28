@@ -1,8 +1,8 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Header from '../header';
-import Menu from '../common/menu';
-import { MenuList } from './constants/MenuList';
+// import Menu from '../common/menu';
+// import { MenuList } from './constants/MenuList';
 import { Routes } from '../../common/constants';
 import styles from './styles.module.scss';
 import Dashboard from '../dashboard';
@@ -16,7 +16,7 @@ const AuthorizedPage = () => (
   <>
     <Header />
     <div className={styles.page}>
-      <Menu list={MenuList} isAllowEdit={true} />
+      {/* <Menu list={MenuList} isAllowEdit={true} /> */}
       <main className={styles.content}>
         <Switch>
           <Route path={Routes.SCHEDULES} component={Schedules} />

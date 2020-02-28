@@ -8,6 +8,7 @@ export interface IGame {
   awayTeam?: ITeam;
   timeSlotId: number;
   fieldId: number;
+  isPremier?: boolean;
 }
 
 export interface IDefinedGames {
@@ -100,3 +101,27 @@ export const settleTeamsPerGames = (games: IGame[], teamCards: ITeamCard[]) =>
       homeTeam,
     };
   });
+
+export const arrayAverageOccurrence = (array: any[]) => {
+  if (array.length === 0) return null;
+  const modeMap = {};
+  let maxCount = 1;
+  let modes = [];
+
+  for (var i = 0; i < array.length; i++) {
+    const el = array[i];
+
+    if (modeMap[el] == null) modeMap[el] = 1;
+    else modeMap[el]++;
+
+    if (modeMap[el] > maxCount) {
+      modes = [el];
+      maxCount = modeMap[el];
+    } else if (modeMap[el] === maxCount) {
+      modes.push(el);
+      maxCount = modeMap[el];
+    }
+  }
+
+  return modes[0];
+};

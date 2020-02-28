@@ -11,7 +11,7 @@ const RenderFieldHeader = (props: IProps) => {
 
   return (
     <th key={field.id} className={styles.fieldTh}>
-      {field.name}
+      {field.isPremier ? '*' : ''} {field.name} ({field.facilityId})
     </th>
   );
 };

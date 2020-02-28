@@ -14,6 +14,7 @@ import TeamCard from './dnd/drag';
 import RenderFieldHeader from './field-header';
 import RenderTimeSlot from './time-slot';
 import { DropParams } from './dnd/drop';
+import test from './test';
 import styles from './styles.module.scss';
 
 export interface ITeamCard extends ITeam {
@@ -40,7 +41,9 @@ const SchedulesMatrix = (props: IProps) => {
     [teamCards]
   );
 
-  const allocatedGames: IGame[] = settleTeamsPerGames(games, teamCards);
+  const values = test({ fields, timeSlots, teamCards, games });
+  console.log('values', values);
+  const allocatedGames: IGame[] = settleTeamsPerGames(games, values);
 
   return (
     <DndProvider backend={HTML5Backend}>
