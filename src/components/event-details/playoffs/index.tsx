@@ -25,7 +25,23 @@ const bracketTypeOptions = [
   '3 Game Guarantee',
 ];
 
-const topNumberOfTeams = ['2', '3', '4', '5', '6', '7', '8'];
+const topNumberOfTeams = [
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
+];
 
 enum bracketTypesEnum {
   'Single Elimination' = 1,

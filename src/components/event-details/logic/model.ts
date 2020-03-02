@@ -48,6 +48,8 @@ export interface EventDetailsDTO {
   created_datetime: string;
   updated_by: string;
   updated_datetime: string;
+  primary_location_lat?: number;
+  primary_location_lng?: number;
 }
 
 export interface IIconFile {

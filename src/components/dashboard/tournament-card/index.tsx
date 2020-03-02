@@ -7,19 +7,29 @@ import tournamentLogoExample from '../../../assets/tournamentLogoExample.svg';
 import { getTournamentStatusColor } from '../../../helpers/getTournamentStatusColor';
 import moment from 'moment';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 interface ITournamentCardProps {
   event: EventDetailsDTO;
+  numOfTeams: number;
+  numOfFields: number;
+  isDetailLoading: boolean;
   history: History;
 }
 
-const TournamentCard = ({ event, history }: ITournamentCardProps) => {
+const TournamentCard = ({
+  event,
+  history,
+  isDetailLoading,
+  numOfTeams,
+  numOfFields,
+}: ITournamentCardProps) => {
   const onTournamentManage = () => {
     history.push(`event/event-details/${event.event_id}`);
   };
 
-  const startDate = moment(event.event_startdate).format('DD.MM.YYYY');
-  const endDate = moment(event.event_enddate).format('DD.MM.YYYY');
+  const startDate = moment(event.event_startdate).format('MM.DD.YYYY');
+  const endDate = moment(event.event_enddate).format('MM.DD.YYYY');
   return (
     <div className={styles.tournamentContainer}>
       <Paper>
@@ -49,12 +59,17 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
               color="primary"
               onClick={onTournamentManage}
             />
-            <Button label="Duplicate" variant="text" color="secondary" />
+            {/* <Button label="Duplicate" variant="text" color="secondary" /> */}
           </div>
         </div>
         <div className={styles.tournamentContent}>
           <div className={styles.tournamentContentItem}>
-            <span className={styles.tournamentContentTitle}>Teams:</span> {'—'}
+            <span className={styles.tournamentContentTitle}>Teams:</span>{' '}
+            {!isDetailLoading ? (
+              numOfTeams || '—'
+            ) : (
+              <CircularProgress size={15} />
+            )}
           </div>
           <div className={styles.tournamentContentItem}>
             <span className={styles.tournamentContentTitle}>Locations:</span>{' '}
@@ -75,10 +90,17 @@ const TournamentCard = ({ event, history }: ITournamentCardProps) => {
             {'—'}
           </div>
           <div className={styles.tournamentContentItem}>
-            <span className={styles.tournamentContentTitle}>Fields:</span> {'—'}
+            <span className={styles.tournamentContentTitle}>Fields:</span>{' '}
+            {!isDetailLoading ? (
+              numOfFields || '—'
+            ) : (
+              <CircularProgress size={15} />
+            )}
           </div>
           <div className={styles.tournamentContentItem}>
-            <span className={styles.tournamentContentTitle}>Schedule:</span>{' '}
+            <span className={styles.tournamentContentTitle}>
+              Last Schedule Release:
+            </span>{' '}
             {'—'}
           </div>
         </div>

@@ -1,8 +1,9 @@
 import React from 'react';
 import styles from '../styles.module.scss';
-import { Input, Select, Checkbox } from 'components/common';
+import { Input, Checkbox } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
 import { IRegistration } from 'common/models/registration';
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface IMainContactProps {
   data?: IRegistration;
@@ -10,8 +11,6 @@ interface IMainContactProps {
 }
 
 const MainContact = ({ data, onChange }: IMainContactProps) => {
-  const roles = ['1', '2', '3'];
-
   const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('reg_first_name', e.target.value);
   const onLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -49,15 +48,18 @@ const MainContact = ({ data, onChange }: IMainContactProps) => {
           />
         </div>
         <div className={styles.sectionItem}>
-          <Select
-            label="Role"
-            options={roles.map(type => ({
-              label: type,
-              value: type,
-            }))}
-            value=""
-            onChange={onRoleChange}
-          />
+          <Tooltip
+            title="Admin, Tourney Director, Girls Lead, Boys Lead, etc."
+            placement="bottom"
+          >
+            <div>
+              <Input
+                label="Role"
+                value={data ? data.role : ''}
+                onChange={onRoleChange}
+              />
+            </div>
+          </Tooltip>
           <span className={styles.tournamentStatus} />
         </div>
         <div className={styles.sectionItem}>

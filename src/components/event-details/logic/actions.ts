@@ -84,7 +84,10 @@ export const createEvent: ActionCreator<ThunkAction<
   if (!allRequiredFields)
     return Toasts.errorToast('All required fields must be filled');
 
-  const response = await api.post('/events', eventDetails);
+  const response = await api.post('/events', {
+    ...eventDetails,
+    event_status: 'Draft',
+  });
 
   if (response?.errorType !== undefined)
     return Toasts.errorToast("Couldn't save the changes");
@@ -108,5 +111,17 @@ export const uploadFiles = (files: IIconFile[]) => () => {
     Storage.put(saveFilePath, file, config)
       .then(() => Toasts.successToast(`${file.name} was successfully uploaded`))
       .catch(() => Toasts.errorToast(`${file.name} couldn't be uploaded`));
+  });
+};
+
+export const removeFiles = (files: IIconFile[]) => () => {
+  if (!files || !files.length) return;
+
+  files.forEach(fileObject => {
+    const { file, destinationType } = fileObject;
+    const key = `event_media_files/${destinationType}_${file.name}`;
+    Storage.remove(key)
+      .then(() => Toasts.successToast(`${file.name} was successfully removed`))
+      .catch(() => Toasts.errorToast(`${file.name} failed to remove`));
   });
 };

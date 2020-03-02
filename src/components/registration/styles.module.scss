@@ -14,7 +14,7 @@
 .mainMenu {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   min-width: 792px;
 }
 .heading {
@@ -67,4 +67,13 @@
 .link {
   color: #11a8ea;
   text-decoration: none;
+}
+.noFoundWrapper {
+  padding: 40px 20px;
+  text-align: center;
+
+  span {
+    font-size: 21px;
+    color: #878787;
+  }
 }
