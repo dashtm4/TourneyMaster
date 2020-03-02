@@ -12,7 +12,7 @@ import {
 import { IPosition } from './map/autocomplete';
 
 import styles from '../styles.module.scss';
-// import { EventDetailsDTO } from '../logic/model';
+import { EventDetailsDTO } from '../logic/model';
 
 import Map from './map';
 import PlacesAutocompleteInput from './map/autocomplete';
@@ -21,7 +21,7 @@ import { BindingCbWithTwo } from 'common/models';
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
-  eventData: any;
+  eventData: Partial<EventDetailsDTO>;
   onChange: BindingCbWithTwo<string, string | number>;
 }
 
