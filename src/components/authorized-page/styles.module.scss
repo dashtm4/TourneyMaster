@@ -1,10 +1,15 @@
 :local(.page) {
+  flex: 1 1 auto;
+
   display: flex;
   align-items: flex-start;
   justify-content: center;
+
   padding: 15px 10% 0;
+
   overflow: auto;
-  flex: 1 1 auto;
+
+  scroll-behavior: smooth;
 }
 
 :local(.content) {
