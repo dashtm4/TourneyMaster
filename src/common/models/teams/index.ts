@@ -3,7 +3,7 @@ export interface ITeam {
   event_id: string | null;
   org_id: number | null;
   long_name: string | null;
-  short_name: string | null;
+  short_name: string;
   team_tag: string | null;
   city: string | null;
   state: string | null;
@@ -22,6 +22,6 @@ export interface ITeam {
   division_id: string | null;
   pool_id: string | null;
   //Optional
-  isChange: boolean,
-  isDelete: boolean
+  isChange: boolean;
+  isDelete: boolean;
 }
