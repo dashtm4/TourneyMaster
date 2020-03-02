@@ -3,17 +3,21 @@ import {
   REGISTRATION_FETCH_FAILURE,
   REGISTRATION_UPDATE_SUCCESS,
   REGISTRATION_FETCH_START,
+  DIVISIONS_FETCH_SUCCESS,
 } from './actionTypes';
 import { IRegistration } from 'common/models/registration';
+import { IDivision } from 'common/models';
 
 export interface IState {
-  data?: IRegistration;
+  data?: Partial<IRegistration>;
+  divisions: IDivision[];
   isLoading: boolean;
   error: boolean;
 }
 
 const defaultState: IState = {
   data: undefined,
+  divisions: [],
   isLoading: false,
   error: false,
 };
@@ -33,7 +37,7 @@ export default (
     case REGISTRATION_FETCH_SUCCESS: {
       return {
         ...state,
-        data: { ...action.payload[0] },
+        data: action.payload[0],
         isLoading: false,
         error: false,
       };
@@ -50,6 +54,17 @@ export default (
         data: action.payload,
         isLoading: false,
         error: true,
+      };
+    }
+    case DIVISIONS_FETCH_SUCCESS: {
+      return {
+        ...state,
+        divisions: action.payload.sort(
+          (a: IDivision, b: IDivision) =>
+            +new Date(a.created_datetime) - +new Date(b.created_datetime)
+        ),
+        isLoading: false,
+        error: false,
       };
     }
     default:

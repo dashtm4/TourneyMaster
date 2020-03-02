@@ -11,13 +11,13 @@ import { connect } from 'react-redux';
 import {
   getRegistration,
   saveRegistration,
+  getDivisions,
 } from './registration-edit/logic/actions';
-import { getDivisions } from '../divisions-and-pools/logic/actions';
 import RegistrationEdit from 'components/registration/registration-edit';
 import { IRegistration } from 'common/models/registration';
 import { BindingCbWithOne, BindingCbWithTwo, IDivision } from 'common/models';
-import { CircularProgress } from '@material-ui/core';
 import { History } from 'history';
+import { Loader } from 'components/common';
 
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
@@ -89,21 +89,8 @@ class RegistrationView extends React.Component<
     return null;
   }
 
-  Loading = () => (
-    <div
-      style={{
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <CircularProgress />
-    </div>
-  );
-
-  renderView = (registration: Partial<IRegistration>) => {
+  renderView = () => {
+    const { registration } = this.props;
     if (this.state.isEdit) {
       return (
         <RegistrationEdit
@@ -119,12 +106,7 @@ class RegistrationView extends React.Component<
           <Paper sticky={true}>
             <div className={styles.mainMenu}>
               <Button
-                label="+ Add to Library"
-                variant="text"
-                color="secondary"
-              />
-              <Button
-                label="Edit"
+                label={registration ? 'Edit' : 'Add'}
                 variant="contained"
                 color="primary"
                 onClick={this.onRegistrationEdit}
@@ -135,45 +117,54 @@ class RegistrationView extends React.Component<
             <div className={styles.heading}>
               <HeadingLevelTwo>Registration</HeadingLevelTwo>
             </div>
-            <ul className={styles.libraryList}>
-              <li>
-                <SectionDropdown
-                  type="section"
-                  panelDetailsType="flat"
-                  isDefaultExpanded={true}
-                >
-                  <span>Primary Information</span>
-                  <PrimaryInformation
-                    eventId={this.eventId}
-                    data={registration}
-                    divisions={this.props.divisions.map(division => ({
-                      name: division.long_name,
-                      id: division.division_id,
-                    }))}
-                  />
-                </SectionDropdown>
-              </li>
-              <li>
-                <SectionDropdown
-                  type="section"
-                  panelDetailsType="flat"
-                  isDefaultExpanded={true}
-                >
-                  <span>Teams & Athletes</span>
-                  <TeamsAthletesInfo data={registration} />
-                </SectionDropdown>
-              </li>
-              <li>
-                <SectionDropdown
-                  type="section"
-                  panelDetailsType="flat"
-                  isDefaultExpanded={true}
-                >
-                  <span>Main Contact</span>
-                  <MainContact data={registration} />
-                </SectionDropdown>
-              </li>
-            </ul>
+            {this.props.isLoading && <Loader />}
+            {registration && !this.props.isLoading ? (
+              <ul className={styles.libraryList}>
+                <li>
+                  <SectionDropdown
+                    type="section"
+                    panelDetailsType="flat"
+                    isDefaultExpanded={true}
+                  >
+                    <span>Primary Information</span>
+                    <PrimaryInformation
+                      eventId={this.eventId}
+                      data={registration}
+                      divisions={this.props.divisions.map(division => ({
+                        name: division.long_name,
+                        id: division.division_id,
+                      }))}
+                    />
+                  </SectionDropdown>
+                </li>
+                <li>
+                  <SectionDropdown
+                    type="section"
+                    panelDetailsType="flat"
+                    isDefaultExpanded={true}
+                  >
+                    <span>Teams & Athletes</span>
+                    <TeamsAthletesInfo data={registration} />
+                  </SectionDropdown>
+                </li>
+                <li>
+                  <SectionDropdown
+                    type="section"
+                    panelDetailsType="flat"
+                    isDefaultExpanded={true}
+                  >
+                    <span>Main Contact</span>
+                    <MainContact data={registration} />
+                  </SectionDropdown>
+                </li>
+              </ul>
+            ) : (
+              !this.props.isLoading && (
+                <div className={styles.noFoundWrapper}>
+                  <span>There is no registration yet.</span>
+                </div>
+              )
+            )}
           </div>
         </section>
       );
@@ -181,25 +172,22 @@ class RegistrationView extends React.Component<
   };
 
   render() {
-    const { registration } = this.props;
-    return (
-      <>
-        {this.props.isLoading && this.Loading()}
-        {registration && !this.props.isLoading && this.renderView(registration)}
-      </>
-    );
+    return <>{this.renderView()}</>;
   }
 }
 
 interface IState {
-  registration: { data: IRegistration; isLoading: boolean };
-  divisions: { data: IDivision[] };
+  registration: {
+    data: IRegistration;
+    divisions: IDivision[];
+    isLoading: boolean;
+  };
 }
 
 const mapStateToProps = (state: IState) => ({
   registration: state.registration.data,
   isLoading: state.registration.isLoading,
-  divisions: state.divisions.data,
+  divisions: state.registration.divisions,
 });
 
 const mapDispatchToProps = {
