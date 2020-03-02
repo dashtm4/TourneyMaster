@@ -120,6 +120,12 @@ export const updateDivision: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (division: IDivision) => async (dispatch: Dispatch) => {
+  if (!division.long_name || !division.short_name) {
+    return Toasts.errorToast(
+      "Please, fill in the 'Long Name' and 'Short Name' fields."
+    );
+  }
+
   const response = await api.put(
     `/divisions?division_id=${division.division_id}`,
     division
@@ -155,6 +161,11 @@ export const saveDivisions: ActionCreator<ThunkAction<
       event_id: eventId,
       division_id: getVarcharEight(),
     };
+    if (!data.long_name || !data.short_name) {
+      return Toasts.errorToast(
+        "Please, fill in the 'Long Name' and 'Short Name' fields."
+      );
+    }
     const response = await api.post(`/divisions`, data);
 
     dispatch(addDivisionSuccess(data));
@@ -200,6 +211,9 @@ export const savePool: ActionCreator<ThunkAction<
     ...pool,
     pool_id: getVarcharEight(),
   };
+  if (!data.pool_name) {
+    return Toasts.errorToast("Please, fill in the 'Name' field.");
+  }
 
   const response = await api.post(`/pools`, data);
 

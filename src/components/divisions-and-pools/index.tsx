@@ -112,7 +112,7 @@ class DivisionsAndPools extends React.Component<
                     panelDetailsType="flat"
                   >
                     <div className={styles.sectionTitle}>
-                      <div>{`Division: ${division.long_name}`}</div>
+                      <div>{`Division: ${division.short_name}`}</div>
                       <div>
                         <Button
                           label="Edit Division Details"
