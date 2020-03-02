@@ -288,7 +288,8 @@ class FacilityDetails extends React.Component<Props, State> {
                 disabled={!isEdit}
               />
             </fieldset>
-            <fieldset className={`${styles.filedset} ${styles.parkingDetails}`}>
+            <fieldset className={`${styles.filedset} ${styles.filedsetGolf}`}>
+              <legend className="visually-hidden">Golf Carts </legend>
               <Checkbox
                 onChange={() =>
                   this.onChangeFacility({
@@ -306,24 +307,6 @@ class FacilityDetails extends React.Component<Props, State> {
                   },
                 ]}
               />
-              {facility.parking_details && (
-                <>
-                  <div className={styles.parkingDetailsWrapper}>
-                    <Input
-                      onChange={this.onChangeFacility}
-                      value={facility.parking_details}
-                      name={FormFields.PARKING_DETAILS}
-                      width="100%"
-                      disabled={!isEdit}
-                    />
-                  </div>
-                  <CardMessage type={Icons.EMODJI_OBJECTS}>
-                    Notify your attendees they need to know something. For
-                    example, if cars will be aggressively ticketed, parking will
-                    be tight, etc.
-                  </CardMessage>
-                </>
-              )}
             </fieldset>
           </div>
           <fieldset className={`${styles.filedset} ${styles.parkingDetails}`}>
@@ -345,13 +328,22 @@ class FacilityDetails extends React.Component<Props, State> {
               ]}
             />
             {facility.parking_details && (
-              <Input
-                onChange={this.onChangeFacility}
-                value={facility.parking_details}
-                name={FormFields.PARKING_DETAILS}
-                width="100%"
-                disabled={!isEdit}
-              />
+              <>
+                <div className={styles.parkingDetailsWrapper}>
+                  <Input
+                    onChange={this.onChangeFacility}
+                    value={facility.parking_details}
+                    name={FormFields.PARKING_DETAILS}
+                    width="100%"
+                    disabled={!isEdit}
+                  />
+                </div>
+                <CardMessage type={Icons.EMODJI_OBJECTS}>
+                  Notify your attendees they need to know something. For
+                  example, if cars will be aggressively ticketed, parking will
+                  be tight, etc.
+                </CardMessage>
+              </>
             )}
           </fieldset>
           <FileUpload
