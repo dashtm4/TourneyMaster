@@ -127,23 +127,24 @@ const saveFacilities: ActionCreator<ThunkAction<
 ) => {
   try {
     for await (let facility of facilities) {
-      delete facility.isFieldsLoaded;
-      delete facility.isFieldsLoading;
+      const copiedFacility = { ...facility };
 
-      if (facility.isChange && !facility.isNew) {
-        delete facility.isChange;
+      delete copiedFacility.isFieldsLoaded;
+      delete copiedFacility.isFieldsLoading;
+
+      if (copiedFacility.isChange && !copiedFacility.isNew) {
+        delete copiedFacility.isChange;
 
         Api.put(
-          `/facilities?facilities_id=${facility.facilities_id}`,
-          facility
+          `/facilities?facilities_id=${copiedFacility.facilities_id}`,
+          copiedFacility
         );
       }
+      if (copiedFacility.isNew) {
+        delete copiedFacility.isChange;
+        delete copiedFacility.isNew;
 
-      if (facility.isNew) {
-        delete facility.isChange;
-        delete facility.isNew;
-
-        Api.post('/facilities', facility);
+        Api.post('/facilities', copiedFacility);
       }
     }
 
