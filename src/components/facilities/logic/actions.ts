@@ -5,17 +5,18 @@ import uuidv4 from 'uuid/v4';
 import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
-  SUCCESS,
-  FAILURE,
   ADD_EMPTY_FACILITY,
   ADD_EMPTY_FIELD,
-  LOAD_FACILITIES,
+  LOAD_FACILITIES_START,
+  LOAD_FACILITIES_SUCCESS,
+  LOAD_FACILITIES_FAILURE,
   LOAD_FIELDS_START,
   LOAD_FIELDS_SUCCESS,
   LOAD_FIELDS_FAILURE,
   UPDATE_FACILITY,
   UPDATE_FIELD,
-  SAVE_FACILITIES,
+  SAVE_FACILITIES_SUCCESS,
+  SAVE_FACILITIES_FAILURE,
   FacilitiesAction,
 } from './action-types';
 import Api from 'api/api';
@@ -29,15 +30,21 @@ const loadFacilities: ActionCreator<ThunkAction<
   FacilitiesAction
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   try {
+    dispatch({
+      type: LOAD_FACILITIES_START,
+    });
+
     const facilities = await Api.get(`/facilities?event_id=${eventId}`);
 
     dispatch({
-      type: LOAD_FACILITIES + SUCCESS,
-      payload: facilities,
+      type: LOAD_FACILITIES_SUCCESS,
+      payload: {
+        facilities,
+      },
     });
   } catch {
     dispatch({
-      type: LOAD_FACILITIES + FAILURE,
+      type: LOAD_FACILITIES_FAILURE,
     });
   }
 };
@@ -156,21 +163,24 @@ const saveFacilities: ActionCreator<ThunkAction<
     }
 
     dispatch({
-      type: SAVE_FACILITIES + SUCCESS,
+      type: SAVE_FACILITIES_SUCCESS,
+      payload: {
+        facilities,
+      },
     });
 
     Toasts.successToast('Saved ❤️');
   } catch {
     dispatch({
-      type: SAVE_FACILITIES + FAILURE,
+      type: SAVE_FACILITIES_FAILURE,
     });
   }
 };
 
 const uploadFileMap = (files: IFileMap[]) => () => {
   if (!files || !files.length) {
-    return
-  };
+    return;
+  }
 
   files.forEach((fileObject: IFileMap) => {
     const { file, destinationType } = fileObject;
@@ -192,5 +202,5 @@ export {
   updateFacilities,
   updateField,
   saveFacilities,
-  uploadFileMap
+  uploadFileMap,
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { Input, Select } from 'components/common/';
 import Checkbox from 'components/common/buttons/checkbox';
 import styles from '../styles.module.scss';
-import { IDisision, ITeam } from 'common/models';
+import { IDivision, ITeam } from 'common/models';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -11,7 +11,7 @@ interface ICreateTeamFormProps {
   index: number;
   onChange: any;
   team: Partial<ITeam>;
-  divisions: IDisision[];
+  divisions: IDivision[];
 }
 
 class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
@@ -81,7 +81,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
     const noneOption = { label: 'None', value: 'None' };
 
     const divisionsOptions = this.props.divisions.map(
-      (division: IDisision) => ({
+      (division: IDivision) => ({
         label: division.long_name,
         value: division.division_id,
       })

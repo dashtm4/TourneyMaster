@@ -9,10 +9,10 @@ import {
   DELETE_DIVISION_SUCCESS,
   ADD_POOL_SUCCESS,
 } from './actionTypes';
-import { IPool, ITeam, IDisision } from 'common/models';
+import { IPool, ITeam, IDivision } from 'common/models';
 
 export interface IState {
-  data?: Partial<IDisision>[];
+  data?: Partial<IDivision>[];
   pools: IPool[];
   teams: ITeam[];
   isLoading: boolean;

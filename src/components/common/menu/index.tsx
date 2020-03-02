@@ -1,22 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import {
   ExpansionPanelWrapped,
   ExpansionPanelSummaryWrapped,
   ExpansionPanelDetailsWrapper,
 } from './expansion-panel-material';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { getIcon } from '../../../helpers/get-icon.helper';
+import { getIcon, stringToLink } from '../../../helpers';
 import { Icons } from '../../../common/constants/icons';
+import { MenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
-
-interface MenuItem {
-  isAllow: boolean;
-  title: string;
-  icon: string;
-  link: string;
-  children: string[] | null;
-}
 
 interface Props {
   list: MenuItem[];
@@ -49,61 +43,46 @@ class Menu extends React.Component<Props, State> {
     this.setState({ isCollapsible: !this.state.isCollapsible });
   };
 
-  renderMenuLink(menuItem: MenuItem, menuSubItem?: string) {
-    const path = this.props.eventId
-      ? `${menuItem.link}/${this.props.eventId}`
-      : menuItem.link;
-
-    return (
-      <Link to={path} className={styles.itemTitle}>
-        {menuSubItem || menuItem.title}
-      </Link>
-    );
-  }
-
   renderMenu() {
-    const { isAllowEdit } = this.props;
+    const { isAllowEdit, list, eventId } = this.props;
 
     return (
       <aside className={styles.dashboardMenu} onMouseLeave={this.onCollapse}>
         <ul className={styles.list}>
-          {this.props.list.map(menuItem =>
-            menuItem.children ? (
-              <li className={styles.itemTitle} key={menuItem.title}>
-                <ExpansionPanelWrapped
-                  disabled={!menuItem.isAllow && !isAllowEdit}
+          {list.map(menuItem => (
+            <li className={styles.itemTitle} key={menuItem.title}>
+              <ExpansionPanelWrapped
+                disabled={!menuItem.isAllow && !isAllowEdit}
+              >
+                <ExpansionPanelSummaryWrapped
+                  expandIcon={
+                    menuItem.children.length !== 0 ? <ExpandMoreIcon /> : null
+                  }
                 >
-                  <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
-                    {getIcon(menuItem.icon)}
-                    {this.renderMenuLink(menuItem)}
-                  </ExpansionPanelSummaryWrapped>
+                  {getIcon(menuItem.icon)}
+                  <Link to={`${menuItem.link}/${eventId || ''}`}>
+                    {menuItem.title}
+                  </Link>
+                </ExpansionPanelSummaryWrapped>
+                {menuItem.children.length !== 0 && (
                   <ExpansionPanelDetailsWrapper>
-                    <ul className={styles.list}>
-                      {menuItem.children.map(menuSubItem => (
-                        <li className={styles.itemSubTitle} key={menuSubItem}>
-                          {this.renderMenuLink(menuItem, menuSubItem)}
+                    <ul className={styles.subList}>
+                      {menuItem.children.map((menuSubItem: string) => (
+                        <li className={styles.subListItem} key={menuSubItem}>
+                          <HashLink
+                            to={`${menuItem.link}/${eventId ||
+                              ''}#${stringToLink(menuSubItem)}`}
+                          >
+                            {menuSubItem}
+                          </HashLink>
                         </li>
                       ))}
                     </ul>
                   </ExpansionPanelDetailsWrapper>
-                </ExpansionPanelWrapped>
-              </li>
-            ) : (
-              <li
-                className={`${styles.itemTitle} ${styles.itemTitleAlone}`}
-                key={menuItem.title}
-              >
-                <ExpansionPanelWrapped
-                  disabled={!menuItem.isAllow && !isAllowEdit}
-                >
-                  <ExpansionPanelSummaryWrapped>
-                    {getIcon(menuItem.icon)}
-                    {this.renderMenuLink(menuItem)}
-                  </ExpansionPanelSummaryWrapped>
-                </ExpansionPanelWrapped>
-              </li>
-            )
-          )}
+                )}
+              </ExpansionPanelWrapped>
+            </li>
+          ))}
         </ul>
         <button className={styles.pinBtn} onClick={this.onSetCollapsibility}>
           {getIcon(Icons.PIN)}

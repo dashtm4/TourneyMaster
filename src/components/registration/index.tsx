@@ -15,8 +15,9 @@ import {
 import { getDivisions } from '../divisions-and-pools/logic/actions';
 import RegistrationEdit from 'components/registration/registration-edit';
 import { IRegistration } from 'common/models/registration';
-import { BindingCbWithOne, BindingCbWithTwo, IDisision } from 'common/models';
+import { BindingCbWithOne, BindingCbWithTwo, IDivision } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
+import { EventMenuTitles } from 'common/enums';
 import { History } from 'history';
 
 interface IRegistrationState {
@@ -29,7 +30,7 @@ interface IRegistrationProps {
   saveRegistration: BindingCbWithTwo<string | undefined, string>;
   getDivisions: BindingCbWithOne<string>;
   registration: IRegistration;
-  divisions: IDisision[];
+  divisions: IDivision[];
   match: any;
   history: History;
   isLoading: boolean;
@@ -138,6 +139,7 @@ class RegistrationView extends React.Component<
             <ul className={styles.libraryList}>
               <li>
                 <SectionDropdown
+                  id={EventMenuTitles.PRIMARY_INFORMATION}
                   type="section"
                   panelDetailsType="flat"
                   isDefaultExpanded={true}
@@ -155,6 +157,7 @@ class RegistrationView extends React.Component<
               </li>
               <li>
                 <SectionDropdown
+                  id={EventMenuTitles.TEAMS_AND_ATHLETES}
                   type="section"
                   panelDetailsType="flat"
                   isDefaultExpanded={true}
@@ -165,6 +168,7 @@ class RegistrationView extends React.Component<
               </li>
               <li>
                 <SectionDropdown
+                  id={EventMenuTitles.MAIN_CONTACT}
                   type="section"
                   panelDetailsType="flat"
                   isDefaultExpanded={true}
@@ -193,7 +197,7 @@ class RegistrationView extends React.Component<
 
 interface IState {
   registration: { data: IRegistration; isLoading: boolean };
-  divisions: { data: IDisision[] };
+  divisions: { data: IDivision[] };
 }
 
 const mapStateToProps = (state: IState) => ({

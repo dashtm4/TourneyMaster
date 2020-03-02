@@ -9,19 +9,11 @@ import {
   editTeam,
   deleteTeam,
 } from './logic/actions';
-import ScoringItem from './components/scoring-Item';
-import TeamDetailsPopup from './components/team-details-popup';
-import HeadingLevelTwo from '../common/headings/heading-level-two';
-import Button from '../common/buttons/button';
-import Modal from '../common/modal';
 import { AppState } from './logic/reducer';
-import {
-  IDisision,
-  IPool,
-  ITeam,
-  BindingAction,
-  BindingCbWithOne,
-} from '../../common/models';
+import Navigation from './components/navigation';
+import ScoringItem from './components/scoring-Item';
+import { HeadingLevelTwo, Modal, Loader, PopupTeamEdit } from '../common';
+import { IDivision, IPool, ITeam, BindingCbWithOne } from '../../common/models';
 import styles from './styles.module.scss';
 
 interface MatchParams {
@@ -29,20 +21,23 @@ interface MatchParams {
 }
 
 interface Props {
-  divisions: IDisision[];
+  isLoading: boolean;
+  isLoaded: boolean;
+  divisions: IDivision[];
   pools: IPool[];
   teams: ITeam[];
   loadDivision: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
-  loadTeams: BindingAction;
+  loadTeams: (poolId: string) => void;
   editTeam: BindingCbWithOne<ITeam>;
   deleteTeam: (teamId: string) => void;
 }
 
 interface State {
   changeableTeam: ITeam | null;
+  currentDivision: string | null;
+  currentPool: string | null;
   isModalOpen: boolean;
-  isEdit: boolean;
 }
 
 class Sсoring extends React.Component<
@@ -53,9 +48,10 @@ class Sсoring extends React.Component<
     super(props);
 
     this.state = {
-      isModalOpen: false,
-      isEdit: false,
+      currentDivision: null,
+      currentPool: null,
       changeableTeam: null,
+      isModalOpen: false,
     };
   }
 
@@ -68,10 +64,6 @@ class Sсoring extends React.Component<
     }
   }
 
-  onEditTeam = () => {
-    this.setState({ isModalOpen: true, isEdit: true });
-  };
-
   onSaveTeam = () => {
     const { changeableTeam } = this.state;
     const { editTeam } = this.props;
@@ -83,10 +75,10 @@ class Sсoring extends React.Component<
     this.onCloseModal();
   };
 
-  onDeleteTeam = (teamId: string) => {
+  onDeleteTeam = (team: ITeam) => {
     const { deleteTeam } = this.props;
 
-    deleteTeam(teamId);
+    deleteTeam(team.team_id);
 
     this.onCloseModal();
   };
@@ -101,22 +93,47 @@ class Sсoring extends React.Component<
     }));
   };
 
-  onOpenTeamDetails = (team: ITeam) => {
-    this.setState({ isModalOpen: true, changeableTeam: team });
+  onOpenTeamDetails = (team: ITeam, divisionName: string, poolName: string) => {
+    this.setState({
+      isModalOpen: true,
+      changeableTeam: team,
+      currentDivision: divisionName,
+      currentPool: poolName,
+    });
   };
 
   onCloseModal = () =>
-    this.setState({ changeableTeam: null, isModalOpen: false, isEdit: false });
+    this.setState({
+      isModalOpen: false,
+      changeableTeam: null,
+      currentDivision: null,
+      currentPool: null,
+    });
 
   render() {
-    const { isModalOpen, isEdit, changeableTeam } = this.state;
-    const { pools, teams, divisions, loadPools, loadTeams } = this.props;
+    const {
+      isModalOpen,
+      changeableTeam,
+      currentDivision,
+      currentPool,
+    } = this.state;
+
+    const {
+      isLoading,
+      pools,
+      teams,
+      divisions,
+      loadPools,
+      loadTeams,
+    } = this.props;
+
+    if (isLoading) {
+      return <Loader />;
+    }
 
     return (
       <section>
-        <p className={styles.navWrapper}>
-          <Button label="Record Scores" variant="contained" color="primary" />
-        </p>
+        <Navigation eventId={this.props.match.params.eventId} />
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>Scoring</HeadingLevelTwo>
           <ul className={styles.scoringList}>
@@ -136,10 +153,10 @@ class Sсoring extends React.Component<
           </ul>
         </div>
         <Modal isOpen={isModalOpen} onClose={this.onCloseModal}>
-          <TeamDetailsPopup
+          <PopupTeamEdit
             team={changeableTeam}
-            isEdit={isEdit}
-            onEditTeamClick={this.onEditTeam}
+            division={currentDivision}
+            pool={currentPool}
             onSaveTeamClick={this.onSaveTeam}
             onDeleteTeamClick={this.onDeleteTeam}
             onChangeTeam={this.onChangeTeam}
@@ -157,6 +174,8 @@ interface IRootState {
 
 export default connect(
   (state: IRootState) => ({
+    isLoading: state.scoring.isLoading,
+    isLoaded: state.scoring.isLoaded,
     divisions: state.scoring.divisions,
     pools: state.scoring.pools,
     teams: state.scoring.teams,

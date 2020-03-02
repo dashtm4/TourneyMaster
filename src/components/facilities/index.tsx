@@ -15,8 +15,7 @@ import {
 } from './logic/actions';
 import Navigation from './components/navigation';
 import FacilityDetails from './components/facility-details';
-import HeadingLevelTwo from '../common/headings/heading-level-two';
-import Select from '../common/select';
+import { HeadingLevelTwo, Select, Loader } from '../common';
 import { IFacility, IField, IFileMap } from '../../common/models';
 import {
   BindingCbWithOne,
@@ -31,6 +30,7 @@ interface MatchParams {
 }
 
 interface Props {
+  isLoading: boolean;
   facilities: IFacility[];
   fields: IField[];
   loadFacilities: (eventId: string) => void;
@@ -47,10 +47,12 @@ class Facilities extends React.Component<
   Props & RouteComponentProps<MatchParams>
 > {
   componentDidMount() {
-    const { loadFacilities, addEmptyFacility } = this.props;
+    const { loadFacilities } = this.props;
     const eventId = this.props.match.params.eventId;
 
-    eventId ? loadFacilities(eventId) : addEmptyFacility(MOCKED_EVENT_ID);
+    if (eventId) {
+      loadFacilities(eventId);
+    }
   }
 
   onChangeFacilitiesCount = (evt: any) => {
@@ -70,6 +72,7 @@ class Facilities extends React.Component<
 
   render() {
     const {
+      isLoading,
       facilities,
       fields,
       loadFields,
@@ -78,6 +81,10 @@ class Facilities extends React.Component<
       updateField,
       uploadFileMap,
     } = this.props;
+
+    if (isLoading) {
+      return <Loader />;
+    }
 
     return (
       <section>
@@ -133,6 +140,7 @@ interface IRootState {
 
 export default connect(
   (state: IRootState) => ({
+    isLoading: state.facilities.isLoading,
     facilities: state.facilities.facilities,
     fields: state.facilities.fields,
   }),

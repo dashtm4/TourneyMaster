@@ -26,7 +26,11 @@ interface Props {
   divisionName: string;
   poolName?: string;
   isEdit: boolean;
-  changePool: (team: ITeam, poolId: string | null) => void;
+  changePool: (
+    team: ITeam,
+    divisionId: string | null,
+    poolId: string | null
+  ) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
@@ -56,8 +60,8 @@ const TeamItem = ({
 
       const { poolId, divisionId } = dropResult;
 
-      if (divisionId === team.division_id && poolId !== team.pool_id) {
-        changePool(team, poolId);
+      if (poolId !== team.pool_id || divisionId !== team.division_id) {
+        changePool(team, divisionId, poolId);
       }
     },
   });

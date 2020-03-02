@@ -1,4 +1,4 @@
-:local(.dashboardMenu) {
+.dashboardMenu {
   position: sticky;
   top: 0;
   width: 270px;
@@ -11,18 +11,30 @@
 
   box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.2);
 }
-:local(.collapsedMenu) {
-  @extend :local(.dashboardMenu);
+
+.collapsedMenu {
+  @extend .dashboardMenu;
+
   width: 69px;
 }
-:local(.list) {
+
+.list {
   margin: 0;
   padding: 0;
 
   list-style: none;
 }
 
-:local(.itemTitle) {
+.subList {
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+
+  overflow: hidden;
+}
+
+.itemTitle {
   display: flex;
   align-items: center;
 
@@ -42,15 +54,22 @@
   }
 }
 
-:local(.itemSubTitle) {
+.subListItem {
   margin: 0 0 25px 15px;
+
+  color: #ffffff;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  overflow: hidden;
 
   &:last-child {
     margin-bottom: 0;
   }
 }
 
-:local(.pinBtn) {
+.pinBtn {
   display: flex;
   align-items: center;
 

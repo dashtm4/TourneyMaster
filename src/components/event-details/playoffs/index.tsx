@@ -8,6 +8,8 @@ import {
   Select,
   Input,
 } from 'components/common';
+import { EventMenuTitles } from 'common/enums';
+
 import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
 
@@ -23,7 +25,23 @@ const bracketTypeOptions = [
   '3 Game Guarantee',
 ];
 
-const topNumberOfTeams = ['2', '3', '4', '5', '6', '7', '8'];
+const topNumberOfTeams = [
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
+];
 
 enum bracketTypesEnum {
   'Single Elimination' = 1,
@@ -102,6 +120,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
 
   return (
     <SectionDropdown
+      id={EventMenuTitles.PLAYOFFS}
       type="section"
       panelDetailsType="flat"
       isDefaultExpanded={true}
@@ -119,7 +138,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
             ]}
             onChange={onPlayoffs}
           />
-          <CardMessage type="info">
+          <CardMessage type="emodjiObjects">
             Playoff settings include Bracket Type, # of Teams, and Ranking
             Factors
           </CardMessage>
@@ -175,7 +194,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
                   />
                 </DndProvider>
               </div>
-              <CardMessage type="info">
+              <CardMessage type="emodjiObjects">
                 Drag and Drop to reorder Ranking Factors
               </CardMessage>
               <Checkbox
