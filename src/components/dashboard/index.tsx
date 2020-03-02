@@ -34,8 +34,22 @@ interface IDashboardProps {
   getEvents: () => void;
 }
 
-class Dashboard extends React.Component<IDashboardProps> {
-  state = { order: 1 };
+interface IDashboardState {
+  order: number;
+  filters: { status: string[]; historical: boolean };
+}
+
+enum EventStatus {
+  PUBLISHED = 'Published',
+  DRAFT = 'Draft',
+}
+
+class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
+  state = {
+    order: 1,
+    filters: { status: ['Published', 'Draft'], historical: false },
+  };
+
   componentDidMount() {
     this.props.getEvents();
   }
@@ -47,7 +61,66 @@ class Dashboard extends React.Component<IDashboardProps> {
     this.setState({ order });
   };
 
+  onPublishedFilter = () => {
+    const { filters } = this.state;
+    if (filters.status.includes(EventStatus.PUBLISHED)) {
+      this.setState({
+        filters: {
+          ...filters,
+          status: filters.status.filter(
+            (filter: string) => filter !== EventStatus.PUBLISHED
+          ),
+        },
+      });
+    } else {
+      this.setState({
+        filters: {
+          ...filters,
+          status: [...filters.status, EventStatus.PUBLISHED],
+        },
+      });
+    }
+  };
+
+  onDraftFilter = () => {
+    const { filters } = this.state;
+    if (filters.status.includes(EventStatus.DRAFT)) {
+      this.setState({
+        filters: {
+          ...filters,
+          status: filters.status.filter(
+            (filter: string) => filter !== EventStatus.DRAFT
+          ),
+        },
+      });
+    } else {
+      this.setState({
+        filters: {
+          ...filters,
+          status: [...filters.status, EventStatus.DRAFT],
+        },
+      });
+    }
+  };
+
+  onHistoricalFilter = () => {
+    this.setState({
+      filters: {
+        ...this.state.filters,
+        historical: !this.state.filters.historical,
+      },
+    });
+  };
+
   renderEvents = () => {
+    const filteredEvents = this.props.events
+      .filter(event => this.state.filters.status.includes(event.event_status))
+      .filter(event =>
+        this.state.filters.historical
+          ? new Date(event.event_enddate) < new Date()
+          : event
+      );
+
     return (
       <div className={styles.tournamentsContainer} key={1}>
         <div className={styles.tournamentsHeading}>
@@ -63,29 +136,42 @@ class Dashboard extends React.Component<IDashboardProps> {
           </div>
           <div className={styles.buttonsGroup}>
             <Button
-              label="Published (1)"
+              label="Published"
               variant="contained"
-              type="squared"
               color="primary"
+              type={
+                this.state.filters.status.includes('Published')
+                  ? 'squared'
+                  : 'squaredOutlined'
+              }
+              onClick={this.onPublishedFilter}
             />
             <Button
-              label="Draft (1)"
+              label="Draft"
               variant="contained"
-              type="squared"
               color="primary"
+              type={
+                this.state.filters.status.includes('Draft')
+                  ? 'squared'
+                  : 'squaredOutlined'
+              }
+              onClick={this.onDraftFilter}
             />
             <Button
-              label="Historical (0)"
+              label="Historical"
               variant="contained"
               color="primary"
-              type="squaredOutlined"
+              type={
+                this.state.filters.historical ? 'squared' : 'squaredOutlined'
+              }
+              onClick={this.onHistoricalFilter}
             />
           </div>
         </div>
         <div className={styles.tournamentsListContainer}>
           {this.props.isLoading && <Loader />}
-          {this.props.events?.length && !this.props.isLoading
-            ? this.props.events.map((event: EventDetailsDTO) => (
+          {filteredEvents?.length && !this.props.isLoading
+            ? filteredEvents.map((event: EventDetailsDTO) => (
                 <TournamentCard
                   key={event.event_id}
                   event={event}

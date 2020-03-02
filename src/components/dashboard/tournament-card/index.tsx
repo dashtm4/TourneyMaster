@@ -59,7 +59,7 @@ const TournamentCard = ({
               color="primary"
               onClick={onTournamentManage}
             />
-            <Button label="Duplicate" variant="text" color="secondary" />
+            {/* <Button label="Duplicate" variant="text" color="secondary" /> */}
           </div>
         </div>
         <div className={styles.tournamentContent}>

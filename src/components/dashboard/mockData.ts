@@ -1,43 +1,43 @@
 export const data = [
-  { message: '1)Publish', link: 'Men’s Spring Thaw', date: '01/14/20' },
-  { message: '2)Create Tournament', link: 'Spring Lacrosse', date: '01/14/20' },
+  { message: 'Publish', link: 'Men’s Spring Thaw', date: '01/14/20' },
+  { message: 'Create Tournament', link: 'Spring Lacrosse', date: '01/14/20' },
   {
-    message: '3)Release Retrospective for',
+    message: 'Release Retrospective for',
     link: 'Field Hockey 1',
     date: '01/14/20',
   },
   {
-    message: '4)Post Tournament Play Scores for',
+    message: 'Post Tournament Play Scores for',
     link: 'Field Hockey 1',
     date: '02/15/20',
   },
   {
-    message: '5)Post Tournament Play Scores for',
+    message: 'Post Tournament Play Scores for',
     link: 'Field Hockey 1',
     date: '02/15/20',
   },
   {
-    message: '6)Create Tournament',
+    message: 'Create Tournament',
     link: 'Spring Lacrosse',
     date: '01/14/20',
   },
   {
-    message: '7)Release Retrospective for',
+    message: 'Release Retrospective for',
     link: 'Field Hockey 1',
     date: '01/14/20',
   },
   {
-    message: '8)Post Tournament Play Scores for',
+    message: 'Post Tournament Play Scores for',
     link: 'Field Hockey 1',
     date: '02/15/20',
   },
   {
-    message: '9)Publish',
+    message: 'Publish',
     link: 'Men’s Spring Thaw',
     date: '01/14/20',
   },
   {
-    message: '10)Post Tournament Play Scores for',
+    message: 'Post Tournament Play Scores for',
     link: 'Field Hockey 1',
     date: '02/15/20',
   },
@@ -65,7 +65,7 @@ export const notificationData: any = [
     date: '01/14/20',
   },
   {
-    message: '5)Post Tournament Play Scores for',
+    message: 'Post Tournament Play Scores for',
     link: 'Field Hockey 1',
     date: '01/14/20',
   },
@@ -90,7 +90,7 @@ export const notificationData: any = [
     date: '01/14/20',
   },
   {
-    message: '5)Post Tournament Play Scores for',
+    message: 'Post Tournament Play Scores for',
     link: 'Field Hockey 1',
     date: '01/14/20',
   },
