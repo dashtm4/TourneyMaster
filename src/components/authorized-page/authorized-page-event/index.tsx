@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { Switch, Route } from 'react-router-dom';
@@ -40,12 +41,12 @@ export const EmptyPage: React.FC = () => {
 
 const AuthorizedPageEvent = ({
   isLoading,
+  isLoaded,
   menuList,
   match,
   loadAuthPageData,
 }: Props & RouteComponentProps<MatchParams>) => {
   const eventId = match.params.eventId;
-
   React.useEffect(() => {
     if (eventId) {
       loadAuthPageData(eventId);
@@ -59,7 +60,7 @@ const AuthorizedPageEvent = ({
   return (
     <>
       <Header />
-      {isLoading ? (
+      {!isLoaded && !isLoading ? (
         <Loader />
       ) : (
         <div className={styles.page}>
