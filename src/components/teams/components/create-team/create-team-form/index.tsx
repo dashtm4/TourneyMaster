@@ -78,18 +78,20 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
       schedule_restrictions,
     } = this.props.team;
 
-    const noneOption = { label: 'None', value: 'None' };
-
-    const divisionsOptions = this.props.divisions.map(
-      (division: IDivision) => ({
-        label: division.long_name,
+    const divisionsOptions = this.props.divisions
+      .sort((a: IDivision, b: IDivision) =>
+        a.short_name.localeCompare(b.short_name)
+      )
+      .map((division: IDivision) => ({
+        label: division.short_name,
         value: division.division_id,
-      })
-    );
+      }));
 
     const levelOptions = [
-      { label: 'Level 1', value: '1' },
-      { label: 'Level 2', value: '2' },
+      { label: 'AA', value: 'AA' },
+      { label: 'A', value: 'A' },
+      { label: 'B', value: 'B' },
+      { label: 'N/A', value: 'N/A' },
     ];
 
     return (
@@ -149,7 +151,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Select
                 label="Division"
-                options={[...divisionsOptions, noneOption]}
+                options={[...divisionsOptions]}
                 value={division_id || ''}
                 onChange={this.onDivisionChange}
               />
@@ -157,7 +159,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Select
                 label="Level"
-                options={[...levelOptions, noneOption]}
+                options={[...levelOptions]}
                 value={level || ''}
                 onChange={this.onLevelChange}
               />
