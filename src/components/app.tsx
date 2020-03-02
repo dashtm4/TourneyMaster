@@ -32,8 +32,8 @@ const App: React.FC = () => {
         />
         <Route
           path={[
-            Routes.EVENT_DETAILS,
-            Routes.FACILITIES,
+            Routes.EVENT_DETAILS_ID,
+            Routes.FACILITIES_ID,
             Routes.REGISTRATION,
             Routes.DIVISIONS_AND_POOLS,
             Routes.ADD_DIVISION,

@@ -6,7 +6,7 @@ export const MenuList = [
     title: 'My Dashboard',
     icon: Icons.PERSON,
     link: Routes.DASHBOARD,
-    children: null,
+    children: [],
   },
   {
     isAllow: true,
@@ -35,14 +35,14 @@ export const MenuList = [
     title: 'Collaboration',
     icon: Icons.PEOPLE,
     link: Routes.COLLABORATION,
-    children: null,
+    children: [],
   },
   {
     isAllow: true,
     title: 'Calendar',
     icon: Icons.CALENDAR,
     link: Routes.CALENDAR,
-    children: null,
+    children: [],
   },
   {
     isAllow: true,
@@ -56,71 +56,6 @@ export const MenuList = [
     title: 'Event Day Complexities',
     link: Routes.EVENT_DAY_COMPLEXITIES,
     icon: Icons.ERROR,
-    children: null,
-  },
-];
-
-export const MenuListForEvent = [
-  {
-    isAllow: true,
-    title: 'Event Details',
-    icon: Icons.PERSON,
-    link: '/event/event-details',
-    children: [
-      'Primary Information',
-      'Event Structure',
-      'Playoffs',
-      'Media Assets',
-      'Advanced Settings',
-    ],
-  },
-  {
-    isAllow: false,
-    title: 'Facilities',
-    icon: Icons.PLACE,
-    link: '/event/facilities',
-    children: null,
-  },
-  {
-    isAllow: false,
-    title: 'Registration',
-    icon: Icons.LIST,
-    link: '/event/registration',
-    children: ['Primary Information', 'Teams & Athletes', 'Main Contact'],
-  },
-  {
-    isAllow: false,
-    title: 'Divisions & Pools',
-    icon: Icons.PEOPLE,
-    link: '/event/divisions-and-pools',
-    children: null,
-  },
-  {
-    isAllow: false,
-    title: 'Teams',
-    icon: Icons.TEAM,
-    link: '/event/teams',
-    children: ['Team Management', 'Request Manager'],
-  },
-  {
-    isAllow: false,
-    title: 'Scheduling',
-    icon: Icons.CLOCK,
-    link: '/event/scheduling',
-    children: ['Tournament Play', 'Brackets'],
-  },
-  {
-    isAllow: false,
-    title: 'Scoring',
-    link: '/event/scoring',
-    icon: Icons.SCORING,
-    children: null,
-  },
-  {
-    isAllow: false,
-    title: 'Reporting',
-    link: '/event/reporting',
-    icon: Icons.REPORT,
-    children: null,
+    children: [],
   },
 ];
