@@ -69,13 +69,13 @@ export const getEvents: ActionCreator<ThunkAction<
     const flds = await api.get(
       `/fields?facilities_id=${facility.facilities_id}`
     );
+
     const updFields = flds.map((field: IField) => ({
       ...field,
       event_id: facility.event_id,
     }));
     fields = [...fields, ...updFields];
-
-    dispatch(fieldsFetchSuccess(fields));
-    dispatch(dashboardTeamsFetchSuccess(teams));
   }
+  dispatch(fieldsFetchSuccess(fields));
+  dispatch(dashboardTeamsFetchSuccess(teams));
 };
