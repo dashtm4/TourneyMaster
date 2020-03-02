@@ -67,8 +67,6 @@ class Facilities extends React.Component<
   savingFacilities = () => {
     const { facilities, fields, saveFacilities } = this.props;
 
-    console.log(facilities);
-
     saveFacilities(facilities, fields);
   };
 

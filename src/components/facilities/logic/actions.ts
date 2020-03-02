@@ -149,17 +149,19 @@ const saveFacilities: ActionCreator<ThunkAction<
     }
 
     for await (let field of fields) {
-      if (field.isChange && !field.isNew) {
-        delete field.isChange;
+      const copiedField = { ...field };
 
-        Api.put(`/fields?field_id=${field.field_id}`, field);
+      if (copiedField.isChange && !copiedField.isNew) {
+        delete copiedField.isChange;
+
+        Api.put(`/fields?field_id=${copiedField.field_id}`, copiedField);
       }
 
-      if (field.isNew) {
-        delete field.isChange;
-        delete field.isNew;
+      if (copiedField.isNew) {
+        delete copiedField.isChange;
+        delete copiedField.isNew;
 
-        Api.post('/fields', field);
+        Api.post('/fields', copiedField);
       }
     }
 
