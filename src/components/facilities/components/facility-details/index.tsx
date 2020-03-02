@@ -15,6 +15,7 @@ import {
   FileUpload,
 } from '../../../common';
 import { FileUploadTypes, AcceptFileTypes } from '../../../common/file-upload';
+import { stringToLink } from 'helpers';
 import {
   IFacility,
   IField,
@@ -105,7 +106,14 @@ class FacilityDetails extends React.Component<Props, State> {
     }
 
     return (
-      <ExpansionPanelWrapped defaultExpanded>
+      <ExpansionPanelWrapped
+        id={
+          facility.facilities_description
+            ? stringToLink(facility.facilities_description)
+            : ''
+        }
+        defaultExpanded
+      >
         <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
           <h2 className={styles.detailsSubtitle}>
             Facility {facilitiyNumber} Details
