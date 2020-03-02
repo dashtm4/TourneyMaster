@@ -10,11 +10,14 @@ import {
   ADD_POOL_SUCCESS,
 } from './actionTypes';
 import { IPool, ITeam, IDivision } from 'common/models';
+import { IRegistration } from 'common/models/registration';
+import { REGISTRATION_FETCH_SUCCESS } from 'components/registration/registration-edit/logic/actionTypes';
 
 export interface IState {
   data?: Partial<IDivision>[];
   pools: IPool[];
   teams: ITeam[];
+  registration?: IRegistration;
   isLoading: boolean;
   error: boolean;
 }
@@ -23,6 +26,7 @@ const defaultState: IState = {
   data: [],
   pools: [],
   teams: [],
+  registration: undefined,
   isLoading: true,
   error: false,
 };
@@ -41,7 +45,10 @@ export default (
     case DIVISIONS_FETCH_SUCCESS: {
       return {
         ...state,
-        data: action.payload,
+        data: action.payload.sort(
+          (a: IDivision, b: IDivision) =>
+            +new Date(a.created_datetime) - +new Date(b.created_datetime)
+        ),
         isLoading: false,
         error: false,
       };
@@ -106,6 +113,14 @@ export default (
       return {
         ...state,
         teams: [...state.teams, ...action.payload],
+        error: false,
+      };
+    }
+    case REGISTRATION_FETCH_SUCCESS: {
+      return {
+        ...state,
+        registration: action.payload[0],
+        isLoading: false,
         error: false,
       };
     }

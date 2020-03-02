@@ -8,6 +8,7 @@ import {
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
   ADD_POOL_SUCCESS,
+  REGISTRATION_FETCH_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
 import { ActionCreator, Dispatch } from 'redux';
@@ -71,6 +72,13 @@ export const teamsFetchSuccess = (
   payload: ITeam[]
 ): { type: string; payload: ITeam[] } => ({
   type: TEAMS_FETCH_SUCCESS,
+  payload,
+});
+
+export const registrationFetchSuccess = (
+  payload: any
+): { type: string; payload: any } => ({
+  type: REGISTRATION_FETCH_SUCCESS,
   payload,
 });
 
@@ -194,4 +202,14 @@ export const savePool: ActionCreator<ThunkAction<
   dispatch(addPoolSuccess(data));
 
   Toasts.successToast('Pool is successfully added');
+};
+
+export const getRegistration: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (eventId: string) => async (dispatch: Dispatch) => {
+  const data = await api.get(`/registrations?event_id=${eventId}`);
+  dispatch(registrationFetchSuccess(data));
 };
