@@ -18,6 +18,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
+import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
+import WarningIcon from '@material-ui/icons/Warning';
 import { PinIcon } from './own-icons';
 import { Icons } from '../../common/constants/icons';
 import styles from './styles.module.scss';
@@ -58,28 +60,42 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return (
         <EditIcon
           className={iconStyles ? '' : styles.icon}
-          style={iconStyles && iconStyles}
+          style={iconStyles}
         />
       );
     case Icons.DELETE:
       return (
         <DeleteIcon
           className={iconStyles ? '' : styles.icon}
-          style={iconStyles && iconStyles}
+          style={iconStyles}
         />
       );
     case Icons.GET_APP:
       return (
         <GetAppIcon
           className={iconStyles ? '' : styles.icon}
-          style={iconStyles && iconStyles}
+          style={iconStyles}
         />
       );
     case Icons.PUBLISH:
       return (
         <PublishIcon
           className={iconStyles ? '' : styles.icon}
-          style={iconStyles && iconStyles}
+          style={iconStyles}
+        />
+      );
+    case Icons.EMODJI_OBJECTS:
+      return (
+        <EmojiObjectsIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
+    case Icons.WARNING:
+      return (
+        <WarningIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
         />
       );
   }

@@ -1,20 +1,33 @@
-export interface IFacilityField {
-  name: string;
-}
-
 export interface IFacility {
-  event_id: string;
   facilities_id: string;
+  event_id: string;
   facilities_description: string | null;
   num_fields: number | null;
+  facilities_tag: string | null;
+  address1: string | null;
+  address2: string | null;
+  city: string;
+  state: string | null;
+  zip: string | null;
+  country: string | null;
+  facility_lat: string | null;
+  facility_long: string | null;
+  facility_sort: string | null;
+  public_access_YN: string | null;
   restrooms: string | null;
-  num_toilets: number | null;
+  num_toilets: string | null;
   restroom_details: string | null;
   parking_available: string | null;
   parking_details: string | null;
   parking_proximity: number | null;
   golf_carts_availabe: boolean | null;
+  field_map_URL: string | null;
+  is_active_YN: number | 1;
+  in_library_YN: string | null;
   created_by: string | null;
+  created_datetime: string | null;
+  updated_by: string | null;
+  updated_datetime: string | null;
   //optional
   isNew?: boolean;
   isChange?: boolean;

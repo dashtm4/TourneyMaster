@@ -135,7 +135,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
             ]}
             onChange={onPlayoffs}
           />
-          <CardMessage type="info">
+          <CardMessage type="emodjiObjects">
             Playoff settings include Bracket Type, # of Teams, and Ranking
             Factors
           </CardMessage>
@@ -191,7 +191,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
                   />
                 </DndProvider>
               </div>
-              <CardMessage type="info">
+              <CardMessage type="emodjiObjects">
                 Drag and Drop to reorder Ranking Factors
               </CardMessage>
               <Checkbox
