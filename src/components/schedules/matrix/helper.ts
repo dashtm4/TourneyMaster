@@ -2,10 +2,16 @@ import { ITeam, IField, ITimeSlot } from '..';
 import { ITeamCard } from './index';
 import { DropParams } from './dnd/drop';
 
+export enum TeamPositionEnum {
+  'awayTeam' = 1,
+  'homeTeam' = 2,
+}
+
 export interface IGame {
   id: number;
-  homeTeam?: ITeam;
-  awayTeam?: ITeam;
+  startTime?: string;
+  awayTeam?: ITeamCard;
+  homeTeam?: ITeamCard;
   timeSlotId: number;
   fieldId: number;
   isPremier?: boolean;

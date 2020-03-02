@@ -83,7 +83,8 @@ const findRegularGame = (
         game.awayTeam?.id || game?.homeTeam?.id!
       ) &&
       // IF this game has common start time
-      teamCard.startTime === avgStartTime
+      // teamCard.startTime === avgStartTime
+      true
   );
 
   teamPlayedGames[tcId] = [
