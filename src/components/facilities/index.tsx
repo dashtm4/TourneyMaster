@@ -47,10 +47,12 @@ class Facilities extends React.Component<
   Props & RouteComponentProps<MatchParams>
 > {
   componentDidMount() {
-    const { loadFacilities, addEmptyFacility } = this.props;
+    const { loadFacilities } = this.props;
     const eventId = this.props.match.params.eventId;
 
-    eventId ? loadFacilities(eventId) : addEmptyFacility(MOCKED_EVENT_ID);
+    if (eventId) {
+      loadFacilities(eventId);
+    }
   }
 
   onChangeFacilitiesCount = (evt: any) => {

@@ -110,3 +110,15 @@ export const uploadFiles = (files: IIconFile[]) => () => {
       .catch(() => Toasts.errorToast(`${file.name} couldn't be uploaded`));
   });
 };
+
+export const removeFiles = (files: IIconFile[]) => () => {
+  if (!files || !files.length) return;
+
+  files.forEach(fileObject => {
+    const { file, destinationType } = fileObject;
+    const key = `event_media_files/${destinationType}_${file.name}`;
+    Storage.remove(key)
+      .then(() => Toasts.successToast(`${file.name} was successfully removed`))
+      .catch(() => Toasts.errorToast(`${file.name} failed to remove`));
+  });
+};

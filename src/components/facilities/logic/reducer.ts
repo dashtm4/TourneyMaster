@@ -5,7 +5,6 @@ import {
   LOAD_FIELDS_SUCCESS,
   ADD_EMPTY_FACILITY,
   ADD_EMPTY_FIELD,
-  SAVE_FACILITIES,
   UPDATE_FACILITY,
   FacilitiesAction,
   UPDATE_FIELD,
@@ -103,8 +102,6 @@ const facilitiesReducer = (
         ),
       };
     }
-    case SAVE_FACILITIES:
-      return state;
     default:
       return state;
   }
