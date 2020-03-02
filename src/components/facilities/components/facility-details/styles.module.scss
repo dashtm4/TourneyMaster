@@ -3,6 +3,8 @@
 }
 
 .detailsSubtitle {
+  margin-bottom: 20px;
+
   font-weight: 600;
   color: #6a6a6a;
 }
@@ -10,6 +12,7 @@
 .descripWrapper {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
   margin-top: 6px;
 
@@ -91,6 +94,10 @@
   justify-content: space-between;
 }
 
-:local(.parkingDetails) {
+.parkingDetails {
   margin-bottom: 25px;
+}
+
+.parkingDetailsWrapper {
+  margin-bottom: 20px;
 }

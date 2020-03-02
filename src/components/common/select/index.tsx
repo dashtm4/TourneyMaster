@@ -2,13 +2,13 @@ import React from 'react';
 import { TextField as MuiTextField, MenuItem } from '@material-ui/core';
 import styles from './style.module.scss';
 
-interface Option {
+export interface ISelectOption {
   label: string;
   value: string;
 }
 
 interface ISelectProps {
-  options: Option[];
+  options: ISelectOption[];
   label?: string;
   value: string;
   width?: string;
@@ -40,7 +40,7 @@ const Select: React.FC<ISelectProps> = ({
       name={name}
       disabled={disabled}
     >
-      {options.map((option: Option, index: number) => (
+      {options.map((option: ISelectOption, index: number) => (
         <MenuItem key={index} value={option.value}>
           {option.label}
         </MenuItem>

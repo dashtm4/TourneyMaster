@@ -32,17 +32,18 @@ const App: React.FC = () => {
         />
         <Route
           path={[
-            Routes.EVENT_DETAILS,
-            Routes.FACILITIES,
-            Routes.REGISTRATION,
-            Routes.DIVISIONS_AND_POOLS,
+            Routes.EVENT_DETAILS_ID,
+            Routes.FACILITIES_ID,
+            Routes.REGISTRATION_ID,
+            Routes.DIVISIONS_AND_POOLS_ID,
             Routes.ADD_DIVISION,
             Routes.EDIT_DIVISION,
-            Routes.TEAMS,
+            Routes.TEAMS_ID,
             Routes.CREATE_TEAM,
-            Routes.SCHEDULING,
-            Routes.SCORING,
-            Routes.REPORTING,
+            Routes.SCHEDULING_ID,
+            Routes.SCORING_ID,
+            Routes.REPORTING_ID,
+            Routes.RECORD_SCORES_ID,
           ]}
           component={AuthorizedPageEventWrapped}
         />

@@ -26,6 +26,7 @@ const createMemeber: ActionCreator<ThunkAction<
         first_name: memberFullName[0],
         last_name: memberFullName[1],
         email_address: email,
+        cognito_sub: sub,
       });
     }
 

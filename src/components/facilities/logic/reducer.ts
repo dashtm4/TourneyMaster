@@ -1,11 +1,10 @@
 import {
-  SUCCESS,
-  LOAD_FACILITIES,
+  LOAD_FACILITIES_START,
+  LOAD_FACILITIES_SUCCESS,
   LOAD_FIELDS_START,
   LOAD_FIELDS_SUCCESS,
   ADD_EMPTY_FACILITY,
   ADD_EMPTY_FIELD,
-  SAVE_FACILITIES,
   UPDATE_FACILITY,
   FacilitiesAction,
   UPDATE_FIELD,
@@ -13,11 +12,15 @@ import {
 import { IFacility, IField } from '../../../common/models';
 
 const initialState = {
+  isLoading: false,
+  isLoaded: false,
   facilities: [],
   fields: [],
 };
 
 export interface AppState {
+  isLoading: boolean;
+  isLoaded: boolean;
   facilities: IFacility[];
   fields: IField[];
 }
@@ -27,8 +30,18 @@ const facilitiesReducer = (
   action: FacilitiesAction
 ) => {
   switch (action.type) {
-    case LOAD_FACILITIES + SUCCESS:
-      return { ...state, facilities: action.payload };
+    case LOAD_FACILITIES_START: {
+      return { ...initialState, isLoading: true };
+    }
+    case LOAD_FACILITIES_SUCCESS:
+      const { facilities } = action.payload;
+
+      return {
+        ...state,
+        facilities,
+        isLoading: false,
+        isLoaded: true,
+      };
     case LOAD_FIELDS_START: {
       const { facilityId } = action.payload;
 
@@ -89,8 +102,6 @@ const facilitiesReducer = (
         ),
       };
     }
-    case SAVE_FACILITIES:
-      return state;
     default:
       return state;
   }

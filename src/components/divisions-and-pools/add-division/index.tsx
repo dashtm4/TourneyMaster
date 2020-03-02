@@ -19,14 +19,14 @@ import {
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteDivision from '../add-division/delete-division';
 import Modal from 'components/common/modal';
-import { IDisision } from 'common/models';
+import { IDivision } from 'common/models';
 
 interface ILocationState {
   divisionId: string;
 }
 
 interface IAddDivisionState {
-  divisions: Partial<IDisision>[];
+  divisions: Partial<IDivision>[];
   isModalOpen: boolean;
 }
 
@@ -34,10 +34,10 @@ interface IDivisionProps {
   history: History;
   location: Location<ILocationState>;
   match: any;
-  divisions: IDisision[];
-  saveDivisions: BindingCbWithTwo<Partial<IDisision>[], string>;
+  divisions: IDivision[];
+  saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
   getDivision: BindingCbWithOne<string>;
-  updateDivision: BindingCbWithOne<Partial<IDisision>>;
+  updateDivision: BindingCbWithOne<Partial<IDivision>>;
   deleteDivision: BindingAction;
 }
 
@@ -48,7 +48,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
 
   componentDidMount() {
     if (this.divisionId) {
-      const division: IDisision[] = this.props.divisions.filter(
+      const division: IDivision[] = this.props.divisions.filter(
         div => div.division_id === this.divisionId
       );
       this.setState({ divisions: [division[0]] });
@@ -157,7 +157,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
 }
 
 interface IState {
-  divisions: { data: IDisision[] };
+  divisions: { data: IDivision[] };
 }
 
 const mapStateToProps = (state: IState) => ({

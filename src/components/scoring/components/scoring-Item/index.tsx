@@ -1,24 +1,21 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
+import React from 'react';
 import moment from 'moment';
-import SectionDropdown from '../../../common/section-dropdown';
+import { SectionDropdown, Loader } from '../../../common';
 import GroupItem from '../group-item';
 import styles from './styles.module.scss';
-import {
-  IDisision,
-  IPool,
-  ITeam,
-  BindingAction,
-  BindingCbWithOne,
-} from '../../../../common/models';
+import { IDivision, IPool, ITeam } from '../../../../common/models';
 
 interface Props {
-  division: IDisision;
+  division: IDivision;
   pools: IPool[];
   teams: ITeam[];
   loadPools: (divisionId: string) => void;
-  loadTeams: BindingAction;
-  onOpenTeamDetails: BindingCbWithOne<ITeam>;
+  loadTeams: (poolId: string) => void;
+  onOpenTeamDetails: (
+    team: ITeam,
+    divisionName: string,
+    poolName: string
+  ) => void;
 }
 
 const ScoringItem = ({
@@ -29,12 +26,12 @@ const ScoringItem = ({
   loadTeams,
   onOpenTeamDetails,
 }: Props) => {
-  useEffect(() => {
+  if (!division.isPoolsLoading && !division.isPoolsLoaded) {
     loadPools(division.division_id);
-  }, []);
+  }
 
-  if (!division) {
-    return null;
+  if (division.isPoolsLoading) {
+    return <Loader />;
   }
 
   return (
@@ -67,13 +64,14 @@ const ScoringItem = ({
             </li>
           </ul>
           <ul className={styles.groupList}>
-            {pools.map(it => (
+            {pools.map(pool => (
               <GroupItem
-                pool={it}
-                teams={teams}
+                division={division}
+                pool={pool}
+                teams={teams.filter(it => it.pool_id === pool.pool_id)}
                 loadTeams={loadTeams}
                 onOpenTeamDetails={onOpenTeamDetails}
-                key={it.pool_id}
+                key={pool.pool_id}
               />
             ))}
           </ul>

@@ -13,11 +13,20 @@ const ICON_STYLES = {
 interface Props {
   isEdit: boolean;
   onEditClick: BindingAction;
+  onSaveClick: BindingAction;
+  onCancelClick: BindingAction;
   eventId: string | undefined;
   history: History;
 }
 
-const Navigation = ({ isEdit, onEditClick, eventId, history }: Props) => {
+const Navigation = ({
+  isEdit,
+  onEditClick,
+  onSaveClick,
+  onCancelClick,
+  eventId,
+  history,
+}: Props) => {
   const onCreateTeam = () => {
     const path = eventId
       ? `/event/teams-create/${eventId}`
@@ -25,6 +34,7 @@ const Navigation = ({ isEdit, onEditClick, eventId, history }: Props) => {
 
     history.push(path);
   };
+  
   return (
     <div className={styles.navWrapper}>
       <p>
@@ -44,13 +54,18 @@ const Navigation = ({ isEdit, onEditClick, eventId, history }: Props) => {
       {isEdit ? (
         <p>
           <Button
-            onClick={onEditClick}
+            onClick={onCancelClick}
             label="Cancel"
             variant="text"
             color="secondary"
           />
           <span className={styles.btnWrapper}>
-            <Button label="Save" variant="contained" color="primary" />
+            <Button
+              onClick={onSaveClick}
+              label="Save"
+              variant="contained"
+              color="primary"
+            />
           </span>
         </p>
       ) : (

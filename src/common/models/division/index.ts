@@ -1,4 +1,4 @@
-export interface IDisision {
+export interface IDivision {
   division_id: string;
   event_id: string;
   long_name: string;
@@ -27,4 +27,6 @@ export interface IDisision {
   //optional
   isPoolsLoading?: boolean;
   isPoolsLoaded?: boolean;
+  isTeamsLoading?: boolean;
+  isTeamsLoaded?: boolean;
 }
