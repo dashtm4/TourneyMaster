@@ -7,6 +7,7 @@ import {
   saveEventDetails,
   createEvent,
   uploadFiles,
+  removeFiles,
 } from './logic/actions';
 import { EventDetailsDTO, IIconFile } from './logic/model';
 import { IAppState } from './logic/reducer';
@@ -30,6 +31,7 @@ interface Props extends IMapStateProps {
   saveEventDetails: (event: Partial<EventDetailsDTO>) => void;
   createEvent: (event: Partial<EventDetailsDTO>) => void;
   uploadFiles: (files: IIconFile[]) => void;
+  removeFiles: (files: IIconFile[]) => void;
 }
 
 type State = {
@@ -89,6 +91,10 @@ class EventDetails extends Component<Props, State> {
     this.props.uploadFiles(files);
   };
 
+  onFileRemove = (files: IIconFile[]) => {
+    this.props.removeFiles(files);
+  };
+
   onSave = () => {
     const { event, eventId } = this.state;
     if (!event) return;
@@ -129,7 +135,10 @@ class EventDetails extends Component<Props, State> {
           onChange={this.onChange}
         />
         <PlayoffsSection eventData={event} onChange={this.onChange} />
-        <MediaAssetsSection onFileUpload={this.onFileUpload} />
+        <MediaAssetsSection
+          onFileUpload={this.onFileUpload}
+          onFileRemove={this.onFileRemove}
+        />
       </div>
     );
   }
@@ -150,6 +159,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       saveEventDetails,
       createEvent,
       uploadFiles,
+      removeFiles,
     },
     dispatch
   );

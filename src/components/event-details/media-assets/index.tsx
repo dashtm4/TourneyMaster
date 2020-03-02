@@ -10,18 +10,28 @@ import styles from '../styles.module.scss';
 
 interface IProps {
   onFileUpload: (files: IIconFile[]) => void;
+  onFileRemove: (files: IIconFile[]) => void;
 }
 
-const MediaAssetsSection: React.FC<IProps> = ({ onFileUpload }) => {
+const MediaAssetsSection: React.FC<IProps> = props => {
+  const { onFileUpload, onFileRemove } = props;
+
+  const populateFileObj = (
+    files: File[],
+    destinationType: string
+  ): IIconFile[] => files.map(file => ({ file, destinationType }));
+
   const onDesktopFileUpload = (files: File[]) =>
-    onFileUpload(
-      files?.map((file: File) => ({ file, destinationType: 'desktop_icon' }))
-    );
+    onFileUpload(populateFileObj(files, 'desktop_icon'));
 
   const onMobileFileUpload = (files: File[]) =>
-    onFileUpload(
-      files?.map((file: File) => ({ file, destinationType: 'mobile_icon' }))
-    );
+    onFileUpload(populateFileObj(files, 'mobile_icon'));
+
+  const onDesktopFileRemove = (files: File[]) =>
+    onFileRemove(populateFileObj(files, 'desktop_icon'));
+
+  const onMobileFileRemove = (files: File[]) =>
+    onFileRemove(populateFileObj(files, 'mobile_icon'));
 
   return (
     <SectionDropdown
@@ -41,10 +51,12 @@ const MediaAssetsSection: React.FC<IProps> = ({ onFileUpload }) => {
               type={FileUploadTypes.SECTION}
               acceptTypes={[
                 AcceptFileTypes.JPG,
+                AcceptFileTypes.JPEG,
                 AcceptFileTypes.PNG,
                 AcceptFileTypes.SVG,
               ]}
               onUpload={onDesktopFileUpload}
+              onFileRemove={onDesktopFileRemove}
             />
           </div>
           <div className={styles.uploadBlock}>
@@ -53,10 +65,12 @@ const MediaAssetsSection: React.FC<IProps> = ({ onFileUpload }) => {
               type={FileUploadTypes.SECTION}
               acceptTypes={[
                 AcceptFileTypes.JPG,
+                AcceptFileTypes.JPEG,
                 AcceptFileTypes.PNG,
                 AcceptFileTypes.SVG,
               ]}
               onUpload={onMobileFileUpload}
+              onFileRemove={onMobileFileRemove}
             />
           </div>
         </div>
