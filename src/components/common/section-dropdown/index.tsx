@@ -6,11 +6,13 @@ import {
   ExpansionPanel,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { stringToLink } from 'helpers';
 import styles from './styles.module.scss';
 
 type DropdownType = 'section' | 'block';
 
 interface Props {
+  id?: string | null;
   children: React.ReactElement[];
   type?: DropdownType;
   isDefaultExpanded?: boolean;
@@ -54,6 +56,7 @@ const setPanelSummaryStyle = (type?: DropdownType) =>
   type && type === 'section' ? { paddingLeft: 0 } : {};
 
 const SectionDropdown = ({
+  id,
   children,
   type,
   headingColor,
@@ -68,6 +71,7 @@ const SectionDropdown = ({
     <ExpansionPanel
       style={setStyleOnType(type)}
       defaultExpanded={isDefaultExpanded}
+      id={id ? stringToLink(id) : undefined}
     >
       <ExpansionPanelSummary
         style={{

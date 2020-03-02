@@ -8,6 +8,7 @@ import {
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
   ADD_POOL_SUCCESS,
+  DIVISION_SAVE_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
 import { ActionCreator, Dispatch } from 'redux';
@@ -127,6 +128,11 @@ export const updateDivision: ActionCreator<ThunkAction<
   Toasts.successToast('Division is successfully updated');
 };
 
+export const saveDivisionsSuccess = (divisions: IDivision[]) => ({
+  type: DIVISION_SAVE_SUCCESS,
+  payload: divisions,
+});
+
 export const saveDivisions: ActionCreator<ThunkAction<
   void,
   {},
@@ -149,6 +155,8 @@ export const saveDivisions: ActionCreator<ThunkAction<
       return Toasts.errorToast("Couldn't add a division");
     }
   }
+
+  dispatch(saveDivisionsSuccess(divisions));
 
   history.push(`/event/divisions-and-pools/${eventId}`);
 

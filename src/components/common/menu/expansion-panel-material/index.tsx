@@ -46,8 +46,7 @@ const ExpansionPanelSummaryWrapped = withStyles({
 
 const ExpansionPanelDetailsWrapper = withStyles({
   root: {
-    paddingTop: '5px',
-    paddingBottom: '10px',
+    padding: '5px 0 10px 24px',
   },
 })(ExpansionPanelDetails);
 

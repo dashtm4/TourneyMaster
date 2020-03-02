@@ -16,6 +16,7 @@ import {
 import RegistrationEdit from 'components/registration/registration-edit';
 import { IRegistration } from 'common/models/registration';
 import { BindingCbWithOne, BindingCbWithTwo, IDivision } from 'common/models';
+import { EventMenuTitles } from 'common/enums';
 import { History } from 'history';
 import { Loader } from 'components/common';
 
@@ -122,6 +123,7 @@ class RegistrationView extends React.Component<
               <ul className={styles.libraryList}>
                 <li>
                   <SectionDropdown
+                    id={EventMenuTitles.PRIMARY_INFORMATION}
                     type="section"
                     panelDetailsType="flat"
                     isDefaultExpanded={true}
@@ -139,6 +141,7 @@ class RegistrationView extends React.Component<
                 </li>
                 <li>
                   <SectionDropdown
+                    id={EventMenuTitles.TEAMS_AND_ATHLETES}
                     type="section"
                     panelDetailsType="flat"
                     isDefaultExpanded={true}
@@ -149,6 +152,7 @@ class RegistrationView extends React.Component<
                 </li>
                 <li>
                   <SectionDropdown
+                    id={EventMenuTitles.MAIN_CONTACT}
                     type="section"
                     panelDetailsType="flat"
                     isDefaultExpanded={true}

@@ -32,7 +32,11 @@ $containerWidth: 370px;
     color: #606060;
     font-size: 15px;
 
-    span {
+    button {
+      margin-top: 10px;
+    }
+
+    .uploadedWrapperText {
       color: #464646;
       font-weight: 600;
       padding-bottom: 4px;

@@ -27,35 +27,105 @@ import styles from './styles.module.scss';
 const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
   switch (icon) {
     case Icons.PERSON:
-      return <PersonIcon className={styles.icon} />;
+      return (
+        <PersonIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.INSERT_DRIVE:
-      return <InsertDriveFileIcon className={styles.icon} />;
+      return (
+        <InsertDriveFileIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.EMAIL:
-      return <EmailIcon className={styles.icon} />;
+      return (
+        <EmailIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.EXPLAND_MORE:
-      return <ExpandMoreIcon className={styles.icon} />;
+      return (
+        <ExpandMoreIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.PEOPLE:
-      return <PeopleIcon className={styles.icon} />;
+      return (
+        <PeopleIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.CALENDAR:
-      return <CalendarTodayIcon className={styles.icon} />;
+      return (
+        <CalendarTodayIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.SETTINGS:
-      return <SettingsIcon className={styles.icon} />;
+      return (
+        <SettingsIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.ERROR:
-      return <ErrorIcon className={styles.icon} />;
+      return (
+        <ErrorIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.PIN:
       return <PinIcon />;
     case Icons.CLOCK:
-      return <WatchLaterIcon className={styles.icon} />;
+      return (
+        <WatchLaterIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.REPORT:
-      return <DescriptionIcon className={styles.icon} />;
+      return (
+        <DescriptionIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.LIST:
-      return <FormatListBulletedIcon className={styles.icon} />;
+      return (
+        <FormatListBulletedIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.TEAM:
-      return <GroupAddIcon className={styles.icon} />;
+      return (
+        <GroupAddIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.PLACE:
-      return <RoomIcon className={styles.icon} />;
+      return (
+        <RoomIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.SCORING:
-      return <CreateIcon className={styles.icon} />;
+      return (
+        <CreateIcon
+          className={iconStyles ? '' : styles.icon}
+          style={iconStyles}
+        />
+      );
     case Icons.EDIT:
       return (
         <EditIcon
