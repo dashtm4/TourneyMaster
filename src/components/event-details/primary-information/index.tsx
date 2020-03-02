@@ -49,7 +49,6 @@ const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
   onChange,
 }: Props) => {
-  //@ts-ignore
   const { time_zone_utc, sport_id, event_startdate, event_enddate } = eventData;
 
   const onNameChange = (e: InputTargetValue) =>
@@ -64,8 +63,14 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const onGenderChange = (e: InputTargetValue) =>
     onChange('gender_id', genderEnum[e.target.value]);
 
-  const onStartDate = (e: Date | string) =>
-    !isNaN(Number(e)) && onChange('event_startdate', new Date(e).toISOString());
+  const onStartDate = (e: Date | string) => {
+    if (!isNaN(Number(e))) {
+      onChange('event_startdate', new Date(e).toISOString());
+      if (event_enddate && new Date(e).toISOString() > event_enddate) {
+        onEndDate(e);
+      }
+    }
+  };
 
   const onEndDate = (e: Date | string) =>
     !isNaN(Number(e)) && onChange('event_enddate', new Date(e).toISOString());
@@ -122,14 +127,14 @@ const PrimaryInformationSection: React.FC<Props> = ({
         </div>
         <div className={styles.piDetailsSecond}>
           <DatePicker
-            // width="160px"
+            minWidth="170px"
             label="Start Date"
             type="date"
             value={event_startdate}
             onChange={onStartDate}
           />
           <DatePicker
-            // width="161px"
+            minWidth="170px"
             label="End Date"
             type="date"
             value={event_enddate}
