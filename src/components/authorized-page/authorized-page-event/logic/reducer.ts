@@ -34,7 +34,11 @@ const pageEventReducer = (
           item.title === EventMenuTitles.FACILITIES
             ? {
                 ...item,
-                children: facilities.map(it => it.facilities_description),
+                children: facilities
+                  .sort((a, b) =>
+                    a.facilities_description > b.facilities_description ? 1 : -1
+                  )
+                  .map(it => it.facilities_description),
               }
             : item
         ),
@@ -47,7 +51,9 @@ const pageEventReducer = (
           item.title === EventMenuTitles.DIVISIONS_AND_POOLS
             ? {
                 ...item,
-                children: action.payload.map(it => it.short_name),
+                children: action.payload
+                  .sort((a, b) => (a.short_name > b.short_name ? 1 : -1))
+                  .map(it => it.short_name),
               }
             : item
         ),

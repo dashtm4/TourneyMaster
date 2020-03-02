@@ -108,25 +108,29 @@ class Facilities extends React.Component<
             />
           </div>
           <ul className={styles.facilitiesList}>
-            {facilities.map((facilitiy, idx) => (
-              <li
-                className={styles.facilitiesItem}
-                key={facilitiy.facilities_id}
-              >
-                <FacilityDetails
-                  facility={facilitiy}
-                  fields={fields.filter(
-                    it => it.facilities_id === facilitiy.facilities_id
-                  )}
-                  facilitiyNumber={idx + 1}
-                  loadFields={loadFields}
-                  addEmptyField={addEmptyField}
-                  updateFacilities={updateFacilities}
-                  updateField={updateField}
-                  uploadFileMap={uploadFileMap}
-                />
-              </li>
-            ))}
+            {facilities
+              .sort((a, b) =>
+                a.facilities_description > b.facilities_description ? 1 : -1
+              )
+              .map((facilitiy, idx) => (
+                <li
+                  className={styles.facilitiesItem}
+                  key={facilitiy.facilities_id}
+                >
+                  <FacilityDetails
+                    facility={facilitiy}
+                    fields={fields.filter(
+                      it => it.facilities_id === facilitiy.facilities_id
+                    )}
+                    facilitiyNumber={idx + 1}
+                    loadFields={loadFields}
+                    addEmptyField={addEmptyField}
+                    updateFacilities={updateFacilities}
+                    updateField={updateField}
+                    uploadFileMap={uploadFileMap}
+                  />
+                </li>
+              ))}
           </ul>
         </div>
       </section>

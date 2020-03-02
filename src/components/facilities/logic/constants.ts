@@ -1,5 +1,5 @@
 const EMPTY_FACILITY = {
-  facilities_description: null,
+  facilities_description: '',
   num_fields: null,
   facilities_tag: null,
   address1: null,
