@@ -261,72 +261,35 @@ class FacilityDetails extends React.Component<Props, State> {
                 onChange={this.onChangeFacility}
                 value={facility.parking_available || ''}
                 name="parking_available"
-                options={['Ample', 'AmAmple', 'AmAmAmple'].map(type => ({
-                  label: type,
-                  value: type,
+                options={Object.keys(ParkingAvailableOptions).map(type => ({
+                  label: ParkingAvailableOptions[type],
+                  value: ParkingAvailableOptions[type],
                 }))}
                 width="100%"
                 disabled={!isEdit}
               />
             </fieldset>
-            <div className={styles.parkingWrapper}>
-              <fieldset
-                className={`${styles.filedset} ${styles.filedsetParkingAvailable}`}
-              >
-                <legend className={styles.fieldTitle}>Parking Available</legend>
-                <Select
-                  onChange={this.onChangeFacility}
-                  value={facility.parking_available || ''}
-                  name="parking_available"
-                  options={Object.keys(ParkingAvailableOptions).map(type => ({
-                    label: ParkingAvailableOptions[type],
-                    value: ParkingAvailableOptions[type],
-                  }))}
-                  width="100%"
-                  disabled={!isEdit}
-                />
-              </fieldset>
-              <fieldset
-                className={`${styles.filedset} ${styles.filedsetDistanceFields}`}
-              >
-                <legend className={styles.fieldTitle}>
-                  Distance to Fields (Main Parking)
-                </legend>
-                <Input
-                  onChange={this.onChangeFacility}
-                  value={
-                    facility.parking_proximity
-                      ? `${facility.parking_proximity}`
-                      : ''
-                  }
-                  name={FormFields.PARKING_PROXIMITY}
-                  placeholder="Meters"
-                  width="100%"
-                  disabled={!isEdit}
-                />
-              </fieldset>
-              <fieldset className={`${styles.filedset} ${styles.filedsetGolf}`}>
-                <legend className="visually-hidden">Golf Carts </legend>
-                <Checkbox
-                  onChange={() =>
-                    this.onChangeFacility({
-                      target: {
-                        name: FormFields.GOLF_CARTS_AVAILABE,
-                        value: facility.golf_carts_availabe ? null : true,
-                      },
-                    })
-                  }
-                  options={[
-                    {
-                      label: 'Golf Carts Available',
-                      checked: Boolean(facility.golf_carts_availabe),
-                      disabled: !isEdit,
-                    },
-                  ]}
-                />
-              </fieldset>
-            </div>
-            <fieldset className={`${styles.filedset} ${styles.parkingDetails}`}>
+            <fieldset
+              className={`${styles.filedset} ${styles.filedsetDistanceFields}`}
+            >
+              <legend className={styles.fieldTitle}>
+                Distance to Fields (Main Parking)
+              </legend>
+              <Input
+                onChange={this.onChangeFacility}
+                value={
+                  facility.parking_proximity
+                    ? `${facility.parking_proximity}`
+                    : ''
+                }
+                name={FormFields.PARKING_PROXIMITY}
+                placeholder="Meters"
+                width="100%"
+                disabled={!isEdit}
+              />
+            </fieldset>
+            <fieldset className={`${styles.filedset} ${styles.filedsetGolf}`}>
+              <legend className="visually-hidden">Golf Carts </legend>
               <Checkbox
                 onChange={() =>
                   this.onChangeFacility({
@@ -344,24 +307,6 @@ class FacilityDetails extends React.Component<Props, State> {
                   },
                 ]}
               />
-              {facility.parking_details && (
-                <>
-                  <div className={styles.parkingDetailsWrapper}>
-                    <Input
-                      onChange={this.onChangeFacility}
-                      value={facility.parking_details}
-                      name={FormFields.PARKING_DETAILS}
-                      width="100%"
-                      disabled={!isEdit}
-                    />
-                  </div>
-                  <CardMessage type={Icons.EMODJI_OBJECTS}>
-                    Notify your attendees they need to know something. For
-                    example, if cars will be aggressively ticketed, parking will
-                    be tight, etc.
-                  </CardMessage>
-                </>
-              )}
             </fieldset>
           </div>
           <fieldset className={`${styles.filedset} ${styles.parkingDetails}`}>
@@ -383,13 +328,22 @@ class FacilityDetails extends React.Component<Props, State> {
               ]}
             />
             {facility.parking_details && (
-              <Input
-                onChange={this.onChangeFacility}
-                value={facility.parking_details}
-                name={FormFields.PARKING_DETAILS}
-                width="100%"
-                disabled={!isEdit}
-              />
+              <>
+                <div className={styles.parkingDetailsWrapper}>
+                  <Input
+                    onChange={this.onChangeFacility}
+                    value={facility.parking_details}
+                    name={FormFields.PARKING_DETAILS}
+                    width="100%"
+                    disabled={!isEdit}
+                  />
+                </div>
+                <CardMessage type={Icons.EMODJI_OBJECTS}>
+                  Notify your attendees they need to know something. For
+                  example, if cars will be aggressively ticketed, parking will
+                  be tight, etc.
+                </CardMessage>
+              </>
             )}
           </fieldset>
           <FileUpload

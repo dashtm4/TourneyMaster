@@ -169,7 +169,7 @@ const saveFacilities: ActionCreator<ThunkAction<
       },
     });
 
-    Toasts.successToast('Saved ❤️');
+    Toasts.successToast('Saved');
   } catch {
     dispatch({
       type: SAVE_FACILITIES_FAILURE,
