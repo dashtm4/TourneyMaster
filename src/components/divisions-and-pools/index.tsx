@@ -108,6 +108,7 @@ class DivisionsAndPools extends React.Component<
               {divisions.map(division => (
                 <li key={division.division_id}>
                   <SectionDropdown
+                    id={division.short_name}
                     isDefaultExpanded={true}
                     panelDetailsType="flat"
                   >
