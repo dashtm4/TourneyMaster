@@ -121,6 +121,17 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
           : event
       );
 
+    const numOfPublished = this.props.events?.filter(
+      event => event.event_status === EventStatus.PUBLISHED
+    ).length;
+    const numOfDraft = this.props.events?.filter(
+      event => event.event_status === EventStatus.DRAFT
+    ).length;
+
+    const numOfHistorical = this.props.events?.filter(
+      event => new Date(event.event_enddate) < new Date()
+    ).length;
+
     return (
       <div className={styles.tournamentsContainer} key={1}>
         <div className={styles.tournamentsHeading}>
@@ -136,7 +147,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
           </div>
           <div className={styles.buttonsGroup}>
             <Button
-              label="Published"
+              label={`Published (${numOfPublished})`}
               variant="contained"
               color="primary"
               type={
@@ -147,7 +158,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
               onClick={this.onPublishedFilter}
             />
             <Button
-              label="Draft"
+              label={`Draft (${numOfDraft})`}
               variant="contained"
               color="primary"
               type={
@@ -158,7 +169,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
               onClick={this.onDraftFilter}
             />
             <Button
-              label="Historical"
+              label={`Historical (${numOfHistorical})`}
               variant="contained"
               color="primary"
               type={
