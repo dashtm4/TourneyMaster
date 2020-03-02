@@ -19,14 +19,14 @@ export const EventMenu = [
     isAllow: false,
     title: EventMenuTitles.FACILITIES,
     icon: Icons.PLACE,
-    link: '/event/facilities',
+    link: Routes.FACILITIES,
     children: [],
   },
   {
     isAllow: false,
     title: EventMenuTitles.REGISTRATION,
     icon: Icons.LIST,
-    link: '/event/registration',
+    link: Routes.REGISTRATION,
     children: ['Primary Information', 'Teams & Athletes', 'Main Contact'],
   },
   {
@@ -47,7 +47,7 @@ export const EventMenu = [
     isAllow: false,
     title: EventMenuTitles.SCHEDULING,
     icon: Icons.CLOCK,
-    link: Routes.SCHEDULES,
+    link: Routes.SCHEDULING,
     children: ['Tournament Play', 'Brackets'],
   },
   {

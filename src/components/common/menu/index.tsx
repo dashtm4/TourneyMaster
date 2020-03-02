@@ -6,7 +6,7 @@ import {
   ExpansionPanelDetailsWrapper,
 } from './expansion-panel-material';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { getIcon } from '../../../helpers/get-icon.helper';
+import { getIcon, stringToLink } from '../../../helpers';
 import { Icons } from '../../../common/constants/icons';
 import { MenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
@@ -68,7 +68,9 @@ class Menu extends React.Component<Props, State> {
                     <ul className={styles.subList}>
                       {menuItem.children.map((menuSubItem: string) => (
                         <li className={styles.subListItem} key={menuSubItem}>
-                          {menuSubItem}
+                          <a href={`#${stringToLink(menuSubItem)}`}>
+                            {menuSubItem}
+                          </a>
                         </li>
                       ))}
                     </ul>

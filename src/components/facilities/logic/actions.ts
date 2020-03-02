@@ -5,8 +5,6 @@ import uuidv4 from 'uuid/v4';
 import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
-  SUCCESS,
-  FAILURE,
   ADD_EMPTY_FACILITY,
   ADD_EMPTY_FIELD,
   LOAD_FACILITIES_START,
@@ -17,7 +15,8 @@ import {
   LOAD_FIELDS_FAILURE,
   UPDATE_FACILITY,
   UPDATE_FIELD,
-  SAVE_FACILITIES,
+  SAVE_FACILITIES_SUCCESS,
+  SAVE_FACILITIES_FAILURE,
   FacilitiesAction,
 } from './action-types';
 import Api from 'api/api';
@@ -164,13 +163,16 @@ const saveFacilities: ActionCreator<ThunkAction<
     }
 
     dispatch({
-      type: SAVE_FACILITIES + SUCCESS,
+      type: SAVE_FACILITIES_SUCCESS,
+      payload: {
+        facilities,
+      },
     });
 
     Toasts.successToast('Saved ❤️');
   } catch {
     dispatch({
-      type: SAVE_FACILITIES + FAILURE,
+      type: SAVE_FACILITIES_FAILURE,
     });
   }
 };

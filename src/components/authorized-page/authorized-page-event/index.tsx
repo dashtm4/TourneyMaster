@@ -49,20 +49,20 @@ const AuthorizedPageEvent = ({
         <main className={styles.content}>
           <Switch>
             <Route path={Routes.EVENT_DETAILS_ID} component={EventDetails} />
-            <Route path={Routes.FACILITIES} component={Facilities} />
-            <Route path={Routes.REGISTRATION} component={Registration} />
+            <Route path={Routes.FACILITIES_ID} component={Facilities} />
+            <Route path={Routes.REGISTRATION_ID} component={Registration} />
+            <Route
+              path={Routes.DIVISIONS_AND_POOLS_ID}
+              component={DivisionsAndPools}
+            />
+            <Route path={Routes.SCHEDULING_ID} component={Scheduling} />
+            <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
+
             <Route path={Routes.RECORD_SCORES_ID} component={RecordScores} />
             <Route path={Routes.ADD_DIVISION} component={AddDivision} />
             <Route path={Routes.EDIT_DIVISION} component={AddDivision} />
-            <Route
-              path={Routes.DIVISIONS_AND_POOLS}
-              component={DivisionsAndPools}
-            />
-            <Route path={Routes.TEAMS} component={Teams} />
-            <Route path={Routes.TEAMS} component={EmptyPage} />
             <Route path={Routes.CREATE_TEAM} component={CreateTeam} />
-            <Route path={Routes.SCHEDULING} component={Scheduling} />
             <Route path={Routes.REPORTING} component={EmptyPage} />
 
             <Route path={Routes.DEFAULT} component={EventDetails} />
