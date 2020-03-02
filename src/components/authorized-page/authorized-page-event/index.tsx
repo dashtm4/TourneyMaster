@@ -58,12 +58,12 @@ const AuthorizedPageEvent = ({
             <Route path={Routes.SCHEDULING_ID} component={Scheduling} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
+            <Route path={Routes.REPORTING_ID} component={EmptyPage} />
 
             <Route path={Routes.RECORD_SCORES_ID} component={RecordScores} />
             <Route path={Routes.ADD_DIVISION} component={AddDivision} />
             <Route path={Routes.EDIT_DIVISION} component={AddDivision} />
             <Route path={Routes.CREATE_TEAM} component={CreateTeam} />
-            <Route path={Routes.REPORTING} component={EmptyPage} />
 
             <Route path={Routes.DEFAULT} component={EventDetails} />
           </Switch>

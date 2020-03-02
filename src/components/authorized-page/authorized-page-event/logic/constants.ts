@@ -8,11 +8,10 @@ export const EventMenu = [
     icon: Icons.PERSON,
     link: Routes.EVENT_DETAILS,
     children: [
-      'Primary Information',
-      'Event Structure',
-      'Playoffs',
-      'Media Assets',
-      'Advanced Settings',
+      EventMenuTitles.PRIMARY_INFORMATION,
+      EventMenuTitles.EVENT_STRUCTURE,
+      EventMenuTitles.PLAYOFFS,
+      EventMenuTitles.MEDIA_ASSETS,
     ],
   },
   {
@@ -27,7 +26,11 @@ export const EventMenu = [
     title: EventMenuTitles.REGISTRATION,
     icon: Icons.LIST,
     link: Routes.REGISTRATION,
-    children: ['Primary Information', 'Teams & Athletes', 'Main Contact'],
+    children: [
+      EventMenuTitles.PRIMARY_INFORMATION,
+      EventMenuTitles.TEAMS_AND_ATHLETES,
+      EventMenuTitles.MAIN_CONTACT,
+    ],
   },
   {
     isAllow: false,
@@ -41,14 +44,19 @@ export const EventMenu = [
     title: EventMenuTitles.TEAMS,
     icon: Icons.TEAM,
     link: Routes.TEAMS,
-    children: ['Team Management', 'Request Manager'],
+    children: [
+      EventMenuTitles.TEAM_MANAGEMENT,
+      // EventMenuTitles.REQUEST_MANAGER,
+    ],
   },
   {
     isAllow: false,
     title: EventMenuTitles.SCHEDULING,
     icon: Icons.CLOCK,
     link: Routes.SCHEDULING,
-    children: ['Tournament Play', 'Brackets'],
+    children: [
+      // EventMenuTitles.TOURNAMENT_PLAY, EventMenuTitles.BRACKETS
+    ],
   },
   {
     isAllow: false,
@@ -60,7 +68,7 @@ export const EventMenu = [
   {
     isAllow: false,
     title: EventMenuTitles.REPORTING,
-    link: '/event/reporting',
+    link: Routes.REPORTING,
     icon: Icons.REPORT,
     children: [],
   },

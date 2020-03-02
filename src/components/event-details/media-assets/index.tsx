@@ -5,6 +5,8 @@ import FileUpload, {
   FileUploadTypes,
   AcceptFileTypes,
 } from 'components/common/file-upload';
+import { EventMenuTitles } from 'common/enums';
+
 import { IIconFile } from '../logic/model';
 import styles from '../styles.module.scss';
 
@@ -25,6 +27,7 @@ const MediaAssetsSection: React.FC<IProps> = ({ onFileUpload }) => {
 
   return (
     <SectionDropdown
+      id={EventMenuTitles.MEDIA_ASSETS}
       type="section"
       panelDetailsType="flat"
       isDefaultExpanded={true}

@@ -9,6 +9,7 @@ import {
   Button,
   DatePicker,
 } from 'components/common';
+import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
@@ -81,6 +82,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
 
   return (
     <SectionDropdown
+      id={EventMenuTitles.PRIMARY_INFORMATION}
       type="section"
       panelDetailsType="flat"
       isDefaultExpanded={true}
