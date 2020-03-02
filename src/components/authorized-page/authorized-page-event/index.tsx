@@ -40,8 +40,8 @@ export const EmptyPage: React.FC = () => {
 };
 
 const AuthorizedPageEvent = ({
-  isLoading,
-  isLoaded,
+  // isLoading,
+  // isLoaded,
   menuList,
   match,
   loadAuthPageData,
@@ -60,7 +60,7 @@ const AuthorizedPageEvent = ({
   return (
     <>
       <Header />
-      {!isLoaded && !isLoading ? (
+      {false ? (
         <Loader />
       ) : (
         <div className={styles.page}>
