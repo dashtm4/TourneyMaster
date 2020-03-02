@@ -112,7 +112,7 @@ class EventDetails extends Component<Props, State> {
 
     const { event } = this.state;
     const { isEventLoading } = this.props.event;
-    return false ? (
+    return !event || isEventLoading ? (
       <Loader />
     ) : (
       <div className={styles.container}>
