@@ -4,6 +4,7 @@ import ColorPicker from '../../../common/color-picker';
 import Checkbox from '../../../common/buttons/checkbox';
 import styles from '../styles.module.scss';
 import { BindingCbWithThree, IDivision } from 'common/models';
+import { IRegistration } from 'common/models/registration';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -15,6 +16,7 @@ interface IAddDivisionFormProps {
   onChange: BindingCbWithThree<string, string, number>;
   index: number;
   division: Partial<IDivision>;
+  registration?: IRegistration;
 }
 
 class AddDivisionForm extends React.Component<

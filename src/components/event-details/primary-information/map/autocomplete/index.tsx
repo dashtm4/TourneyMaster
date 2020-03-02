@@ -1,5 +1,8 @@
 import React from 'react';
-import PlacesAutocomplete from 'react-places-autocomplete'; // geocodeByAddress, // getLatLng,
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng,
+} from 'react-places-autocomplete';
 import { Input } from 'components/common';
 import styles from './styles.module.scss';
 import { BindingCbWithOne } from 'common/models';
@@ -20,11 +23,10 @@ const PlacesAutocompleteInput = ({
   address,
 }: IPlaceAutocomplete) => {
   const handleSelect = async (value: string) => {
-    // const results = await geocodeByAddress(value);
-    // const latLng = await getLatLng(results[0]);
+    const results = await geocodeByAddress(value);
+    const latLng = await getLatLng(results[0]);
     onChange(value);
-    // onSelect(latLng);
-    onSelect({ lat: 49.842957, lng: 24.031111 });
+    onSelect(latLng);
   };
 
   return (
@@ -40,7 +42,6 @@ const PlacesAutocompleteInput = ({
               {...getInputProps({
                 placeholder: 'Search Google Maps',
                 label: 'General Location',
-                disabled: true,
               })}
             />
             {suggestions.length > 0 && (

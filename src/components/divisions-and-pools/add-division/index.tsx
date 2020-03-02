@@ -10,6 +10,7 @@ import {
   saveDivisions,
   updateDivision,
   deleteDivision,
+  getRegistration,
 } from '../logic/actions';
 import {
   BindingCbWithOne,
@@ -20,6 +21,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteDivision from '../add-division/delete-division';
 import Modal from 'components/common/modal';
 import { IDivision } from 'common/models';
+import { IRegistration } from 'common/models/registration';
 
 interface ILocationState {
   divisionId: string;
@@ -35,10 +37,12 @@ interface IDivisionProps {
   location: Location<ILocationState>;
   match: any;
   divisions: IDivision[];
+  registration: IRegistration;
   saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
   getDivision: BindingCbWithOne<string>;
   updateDivision: BindingCbWithOne<Partial<IDivision>>;
   deleteDivision: BindingAction;
+  getRegistration: BindingCbWithOne<string>;
 }
 
 class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
@@ -53,6 +57,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
       );
       this.setState({ divisions: [division[0]] });
     }
+    this.props.getRegistration(this.eventId);
   }
 
   onChange = (name: string, value: string | number, index: number) => {
@@ -140,6 +145,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
             index={index}
             onChange={this.onChange}
             division={this.state.divisions[index]}
+            registration={this.props.registration}
           />
         ))}
         {this.renderButton()}
@@ -157,17 +163,19 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
 }
 
 interface IState {
-  divisions: { data: IDivision[] };
+  divisions: { data: IDivision[]; registration: IRegistration };
 }
 
 const mapStateToProps = (state: IState) => ({
   divisions: state.divisions.data,
+  registration: state.divisions.registration,
 });
 
 const mapDispatchToProps = {
   saveDivisions,
   updateDivision,
   deleteDivision,
+  getRegistration,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddDivision);

@@ -34,6 +34,10 @@ interface IDivisionAndPoolsState {
   isModalOpen: boolean;
   selected: Partial<IDivision>;
 }
+// const getDefaultDivisionState = (registration: any) => ({
+//   entry_fee: registration.entry_fee,
+//   max_num_teams: registration.max_teams_per_division,
+// });
 
 class DivisionsAndPools extends React.Component<
   IDivisionsAndPoolsProps,
@@ -113,7 +117,7 @@ class DivisionsAndPools extends React.Component<
                     panelDetailsType="flat"
                   >
                     <div className={styles.sectionTitle}>
-                      <div>{`Division: ${division.long_name}`}</div>
+                      <div>{`Division: ${division.short_name}`}</div>
                       <div>
                         <Button
                           label="Edit Division Details"
