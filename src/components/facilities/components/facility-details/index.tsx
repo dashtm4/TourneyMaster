@@ -9,7 +9,9 @@ import {
   FileUpload,
   SectionDropdown,
   HeadingLevelThree,
+  CardMessage,
 } from '../../../common';
+import { Icons } from 'common/constants/icons';
 import { FileUploadTypes, AcceptFileTypes } from '../../../common/file-upload';
 import {
   IFacility,
@@ -18,6 +20,29 @@ import {
   BindingCbWithOne,
 } from '../../../../common/models';
 import styles from './styles.module.scss';
+
+enum FormFields {
+  FACILITIES_DESCRIPTION = 'facilities_description',
+  ADDRESS_ONE = 'address1',
+  NUM_FIELDS = 'num_fields',
+  RESTROOM = 'restrooms',
+  NUM_TOILETS = 'num_toilets',
+  RESTROOM_DETAILS = 'restroom_details',
+  PARKING_AVAILABLE = 'parking_available',
+  PARKING_PROXIMITY = 'parking_proximity',
+  GOLF_CARTS_AVAILABE = 'golf_carts_availabe',
+  PARKING_DETAILS = 'parking_details',
+}
+
+enum ParkingAvailableOptions {
+  AMPLE = 'Ample',
+  RESTRICTED = 'Restricted',
+  VERY_RESTRICTED = 'Very Restricted',
+}
+
+interface State {
+  isEdit: boolean;
+}
 
 interface Props {
   facility: IFacility;
@@ -28,22 +53,6 @@ interface Props {
   updateField: BindingCbWithOne<IField>;
   updateFacilities: BindingCbWithOne<IFacility>;
   uploadFileMap: (files: IFileMap[]) => void;
-}
-
-interface State {
-  isEdit: boolean;
-}
-
-enum FormFields {
-  FACILITIES_DESCRIPTION = 'facilities_description',
-  NUM_FIELDS = 'num_fields',
-  RESTROOM = 'restrooms',
-  NUM_TOILETS = 'num_toilets',
-  RESTROOM_DETAILS = 'restroom_details',
-  PARKING_AVAILABLE = 'parking_available',
-  PARKING_PROXIMITY = 'parking_proximity',
-  GOLF_CARTS_AVAILABE = 'golf_carts_availabe',
-  PARKING_DETAILS = 'parking_details',
 }
 
 class FacilityDetails extends React.Component<Props, State> {
@@ -114,17 +123,7 @@ class FacilityDetails extends React.Component<Props, State> {
         </HeadingLevelThree>
         <form className={styles.form} autoComplete="off">
           <h3 className={styles.detailsSubtitle}>Location {facilitiyNumber}</h3>
-          <p className={styles.descripWrapper}>
-            <span>The Proving Grounds</span>
-            <Button
-              onClick={this.onEditClick}
-              label="Edit"
-              variant={isEdit ? 'contained' : 'text'}
-              color="secondary"
-              type={isEdit ? 'danger' : undefined}
-            />
-          </p>
-          <div className={styles.nameWrapper}>
+          <div className={styles.descripWrapper}>
             <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
               <legend className={styles.fieldTitle}>
                 Facility {facilitiyNumber} Name
@@ -134,6 +133,28 @@ class FacilityDetails extends React.Component<Props, State> {
                 value={facility.facilities_description || ''}
                 name={FormFields.FACILITIES_DESCRIPTION}
                 placeholder={'Main Stadium'}
+                disabled={!isEdit}
+                width={'100%'}
+              />
+            </fieldset>
+            <Button
+              onClick={this.onEditClick}
+              label="Edit"
+              variant={isEdit ? 'contained' : 'text'}
+              color="secondary"
+              type={isEdit ? 'danger' : undefined}
+            />
+          </div>
+          <div className={styles.nameWrapper}>
+            <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
+              <legend className={styles.fieldTitle}>
+                Facility {facilitiyNumber} Address
+              </legend>
+              <Input
+                onChange={this.onChangeFacility}
+                value={facility.address1 || ''}
+                name={FormFields.ADDRESS_ONE}
+                placeholder={'Facility address'}
                 disabled={!isEdit}
                 width={'100%'}
               />
@@ -248,25 +269,64 @@ class FacilityDetails extends React.Component<Props, State> {
                 disabled={!isEdit}
               />
             </fieldset>
-            <fieldset
-              className={`${styles.filedset} ${styles.filedsetDistanceFields}`}
-            >
-              <legend className={styles.fieldTitle}>Distance to Fields</legend>
-              <Input
-                onChange={this.onChangeFacility}
-                value={
-                  facility.parking_proximity
-                    ? `${facility.parking_proximity}`
-                    : ''
-                }
-                name={FormFields.PARKING_PROXIMITY}
-                placeholder="Meters"
-                width="100%"
-                disabled={!isEdit}
-              />
-            </fieldset>
-            <fieldset className={`${styles.filedset} ${styles.filedsetGolf}`}>
-              <legend className="visually-hidden">Golf Carts </legend>
+            <div className={styles.parkingWrapper}>
+              <fieldset
+                className={`${styles.filedset} ${styles.filedsetParkingAvailable}`}
+              >
+                <legend className={styles.fieldTitle}>Parking Available</legend>
+                <Select
+                  onChange={this.onChangeFacility}
+                  value={facility.parking_available || ''}
+                  name="parking_available"
+                  options={Object.keys(ParkingAvailableOptions).map(type => ({
+                    label: ParkingAvailableOptions[type],
+                    value: ParkingAvailableOptions[type],
+                  }))}
+                  width="100%"
+                  disabled={!isEdit}
+                />
+              </fieldset>
+              <fieldset
+                className={`${styles.filedset} ${styles.filedsetDistanceFields}`}
+              >
+                <legend className={styles.fieldTitle}>
+                  Distance to Fields (Main Parking)
+                </legend>
+                <Input
+                  onChange={this.onChangeFacility}
+                  value={
+                    facility.parking_proximity
+                      ? `${facility.parking_proximity}`
+                      : ''
+                  }
+                  name={FormFields.PARKING_PROXIMITY}
+                  placeholder="Meters"
+                  width="100%"
+                  disabled={!isEdit}
+                />
+              </fieldset>
+              <fieldset className={`${styles.filedset} ${styles.filedsetGolf}`}>
+                <legend className="visually-hidden">Golf Carts </legend>
+                <Checkbox
+                  onChange={() =>
+                    this.onChangeFacility({
+                      target: {
+                        name: FormFields.GOLF_CARTS_AVAILABE,
+                        value: facility.golf_carts_availabe ? null : true,
+                      },
+                    })
+                  }
+                  options={[
+                    {
+                      label: 'Golf Carts Available',
+                      checked: Boolean(facility.golf_carts_availabe),
+                      disabled: !isEdit,
+                    },
+                  ]}
+                />
+              </fieldset>
+            </div>
+            <fieldset className={`${styles.filedset} ${styles.parkingDetails}`}>
               <Checkbox
                 onChange={() =>
                   this.onChangeFacility({
@@ -284,6 +344,24 @@ class FacilityDetails extends React.Component<Props, State> {
                   },
                 ]}
               />
+              {facility.parking_details && (
+                <>
+                  <div className={styles.parkingDetailsWrapper}>
+                    <Input
+                      onChange={this.onChangeFacility}
+                      value={facility.parking_details}
+                      name={FormFields.PARKING_DETAILS}
+                      width="100%"
+                      disabled={!isEdit}
+                    />
+                  </div>
+                  <CardMessage type={Icons.EMODJI_OBJECTS}>
+                    Notify your attendees they need to know something. For
+                    example, if cars will be aggressively ticketed, parking will
+                    be tight, etc.
+                  </CardMessage>
+                </>
+              )}
             </fieldset>
           </div>
           <fieldset className={`${styles.filedset} ${styles.parkingDetails}`}>

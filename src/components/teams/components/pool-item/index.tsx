@@ -50,18 +50,20 @@ const PoolItem = ({
         </h5>
       )}
       <ul ref={isEdit ? drop : null} className={styles.teamList}>
-        {teams.map(it => (
-          <TeamItem
-            team={it}
-            divisionName={division ? division.long_name : ''}
-            poolName={pool?.pool_name}
-            isEdit={isEdit}
-            changePool={changePool}
-            onDeletePopupOpen={onDeletePopupOpen}
-            onEditPopupOpen={onEditPopupOpen}
-            key={it.team_id}
-          />
-        ))}
+        {teams
+          .sort((a, b) => (a.short_name > b.short_name ? 1 : -1))
+          .map(it => (
+            <TeamItem
+              team={it}
+              divisionName={division ? division.long_name : ''}
+              poolName={pool?.pool_name}
+              isEdit={isEdit}
+              changePool={changePool}
+              onDeletePopupOpen={onDeletePopupOpen}
+              onEditPopupOpen={onEditPopupOpen}
+              key={it.team_id}
+            />
+          ))}
       </ul>
     </li>
   );
