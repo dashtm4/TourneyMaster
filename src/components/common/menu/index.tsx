@@ -25,6 +25,9 @@ interface Props {
 const Menu = ({ isAllowEdit, list, eventId }: Props) => {
   const [isCollapsed, onCollapse] = React.useState(false);
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
+  const [activeItem, setActiveItem] = React.useState(list[0].title);
+
+  console.log(activeItem);
 
   return (
     <aside
@@ -58,7 +61,15 @@ const Menu = ({ isAllowEdit, list, eventId }: Props) => {
                   isCollapsed ? STYLES_MENUITEM_ICON : undefined
                 )}
                 {!isCollapsed && (
-                  <Link to={`${menuItem.link}/${eventId || ''}`}>
+                  <Link
+                    className={
+                      activeItem === menuItem.title
+                        ? styles.activeItemTitle
+                        : ''
+                    }
+                    onClick={() => setActiveItem(menuItem.title)}
+                    to={`${menuItem.link}/${eventId || ''}`}
+                  >
                     {menuItem.title}
                   </Link>
                 )}
@@ -69,6 +80,7 @@ const Menu = ({ isAllowEdit, list, eventId }: Props) => {
                     {menuItem.children.map((menuSubItem: string) => (
                       <li className={styles.subListItem} key={menuSubItem}>
                         <HashLink
+                          onClick={() => setActiveItem(menuItem.title)}
                           to={`${menuItem.link}/${eventId || ''}#${stringToLink(
                             menuSubItem
                           )}`}
