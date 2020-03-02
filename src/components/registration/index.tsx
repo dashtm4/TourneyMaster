@@ -131,7 +131,7 @@ class RegistrationView extends React.Component<
                       eventId={this.eventId}
                       data={registration}
                       divisions={this.props.divisions.map(division => ({
-                        name: division.long_name,
+                        name: division.short_name,
                         id: division.division_id,
                       }))}
                     />

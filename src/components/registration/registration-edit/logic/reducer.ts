@@ -59,9 +59,8 @@ export default (
     case DIVISIONS_FETCH_SUCCESS: {
       return {
         ...state,
-        divisions: action.payload.sort(
-          (a: IDivision, b: IDivision) =>
-            +new Date(a.created_datetime) - +new Date(b.created_datetime)
+        divisions: action.payload.sort((a: IDivision, b: IDivision) =>
+          a.short_name.localeCompare(b.short_name)
         ),
         isLoading: false,
         error: false,
