@@ -8,6 +8,8 @@ import {
   Select,
   Input,
 } from 'components/common';
+import { EventMenuTitles } from 'common/enums';
+
 import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
 
@@ -118,6 +120,7 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
 
   return (
     <SectionDropdown
+      id={EventMenuTitles.PLAYOFFS}
       type="section"
       panelDetailsType="flat"
       isDefaultExpanded={true}

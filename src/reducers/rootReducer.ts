@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 import history from '../browserhistory';
-
+import pageEvent from 'components/authorized-page/authorized-page-event/logic/reducer';
 import facilities from 'components/facilities/logic/reducer';
 import event from 'components/event-details/logic/reducer';
 import events from 'components/dashboard/logic/reducer';
@@ -15,6 +15,7 @@ import recordScores from 'components/scoring/pages/record-scores/logic/reducer';
 
 const rootReducer = combineReducers({
   router: connectRouter(history),
+  pageEvent,
   facilities,
   event,
   events,
