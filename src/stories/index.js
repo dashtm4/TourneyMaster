@@ -19,7 +19,7 @@ import ProgressBar from '../components/common/progress-bar';
 import ColorPicker from '../components/common/color-picker';
 import Paper from '../components/common/paper';
 import CardMessage from '../components/common/card-message';
-import { CardMessageTypes } from '../components/common/card-message/Types';
+import { CardMessageTypes } from '../components/common/card-message/types';
 import TooltipMessage from '../components/common/tooltip-message';
 import { TooltipMessageTypes } from '../components/common/tooltip-message/Types';
 import DashboardMenu from '../components/common/menu';

@@ -9,8 +9,8 @@ import {
   editTeam,
   deleteTeam,
 } from './logic/actions';
-import Navigation from './components/navigation';
 import { AppState } from './logic/reducer';
+import Navigation from './components/navigation';
 import ScoringItem from './components/scoring-Item';
 import { HeadingLevelTwo, Modal, Loader, PopupTeamEdit } from '../common';
 import { IDivision, IPool, ITeam, BindingCbWithOne } from '../../common/models';

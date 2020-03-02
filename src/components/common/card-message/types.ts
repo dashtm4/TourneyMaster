@@ -1,5 +1,5 @@
 enum CardMessageTypes {
-  INFO = 'info',
+  EMODJI_OBJECTS = 'emodjiObjects',
   WARNING = 'warning',
 }
 
