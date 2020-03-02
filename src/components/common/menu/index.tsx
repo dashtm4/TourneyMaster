@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import {
   ExpansionPanelWrapped,
   ExpansionPanelSummaryWrapped,
@@ -68,9 +69,12 @@ class Menu extends React.Component<Props, State> {
                     <ul className={styles.subList}>
                       {menuItem.children.map((menuSubItem: string) => (
                         <li className={styles.subListItem} key={menuSubItem}>
-                          <a href={`#${stringToLink(menuSubItem)}`}>
+                          <HashLink
+                            to={`${menuItem.link}/${eventId ||
+                              ''}#${stringToLink(menuSubItem)}`}
+                          >
                             {menuSubItem}
-                          </a>
+                          </HashLink>
                         </li>
                       ))}
                     </ul>
