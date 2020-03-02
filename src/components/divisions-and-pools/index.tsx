@@ -34,6 +34,10 @@ interface IDivisionAndPoolsState {
   isModalOpen: boolean;
   selected: Partial<IDivision>;
 }
+// const getDefaultDivisionState = (registration: any) => ({
+//   entry_fee: registration.entry_fee,
+//   max_num_teams: registration.max_teams_per_division,
+// });
 
 class DivisionsAndPools extends React.Component<
   IDivisionsAndPoolsProps,
