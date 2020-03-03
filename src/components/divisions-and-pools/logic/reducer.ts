@@ -37,10 +37,7 @@ export default (
 ) => {
   switch (action.type) {
     case FETCH_START: {
-      return {
-        ...state,
-        isLoading: true,
-      };
+      return { ...defaultState };
     }
     case DIVISIONS_FETCH_SUCCESS: {
       return {

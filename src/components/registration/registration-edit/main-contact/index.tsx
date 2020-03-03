@@ -1,9 +1,8 @@
 import React from 'react';
 import styles from '../styles.module.scss';
-import { Input, Checkbox } from 'components/common';
+import { Input, Checkbox, CardMessage } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
 import { IRegistration } from 'common/models/registration';
-import Tooltip from '@material-ui/core/Tooltip';
 
 interface IMainContactProps {
   data?: IRegistration;
@@ -30,6 +29,12 @@ const MainContact = ({ data, onChange }: IMainContactProps) => {
 
   return (
     <div className={styles.section}>
+      <div className={styles.sectionTooltipRow}>
+        <div className={styles.sectionItem} style={{ width: '51.5%' }} />
+        <CardMessage type="emodjiObjects" style={{ fontSize: '10xp' }}>
+          Admin, Tourney Director, Boys Lead, etc.
+        </CardMessage>
+      </div>
       <div className={styles.sectionFirstRow}>
         <div className={styles.sectionItem}>
           <Input
@@ -48,18 +53,11 @@ const MainContact = ({ data, onChange }: IMainContactProps) => {
           />
         </div>
         <div className={styles.sectionItem}>
-          <Tooltip
-            title="Admin, Tourney Director, Girls Lead, Boys Lead, etc."
-            placement="bottom"
-          >
-            <div>
-              <Input
-                label="Role"
-                value={data ? data.role : ''}
-                onChange={onRoleChange}
-              />
-            </div>
-          </Tooltip>
+          <Input
+            label="Role"
+            value={data ? data.role : ''}
+            onChange={onRoleChange}
+          />
           <span className={styles.tournamentStatus} />
         </div>
         <div className={styles.sectionItem}>

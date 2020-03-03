@@ -12,6 +12,7 @@ interface IAddPoolState {
 
 interface IAddPoolProps {
   division: IDivision;
+  numOfTeams: number;
   savePool: BindingCbWithOne<IAddPoolState>;
   onClose: BindingAction;
 }
@@ -32,7 +33,16 @@ class AddPool extends React.Component<IAddPoolProps, IAddPoolState> {
   };
 
   onSave = () => {
-    this.props.savePool(this.state);
+    const { division_id, pool_name, pool_tag } = this.state;
+
+    const data = {
+      division_id,
+      pool_name,
+      pool_tag: pool_tag
+        ? pool_tag
+        : `${this.props.division.short_name}${pool_name}`,
+    };
+    this.props.savePool(data);
     this.props.onClose();
   };
 
@@ -62,8 +72,7 @@ class AddPool extends React.Component<IAddPoolProps, IAddPoolState> {
           {division.short_name || '—'}
         </div>
         <div className={styles.sectionItem}>
-          <span className={styles.title}>Teams:</span>{' '}
-          {division.teams_registered || '—'}
+          <span className={styles.title}>Teams:</span> {this.props.numOfTeams}
         </div>
         <div className={styles.buttonsGroup}>
           <div>
