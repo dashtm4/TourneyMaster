@@ -27,8 +27,6 @@ const Menu = ({ isAllowEdit, list, eventId }: Props) => {
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(list[0].title);
 
-  console.log(activeItem);
-
   return (
     <aside
       className={`${styles.dashboardMenu} ${
