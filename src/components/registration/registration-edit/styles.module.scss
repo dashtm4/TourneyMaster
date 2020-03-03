@@ -36,9 +36,12 @@
     display: flex;
     justify-content: space-between;
   }
+  .sectionTooltipRow {
+    display: flex;
+  }
   .sectionItem {
     flex-grow: 0;
-    width: 20%;
+    width: 22%;
     color: #6a6a6a;
     margin-bottom: 32px;
   }
