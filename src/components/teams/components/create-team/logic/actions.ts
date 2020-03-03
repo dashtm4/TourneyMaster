@@ -22,6 +22,11 @@ export const saveTeams: ActionCreator<ThunkAction<
       event_id: eventId,
       team_id: getVarcharEight(),
     };
+    if (!data.short_name || !data.long_name) {
+      return Toasts.errorToast(
+        "Please, fill in the 'Long Name' and 'Short Name' fields."
+      );
+    }
     const response = await api.post(`/teams`, data);
 
     if (response?.errorType === 'Error') {

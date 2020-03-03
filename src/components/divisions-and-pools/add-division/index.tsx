@@ -45,10 +45,15 @@ interface IDivisionProps {
   getRegistration: BindingCbWithOne<string>;
 }
 
+// const defaultDivision = { entry_fee: 0, max_num_teams: 0 };
+
 class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   divisionId = this.props.location.state?.divisionId;
   eventId = this.props.match.params.eventId;
-  state = { divisions: [{}], isModalOpen: false };
+  state = {
+    divisions: [{}],
+    isModalOpen: false,
+  };
 
   componentDidMount() {
     if (this.divisionId) {
@@ -144,7 +149,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
             key={index}
             index={index}
             onChange={this.onChange}
-            division={this.state.divisions[index]}
+            division={this.state.divisions[index] || {}}
             registration={this.props.registration}
           />
         ))}

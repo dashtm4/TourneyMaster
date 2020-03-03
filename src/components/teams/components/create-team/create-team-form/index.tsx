@@ -141,12 +141,6 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
                 value={state || ''}
                 onChange={this.onStateChange}
               />
-              {/* <Select
-                label="State"
-                options={[]}
-                value={state || ''}
-                onChange={this.onStateChange}
-              /> */}
             </div>
             <div className={styles.sectionItem}>
               <Select

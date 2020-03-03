@@ -157,6 +157,12 @@ class DivisionsAndPools extends React.Component<
                     division={this.state.selected}
                     onClose={this.onModalClose}
                     savePool={this.props.savePool}
+                    numOfTeams={
+                      teams.filter(
+                        team =>
+                          team.division_id === this.state.selected.division_id
+                      ).length
+                    }
                   />
                 </Modal>
               )}
