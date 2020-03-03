@@ -3,20 +3,30 @@ import api from 'api/api';
 import { getVarcharEight } from 'helpers';
 import { IMember } from 'common/models/member';
 import jwt_decode from 'jwt-decode';
-import SectionDropdown from '../common/section-dropdown';
-import { HeadingLevelThree, HeadingLevelTwo, Toasts } from 'components/common';
-import Button from '../common/buttons/button';
-import { Input } from 'components/common';
+import {
+  HeadingLevelThree,
+  HeadingLevelTwo,
+  Toasts,
+  SectionDropdown,
+  Button,
+  Input,
+  CardMessage,
+} from 'components/common';
+import { Icons } from 'common/constants';
+import OrganizationsList from './components/organizations-list';
 import styles from './styles.module.scss';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+
+const CARD_MESSAGE_STYLES = {
+  marginBottom: '20px',
+};
 
 interface IState {
   organizations: any[];
-  orgName: string;
-  orgTag: string;
-  city: string;
-  state: string;
-  invitationCode: string;
+  orgName: string | null;
+  orgTag: string | null;
+  city: string | null;
+  state: string | null;
+  invitationCode: string | null;
 }
 
 class OrganizationsManagement extends React.PureComponent<any, IState> {
@@ -24,11 +34,11 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
     super(props);
     this.state = {
       organizations: [],
-      orgName: '',
-      orgTag: '',
-      city: '',
-      state: '',
-      invitationCode: '',
+      orgName: null,
+      orgTag: null,
+      city: null,
+      state: null,
+      invitationCode: null,
     };
   }
 
@@ -41,7 +51,9 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
     this.setState({ organizations });
   }
 
-  async addOrganization() {
+  async addOrganization(evt: React.SyntheticEvent) {
+    evt.preventDefault();
+
     const orgId = getVarcharEight();
     const data = {
       org_name: this.state.orgName,
@@ -51,8 +63,11 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
       state: this.state.state,
       is_active_YN: 1,
     };
+
     await api.post('/organizations', data);
+
     await this.addUserToOrg(orgId);
+
     await this.getAllAvailableOrganizations();
   }
 
@@ -107,66 +122,6 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
     Toasts.successToast('The invitation code was successfully copied');
   }
 
-  renderOrganization() {
-    const { organizations } = this.state;
-    return (
-      <SectionDropdown
-        type="section"
-        useBorder={true}
-        isDefaultExpanded={true}
-        panelDetailsType="flat"
-      >
-        <HeadingLevelThree>
-          <span>Organizations List</span>
-        </HeadingLevelThree>
-        <div className={styles.listContainer}>
-          {organizations.length > 0 && (
-            <div>
-              <p className={styles.title}>
-                Organizations to which you currently belong
-              </p>
-              <ul className={styles.listItem}>
-                <li className={styles.title}>{''}</li>
-                <li className={styles.title}>Name</li>
-                <li className={styles.title}>@Tag</li>
-                <li className={styles.title}>City</li>
-                <li className={styles.title}>State</li>
-                <li className={styles.title}>Invitation Code</li>
-              </ul>
-            </div>
-          )}
-          {organizations.map((organization, index) => {
-            return (
-              <>
-                <ul className={styles.listItem}>
-                  <li>{`${index + 1}.`}</li>
-                  <li>{organization?.org_name}</li>
-                  <li>{organization?.org_tag}</li>
-                  <li>{organization?.city}</li>
-                  <li>{organization?.state}</li>
-                  <li>
-                    {organization?.org_id}
-                    <FileCopyIcon
-                      className={styles.copyIcon}
-                      // tslint:disable-next-line: jsx-no-lambda
-                      onClick={() => this.copyToClipboard(organization?.org_id)}
-                    />
-                  </li>
-                </ul>
-              </>
-            );
-          })}
-          {organizations.length === 0 && (
-            <span className={styles.noFound}>
-              Sorry, you are not in organization yet. You can create your own or
-              apply invitation from other user.
-            </span>
-          )}
-        </div>
-      </SectionDropdown>
-    );
-  }
-
   renderNewOrganizationSection() {
     return (
       <SectionDropdown
@@ -176,55 +131,62 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
         panelDetailsType="flat"
       >
         <HeadingLevelThree>
-          <span>Add Organization</span>
+          <span>Create Organization</span>
         </HeadingLevelThree>
         <div className={styles.section}>
-          <div className={styles.sectionItem}>
-            <Input
-              fullWidth={true}
-              label="Organization Name"
-              value={this.state.orgName || ''}
-              // tslint:disable-next-line: jsx-no-lambda
-              onChange={(ev: any) => this.onOrgNameChange(ev)}
-            />
-          </div>
-          <div className={styles.sectionItem}>
-            <Input
-              fullWidth={true}
-              label="Organization Tag"
-              // tslint:disable-next-line: jsx-no-lambda
-              onChange={(ev: any) => this.onOrgTagChange(ev)}
-              value={this.state.orgTag || ''}
-              startAdornment="@"
-            />
-          </div>
-          <div className={styles.sectionItem}>
-            <Input
-              fullWidth={true}
-              label="City"
-              // tslint:disable-next-line: jsx-no-lambda
-              onChange={(ev: any) => this.onCityChange(ev)}
-              value={this.state.city || ''}
-            />
-          </div>
-          <div className={styles.sectionItem}>
-            <Input
-              fullWidth={true}
-              label="State"
-              // tslint:disable-next-line: jsx-no-lambda
-              onChange={(ev: any) => this.onStateChange(ev)}
-              value={this.state.state || ''}
-            />
-          </div>
-          <div className={styles.sectionItem}>
-            <Button
-              label="Add Organization"
-              variant="contained"
-              color="primary"
-              // tslint:disable-next-line: jsx-no-lambda
-              onClick={() => this.addOrganization()}
-            />
-          </div>
+          <CardMessage type={Icons.EMODJI_OBJECTS} style={CARD_MESSAGE_STYLES}>
+            Create a common calendar where you and your organization’s
+            collaborators can see each others notes, requests, tasks, and
+            reminders.
+          </CardMessage>
+          <form onSubmit={evt => this.addOrganization(evt)}>
+            <div className={styles.sectionItem}>
+              <Input
+                fullWidth={true}
+                label="Organization Name"
+                value={this.state.orgName || ''}
+                // tslint:disable-next-line: jsx-no-lambda
+                onChange={(ev: any) => this.onOrgNameChange(ev)}
+                isRequired
+              />
+            </div>
+            <div className={styles.sectionItem}>
+              <Input
+                fullWidth={true}
+                label="Organization Tag"
+                // tslint:disable-next-line: jsx-no-lambda
+                onChange={(ev: any) => this.onOrgTagChange(ev)}
+                value={this.state.orgTag || ''}
+                startAdornment="@"
+              />
+            </div>
+            <div className={styles.sectionItem}>
+              <Input
+                fullWidth={true}
+                label="City"
+                // tslint:disable-next-line: jsx-no-lambda
+                onChange={(ev: any) => this.onCityChange(ev)}
+                value={this.state.city || ''}
+              />
+            </div>
+            <div className={styles.sectionItem}>
+              <Input
+                fullWidth={true}
+                label="State"
+                // tslint:disable-next-line: jsx-no-lambda
+                onChange={(ev: any) => this.onStateChange(ev)}
+                value={this.state.state || ''}
+              />
+            </div>
+            <div className={styles.sectionItem}>
+              <Button
+                label="Add Organization"
+                btnType="submit"
+                variant="contained"
+                color="primary"
+              />
+            </div>
+          </form>
         </div>
       </SectionDropdown>
     );
@@ -266,12 +228,17 @@ class OrganizationsManagement extends React.PureComponent<any, IState> {
   }
 
   render() {
+    const { organizations } = this.state;
+
     return (
       <div className={styles.container}>
         <div className={styles.heading}>
           <HeadingLevelTwo>Organizations Management</HeadingLevelTwo>
         </div>
-        {this.renderOrganization()}
+        <OrganizationsList
+          organizations={organizations}
+          onCopyToClipboard={this.copyToClipboard}
+        />
         {this.renderNewOrganizationSection()}
         {this.renderApplyInvitation()}
       </div>
