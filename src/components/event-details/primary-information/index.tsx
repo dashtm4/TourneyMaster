@@ -168,6 +168,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
                 onSelect={onGeneralLocationSelect}
                 onChange={onPrimaryLocation}
                 address={eventData.primary_location_desc || ''}
+                label={'General Location'}
               />
             </div>
             <div className={styles.piDetailsThirdArea}>
