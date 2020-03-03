@@ -305,7 +305,7 @@ class FacilityDetails extends React.Component<Props, State> {
               className={`${styles.filedset} ${styles.filedsetDistanceFields}`}
             >
               <legend className={styles.fieldTitle}>
-                Distance to Fields (Main Parking)
+                Main Parking - Distance to Fields (approx)
               </legend>
               <Input
                 onChange={this.onChangeFacility}

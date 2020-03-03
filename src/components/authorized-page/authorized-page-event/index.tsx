@@ -40,11 +40,11 @@ export const EmptyPage: React.FC = () => {
 };
 
 const AuthorizedPageEvent = ({
-  // isLoading,
-  // isLoaded,
+  isLoaded,
   menuList,
   match,
   loadAuthPageData,
+  clearAuthPageData,
 }: Props & RouteComponentProps<MatchParams>) => {
   const eventId = match.params.eventId;
   React.useEffect(() => {
@@ -57,42 +57,42 @@ const AuthorizedPageEvent = ({
     };
   }, []);
 
+  if (eventId && !isLoaded) {
+    return <Loader />;
+  }
+
   return (
     <>
       <Header />
-      {false ? (
-        <Loader />
-      ) : (
-        <div className={styles.page}>
-          <Menu
-            list={menuList}
-            eventId={eventId}
-            isAllowEdit={Boolean(eventId)}
-          />
-          <main className={styles.content}>
-            <Switch>
-              <Route path={Routes.EVENT_DETAILS_ID} component={EventDetails} />
-              <Route path={Routes.FACILITIES_ID} component={Facilities} />
-              <Route path={Routes.REGISTRATION_ID} component={Registration} />
-              <Route
-                path={Routes.DIVISIONS_AND_POOLS_ID}
-                component={DivisionsAndPools}
-              />
-              <Route path={Routes.SCHEDULING_ID} component={Scheduling} />
-              <Route path={Routes.TEAMS_ID} component={Teams} />
-              <Route path={Routes.SCORING_ID} component={Sсoring} />
-              <Route path={Routes.REPORTING_ID} component={EmptyPage} />
+      <div className={styles.page}>
+        <Menu
+          list={menuList}
+          eventId={eventId}
+          isAllowEdit={Boolean(eventId)}
+        />
+        <main className={styles.content}>
+          <Switch>
+            <Route path={Routes.EVENT_DETAILS_ID} component={EventDetails} />
+            <Route path={Routes.FACILITIES_ID} component={Facilities} />
+            <Route path={Routes.REGISTRATION_ID} component={Registration} />
+            <Route
+              path={Routes.DIVISIONS_AND_POOLS_ID}
+              component={DivisionsAndPools}
+            />
+            <Route path={Routes.SCHEDULING_ID} component={Scheduling} />
+            <Route path={Routes.TEAMS_ID} component={Teams} />
+            <Route path={Routes.SCORING_ID} component={Sсoring} />
+            <Route path={Routes.REPORTING_ID} component={EmptyPage} />
 
-              <Route path={Routes.RECORD_SCORES_ID} component={RecordScores} />
-              <Route path={Routes.ADD_DIVISION} component={AddDivision} />
-              <Route path={Routes.EDIT_DIVISION} component={AddDivision} />
-              <Route path={Routes.CREATE_TEAM} component={CreateTeam} />
+            <Route path={Routes.RECORD_SCORES_ID} component={RecordScores} />
+            <Route path={Routes.ADD_DIVISION} component={AddDivision} />
+            <Route path={Routes.EDIT_DIVISION} component={AddDivision} />
+            <Route path={Routes.CREATE_TEAM} component={CreateTeam} />
 
-              <Route path={Routes.DEFAULT} component={EventDetails} />
-            </Switch>
-          </main>
-        </div>
-      )}
+            <Route path={Routes.DEFAULT} component={EventDetails} />
+          </Switch>
+        </main>
+      </div>
     </>
   );
 };

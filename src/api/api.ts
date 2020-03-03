@@ -78,15 +78,18 @@ class Api {
     try {
       const cognitoUser = await Auth.currentAuthenticatedUser();
       const currentSession = await Auth.currentSession();
+      const tokenExpiration = currentSession.getIdToken().getExpiration();
+      const currentTimeInSecond = Math.ceil(+Date.now() / 1000);
 
-      cognitoUser.refreshSession(
-        currentSession.getRefreshToken(),
-        (_: any, session: any) => {
-          const { idToken } = session;
-
-          localStorage.setItem('token', idToken.jwtToken);
-        }
-      );
+      if (currentTimeInSecond >= tokenExpiration) {
+        cognitoUser.refreshSession(
+          currentSession.getRefreshToken(),
+          (_: any, session: any) => {
+            const { idToken } = session;
+            localStorage.setItem('token', idToken.jwtToken);
+          }
+        );
+      }
     } catch (error) {
       console.error('Unable to refresh Token', error);
     }
