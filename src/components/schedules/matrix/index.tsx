@@ -3,19 +3,20 @@ import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { IField, ITeam, ITimeSlot } from '..';
 import {
-  IGame,
+  // IGame,
   defineGames,
   IDefinedGames,
   updateTeamCards,
   selectProperGamesPerTimeSlot,
-  settleTeamsPerGames,
+  // settleTeamsPerGames,
 } from './helper';
 import TeamCard from './dnd/drag';
 import RenderFieldHeader from './field-header';
 import RenderTimeSlot from './time-slot';
 import { DropParams } from './dnd/drop';
-import test from './test';
+// import test from './test';
 import styles from './styles.module.scss';
+import Scheduler from './Scheduler';
 
 export interface ITeamCard extends ITeam {
   fieldId?: number;
@@ -41,9 +42,10 @@ const SchedulesMatrix = (props: IProps) => {
     [teamCards]
   );
 
-  const values = test({ fields, timeSlots, teamCards, games });
+  // const values = test({ fields, timeSlots, teamCards, games });
+  const values = new Scheduler(fields, teamCards, games, timeSlots);
   console.log('values', values);
-  const allocatedGames: IGame[] = settleTeamsPerGames(games, values);
+  // const allocatedGames: IGame[] = settleTeamsPerGames(games, values);
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -59,7 +61,10 @@ const SchedulesMatrix = (props: IProps) => {
             <RenderTimeSlot
               key={timeSlot.id}
               timeSlot={timeSlot}
-              games={selectProperGamesPerTimeSlot(timeSlot, allocatedGames)}
+              games={selectProperGamesPerTimeSlot(
+                timeSlot,
+                values.updatedGames
+              )}
               moveCard={moveCard}
             />
           ))}
