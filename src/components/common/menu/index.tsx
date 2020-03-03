@@ -13,6 +13,11 @@ import { MenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 
 const STYLES_MENUITEM_ICON = {
+  height: '23px !important',
+  marginRight: '10px',
+};
+
+const STYLES_MENUITEM_ICON_COLLAPSED = {
   marginRight: 0,
 };
 
@@ -26,8 +31,6 @@ const Menu = ({ isAllowEdit, list, eventId }: Props) => {
   const [isCollapsed, onCollapse] = React.useState(false);
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(list[0].title);
-
-  console.log(activeItem);
 
   return (
     <aside
@@ -58,7 +61,9 @@ const Menu = ({ isAllowEdit, list, eventId }: Props) => {
               >
                 {getIcon(
                   menuItem.icon,
-                  isCollapsed ? STYLES_MENUITEM_ICON : undefined
+                  isCollapsed
+                    ? STYLES_MENUITEM_ICON_COLLAPSED
+                    : STYLES_MENUITEM_ICON
                 )}
                 {!isCollapsed && (
                   <Link

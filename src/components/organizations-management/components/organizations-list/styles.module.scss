@@ -1,0 +1,42 @@
+.description {
+  margin: 0 0 10px;
+
+  color: #6a6a6a;
+  font-weight: 600;
+}
+
+.sectWrapper {
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+.orgTableWrapper {
+  padding: 0 50px;
+}
+
+.orgTable {
+  width: 100%;
+  text-align: left;
+
+  thead {
+    color: #6a6a6a;
+  }
+
+  th {
+    padding-bottom: 10px;
+  }
+}
+
+.codeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 135px;
+
+  background-color: transparent;
+
+  border: 0;
+
+  cursor: pointer;
+}
