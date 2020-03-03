@@ -128,7 +128,11 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     nextProps: IDivisionProps,
     prevState: IAddDivisionState
   ): Partial<IAddDivisionState> {
-    if (nextProps.registration && !prevState.defaultDivision.entry_fee) {
+    if (
+      nextProps.registration &&
+      !prevState.defaultDivision.entry_fee &&
+      !prevState.divisions[0]?.division_id
+    ) {
       return {
         defaultDivision: {
           entry_fee: nextProps.registration.entry_fee,
