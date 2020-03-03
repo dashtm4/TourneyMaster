@@ -28,6 +28,7 @@ interface ILocationState {
 }
 
 interface IAddDivisionState {
+  defaultDivision: Partial<{ entry_fee: number; max_num_teams: number }>;
   divisions: Partial<IDivision>[];
   isModalOpen: boolean;
 }
@@ -45,12 +46,11 @@ interface IDivisionProps {
   getRegistration: BindingCbWithOne<string>;
 }
 
-// const defaultDivision = { entry_fee: 0, max_num_teams: 0 };
-
 class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   divisionId = this.props.location.state?.divisionId;
   eventId = this.props.match.params.eventId;
   state = {
+    defaultDivision: {},
     divisions: [{}],
     isModalOpen: false,
   };
@@ -86,7 +86,9 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   };
 
   onAddDivision = () => {
-    this.setState({ divisions: [...this.state.divisions, {}] });
+    this.setState({
+      divisions: [...this.state.divisions, this.state.defaultDivision],
+    });
   };
 
   onDeleteDivision = () => {
@@ -121,6 +123,28 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
       />
     );
   };
+
+  static getDerivedStateFromProps(
+    nextProps: IDivisionProps,
+    prevState: IAddDivisionState
+  ): Partial<IAddDivisionState> {
+    if (nextProps.registration && !prevState.defaultDivision.entry_fee) {
+      return {
+        defaultDivision: {
+          entry_fee: nextProps.registration.entry_fee,
+          max_num_teams: nextProps.registration.max_teams_per_division,
+        },
+        divisions: [
+          {
+            entry_fee: nextProps.registration.entry_fee,
+            max_num_teams: nextProps.registration.max_teams_per_division,
+          },
+        ],
+      };
+    } else {
+      return {};
+    }
+  }
 
   render() {
     return (
