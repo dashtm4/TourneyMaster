@@ -11,7 +11,7 @@
 }
 
 .orgTableWrapper {
-  padding: 0 50px;
+  padding-left: 25px;
 }
 
 .orgTable {
@@ -39,4 +39,8 @@
   border: 0;
 
   cursor: pointer;
+}
+
+.delBtnWrapper {
+  color: #ff0f19;
 }
