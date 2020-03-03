@@ -93,10 +93,10 @@ const PrimaryInformationSection: React.FC<Props> = ({
 
   const onGeneralLocationSelect = (position: IPosition) => {
     onChange('primary_location_lat', position.lat);
-    onChange('primary_location_lng', position.lng);
+    onChange('primary_location_long', position.lng);
   };
 
-  const { primary_location_lat: lat, primary_location_lng: lng } = eventData;
+  const { primary_location_lat: lat, primary_location_long: lng } = eventData;
 
   return (
     <SectionDropdown

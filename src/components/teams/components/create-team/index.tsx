@@ -115,11 +115,11 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
 }
 
 interface IState {
-  divisions: { data: IDivision[] };
+  teams: any;
 }
 
 const mapStateToProps = (state: IState) => ({
-  divisions: state.divisions.data,
+  divisions: state.teams.divisions,
 });
 
 const mapDispatchToProps = {

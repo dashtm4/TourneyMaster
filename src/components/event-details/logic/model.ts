@@ -49,7 +49,7 @@ export interface EventDetailsDTO {
   updated_by: string;
   updated_datetime: string;
   primary_location_lat?: number;
-  primary_location_lng?: number;
+  primary_location_long?: number;
 }
 
 export interface IIconFile {

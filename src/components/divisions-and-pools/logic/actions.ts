@@ -8,6 +8,7 @@ import {
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
   ADD_POOL_SUCCESS,
+  REGISTRATION_FETCH_SUCCESS,
   DIVISION_SAVE_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
@@ -75,6 +76,13 @@ export const teamsFetchSuccess = (
   payload,
 });
 
+export const registrationFetchSuccess = (
+  payload: any
+): { type: string; payload: any } => ({
+  type: REGISTRATION_FETCH_SUCCESS,
+  payload,
+});
+
 export const getDivisions: ActionCreator<ThunkAction<
   void,
   {},
@@ -112,6 +120,12 @@ export const updateDivision: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (division: IDivision) => async (dispatch: Dispatch) => {
+  if (!division.long_name || !division.short_name) {
+    return Toasts.errorToast(
+      "Please, fill in the 'Long Name' and 'Short Name' fields."
+    );
+  }
+
   const response = await api.put(
     `/divisions?division_id=${division.division_id}`,
     division
@@ -147,6 +161,11 @@ export const saveDivisions: ActionCreator<ThunkAction<
       event_id: eventId,
       division_id: getVarcharEight(),
     };
+    if (!data.long_name || !data.short_name) {
+      return Toasts.errorToast(
+        "Please, fill in the 'Long Name' and 'Short Name' fields."
+      );
+    }
     const response = await api.post(`/divisions`, data);
 
     dispatch(addDivisionSuccess(data));
@@ -192,6 +211,9 @@ export const savePool: ActionCreator<ThunkAction<
     ...pool,
     pool_id: getVarcharEight(),
   };
+  if (!data.pool_name) {
+    return Toasts.errorToast("Please, fill in the 'Name' field.");
+  }
 
   const response = await api.post(`/pools`, data);
 
@@ -202,4 +224,14 @@ export const savePool: ActionCreator<ThunkAction<
   dispatch(addPoolSuccess(data));
 
   Toasts.successToast('Pool is successfully added');
+};
+
+export const getRegistration: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (eventId: string) => async (dispatch: Dispatch) => {
+  const data = await api.get(`/registrations?event_id=${eventId}`);
+  dispatch(registrationFetchSuccess(data));
 };

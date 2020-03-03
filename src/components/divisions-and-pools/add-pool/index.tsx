@@ -59,7 +59,7 @@ class AddPool extends React.Component<IAddPoolProps, IAddPoolState> {
         </div>
         <div className={styles.sectionItem}>
           <span className={styles.title}>Division:</span>{' '}
-          {division.long_name || '—'}
+          {division.short_name || '—'}
         </div>
         <div className={styles.sectionItem}>
           <span className={styles.title}>Teams:</span>{' '}
