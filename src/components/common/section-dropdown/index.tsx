@@ -64,19 +64,16 @@ const SectionDropdown = ({
   useBorder,
   panelDetailsType,
 }: Props) => (
-  <section
-    className={styles.section}
-    style={{ borderTop: useBorder ? '1px solid #d1d1d1' : 'none' }}
-  >
+  <section className={styles.section} id={id ? stringToLink(id) : undefined}>
     <ExpansionPanel
       style={setStyleOnType(type)}
       defaultExpanded={isDefaultExpanded}
-      id={id ? stringToLink(id) : undefined}
     >
       <ExpansionPanelSummary
         style={{
           ...setPanelSummaryStyle(type),
           display: 'flex',
+          borderTop: useBorder ? '1px solid #d1d1d1' : 'none',
         }}
         expandIcon={setExpandIcon(type)}
         aria-controls="panel1a-content"
