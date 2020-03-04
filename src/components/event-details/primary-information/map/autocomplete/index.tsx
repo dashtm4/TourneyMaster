@@ -16,11 +16,15 @@ interface IPlaceAutocomplete {
   onSelect: BindingCbWithOne<IPosition>;
   onChange: BindingCbWithOne<string>;
   address: string;
+  disabled?: boolean;
+  label: string;
 }
 const PlacesAutocompleteInput = ({
   onSelect,
   onChange,
   address,
+  disabled,
+  label,
 }: IPlaceAutocomplete) => {
   const handleSelect = async (value: string) => {
     const results = await geocodeByAddress(value);
@@ -41,7 +45,8 @@ const PlacesAutocompleteInput = ({
             <Input
               {...getInputProps({
                 placeholder: 'Search Google Maps',
-                label: 'General Location',
+                label,
+                disabled,
               })}
             />
             {suggestions.length > 0 && (

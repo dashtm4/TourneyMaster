@@ -1,29 +1,28 @@
+.sectWrapper {
+  width: 100%;
+}
+
 .description {
-  margin: 0 0 10px;
+  margin: 0 0 20px;
 
   color: #6a6a6a;
   font-weight: 600;
 }
 
-.sectWrapper {
-  width: 100%;
-  padding-bottom: 20px;
-}
-
 .orgTableWrapper {
-  padding-left: 25px;
+  padding: 0 0 15px 30px;
 }
 
 .orgTable {
   width: 100%;
+
   text-align: left;
 
-  thead {
-    color: #6a6a6a;
-  }
+  thead th {
+    padding-bottom: 15px;
 
-  th {
-    padding-bottom: 10px;
+    color: #6a6a6a;
+    font-weight: 700;
   }
 }
 
@@ -32,7 +31,7 @@
   align-items: center;
   justify-content: space-between;
 
-  width: 135px;
+  width: 140px;
 
   background-color: transparent;
 

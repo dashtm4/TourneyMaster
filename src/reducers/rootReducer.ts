@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
-import history from 'browserhistory';
+import history from '../browserhistory';
 import pageEvent from 'components/authorized-page/authorized-page-event/logic/reducer';
 import facilities from 'components/facilities/logic/reducer';
 import event from 'components/event-details/logic/reducer';

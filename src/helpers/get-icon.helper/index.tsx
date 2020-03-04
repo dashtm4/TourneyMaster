@@ -20,9 +20,9 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
 import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
 import WarningIcon from '@material-ui/icons/Warning';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import FileCopy from '@material-ui/icons/FileCopy';
 import { PinIcon } from './own-icons';
-import { Icons } from 'common/constants/icons';
+import { Icons } from '../../common/constants/icons';
 
 const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
   switch (icon) {
@@ -43,7 +43,7 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
     case Icons.ERROR:
       return <ErrorIcon style={iconStyles} />;
     case Icons.PIN:
-      return <PinIcon styles={iconStyles} />;
+      return <PinIcon style={iconStyles} />;
     case Icons.CLOCK:
       return <WatchLaterIcon style={iconStyles} />;
     case Icons.REPORT:
@@ -69,7 +69,7 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
     case Icons.WARNING:
       return <WarningIcon style={iconStyles} />;
     case Icons.FILE_COPY:
-      return <FileCopyIcon style={iconStyles} />;
+      return <FileCopy style={iconStyles} />;
   }
 
   return <ClearIcon />;

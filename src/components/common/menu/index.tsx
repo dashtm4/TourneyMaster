@@ -13,7 +13,6 @@ import { MenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 
 const STYLES_MENUITEM_ICON = {
-  height: '23px !important',
   marginRight: '10px',
 };
 

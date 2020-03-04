@@ -19,11 +19,11 @@ const Button: React.FC<IButtonProps> = ({
   color,
   variant,
   type,
-  btnType,
   onClick,
   icon,
   disabled,
   btnStyles,
+  btnType,
 }) => (
   <MuiButton
     disabled={disabled}
@@ -31,8 +31,8 @@ const Button: React.FC<IButtonProps> = ({
     color={color}
     className={type && styles[`${type}Btn`]}
     onClick={onClick}
-    style={{ fontSize: '16px', ...btnStyles, opacity: disabled ? '0.4' : '1' }}
-    type={btnType || 'button'}
+    style={{ fontSize: '16px', ...btnStyles }}
+    type={btnType}
   >
     <div className={icon && styles.iconWrapper}>{icon}</div>
     {label}

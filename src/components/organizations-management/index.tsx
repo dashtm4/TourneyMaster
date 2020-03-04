@@ -12,13 +12,13 @@ import { HeadingLevelTwo, Loader } from 'components/common';
 import OrganizationsList from './components/organizations-list';
 import CreateOrganization from './components/create-organization';
 import ApplyInvitation from './components/apply-invitation';
-import { getVarcharEight } from 'helpers';
 import {
   IOrganization,
   BindingAction,
   IConfigurableOrganization,
 } from 'common/models';
 import { IAddUserToOrg } from './types';
+import { getVarcharEight } from 'helpers';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -41,15 +41,15 @@ class OrganizationsManagement extends React.Component<Props> {
   addOrganization = async (organizationData: IConfigurableOrganization) => {
     const { createOrganization, addUserToOrganization } = this.props;
 
-    const newOrganization = {
+    const organization = {
       ...organizationData,
       org_id: getVarcharEight(),
       is_active_YN: 1,
     };
 
-    await createOrganization(newOrganization);
+    await createOrganization(organization);
 
-    addUserToOrganization({ orgId: newOrganization.org_id });
+    addUserToOrganization({ orgId: organization.org_id });
   };
 
   render() {

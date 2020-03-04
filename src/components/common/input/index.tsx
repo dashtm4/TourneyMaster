@@ -53,6 +53,7 @@ const TextField: React.FC<ITextFieldProps> = ({
       rows={rows}
       value={value}
       onChange={onChange}
+      required={isRequired}
       InputProps={{
         endAdornment: endAdornment && (
           <InputAdornment position="start">
@@ -63,7 +64,6 @@ const TextField: React.FC<ITextFieldProps> = ({
           <InputAdornment position="start">{startAdornment}</InputAdornment>
         ),
       }}
-      required={isRequired}
     />
   </div>
 );

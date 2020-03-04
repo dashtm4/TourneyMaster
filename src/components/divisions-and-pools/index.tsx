@@ -127,7 +127,14 @@ class DivisionsAndPools extends React.Component<
                       </div>
                     </div>
                     <div className={styles.sectionContent}>
-                      <DivisionDetails data={division} />
+                      <DivisionDetails
+                        data={division}
+                        numOfPools={
+                          pools.filter(
+                            pool => pool.division_id === division.division_id
+                          ).length
+                        }
+                      />
                       <PoolsDetails
                         onAddPool={this.onAddPool}
                         division={division}

@@ -20,7 +20,7 @@ export interface AppState {
   organizations: IOrganization[];
 }
 
-const organizationManagementReducer = (
+const organizationsManagementReducer = (
   state: AppState = initialState,
   action: organizationManagementAction
 ) => {
@@ -69,4 +69,4 @@ const organizationManagementReducer = (
   }
 };
 
-export default organizationManagementReducer;
+export default organizationsManagementReducer;
