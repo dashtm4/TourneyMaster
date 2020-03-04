@@ -41,6 +41,7 @@ const ApplyInvitation = ({ addUserToOrganization }: Props) => {
             value={invCode || ''}
             fullWidth={true}
             label="Invitation Code"
+            isRequired
           />
         </div>
         <div className={styles.sectionItem}>
