@@ -13,11 +13,6 @@ import { MenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 
 const STYLES_MENUITEM_ICON = {
-  height: '23px !important',
-  marginRight: '10px',
-};
-
-const STYLES_MENUITEM_ICON_COLLAPSED = {
   marginRight: 0,
 };
 
@@ -61,9 +56,7 @@ const Menu = ({ isAllowEdit, list, eventId }: Props) => {
               >
                 {getIcon(
                   menuItem.icon,
-                  isCollapsed
-                    ? STYLES_MENUITEM_ICON_COLLAPSED
-                    : STYLES_MENUITEM_ICON
+                  isCollapsed ? STYLES_MENUITEM_ICON : undefined
                 )}
                 {!isCollapsed && (
                   <Link

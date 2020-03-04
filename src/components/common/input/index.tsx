@@ -19,7 +19,6 @@ interface ITextFieldProps {
   name?: string;
   disabled?: boolean;
   type?: 'text' | 'number';
-  isRequired?: boolean;
 }
 
 const TextField: React.FC<ITextFieldProps> = ({
@@ -36,7 +35,6 @@ const TextField: React.FC<ITextFieldProps> = ({
   name,
   disabled,
   type,
-  isRequired,
 }) => (
   <div className={styles.container}>
     <span className={styles.label}>{label}</span>
@@ -63,7 +61,6 @@ const TextField: React.FC<ITextFieldProps> = ({
           <InputAdornment position="start">{startAdornment}</InputAdornment>
         ),
       }}
-      required={isRequired}
     />
   </div>
 );

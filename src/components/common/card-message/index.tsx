@@ -12,7 +12,7 @@ interface Props {
 const CardMessage = ({ children, type, style, iconStyle }: Props) => (
   <p className={styles.CardMessage} style={style}>
     {getIcon(type, iconStyle)}
-    <span>{children}</span>
+    {children}
   </p>
 );
 

@@ -7,7 +7,6 @@ interface IButtonProps {
   color: 'primary' | 'secondary' | 'inherit' | 'default' | undefined;
   variant: 'text' | 'outlined' | 'contained' | undefined;
   type?: 'squared' | 'danger' | 'squaredOutlined' | 'dangerLink' | undefined;
-  btnType?: 'button' | 'submit';
   btnStyles?: object;
   icon?: JSX.Element;
   disabled?: boolean;
@@ -19,7 +18,6 @@ const Button: React.FC<IButtonProps> = ({
   color,
   variant,
   type,
-  btnType,
   onClick,
   icon,
   disabled,
@@ -31,8 +29,7 @@ const Button: React.FC<IButtonProps> = ({
     color={color}
     className={type && styles[`${type}Btn`]}
     onClick={onClick}
-    style={{ fontSize: '16px', ...btnStyles, opacity: disabled ? '0.4' : '1' }}
-    type={btnType || 'button'}
+    style={{ fontSize: '16px', ...btnStyles }}
   >
     <div className={icon && styles.iconWrapper}>{icon}</div>
     {label}
