@@ -42,6 +42,8 @@ enum ParkingAvailableOptions {
   VERY_RESTRICTED = 'Very Restricted',
 }
 
+const FACILITY_FIELD_MAP_KEY = 'field_map_URL';
+
 interface State {
   isEdit: boolean;
 }
@@ -104,7 +106,10 @@ class FacilityDetails extends React.Component<Props, State> {
 
     uploadFileMap(
       facility,
-      files?.map((file: File) => ({ file, destinationType: 'facility_map' }))
+      files.map((file: File) => ({
+        file,
+        destinationType: FACILITY_FIELD_MAP_KEY,
+      }))
     );
   };
 
