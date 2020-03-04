@@ -16,7 +16,7 @@ interface IPoolsDetailsProps {
 
 class PoolsDetails extends React.Component<IPoolsDetailsProps> {
   componentDidMount() {
-    if (!this.props.pools.length) {
+    if (!this.props.pools.length && !this.props.teams.length) {
       this.props.getPools(this.props.division.division_id);
       this.props.getTeams(this.props.division.division_id);
     }

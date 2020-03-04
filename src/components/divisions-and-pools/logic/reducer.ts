@@ -8,10 +8,10 @@ import {
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
   ADD_POOL_SUCCESS,
+  REGISTRATION_FETCH_SUCCESS,
 } from './actionTypes';
 import { IPool, ITeam, IDivision } from 'common/models';
 import { IRegistration } from 'common/models/registration';
-import { REGISTRATION_FETCH_SUCCESS } from 'components/registration/registration-edit/logic/actionTypes';
 
 export interface IState {
   data?: Partial<IDivision>[];
