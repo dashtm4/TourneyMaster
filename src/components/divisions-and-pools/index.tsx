@@ -22,6 +22,7 @@ interface IDivisionsAndPoolsProps {
   pools: IPool[];
   teams: ITeam[];
   isLoading: boolean;
+  areDetailsLoading: boolean;
   history: History;
   match: any;
   getDivisions: BindingCbWithOne<string>;
@@ -146,6 +147,7 @@ class DivisionsAndPools extends React.Component<
                         teams={teams.filter(
                           team => team.division_id === division.division_id
                         )}
+                        areDetailsLoading={this.props.areDetailsLoading}
                       />
                     </div>
                   </SectionDropdown>
@@ -189,6 +191,7 @@ interface IState {
     pools: IPool[];
     teams: ITeam[];
     isLoading: boolean;
+    areDetailsLoading: boolean;
   };
 }
 
@@ -197,6 +200,7 @@ const mapStateToProps = (state: IState) => ({
   pools: state.divisions.pools,
   teams: state.divisions.teams,
   isLoading: state.divisions.isLoading,
+  areDetailsLoading: state.divisions.areDetailsLoading,
 });
 
 const mapDispatchToProps = {
