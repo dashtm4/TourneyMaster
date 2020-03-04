@@ -8,6 +8,7 @@ import FileUpload, {
 import { EventMenuTitles } from 'common/enums';
 
 import { IIconFile } from '../logic/model';
+import { UploadLogoTypes } from '../state';
 import styles from '../styles.module.scss';
 
 interface IProps {
@@ -24,16 +25,16 @@ const MediaAssetsSection: React.FC<IProps> = props => {
   ): IIconFile[] => files.map(file => ({ file, destinationType }));
 
   const onDesktopFileUpload = (files: File[]) =>
-    onFileUpload(populateFileObj(files, 'desktop_icon'));
+    onFileUpload(populateFileObj(files, UploadLogoTypes.DESKTOP));
 
   const onMobileFileUpload = (files: File[]) =>
-    onFileUpload(populateFileObj(files, 'mobile_icon'));
+    onFileUpload(populateFileObj(files, UploadLogoTypes.MOBILE));
 
   const onDesktopFileRemove = (files: File[]) =>
-    onFileRemove(populateFileObj(files, 'desktop_icon'));
+    onFileRemove(populateFileObj(files, UploadLogoTypes.DESKTOP));
 
   const onMobileFileRemove = (files: File[]) =>
-    onFileRemove(populateFileObj(files, 'mobile_icon'));
+    onFileRemove(populateFileObj(files, UploadLogoTypes.MOBILE));
 
   return (
     <SectionDropdown

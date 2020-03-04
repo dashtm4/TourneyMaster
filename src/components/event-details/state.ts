@@ -48,3 +48,8 @@ export const requiredFieldsNotEmpty = (
   Object.keys(event)
     .filter((key: string) => requiredEventFields.includes(key))
     .every((key: string) => event[key] !== undefined && event[key] !== '');
+
+export enum UploadLogoTypes {
+  MOBILE = 'mobile_icon_URL',
+  DESKTOP = 'desktop_icon_URL',
+}
