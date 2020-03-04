@@ -54,7 +54,7 @@ interface Props {
   addEmptyField: (facilityId: string) => void;
   updateField: BindingCbWithOne<IField>;
   updateFacilities: BindingCbWithOne<IFacility>;
-  uploadFileMap: (files: IFileMap[]) => void;
+  uploadFileMap: (facility: IFacility, files: IFileMap[]) => void;
 }
 
 class FacilityDetails extends React.Component<Props, State> {
@@ -100,9 +100,10 @@ class FacilityDetails extends React.Component<Props, State> {
   onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
 
   onMapFileUpload = (files: File[]) => {
-    const { uploadFileMap } = this.props;
+    const { facility, uploadFileMap } = this.props;
 
     uploadFileMap(
+      facility,
       files?.map((file: File) => ({ file, destinationType: 'facility_map' }))
     );
   };

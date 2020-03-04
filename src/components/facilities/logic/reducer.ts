@@ -8,6 +8,7 @@ import {
   UPDATE_FACILITY,
   FacilitiesAction,
   UPDATE_FIELD,
+  UPLOAD_FILE_MAP_SUCCESS,
 } from './action-types';
 import { IFacility, IField } from '../../../common/models';
 
@@ -99,6 +100,16 @@ const facilitiesReducer = (
         ...state,
         fields: state.fields.map(it =>
           it.field_id === updatedField.field_id ? updatedField : it
+        ),
+      };
+    }
+    case UPLOAD_FILE_MAP_SUCCESS: {
+      const { facility } = action.payload;
+
+      return {
+        ...state,
+        facilities: state.facilities.map(it =>
+          it.facilities_id === facility.facilities_id ? facility : it
         ),
       };
     }

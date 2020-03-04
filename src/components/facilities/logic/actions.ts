@@ -18,6 +18,8 @@ import {
   SAVE_FACILITIES_SUCCESS,
   SAVE_FACILITIES_FAILURE,
   FacilitiesAction,
+  UPLOAD_FILE_MAP_SUCCESS,
+  UPLOAD_FILE_MAP_FAILURE,
 } from './action-types';
 import Api from 'api/api';
 import { getVarcharEight } from '../../../helpers';
@@ -180,20 +182,41 @@ const saveFacilities: ActionCreator<ThunkAction<
   }
 };
 
-const uploadFileMap = (files: IFileMap[]) => () => {
+const uploadFileMap: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  FacilitiesAction
+>> = (facility: IFacility, files: IFileMap[]) => async (dispatch: Dispatch) => {
   if (!files || !files.length) {
     return;
   }
 
-  files.forEach((fileObject: IFileMap) => {
+  files.forEach(async (fileObject: IFileMap) => {
     const { file, destinationType } = fileObject;
     const uuid = uuidv4();
     const saveFilePath = `event_media_files/${destinationType}_${uuid}_${file.name}`;
     const config = { contentType: file.type };
 
-    Storage.put(saveFilePath, file, config)
-      .then(() => Toasts.successToast(`${file.name} was successfully uploaded`))
-      .catch(() => Toasts.errorToast(`${file.name} couldn't be uploaded`));
+    try {
+      const storage = await Storage.put(saveFilePath, file, config);
+      const { key } = storage as any;
+
+      dispatch({
+        type: UPLOAD_FILE_MAP_SUCCESS,
+        payload: {
+          facility: { ...facility, isChange: true, field_map_URL: key },
+        },
+      });
+
+      Toasts.successToast(`${file.name} was successfully uploaded`);
+    } catch (err) {
+      dispatch({
+        type: UPLOAD_FILE_MAP_FAILURE,
+      });
+
+      Toasts.errorToast(`${file.name} couldn't be uploaded`);
+    }
   });
 };
 
