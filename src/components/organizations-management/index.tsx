@@ -48,7 +48,7 @@ class OrganizationsManagement extends React.PureComponent<Props, IState> {
   }
 
   addOrganization = async (organizationData: IConfigurableOrganization) => {
-    const { createOrganization } = this.props;
+    const { createOrganization, addUserToOrganization } = this.props;
 
     const newOrganization = {
       ...organizationData,
@@ -62,7 +62,7 @@ class OrganizationsManagement extends React.PureComponent<Props, IState> {
   };
 
   render() {
-    const { organizations, isLoading } = this.props;
+    const { organizations, isLoading, addUserToOrganization } = this.props;
 
     if (isLoading) {
       return <Loader />;
@@ -75,7 +75,7 @@ class OrganizationsManagement extends React.PureComponent<Props, IState> {
         </div>
         <OrganizationsList organizations={organizations} />
         <CreateOrganization addOrganization={this.addOrganization} />
-        <ApplyInvitation />
+        <ApplyInvitation addUserToOrganization={addUserToOrganization} />
       </section>
     );
   }
@@ -96,6 +96,7 @@ export default connect(
       {
         loadOrganizations,
         createOrganization,
+        addUserToOrganization,
       },
       dispatch
     )

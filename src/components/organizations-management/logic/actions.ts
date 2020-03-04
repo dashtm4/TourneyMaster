@@ -1,6 +1,5 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
-import jwt_decode from 'jwt-decode';
 import Api from 'api/api';
 import {
   organizationManagementAction,
@@ -10,8 +9,10 @@ import {
   CREATE_ORGANIZATION_SUCCESS,
   CREATE_ORGANIZATION_FAILURE,
 } from './action-types';
+import { Toasts } from 'components/common';
 import { IMember } from 'common/models';
 import { getVarcharEight } from 'helpers';
+import { Auth } from 'aws-amplify';
 import { IAddUserToOrg } from '../types';
 
 const loadOrganizations: ActionCreator<ThunkAction<
@@ -62,27 +63,33 @@ const createOrganization: ActionCreator<ThunkAction<
   }
 };
 
-const addUserToOrganization = async ({ orgId, invCode }: IAddUserToOrg) => {
-  const token = localStorage.getItem('token');
+const addUserToOrganization: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  organizationManagementAction
+>> = ({ orgId, invCode }: IAddUserToOrg) => async () => {
+  try {
+    const currentSession = await Auth.currentSession();
+    const userEmail = currentSession.getIdToken().payload.email;
+    const members = await Api.get(`/members?email_address=${userEmail}`);
 
-  if (!token) {
-    return;
+    const member: IMember = members.find(
+      (it: IMember) => it.email_address === userEmail
+    );
+
+    const orgMembers = {
+      member_id: member.member_id,
+      org_member_id: getVarcharEight(),
+      org_id: orgId || invCode,
+    };
+
+    await Api.post('/org_members', orgMembers);
+
+    Toasts.successToast('Success! You were added to the organization.');
+  } catch {
+    Toasts.errorToast('Oops. Something went wrong...');
   }
-
-  const decodedToken = jwt_decode(token);
-  const { email } = decodedToken as any;
-  const members = await Api.get(`/members?email_address=${email}`);
-  const member: IMember = members.find(
-    (it: IMember) => it.email_address === email
-  );
-
-  const orgMembers = {
-    member_id: member.member_id,
-    org_member_id: getVarcharEight(),
-    org_id: orgId || invCode,
-  };
-
-  await Api.post('/org_members', orgMembers);
 };
 
 export { loadOrganizations, createOrganization, addUserToOrganization };

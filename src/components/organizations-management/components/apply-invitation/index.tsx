@@ -5,10 +5,14 @@ import {
   Input,
   Button,
 } from 'components/common';
-import { addUserToOrganization } from '../../logic/actions';
+import { IAddUserToOrg } from '../../types';
 import styles from './styles.module.scss';
 
-const ApplyInvitation = () => {
+interface Props {
+  addUserToOrganization: ({ orgId, invCode }: IAddUserToOrg) => void;
+}
+
+const ApplyInvitation = ({ addUserToOrganization }: Props) => {
   const [invCode, onChange] = React.useState('');
 
   return (

@@ -49,7 +49,7 @@ const OrganizationsList = ({ organizations }: Props) => {
           {organizations.length > 0 ? (
             <>
               <p className={styles.description}>
-                Organizations to which you currently belong
+                Organizations to which you currently belong:
               </p>
               <div className={styles.orgTableWrapper}>
                 <table className={styles.orgTable}>

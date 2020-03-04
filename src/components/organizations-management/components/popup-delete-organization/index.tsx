@@ -28,7 +28,7 @@ const PopupDeleteOrganization = ({
           <p className={styles.confirmDesc}>
             You are about to delete this organization and this cannot be done.
             Please enter the name of the organization you wish to delete to
-            continue
+            continue.
           </p>
           <Input
             onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
