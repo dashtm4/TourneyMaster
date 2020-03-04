@@ -1,7 +1,5 @@
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { Storage } from 'aws-amplify';
-import uuidv4 from 'uuid/v4';
 import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
@@ -22,8 +20,8 @@ import {
   UPLOAD_FILE_MAP_FAILURE,
 } from './action-types';
 import Api from 'api/api';
-import { getVarcharEight } from '../../../helpers';
-import { IFacility, IField, IFileMap } from '../../../common/models';
+import { getVarcharEight, uploadFile } from 'helpers';
+import { IFacility, IField, IUploadFile } from 'common/models';
 
 const loadFacilities: ActionCreator<ThunkAction<
   void,
@@ -187,20 +185,17 @@ const uploadFileMap: ActionCreator<ThunkAction<
   {},
   null,
   FacilitiesAction
->> = (facility: IFacility, files: IFileMap[]) => async (dispatch: Dispatch) => {
+>> = (facility: IFacility, files: IUploadFile[]) => async (
+  dispatch: Dispatch
+) => {
   if (!files || !files.length) {
     return;
   }
 
-  files.forEach(async (fileObject: IFileMap) => {
-    const { file, destinationType } = fileObject;
-    const uuid = uuidv4();
-    const saveFilePath = `event_media_files/${destinationType}_${uuid}_${file.name}`;
-    const config = { contentType: file.type };
-
+  for await (let file of files) {
     try {
-      const storage = await Storage.put(saveFilePath, file, config);
-      const { key } = storage as any;
+      const uploadedFile = await uploadFile(file);
+      const { key } = uploadedFile as Storage;
 
       dispatch({
         type: UPLOAD_FILE_MAP_SUCCESS,
@@ -209,15 +204,15 @@ const uploadFileMap: ActionCreator<ThunkAction<
         },
       });
 
-      Toasts.successToast(`${file.name} was successfully uploaded`);
+      Toasts.successToast('Map was successfully uploaded');
     } catch (err) {
       dispatch({
         type: UPLOAD_FILE_MAP_FAILURE,
       });
 
-      Toasts.errorToast(`${file.name} couldn't be uploaded`);
+      Toasts.errorToast('Map could not be uploaded');
     }
-  });
+  }
 };
 
 export {

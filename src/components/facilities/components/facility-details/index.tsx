@@ -16,7 +16,7 @@ import { FileUploadTypes, AcceptFileTypes } from '../../../common/file-upload';
 import {
   IFacility,
   IField,
-  IFileMap,
+  IUploadFile,
   BindingCbWithOne,
 } from '../../../../common/models';
 import styles from './styles.module.scss';
@@ -54,7 +54,7 @@ interface Props {
   addEmptyField: (facilityId: string) => void;
   updateField: BindingCbWithOne<IField>;
   updateFacilities: BindingCbWithOne<IFacility>;
-  uploadFileMap: (facility: IFacility, files: IFileMap[]) => void;
+  uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
 }
 
 class FacilityDetails extends React.Component<Props, State> {
@@ -379,11 +379,13 @@ class FacilityDetails extends React.Component<Props, State> {
               </>
             )}
           </fieldset>
-          <FileUpload
-            type={FileUploadTypes.BUTTON}
-            acceptTypes={[AcceptFileTypes.PDF]}
-            onUpload={this.onMapFileUpload}
-          />
+          <fieldset className={styles.filedset} disabled={!isEdit}>
+            <FileUpload
+              type={FileUploadTypes.BUTTON}
+              acceptTypes={[AcceptFileTypes.PDF]}
+              onUpload={this.onMapFileUpload}
+            />
+          </fieldset>
         </form>
       </SectionDropdown>
     );
