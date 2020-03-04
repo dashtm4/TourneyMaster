@@ -41,12 +41,6 @@ export default (props: IProps) => {
     right: '',
   };
 
-  // const header = {
-  //   left: 'prev,next today',
-  //   center: 'title',
-  //   right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-  // }
-
   const eventTimeFormat = {
     hour: '2-digit',
     minute: '2-digit',
@@ -75,7 +69,9 @@ export default (props: IProps) => {
     calendarApi = calendarRef!.current!.getApi();
   });
 
-  const changeView = (view: 'day' | 'week' | 'month') => {
+  const changeView = (
+    view: 'day' | 'week' | 'month' | 'listDay' | 'listMonth'
+  ) => {
     const viewType = getViewType(view);
     calendarApi.changeView(viewType);
     changeCurrentView(view);
@@ -155,6 +151,8 @@ export default (props: IProps) => {
           {renderButton('month')}
         </div>
       </div>
+      {renderButton('listDay')}
+      {renderButton('listMonth')}
       <div>
         <FullCalendar
           firstDay={1}
@@ -170,6 +168,7 @@ export default (props: IProps) => {
           dateClick={handleDateClick}
           eventClick={handleEventClick}
           eventDrop={onEventDrop}
+          // buttonText={buttonText}
         />
         <div className={styles.badgeContainer}>
           {renderBadge('#1c315f', 'Event')}

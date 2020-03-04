@@ -81,7 +81,7 @@ const calendarEventCreateSucc = () => ({
 });
 
 export const getCalendarEvents = () => async (dispatch: Dispatch) => {
-  const response = await get('/calendarEvents');
+  const response = await get('/calendar_events');
 
   if (response && !response.error) {
     return dispatch(fetchCalendarEvents(response));
@@ -99,7 +99,7 @@ export const saveCalendar = (data: ICalendarEvent[]) => async (
 
   if (!eventsAreValid) return Toasts.errorToast('Event data is invalid');
 
-  const response = await post('/calendarEvents', data);
+  const response = await post('/calendar_events', data);
 
   if (response && !response.error) {
     dispatch(calendarEventCreateSucc());
