@@ -4,9 +4,10 @@ import { IDivision } from 'common/models';
 
 interface IDivisionDetailProps {
   data: IDivision;
+  numOfPools: number;
 }
 
-const DivisionDetails = ({ data }: IDivisionDetailProps) => (
+const DivisionDetails = ({ data, numOfPools }: IDivisionDetailProps) => (
   <div className={styles.divisionDetailsContainer}>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Max Team Registration:</span>{' '}
@@ -30,7 +31,7 @@ const DivisionDetails = ({ data }: IDivisionDetailProps) => (
     </div>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Number of Pools:</span>{' '}
-      {data.num_pools || '—'}
+      {numOfPools}
     </div>
   </div>
 );

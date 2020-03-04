@@ -10,8 +10,8 @@ export interface IFacility {
   state: string | null;
   zip: string | null;
   country: string | null;
-  facility_lat: string | null;
-  facility_long: string | null;
+  facility_lat: number | null;
+  facility_long: number | null;
   facility_sort: string | null;
   public_access_YN: string | null;
   restrooms: string | null;

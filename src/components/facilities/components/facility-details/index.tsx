@@ -20,6 +20,8 @@ import {
   BindingCbWithOne,
 } from '../../../../common/models';
 import styles from './styles.module.scss';
+import PlacesAutocompleteInput from '../../../event-details/primary-information/map/autocomplete';
+import Map from '../../../event-details/primary-information/map';
 
 enum FormFields {
   FACILITIES_DESCRIPTION = 'facilities_description',
@@ -70,6 +72,20 @@ class FacilityDetails extends React.Component<Props, State> {
     updateFacilities({ ...facility, [name]: value });
   };
 
+  onChangeAddress = (address: string) => {
+    const { facility, updateFacilities } = this.props;
+    updateFacilities({ ...facility, address1: address });
+  };
+
+  onAdressSelect = (position: any) => {
+    const { facility, updateFacilities } = this.props;
+    updateFacilities({
+      ...facility,
+      facility_lat: position.lat,
+      facility_long: position.lng,
+    });
+  };
+
   onChangeField = (
     field: IField,
     {
@@ -108,6 +124,7 @@ class FacilityDetails extends React.Component<Props, State> {
     ) {
       loadFields(facility.facilities_id);
     }
+    const { facility_lat: lat, facility_long: lng } = this.props.facility;
 
     return (
       <SectionDropdown
@@ -122,62 +139,75 @@ class FacilityDetails extends React.Component<Props, State> {
           </span>
         </HeadingLevelThree>
         <form className={styles.form} autoComplete="off">
-          <h3 className={styles.detailsSubtitle}>Location {facilitiyNumber}</h3>
-          <div className={styles.descripWrapper}>
-            <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
-              <legend className={styles.fieldTitle}>
-                Facility {facilitiyNumber} Name
-              </legend>
-              <Input
-                onChange={this.onChangeFacility}
-                value={facility.facilities_description || ''}
-                name={FormFields.FACILITIES_DESCRIPTION}
-                placeholder={'Main Stadium'}
-                disabled={!isEdit}
-                width={'100%'}
+          <div className={styles.container}>
+            <div className={styles.section}>
+              <h3 className={styles.detailsSubtitle}>
+                Location {facilitiyNumber}
+              </h3>
+              <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
+                <legend className={styles.fieldTitle}>Facility Name</legend>
+                <Input
+                  onChange={this.onChangeFacility}
+                  value={facility.facilities_description || ''}
+                  name={FormFields.FACILITIES_DESCRIPTION}
+                  placeholder={'Main Stadium'}
+                  disabled={!isEdit}
+                  width={'100%'}
+                />
+              </fieldset>
+              <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
+                <PlacesAutocompleteInput
+                  onSelect={this.onAdressSelect}
+                  onChange={this.onChangeAddress}
+                  address={facility.address1 || ''}
+                  disabled={!isEdit}
+                  label={'Facility Address'}
+                />
+              </fieldset>
+              <fieldset
+                className={`${styles.filedset} ${styles.filedsetFields}`}
+              >
+                <legend className={styles.fieldTitle}>Number of Fields</legend>
+                <Select
+                  onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
+                    if (evt.target.value > fields.length.toString()) {
+                      this.onChangeFacility(evt);
+                      addEmptyField(facility.facilities_id);
+                    }
+                  }}
+                  value={`${fields.length || ''}`}
+                  name={FormFields.NUM_FIELDS}
+                  options={Array.from(
+                    new Array(fields.length + 1),
+                    (_, idx) => ({
+                      label: `${idx + 1}`,
+                      value: `${idx + 1}`,
+                    })
+                  )}
+                  width="100%"
+                  disabled={!isEdit}
+                />
+              </fieldset>
+            </div>
+            <div className={styles.section}>
+              {lat && lng && (
+                <Map
+                  position={{
+                    lat,
+                    lng,
+                  }}
+                />
+              )}
+            </div>
+            <div className={`${styles.section} ${styles.btnContainer}`}>
+              <Button
+                onClick={this.onEditClick}
+                label="Edit"
+                variant={isEdit ? 'contained' : 'text'}
+                color="secondary"
+                type={isEdit ? 'danger' : undefined}
               />
-            </fieldset>
-            <Button
-              onClick={this.onEditClick}
-              label="Edit"
-              variant={isEdit ? 'contained' : 'text'}
-              color="secondary"
-              type={isEdit ? 'danger' : undefined}
-            />
-          </div>
-          <div className={styles.nameWrapper}>
-            <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
-              <legend className={styles.fieldTitle}>
-                Facility {facilitiyNumber} Address
-              </legend>
-              <Input
-                onChange={this.onChangeFacility}
-                value={facility.address1 || ''}
-                name={FormFields.ADDRESS_ONE}
-                placeholder={'Facility address'}
-                disabled={!isEdit}
-                width={'100%'}
-              />
-            </fieldset>
-            <fieldset className={styles.filedset}>
-              <legend className={styles.fieldTitle}>Number of Fields</legend>
-              <Select
-                onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-                  if (evt.target.value > fields.length.toString()) {
-                    this.onChangeFacility(evt);
-                    addEmptyField(facility.facilities_id);
-                  }
-                }}
-                value={`${fields.length || ''}`}
-                name={FormFields.NUM_FIELDS}
-                options={Array.from(new Array(fields.length + 1), (_, idx) => ({
-                  label: `${idx + 1}`,
-                  value: `${idx + 1}`,
-                }))}
-                width="160px"
-                disabled={!isEdit}
-              />
-            </fieldset>
+            </div>
           </div>
           <ul className={styles.fieldList}>
             {facility.isFieldsLoading ? (
@@ -212,14 +242,16 @@ class FacilityDetails extends React.Component<Props, State> {
                 disabled={!isEdit}
               />
             </fieldset>
-            <fieldset className={styles.filedset}>
+            <fieldset
+              className={`${styles.filedset} ${styles.filedsetToiltes}`}
+            >
               <legend className={styles.fieldTitle}># Portable Toilets</legend>
               <Input
                 onChange={this.onChangeFacility}
                 value={facility.num_toilets ? `${facility.num_toilets}` : ''}
                 name={FormFields.NUM_TOILETS}
                 placeholder="5"
-                width="250px"
+                width="100%"
                 disabled={!isEdit}
               />
             </fieldset>
