@@ -10,6 +10,7 @@ export enum TeamPositionEnum {
 export interface IGame {
   id: number;
   startTime?: string;
+  facilityId?: number;
   homeTeam?: ITeamCard;
   awayTeam?: ITeamCard;
   timeSlotId: number;
@@ -131,3 +132,11 @@ export const arrayAverageOccurrence = (array: any[]) => {
 
   return modes[0];
 };
+
+export const getSortedByGamesNum = (data: any) =>
+  Object.keys(data).sort((a, b) =>
+    data[a].gamesNum < data[b].gamesNum ? 1 : -1
+  );
+
+export const getSortedDesc = (data: any) =>
+  Object.keys(data).sort((a, b) => (data[a] < data[b] ? 1 : -1));

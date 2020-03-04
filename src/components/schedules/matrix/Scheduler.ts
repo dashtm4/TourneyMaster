@@ -1,6 +1,13 @@
 import moment from 'moment';
+import { union } from 'lodash-es';
 import { getTimeFromString } from 'helpers/stringTimeOperations';
-import { IGame, TeamPositionEnum, arrayAverageOccurrence } from './helper';
+import {
+  IGame,
+  TeamPositionEnum,
+  arrayAverageOccurrence,
+  getSortedByGamesNum,
+  getSortedDesc,
+} from './helper';
 import { ITimeSlot, IField } from '..';
 import { ITeamCard } from '.';
 
@@ -14,7 +21,7 @@ interface ITeamsInPlay {
 
 interface IFacilityData {
   [key: string]: {
-    divisionId?: number;
+    divisionIds?: number[];
     gamesNum?: number;
   };
 }
@@ -57,11 +64,13 @@ export default class Scheduler {
       startTime: this.timeSlots.find(
         timeSlot => timeSlot.id === game.timeSlotId
       )?.time,
+      facilityId: this.fields.find(field => field.id === game.fieldId)
+        ?.facilityId,
     }));
   };
 
   calculateTeamData = () => {
-    [...this.teamCards, ...this.teamCards].map(teamCard => {
+    [...this.teamCards].map(teamCard => {
       const foundGame = this.findGame(teamCard, {
         isPremier: teamCard.isPremier,
       });
@@ -69,11 +78,11 @@ export default class Scheduler {
       if (foundGame) {
         const updatedTeamCard = this.updateTeam(teamCard, foundGame);
         this.setTeamInPlay(teamCard, foundGame);
-        this.setDivisionPerFacility(teamCard, foundGame);
-        console.log('facilityData', this.facilityData);
         this.updateGame(foundGame, updatedTeamCard);
       }
     });
+
+    this.handleSingleTeamGames();
   };
 
   findGame = (teamCard: ITeamCard, conditions?: IConditions) => {
@@ -93,7 +102,10 @@ export default class Scheduler {
         this.gameStartsInProperTime(game, teamCard) &&
         !teamTimeSlots.includes(game.timeSlotId) &&
         !teamTimeSlots.includes(game.timeSlotId - 1) &&
-        !this.teamInPlayGames(teamCard, game)
+        !this.teamInPlayGames(teamCard, game) &&
+        this.facilityData[game.facilityId!]?.divisionIds?.includes(
+          teamCard.divisionId
+        )
     );
   };
 
@@ -103,6 +115,75 @@ export default class Scheduler {
         ? { ...game, [TeamPositionEnum[teamCard.teamPosition!]]: teamCard }
         : game
     );
+  };
+
+  handleSingleTeamGames = () => {
+    const singleTeamCards: (ITeamCard | undefined)[] = [];
+    this.updatedGames = this.updatedGames.map(game => {
+      const { awayTeam, homeTeam } = game;
+      if (!(awayTeam && homeTeam) && (awayTeam || homeTeam)) {
+        singleTeamCards.push(awayTeam || homeTeam);
+        delete game.awayTeam;
+        delete game.homeTeam;
+      }
+      return game;
+    });
+
+    const teams: { [key: string]: ITeamCard | undefined } = {};
+    singleTeamCards.forEach(
+      teamCard =>
+        (teams[teamCard?.id!] = singleTeamCards.find(
+          tc =>
+            !this.teamsInPlay[tc?.id!].includes(teamCard?.id!) &&
+            tc?.isPremier === teamCard?.isPremier &&
+            tc?.id !== teamCard?.id &&
+            !teams[tc.id]
+        ))
+    );
+
+    const foundGames: IGame[] = [];
+    Object.keys(teams).forEach(teamId => {
+      const hostTeam = this.teamCards[teamId];
+      const team = teams[teamId];
+
+      if (!hostTeam || !team) return;
+
+      const teamGames = this.updatedGames.filter(
+        ({ awayTeam, homeTeam }) =>
+          awayTeam?.id === hostTeam.id ||
+          homeTeam?.id === hostTeam.id ||
+          awayTeam?.id === team?.id ||
+          homeTeam?.id === team?.id
+      );
+
+      let teamsTimeSlotIds = teamGames.map(game => game.timeSlotId);
+      teamsTimeSlotIds.forEach(timeSlotId =>
+        teamsTimeSlotIds.push(timeSlotId + 1)
+      );
+      teamsTimeSlotIds = union(teamsTimeSlotIds);
+
+      const foundGame = this.updatedGames.find(
+        game =>
+          game.isPremier === hostTeam.isPremier &&
+          !game.awayTeam &&
+          !game.homeTeam &&
+          !teamsTimeSlotIds.includes(game.timeSlotId)
+      );
+
+      if (foundGame) {
+        foundGames.push(foundGame);
+        [hostTeam, team].forEach(t => {
+          const foundUpdatedGame = this.updatedGames.find(
+            game => game.id === foundGame.id
+          );
+          if (!foundUpdatedGame) return;
+
+          const updatedTeam = this.updateTeam(t, foundUpdatedGame!);
+          this.setTeamInPlay(t, foundGame);
+          this.updateGame(foundGame, updatedTeam);
+        });
+      }
+    });
   };
 
   updateTeam = (teamCard: ITeamCard, game: IGame) => {
@@ -146,23 +227,7 @@ export default class Scheduler {
   getDivisionPerFacility = (game: IGame) => {
     const facilityId = this.fields.find(field => field.id === game.fieldId)
       ?.facilityId;
-    return this.facilityData[facilityId!]?.divisionId;
-  };
-
-  setDivisionPerFacility = (teamCard: ITeamCard, game: IGame) => {
-    const divisionId = teamCard.divisionId;
-    const facilityId = this.fields.find(field => field.id === game.fieldId)
-      ?.facilityId;
-
-    if (facilityId && !this.facilityData[facilityId]?.divisionId) {
-      this.facilityData = {
-        ...this.facilityData,
-        [facilityId]: {
-          ...(this.facilityData[facilityId] || []),
-          divisionId,
-        },
-      };
-    }
+    return this.facilityData[facilityId!]?.divisionIds;
   };
 
   calculateGamesForFacilities = () => {
@@ -186,7 +251,40 @@ export default class Scheduler {
       };
     });
 
-    console.log('facilityData', this.facilityData);
+    const teamsInDivisions = {};
+    this.teamCards.forEach(
+      teamCard =>
+        (teamsInDivisions[teamCard.divisionId] =
+          teamsInDivisions[teamCard.divisionId] + 1 || 1)
+    );
+
+    const sortedFacilities = getSortedByGamesNum(this.facilityData);
+    const sortedDivisions = getSortedDesc(teamsInDivisions);
+
+    const numberOfAllTeams = this.teamCards.filter(
+      teamCard => !teamCard.isPremier
+    ).length;
+
+    // If all teams can fit in one biggest facility then let it be
+    if (numberOfAllTeams <= this.facilityData[sortedFacilities[0]]?.gamesNum!) {
+      this.facilityData[sortedFacilities[0]] = {
+        ...this.facilityData[sortedFacilities[0]],
+        divisionIds: [...sortedDivisions.map(Number)],
+      };
+      return;
+    }
+
+    // Put divisions in facilities by number of games and teams
+    sortedDivisions.forEach((divisionId, index) => {
+      const facilityId = sortedFacilities[index] || sortedFacilities[0];
+      this.facilityData[facilityId] = {
+        ...this.facilityData[facilityId],
+        divisionIds: [
+          ...(this.facilityData[facilityId]?.divisionIds || []),
+          Number(divisionId),
+        ],
+      };
+    });
   };
 
   calculateAvgStartTime = () => {
@@ -194,3 +292,12 @@ export default class Scheduler {
     this.avgStartTime = arrayAverageOccurrence(timeStarts);
   };
 }
+
+/*
+ * Premier teams can only play on Premier fields
+ * Teams from One Division can only play on One Facility
+ * Teams can only play one game for one TimeSlot
+ * Teams can only play after defined start time
+ * Teams cannot play back-to-back games
+ * Min Max Games Guarantee
+ */

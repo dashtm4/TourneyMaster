@@ -196,7 +196,7 @@ const teams: ITeam[] = [
     id: 16,
     name: 'Team # 17',
     startTime: '02/02/2020 08:00:00',
-    divisionId: 1,
+    divisionId: 2,
     isPremier: false,
   },
 ];
