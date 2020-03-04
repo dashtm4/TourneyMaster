@@ -1,0 +1,16 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+
+  width: 100%;
+}
+
+.sectionItem {
+  flex-grow: 0;
+
+  width: 33%;
+  margin-bottom: 16px;
+
+  color: #6a6a6a;
+}

@@ -113,7 +113,7 @@ const editTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
       },
     });
 
-    Toasts.successToast('Saved');
+    Toasts.successToast('Teams saved successfully');
   } catch {
     dispatch({
       type: EDIT_TEAM_FAILURE,
