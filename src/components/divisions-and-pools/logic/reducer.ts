@@ -19,6 +19,7 @@ export interface IState {
   teams: ITeam[];
   registration?: IRegistration;
   isLoading: boolean;
+  areDetailsLoading: boolean;
   error: boolean;
 }
 
@@ -28,6 +29,7 @@ const defaultState: IState = {
   teams: [],
   registration: undefined,
   isLoading: true,
+  areDetailsLoading: true,
   error: false,
 };
 
@@ -109,6 +111,7 @@ export default (
       return {
         ...state,
         teams: [...state.teams, ...action.payload],
+        areDetailsLoading: false,
         error: false,
       };
     }
