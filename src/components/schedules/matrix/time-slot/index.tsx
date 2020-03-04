@@ -14,9 +14,14 @@ interface IProps {
 const RenderTimeSlot = (props: IProps) => {
   const { timeSlot, games, moveCard } = props;
 
+  const formatTimeSlot = (time: string) => {
+    if (!time) return;
+    return time.slice(0, 5);
+  };
+
   return (
     <tr key={timeSlot.id} className={styles.timeSlotRow}>
-      <th>{timeSlot.time}</th>
+      <th>{formatTimeSlot(timeSlot.time)}</th>
       {games.map((game: IGame) => (
         <RenderGameSlot key={game.id} game={game} moveCard={moveCard} />
       ))}

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import SchedulesMatrix from './matrix';
+import { calculateTimeSlots } from './helper';
 
 export interface IField {
   id: number;
@@ -149,7 +150,7 @@ const teams: ITeam[] = [
     divisionId: 1,
     isPremier: true,
   },
-  // ONLY PREMIER TEAMS HERE !
+  // ONLY PREMIER TEAMS HERE ! (not anymore...)
   {
     id: 10,
     name: 'Team # 11',
@@ -201,43 +202,32 @@ const teams: ITeam[] = [
   },
 ];
 
-const timeSlots: ITimeSlot[] = [
-  {
-    id: 0,
-    time: '08:00',
-  },
-  {
-    id: 1,
-    time: '09:00',
-  },
-  {
-    id: 2,
-    time: '10:00',
-  },
-  {
-    id: 3,
-    time: '11:00',
-  },
-  {
-    id: 4,
-    time: '12:00',
-  },
-  {
-    id: 5,
-    time: '13:00',
-  },
-  {
-    id: 6,
-    time: '14:00',
-  },
-  {
-    id: 7,
-    time: '15:00',
-  },
-];
+interface IState {
+  timeSlots?: ITimeSlot[];
+}
 
-class Schedules extends Component {
+class Schedules extends Component<{}, IState> {
+  state = {
+    timeSlots: [],
+  };
+
+  componentDidMount() {
+    const firstGameTime = '08:00:00';
+    const lastGameEnd = '16:00:00';
+    const totalGameTime = 60;
+
+    const timeSlots = calculateTimeSlots(
+      firstGameTime,
+      lastGameEnd,
+      totalGameTime
+    );
+
+    this.setState({ timeSlots });
+  }
+
   render() {
+    const { timeSlots } = this.state;
+
     return (
       <div>
         <SchedulesMatrix timeSlots={timeSlots} fields={fields} teams={teams} />

@@ -22,6 +22,7 @@ interface ITeamsInPlay {
 interface IFacilityData {
   [key: string]: {
     divisionIds?: number[];
+    gamesPerTeam?: number;
     gamesNum?: number;
   };
 }
@@ -35,6 +36,9 @@ export default class Scheduler {
   teamsInPlay: ITeamsInPlay;
   facilityData: IFacilityData;
   avgStartTime?: string;
+  teamGameNum?: number;
+  minGameNum = 3;
+  maxGameNum = 5;
 
   constructor(
     fields: IField[],
@@ -49,10 +53,12 @@ export default class Scheduler {
     this.updatedGames = [];
     this.teamsInPlay = {};
     this.facilityData = {};
+    this.calculateTeamGameNum();
     this.calculateGamesForFacilities();
     this.calculateAvgStartTime();
     this.populateGameData();
     this.calculateTeamData();
+    this.handleSingleTeamGames();
   }
 
   populateGameData = () => {
@@ -71,9 +77,8 @@ export default class Scheduler {
 
   calculateTeamData = () => {
     [...this.teamCards].map(teamCard => {
-      const foundGame = this.findGame(teamCard, {
-        isPremier: teamCard.isPremier,
-      });
+      const conditions = { isPremier: teamCard.isPremier };
+      const foundGame = this.findGame(teamCard, conditions);
 
       if (foundGame) {
         const updatedTeamCard = this.updateTeam(teamCard, foundGame);
@@ -82,7 +87,27 @@ export default class Scheduler {
       }
     });
 
-    this.handleSingleTeamGames();
+    this.incrementGamePerTeam();
+
+    if (this.teamGameNum && !this.isGamesPerTeamSatisfied(this.teamGameNum!)) {
+      this.calculateTeamData();
+    }
+  };
+
+  incrementGamePerTeam = () => {
+    Object.keys(this.facilityData).forEach(
+      key =>
+        (this.facilityData[key].gamesPerTeam =
+          this.facilityData[key].gamesPerTeam! + 1 || 1)
+    );
+  };
+
+  isGamesPerTeamSatisfied = (requestNum: number) => {
+    return !!Object.keys(this.facilityData).find(
+      key =>
+        this.facilityData[key]?.gamesPerTeam &&
+        this.facilityData[key]?.gamesPerTeam >= requestNum
+    );
   };
 
   findGame = (teamCard: ITeamCard, conditions?: IConditions) => {
@@ -115,6 +140,11 @@ export default class Scheduler {
         ? { ...game, [TeamPositionEnum[teamCard.teamPosition!]]: teamCard }
         : game
     );
+  };
+
+  calculateTeamGameNum = () => {
+    const timeSlotsNum = this.timeSlots.length;
+    this.teamGameNum = timeSlotsNum / 2;
   };
 
   handleSingleTeamGames = () => {
@@ -167,7 +197,13 @@ export default class Scheduler {
           game.isPremier === hostTeam.isPremier &&
           !game.awayTeam &&
           !game.homeTeam &&
-          !teamsTimeSlotIds.includes(game.timeSlotId)
+          !teamsTimeSlotIds.includes(game.timeSlotId) &&
+          this.facilityData[game.facilityId!].divisionIds?.includes(
+            hostTeam.divisionId
+          ) &&
+          this.facilityData[game.facilityId!].divisionIds?.includes(
+            team.divisionId
+          )
       );
 
       if (foundGame) {
@@ -294,10 +330,13 @@ export default class Scheduler {
 }
 
 /*
- * Premier teams can only play on Premier fields
- * Teams from One Division can only play on One Facility
- * Teams can only play one game for one TimeSlot
- * Teams can only play after defined start time
- * Teams cannot play back-to-back games
- * Min Max Games Guarantee
- */
+
+  ✓ Premier teams can only play on Premier fields
+  ✓ Teams from One Division can only play on One Facility
+  ✓ Teams can only play one game for one TimeSlot
+  ✓ Teams can only play after defined start time
+  ✓ Teams cannot play back-to-back games
+  ✓ Min Max Games Guarantee
+  x Handle single teams game picking
+
+*/
