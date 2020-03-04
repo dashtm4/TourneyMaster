@@ -109,9 +109,13 @@ class Facilities extends React.Component<
           </div>
           <ul className={styles.facilitiesList}>
             {facilities
-              .sort((a, b) =>
-                a.facilities_description > b.facilities_description ? 1 : -1
-              )
+              .sort((a, b) => {
+                if (a.isChange || b.isChange) return 0;
+
+                return a.facilities_description > b.facilities_description
+                  ? 1
+                  : -1;
+              })
               .map((facilitiy, idx) => (
                 <li
                   className={styles.facilitiesItem}
