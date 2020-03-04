@@ -258,4 +258,5 @@ const TeamDetailsPopup = ({
     </div>
   );
 };
+
 export default TeamDetailsPopup;
