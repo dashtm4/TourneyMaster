@@ -2,47 +2,7 @@
   width: 100%;
   min-width: 792px;
 }
-.section {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-}
-.sectionItem {
-  flex-grow: 0;
-  width: 33%;
-  color: #6a6a6a;
-  margin-bottom: 16px;
-}
-.noFound {
-  font-size: 21px;
-  color: #878787;
-}
-.title {
-  color: #6a6a6a;
-  font-weight: 600;
-  padding-bottom: 10px;
-}
-.listContainer {
-  width: 100%;
-}
-.listItem {
-  display: flex;
-  flex-direction: row;
-  & > li {
-    &:first-of-type {
-      width: 2%;
-    }
-    width: 24%;
-    align-items: center;
-    display: flex;
-  }
-}
+
 .heading {
   margin: 24px 0;
-}
-.copyIcon {
-  cursor: pointer;
-  margin-left: 5px;
-  font-size: 1rem !important;
 }

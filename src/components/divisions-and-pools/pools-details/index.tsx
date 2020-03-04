@@ -4,6 +4,7 @@ import Button from '../../common/buttons/button';
 import CreateIcon from '@material-ui/icons/Create';
 import Pool from './pool';
 import { IPool, ITeam, BindingCbWithOne, IDivision } from 'common/models';
+import { Loader } from 'components/common';
 
 interface IPoolsDetailsProps {
   onAddPool: BindingCbWithOne<IDivision>;
@@ -12,11 +13,12 @@ interface IPoolsDetailsProps {
   division: IDivision;
   pools: IPool[];
   teams: ITeam[];
+  areDetailsLoading: boolean;
 }
 
 class PoolsDetails extends React.Component<IPoolsDetailsProps> {
   componentDidMount() {
-    if (!this.props.pools.length) {
+    if (!this.props.pools.length && !this.props.teams.length) {
       this.props.getPools(this.props.division.division_id);
       this.props.getTeams(this.props.division.division_id);
     }
@@ -47,18 +49,22 @@ class PoolsDetails extends React.Component<IPoolsDetailsProps> {
             />
           </div>
         </div>
-        <div className={styles.poolsContainer}>
-          {pools.map(pool => (
-            <Pool
-              key={pool.pool_id}
-              pool={pool}
-              teams={teams.filter(team => team.pool_id === pool.pool_id)}
-            />
-          ))}
-          {teams.length !== 0 && (
-            <Pool teams={teams.filter(team => !team.pool_id)} />
-          )}
-        </div>
+        {this.props.areDetailsLoading ? (
+          <Loader />
+        ) : (
+          <div className={styles.poolsContainer}>
+            {pools.map(pool => (
+              <Pool
+                key={pool.pool_id}
+                pool={pool}
+                teams={teams.filter(team => team.pool_id === pool.pool_id)}
+              />
+            ))}
+            {teams.length !== 0 && (
+              <Pool teams={teams.filter(team => !team.pool_id)} />
+            )}
+          </div>
+        )}
       </div>
     );
   }
