@@ -55,7 +55,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   }
 
   onCreateTournament = () => {
-    this.props.history.push('event/event-details');
+    this.props.history.push('/event/event-details');
   };
   onOrderChange = (order: number) => {
     this.setState({ order });

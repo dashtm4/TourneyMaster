@@ -25,7 +25,7 @@ const TournamentCard = ({
   numOfFields,
 }: ITournamentCardProps) => {
   const onTournamentManage = () => {
-    history.push(`event/event-details/${event.event_id}`);
+    history.push(`/event/event-details/${event.event_id}`);
   };
 
   const startDate = moment(event.event_startdate).format('MM.DD.YYYY');
