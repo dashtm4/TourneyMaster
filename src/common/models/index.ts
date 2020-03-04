@@ -9,3 +9,4 @@ export * from './files';
 export * from './menu-list';
 export * from './organization';
 export * from './member';
+export * from './org-member'

@@ -18,6 +18,7 @@ const COPY_ICON_STYLES = {
 
 interface Props {
   organizations: IOrganization[];
+  deleteOrganization: (organization: IOrganization) => void;
 }
 
 const copyToClipboard = (id: string) => {
@@ -31,7 +32,7 @@ const copyToClipboard = (id: string) => {
   Toasts.successToast('The invitation code was successfully copied');
 };
 
-const OrganizationsList = ({ organizations }: Props) => {
+const OrganizationsList = ({ organizations, deleteOrganization }: Props) => {
   const [configOrg, onDeletePopup] = React.useState<null | IOrganization>(null);
 
   return (
@@ -120,7 +121,10 @@ const OrganizationsList = ({ organizations }: Props) => {
           isOpen={Boolean(configOrg)}
           onClose={() => onDeletePopup(null)}
           onCancelClick={() => onDeletePopup(null)}
-          onDeleteClick={() => {}}
+          onDeleteClick={() => {
+            deleteOrganization(configOrg);
+            onDeletePopup(null);
+          }}
         />
       )}
     </>

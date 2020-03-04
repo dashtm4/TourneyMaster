@@ -10,9 +10,11 @@ import {
   CREATE_ORGANIZATION_FAILURE,
   ADD_USER_TO_ORGANIZATION_SUCCESS,
   ADD_USER_TO_ORGANIZATION_FAILURE,
+  DELETE_ORGANIZATION_SUCCESS,
+  DELETE_ORGANIZATION_FAILURE,
 } from './action-types';
 import { Toasts } from 'components/common';
-import { IMember } from 'common/models';
+import { IMember, IOrganization, IOrgMember } from 'common/models';
 import { getVarcharEight } from 'helpers';
 import { Auth } from 'aws-amplify';
 import { IAddUserToOrg } from '../types';
@@ -102,9 +104,46 @@ const addUserToOrganization: ActionCreator<ThunkAction<
     dispatch({
       type: ADD_USER_TO_ORGANIZATION_FAILURE,
     });
-
-    Toasts.errorToast('Oops. Something went wrong...');
   }
 };
 
-export { loadOrganizations, createOrganization, addUserToOrganization };
+const deleteOrganization: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  organizationManagementAction
+>> = (organization: IOrganization) => async (dispatch: Dispatch) => {
+  try {
+    const currentSession = await Auth.currentSession();
+    const userEmail = currentSession.getIdToken().payload.email;
+    const members = await Api.get(`/members?email_address=${userEmail}`);
+    const member: IMember = members.find(
+      (it: IMember) => it.email_address === userEmail
+    );
+    const orgMembers = await Api.get('/org_members');
+    const toBeDelOrgMember = orgMembers.find(
+      (it: IOrgMember) =>
+        it.member_id === member.member_id && it.org_id === organization.org_id
+    );
+
+    Api.delete(`/org_members?org_member_id=${toBeDelOrgMember.org_member_id}`);
+
+    dispatch({
+      type: DELETE_ORGANIZATION_SUCCESS,
+      payload: {
+        organization,
+      },
+    });
+  } catch {
+    dispatch({
+      type: DELETE_ORGANIZATION_FAILURE,
+    });
+  }
+};
+
+export {
+  loadOrganizations,
+  createOrganization,
+  addUserToOrganization,
+  deleteOrganization,
+};

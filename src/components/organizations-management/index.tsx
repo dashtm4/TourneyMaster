@@ -6,6 +6,7 @@ import {
   loadOrganizations,
   createOrganization,
   addUserToOrganization,
+  deleteOrganization,
 } from './logic/actions';
 import { HeadingLevelTwo, Loader } from 'components/common';
 import OrganizationsList from './components/organizations-list';
@@ -27,20 +28,10 @@ interface Props {
   loadOrganizations: BindingAction;
   createOrganization: (organization: IOrganization) => void;
   addUserToOrganization: ({ orgId, invCode }: IAddUserToOrg) => void;
+  deleteOrganization: (organization: IOrganization) => void;
 }
 
-interface IState {
-  invitationCode: string | null;
-}
-
-class OrganizationsManagement extends React.PureComponent<Props, IState> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      invitationCode: null,
-    };
-  }
-
+class OrganizationsManagement extends React.Component<Props> {
   componentDidMount() {
     const { loadOrganizations } = this.props;
 
@@ -62,7 +53,12 @@ class OrganizationsManagement extends React.PureComponent<Props, IState> {
   };
 
   render() {
-    const { organizations, isLoading, addUserToOrganization } = this.props;
+    const {
+      organizations,
+      isLoading,
+      addUserToOrganization,
+      deleteOrganization,
+    } = this.props;
 
     if (isLoading) {
       return <Loader />;
@@ -73,7 +69,10 @@ class OrganizationsManagement extends React.PureComponent<Props, IState> {
         <div className={styles.heading}>
           <HeadingLevelTwo>Organizations Management</HeadingLevelTwo>
         </div>
-        <OrganizationsList organizations={organizations} />
+        <OrganizationsList
+          organizations={organizations}
+          deleteOrganization={deleteOrganization}
+        />
         <CreateOrganization addOrganization={this.addOrganization} />
         <ApplyInvitation addUserToOrganization={addUserToOrganization} />
       </section>
@@ -97,6 +96,7 @@ export default connect(
         loadOrganizations,
         createOrganization,
         addUserToOrganization,
+        deleteOrganization,
       },
       dispatch
     )

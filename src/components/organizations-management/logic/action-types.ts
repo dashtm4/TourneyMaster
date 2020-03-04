@@ -17,6 +17,11 @@ export const ADD_USER_TO_ORGANIZATION_SUCCESS =
 export const ADD_USER_TO_ORGANIZATION_FAILURE =
   'ORGANIZATIONS_MANAGEMENT:ADD_USER_TO_ORGANIZATION_FAILURE';
 
+export const DELETE_ORGANIZATION_SUCCESS =
+  'ORGANIZATIONS_MANAGEMENT:DELETE_ORGANIZATION_SUCCESS';
+export const DELETE_ORGANIZATION_FAILURE =
+  'ORGANIZATIONS_MANAGEMENT:DELETE_ORGANIZATION_FAILURE';
+
 export interface loadOrganizationsStart {
   type: 'ORGANIZATIONS_MANAGEMENT:LOAD_ORGANIZATIONS_START';
 }
@@ -42,8 +47,16 @@ export interface addUserToOrganizationSuccess {
   };
 }
 
+export interface deleteOrganizationSuccess {
+  type: 'ORGANIZATIONS_MANAGEMENT:DELETE_ORGANIZATION_SUCCESS';
+  payload: {
+    organization: IOrganization;
+  };
+}
+
 export type organizationManagementAction =
   | loadOrganizationsSuccess
   | loadOrganizationsStart
   | createOrganizationSuccess
-  | addUserToOrganizationSuccess;
+  | addUserToOrganizationSuccess
+  | deleteOrganizationSuccess;

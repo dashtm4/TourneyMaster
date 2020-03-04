@@ -4,6 +4,7 @@ import {
   LOAD_ORGANIZATIONS_SUCCESS,
   CREATE_ORGANIZATION_SUCCESS,
   ADD_USER_TO_ORGANIZATION_SUCCESS,
+  DELETE_ORGANIZATION_SUCCESS,
 } from './action-types';
 import { IOrganization } from '../../../common/models';
 
@@ -51,6 +52,16 @@ const organizationManagementReducer = (
       return {
         ...state,
         organizations,
+      };
+    }
+    case DELETE_ORGANIZATION_SUCCESS: {
+      const { organization } = action.payload;
+
+      return {
+        ...state,
+        organizations: state.organizations.filter(
+          it => it.org_id !== organization.org_id
+        ),
       };
     }
     default:
