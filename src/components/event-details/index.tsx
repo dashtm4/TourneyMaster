@@ -6,7 +6,6 @@ import {
   getEventDetails,
   saveEventDetails,
   createEvent,
-  uploadFiles,
   removeFiles,
 } from './logic/actions';
 import { EventDetailsDTO, IIconFile } from './logic/model';
@@ -18,6 +17,8 @@ import MediaAssetsSection from './media-assets';
 import PlayoffsSection from './playoffs';
 
 import { Button, HeadingLevelTwo, Paper, Loader } from 'components/common';
+import { IUploadFile } from 'common/models';
+import { uploadFile } from 'helpers';
 import styles from './styles.module.scss';
 import { eventState } from './state';
 
@@ -87,11 +88,16 @@ class EventDetails extends Component<Props, State> {
     }));
   };
 
-  onFileUpload = (files: IIconFile[]) => {
-    this.props.uploadFiles(files);
+  onFileUpload = async (files: IUploadFile[]) => {
+    for await (let file of files) {
+      const uploadedFile = await uploadFile(file);
+      const { key } = uploadedFile as Storage;
+
+      this.onChange(file.destinationType, key);
+    }
   };
 
-  onFileRemove = (files: IIconFile[]) => {
+  onFileRemove = (files: IUploadFile[]) => {
     this.props.removeFiles(files);
   };
 
@@ -157,7 +163,6 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       getEventDetails,
       saveEventDetails,
       createEvent,
-      uploadFiles,
       removeFiles,
     },
     dispatch

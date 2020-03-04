@@ -21,7 +21,6 @@
 
 .nameWrapper {
   display: flex;
-  // justify-content: flex-end;
 
   margin-top: 15px;
 }
@@ -31,6 +30,15 @@
   padding: 0;
 
   border: 0;
+
+  &:disabled {
+    opacity: 0.5;
+
+    label,
+    input {
+      cursor: default;
+    }
+  }
 
   legend {
     margin-bottom: 5px;

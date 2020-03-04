@@ -16,7 +16,7 @@ import {
 import Navigation from './components/navigation';
 import FacilityDetails from './components/facility-details';
 import { HeadingLevelTwo, Select, Loader } from '../common';
-import { IFacility, IField, IFileMap } from '../../common/models';
+import { IFacility, IField, IUploadFile } from '../../common/models';
 import {
   BindingCbWithOne,
   BindingCbWithTwo,
@@ -40,7 +40,7 @@ interface Props {
   updateFacilities: BindingCbWithOne<IFacility>;
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
-  uploadFileMap: (files: IFileMap[]) => void;
+  uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
 }
 
 class Facilities extends React.Component<

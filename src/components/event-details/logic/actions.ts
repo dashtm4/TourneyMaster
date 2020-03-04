@@ -1,7 +1,7 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
 import { Storage } from 'aws-amplify';
-import uuidv4 from 'uuid/v4';
+// import uuidv4 from 'uuid/v4';
 
 import {
   EVENT_DETAILS_FETCH_START,
@@ -99,20 +99,20 @@ export const createEvent: ActionCreator<ThunkAction<
   dispatch<any>(getEventDetails(eventDetails.event_id));
 };
 
-export const uploadFiles = (files: IIconFile[]) => () => {
-  if (!files || !files.length) return;
+// export const uploadFiles = (files: IIconFile[]) => () => {
+//   if (!files || !files.length) return;
 
-  files.forEach((fileObject: IIconFile) => {
-    const { file, destinationType } = fileObject;
-    const uuid = uuidv4();
-    const saveFilePath = `event_media_files/${destinationType}_${uuid}_${file.name}`;
-    const config = { contentType: file.type };
+//   files.forEach((fileObject: IIconFile) => {
+//     const { file, destinationType } = fileObject;
+//     const uuid = uuidv4();
+//     const saveFilePath = `event_media_files/${destinationType}_${uuid}_${file.name}`;
+//     const config = { contentType: file.type };
 
-    Storage.put(saveFilePath, file, config)
-      .then(() => Toasts.successToast(`${file.name} was successfully uploaded`))
-      .catch(() => Toasts.errorToast(`${file.name} couldn't be uploaded`));
-  });
-};
+//     Storage.put(saveFilePath, file, config)
+//       .then(() => Toasts.successToast(`${file.name} was successfully uploaded`))
+//       .catch(() => Toasts.errorToast(`${file.name} couldn't be uploaded`));
+//   });
+// };
 
 export const removeFiles = (files: IIconFile[]) => () => {
   if (!files || !files.length) return;
