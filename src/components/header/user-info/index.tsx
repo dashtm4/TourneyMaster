@@ -46,7 +46,7 @@ const UserInfo: React.FC = () => {
               hisory.replace(Routes.ORGANIZATIONS_MANAGEMENT);
             }}
           >
-            My Organizations
+            Organizations Management
           </MenuItem>
           <MenuItem
             onClick={() => {
