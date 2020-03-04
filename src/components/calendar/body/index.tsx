@@ -5,6 +5,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import listPlugin from '@fullcalendar/list';
 import { capitalize } from 'lodash-es';
 import { format } from 'date-fns/esm';
 
@@ -40,6 +41,12 @@ export default (props: IProps) => {
     right: '',
   };
 
+  // const header = {
+  //   left: 'prev,next today',
+  //   center: 'title',
+  //   right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+  // }
+
   const eventTimeFormat = {
     hour: '2-digit',
     minute: '2-digit',
@@ -51,8 +58,16 @@ export default (props: IProps) => {
   const [currentView, changeCurrentView] = useState<ViewType>('month');
 
   const calendarRef = React.createRef<FullCalendar>();
-  const plugins = [dayGridPlugin, timeGridPlugin, interactionPlugin];
-  const columnHeaderFormat = { weekday: 'long' };
+  const plugins = [
+    dayGridPlugin,
+    timeGridPlugin,
+    interactionPlugin,
+    listPlugin,
+  ];
+  const columnHeaderFormat = {
+    weekday: 'long',
+    day: 'numeric',
+  };
 
   let calendarApi: Calendar;
 
@@ -101,6 +116,22 @@ export default (props: IProps) => {
     />
   );
 
+  const renderDatePicker = () => {
+    const view = currentView === 'month' ? 'month' : 'date';
+    const dateFormat = currentView === 'month' ? 'MMMM yyyy' : 'MMMM dd, yyyy';
+    return (
+      <DatePicker
+        views={[view]}
+        width="250px"
+        label=""
+        type="date"
+        dateFormat={dateFormat}
+        value={String(currentDate)}
+        onChange={onDateChange}
+      />
+    );
+  };
+
   const renderBadge = (color: string, label: string) => (
     <div className={styles.badgeWrapper}>
       <div style={{ background: color }} />
@@ -117,15 +148,7 @@ export default (props: IProps) => {
           variant="contained"
           onClick={onCreatePressed}
         />
-        <DatePicker
-          views={['month']}
-          width="200px"
-          label=""
-          type="date"
-          dateFormat="MMMM yyyy"
-          value={String(currentDate)}
-          onChange={onDateChange}
-        />
+        {renderDatePicker()}
         <div className={styles.buttonsWrapper}>
           {renderButton('day')}
           {renderButton('week')}

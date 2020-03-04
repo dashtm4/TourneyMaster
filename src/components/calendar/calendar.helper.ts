@@ -10,7 +10,7 @@ export const getViewType = (view: 'day' | 'week' | 'month') => {
     case 'day':
       return 'timeGridDay';
     case 'week':
-      return 'dayGridWeek';
+      return 'timeGridWeek';
     default:
       return 'dayGridMonth';
   }

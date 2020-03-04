@@ -22,6 +22,18 @@ const eventsList: ICalendarEvent[] = [
     setReminder: false,
   },
   {
+    title: 'Event Number 2',
+    dateFrom: '2020-03-01T10:00:00',
+    dateTo: '2020-03-01T12:00:00',
+    location: 'Location',
+    eventTag: 'tag',
+    type: 'event',
+    timeFrom: '2020-01-01T10:00:00',
+    timeTo: '2020-01-02T12:00:00',
+    description: 'Description',
+    setReminder: false,
+  },
+  {
     title: 'Reminder Number One',
     dateFrom: '2020-02-07T18:35:00',
     dateTo: '2020-02-07T20:10:00',
