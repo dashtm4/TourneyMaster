@@ -3,6 +3,7 @@ import {
   LOAD_ORGANIZATIONS_START,
   LOAD_ORGANIZATIONS_SUCCESS,
   CREATE_ORGANIZATION_SUCCESS,
+  ADD_USER_TO_ORGANIZATION_SUCCESS,
 } from './action-types';
 import { IOrganization } from '../../../common/models';
 
@@ -33,7 +34,7 @@ const organizationManagementReducer = (
         ...state,
         isLoaded: true,
         isLoading: false,
-        organizations: organizations,
+        organizations,
       };
     }
     case CREATE_ORGANIZATION_SUCCESS: {
@@ -42,6 +43,14 @@ const organizationManagementReducer = (
       return {
         ...state,
         organizations: [...state.organizations, organization],
+      };
+    }
+    case ADD_USER_TO_ORGANIZATION_SUCCESS: {
+      const { organizations } = action.payload;
+
+      return {
+        ...state,
+        organizations,
       };
     }
     default:

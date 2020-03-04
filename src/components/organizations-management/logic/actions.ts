@@ -8,6 +8,8 @@ import {
   LOAD_ORGANIZATIONS_FAILURE,
   CREATE_ORGANIZATION_SUCCESS,
   CREATE_ORGANIZATION_FAILURE,
+  ADD_USER_TO_ORGANIZATION_SUCCESS,
+  ADD_USER_TO_ORGANIZATION_FAILURE,
 } from './action-types';
 import { Toasts } from 'components/common';
 import { IMember } from 'common/models';
@@ -68,7 +70,7 @@ const addUserToOrganization: ActionCreator<ThunkAction<
   {},
   null,
   organizationManagementAction
->> = ({ orgId, invCode }: IAddUserToOrg) => async () => {
+>> = ({ orgId, invCode }: IAddUserToOrg) => async (dispatch: Dispatch) => {
   try {
     const currentSession = await Auth.currentSession();
     const userEmail = currentSession.getIdToken().payload.email;
@@ -86,8 +88,21 @@ const addUserToOrganization: ActionCreator<ThunkAction<
 
     await Api.post('/org_members', orgMembers);
 
+    const organizations = await Api.get(`/organizations`);
+
+    dispatch({
+      type: ADD_USER_TO_ORGANIZATION_SUCCESS,
+      payload: {
+        organizations,
+      },
+    });
+
     Toasts.successToast('Success! You were added to the organization.');
   } catch {
+    dispatch({
+      type: ADD_USER_TO_ORGANIZATION_FAILURE,
+    });
+
     Toasts.errorToast('Oops. Something went wrong...');
   }
 };

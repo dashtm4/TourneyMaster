@@ -12,6 +12,11 @@ export const CREATE_ORGANIZATION_SUCCESS =
 export const CREATE_ORGANIZATION_FAILURE =
   'ORGANIZATIONS_MANAGEMENT:CREATE_ORGANIZATION_FAILURE';
 
+export const ADD_USER_TO_ORGANIZATION_SUCCESS =
+  'ORGANIZATIONS_MANAGEMENT:ADD_USER_TO_ORGANIZATION_SUCCESS';
+export const ADD_USER_TO_ORGANIZATION_FAILURE =
+  'ORGANIZATIONS_MANAGEMENT:ADD_USER_TO_ORGANIZATION_FAILURE';
+
 export interface loadOrganizationsStart {
   type: 'ORGANIZATIONS_MANAGEMENT:LOAD_ORGANIZATIONS_START';
 }
@@ -30,7 +35,15 @@ export interface createOrganizationSuccess {
   };
 }
 
+export interface addUserToOrganizationSuccess {
+  type: 'ORGANIZATIONS_MANAGEMENT:ADD_USER_TO_ORGANIZATION_SUCCESS';
+  payload: {
+    organizations: IOrganization[];
+  };
+}
+
 export type organizationManagementAction =
   | loadOrganizationsSuccess
   | loadOrganizationsStart
-  | createOrganizationSuccess;
+  | createOrganizationSuccess
+  | addUserToOrganizationSuccess;
