@@ -55,7 +55,7 @@ const AuthorizedPageEvent = ({
     return () => {
       clearAuthPageData();
     };
-  }, []);
+  }, [eventId]);
 
   if (eventId && !isLoaded) {
     return <Loader />;
