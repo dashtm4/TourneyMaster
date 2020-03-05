@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CodeIcon from '@material-ui/icons/Code';
 
 import {
@@ -51,12 +51,21 @@ enum genderEnum {
   'Male' = 1,
   'Female' = 2,
 }
+const levelOptions = ['High School', 'Club', 'Youth', 'Other'];
 
 const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
   onChange,
 }: Props) => {
-  const { time_zone_utc, sport_id, event_startdate, event_enddate } = eventData;
+  const {
+    time_zone_utc,
+    sport_id,
+    event_startdate,
+    event_enddate,
+    event_level,
+  } = eventData;
+
+  const [gender_id, onChangeGender] = useState(1);
 
   const onNameChange = (e: InputTargetValue) =>
     onChange('event_name', e.target.value);
@@ -64,11 +73,24 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const onTagChange = (e: InputTargetValue) =>
     onChange('event_tag', e.target.value);
 
-  const onSportChange = (e: InputTargetValue) =>
+  const onSportChange = (e: InputTargetValue) => {
     onChange('sport_id', sportsEnum[e.target.value]);
+    // if (gender_id === 1 && sportsEnum[e.target.value] === 1) {
+    //   onChange('sport_id', 1);
+    // } else if (gender_id === 2 && sportsEnum[e.target.value] === 1) {
+    //   onChange('sport_id', 2);
+    // } else if (gender_id === 1 && sportsEnum[e.target.value] === 2) {
+    //   onChange('sport_id', 3);
+    // } else if (gender_id === 2 && sportsEnum[e.target.value] === 2) {
+    //   onChange('sport_id', 4);
+    // }
+  };
+  const onLevelChange = (e: InputTargetValue) =>
+    onChange('event_level', e.target.value);
 
-  const onGenderChange = (e: InputTargetValue) =>
-    onChange('gender_id', genderEnum[e.target.value]);
+  const onGenderChange = (e: InputTargetValue) => {
+    onChangeGender(genderEnum[e.target.value]);
+  };
 
   const onStartDate = (e: Date | string) => {
     if (!isNaN(Number(e))) {
@@ -95,9 +117,8 @@ const PrimaryInformationSection: React.FC<Props> = ({
     onChange('primary_location_lat', position.lat);
     onChange('primary_location_long', position.lng);
   };
-
+  console.log('SPORT ID', sport_id);
   const { primary_location_lat: lat, primary_location_long: lng } = eventData;
-
   return (
     <SectionDropdown
       id={EventMenuTitles.PRIMARY_INFORMATION}
@@ -130,9 +151,15 @@ const PrimaryInformationSection: React.FC<Props> = ({
             onChange={onSportChange}
           />
           <Select
+            options={levelOptions.map(type => ({ label: type, value: type }))}
+            label="Level"
+            value={event_level || ''}
+            onChange={onLevelChange}
+          />
+          <Select
             options={genderOptions.map(type => ({ label: type, value: type }))}
             label="Gender"
-            value={genderOptions[0]}
+            value={genderEnum[gender_id] || ''}
             onChange={onGenderChange}
           />
         </div>

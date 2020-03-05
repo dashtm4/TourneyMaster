@@ -84,10 +84,7 @@ export const createEvent: ActionCreator<ThunkAction<
   if (!allRequiredFields)
     return Toasts.errorToast('All required fields must be filled');
 
-  const response = await api.post('/events', {
-    ...eventDetails,
-    event_status: 'Draft',
-  });
+  const response = await api.post('/events', eventDetails);
 
   if (response?.errorType !== undefined)
     return Toasts.errorToast("Couldn't save the changes");
