@@ -135,6 +135,11 @@ class DivisionsAndPools extends React.Component<
                             pool => pool.division_id === division.division_id
                           ).length
                         }
+                        numOfTeams={
+                          teams.filter(
+                            team => team.division_id === division.division_id
+                          ).length
+                        }
                       />
                       <PoolsDetails
                         onAddPool={this.onAddPool}

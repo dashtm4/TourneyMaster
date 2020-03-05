@@ -29,6 +29,7 @@ class PoolsDetails extends React.Component<IPoolsDetailsProps> {
 
   render() {
     const { pools, teams } = this.props;
+    const unassignedTeams = teams.filter(team => !team.pool_id);
     return (
       <div>
         <div className={styles.headingContainer}>
@@ -60,9 +61,7 @@ class PoolsDetails extends React.Component<IPoolsDetailsProps> {
                 teams={teams.filter(team => team.pool_id === pool.pool_id)}
               />
             ))}
-            {teams.length !== 0 && (
-              <Pool teams={teams.filter(team => !team.pool_id)} />
-            )}
+            {unassignedTeams.length !== 0 && <Pool teams={unassignedTeams} />}
           </div>
         )}
       </div>

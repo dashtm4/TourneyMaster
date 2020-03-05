@@ -10,6 +10,8 @@ export const eventState = () => ({
   event_enddate: new Date().toISOString(),
   time_zone_utc: -5,
   event_tag: '',
+  event_level: 'Other',
+  event_status: 'Draft',
   event_format_id: 0,
   first_game_time: '',
   last_game_end: '',
