@@ -1,5 +1,5 @@
 import React from 'react';
-// import * as Yup from 'yup';
+
 import {
   SectionDropdown,
   Button,
@@ -11,12 +11,6 @@ import {
 import { Icons } from 'common/constants';
 import styles from './styles.module.scss';
 import { IConfigurableOrganization } from 'common/models';
-
-// const validationSchema = Yup.object().shape({
-//   name: Yup.string()
-//     .required('Email is required!')
-//     .max(255, 'Max email length is 255 symbols!'),
-// });
 
 const CONFIRM_POPUP_MESSAGE =
   'You are about to create a new organization. Are you sure?';
@@ -33,10 +27,10 @@ const EMPTY_ORGANIZATION = {
 };
 
 interface Props {
-  addOrganization: (organizationData: IConfigurableOrganization) => void;
+  createOrganization: (organizationData: IConfigurableOrganization) => void;
 }
 
-const CreateOrganization = ({ addOrganization }: Props) => {
+const CreateOrganization = ({ createOrganization }: Props) => {
   const [organization, onChange] = React.useState<IConfigurableOrganization>(
     EMPTY_ORGANIZATION
   );
@@ -63,28 +57,21 @@ const CreateOrganization = ({ addOrganization }: Props) => {
             onSubmit={(evt: any) => {
               evt.preventDefault();
 
-              console.log(Object.keys(new FormData(evt.formData)));
-
-              // console.log(validationSchema.isValidSync({ name: '' }));
-
-              // onConfirmPopup(true);
+              onConfirmPopup(true);
             }}
           >
             <div className={styles.sectionItem}>
               <Input
-                name="orgName"
                 onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
                   onChange({ ...organization, org_name: evt.target.value })
                 }
                 value={organization.org_name || ''}
                 fullWidth={true}
                 label="Organization Name"
-                isRequired
               />
             </div>
             <div className={styles.sectionItem}>
               <Input
-                name="orgTag"
                 onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
                   onChange({ ...organization, org_tag: evt.target.value })
                 }
@@ -96,7 +83,6 @@ const CreateOrganization = ({ addOrganization }: Props) => {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                name="city"
                 onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
                   onChange({ ...organization, city: evt.target.value })
                 }
@@ -107,7 +93,6 @@ const CreateOrganization = ({ addOrganization }: Props) => {
             </div>
             <div className={styles.sectionItem}>
               <Input
-                name="state"
                 onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
                   onChange({ ...organization, state: evt.target.value })
                 }
@@ -133,9 +118,8 @@ const CreateOrganization = ({ addOrganization }: Props) => {
         onClose={() => onConfirmPopup(false)}
         onCanceClick={() => onConfirmPopup(false)}
         onYesClick={() => {
-          addOrganization(organization);
+          createOrganization(organization);
           onConfirmPopup(false);
-          onChange(EMPTY_ORGANIZATION);
         }}
       />
     </>
