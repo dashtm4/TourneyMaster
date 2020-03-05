@@ -1,3 +1,7 @@
+enum MenuTitles {
+  REGISTRATION = 'Registration',
+}
+
 enum EventMenuTitles {
   EVENT_DETAILS = 'Event Details',
   PRIMARY_INFORMATION = 'Primary Information',
@@ -20,4 +24,4 @@ enum EventMenuTitles {
   REPORTING = 'Reporting',
 }
 
-export { EventMenuTitles };
+export { MenuTitles, EventMenuTitles };
