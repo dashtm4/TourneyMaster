@@ -48,7 +48,7 @@ const SchedulesMatrix = (props: IProps) => {
         <tbody>
           <tr>
             <td />
-            {fields.slice(0, gameFields).map((field: any) => (
+            {values.fields.slice(0, gameFields).map((field: any) => (
               <RenderFieldHeader key={field.id} field={field} />
             ))}
           </tr>

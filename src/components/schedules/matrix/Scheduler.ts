@@ -15,7 +15,7 @@ interface IConditions {
   isPremier?: boolean;
 }
 
-interface ITeamsInPlay {
+interface IKeyId {
   [key: string]: (number | undefined)[];
 }
 
@@ -33,10 +33,12 @@ export default class Scheduler {
   games: IGame[];
   timeSlots: ITimeSlot[];
   updatedGames: IGame[];
-  teamsInPlay: ITeamsInPlay;
+  teamsInPlay: IKeyId;
   facilityData: IFacilityData;
   avgStartTime?: string;
   teamGameNum?: number;
+  unusedFields?: number[];
+  poolsData: IKeyId;
   minGameNum = 3;
   maxGameNum = 5;
 
@@ -53,12 +55,15 @@ export default class Scheduler {
     this.updatedGames = [];
     this.teamsInPlay = {};
     this.facilityData = {};
+    this.poolsData = {};
     this.calculateTeamGameNum();
+    this.setTeamsPerPools();
     this.calculateGamesForFacilities();
     this.calculateAvgStartTime();
     this.populateGameData();
     this.calculateTeamData();
     this.handleSingleTeamGames();
+    this.calculateEmptyFields();
   }
 
   populateGameData = () => {
@@ -136,6 +141,7 @@ export default class Scheduler {
         !teamTimeSlots.includes(game.timeSlotId) &&
         !teamTimeSlots.includes(game.timeSlotId - 1) &&
         !this.teamInPlayGames(teamCard, game) &&
+        this.checkForPoolsConsistency(teamCard, game) &&
         this.facilityData[game.facilityId!]?.divisionIds?.includes(
           teamCard.divisionId
         )
@@ -153,6 +159,22 @@ export default class Scheduler {
   calculateTeamGameNum = () => {
     const timeSlotsNum = this.timeSlots.length;
     this.teamGameNum = timeSlotsNum / 2;
+  };
+
+  setTeamsPerPools = () => {
+    this.teamCards.map(teamCard => {
+      this.poolsData[teamCard.poolId] = [
+        ...(this.poolsData[teamCard.poolId] || []),
+        teamCard.id,
+      ];
+    });
+  };
+
+  checkForPoolsConsistency = (teamCard: ITeamCard, game: IGame) => {
+    const { awayTeam } = game;
+    return awayTeam
+      ? !!this.poolsData[teamCard.poolId].includes(awayTeam?.id)
+      : true;
   };
 
   handleSingleTeamGames = () => {
@@ -174,6 +196,7 @@ export default class Scheduler {
           tc =>
             !this.teamsInPlay[tc?.id!].includes(teamCard?.id!) &&
             !this.teamsInPlay[teamCard?.id!].includes(tc?.id!) &&
+            teamCard?.poolId === tc?.poolId &&
             tc?.isPremier === teamCard?.isPremier &&
             tc?.id !== teamCard?.id &&
             !teams[tc.id]
@@ -336,6 +359,22 @@ export default class Scheduler {
     const timeStarts = this.teamCards.map(tc => tc.startTime);
     this.avgStartTime = arrayAverageOccurrence(timeStarts);
   };
+
+  calculateEmptyFields = () => {
+    const fields = this.updatedGames
+      .filter(game => game.awayTeam && game.homeTeam)
+      .map(game => game.fieldId);
+
+    const fieldsUnique = union(fields);
+    this.unusedFields = this.fields
+      .map(field => field.id)
+      .filter(fieldId => !fieldsUnique.includes(fieldId));
+
+    this.fields = this.fields.map(field => ({
+      ...field,
+      isUnused: this.unusedFields?.includes(field.id),
+    }));
+  };
 }
 
 /*
@@ -347,6 +386,6 @@ export default class Scheduler {
   ✓ Teams cannot play back-to-back games
   ✓ Min Max Games Guarantee
   ✓ Handle single teams game picking
-  x Add pool constrains
+  ✓ Handle pool constrains
 
 */
