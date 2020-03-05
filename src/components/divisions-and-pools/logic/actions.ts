@@ -3,7 +3,7 @@ import {
   DIVISIONS_FETCH_FAILURE,
   POOLS_FETCH_SUCCESS,
   TEAMS_FETCH_SUCCESS,
-  FETCH_START,
+  FETCH_DETAILS_START,
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
@@ -19,8 +19,8 @@ import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
 import { IPool, ITeam, IDivision } from 'common/models';
 
-export const fetchStart = (): { type: string } => ({
-  type: FETCH_START,
+export const fetchDetailsStart = (): { type: string } => ({
+  type: FETCH_DETAILS_START,
 });
 
 export const divisionsFetchSuccess = (
@@ -89,7 +89,6 @@ export const getDivisions: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (eventId: string) => async (dispatch: Dispatch) => {
-  dispatch(fetchStart());
   const data = await api.get(`/divisions?event_id=${eventId}`);
   dispatch(divisionsFetchSuccess(data));
 };
@@ -100,6 +99,8 @@ export const getPools: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (divisionId: string) => async (dispatch: Dispatch) => {
+  dispatch(fetchDetailsStart());
+
   const data = await api.get(`/pools?division_id=${divisionId}`);
   dispatch(poolsFetchSuccess(data));
 };
@@ -187,7 +188,16 @@ export const deleteDivision: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (divisionId: string) => async (dispatch: Dispatch) => {
+>> = (divisionId: string, pools: IPool[], teams: ITeam[]) => async (
+  dispatch: Dispatch
+) => {
+  pools.forEach(pool => api.delete(`/pools?pool_id=${pool.pool_id}`));
+  teams.forEach(team =>
+    api.put(`/teams?team_id=${team.team_id}`, {
+      pool_id: null,
+      division_id: null,
+    })
+  );
   const response = await api.delete(`/divisions?division_id=${divisionId}`);
 
   if (response?.errorType === 'Error') {

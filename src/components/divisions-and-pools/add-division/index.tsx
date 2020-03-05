@@ -14,17 +14,19 @@ import {
 } from '../logic/actions';
 import {
   BindingCbWithOne,
-  BindingAction,
   BindingCbWithTwo,
+  BindingCbWithThree,
 } from 'common/models/callback';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteDivision from '../add-division/delete-division';
 import Modal from 'components/common/modal';
-import { IDivision } from 'common/models';
+import { IDivision, ITeam, IPool } from 'common/models';
 import { IRegistration } from 'common/models/registration';
 
 interface ILocationState {
   divisionId: string;
+  pools: IPool[];
+  teams: ITeam[];
 }
 
 interface IAddDivisionState {
@@ -42,7 +44,7 @@ interface IDivisionProps {
   saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
   getDivision: BindingCbWithOne<string>;
   updateDivision: BindingCbWithOne<Partial<IDivision>>;
-  deleteDivision: BindingAction;
+  deleteDivision: BindingCbWithThree<string, IPool[], ITeam[]>;
   getRegistration: BindingCbWithOne<string>;
 }
 
@@ -188,6 +190,8 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
             divisionId={this.divisionId}
             onClose={this.onModalClose}
             deleteDivision={this.props.deleteDivision}
+            pools={this.props.location.state?.pools}
+            teams={this.props.location.state?.teams}
           />
         </Modal>
       </section>
