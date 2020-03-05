@@ -89,7 +89,13 @@ export default class Scheduler {
 
     this.incrementGamePerTeam();
 
-    if (this.teamGameNum && !this.isGamesPerTeamSatisfied(this.teamGameNum!)) {
+    const currentGamesPerTeam = this.getGamesPerTeam();
+
+    if (
+      this.teamGameNum &&
+      currentGamesPerTeam < this.teamGameNum &&
+      currentGamesPerTeam < this.maxGameNum
+    ) {
       this.calculateTeamData();
     }
   };
@@ -102,12 +108,14 @@ export default class Scheduler {
     );
   };
 
-  isGamesPerTeamSatisfied = (requestNum: number) => {
-    return !!Object.keys(this.facilityData).find(
-      key =>
-        this.facilityData[key]?.gamesPerTeam &&
-        this.facilityData[key]?.gamesPerTeam >= requestNum
+  getGamesPerTeam = () => {
+    let returnNum;
+    Object.keys(this.facilityData).forEach(key =>
+      this.facilityData[key]?.gamesPerTeam
+        ? (returnNum = this.facilityData[key]?.gamesPerTeam)
+        : null
     );
+    return returnNum || -1;
   };
 
   findGame = (teamCard: ITeamCard, conditions?: IConditions) => {
@@ -165,6 +173,7 @@ export default class Scheduler {
         (teams[teamCard?.id!] = singleTeamCards.find(
           tc =>
             !this.teamsInPlay[tc?.id!].includes(teamCard?.id!) &&
+            !this.teamsInPlay[teamCard?.id!].includes(tc?.id!) &&
             tc?.isPremier === teamCard?.isPremier &&
             tc?.id !== teamCard?.id &&
             !teams[tc.id]
@@ -188,9 +197,9 @@ export default class Scheduler {
 
       let teamsTimeSlotIds = teamGames.map(game => game.timeSlotId);
       teamsTimeSlotIds.forEach(timeSlotId =>
-        teamsTimeSlotIds.push(timeSlotId + 1)
+        teamsTimeSlotIds.push(timeSlotId + 1, timeSlotId - 1)
       );
-      teamsTimeSlotIds = union(teamsTimeSlotIds);
+      teamsTimeSlotIds = union(teamsTimeSlotIds).filter(id => id >= 0);
 
       const foundGame = this.updatedGames.find(
         game =>
@@ -337,6 +346,7 @@ export default class Scheduler {
   ✓ Teams can only play after defined start time
   ✓ Teams cannot play back-to-back games
   ✓ Min Max Games Guarantee
-  x Handle single teams game picking
+  ✓ Handle single teams game picking
+  x Add pool constrains
 
 */
