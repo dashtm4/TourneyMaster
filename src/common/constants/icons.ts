@@ -20,6 +20,7 @@ enum Icons {
   PUBLISH = 'publish',
   EMODJI_OBJECTS = 'emodjiObjects',
   WARNING = 'warning',
+  FILE_COPY = 'fileCopy',
 }
 
 export { Icons };

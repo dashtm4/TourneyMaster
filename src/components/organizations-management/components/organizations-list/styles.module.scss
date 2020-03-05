@@ -1,0 +1,45 @@
+.sectWrapper {
+  width: 100%;
+}
+
+.description {
+  margin: 0 0 20px;
+
+  color: #6a6a6a;
+  font-weight: 600;
+}
+
+.orgTableWrapper {
+  padding: 0 0 15px 30px;
+}
+
+.orgTable {
+  width: 100%;
+
+  text-align: left;
+
+  thead th {
+    padding-bottom: 15px;
+
+    color: #6a6a6a;
+    font-weight: 700;
+  }
+}
+
+.codeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 140px;
+
+  background-color: transparent;
+
+  border: 0;
+
+  cursor: pointer;
+}
+
+.delBtnWrapper {
+  color: #ff0f19;
+}

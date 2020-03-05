@@ -17,7 +17,7 @@ class Pool extends React.Component<IPoolProps> {
         </p>
         <ul>
           {teams.length
-            ? teams.map(team => <li key={team.team_id}>{team.long_name}</li>)
+            ? teams.map(team => <li key={team.team_id}>{team.short_name}</li>)
             : '—'}
         </ul>
       </div>

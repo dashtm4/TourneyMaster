@@ -16,7 +16,7 @@ import {
 import Navigation from './components/navigation';
 import FacilityDetails from './components/facility-details';
 import { HeadingLevelTwo, Select, Loader } from '../common';
-import { IFacility, IField, IFileMap } from '../../common/models';
+import { IFacility, IField, IUploadFile } from '../../common/models';
 import {
   BindingCbWithOne,
   BindingCbWithTwo,
@@ -40,7 +40,7 @@ interface Props {
   updateFacilities: BindingCbWithOne<IFacility>;
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
-  uploadFileMap: (files: IFileMap[]) => void;
+  uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
 }
 
 class Facilities extends React.Component<
@@ -109,9 +109,13 @@ class Facilities extends React.Component<
           </div>
           <ul className={styles.facilitiesList}>
             {facilities
-              .sort((a, b) =>
-                a.facilities_description > b.facilities_description ? 1 : -1
-              )
+              .sort((a, b) => {
+                if (a.isChange || b.isChange) return 0;
+
+                return a.facilities_description > b.facilities_description
+                  ? 1
+                  : -1;
+              })
               .map((facilitiy, idx) => (
                 <li
                   className={styles.facilitiesItem}

@@ -16,7 +16,7 @@ import { FileUploadTypes, AcceptFileTypes } from '../../../common/file-upload';
 import {
   IFacility,
   IField,
-  IFileMap,
+  IUploadFile,
   BindingCbWithOne,
 } from '../../../../common/models';
 import styles from './styles.module.scss';
@@ -42,6 +42,8 @@ enum ParkingAvailableOptions {
   VERY_RESTRICTED = 'Very Restricted',
 }
 
+const FACILITY_FIELD_MAP_KEY = 'field_map_URL';
+
 interface State {
   isEdit: boolean;
 }
@@ -54,7 +56,7 @@ interface Props {
   addEmptyField: (facilityId: string) => void;
   updateField: BindingCbWithOne<IField>;
   updateFacilities: BindingCbWithOne<IFacility>;
-  uploadFileMap: (files: IFileMap[]) => void;
+  uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
 }
 
 class FacilityDetails extends React.Component<Props, State> {
@@ -100,10 +102,14 @@ class FacilityDetails extends React.Component<Props, State> {
   onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
 
   onMapFileUpload = (files: File[]) => {
-    const { uploadFileMap } = this.props;
+    const { facility, uploadFileMap } = this.props;
 
     uploadFileMap(
-      files?.map((file: File) => ({ file, destinationType: 'facility_map' }))
+      facility,
+      files.map((file: File) => ({
+        file,
+        destinationType: FACILITY_FIELD_MAP_KEY,
+      }))
     );
   };
 
@@ -378,11 +384,13 @@ class FacilityDetails extends React.Component<Props, State> {
               </>
             )}
           </fieldset>
-          <FileUpload
-            type={FileUploadTypes.BUTTON}
-            acceptTypes={[AcceptFileTypes.PDF]}
-            onUpload={this.onMapFileUpload}
-          />
+          <fieldset className={styles.filedset} disabled={!isEdit}>
+            <FileUpload
+              type={FileUploadTypes.BUTTON}
+              acceptTypes={[AcceptFileTypes.PDF]}
+              onUpload={this.onMapFileUpload}
+            />
+          </fieldset>
         </form>
       </SectionDropdown>
     );

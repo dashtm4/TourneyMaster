@@ -1,7 +1,5 @@
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { Storage } from 'aws-amplify';
-import uuidv4 from 'uuid/v4';
 import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
@@ -18,10 +16,12 @@ import {
   SAVE_FACILITIES_SUCCESS,
   SAVE_FACILITIES_FAILURE,
   FacilitiesAction,
+  UPLOAD_FILE_MAP_SUCCESS,
+  UPLOAD_FILE_MAP_FAILURE,
 } from './action-types';
 import Api from 'api/api';
-import { getVarcharEight } from '../../../helpers';
-import { IFacility, IField, IFileMap } from '../../../common/models';
+import { getVarcharEight, uploadFile } from 'helpers';
+import { IFacility, IField, IUploadFile } from 'common/models';
 
 const loadFacilities: ActionCreator<ThunkAction<
   void,
@@ -172,7 +172,7 @@ const saveFacilities: ActionCreator<ThunkAction<
       },
     });
 
-    Toasts.successToast('Saved');
+    Toasts.successToast('Facilities saved successfully');
   } catch {
     dispatch({
       type: SAVE_FACILITIES_FAILURE,
@@ -180,21 +180,39 @@ const saveFacilities: ActionCreator<ThunkAction<
   }
 };
 
-const uploadFileMap = (files: IFileMap[]) => () => {
+const uploadFileMap: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  FacilitiesAction
+>> = (facility: IFacility, files: IUploadFile[]) => async (
+  dispatch: Dispatch
+) => {
   if (!files || !files.length) {
     return;
   }
 
-  files.forEach((fileObject: IFileMap) => {
-    const { file, destinationType } = fileObject;
-    const uuid = uuidv4();
-    const saveFilePath = `event_media_files/${destinationType}_${uuid}_${file.name}`;
-    const config = { contentType: file.type };
+  for await (let file of files) {
+    try {
+      const uploadedFile = await uploadFile(file);
+      const { key } = uploadedFile as Storage;
 
-    Storage.put(saveFilePath, file, config)
-      .then(() => Toasts.successToast(`${file.name} was successfully uploaded`))
-      .catch(() => Toasts.errorToast(`${file.name} couldn't be uploaded`));
-  });
+      dispatch({
+        type: UPLOAD_FILE_MAP_SUCCESS,
+        payload: {
+          facility: { ...facility, isChange: true, field_map_URL: key },
+        },
+      });
+
+      Toasts.successToast('Map was successfully uploaded');
+    } catch (err) {
+      dispatch({
+        type: UPLOAD_FILE_MAP_FAILURE,
+      });
+
+      Toasts.errorToast('Map could not be uploaded');
+    }
+  }
 };
 
 export {
