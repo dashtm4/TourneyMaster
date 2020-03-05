@@ -41,7 +41,6 @@ export const EmptyPage: React.FC = () => {
 
 const AuthorizedPageEvent = ({
   isLoaded,
-  isLoading,
   menuList,
   match,
   loadAuthPageData,
@@ -56,9 +55,9 @@ const AuthorizedPageEvent = ({
     return () => {
       clearAuthPageData();
     };
-  }, []);
+  }, [eventId]);
 
-  if (eventId && isLoading && !isLoaded) {
+  if (eventId && !isLoaded) {
     return <Loader />;
   }
 
