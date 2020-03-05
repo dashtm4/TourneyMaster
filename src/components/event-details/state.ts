@@ -1,5 +1,4 @@
 import { getVarcharEight } from 'helpers';
-import { EventDetailsDTO } from './logic/model';
 
 export const eventState = () => ({
   event_id: getVarcharEight(),
@@ -25,29 +24,7 @@ export const eventState = () => ({
   division_id: undefined,
   event_logo_path: '',
   is_active_YN: 0,
-  created_by: '',
-  created_datetime: new Date().toISOString(),
-  updated_by: '',
-  updated_datetime: new Date().toISOString(),
 });
-
-export const requiredEventFields = [
-  'event_id',
-  'sport_id',
-  'event_name',
-  'event_description',
-  'event_startdate',
-  'event_enddate',
-  'time_zone_utc',
-  'created_datetime',
-];
-
-export const requiredFieldsNotEmpty = (
-  event: Partial<EventDetailsDTO>
-): boolean =>
-  Object.keys(event)
-    .filter((key: string) => requiredEventFields.includes(key))
-    .every((key: string) => event[key] !== undefined && event[key] !== '');
 
 export enum UploadLogoTypes {
   MOBILE = 'mobile_icon_URL',
