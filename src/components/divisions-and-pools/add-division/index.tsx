@@ -22,6 +22,7 @@ import DeleteDivision from '../add-division/delete-division';
 import Modal from 'components/common/modal';
 import { IDivision, ITeam, IPool } from 'common/models';
 import { IRegistration } from 'common/models/registration';
+import CancelPopup from '../../common/cancel-popup';
 
 interface ILocationState {
   divisionId: string;
@@ -33,6 +34,7 @@ interface IAddDivisionState {
   defaultDivision: Partial<{ entry_fee: number; max_num_teams: number }>;
   divisions: Partial<IDivision>[];
   isModalOpen: boolean;
+  isModalConfirmOpen: boolean;
 }
 
 interface IDivisionProps {
@@ -55,6 +57,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     defaultDivision: {},
     divisions: [{}],
     isModalOpen: false,
+    isModalConfirmOpen: false,
   };
 
   componentDidMount() {
@@ -78,7 +81,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   };
 
   onCancel = () => {
-    this.props.history.goBack();
+    this.setState({ isModalConfirmOpen: true });
   };
 
   onSave = () => {
@@ -100,7 +103,9 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   onModalClose = () => {
     this.setState({ isModalOpen: false });
   };
-
+  onModalConfirmClose = () => {
+    this.setState({ isModalConfirmOpen: false });
+  };
   renderHeading = () => {
     const text = this.divisionId ? 'Edit Division' : 'Add Division';
     return <HeadingLevelTwo>{text}</HeadingLevelTwo>;
@@ -193,6 +198,12 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
             pools={this.props.location.state?.pools}
             teams={this.props.location.state?.teams}
           />
+        </Modal>
+        <Modal
+          isOpen={this.state.isModalConfirmOpen}
+          onClose={this.onModalConfirmClose}
+        >
+          <CancelPopup onSave={this.onSave} />
         </Modal>
       </section>
     );
