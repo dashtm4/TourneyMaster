@@ -1,4 +1,5 @@
 import React from 'react';
+// import * as Yup from 'yup';
 import {
   SectionDropdown,
   Button,
@@ -10,6 +11,12 @@ import {
 import { Icons } from 'common/constants';
 import styles from './styles.module.scss';
 import { IConfigurableOrganization } from 'common/models';
+
+// const validationSchema = Yup.object().shape({
+//   name: Yup.string()
+//     .required('Email is required!')
+//     .max(255, 'Max email length is 255 symbols!'),
+// });
 
 const CONFIRM_POPUP_MESSAGE =
   'You are about to create a new organization. Are you sure?';
@@ -53,14 +60,19 @@ const CreateOrganization = ({ addOrganization }: Props) => {
             reminders.
           </CardMessage>
           <form
-            onSubmit={evt => {
+            onSubmit={(evt: any) => {
               evt.preventDefault();
 
-              onConfirmPopup(true);
+              console.log(Object.keys(new FormData(evt.formData)));
+
+              // console.log(validationSchema.isValidSync({ name: '' }));
+
+              // onConfirmPopup(true);
             }}
           >
             <div className={styles.sectionItem}>
               <Input
+                name="orgName"
                 onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
                   onChange({ ...organization, org_name: evt.target.value })
                 }
@@ -72,6 +84,7 @@ const CreateOrganization = ({ addOrganization }: Props) => {
             </div>
             <div className={styles.sectionItem}>
               <Input
+                name="orgTag"
                 onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
                   onChange({ ...organization, org_tag: evt.target.value })
                 }
@@ -83,6 +96,7 @@ const CreateOrganization = ({ addOrganization }: Props) => {
             </div>
             <div className={styles.sectionItem}>
               <Input
+                name="city"
                 onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
                   onChange({ ...organization, city: evt.target.value })
                 }
@@ -93,6 +107,7 @@ const CreateOrganization = ({ addOrganization }: Props) => {
             </div>
             <div className={styles.sectionItem}>
               <Input
+                name="state"
                 onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
                   onChange({ ...organization, state: evt.target.value })
                 }
