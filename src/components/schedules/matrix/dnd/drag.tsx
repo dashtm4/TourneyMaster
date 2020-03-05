@@ -5,7 +5,7 @@ import styles from './styles.module.scss';
 interface Props {
   text: string;
   type: string;
-  id: number;
+  id: string;
 }
 
 export default (props: Props) => {

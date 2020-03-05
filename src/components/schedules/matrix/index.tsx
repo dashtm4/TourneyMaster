@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { IField, ITeam, ITimeSlot } from '..';
+import { IField, ITimeSlot } from '..';
 import {
   defineGames,
   IDefinedGames,
@@ -14,12 +14,7 @@ import RenderTimeSlot from './time-slot';
 import { DropParams } from './dnd/drop';
 import styles from './styles.module.scss';
 import Scheduler from './Scheduler';
-
-export interface ITeamCard extends ITeam {
-  fieldId?: number;
-  timeSlotId?: number;
-  teamPosition?: number;
-}
+import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 
 interface IProps {
   timeSlots: ITimeSlot[];

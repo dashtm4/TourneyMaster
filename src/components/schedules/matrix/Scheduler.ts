@@ -1,6 +1,6 @@
-import moment from 'moment';
 import { union } from 'lodash-es';
 import { getTimeFromString } from 'helpers/stringTimeOperations';
+import { ITeamCard } from 'common/models/schedule/teams';
 import {
   IGame,
   TeamPositionEnum,
@@ -9,19 +9,18 @@ import {
   getSortedDesc,
 } from './helper';
 import { ITimeSlot, IField } from '..';
-import { ITeamCard } from '.';
 
 interface IConditions {
   isPremier?: boolean;
 }
 
 interface IKeyId {
-  [key: string]: (number | undefined)[];
+  [key: string]: (string | undefined)[];
 }
 
 interface IFacilityData {
   [key: string]: {
-    divisionIds?: number[];
+    divisionIds?: string[];
     gamesPerTeam?: number;
     gamesNum?: number;
   };
@@ -267,10 +266,7 @@ export default class Scheduler {
 
   gameStartsInProperTime = (game: IGame, teamCard: ITeamCard) => {
     const gameTime = getTimeFromString(game.startTime!, 'minutes');
-    const teamTime = getTimeFromString(
-      moment(teamCard.startTime).format('hh:mm'),
-      'minutes'
-    );
+    const teamTime = getTimeFromString(teamCard.startTime, 'minutes');
     return gameTime >= teamTime;
   };
 
@@ -284,7 +280,7 @@ export default class Scheduler {
     const { awayTeam, homeTeam } = game;
     const newTeamId = [
       awayTeam?.id !== undefined ? awayTeam.id : homeTeam?.id,
-    ].filter(el => el !== undefined && el >= 0);
+    ].filter(el => el !== undefined);
 
     this.teamsInPlay[teamCard.id] = [
       ...(this.teamsInPlay[teamCard.id] || []),
@@ -337,7 +333,7 @@ export default class Scheduler {
     if (numberOfAllTeams <= this.facilityData[sortedFacilities[0]]?.gamesNum!) {
       this.facilityData[sortedFacilities[0]] = {
         ...this.facilityData[sortedFacilities[0]],
-        divisionIds: [...sortedDivisions.map(Number)],
+        divisionIds: [...sortedDivisions],
       };
       return;
     }
@@ -349,7 +345,7 @@ export default class Scheduler {
         ...this.facilityData[facilityId],
         divisionIds: [
           ...(this.facilityData[facilityId]?.divisionIds || []),
-          Number(divisionId),
+          divisionId,
         ],
       };
     });

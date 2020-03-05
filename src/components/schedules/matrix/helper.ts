@@ -1,6 +1,6 @@
-import { ITeam, IField, ITimeSlot } from '..';
-import { ITeamCard } from './index';
+import { IField, ITimeSlot } from '..';
 import { DropParams } from './dnd/drop';
+import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 
 export enum TeamPositionEnum {
   'awayTeam' = 1,
@@ -29,7 +29,6 @@ export const defineGames = (
   timeSlots: ITimeSlot[],
   _teams: ITeam[]
 ): IDefinedGames => {
-  // const teamsNumber = teams.length;
   const fieldsNumber = fields.length;
   const timeSlotsNumber = timeSlots.length;
   const gamesNumber = fieldsNumber * timeSlotsNumber;
