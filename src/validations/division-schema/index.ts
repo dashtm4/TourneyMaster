@@ -5,8 +5,4 @@ const divisionSchema = Yup.object({
   short_name: Yup.string().required('Division short name is required to fill!'),
 });
 
-const poolSchema = Yup.object({
-  pool_name: Yup.string().required('Pool name is required to fill!'),
-});
-
-export { divisionSchema, poolSchema };
+export { divisionSchema };

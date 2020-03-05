@@ -15,7 +15,7 @@ import api from 'api/api';
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import history from '../../../browserhistory';
-import { divisionSchema, poolSchema } from './validation-schemas';
+import { divisionSchema, poolSchema } from 'validations';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
 import { IPool, ITeam, IDivision } from 'common/models';

@@ -13,10 +13,7 @@ import {
   DELETE_ORGANIZATION_SUCCESS,
   DELETE_ORGANIZATION_FAILURE,
 } from './action-types';
-import {
-  organizationSchema,
-  applyInvitationSchema,
-} from './validation-schemas';
+import { organizationSchema, applyInvitationSchema } from 'validations';
 import { Toasts } from 'components/common';
 import { IMember, IOrganization, IOrgMember } from 'common/models';
 import { getVarcharEight } from 'helpers';

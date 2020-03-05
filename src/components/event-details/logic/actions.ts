@@ -11,7 +11,7 @@ import {
 } from './actionTypes';
 
 import api from 'api/api';
-import { eventDetailsSchema } from './validation-schemas';
+import { eventDetailsSchema } from 'validations';
 import { EventDetailsDTO, IIconFile } from './model';
 import history from 'browserhistory';
 import { Toasts } from 'components/common';

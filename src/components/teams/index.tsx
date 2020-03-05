@@ -6,7 +6,14 @@ import { loadDivisionsTeams, loadPools, saveTeams } from './logic/actions';
 import Navigation from './components/navigation';
 import TeamManagement from './components/team-management';
 import PopupDeleteTeam from './components/popup-delete-team';
-import { HeadingLevelTwo, Modal, PopupTeamEdit, Loader } from '../common';
+import {
+  HeadingLevelTwo,
+  Modal,
+  PopupTeamEdit,
+  Loader,
+  Toasts,
+} from 'components/common';
+import { teamSchema } from 'validations';
 import { AppState } from './logic/reducer';
 import { IDivision, IPool, ITeam } from '../../common/models';
 import styles from './styles.module.scss';
@@ -140,15 +147,21 @@ class Teams extends React.Component<
       },
     }));
 
-  onSaveTeam = () => {
+  onSaveTeam = async () => {
     const { configurableTeam } = this.state;
 
-    if (configurableTeam) {
-      this.setState(({ teams }) => ({
-        teams: teams.map(it =>
-          it.team_id === configurableTeam.team_id ? configurableTeam : it
-        ),
-      }));
+    try {
+      await teamSchema.validateSync(configurableTeam);
+
+      if (configurableTeam) {
+        this.setState(({ teams }) => ({
+          teams: teams.map(it =>
+            it.team_id === configurableTeam.team_id ? configurableTeam : it
+          ),
+        }));
+      }
+    } catch (err) {
+      Toasts.errorToast(err.message);
     }
 
     this.onCloseModal();
