@@ -1,14 +1,14 @@
 @import '~@fullcalendar/core/main.css';
 @import '~@fullcalendar/daygrid/main.css';
 @import '~@fullcalendar/timegrid/main.css';
-@import '~@fullcalendar/list/main.css';
+// @import '~@fullcalendar/list/main.css';
 
 .fc-event {
   background-color: #fff;
   border: none;
   box-shadow: 7px 3px 13px -2px #dcdcdc;
   color: #545454;
-  padding: 7px 12px;
+  padding: 5px 12px 0 12px;
   border-radius: 0 3px 3px 0;
   border-left: 3px solid;
 

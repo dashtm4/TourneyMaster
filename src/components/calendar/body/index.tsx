@@ -151,8 +151,8 @@ export default (props: IProps) => {
           {renderButton('month')}
         </div>
       </div>
-      {renderButton('listDay')}
-      {renderButton('listMonth')}
+      {/* {renderButton('listDay')}
+      {renderButton('listMonth')} */}
       <div>
         <FullCalendar
           firstDay={1}
