@@ -2,12 +2,12 @@ import * as Yup from 'yup';
 
 declare module 'yup' {
   interface ArraySchema<T> {
-    unique(mapper: (a: T) => string, message?: string): ArraySchema<T>;
+    unique(mapper: (entity: T) => string, message?: string): ArraySchema<T>;
   }
 }
 
 Yup.addMethod(Yup.array, 'unique', function(
-  mapper = (a: any) => a,
+  mapper = (entity: any) => entity,
   message: string = `Not have duplicates`
 ) {
   return this.test(

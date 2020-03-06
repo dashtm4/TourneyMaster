@@ -1,3 +1,6 @@
+import { ActionCreator, Dispatch } from 'redux';
+import { ThunkAction } from 'redux-thunk';
+import * as Yup from 'yup';
 import {
   DIVISIONS_FETCH_SUCCESS,
   DIVISIONS_FETCH_FAILURE,
@@ -12,8 +15,6 @@ import {
   DIVISION_SAVE_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
-import { ActionCreator, Dispatch } from 'redux';
-import { ThunkAction } from 'redux-thunk';
 import history from '../../../browserhistory';
 import { divisionSchema, poolSchema } from 'validations';
 import { Toasts } from 'components/common';
@@ -122,7 +123,10 @@ export const updateDivision: ActionCreator<ThunkAction<
   { type: string }
 >> = (division: IDivision) => async (dispatch: Dispatch) => {
   try {
-    await divisionSchema.validate(division);
+    await Yup.array()
+      .of(divisionSchema)
+      .unique(division => division.long_name)
+      .validate(division);
 
     const response = await api.put(
       `/divisions?division_id=${division.division_id}`,

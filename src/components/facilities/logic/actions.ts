@@ -1,5 +1,6 @@
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import * as Yup from 'yup';
 import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
@@ -21,7 +22,6 @@ import {
 } from './action-types';
 import Api from 'api/api';
 import { facilitySchema } from 'validations';
-import * as Yup from 'yup';
 import { getVarcharEight, uploadFile } from 'helpers';
 import { IFacility, IField, IUploadFile } from 'common/models';
 
