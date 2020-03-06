@@ -21,6 +21,7 @@ import {
 } from './action-types';
 import Api from 'api/api';
 import { facilitySchema } from 'validations';
+import * as Yup from 'yup';
 import { getVarcharEight, uploadFile } from 'helpers';
 import { IFacility, IField, IUploadFile } from 'common/models';
 
@@ -127,10 +128,16 @@ const saveFacilities: ActionCreator<ThunkAction<
   dispatch: Dispatch
 ) => {
   try {
+    await Yup.array()
+      .of(facilitySchema)
+      .unique(
+        facility => facility.facilities_description,
+        'Oops. It looks like you have facilities with the same name. The facility must have a unique name.'
+      )
+      .validate(facilities);
+
     for await (let facility of facilities) {
       const copiedFacility = { ...facility };
-
-      await facilitySchema.validate(copiedFacility);
 
       delete copiedFacility.isFieldsLoaded;
       delete copiedFacility.isFieldsLoading;
