@@ -19,6 +19,7 @@ enum FileUploadTypes {
 
 enum AcceptFileTypes {
   JPG = '.jpg',
+  JPEG = '.jpeg',
   PNG = '.png',
   SVG = '.svg',
   PDF = '.pdf',
@@ -29,14 +30,11 @@ interface IProps {
   incomingFiles?: File[];
   onUpload: (files: File[]) => void;
   acceptTypes: AcceptFileTypes[];
+  onFileRemove?: (files: File[]) => void;
 }
 
-const FileUpload: React.FC<IProps> = ({
-  type,
-  acceptTypes,
-  incomingFiles,
-  onUpload,
-}) => {
+const FileUpload: React.FC<IProps> = props => {
+  const { type, acceptTypes, incomingFiles, onUpload, onFileRemove } = props;
   const [files, setFiles] = useState<File[] | null>(incomingFiles || null);
 
   const onDrop = useCallback((uploadedFiles: File[]) => {
@@ -48,17 +46,30 @@ const FileUpload: React.FC<IProps> = ({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: false,
-    accept: acceptTypes.join(''),
+    accept: acceptTypes,
   });
 
+  const removeFiles = () => {
+    setFiles(null);
+    if (onFileRemove && files) {
+      onFileRemove(files);
+    }
+  };
+
   const showFiles = (): string => {
-    return files ? files.map((file: File) => file.name).join(', ') : '';
+    return files ? files.map(file => file.name).join(', ') : '';
   };
 
   const renderFiles = () => (
     <div className={styles.uploadedWrapper}>
-      <span>Uploaded File: </span>
+      <span className={styles.uploadedWrapperText}>Uploaded File: </span>
       {showFiles()}
+      <Button
+        label="Remove"
+        variant="text"
+        color="secondary"
+        onClick={removeFiles}
+      />
     </div>
   );
 
@@ -81,10 +92,8 @@ const FileUpload: React.FC<IProps> = ({
       </>
     );
 
-  const renderUploaderType = (
-    type: FileUploadTypes.BUTTON | FileUploadTypes.SECTION
-  ) => {
-    switch (type) {
+  const renderUploaderType = (uploadType: FileUploadTypes) => {
+    switch (uploadType) {
       case FileUploadTypes.SECTION:
         return (
           <div className={styles.wrapper}>
@@ -95,7 +104,7 @@ const FileUpload: React.FC<IProps> = ({
 
               {Boolean(!files?.length) && renderUploader()}
 
-              <input {...getInputProps()} />
+              <input disabled={!!files?.length} {...getInputProps()} />
             </div>
           </div>
         );

@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 import history from '../browserhistory';
-
+import pageEvent from 'components/authorized-page/authorized-page-event/logic/reducer';
 import facilities from 'components/facilities/logic/reducer';
 import event from 'components/event-details/logic/reducer';
 import events from 'components/dashboard/logic/reducer';
@@ -12,9 +12,11 @@ import scoring from 'components/scoring/logic/reducer';
 import scheduling from 'components/scheduling/logic/reducer';
 import teams from 'components/teams/logic/reducer';
 import recordScores from 'components/scoring/pages/record-scores/logic/reducer';
+import organizationsManagement from 'components/organizations-management/logic/reducer';
 
 const rootReducer = combineReducers({
   router: connectRouter(history),
+  pageEvent,
   facilities,
   event,
   events,
@@ -25,6 +27,7 @@ const rootReducer = combineReducers({
   recordScores,
   scheduling,
   teams,
+  organizationsManagement,
 });
 
 export default rootReducer;

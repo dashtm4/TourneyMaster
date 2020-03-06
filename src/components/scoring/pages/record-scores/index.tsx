@@ -83,7 +83,7 @@ class RecordScores extends React.Component<
   leavePage = () => {
     const eventId = this.props.match.params.eventId;
 
-    History.push(`${Routes.SCORING}${eventId || ''}`);
+    History.push(`${Routes.SCORING}/${eventId || ''}`);
   };
 
   onLeavePage = () => {

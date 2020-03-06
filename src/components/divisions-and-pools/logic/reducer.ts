@@ -8,14 +8,18 @@ import {
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
   ADD_POOL_SUCCESS,
+  REGISTRATION_FETCH_SUCCESS,
 } from './actionTypes';
 import { IPool, ITeam, IDivision } from 'common/models';
+import { IRegistration } from 'common/models/registration';
 
 export interface IState {
   data?: Partial<IDivision>[];
   pools: IPool[];
   teams: ITeam[];
+  registration?: IRegistration;
   isLoading: boolean;
+  areDetailsLoading: boolean;
   error: boolean;
 }
 
@@ -23,7 +27,9 @@ const defaultState: IState = {
   data: [],
   pools: [],
   teams: [],
+  registration: undefined,
   isLoading: true,
+  areDetailsLoading: true,
   error: false,
 };
 
@@ -33,15 +39,14 @@ export default (
 ) => {
   switch (action.type) {
     case FETCH_START: {
-      return {
-        ...state,
-        isLoading: true,
-      };
+      return { ...defaultState };
     }
     case DIVISIONS_FETCH_SUCCESS: {
       return {
         ...state,
-        data: action.payload,
+        data: action.payload.sort((a: IDivision, b: IDivision) =>
+          a.short_name.localeCompare(b.short_name)
+        ),
         isLoading: false,
         error: false,
       };
@@ -106,6 +111,15 @@ export default (
       return {
         ...state,
         teams: [...state.teams, ...action.payload],
+        areDetailsLoading: false,
+        error: false,
+      };
+    }
+    case REGISTRATION_FETCH_SUCCESS: {
+      return {
+        ...state,
+        registration: action.payload[0],
+        isLoading: false,
         error: false,
       };
     }

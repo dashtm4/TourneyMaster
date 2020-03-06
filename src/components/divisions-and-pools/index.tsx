@@ -22,6 +22,7 @@ interface IDivisionsAndPoolsProps {
   pools: IPool[];
   teams: ITeam[];
   isLoading: boolean;
+  areDetailsLoading: boolean;
   history: History;
   match: any;
   getDivisions: BindingCbWithOne<string>;
@@ -108,11 +109,12 @@ class DivisionsAndPools extends React.Component<
               {divisions.map(division => (
                 <li key={division.division_id}>
                   <SectionDropdown
+                    id={division.short_name}
                     isDefaultExpanded={true}
                     panelDetailsType="flat"
                   >
                     <div className={styles.sectionTitle}>
-                      <div>{`Division: ${division.long_name}`}</div>
+                      <div>{`Division: ${division.short_name}`}</div>
                       <div>
                         <Button
                           label="Edit Division Details"
@@ -126,7 +128,19 @@ class DivisionsAndPools extends React.Component<
                       </div>
                     </div>
                     <div className={styles.sectionContent}>
-                      <DivisionDetails data={division} />
+                      <DivisionDetails
+                        data={division}
+                        numOfPools={
+                          pools.filter(
+                            pool => pool.division_id === division.division_id
+                          ).length
+                        }
+                        numOfTeams={
+                          teams.filter(
+                            team => team.division_id === division.division_id
+                          ).length
+                        }
+                      />
                       <PoolsDetails
                         onAddPool={this.onAddPool}
                         division={division}
@@ -138,6 +152,7 @@ class DivisionsAndPools extends React.Component<
                         teams={teams.filter(
                           team => team.division_id === division.division_id
                         )}
+                        areDetailsLoading={this.props.areDetailsLoading}
                       />
                     </div>
                   </SectionDropdown>
@@ -152,6 +167,12 @@ class DivisionsAndPools extends React.Component<
                     division={this.state.selected}
                     onClose={this.onModalClose}
                     savePool={this.props.savePool}
+                    numOfTeams={
+                      teams.filter(
+                        team =>
+                          team.division_id === this.state.selected.division_id
+                      ).length
+                    }
                   />
                 </Modal>
               )}
@@ -175,6 +196,7 @@ interface IState {
     pools: IPool[];
     teams: ITeam[];
     isLoading: boolean;
+    areDetailsLoading: boolean;
   };
 }
 
@@ -183,6 +205,7 @@ const mapStateToProps = (state: IState) => ({
   pools: state.divisions.pools,
   teams: state.divisions.teams,
   isLoading: state.divisions.isLoading,
+  areDetailsLoading: state.divisions.areDetailsLoading,
 });
 
 const mapDispatchToProps = {

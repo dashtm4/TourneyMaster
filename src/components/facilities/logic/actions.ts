@@ -1,12 +1,8 @@
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { Storage } from 'aws-amplify';
-import uuidv4 from 'uuid/v4';
 import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
-  SUCCESS,
-  FAILURE,
   ADD_EMPTY_FACILITY,
   ADD_EMPTY_FIELD,
   LOAD_FACILITIES_START,
@@ -17,12 +13,16 @@ import {
   LOAD_FIELDS_FAILURE,
   UPDATE_FACILITY,
   UPDATE_FIELD,
-  SAVE_FACILITIES,
+  SAVE_FACILITIES_SUCCESS,
+  SAVE_FACILITIES_FAILURE,
   FacilitiesAction,
+  UPLOAD_FILE_MAP_SUCCESS,
+  UPLOAD_FILE_MAP_FAILURE,
 } from './action-types';
 import Api from 'api/api';
-import { getVarcharEight } from '../../../helpers';
-import { IFacility, IField, IFileMap } from '../../../common/models';
+import { facilitySchema } from 'validations';
+import { getVarcharEight, uploadFile } from 'helpers';
+import { IFacility, IField, IUploadFile } from 'common/models';
 
 const loadFacilities: ActionCreator<ThunkAction<
   void,
@@ -128,68 +128,96 @@ const saveFacilities: ActionCreator<ThunkAction<
 ) => {
   try {
     for await (let facility of facilities) {
-      delete facility.isFieldsLoaded;
-      delete facility.isFieldsLoading;
+      const copiedFacility = { ...facility };
 
-      if (facility.isChange && !facility.isNew) {
-        delete facility.isChange;
+      await facilitySchema.validate(copiedFacility);
+
+      delete copiedFacility.isFieldsLoaded;
+      delete copiedFacility.isFieldsLoading;
+
+      if (copiedFacility.isChange && !copiedFacility.isNew) {
+        delete copiedFacility.isChange;
 
         Api.put(
-          `/facilities?facilities_id=${facility.facilities_id}`,
-          facility
+          `/facilities?facilities_id=${copiedFacility.facilities_id}`,
+          copiedFacility
         );
       }
+      if (copiedFacility.isNew) {
+        delete copiedFacility.isChange;
+        delete copiedFacility.isNew;
 
-      if (facility.isNew) {
-        delete facility.isChange;
-        delete facility.isNew;
-
-        Api.post('/facilities', facility);
+        Api.post('/facilities', copiedFacility);
       }
     }
 
     for await (let field of fields) {
-      if (field.isChange && !field.isNew) {
-        delete field.isChange;
+      const copiedField = { ...field };
 
-        Api.put(`/fields?field_id=${field.field_id}`, field);
+      if (copiedField.isChange && !copiedField.isNew) {
+        delete copiedField.isChange;
+
+        Api.put(`/fields?field_id=${copiedField.field_id}`, copiedField);
       }
 
-      if (field.isNew) {
-        delete field.isChange;
-        delete field.isNew;
+      if (copiedField.isNew) {
+        delete copiedField.isChange;
+        delete copiedField.isNew;
 
-        Api.post('/fields', field);
+        Api.post('/fields', copiedField);
       }
     }
 
     dispatch({
-      type: SAVE_FACILITIES + SUCCESS,
+      type: SAVE_FACILITIES_SUCCESS,
+      payload: {
+        facilities,
+      },
     });
 
-    Toasts.successToast('Saved ❤️');
-  } catch {
+    Toasts.successToast('Facilities saved successfully');
+  } catch (err) {
     dispatch({
-      type: SAVE_FACILITIES + FAILURE,
+      type: SAVE_FACILITIES_FAILURE,
     });
+
+    Toasts.errorToast(err.message);
   }
 };
 
-const uploadFileMap = (files: IFileMap[]) => () => {
+const uploadFileMap: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  FacilitiesAction
+>> = (facility: IFacility, files: IUploadFile[]) => async (
+  dispatch: Dispatch
+) => {
   if (!files || !files.length) {
     return;
   }
 
-  files.forEach((fileObject: IFileMap) => {
-    const { file, destinationType } = fileObject;
-    const uuid = uuidv4();
-    const saveFilePath = `event_media_files/${destinationType}_${uuid}_${file.name}`;
-    const config = { contentType: file.type };
+  for await (let file of files) {
+    try {
+      const uploadedFile = await uploadFile(file);
+      const { key } = uploadedFile as Storage;
 
-    Storage.put(saveFilePath, file, config)
-      .then(() => Toasts.successToast(`${file.name} was successfully uploaded`))
-      .catch(() => Toasts.errorToast(`${file.name} couldn't be uploaded`));
-  });
+      dispatch({
+        type: UPLOAD_FILE_MAP_SUCCESS,
+        payload: {
+          facility: { ...facility, isChange: true, field_map_URL: key },
+        },
+      });
+
+      Toasts.successToast('Map was successfully uploaded');
+    } catch (err) {
+      dispatch({
+        type: UPLOAD_FILE_MAP_FAILURE,
+      });
+
+      Toasts.errorToast('Map could not be uploaded');
+    }
+  }
 };
 
 export {

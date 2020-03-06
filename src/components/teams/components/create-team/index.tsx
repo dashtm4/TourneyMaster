@@ -7,7 +7,6 @@ import Button from 'components/common/buttons/button';
 import HeadingLevelTwo from 'components/common/headings/heading-level-two';
 import AddTeamForm from './create-team-form';
 import { saveTeams } from './logic/actions';
-import { getDivisions } from 'components/divisions-and-pools/logic/actions';
 import {
   BindingCbWithOne,
   IDivision,
@@ -33,10 +32,6 @@ interface ICreateTeamProps {
 class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
   eventId = this.props.match.params.eventId;
   state = { teams: [{}], isModalOpen: false };
-
-  componentDidMount() {
-    this.props.getDivisions(this.eventId);
-  }
 
   onChange = (name: string, value: string | number, index: number) => {
     this.setState(({ teams }) => ({
@@ -115,16 +110,15 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
 }
 
 interface IState {
-  divisions: { data: IDivision[] };
+  teams: any;
 }
 
 const mapStateToProps = (state: IState) => ({
-  divisions: state.divisions.data,
+  divisions: state.teams.divisions,
 });
 
 const mapDispatchToProps = {
   saveTeams,
-  getDivisions,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateTeam);

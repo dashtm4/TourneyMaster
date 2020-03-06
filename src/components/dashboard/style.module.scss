@@ -11,7 +11,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin: 35px 0;
   width: 100%;
 }
 
@@ -42,12 +42,15 @@
 .dashboardCardsContainer {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 35px;
+}
+.tournamentsContainer {
+  margin: 35px 0;
 }
 .tournamentsListContainer {
-  height: 600px;
+  max-height: 600px;
   overflow-y: auto;
-  & > * {
+  & > *:not(:last-child) {
     margin: 16px 0;
   }
   &::-webkit-scrollbar {
@@ -89,4 +92,7 @@
     font-size: 21px;
     color: #878787;
   }
+}
+.notificationsContainer {
+  margin: 35px 0;
 }

@@ -8,11 +8,14 @@ import {
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
   ADD_POOL_SUCCESS,
+  REGISTRATION_FETCH_SUCCESS,
+  DIVISION_SAVE_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import history from '../../../browserhistory';
+import { divisionSchema, poolSchema } from 'validations';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
 import { IPool, ITeam, IDivision } from 'common/models';
@@ -74,6 +77,13 @@ export const teamsFetchSuccess = (
   payload,
 });
 
+export const registrationFetchSuccess = (
+  payload: any
+): { type: string; payload: any } => ({
+  type: REGISTRATION_FETCH_SUCCESS,
+  payload,
+});
+
 export const getDivisions: ActionCreator<ThunkAction<
   void,
   {},
@@ -111,21 +121,32 @@ export const updateDivision: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (division: IDivision) => async (dispatch: Dispatch) => {
-  const response = await api.put(
-    `/divisions?division_id=${division.division_id}`,
-    division
-  );
+  try {
+    await divisionSchema.validate(division);
 
-  dispatch(updateDivisionSuccess(division));
+    const response = await api.put(
+      `/divisions?division_id=${division.division_id}`,
+      division
+    );
 
-  if (response?.errorType === 'Error') {
-    return Toasts.errorToast("Couldn't update a division");
+    dispatch(updateDivisionSuccess(division));
+
+    if (response?.errorType === 'Error') {
+      return Toasts.errorToast("Couldn't update a division");
+    }
+
+    history.goBack();
+
+    Toasts.successToast('Division is successfully updated');
+  } catch (err) {
+    Toasts.errorToast(err.message);
   }
-
-  history.goBack();
-
-  Toasts.successToast('Division is successfully updated');
 };
+
+export const saveDivisionsSuccess = (divisions: IDivision[]) => ({
+  type: DIVISION_SAVE_SUCCESS,
+  payload: divisions,
+});
 
 export const saveDivisions: ActionCreator<ThunkAction<
   void,
@@ -135,24 +156,33 @@ export const saveDivisions: ActionCreator<ThunkAction<
 >> = (divisions: IDivision[], eventId: string) => async (
   dispatch: Dispatch
 ) => {
-  for await (const division of divisions) {
-    const data = {
-      ...division,
-      event_id: eventId,
-      division_id: getVarcharEight(),
-    };
-    const response = await api.post(`/divisions`, data);
+  try {
+    for await (const division of divisions) {
+      const data = {
+        ...division,
+        event_id: eventId,
+        division_id: getVarcharEight(),
+      };
 
-    dispatch(addDivisionSuccess(data));
+      await divisionSchema.validate(division);
 
-    if (response?.errorType === 'Error') {
-      return Toasts.errorToast("Couldn't add a division");
+      const response = await api.post(`/divisions`, data);
+
+      dispatch(addDivisionSuccess(data));
+
+      if (response?.errorType === 'Error') {
+        return Toasts.errorToast("Couldn't add a division");
+      }
     }
+
+    dispatch(saveDivisionsSuccess(divisions));
+
+    history.push(`/event/divisions-and-pools/${eventId}`);
+
+    Toasts.successToast('Division is successfully added');
+  } catch (err) {
+    Toasts.errorToast(err.message);
   }
-
-  history.push(`/event/divisions-and-pools/${eventId}`);
-
-  Toasts.successToast('Division is successfully added');
 };
 
 export const deleteDivision: ActionCreator<ThunkAction<
@@ -180,18 +210,34 @@ export const savePool: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (pool: IPool) => async (dispatch: Dispatch) => {
-  const data = {
-    ...pool,
-    pool_id: getVarcharEight(),
-  };
+  try {
+    const data = {
+      ...pool,
+      pool_id: getVarcharEight(),
+    };
 
-  const response = await api.post(`/pools`, data);
+    await poolSchema.validate(data);
 
-  if (response?.errorType === 'Error') {
-    return Toasts.errorToast("Couldn't add a pool division");
+    const response = await api.post(`/pools`, data);
+
+    if (response?.errorType === 'Error') {
+      return Toasts.errorToast("Couldn't add a pool division");
+    }
+
+    dispatch(addPoolSuccess(data));
+
+    Toasts.successToast('Pool is successfully added');
+  } catch (err) {
+    Toasts.errorToast(err.message);
   }
+};
 
-  dispatch(addPoolSuccess(data));
-
-  Toasts.successToast('Pool is successfully added');
+export const getRegistration: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (eventId: string) => async (dispatch: Dispatch) => {
+  const data = await api.get(`/registrations?event_id=${eventId}`);
+  dispatch(registrationFetchSuccess(data));
 };

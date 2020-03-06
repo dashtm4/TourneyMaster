@@ -1,5 +1,5 @@
 .cardContainer {
-  width: 65.5%;
+  width: 100%;
 }
 .cardHeader {
   display: flex;
@@ -12,13 +12,15 @@
   color: #1c315f;
   font-size: 24px;
   font-weight: 600;
+  padding: 12px 16px;
 }
-.notificationsList {
-  padding: 0;
-}
+
 .notification {
   display: flex;
   flex-direction: row;
+  margin: 0;
+}
+.notificationsContainer {
   margin: 0;
 }
 .notificationMessage {
@@ -37,6 +39,7 @@
     color: #11a8ea;
     cursor: pointer;
     padding-left: 3px;
+    text-decoration: none;
   }
 }
 .link {
@@ -52,12 +55,12 @@
   margin: auto;
   cursor: pointer;
 }
-.line {
+.horizontalLine {
   position: relative;
-  left: 15px;
-  border-left: 5px solid#CDCFD2;
+  top: 15px;
+  border-bottom: 5px solid#CDCFD2;
 }
-.oval {
+.circle {
   align-self: center;
   box-sizing: border-box;
   height: 24px;
@@ -66,20 +69,53 @@
   border-radius: 100%;
   background-color: #f4f4f4;
   z-index: 0;
-  margin-right: 15px;
 }
 .notification:nth-of-type(3n) {
-  .oval {
+  .circle {
     border-color: #ffcb00;
   }
 }
 .notification:nth-of-type(3n + 1) {
-  .oval {
+  .circle {
     border-color: #00cc47;
   }
 }
 .notification:nth-of-type(3n + 2) {
-  .oval {
+  .circle {
     border-color: red;
+  }
+}
+.tmNotificationsContainer {
+  display: flex;
+  padding: 50px 0 40px 0;
+  min-height: 200px;
+  .tmNotificationsList {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    width: 100%;
+    padding: 0 20px;
+  }
+  .tmNotification {
+    @extend .notification;
+    width: 20%;
+    .tmNotificationItem {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+    .tmNotificationMessage {
+      @extend .notificationMessage;
+      font-size: 13px;
+    }
+  }
+}
+.noFoundWrapper {
+  padding-bottom: 20px;
+  text-align: center;
+
+  span {
+    font-size: 18px;
+    color: #878787;
   }
 }

@@ -19,6 +19,7 @@ interface ITextFieldProps {
   name?: string;
   disabled?: boolean;
   type?: 'text' | 'number';
+  isRequired?: boolean;
 }
 
 const TextField: React.FC<ITextFieldProps> = ({
@@ -35,6 +36,7 @@ const TextField: React.FC<ITextFieldProps> = ({
   name,
   disabled,
   type,
+  isRequired,
 }) => (
   <div className={styles.container}>
     <span className={styles.label}>{label}</span>
@@ -51,6 +53,7 @@ const TextField: React.FC<ITextFieldProps> = ({
       rows={rows}
       value={value}
       onChange={onChange}
+      required={isRequired}
       InputProps={{
         endAdornment: endAdornment && (
           <InputAdornment position="start">

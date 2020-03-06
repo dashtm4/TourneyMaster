@@ -2,6 +2,7 @@ import React from 'react';
 import DivisionItem from '../division-item';
 import { SectionDropdown } from '../../../common';
 import { IDivision, IPool, ITeam } from '../../../../common/models';
+import { EventMenuTitles } from 'common/enums';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -34,7 +35,11 @@ const TeamManagement = ({
   onEditPopupOpen,
 }: Props) => (
   <li>
-    <SectionDropdown type="section" isDefaultExpanded={true}>
+    <SectionDropdown
+      id={EventMenuTitles.TEAM_MANAGEMENT}
+      type="section"
+      isDefaultExpanded={true}
+    >
       <span>Team Management</span>
       <ul className={styles.divisionList}>
         {divisions.map(division => (

@@ -78,7 +78,7 @@ const TeamsAthletesInfo = ({ data, onChange }: ITeamsAthletesInfoProps) => {
             onChange={onAthleteBirthDateChange}
             checked={
               (data && OptionsEnum[data.request_athlete_birthdate]) ||
-              OptionsEnum[2]
+              OptionsEnum[3]
             }
           />
         </div>
@@ -89,7 +89,7 @@ const TeamsAthletesInfo = ({ data, onChange }: ITeamsAthletesInfoProps) => {
             onChange={onAthleteJerseyNumberChange}
             checked={
               (data && OptionsEnum[data.request_athlete_jersey_number]) ||
-              OptionsEnum[2]
+              OptionsEnum[3]
             }
           />
         </div>
@@ -100,7 +100,7 @@ const TeamsAthletesInfo = ({ data, onChange }: ITeamsAthletesInfoProps) => {
             onChange={onAthleteEmailChange}
             checked={
               (data && OptionsEnum[data.request_athlete_email]) ||
-              OptionsEnum[2]
+              OptionsEnum[3]
             }
           />
         </div>

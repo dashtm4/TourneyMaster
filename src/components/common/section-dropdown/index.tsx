@@ -6,11 +6,13 @@ import {
   ExpansionPanel,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { stringToLink } from 'helpers';
 import styles from './styles.module.scss';
 
 type DropdownType = 'section' | 'block';
 
 interface Props {
+  id?: string | null;
   children: React.ReactElement[];
   type?: DropdownType;
   isDefaultExpanded?: boolean;
@@ -54,6 +56,7 @@ const setPanelSummaryStyle = (type?: DropdownType) =>
   type && type === 'section' ? { paddingLeft: 0 } : {};
 
 const SectionDropdown = ({
+  id,
   children,
   type,
   headingColor,
@@ -61,10 +64,7 @@ const SectionDropdown = ({
   useBorder,
   panelDetailsType,
 }: Props) => (
-  <section
-    className={styles.section}
-    style={{ borderTop: useBorder ? '1px solid #d1d1d1' : 'none' }}
-  >
+  <section className={styles.section} id={id ? stringToLink(id) : undefined}>
     <ExpansionPanel
       style={setStyleOnType(type)}
       defaultExpanded={isDefaultExpanded}
@@ -73,6 +73,7 @@ const SectionDropdown = ({
         style={{
           ...setPanelSummaryStyle(type),
           display: 'flex',
+          borderTop: useBorder ? '1px solid #d1d1d1' : 'none',
         }}
         expandIcon={setExpandIcon(type)}
         aria-controls="panel1a-content"

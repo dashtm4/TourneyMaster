@@ -80,6 +80,7 @@ const PrimaryInformation = ({ data, onChange }: IPrimaryInformationProps) => {
           <Input
             fullWidth={true}
             label="Early Bird Discount"
+            startAdornment="$"
             type="number"
             value={data ? data.early_bird_discount : ''}
             onChange={onEarlyBirdDiscountChange}

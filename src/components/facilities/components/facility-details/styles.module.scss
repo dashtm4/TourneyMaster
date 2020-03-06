@@ -3,6 +3,8 @@
 }
 
 .detailsSubtitle {
+  margin-bottom: 20px;
+
   font-weight: 600;
   color: #6a6a6a;
 }
@@ -10,6 +12,7 @@
 .descripWrapper {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
   margin-top: 6px;
 
@@ -18,7 +21,6 @@
 
 .nameWrapper {
   display: flex;
-  justify-content: space-between;
 
   margin-top: 15px;
 }
@@ -29,30 +31,54 @@
 
   border: 0;
 
+  &:disabled {
+    opacity: 0.5;
+
+    label,
+    input {
+      cursor: default;
+    }
+  }
+
   legend {
     margin-bottom: 5px;
   }
 
-  &Name,
+  &Name {
+    width: 100%;
+    margin-right: 20px;
+    padding-bottom: 10px;
+  }
+
+  &Fields {
+    width: 43%;
+    margin-right: 20px;
+    padding-bottom: 10px;
+  }
+
   &Restrooms {
-    width: 75%;
+    width: 15%;
     margin-right: 20px;
   }
 
+  &Toiltes {
+    width: 19%;
+  }
+
   &ParkingAvailable {
-    width: 33%;
+    width: 35%;
     margin-right: 15px;
   }
 
   &DistanceFields {
-    width: 33%;
+    width: 45%;
     margin-right: 15px;
   }
 }
 
 .fieldTitle {
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 600;
   color: #6a6a6a;
 }
 
@@ -60,7 +86,7 @@
   display: flex;
   flex-wrap: wrap;
 
-  margin: 0 0 25px -30px;
+  margin: 0 0 10px -30px;
   padding: 0;
 
   list-style: none;
@@ -73,7 +99,7 @@
 
 .restroomWrapper {
   display: flex;
-  justify-content: space-between;
+  // justify-content: space-between;
 
   margin-bottom: 15px;
 }
@@ -91,6 +117,29 @@
   justify-content: space-between;
 }
 
-:local(.parkingDetails) {
+.parkingDetails {
   margin-bottom: 25px;
+}
+
+.parkingDetailsWrapper {
+  margin-bottom: 20px;
+}
+.container {
+  display: flex;
+  justify-content: space-between;
+  .section {
+    width: 35%;
+
+    &:nth-of-type(2) {
+      width: 50%;
+    }
+    &:nth-of-type(3) {
+      width: 5%;
+    }
+  }
+}
+.btnContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
 }

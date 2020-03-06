@@ -16,7 +16,7 @@ import {
 import Navigation from './components/navigation';
 import FacilityDetails from './components/facility-details';
 import { HeadingLevelTwo, Select, Loader } from '../common';
-import { IFacility, IField, IFileMap } from '../../common/models';
+import { IFacility, IField, IUploadFile } from '../../common/models';
 import {
   BindingCbWithOne,
   BindingCbWithTwo,
@@ -40,17 +40,19 @@ interface Props {
   updateFacilities: BindingCbWithOne<IFacility>;
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
-  uploadFileMap: (files: IFileMap[]) => void;
+  uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
 }
 
 class Facilities extends React.Component<
   Props & RouteComponentProps<MatchParams>
 > {
   componentDidMount() {
-    const { loadFacilities, addEmptyFacility } = this.props;
+    const { loadFacilities } = this.props;
     const eventId = this.props.match.params.eventId;
 
-    eventId ? loadFacilities(eventId) : addEmptyFacility(MOCKED_EVENT_ID);
+    if (eventId) {
+      loadFacilities(eventId);
+    }
   }
 
   onChangeFacilitiesCount = (evt: any) => {
@@ -106,25 +108,33 @@ class Facilities extends React.Component<
             />
           </div>
           <ul className={styles.facilitiesList}>
-            {facilities.map((facilitiy, idx) => (
-              <li
-                className={styles.facilitiesItem}
-                key={facilitiy.facilities_id}
-              >
-                <FacilityDetails
-                  facility={facilitiy}
-                  fields={fields.filter(
-                    it => it.facilities_id === facilitiy.facilities_id
-                  )}
-                  facilitiyNumber={idx + 1}
-                  loadFields={loadFields}
-                  addEmptyField={addEmptyField}
-                  updateFacilities={updateFacilities}
-                  updateField={updateField}
-                  uploadFileMap={uploadFileMap}
-                />
-              </li>
-            ))}
+            {facilities
+              .sort((a, b) => {
+                if (a.isChange || b.isChange) return 0;
+
+                return a.facilities_description > b.facilities_description
+                  ? 1
+                  : -1;
+              })
+              .map((facilitiy, idx) => (
+                <li
+                  className={styles.facilitiesItem}
+                  key={facilitiy.facilities_id}
+                >
+                  <FacilityDetails
+                    facility={facilitiy}
+                    fields={fields.filter(
+                      it => it.facilities_id === facilitiy.facilities_id
+                    )}
+                    facilitiyNumber={idx + 1}
+                    loadFields={loadFields}
+                    addEmptyField={addEmptyField}
+                    updateFacilities={updateFacilities}
+                    updateField={updateField}
+                    uploadFileMap={uploadFileMap}
+                  />
+                </li>
+              ))}
           </ul>
         </div>
       </section>

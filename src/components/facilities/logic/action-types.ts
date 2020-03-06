@@ -19,23 +19,27 @@ export const UPDATE_FACILITY = 'UPDATE_FACILITY';
 
 export const UPDATE_FIELD = 'UPDATE_FIELD';
 
-export const SAVE_FACILITIES = 'SAVE_FACILITIES';
+export const SAVE_FACILITIES_SUCCESS = 'FACILITIES:SAVE_FACILITIES_SUCCESS';
+export const SAVE_FACILITIES_FAILURE = 'FACILITIES:SAVE_FACILITIES_FAILURE';
+
+export const UPLOAD_FILE_MAP_SUCCESS = 'FACILITIES:UPLOAD_FILE_MAP_SUCCESS';
+export const UPLOAD_FILE_MAP_FAILURE = 'FACILITIES:UPLOAD_FILE_MAP_FAILURE';
 
 export interface loadFacilitiesStart {
   type: 'FACILITIES:LOAD_FACILITIES_START';
-}
-
-export interface loadFacilitiesSuccess {
-  type: 'FACILITIES:LOAD_FACILITIES_SUCCESS';
-  payload: {
-    facilities: IFacility[];
-  };
 }
 
 export interface loadFieldsStart {
   type: 'FACILITIES:LOAD_FIELDS_START';
   payload: {
     facilityId: string;
+  };
+}
+
+export interface loadFacilitiesSuccess {
+  type: 'FACILITIES:LOAD_FACILITIES_SUCCESS';
+  payload: {
+    facilities: IFacility[];
   };
 }
 
@@ -76,9 +80,16 @@ export interface updateField {
 }
 
 export interface saveFacilities {
-  type: 'SAVE_FACILITIES';
+  type: 'FACILITIES:SAVE_FACILITIES_SUCCESS';
   payload: {
     facilities: IFacility[];
+  };
+}
+
+export interface uploadFileMapSuccess {
+  type: 'FACILITIES:UPLOAD_FILE_MAP_SUCCESS';
+  payload: {
+    facility: IFacility;
   };
 }
 
@@ -91,4 +102,5 @@ export type FacilitiesAction =
   | addEmptyField
   | updateFacilities
   | updateField
-  | saveFacilities;
+  | saveFacilities
+  | uploadFileMapSuccess;

@@ -4,17 +4,22 @@ import { IDivision } from 'common/models';
 
 interface IDivisionDetailProps {
   data: IDivision;
+  numOfPools: number;
+  numOfTeams: number;
 }
 
-const DivisionDetails = ({ data }: IDivisionDetailProps) => (
+const DivisionDetails = ({
+  data,
+  numOfPools,
+  numOfTeams,
+}: IDivisionDetailProps) => (
   <div className={styles.divisionDetailsContainer}>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Max Team Registration:</span>{' '}
       {data.max_num_teams || '—'}
     </div>
     <div className={styles.divisionItem}>
-      <span className={styles.divisionTitle}>Teams Paid:</span>{' '}
-      {/* {data.teams_paid || '—'} */}
+      <span className={styles.divisionTitle}>Teams Paid:</span> {'—'}
     </div>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Entry Fee:</span>{' '}
@@ -22,7 +27,7 @@ const DivisionDetails = ({ data }: IDivisionDetailProps) => (
     </div>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Teams Registered:</span>{' '}
-      {data.teams_registered || '—'}
+      {numOfTeams}
     </div>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Teams Tentitive:</span>{' '}
@@ -30,7 +35,7 @@ const DivisionDetails = ({ data }: IDivisionDetailProps) => (
     </div>
     <div className={styles.divisionItem}>
       <span className={styles.divisionTitle}>Number of Pools:</span>{' '}
-      {data.num_pools || '—'}
+      {numOfPools}
     </div>
   </div>
 );

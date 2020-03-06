@@ -15,8 +15,8 @@ const DeleteDivision = ({
   onClose,
   deleteDivision,
   divisionId,
-  division,
-}: IDeleteDivisionProps) => {
+}: // division,
+IDeleteDivisionProps) => {
   const onDeleteDivision = () => {
     deleteDivision(divisionId);
     onClose();
@@ -33,13 +33,13 @@ const DeleteDivision = ({
           Teams inside the division will be moved to unassigned.
         </div>
       </div>
-      <div className={styles.sectionItem}>
+      {/* <div className={styles.sectionItem}>
         <span className={styles.title}>Pools:</span> {division.num_pools || '—'}
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.title}>Teams:</span>{' '}
         {division.teams_registered || '—'}
-      </div>
+      </div> */}
       <div className={styles.buttonsGroup}>
         <div>
           <Button

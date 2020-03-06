@@ -18,6 +18,7 @@ interface IDatePickerProps {
   value?: string | Date;
   type: string;
   width?: string;
+  minWidth?: string;
   onChange: any;
   views?: DatePickerView[];
   dateFormat?: string;
@@ -31,6 +32,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   onChange,
   type,
   width,
+  minWidth,
   views,
   dateFormat,
   viewType,
@@ -38,34 +40,37 @@ const DatePicker: React.FC<IDatePickerProps> = ({
 }) => {
   const renderInputDatePicker = () => (
     <InputDatePicker
+      autoOk={true}
       fullWidth={fullWidth}
       views={views}
-      style={{ width }}
+      style={{ width, minWidth }}
       variant="inline"
       size="small"
       inputVariant="outlined"
       value={value}
-      format={dateFormat || 'yyyy/MM/dd'}
+      format={dateFormat || 'MM/dd/yyyy'}
       onChange={onChange}
     />
   );
   const renderDatePicker = () => (
     <KeyboardDatePicker
+      autoOk={true}
       fullWidth={fullWidth}
       views={views}
-      style={{ width }}
+      style={{ width, minWidth }}
       variant="inline"
       size="small"
       inputVariant="outlined"
       value={value}
-      format={dateFormat || 'yyyy/MM/dd'}
+      format={dateFormat || 'MM/dd/yyyy'}
       onChange={onChange}
     />
   );
   const renderInputTimePicker = () => (
     <InputTimePicker
+      autoOk={true}
       fullWidth={fullWidth}
-      style={{ width }}
+      style={{ width, minWidth }}
       variant="inline"
       size="small"
       inputVariant="outlined"
@@ -76,8 +81,9 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   );
   const renderTimePicker = () => (
     <KeyboardTimePicker
+      autoOk={true}
       fullWidth={fullWidth}
-      style={{ width }}
+      style={{ width, minWidth }}
       variant="inline"
       size="small"
       inputVariant="outlined"

@@ -93,7 +93,7 @@ const saveTeams: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
       },
     });
 
-    Toasts.successToast('Saved ❤️');
+    Toasts.successToast('Teams saved successfully');
   } catch {
     dispatch({
       type: SAVE_TEAMS_FAILURE,

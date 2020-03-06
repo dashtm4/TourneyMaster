@@ -5,10 +5,10 @@ import {
   LOAD_FIELDS_SUCCESS,
   ADD_EMPTY_FACILITY,
   ADD_EMPTY_FIELD,
-  SAVE_FACILITIES,
   UPDATE_FACILITY,
   FacilitiesAction,
   UPDATE_FIELD,
+  UPLOAD_FILE_MAP_SUCCESS,
 } from './action-types';
 import { IFacility, IField } from '../../../common/models';
 
@@ -103,8 +103,16 @@ const facilitiesReducer = (
         ),
       };
     }
-    case SAVE_FACILITIES:
-      return state;
+    case UPLOAD_FILE_MAP_SUCCESS: {
+      const { facility } = action.payload;
+
+      return {
+        ...state,
+        facilities: state.facilities.map(it =>
+          it.facilities_id === facility.facilities_id ? facility : it
+        ),
+      };
+    }
     default:
       return state;
   }
