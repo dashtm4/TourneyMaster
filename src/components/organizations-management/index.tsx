@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -17,8 +18,6 @@ import {
   BindingAction,
   IConfigurableOrganization,
 } from 'common/models';
-import { IAddUserToOrg } from './types';
-import { getVarcharEight } from 'helpers';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -26,59 +25,41 @@ interface Props {
   isLoaded: boolean;
   organizations: IOrganization[];
   loadOrganizations: BindingAction;
-  createOrganization: (organization: IOrganization) => void;
-  addUserToOrganization: ({ orgId, invCode }: IAddUserToOrg) => void;
+  createOrganization: (organization: IConfigurableOrganization) => void;
+  addUserToOrganization: (invCode: string) => void;
   deleteOrganization: (organization: IOrganization) => void;
 }
 
-class OrganizationsManagement extends React.Component<Props> {
-  componentDidMount() {
-    const { loadOrganizations } = this.props;
-
+const OrganizationsManagement = ({
+  organizations,
+  isLoading,
+  addUserToOrganization,
+  createOrganization,
+  deleteOrganization,
+  loadOrganizations,
+}: Props) => {
+  React.useEffect(() => {
     loadOrganizations();
+  }, []);
+
+  if (isLoading) {
+    return <Loader />;
   }
 
-  addOrganization = async (organizationData: IConfigurableOrganization) => {
-    const { createOrganization, addUserToOrganization } = this.props;
-
-    const organization = {
-      ...organizationData,
-      org_id: getVarcharEight(),
-      is_active_YN: 1,
-    };
-
-    await createOrganization(organization);
-
-    addUserToOrganization({ orgId: organization.org_id });
-  };
-
-  render() {
-    const {
-      organizations,
-      isLoading,
-      addUserToOrganization,
-      deleteOrganization,
-    } = this.props;
-
-    if (isLoading) {
-      return <Loader />;
-    }
-
-    return (
-      <section className={styles.container}>
-        <div className={styles.heading}>
-          <HeadingLevelTwo>Organizations Management</HeadingLevelTwo>
-        </div>
-        <OrganizationsList
-          organizations={organizations}
-          deleteOrganization={deleteOrganization}
-        />
-        <CreateOrganization addOrganization={this.addOrganization} />
-        <ApplyInvitation addUserToOrganization={addUserToOrganization} />
-      </section>
-    );
-  }
-}
+  return (
+    <section className={styles.container}>
+      <div className={styles.heading}>
+        <HeadingLevelTwo>Organizations Management</HeadingLevelTwo>
+      </div>
+      <OrganizationsList
+        organizations={organizations}
+        deleteOrganization={deleteOrganization}
+      />
+      <CreateOrganization createOrganization={createOrganization} />
+      <ApplyInvitation addUserToOrganization={addUserToOrganization} />
+    </section>
+  );
+};
 
 interface IRootState {
   organizationsManagement: AppState;

@@ -20,6 +20,7 @@ import {
   UPLOAD_FILE_MAP_FAILURE,
 } from './action-types';
 import Api from 'api/api';
+import { facilitySchema } from 'validations';
 import { getVarcharEight, uploadFile } from 'helpers';
 import { IFacility, IField, IUploadFile } from 'common/models';
 
@@ -129,6 +130,8 @@ const saveFacilities: ActionCreator<ThunkAction<
     for await (let facility of facilities) {
       const copiedFacility = { ...facility };
 
+      await facilitySchema.validate(copiedFacility);
+
       delete copiedFacility.isFieldsLoaded;
       delete copiedFacility.isFieldsLoading;
 
@@ -173,10 +176,12 @@ const saveFacilities: ActionCreator<ThunkAction<
     });
 
     Toasts.successToast('Facilities saved successfully');
-  } catch {
+  } catch (err) {
     dispatch({
       type: SAVE_FACILITIES_FAILURE,
     });
+
+    Toasts.errorToast(err.message);
   }
 };
 

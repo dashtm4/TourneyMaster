@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   SectionDropdown,
   Button,
@@ -26,10 +27,10 @@ const EMPTY_ORGANIZATION = {
 };
 
 interface Props {
-  addOrganization: (organizationData: IConfigurableOrganization) => void;
+  createOrganization: (organizationData: IConfigurableOrganization) => void;
 }
 
-const CreateOrganization = ({ addOrganization }: Props) => {
+const CreateOrganization = ({ createOrganization }: Props) => {
   const [organization, onChange] = React.useState<IConfigurableOrganization>(
     EMPTY_ORGANIZATION
   );
@@ -53,7 +54,7 @@ const CreateOrganization = ({ addOrganization }: Props) => {
             reminders.
           </CardMessage>
           <form
-            onSubmit={evt => {
+            onSubmit={(evt: any) => {
               evt.preventDefault();
 
               onConfirmPopup(true);
@@ -67,7 +68,6 @@ const CreateOrganization = ({ addOrganization }: Props) => {
                 value={organization.org_name || ''}
                 fullWidth={true}
                 label="Organization Name"
-                isRequired
               />
             </div>
             <div className={styles.sectionItem}>
@@ -118,9 +118,8 @@ const CreateOrganization = ({ addOrganization }: Props) => {
         onClose={() => onConfirmPopup(false)}
         onCanceClick={() => onConfirmPopup(false)}
         onYesClick={() => {
-          addOrganization(organization);
+          createOrganization(organization);
           onConfirmPopup(false);
-          onChange(EMPTY_ORGANIZATION);
         }}
       />
     </>

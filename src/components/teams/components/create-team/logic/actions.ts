@@ -1,6 +1,7 @@
 import api from 'api/api';
 import { ActionCreator } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import { teamSchema } from 'validations';
 import { getVarcharEight } from 'helpers';
 import { Toasts } from 'components/common';
 import { ITeam } from 'common/models';
@@ -16,25 +17,27 @@ export const saveTeams: ActionCreator<ThunkAction<
   eventId: string,
   history: History
 ) => async () => {
-  for await (const team of teams) {
-    const data = {
-      ...team,
-      event_id: eventId,
-      team_id: getVarcharEight(),
-    };
-    if (!data.short_name || !data.long_name) {
-      return Toasts.errorToast(
-        "Please, fill in the 'Long Name' and 'Short Name' fields."
-      );
-    }
-    const response = await api.post(`/teams`, data);
+  try {
+    for await (const team of teams) {
+      const data = {
+        ...team,
+        event_id: eventId,
+        team_id: getVarcharEight(),
+      };
 
-    if (response?.errorType === 'Error') {
-      return Toasts.errorToast("Couldn't create a team");
+      await teamSchema.validate(team);
+
+      const response = await api.post(`/teams`, data);
+
+      if (response?.errorType === 'Error') {
+        return Toasts.errorToast("Couldn't create a team");
+      }
     }
+
+    history.goBack();
+
+    Toasts.successToast('Team is successfully created');
+  } catch (err) {
+    Toasts.errorToast(err.message);
   }
-
-  history.goBack();
-
-  Toasts.successToast('Team is successfully created');
 };

@@ -67,7 +67,8 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "typescript": "^3.7.5",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "yup": "^0.28.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -93,6 +94,7 @@
   },
   "devDependencies": {
     "@types/node-sass": "^4.11.0",
+    "@types/yup": "^0.26.32",
     "prettier": "^1.19.1",
     "tslint": "^6.0.0",
     "tslint-config-prettier": "^1.18.0",
