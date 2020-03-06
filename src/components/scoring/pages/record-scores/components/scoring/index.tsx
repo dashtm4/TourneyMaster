@@ -1,6 +1,7 @@
 import React from 'react';
-import ScoringFilter from '../scoring-filter/index';
-import { DayTypes } from '../../index';
+import ScoringFilter from '../scoring-filter';
+import ScoringTable from '../scoring-table';
+import { DayTypes, ViewTypes } from '../../index';
 import { IDivision, ITeam, IField } from 'common/models';
 import styles from './styles.module.scss';
 
@@ -8,6 +9,7 @@ interface Props {
   divisions: IDivision[];
   teams: ITeam[];
   fields: IField[];
+  view: ViewTypes;
   selectedDay: DayTypes;
   selectedDivision: string;
   selectedTeam: string;
@@ -20,6 +22,7 @@ const Scoring = ({
   divisions,
   teams,
   fields,
+  view,
   selectedDay,
   selectedDivision,
   selectedTeam,
@@ -40,6 +43,7 @@ const Scoring = ({
       onChangeSelect={onChangeSelect}
       onChangeDay={onChangeDay}
     />
+    <ScoringTable isEnterScores={view === ViewTypes.ENTER_SCORES} />
   </section>
 );
 
