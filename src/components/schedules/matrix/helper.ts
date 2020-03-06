@@ -1,6 +1,6 @@
-import { ITeam, IField, ITimeSlot } from '..';
-import { ITeamCard } from './index';
+import { IField, ITimeSlot } from '..';
 import { DropParams } from './dnd/drop';
+import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 
 export enum TeamPositionEnum {
   'awayTeam' = 1,
@@ -10,8 +10,9 @@ export enum TeamPositionEnum {
 export interface IGame {
   id: number;
   startTime?: string;
-  awayTeam?: ITeamCard;
+  facilityId?: number;
   homeTeam?: ITeamCard;
+  awayTeam?: ITeamCard;
   timeSlotId: number;
   fieldId: number;
   isPremier?: boolean;
@@ -28,7 +29,6 @@ export const defineGames = (
   timeSlots: ITimeSlot[],
   _teams: ITeam[]
 ): IDefinedGames => {
-  // const teamsNumber = teams.length;
   const fieldsNumber = fields.length;
   const timeSlotsNumber = timeSlots.length;
   const gamesNumber = fieldsNumber * timeSlotsNumber;
@@ -131,3 +131,11 @@ export const arrayAverageOccurrence = (array: any[]) => {
 
   return modes[0];
 };
+
+export const getSortedByGamesNum = (data: any) =>
+  Object.keys(data).sort((a, b) =>
+    data[a].gamesNum < data[b].gamesNum ? 1 : -1
+  );
+
+export const getSortedDesc = (data: any) =>
+  Object.keys(data).sort((a, b) => (data[a] < data[b] ? 1 : -1));
