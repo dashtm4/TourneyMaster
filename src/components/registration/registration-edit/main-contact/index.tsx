@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '../styles.module.scss';
-import { Input, Select, Checkbox } from 'components/common';
+import { Input, Checkbox, CardMessage } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
 import { IRegistration } from 'common/models/registration';
 
@@ -10,8 +10,6 @@ interface IMainContactProps {
 }
 
 const MainContact = ({ data, onChange }: IMainContactProps) => {
-  const roles = ['1', '2', '3'];
-
   const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('reg_first_name', e.target.value);
   const onLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -31,6 +29,12 @@ const MainContact = ({ data, onChange }: IMainContactProps) => {
 
   return (
     <div className={styles.section}>
+      <div className={styles.sectionTooltipRow}>
+        <div className={styles.sectionItem} style={{ width: '51.5%' }} />
+        <CardMessage type="emodjiObjects" style={{ fontSize: '10xp' }}>
+          Admin, Tourney Director, Boys Lead, etc.
+        </CardMessage>
+      </div>
       <div className={styles.sectionFirstRow}>
         <div className={styles.sectionItem}>
           <Input
@@ -49,13 +53,9 @@ const MainContact = ({ data, onChange }: IMainContactProps) => {
           />
         </div>
         <div className={styles.sectionItem}>
-          <Select
+          <Input
             label="Role"
-            options={roles.map(type => ({
-              label: type,
-              value: type,
-            }))}
-            value=""
+            value={data ? data.role : ''}
             onChange={onRoleChange}
           />
           <span className={styles.tournamentStatus} />

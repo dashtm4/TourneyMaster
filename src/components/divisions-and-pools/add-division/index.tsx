@@ -10,49 +10,64 @@ import {
   saveDivisions,
   updateDivision,
   deleteDivision,
+  getRegistration,
 } from '../logic/actions';
 import {
   BindingCbWithOne,
-  BindingAction,
   BindingCbWithTwo,
+  BindingCbWithThree,
 } from 'common/models/callback';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteDivision from '../add-division/delete-division';
 import Modal from 'components/common/modal';
-import { IDisision } from 'common/models';
+import { IDivision, ITeam, IPool } from 'common/models';
+import { IRegistration } from 'common/models/registration';
+import CancelPopup from '../../common/cancel-popup';
 
 interface ILocationState {
   divisionId: string;
+  pools: IPool[];
+  teams: ITeam[];
 }
 
 interface IAddDivisionState {
-  divisions: Partial<IDisision>[];
+  defaultDivision: Partial<{ entry_fee: number; max_num_teams: number }>;
+  divisions: Partial<IDivision>[];
   isModalOpen: boolean;
+  isModalConfirmOpen: boolean;
 }
 
 interface IDivisionProps {
   history: History;
   location: Location<ILocationState>;
   match: any;
-  divisions: IDisision[];
-  saveDivisions: BindingCbWithTwo<Partial<IDisision>[], string>;
+  divisions: IDivision[];
+  registration: IRegistration;
+  saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
   getDivision: BindingCbWithOne<string>;
-  updateDivision: BindingCbWithOne<Partial<IDisision>>;
-  deleteDivision: BindingAction;
+  updateDivision: BindingCbWithOne<Partial<IDivision>>;
+  deleteDivision: BindingCbWithThree<string, IPool[], ITeam[]>;
+  getRegistration: BindingCbWithOne<string>;
 }
 
 class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   divisionId = this.props.location.state?.divisionId;
   eventId = this.props.match.params.eventId;
-  state = { divisions: [{}], isModalOpen: false };
+  state = {
+    defaultDivision: {},
+    divisions: [{}],
+    isModalOpen: false,
+    isModalConfirmOpen: false,
+  };
 
   componentDidMount() {
     if (this.divisionId) {
-      const division: IDisision[] = this.props.divisions.filter(
+      const division: IDivision[] = this.props.divisions.filter(
         div => div.division_id === this.divisionId
       );
       this.setState({ divisions: [division[0]] });
     }
+    this.props.getRegistration(this.eventId);
   }
 
   onChange = (name: string, value: string | number, index: number) => {
@@ -66,7 +81,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   };
 
   onCancel = () => {
-    this.props.history.goBack();
+    this.setState({ isModalConfirmOpen: true });
   };
 
   onSave = () => {
@@ -76,7 +91,9 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   };
 
   onAddDivision = () => {
-    this.setState({ divisions: [...this.state.divisions, {}] });
+    this.setState({
+      divisions: [...this.state.divisions, this.state.defaultDivision],
+    });
   };
 
   onDeleteDivision = () => {
@@ -86,7 +103,9 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   onModalClose = () => {
     this.setState({ isModalOpen: false });
   };
-
+  onModalConfirmClose = () => {
+    this.setState({ isModalConfirmOpen: false });
+  };
   renderHeading = () => {
     const text = this.divisionId ? 'Edit Division' : 'Add Division';
     return <HeadingLevelTwo>{text}</HeadingLevelTwo>;
@@ -111,6 +130,32 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
       />
     );
   };
+
+  static getDerivedStateFromProps(
+    nextProps: IDivisionProps,
+    prevState: IAddDivisionState
+  ): Partial<IAddDivisionState> {
+    if (
+      nextProps.registration &&
+      !prevState.defaultDivision.entry_fee &&
+      !prevState.divisions[0]?.division_id
+    ) {
+      return {
+        defaultDivision: {
+          entry_fee: nextProps.registration.entry_fee,
+          max_num_teams: nextProps.registration.max_teams_per_division,
+        },
+        divisions: [
+          {
+            entry_fee: nextProps.registration.entry_fee,
+            max_num_teams: nextProps.registration.max_teams_per_division,
+          },
+        ],
+      };
+    } else {
+      return {};
+    }
+  }
 
   render() {
     return (
@@ -139,7 +184,8 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
             key={index}
             index={index}
             onChange={this.onChange}
-            division={this.state.divisions[index]}
+            division={this.state.divisions[index] || {}}
+            registration={this.props.registration}
           />
         ))}
         {this.renderButton()}
@@ -149,7 +195,15 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
             divisionId={this.divisionId}
             onClose={this.onModalClose}
             deleteDivision={this.props.deleteDivision}
+            pools={this.props.location.state?.pools}
+            teams={this.props.location.state?.teams}
           />
+        </Modal>
+        <Modal
+          isOpen={this.state.isModalConfirmOpen}
+          onClose={this.onModalConfirmClose}
+        >
+          <CancelPopup onSave={this.onSave} />
         </Modal>
       </section>
     );
@@ -157,17 +211,19 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
 }
 
 interface IState {
-  divisions: { data: IDisision[] };
+  divisions: { data: IDivision[]; registration: IRegistration };
 }
 
 const mapStateToProps = (state: IState) => ({
   divisions: state.divisions.data,
+  registration: state.divisions.registration,
 });
 
 const mapDispatchToProps = {
   saveDivisions,
   updateDivision,
   deleteDivision,
+  getRegistration,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddDivision);

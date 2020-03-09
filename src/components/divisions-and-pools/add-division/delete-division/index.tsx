@@ -2,23 +2,32 @@ import React from 'react';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 import WarningIcon from '@material-ui/icons/Warning';
-import { BindingAction, BindingCbWithOne, IDisision } from 'common/models';
+import {
+  BindingAction,
+  IDivision,
+  IPool,
+  ITeam,
+  BindingCbWithThree,
+} from 'common/models';
 
 interface IDeleteDivisionProps {
   onClose: BindingAction;
-  deleteDivision: BindingCbWithOne<string>;
+  deleteDivision: BindingCbWithThree<string, IPool[], ITeam[]>;
   divisionId: string;
-  division: Partial<IDisision>;
+  division: Partial<IDivision>;
+  pools: IPool[];
+  teams: ITeam[];
 }
 
 const DeleteDivision = ({
   onClose,
   deleteDivision,
   divisionId,
-  division,
+  pools,
+  teams,
 }: IDeleteDivisionProps) => {
   const onDeleteDivision = () => {
-    deleteDivision(divisionId);
+    deleteDivision(divisionId, pools, teams);
     onClose();
   };
 
@@ -34,11 +43,10 @@ const DeleteDivision = ({
         </div>
       </div>
       <div className={styles.sectionItem}>
-        <span className={styles.title}>Pools:</span> {division.num_pools || '—'}
+        <span className={styles.title}>Pools:</span> {pools.length}
       </div>
       <div className={styles.sectionItem}>
-        <span className={styles.title}>Teams:</span>{' '}
-        {division.teams_registered || '—'}
+        <span className={styles.title}>Teams:</span> {teams.length}
       </div>
       <div className={styles.buttonsGroup}>
         <div>

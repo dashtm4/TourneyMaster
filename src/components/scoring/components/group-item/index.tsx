@@ -1,35 +1,41 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
-import SectionDropdown from '../../../common/section-dropdown';
+import React from 'react';
+import { SectionDropdown, Loader } from '../../../common';
 import TeamItem from '../team-item';
+import { IPool, ITeam, IDivision } from '../../../../common/models';
 import styles from './styles.module.scss';
-import {
-  IPool,
-  ITeam,
-  BindingAction,
-  BindingCbWithOne,
-} from '../../../../common/models';
 
 interface Props {
+  division: IDivision;
   pool: IPool;
   teams: ITeam[];
-  loadTeams: BindingAction;
-  onOpenTeamDetails: BindingCbWithOne<ITeam>;
+  loadTeams: (poolId: string) => void;
+  onOpenTeamDetails: (
+    team: ITeam,
+    divisionName: string,
+    poolName: string
+  ) => void;
 }
 
-const GroupItem = ({ pool, teams, loadTeams, onOpenTeamDetails }: Props) => {
-  useEffect(() => {
-    loadTeams();
-  }, []);
+const GroupItem = ({
+  division,
+  pool,
+  teams,
+  loadTeams,
+  onOpenTeamDetails,
+}: Props) => {
+  if (!pool.isTeamsLoading && !pool.isTeamsLoaded) {
+    loadTeams(pool.pool_id);
+  }
 
-  if (teams.length === 0) {
-    return null;
+  if (pool.isTeamsLoading) {
+    return <Loader />;
   }
 
   return (
     <li className={styles.groupItem}>
       <SectionDropdown isDefaultExpanded={true} headingColor={'#1C315F'}>
-        <span>{pool.pool_desc}</span>
+        <span>{pool.pool_name}</span>
         <table className={styles.groupTable}>
           <thead>
             <tr>
@@ -44,6 +50,8 @@ const GroupItem = ({ pool, teams, loadTeams, onOpenTeamDetails }: Props) => {
             {teams.map(it => (
               <TeamItem
                 team={it}
+                divisionName={division.long_name}
+                poolName={pool.pool_name}
                 key={it.team_id}
                 onOpenTeamDetails={onOpenTeamDetails}
               />

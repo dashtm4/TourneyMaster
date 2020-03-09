@@ -7,6 +7,7 @@ import {
   Radio,
   Checkbox,
 } from 'components/common';
+import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
@@ -125,6 +126,7 @@ const EventStructureSection: React.FC<Props> = ({
 
   return (
     <SectionDropdown
+      id={EventMenuTitles.EVENT_STRUCTURE}
       type="section"
       panelDetailsType="flat"
       isDefaultExpanded={true}

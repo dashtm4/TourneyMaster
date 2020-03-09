@@ -1,45 +1,46 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
+import * as Yup from 'yup';
 import {
   TeamsAction,
-  SUCCESS,
-  FAILURE,
-  CHANGE_POOL,
-  LOAD_DIVISIONS,
+  LOAD_DIVISIONS_TEAMS_START,
+  LOAD_DIVISIONS_TEAMS_SUCCESS,
+  LOAD_DIVISIONS_TEAMS_FAILURE,
   LOAD_POOLS_START,
   LOAD_POOLS_SUCCESS,
   LOAD_POOLS_FAILURE,
-  LOAD_TEAMS_START,
-  LOAD_TEAMS_SUCCESS,
-  LOAD_TEAMS_FAILURE,
-  EDIT_TEAM,
-  DELETE_TEAM,
+  SAVE_TEAMS_SUCCESS,
+  SAVE_TEAMS_FAILURE,
 } from './action-types';
-import { ITeam } from '../../../common/models';
 import Api from 'api/api';
+import { teamSchema } from 'validations';
+import { Toasts } from 'components/common';
+import { ITeam } from 'common/models';
 
-const changePool = (team: ITeam, poolId: string | null) => {
-  const changedTeam = { ...team, pool_id: poolId, isChange: true };
-
-  return {
-    type: CHANGE_POOL,
-    payload: changedTeam,
-  };
-};
-
-const loadDivisions: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
-  eventId: string
-) => async (dispatch: Dispatch) => {
+const loadDivisionsTeams: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  TeamsAction
+>> = (eventId: string) => async (dispatch: Dispatch) => {
   try {
+    dispatch({
+      type: LOAD_DIVISIONS_TEAMS_START,
+    });
+
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
+    const teams = await Api.get(`/teams?event_id=${eventId}`);
 
     dispatch({
-      type: LOAD_DIVISIONS + SUCCESS,
-      payload: divisions,
+      type: LOAD_DIVISIONS_TEAMS_SUCCESS,
+      payload: {
+        divisions,
+        teams,
+      },
     });
   } catch {
     dispatch({
-      type: LOAD_DIVISIONS + FAILURE,
+      type: LOAD_DIVISIONS_TEAMS_FAILURE,
     });
   }
 };
@@ -71,72 +72,49 @@ const loadPools: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-const loadTeams: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
-  poolId: string
+const saveTeams: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
+  teams: ITeam[]
 ) => async (dispatch: Dispatch) => {
   try {
-    dispatch({
-      type: LOAD_TEAMS_START,
-      payload: {
-        poolId,
-      },
-    });
+    await Yup.array()
+      .of(teamSchema)
+      .unique(
+        team => team.long_name,
+        'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
+      )
+      .unique(
+        team => team.short_name,
+        'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+      )
+      .validate(teams);
 
-    const teams = await Api.get(`/teams?pool_id=${poolId}`);
+    for await (let team of teams) {
+      if (team.isDelete) {
+        await Api.delete(`/teams?team_id=${team.team_id}`);
+      }
+
+      if (team.isChange && !team.isDelete) {
+        delete team.isChange;
+
+        await Api.put(`/teams?team_id=${team.team_id}`, team);
+      }
+    }
 
     dispatch({
-      type: LOAD_TEAMS_SUCCESS,
+      type: SAVE_TEAMS_SUCCESS,
       payload: {
-        poolId,
         teams,
       },
     });
-  } catch {
+
+    Toasts.successToast('Teams saved successfully');
+  } catch (err) {
     dispatch({
-      type: LOAD_TEAMS_FAILURE,
+      type: SAVE_TEAMS_FAILURE,
     });
+
+    Toasts.errorToast(err.message);
   }
 };
 
-const editTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
-  team: ITeam
-) => async (dispatch: Dispatch) => {
-  try {
-    await Api.put(`/teams?team_id=${team.team_id}`, team);
-
-    dispatch({
-      type: EDIT_TEAM + SUCCESS,
-      payload: team,
-    });
-  } catch {
-    dispatch({
-      type: EDIT_TEAM + FAILURE,
-    });
-  }
-};
-
-const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
-  team: ITeam
-) => async (dispatch: Dispatch) => {
-  try {
-    await Api.delete(`/teams?team_id=${team.team_id}`);
-
-    dispatch({
-      type: DELETE_TEAM + SUCCESS,
-      payload: team,
-    });
-  } catch {
-    dispatch({
-      type: DELETE_TEAM + FAILURE,
-    });
-  }
-};
-
-export {
-  changePool,
-  loadDivisions,
-  loadPools,
-  loadTeams,
-  editTeam,
-  deleteTeam,
-};
+export { loadDivisionsTeams, loadPools, saveTeams };

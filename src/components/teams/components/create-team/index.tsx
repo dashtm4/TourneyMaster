@@ -7,15 +7,14 @@ import Button from 'components/common/buttons/button';
 import HeadingLevelTwo from 'components/common/headings/heading-level-two';
 import AddTeamForm from './create-team-form';
 import { saveTeams } from './logic/actions';
-import { getDivisions } from 'components/divisions-and-pools/logic/actions';
 import {
   BindingCbWithOne,
-  IDisision,
+  IDivision,
   ITeam,
   BindingCbWithThree,
 } from 'common/models';
 import Modal from 'components/common/modal';
-import CancelPopup from './cancel-popup';
+import CancelPopup from 'components/common/cancel-popup';
 
 interface ICreateTeamState {
   teams: Partial<ITeam>[];
@@ -25,7 +24,7 @@ interface ICreateTeamState {
 interface ICreateTeamProps {
   history: History;
   match: any;
-  divisions: IDisision[];
+  divisions: IDivision[];
   saveTeams: BindingCbWithThree<Partial<ITeam>[], string, History>;
   getDivisions: BindingCbWithOne<string>;
 }
@@ -33,10 +32,6 @@ interface ICreateTeamProps {
 class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
   eventId = this.props.match.params.eventId;
   state = { teams: [{}], isModalOpen: false };
-
-  componentDidMount() {
-    this.props.getDivisions(this.eventId);
-  }
 
   onChange = (name: string, value: string | number, index: number) => {
     this.setState(({ teams }) => ({
@@ -107,7 +102,7 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
           onClick={this.onAddTeam}
         />
         <Modal isOpen={this.state.isModalOpen} onClose={this.onModalClose}>
-          <CancelPopup onSave={this.onSave} history={this.props.history} />
+          <CancelPopup onSave={this.onSave} />
         </Modal>
       </section>
     );
@@ -115,16 +110,15 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
 }
 
 interface IState {
-  divisions: { data: IDisision[] };
+  teams: any;
 }
 
 const mapStateToProps = (state: IState) => ({
-  divisions: state.divisions.data,
+  divisions: state.teams.divisions,
 });
 
 const mapDispatchToProps = {
   saveTeams,
-  getDivisions,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateTeam);

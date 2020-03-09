@@ -4,6 +4,7 @@
 }
 
 .squaredBtn {
+  border: 0.75px solid #1c315f !important;
   border-radius: 3.75px !important;
 }
 
@@ -18,5 +19,6 @@
 }
 
 .iconWrapper {
+  display: flex;
   margin-right: 7px;
 }

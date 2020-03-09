@@ -1,4 +1,4 @@
-export interface IDisision {
+export interface IDivision {
   division_id: string;
   event_id: string;
   long_name: string;
@@ -6,12 +6,12 @@ export interface IDisision {
   is_premier_YN: null;
   entry_fee: number;
   division_description: string;
-  division_hex: null;
+  division_hex: string;
   division_tag: string;
-  max_num_teams: null;
-  teams_registered: null;
-  teams_tentitive: null;
-  num_pools: null;
+  max_num_teams: number;
+  teams_registered: number;
+  teams_tentitive: number;
+  num_pools: number;
   division_message: string;
   game_duration_differ: null;
   game_duration_override: null;
@@ -27,4 +27,6 @@ export interface IDisision {
   //optional
   isPoolsLoading?: boolean;
   isPoolsLoaded?: boolean;
+  isTeamsLoading?: boolean;
+  isTeamsLoaded?: boolean;
 }

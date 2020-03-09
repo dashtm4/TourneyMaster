@@ -1,6 +1,8 @@
-import api from 'api/api';
 import { ActionCreator } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import * as Yup from 'yup';
+import api from 'api/api';
+import { teamSchema } from 'validations';
 import { getVarcharEight } from 'helpers';
 import { Toasts } from 'components/common';
 import { ITeam } from 'common/models';
@@ -16,20 +18,39 @@ export const saveTeams: ActionCreator<ThunkAction<
   eventId: string,
   history: History
 ) => async () => {
-  for await (const team of teams) {
-    const data = {
-      ...team,
-      event_id: eventId,
-      team_id: getVarcharEight(),
-    };
-    const response = await api.post(`/teams`, data);
+  try {
+    const allTeams = await api.get(`/teams?event_id=${eventId}`);
 
-    if (response?.errorType === 'Error') {
-      return Toasts.errorToast("Couldn't create a team");
+    await Yup.array()
+      .of(teamSchema)
+      .unique(
+        team => team.long_name,
+        'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
+      )
+      .unique(
+        team => team.short_name,
+        'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+      )
+      .validate([...allTeams, ...teams]);
+
+    for await (const team of teams) {
+      const data = {
+        ...team,
+        event_id: eventId,
+        team_id: getVarcharEight(),
+      };
+
+      const response = await api.post(`/teams`, data);
+
+      if (response?.errorType === 'Error') {
+        return Toasts.errorToast("Couldn't create a team");
+      }
     }
+
+    history.goBack();
+
+    Toasts.successToast('Team is successfully created');
+  } catch (err) {
+    Toasts.errorToast(err.message);
   }
-
-  history.goBack();
-
-  Toasts.successToast('Team is successfully created');
 };

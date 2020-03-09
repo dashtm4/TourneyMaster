@@ -1,22 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import {
   ExpansionPanelWrapped,
   ExpansionPanelSummaryWrapped,
   ExpansionPanelDetailsWrapper,
 } from './expansion-panel-material';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { getIcon } from '../../../helpers/get-icon.helper';
+import { getIcon, stringToLink } from '../../../helpers';
 import { Icons } from '../../../common/constants/icons';
+import { MenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 
-interface MenuItem {
-  isAllow: boolean;
-  title: string;
-  icon: string;
-  link: string;
-  children: string[] | null;
-}
+const STYLES_MENUITEM_ICON = {
+  marginRight: '10px',
+};
+
+const STYLES_MENUITEM_ICON_COLLAPSED = {
+  marginRight: 0,
+};
 
 interface Props {
   list: MenuItem[];
@@ -24,117 +26,89 @@ interface Props {
   isAllowEdit: boolean;
 }
 
-interface State {
-  isCollapsible: boolean;
-  collapsed: boolean;
-}
+const Menu = ({ isAllowEdit, list, eventId }: Props) => {
+  const [isCollapsed, onCollapse] = React.useState(false);
+  const [isCollapsible, onSetCollapsibility] = React.useState(false);
+  const [activeItem, setActiveItem] = React.useState(list[0].title);
 
-class Menu extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      isCollapsible: false,
-      collapsed: false,
-    };
-  }
-
-  onCollapse = () => {
-    if (this.state.isCollapsible) {
-      this.setState({ collapsed: !this.state.collapsed });
-    }
-  };
-
-  onSetCollapsibility = () => {
-    this.setState({ isCollapsible: !this.state.isCollapsible });
-  };
-
-  renderMenuLink(menuItem: MenuItem, menuSubItem?: string) {
-    const path = this.props.eventId
-      ? `${menuItem.link}/${this.props.eventId}`
-      : menuItem.link;
-
-    return (
-      <Link to={path} className={styles.itemTitle}>
-        {menuSubItem || menuItem.title}
-      </Link>
-    );
-  }
-
-  renderMenu() {
-    const { isAllowEdit } = this.props;
-
-    return (
-      <aside className={styles.dashboardMenu} onMouseLeave={this.onCollapse}>
-        <ul className={styles.list}>
-          {this.props.list.map(menuItem =>
-            menuItem.children ? (
-              <li className={styles.itemTitle} key={menuItem.title}>
-                <ExpansionPanelWrapped
-                  disabled={!menuItem.isAllow && !isAllowEdit}
-                >
-                  <ExpansionPanelSummaryWrapped expandIcon={<ExpandMoreIcon />}>
-                    {getIcon(menuItem.icon)}
-                    {this.renderMenuLink(menuItem)}
-                  </ExpansionPanelSummaryWrapped>
-                  <ExpansionPanelDetailsWrapper>
-                    <ul className={styles.list}>
-                      {menuItem.children.map(menuSubItem => (
-                        <li className={styles.itemSubTitle} key={menuSubItem}>
-                          {this.renderMenuLink(menuItem, menuSubItem)}
-                        </li>
-                      ))}
-                    </ul>
-                  </ExpansionPanelDetailsWrapper>
-                </ExpansionPanelWrapped>
-              </li>
-            ) : (
-              <li
-                className={`${styles.itemTitle} ${styles.itemTitleAlone}`}
-                key={menuItem.title}
+  return (
+    <aside
+      className={`${styles.dashboardMenu} ${
+        isCollapsed ? styles.dashboardMenuCollapsed : ''
+      } `}
+      onMouseOver={() => {
+        if (isCollapsible) {
+          onCollapse(false);
+        }
+      }}
+      onMouseOut={() => {
+        if (isCollapsible) {
+          onCollapse(true);
+        }
+      }}
+    >
+      <ul className={styles.list}>
+        {list.map(menuItem => (
+          <li className={styles.itemTitle} key={menuItem.title}>
+            <ExpansionPanelWrapped disabled={!menuItem.isAllow && !isAllowEdit}>
+              <ExpansionPanelSummaryWrapped
+                expandIcon={
+                  menuItem.children.length !== 0 && !isCollapsed ? (
+                    <ExpandMoreIcon />
+                  ) : null
+                }
               >
-                <ExpansionPanelWrapped
-                  disabled={!menuItem.isAllow && !isAllowEdit}
-                >
-                  <ExpansionPanelSummaryWrapped>
-                    {getIcon(menuItem.icon)}
-                    {this.renderMenuLink(menuItem)}
-                  </ExpansionPanelSummaryWrapped>
-                </ExpansionPanelWrapped>
-              </li>
-            )
-          )}
-        </ul>
-        <button className={styles.pinBtn} onClick={this.onSetCollapsibility}>
-          {getIcon(Icons.PIN)}
-          {this.state.isCollapsible ? 'Pin' : 'Unpin'} Menu
-        </button>
-      </aside>
-    );
-  }
-
-  renderCollapsedMenu() {
-    return (
-      <aside className={styles.collapsedMenu} onMouseEnter={this.onCollapse}>
-        <ul className={styles.list}>
-          {this.props.list.map(menuItem => (
-            <li
-              className={`${styles.itemTitle} ${styles.itemTitleAlone}`}
-              key={menuItem.title}
-            >
-              {getIcon(menuItem.icon)}
-            </li>
-          ))}
-        </ul>
-      </aside>
-    );
-  }
-
-  render() {
-    const { collapsed } = this.state;
-
-    return <>{collapsed ? this.renderCollapsedMenu() : this.renderMenu()}</>;
-  }
-}
+                {getIcon(
+                  menuItem.icon,
+                  isCollapsed
+                    ? STYLES_MENUITEM_ICON_COLLAPSED
+                    : STYLES_MENUITEM_ICON
+                )}
+                {!isCollapsed && (
+                  <Link
+                    className={
+                      activeItem === menuItem.title
+                        ? styles.activeItemTitle
+                        : ''
+                    }
+                    onClick={() => setActiveItem(menuItem.title)}
+                    to={`${menuItem.link}/${eventId || ''}`}
+                  >
+                    {menuItem.title}
+                  </Link>
+                )}
+              </ExpansionPanelSummaryWrapped>
+              {menuItem.children.length !== 0 && (
+                <ExpansionPanelDetailsWrapper>
+                  <ul className={styles.subList}>
+                    {menuItem.children.map((menuSubItem: string) => (
+                      <li className={styles.subListItem} key={menuSubItem}>
+                        <HashLink
+                          onClick={() => setActiveItem(menuItem.title)}
+                          to={`${menuItem.link}/${eventId || ''}#${stringToLink(
+                            menuSubItem
+                          )}`}
+                        >
+                          {menuSubItem}
+                        </HashLink>
+                      </li>
+                    ))}
+                  </ul>
+                </ExpansionPanelDetailsWrapper>
+              )}
+            </ExpansionPanelWrapped>
+          </li>
+        ))}
+      </ul>
+      <button
+        className={styles.pinBtn}
+        onClick={() => onSetCollapsibility(!isCollapsible)}
+      >
+        {getIcon(Icons.PIN)}
+        {!isCollapsed && `${isCollapsible ? 'Pin' : 'Unpin'}  Menu`}
+      </button>
+    </aside>
+  );
+};
 
 export default Menu;

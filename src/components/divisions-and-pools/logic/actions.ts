@@ -1,29 +1,33 @@
+import { ActionCreator, Dispatch } from 'redux';
+import { ThunkAction } from 'redux-thunk';
+import * as Yup from 'yup';
 import {
   DIVISIONS_FETCH_SUCCESS,
   DIVISIONS_FETCH_FAILURE,
   POOLS_FETCH_SUCCESS,
   TEAMS_FETCH_SUCCESS,
-  FETCH_START,
+  FETCH_DETAILS_START,
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
   ADD_POOL_SUCCESS,
+  REGISTRATION_FETCH_SUCCESS,
+  DIVISION_SAVE_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
-import { ActionCreator, Dispatch } from 'redux';
-import { ThunkAction } from 'redux-thunk';
 import history from '../../../browserhistory';
+import { divisionSchema, poolSchema } from 'validations';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
-import { IPool, ITeam, IDisision } from 'common/models';
+import { IPool, ITeam, IDivision } from 'common/models';
 
-export const fetchStart = (): { type: string } => ({
-  type: FETCH_START,
+export const fetchDetailsStart = (): { type: string } => ({
+  type: FETCH_DETAILS_START,
 });
 
 export const divisionsFetchSuccess = (
-  payload: IDisision
-): { type: string; payload: IDisision } => ({
+  payload: IDivision
+): { type: string; payload: IDivision } => ({
   type: DIVISIONS_FETCH_SUCCESS,
   payload,
 });
@@ -33,15 +37,15 @@ export const divisionsFetchFailure = (): { type: string } => ({
 });
 
 export const addDivisionSuccess = (
-  payload: IDisision
-): { type: string; payload: IDisision } => ({
+  payload: IDivision
+): { type: string; payload: IDivision } => ({
   type: ADD_DIVISION_SUCCESS,
   payload,
 });
 
 export const updateDivisionSuccess = (
-  payload: IDisision
-): { type: string; payload: IDisision } => ({
+  payload: IDivision
+): { type: string; payload: IDivision } => ({
   type: UPDATE_DIVISION_SUCCESS,
   payload,
 });
@@ -74,13 +78,19 @@ export const teamsFetchSuccess = (
   payload,
 });
 
+export const registrationFetchSuccess = (
+  payload: any
+): { type: string; payload: any } => ({
+  type: REGISTRATION_FETCH_SUCCESS,
+  payload,
+});
+
 export const getDivisions: ActionCreator<ThunkAction<
   void,
   {},
   null,
   { type: string }
 >> = (eventId: string) => async (dispatch: Dispatch) => {
-  dispatch(fetchStart());
   const data = await api.get(`/divisions?event_id=${eventId}`);
   dispatch(divisionsFetchSuccess(data));
 };
@@ -91,6 +101,8 @@ export const getPools: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (divisionId: string) => async (dispatch: Dispatch) => {
+  dispatch(fetchDetailsStart());
+
   const data = await api.get(`/pools?division_id=${divisionId}`);
   dispatch(poolsFetchSuccess(data));
 };
@@ -110,49 +122,101 @@ export const updateDivision: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (division: IDisision) => async (dispatch: Dispatch) => {
-  const response = await api.put(
-    `/divisions?division_id=${division.division_id}`,
-    division
-  );
+>> = (division: IDivision) => async (dispatch: Dispatch) => {
+  try {
+    const allDivisions = await api.get(
+      `/divisions?event_id=${division.event_id}`
+    );
 
-  dispatch(updateDivisionSuccess(division));
+    await Yup.array()
+      .of(divisionSchema)
+      .unique(
+        division => division.long_name,
+        'Oops. It looks like you already have division with the same long name. The division must have a unique long name.'
+      )
+      .unique(
+        division => division.short_name,
+        'Oops. It looks like you already have division with the same short name. The division must have a unique short name.'
+      )
+      .validate(
+        allDivisions.map((it: IDivision) =>
+          it.division_id === division.division_id ? division : it
+        )
+      );
 
-  if (response?.errorType === 'Error') {
-    return Toasts.errorToast("Couldn't update a division");
+    const response = await api.put(
+      `/divisions?division_id=${division.division_id}`,
+      division
+    );
+
+    dispatch(updateDivisionSuccess(division));
+
+    if (response?.errorType === 'Error') {
+      return Toasts.errorToast("Couldn't update a division");
+    }
+
+    history.goBack();
+
+    Toasts.successToast('Division is successfully updated');
+  } catch (err) {
+    Toasts.errorToast(err.message);
   }
-
-  history.goBack();
-
-  Toasts.successToast('Division is successfully updated');
 };
+
+export const saveDivisionsSuccess = (divisions: IDivision[]) => ({
+  type: DIVISION_SAVE_SUCCESS,
+  payload: divisions,
+});
 
 export const saveDivisions: ActionCreator<ThunkAction<
   void,
   {},
   null,
   { type: string }
->> = (divisions: IDisision[], eventId: string) => async (
+>> = (divisions: IDivision[], eventId: string) => async (
   dispatch: Dispatch
 ) => {
-  for await (const division of divisions) {
-    const data = {
-      ...division,
-      event_id: eventId,
-      division_id: getVarcharEight(),
-    };
-    const response = await api.post(`/divisions`, data);
+  try {
+    const allDivisions = await api.get(`/divisions?event_id=${eventId}`);
 
-    dispatch(addDivisionSuccess(data));
+    await Yup.array()
+      .of(divisionSchema)
+      .unique(
+        division => division.long_name,
+        'Oops. It looks like you already have division with the same long name. The division must have a unique long name.'
+      )
+      .unique(
+        division => division.short_name,
+        'Oops. It looks like you already have division with the same short name. The division must have a unique short name.'
+      )
+      .validate([...allDivisions, ...divisions]);
 
-    if (response?.errorType === 'Error') {
-      return Toasts.errorToast("Couldn't add a division");
+    for await (const division of divisions) {
+      const data = {
+        ...division,
+        event_id: eventId,
+        division_id: getVarcharEight(),
+      };
+
+      await divisionSchema.validate(division);
+
+      const response = await api.post(`/divisions`, data);
+
+      dispatch(addDivisionSuccess(data));
+
+      if (response?.errorType === 'Error') {
+        return Toasts.errorToast("Couldn't add a division");
+      }
     }
+
+    dispatch(saveDivisionsSuccess(divisions));
+
+    history.push(`/event/divisions-and-pools/${eventId}`);
+
+    Toasts.successToast('Division is successfully added');
+  } catch (err) {
+    Toasts.errorToast(err.message);
   }
-
-  history.push(`/event/divisions-and-pools/${eventId}`);
-
-  Toasts.successToast('Division is successfully added');
 };
 
 export const deleteDivision: ActionCreator<ThunkAction<
@@ -160,7 +224,16 @@ export const deleteDivision: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (divisionId: string) => async (dispatch: Dispatch) => {
+>> = (divisionId: string, pools: IPool[], teams: ITeam[]) => async (
+  dispatch: Dispatch
+) => {
+  pools.forEach(pool => api.delete(`/pools?pool_id=${pool.pool_id}`));
+  teams.forEach(team =>
+    api.put(`/teams?team_id=${team.team_id}`, {
+      pool_id: null,
+      division_id: null,
+    })
+  );
   const response = await api.delete(`/divisions?division_id=${divisionId}`);
 
   if (response?.errorType === 'Error') {
@@ -180,18 +253,41 @@ export const savePool: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (pool: IPool) => async (dispatch: Dispatch) => {
-  const data = {
-    ...pool,
-    pool_id: getVarcharEight(),
-  };
+  try {
+    const data = {
+      ...pool,
+      pool_id: getVarcharEight(),
+    };
+    const allPools = await api.get(`/pools?division_id=${pool.division_id}`);
 
-  const response = await api.post(`/pools`, data);
+    await Yup.array()
+      .of(poolSchema)
+      .unique(
+        pool => pool.pool_name,
+        'Oops. It looks like you already have pool with the same name. The pool must have a unique name.'
+      )
+      .validate([...allPools, data]);
 
-  if (response?.errorType === 'Error') {
-    return Toasts.errorToast("Couldn't add a pool division");
+    const response = await api.post(`/pools`, data);
+
+    if (response?.errorType === 'Error') {
+      return Toasts.errorToast("Couldn't add a pool division");
+    }
+
+    dispatch(addPoolSuccess(data));
+
+    Toasts.successToast('Pool is successfully added');
+  } catch (err) {
+    Toasts.errorToast(err.message);
   }
+};
 
-  dispatch(addPoolSuccess(data));
-
-  Toasts.successToast('Pool is successfully added');
+export const getRegistration: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (eventId: string) => async (dispatch: Dispatch) => {
+  const data = await api.get(`/registrations?event_id=${eventId}`);
+  dispatch(registrationFetchSuccess(data));
 };

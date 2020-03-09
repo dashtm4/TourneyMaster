@@ -5,26 +5,40 @@ import FileUpload, {
   FileUploadTypes,
   AcceptFileTypes,
 } from 'components/common/file-upload';
+import { EventMenuTitles } from 'common/enums';
+
 import { IIconFile } from '../logic/model';
+import { UploadLogoTypes } from '../state';
 import styles from '../styles.module.scss';
 
 interface IProps {
   onFileUpload: (files: IIconFile[]) => void;
+  onFileRemove: (files: IIconFile[]) => void;
 }
 
-const MediaAssetsSection: React.FC<IProps> = ({ onFileUpload }) => {
+const MediaAssetsSection: React.FC<IProps> = props => {
+  const { onFileUpload, onFileRemove } = props;
+
+  const populateFileObj = (
+    files: File[],
+    destinationType: string
+  ): IIconFile[] => files.map(file => ({ file, destinationType }));
+
   const onDesktopFileUpload = (files: File[]) =>
-    onFileUpload(
-      files?.map((file: File) => ({ file, destinationType: 'desktop_icon' }))
-    );
+    onFileUpload(populateFileObj(files, UploadLogoTypes.DESKTOP));
 
   const onMobileFileUpload = (files: File[]) =>
-    onFileUpload(
-      files?.map((file: File) => ({ file, destinationType: 'mobile_icon' }))
-    );
+    onFileUpload(populateFileObj(files, UploadLogoTypes.MOBILE));
+
+  const onDesktopFileRemove = (files: File[]) =>
+    onFileRemove(populateFileObj(files, UploadLogoTypes.DESKTOP));
+
+  const onMobileFileRemove = (files: File[]) =>
+    onFileRemove(populateFileObj(files, UploadLogoTypes.MOBILE));
 
   return (
     <SectionDropdown
+      id={EventMenuTitles.MEDIA_ASSETS}
       type="section"
       panelDetailsType="flat"
       isDefaultExpanded={true}
@@ -41,10 +55,12 @@ const MediaAssetsSection: React.FC<IProps> = ({ onFileUpload }) => {
               type={FileUploadTypes.SECTION}
               acceptTypes={[
                 AcceptFileTypes.JPG,
+                AcceptFileTypes.JPEG,
                 AcceptFileTypes.PNG,
                 AcceptFileTypes.SVG,
               ]}
               onUpload={onDesktopFileUpload}
+              onFileRemove={onDesktopFileRemove}
             />
           </div>
           <div className={styles.uploadBlock}>
@@ -53,10 +69,12 @@ const MediaAssetsSection: React.FC<IProps> = ({ onFileUpload }) => {
               type={FileUploadTypes.SECTION}
               acceptTypes={[
                 AcceptFileTypes.JPG,
+                AcceptFileTypes.JPEG,
                 AcceptFileTypes.PNG,
                 AcceptFileTypes.SVG,
               ]}
               onUpload={onMobileFileUpload}
+              onFileRemove={onMobileFileRemove}
             />
           </div>
         </div>

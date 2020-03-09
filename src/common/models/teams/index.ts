@@ -1,24 +1,27 @@
 export interface ITeam {
   team_id: string;
-  event_id: string;
-  org_id: number;
-  long_name: string;
+  event_id: string | null;
+  org_id: number | null;
+  long_name: string | null;
   short_name: string;
-  team_tag: string;
-  city: string;
-  state: string;
-  level: string;
-  contact_first_name: string;
-  contact_last_name: string;
-  phone_num: string;
-  contact_email: string;
-  schedule_restrictions: number;
-  is_active_YN: number;
-  is_library_YN: number;
-  created_by: string;
-  created_datetime: string;
-  updated_by: string;
-  updated_datetime: string;
-  division_id: string;
+  team_tag: string | null;
+  city: string | null;
+  state: string | null;
+  level: string | null;
+  contact_first_name: string | null;
+  contact_last_name: string | null;
+  phone_num: string | null;
+  contact_email: string | null;
+  schedule_restrictions: number | null;
+  is_active_YN: number | null;
+  is_library_YN: number | null;
+  created_by: string | null;
+  created_datetime: string | null;
+  updated_by: string | null;
+  updated_datetime: string | null;
+  division_id: string | null;
   pool_id: string | null;
+  //Optional
+  isChange: boolean;
+  isDelete: boolean;
 }
