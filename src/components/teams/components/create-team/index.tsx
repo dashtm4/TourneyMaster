@@ -14,7 +14,7 @@ import {
   BindingCbWithThree,
 } from 'common/models';
 import Modal from 'components/common/modal';
-import CancelPopup from './cancel-popup';
+import CancelPopup from 'components/common/cancel-popup';
 
 interface ICreateTeamState {
   teams: Partial<ITeam>[];
@@ -102,7 +102,7 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
           onClick={this.onAddTeam}
         />
         <Modal isOpen={this.state.isModalOpen} onClose={this.onModalClose}>
-          <CancelPopup onSave={this.onSave} history={this.props.history} />
+          <CancelPopup onSave={this.onSave} />
         </Modal>
       </section>
     );

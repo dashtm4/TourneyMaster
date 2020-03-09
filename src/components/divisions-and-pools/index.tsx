@@ -5,17 +5,15 @@ import styles from './styles.module.scss';
 import Paper from '../common/paper';
 import Button from '../common/buttons/button';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
-import SectionDropdown from '../common/section-dropdown';
-import DivisionDetails from './division-details';
-import PoolsDetails from './pools-details';
-import CreateIcon from '@material-ui/icons/Create';
 import { getDivisions, getPools, getTeams, savePool } from './logic/actions';
 import Modal from '../common/modal';
-import AddPool from './add-pool';
+import AddPool from './division/add-pool';
 import { BindingCbWithOne } from 'common/models/callback';
 import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
+
+import Division from './division';
 
 interface IDivisionsAndPoolsProps {
   divisions: IDivision[];
@@ -52,14 +50,6 @@ class DivisionsAndPools extends React.Component<
       ? `/event/divisions-and-pools-add/${this.eventId}`
       : '/event/divisions-and-pools-add';
     this.props.history.push(path);
-  };
-
-  onEditDivisionDetails = (divisionId: string) => (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const path = this.eventId
-      ? `/event/divisions-and-pools-edit/${this.eventId}`
-      : '/event/divisions-and-pools-edit';
-    this.props.history.push({ pathname: path, state: { divisionId } });
   };
 
   onAddPool = (division: IDivision) => {
@@ -108,54 +98,21 @@ class DivisionsAndPools extends React.Component<
             <ul className={styles.divisionsList}>
               {divisions.map(division => (
                 <li key={division.division_id}>
-                  <SectionDropdown
-                    id={division.short_name}
-                    isDefaultExpanded={true}
-                    panelDetailsType="flat"
-                  >
-                    <div className={styles.sectionTitle}>
-                      <div>{`Division: ${division.short_name}`}</div>
-                      <div>
-                        <Button
-                          label="Edit Division Details"
-                          variant="text"
-                          color="secondary"
-                          icon={<CreateIcon />}
-                          onClick={this.onEditDivisionDetails(
-                            division.division_id
-                          )}
-                        />
-                      </div>
-                    </div>
-                    <div className={styles.sectionContent}>
-                      <DivisionDetails
-                        data={division}
-                        numOfPools={
-                          pools.filter(
-                            pool => pool.division_id === division.division_id
-                          ).length
-                        }
-                        numOfTeams={
-                          teams.filter(
-                            team => team.division_id === division.division_id
-                          ).length
-                        }
-                      />
-                      <PoolsDetails
-                        onAddPool={this.onAddPool}
-                        division={division}
-                        getPools={this.props.getPools}
-                        getTeams={this.props.getTeams}
-                        pools={pools.filter(
-                          pool => pool.division_id === division.division_id
-                        )}
-                        teams={teams.filter(
-                          team => team.division_id === division.division_id
-                        )}
-                        areDetailsLoading={this.props.areDetailsLoading}
-                      />
-                    </div>
-                  </SectionDropdown>
+                  <Division
+                    eventId={this.eventId}
+                    division={division}
+                    pools={pools.filter(
+                      pool => pool.division_id === division.division_id
+                    )}
+                    teams={teams.filter(
+                      team => team.division_id === division.division_id
+                    )}
+                    onAddPool={this.onAddPool}
+                    getPools={this.props.getPools}
+                    getTeams={this.props.getTeams}
+                    areDetailsLoading={this.props.areDetailsLoading}
+                    divisions={this.props.divisions}
+                  />
                 </li>
               ))}
               {this.state.selected && (

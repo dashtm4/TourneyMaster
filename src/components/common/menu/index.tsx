@@ -134,7 +134,7 @@ const Menu = ({
             <span className={styles.doneBtnWrapper}>
               <Button
                 onClick={() => {
-                  if (eventId) {
+                  if (eventId && publishTournament) {
                     publishTournament(eventId);
                   }
                 }}
