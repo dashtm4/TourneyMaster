@@ -3,7 +3,7 @@ import {
   DIVISIONS_FETCH_FAILURE,
   POOLS_FETCH_SUCCESS,
   TEAMS_FETCH_SUCCESS,
-  FETCH_START,
+  FETCH_DETAILS_START,
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
@@ -38,8 +38,8 @@ export default (
   action: { type: string; payload?: any }
 ) => {
   switch (action.type) {
-    case FETCH_START: {
-      return { ...defaultState };
+    case FETCH_DETAILS_START: {
+      return { ...state, pools: [], teams: [], areDetailsLoading: true };
     }
     case DIVISIONS_FETCH_SUCCESS: {
       return {
