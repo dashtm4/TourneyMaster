@@ -8,8 +8,8 @@ import {
   ExpansionPanelDetailsWrapper,
 } from './expansion-panel-material';
 import { ProgressBar } from 'components/common';
-import { getIcon, stringToLink } from '../../../helpers';
-import { Icons } from '../../../common/constants/icons';
+import { getIcon, stringToLink, countCompletedPercent } from 'helpers';
+import { Icons } from 'common/constants/icons';
 import { IMenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 
@@ -46,22 +46,7 @@ const Menu = ({ isAllowEdit, isDraft, list, eventId }: Props) => {
       return;
     }
 
-    const completedItems = list.reduce(
-      (acc, it) => ({
-        shouldCompleted: it.hasOwnProperty(COMPLETED_ITEM_FILED)
-          ? acc.shouldCompleted + 1
-          : acc.shouldCompleted,
-        completed:
-          it.hasOwnProperty(COMPLETED_ITEM_FILED) && it.isCompleted
-            ? acc.completed + 1
-            : acc.completed,
-      }),
-      { shouldCompleted: 0, completed: 0 }
-    );
-
-    return Math.ceil(
-      (completedItems.completed / completedItems.shouldCompleted) * 100
-    );
+    return countCompletedPercent(list, COMPLETED_ITEM_FILED);
   });
 
   return (
