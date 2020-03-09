@@ -24,7 +24,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
     const registration = await Api.get(`/registrations?event_id=${eventId}`);
     const facilities = await Api.get(`/facilities?event_id=${eventId}`);
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
-    const teams = await Api.get(`/teams?=event_id=${eventId}`);
+    const teams = await Api.get(`/teams?event_id=${eventId}`);
 
     dispatch({
       type: LOAD_AUTH_PAGE_DATA_SUCCESS,
