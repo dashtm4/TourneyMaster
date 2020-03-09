@@ -3,7 +3,11 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { loadAuthPageData, clearAuthPageData } from './logic/actions';
+import {
+  loadAuthPageData,
+  clearAuthPageData,
+  publishTournament,
+} from './logic/actions';
 import { AppState } from './logic/reducer';
 import Header from 'components/header';
 import Menu from 'components/common/menu';
@@ -34,6 +38,7 @@ interface Props {
   tournamentData: ITournamentData;
   loadAuthPageData: (eventId: string) => void;
   clearAuthPageData: BindingAction;
+  publishTournament: (eventId: string) => void;
 }
 
 export const EmptyPage: React.FC = () => {
@@ -47,6 +52,7 @@ const AuthorizedPageEvent = ({
   tournamentData,
   loadAuthPageData,
   clearAuthPageData,
+  publishTournament,
 }: Props & RouteComponentProps<MatchParams>) => {
   const eventId = match.params.eventId;
   React.useEffect(() => {
@@ -72,6 +78,7 @@ const AuthorizedPageEvent = ({
           eventId={eventId}
           isAllowEdit={Boolean(eventId)}
           isDraft={Boolean(tournamentData.event?.event_status)}
+          publishTournament={publishTournament}
         />
         <main className={styles.content}>
           <Switch>
@@ -112,5 +119,8 @@ export default connect(
     menuList: pageEvent.menuList,
   }),
   (dispatch: Dispatch) =>
-    bindActionCreators({ loadAuthPageData, clearAuthPageData }, dispatch)
+    bindActionCreators(
+      { loadAuthPageData, clearAuthPageData, publishTournament },
+      dispatch
+    )
 )(AuthorizedPageEvent);

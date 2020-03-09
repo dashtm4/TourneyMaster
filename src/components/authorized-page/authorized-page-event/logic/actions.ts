@@ -6,8 +6,12 @@ import {
   LOAD_AUTH_PAGE_DATA_SUCCESS,
   LOAD_AUTH_PAGE_DATA_FAILURE,
   CLEAR_AUTH_PAGE_DATA,
+  PUBLISH_TOURNAMENT_SUCCESS,
+  PUBLISH_TOURNAMENT_FAILURE,
 } from './action-types';
 import Api from 'api/api';
+import { IEventDetails } from 'common/models';
+import { EventStatuses } from 'common/enums';
 
 const loadAuthPageData: ActionCreator<ThunkAction<
   void,
@@ -51,4 +55,35 @@ const clearAuthPageData = () => ({
   type: CLEAR_AUTH_PAGE_DATA,
 });
 
-export { loadAuthPageData, clearAuthPageData };
+const publishTournament: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  AuthPageAction
+>> = (eventId: string) => async (dispatch: Dispatch) => {
+  try {
+    const events = await Api.get(`/events?event_id=${eventId}`);
+    const currentEvent = events.find(
+      (it: IEventDetails) => it.event_id === eventId
+    );
+    const updatedEvent = {
+      ...currentEvent,
+      event_status: EventStatuses.PUBLIHSED,
+    };
+
+    Api.put(`/events?event_id=${updatedEvent.event_id}`, updatedEvent);
+
+    dispatch({
+      type: PUBLISH_TOURNAMENT_SUCCESS,
+      payload: {
+        event: updatedEvent,
+      },
+    });
+  } catch {
+    dispatch({
+      type: PUBLISH_TOURNAMENT_FAILURE,
+    });
+  }
+};
+
+export { loadAuthPageData, clearAuthPageData, publishTournament };

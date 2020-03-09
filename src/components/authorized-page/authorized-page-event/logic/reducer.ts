@@ -3,6 +3,7 @@ import {
   LOAD_AUTH_PAGE_DATA_START,
   LOAD_AUTH_PAGE_DATA_SUCCESS,
   CLEAR_AUTH_PAGE_DATA,
+  PUBLISH_TOURNAMENT_SUCCESS,
   AuthPageAction,
 } from './action-types';
 import {
@@ -186,6 +187,17 @@ const pageEventReducer = (
               }
             : item
         ),
+      };
+    }
+    case PUBLISH_TOURNAMENT_SUCCESS: {
+      const { event } = action.payload;
+
+      return {
+        ...state,
+        tournamentData: {
+          ...state.tournamentData,
+          event,
+        },
       };
     }
     case CLEAR_AUTH_PAGE_DATA: {

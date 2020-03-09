@@ -36,9 +36,16 @@ interface Props {
   eventId?: string;
   isAllowEdit: boolean;
   isDraft?: boolean;
+  publishTournament?: (eventId: string) => void;
 }
 
-const Menu = ({ isAllowEdit, isDraft, list, eventId }: Props) => {
+const Menu = ({
+  isAllowEdit,
+  isDraft,
+  list,
+  eventId,
+  publishTournament,
+}: Props) => {
   const [isCollapsed, onCollapse] = React.useState(false);
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(list[0].title);
@@ -126,6 +133,11 @@ const Menu = ({ isAllowEdit, isDraft, list, eventId }: Props) => {
           {percentOfCompleted === 100 ? (
             <span className={styles.doneBtnWrapper}>
               <Button
+                onClick={() => {
+                  if (eventId) {
+                    publishTournament(eventId);
+                  }
+                }}
                 icon={getIcon(Icons.DONE)}
                 label="Publish Tournament"
                 color={ButtonColors.INHERIT}
