@@ -1,4 +1,4 @@
-import { Dispatch } from 'redux';
+import { Dispatch, ActionCreator } from 'redux';
 import { ICalendarEvent } from 'common/models/calendar';
 import { Toasts } from 'components/common';
 
@@ -7,56 +7,59 @@ import {
   CALENDAR_EVENT_CREATE_SUCC,
 } from './actionTypes';
 import { isCalendarEventValid } from './helper';
+import { getVarcharEight } from 'helpers';
+import api from 'api/api';
+import { ThunkAction } from 'redux-thunk';
 
-const eventsList: ICalendarEvent[] = [
+const eventsList: Partial<ICalendarEvent>[] = [
   {
-    title: 'Event Number One',
-    dateFrom: '2020-02-01T10:00:00',
-    dateTo: '2020-02-05T12:00:00',
-    location: 'Some Location',
-    eventTag: 'Event tag',
-    type: 'event',
-    timeFrom: '2020-02-01T10:00:00',
-    timeTo: '2020-02-05T12:00:00',
-    description: 'Description',
-    setReminder: false,
+    cal_event_title: 'Event Number One',
+    cal_event_startdate: '2020-02-01T10:00:00',
+    cal_event_enddate: '2020-02-05T12:00:00',
+    // location: 'Some Location',
+    cal_event_tag: 'Event tag',
+    cal_event_type: 'event',
+    // timeFrom: '2020-02-01T10:00:00',
+    // timeTo: '2020-02-05T12:00:00',
+    cal_event_desc: 'Description',
+    has_reminder: 0,
   },
-  {
-    title: 'Event Number 2',
-    dateFrom: '2020-03-01T10:00:00',
-    dateTo: '2020-03-01T12:00:00',
-    location: 'Location',
-    eventTag: 'tag',
-    type: 'event',
-    timeFrom: '2020-01-01T10:00:00',
-    timeTo: '2020-01-02T12:00:00',
-    description: 'Description',
-    setReminder: false,
-  },
-  {
-    title: 'Reminder Number One',
-    dateFrom: '2020-02-07T18:35:00',
-    dateTo: '2020-02-07T20:10:00',
-    location: 'Some Location',
-    eventTag: 'Event tag',
-    type: 'reminder',
-    timeFrom: '2020-02-07T18:35:00',
-    timeTo: '2020-02-07T20:10:00',
-    description: 'Description',
-    setReminder: false,
-  },
-  {
-    title: 'Task Number One',
-    dateFrom: '2020-02-10T11:00:00',
-    dateTo: '2020-02-12T23:10:00',
-    location: 'Some Location',
-    eventTag: 'Event tag',
-    type: 'task',
-    timeFrom: '2020-02-10T11:00:00',
-    timeTo: '2020-02-12T23:10:00',
-    description: 'Description',
-    setReminder: false,
-  },
+  // {
+  //   title: 'Event Number 2',
+  //   dateFrom: '2020-03-01T10:00:00',
+  //   dateTo: '2020-03-01T12:00:00',
+  //   location: 'Location',
+  //   eventTag: 'tag',
+  //   cal_event_type: 'event',
+  //   timeFrom: '2020-01-01T10:00:00',
+  //   timeTo: '2020-01-02T12:00:00',
+  //   description: 'Description',
+  //   setReminder: false,
+  // },
+  // {
+  //   title: 'Reminder Number One',
+  //   dateFrom: '2020-02-07T18:35:00',
+  //   dateTo: '2020-02-07T20:10:00',
+  //   location: 'Some Location',
+  //   eventTag: 'Event tag',
+  //   cal_event_type: 'reminder',
+  //   timeFrom: '2020-02-07T18:35:00',
+  //   timeTo: '2020-02-07T20:10:00',
+  //   description: 'Description',
+  //   setReminder: false,
+  // },
+  // {
+  //   title: 'Task Number One',
+  //   dateFrom: '2020-02-10T11:00:00',
+  //   dateTo: '2020-02-12T23:10:00',
+  //   location: 'Some Location',
+  //   eventTag: 'Event tag',
+  //   cal_event_type: 'task',
+  //   timeFrom: '2020-02-10T11:00:00',
+  //   timeTo: '2020-02-12T23:10:00',
+  //   description: 'Description',
+  //   setReminder: false,
+  // },
 ];
 
 /**
@@ -107,4 +110,21 @@ export const saveCalendar = (data: ICalendarEvent[]) => async (
   }
 
   Toasts.errorToast("Couldn't save the data");
+};
+
+export const saveCalendarEvent: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (event: ICalendarEvent) => async (_dispatch: Dispatch) => {
+  const data = { ...event, cal_event_id: getVarcharEight() };
+
+  const response = await api.post('/calendar_events', data);
+
+  if (response?.errorType === 'Error') {
+    return Toasts.errorToast("Couldn't add a division");
+  }
+
+  Toasts.successToast('Division is successfully added');
 };

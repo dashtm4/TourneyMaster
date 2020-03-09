@@ -1,12 +1,10 @@
 import { ICalendarEvent } from 'common/models/calendar';
 
-export const isCalendarEventValid = (event: ICalendarEvent) => {
+export const isCalendarEventValid = (event: Partial<ICalendarEvent>) => {
   const requiredFields = [
-    'title',
-    'location',
-    'eventTag',
-    'dateFrom',
-    'dateTo',
+    'cal_event_title',
+    'cal_event_startdate',
+    'cal_event_enddate',
   ];
 
   const fields = Object.keys(event).filter(

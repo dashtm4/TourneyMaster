@@ -6,6 +6,7 @@ import {
   KeyboardTimePicker,
   MuiPickersUtilsProvider,
   DatePickerView,
+  DateTimePicker,
 } from '@material-ui/pickers';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
@@ -93,17 +94,44 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       onChange={onChange}
     />
   );
+
+  const renderDateTimePicker = () => (
+    <DateTimePicker
+      autoOk={true}
+      fullWidth={fullWidth}
+      views={views}
+      style={{ width, minWidth }}
+      variant="inline"
+      size="small"
+      inputVariant="outlined"
+      value={value}
+      format={dateFormat || 'MMMM dd, HH:mm'}
+      onChange={onChange}
+    />
+  );
+
   const chooseDatePicker = () =>
     viewType === 'input' ? renderInputDatePicker() : renderDatePicker();
 
   const chooseTimePicker = () =>
     viewType === 'input' ? renderInputTimePicker() : renderTimePicker();
 
+  const renderPicker = () => {
+    switch (type) {
+      case 'date':
+        return chooseDatePicker();
+      case 'date-time':
+        return renderDateTimePicker();
+      default:
+        return chooseTimePicker();
+    }
+  };
+
   return (
     <div className={styles.container}>
       <span className={styles.label}>{label}</span>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        {type === 'date' ? chooseDatePicker() : chooseTimePicker()}
+        {renderPicker()}
       </MuiPickersUtilsProvider>
     </div>
   );

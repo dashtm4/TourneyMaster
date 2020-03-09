@@ -100,7 +100,9 @@ export default (props: IProps) => {
     console.log(arg);
   };
 
-  const onEventDrop = () => {};
+  const onEventDrop = (eventDropInfo: any) => {
+    console.log(eventDropInfo.event);
+  };
 
   const renderButton = (buttonType: ViewType) => (
     <Button
@@ -134,7 +136,7 @@ export default (props: IProps) => {
       <span>{label}</span>
     </div>
   );
-
+  console.log(eventsList);
   return (
     <div className={styles.container}>
       <div className={styles.header}>
