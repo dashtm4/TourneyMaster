@@ -24,6 +24,7 @@ import Teams from 'components/teams';
 import CreateTeam from 'components/teams/components/create-team';
 import { Routes } from 'common/constants';
 import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
+import { EventStatuses } from 'common/enums';
 import { Loader } from 'components/common';
 import styles from '../styles.module.scss';
 
@@ -77,7 +78,9 @@ const AuthorizedPageEvent = ({
           list={menuList}
           eventId={eventId}
           isAllowEdit={Boolean(eventId)}
-          isDraft={Boolean(tournamentData.event?.event_status)}
+          isDraft={Boolean(
+            tournamentData.event?.event_status === EventStatuses.DRAFT
+          )}
           publishTournament={publishTournament}
         />
         <main className={styles.content}>
