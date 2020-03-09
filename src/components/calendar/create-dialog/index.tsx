@@ -13,6 +13,7 @@ import { IDateSelect } from '../calendar.model';
 import styles from './styles.module.scss';
 
 import { isCalendarEventValid } from '../logic/helper';
+import { getVarcharEight } from 'helpers';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -24,6 +25,7 @@ interface IProps {
 }
 
 const defaultCalendarEvent = (): Partial<ICalendarEvent> => ({
+  cal_event_id: getVarcharEight(),
   cal_event_title: '',
   cal_event_startdate: new Date().toString(),
   cal_event_enddate: new Date().toString(),
@@ -37,7 +39,7 @@ const defaultCalendarEvent = (): Partial<ICalendarEvent> => ({
 export default (props: IProps) => {
   const { dialogOpen, onDialogClose, onSave, dateSelect } = props;
   const { left, top, date } = dateSelect;
-  console.log(date);
+
   useEffect(() => {
     if (!dialogOpen)
       setTimeout(() => setCalendarEvent(defaultCalendarEvent()), 200);
@@ -72,19 +74,14 @@ export default (props: IProps) => {
   const onDateToChange = (value: Date | string) =>
     updateEvent('cal_event_enddate', String(value));
 
-  // const onTimeFromChange = (value: Date | string) =>
-  //   updateEvent('timeFrom', String(value));
-
-  // const onTimeToChange = (value: Date | string) =>
-  //   updateEvent('timeTo', String(value));
-
   const onChange = (event: InputTargetValue) => {
     const { name, value } = event?.target;
     updateEvent(name, value);
   };
 
-  const toggleReminder = () =>
-    updateEvent('hasReminder', !calendarEvent.has_reminder);
+  const onHasReminderChange = (event: InputTargetValue) => {
+    updateEvent('has_reminder', event.target.checked ? 1 : 0);
+  };
 
   const onSaveClicked = () => onSave(calendarEvent);
 
@@ -99,7 +96,7 @@ export default (props: IProps) => {
         type={buttonTypeEvent(el, calendarEvent.cal_event_type!)}
       />
     ));
-  console.log(calendarEvent);
+
   return (
     <Dialog
       className={styles.container}
@@ -113,13 +110,16 @@ export default (props: IProps) => {
           <div className={styles.leftColumn}>
             <Input
               name="cal_event_title"
-              width="284px"
+              width="283px"
               onChange={onChange}
               value={calendarEvent.cal_event_title}
               placeholder="Title"
             />
             <div className={styles.withIconWrapper}>
-              <FontAwesomeIcon icon={faCalendar} />
+              <FontAwesomeIcon
+                icon={faCalendar}
+                style={{ marginRight: '7px' }}
+              />
               <DatePicker
                 width="257px"
                 label=""
@@ -128,7 +128,7 @@ export default (props: IProps) => {
                 value={calendarEvent.cal_event_startdate}
                 onChange={onDateFromChange}
               />
-              <span>&ndash;</span>
+              <span style={{ marginLeft: '5px' }}>&ndash;</span>
             </div>
             <div className={styles.withIconWrapper}>
               <FontAwesomeIcon icon={faMapPin} />
@@ -157,33 +157,13 @@ export default (props: IProps) => {
               {renderButtons(buttonTypeEvents)}
             </div>
             <DatePicker
-              width="257px"
+              width="262px"
               label=""
               type="date-time"
               viewType="input"
               value={calendarEvent.cal_event_enddate}
               onChange={onDateToChange}
             />
-            {/* <div className={styles.withIconWrapper}>
-              <FontAwesomeIcon icon={faClock} />
-              <DatePicker
-                width="100px"
-                label=""
-                type="time"
-                viewType="input"
-                value={calendarEvent.timeFrom}
-                onChange={onTimeFromChange}
-              />
-              <span>&ndash;</span>
-              <DatePicker
-                width="100px"
-                label=""
-                type="time"
-                viewType="input"
-                value={calendarEvent.timeTo}
-                onChange={onTimeToChange}
-              />
-            </div> */}
             <div className={styles.withIconWrapper}>
               <FontAwesomeIcon icon={faAlignLeft} />
               <Input
@@ -202,7 +182,7 @@ export default (props: IProps) => {
                     checked: Boolean(calendarEvent.has_reminder),
                   },
                 ]}
-                onChange={toggleReminder}
+                onChange={onHasReminderChange}
               />
             </div>
           </div>

@@ -7,7 +7,6 @@ import {
   CALENDAR_EVENT_CREATE_SUCC,
 } from './actionTypes';
 import { isCalendarEventValid } from './helper';
-import { getVarcharEight } from 'helpers';
 import api from 'api/api';
 import { ThunkAction } from 'redux-thunk';
 
@@ -118,13 +117,31 @@ export const saveCalendarEvent: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (event: ICalendarEvent) => async (_dispatch: Dispatch) => {
-  const data = { ...event, cal_event_id: getVarcharEight() };
-
-  const response = await api.post('/calendar_events', data);
+  const response = await api.post('/calendar_events', event);
 
   if (response?.errorType === 'Error') {
-    return Toasts.errorToast("Couldn't add a division");
+    return Toasts.errorToast("Couldn't create an event");
   }
 
-  Toasts.successToast('Division is successfully added');
+  Toasts.successToast('Event is successfully created');
+};
+
+export const updateCalendarEvent: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (event: ICalendarEvent) => async (_dispatch: Dispatch) => {
+  console.log(event);
+
+  const response = await api.put(
+    `/calendar_events?cal_event_id=${event.cal_event_id}`,
+    event
+  );
+
+  if (response?.errorType === 'Error') {
+    return Toasts.errorToast("Couldn't update an event");
+  }
+
+  Toasts.successToast('Event is successfully updated');
 };

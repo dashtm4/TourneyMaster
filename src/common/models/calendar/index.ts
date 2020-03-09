@@ -1,6 +1,7 @@
 import { ButtonTypeEvent } from 'components/calendar/calendar.helper';
 
 export interface IEvent {
+  id: string;
   title: string;
   start: string;
   end: string;

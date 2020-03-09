@@ -12,7 +12,7 @@ import { format } from 'date-fns/esm';
 import { getViewType, buttonTypeView, ViewType } from '../calendar.helper';
 import { DatePicker, Button } from 'components/common';
 import styles from './styles.module.scss';
-import { IEvent } from 'common/models/calendar';
+import { IEvent, ICalendarEvent } from 'common/models/calendar';
 import { IDateSelect } from '../calendar.model';
 import './main.scss';
 
@@ -20,6 +20,7 @@ interface IProps {
   onCreatePressed: () => void;
   eventsList?: IEvent[];
   onDatePressed: (dateSelect: IDateSelect) => void;
+  onEventUpdate: (event: Partial<ICalendarEvent>) => void;
 }
 
 interface EventArg {
@@ -33,7 +34,7 @@ interface EventArg {
 }
 
 export default (props: IProps) => {
-  const { eventsList, onCreatePressed, onDatePressed } = props;
+  const { eventsList, onCreatePressed, onDatePressed, onEventUpdate } = props;
 
   const header = {
     left: '',
@@ -44,8 +45,8 @@ export default (props: IProps) => {
   const eventTimeFormat = {
     hour: '2-digit',
     minute: '2-digit',
-    hour12: false,
-    meridiem: false,
+    hour12: true,
+    meridiem: true,
   };
 
   const [currentDate, changeCurrentDate] = useState(new Date());
@@ -101,7 +102,25 @@ export default (props: IProps) => {
   };
 
   const onEventDrop = (eventDropInfo: any) => {
-    console.log(eventDropInfo.event);
+    const { id, start, end } = eventDropInfo.event;
+
+    const data = {
+      cal_event_id: id,
+      cal_event_startdate: start,
+      cal_event_enddate: end || start,
+    };
+    onEventUpdate(data);
+  };
+
+  const onEventResize = (eventResizeInfo: any) => {
+    const { id, start, end } = eventResizeInfo.event;
+    console.log(start);
+    const data = {
+      cal_event_id: id,
+      cal_event_startdate: start,
+      cal_event_enddate: end,
+    };
+    onEventUpdate(data);
   };
 
   const renderButton = (buttonType: ViewType) => (
@@ -170,6 +189,7 @@ export default (props: IProps) => {
           dateClick={handleDateClick}
           eventClick={handleEventClick}
           eventDrop={onEventDrop}
+          eventResize={onEventResize}
           // buttonText={buttonText}
         />
         <div className={styles.badgeContainer}>
