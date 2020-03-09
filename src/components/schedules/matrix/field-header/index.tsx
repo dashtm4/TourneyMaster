@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '../styles.module.scss';
-import { IField } from 'components/schedules';
+import { IField } from 'common/models/schedule/fields';
 
 interface IProps {
   field: IField;

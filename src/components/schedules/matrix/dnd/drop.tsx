@@ -9,7 +9,7 @@ interface OnDropData {
 }
 
 export interface DropParams extends OnDropData {
-  fieldId: number;
+  fieldId: string;
   timeSlotId: number;
   teamPosition: number;
 }
@@ -18,7 +18,7 @@ interface Props {
   text: string;
   accept: string;
   onDrop: (params: DropParams) => void;
-  fieldId: number;
+  fieldId: string;
   timeSlotId: number;
   teamPosition: 1 | 2;
 }

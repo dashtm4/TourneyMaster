@@ -34,7 +34,7 @@ export interface ITeam {
 
 export interface ITeamCard extends ITeam {
   games?: number[];
-  fieldId?: number;
+  fieldId?: string;
   timeSlotId?: number;
   teamPosition?: number;
 }

@@ -1,4 +1,5 @@
-import { IField, ITimeSlot } from '..';
+import { ITimeSlot } from '..';
+import { IField } from 'common/models/schedule/fields';
 import { DropParams } from './dnd/drop';
 import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 
@@ -10,11 +11,11 @@ export enum TeamPositionEnum {
 export interface IGame {
   id: number;
   startTime?: string;
-  facilityId?: number;
+  facilityId?: string;
   homeTeam?: ITeamCard;
   awayTeam?: ITeamCard;
   timeSlotId: number;
-  fieldId: number;
+  fieldId: string;
   isPremier?: boolean;
 }
 
@@ -36,7 +37,7 @@ export const defineGames = (
   const games: IGame[] = [];
   for (let i = 1; i <= gamesNumber; i++) {
     const timeSlotId = Math.ceil(i / fieldsNumber) - 1;
-    const fieldId = i - Math.ceil(timeSlotId * fieldsNumber) - 1;
+    const fieldId = fields[i - Math.ceil(timeSlotId * fieldsNumber) - 1].id;
 
     games.push({
       id: i,

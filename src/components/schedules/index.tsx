@@ -2,78 +2,74 @@ import React, { Component } from 'react';
 import SchedulesMatrix from './matrix';
 import { calculateTimeSlots } from './helper';
 import api from 'api/api';
-import { mapTeamsData } from './mapTournamentData';
+import { mapTeamsData, mapFieldsData } from './mapTournamentData';
 import { IFetchedTeam, ITeam } from 'common/models/schedule/teams';
-
-export interface IField {
-  id: number;
-  facilityId: number;
-  isUnused?: boolean;
-  name: string;
-  isPremier: boolean;
-}
+import { IFetchedDivision } from 'common/models/schedule/divisions';
+import { IFacility } from 'common/models/facilities';
+import { IField } from 'common/models/schedule/fields';
+import { IField as IFetchedField } from 'common/models/field';
 
 export interface ITimeSlot {
   id: number;
   time: string;
 }
 
-const fields: IField[] = [
-  {
-    id: 0,
-    facilityId: 0,
-    name: 'Field 0',
-    isPremier: true,
-  },
-  {
-    id: 1,
-    facilityId: 0,
-    name: 'Field 1',
-    isPremier: true,
-  },
-  {
-    id: 2,
-    facilityId: 0,
-    name: 'Field 2',
-    isPremier: false,
-  },
-  {
-    id: 3,
-    facilityId: 0,
-    name: 'Field 3',
-    isPremier: false,
-  },
-  {
-    id: 4,
-    facilityId: 0,
-    name: 'Field 4',
-    isPremier: false,
-  },
-  {
-    id: 5,
-    facilityId: 0,
-    name: 'Field 5',
-    isPremier: false,
-  },
-  {
-    id: 6,
-    facilityId: 0,
-    name: 'Field 6',
-    isPremier: false,
-  },
-  {
-    id: 7,
-    facilityId: 1,
-    name: 'Field 7',
-    isPremier: false,
-  },
-  {
-    id: 8,
-    facilityId: 1,
-    name: 'Field 8',
-    isPremier: false,
-  },
-];
+// const fields: IField[] = [
+//   {
+//     id: 0,
+//     facilityId: 0,
+//     name: 'Field 0',
+//     isPremier: true,
+//   },
+//   {
+//     id: 1,
+//     facilityId: 0,
+//     name: 'Field 1',
+//     isPremier: true,
+//   },
+//   {
+//     id: 2,
+//     facilityId: 0,
+//     name: 'Field 2',
+//     isPremier: false,
+//   },
+//   {
+//     id: 3,
+//     facilityId: 0,
+//     name: 'Field 3',
+//     isPremier: false,
+//   },
+//   {
+//     id: 4,
+//     facilityId: 0,
+//     name: 'Field 4',
+//     isPremier: false,
+//   },
+//   {
+//     id: 5,
+//     facilityId: 0,
+//     name: 'Field 5',
+//     isPremier: false,
+//   },
+//   {
+//     id: 6,
+//     facilityId: 0,
+//     name: 'Field 6',
+//     isPremier: false,
+//   },
+//   {
+//     id: 7,
+//     facilityId: 1,
+//     name: 'Field 7',
+//     isPremier: false,
+//   },
+//   {
+//     id: 8,
+//     facilityId: 1,
+//     name: 'Field 8',
+//     isPremier: false,
+//   },
+// ];
 
 // POOLS 'A1', 'B2', 'C3', 'D4', E5, F6
 
@@ -326,6 +322,7 @@ const fields: IField[] = [
 interface IState {
   timeSlots?: ITimeSlot[];
   teams?: ITeam[];
+  fields?: IField[];
 }
 
 class Schedules extends Component<{}, IState> {
@@ -347,16 +344,39 @@ class Schedules extends Component<{}, IState> {
     const fetchedTeams: IFetchedTeam[] = await api.get(
       '/teams?event_id=ADLNT001'
     );
-    const fetchedDivisions = await api.get('/divisions?event_id=ADLNT001');
+    const fetchedDivisions: IFetchedDivision[] = await api.get(
+      '/divisions?event_id=ADLNT001'
+    );
+
+    const fetchedFacilities: IFacility[] = await api.get(
+      '/facilities?event_id=ADLNT001'
+    );
+
+    const fetchedFields: IFetchedField[] = [];
+    await Promise.all(
+      fetchedFacilities.map(async ff => {
+        const fields = await api.get(
+          `/fields?facilities_id=${ff.facilities_id}`
+        );
+        if (fields?.length) fetchedFields.push(...fields);
+      })
+    );
+
     const mappedTeams: ITeam[] = mapTeamsData(
       fetchedTeams,
       fetchedDivisions
     ).slice(0, 60);
-    this.setState({ teams: mappedTeams });
+
+    const mappedFields: IField[] = mapFieldsData(fetchedFields);
+
+    this.setState({
+      teams: mappedTeams,
+      fields: mappedFields,
+    });
   }
 
   render() {
-    const { timeSlots, teams } = this.state;
+    const { timeSlots, teams, fields } = this.state;
 
     return (
       <div>

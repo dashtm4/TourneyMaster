@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { IField, ITimeSlot } from '..';
+import { ITimeSlot } from '..';
+import { IField } from 'common/models/schedule/fields';
 import {
   defineGames,
   IDefinedGames,

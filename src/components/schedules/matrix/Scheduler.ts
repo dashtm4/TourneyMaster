@@ -8,7 +8,8 @@ import {
   getSortedByGamesNum,
   getSortedDesc,
 } from './helper';
-import { ITimeSlot, IField } from '..';
+import { ITimeSlot } from '..';
+import { IField } from 'common/models/schedule/fields';
 
 interface IConditions {
   isPremier?: boolean;
@@ -40,7 +41,7 @@ export default class Scheduler {
   facilityData: IFacilityData;
   avgStartTime?: string;
   teamGameNum?: number;
-  unusedFields?: number[];
+  unusedFields?: string[];
   poolsData: IKeyId;
   minGameNum = 3;
   maxGameNum = 5;
@@ -323,7 +324,7 @@ export default class Scheduler {
   };
 
   calculateGamesForFacilities = () => {
-    const facilities: number[] = [];
+    const facilities: string[] = [];
     const facilitiesFields = {};
 
     new Set(this.fields.map(field => field.facilityId)).forEach(facility => {
