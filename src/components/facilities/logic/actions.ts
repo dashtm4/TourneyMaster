@@ -1,5 +1,6 @@
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import * as Yup from 'yup';
 import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
@@ -127,10 +128,16 @@ const saveFacilities: ActionCreator<ThunkAction<
   dispatch: Dispatch
 ) => {
   try {
+    await Yup.array()
+      .of(facilitySchema)
+      .unique(
+        facility => facility.facilities_description,
+        'Oops. It looks like you have facilities with the same name. The facility must have a unique name.'
+      )
+      .validate(facilities);
+
     for await (let facility of facilities) {
       const copiedFacility = { ...facility };
-
-      await facilitySchema.validate(copiedFacility);
 
       delete copiedFacility.isFieldsLoaded;
       delete copiedFacility.isFieldsLoading;
