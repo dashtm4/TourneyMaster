@@ -105,7 +105,6 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       size="small"
       inputVariant="outlined"
       value={value}
-      format={dateFormat || 'MMMM dd, HH:mm'}
       onChange={onChange}
     />
   );

@@ -160,7 +160,7 @@ export default (props: IProps) => {
     <div className={styles.container}>
       <div className={styles.header}>
         <Button
-          label="Create +"
+          label="Create Event/Reminder/Task"
           color="primary"
           variant="contained"
           onClick={onCreatePressed}
