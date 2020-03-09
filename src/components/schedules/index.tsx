@@ -347,7 +347,11 @@ class Schedules extends Component<{}, IState> {
     const fetchedTeams: IFetchedTeam[] = await api.get(
       '/teams?event_id=ADLNT001'
     );
-    const mappedTeams: ITeam[] = mapTeamsData(fetchedTeams).slice(0, 30);
+    const fetchedDivisions = await api.get('/divisions?event_id=ADLNT001');
+    const mappedTeams: ITeam[] = mapTeamsData(
+      fetchedTeams,
+      fetchedDivisions
+    ).slice(0, 60);
     this.setState({ teams: mappedTeams });
   }
 
