@@ -1,6 +1,7 @@
-import { union } from 'lodash-es';
+import { union, findKey } from 'lodash-es';
 import { getTimeFromString } from 'helpers/stringTimeOperations';
 import { ITeamCard } from 'common/models/schedule/teams';
+import { IField } from 'common/models/schedule/fields';
 import {
   IGame,
   TeamPositionEnum,
@@ -9,7 +10,11 @@ import {
   getSortedDesc,
 } from './helper';
 import { ITimeSlot } from '..';
-import { IField } from 'common/models/schedule/fields';
+
+export interface IGameOptions {
+  minGameNum?: number;
+  maxGameNum?: number;
+}
 
 interface IConditions {
   isPremier?: boolean;
@@ -50,7 +55,8 @@ export default class Scheduler {
     fields: IField[],
     teamCards: ITeamCard[],
     games: IGame[],
-    timeSlots: ITimeSlot[]
+    timeSlots: ITimeSlot[],
+    gameOptions?: IGameOptions
   ) {
     this.fields = fields;
     this.teamCards = teamCards;
@@ -60,6 +66,9 @@ export default class Scheduler {
     this.teamsInPlay = {};
     this.facilityData = {};
     this.poolsData = {};
+
+    this.minGameNum = gameOptions?.minGameNum || 3;
+    this.maxGameNum = gameOptions?.maxGameNum || 5;
 
     this.calculateTeamGameNum();
     this.setTeamsPerPools();
@@ -86,12 +95,13 @@ export default class Scheduler {
   };
 
   calculateTeamData = () => {
-    [...this.teamCards].map(teamCard => {
+    this.teamCards.forEach(teamCard => {
       const conditions = { isPremier: teamCard.isPremier };
       const foundGame = this.findGame(teamCard, conditions);
 
       if (foundGame) {
         const updatedTeamCard = this.updateTeam(teamCard, foundGame);
+        this.updateFacilityData(teamCard, foundGame);
         this.saveUpdatedTeam(updatedTeamCard);
         this.setTeamInPlay(teamCard, foundGame);
         this.updateGame(foundGame, updatedTeamCard);
@@ -148,9 +158,7 @@ export default class Scheduler {
         !teamTimeSlots.includes(game.timeSlotId - 1) &&
         !this.teamInPlayGames(teamCard, game) &&
         this.checkForPoolsConsistency(teamCard, game) &&
-        this.facilityData[game.facilityId!]?.divisionIds?.includes(
-          teamCard.divisionId
-        )
+        this.checkForFacilityConsistency(teamCard, game)
     );
   };
 
@@ -164,7 +172,7 @@ export default class Scheduler {
 
   calculateTeamGameNum = () => {
     const timeSlotsNum = this.timeSlots.length;
-    this.teamGameNum = timeSlotsNum / 2;
+    this.teamGameNum = Math.round(timeSlotsNum / 2);
   };
 
   setTeamsPerPools = () => {
@@ -183,15 +191,54 @@ export default class Scheduler {
       : true;
   };
 
+  updateFacilityData = (teamCard: ITeamCard, game: IGame) => {
+    const facilityId = game.facilityId || 'default';
+    const divisionId = teamCard.divisionId;
+    const divisionIdsArr = this.facilityData[facilityId]?.divisionIds;
+
+    const facilityDataIncludesDivision = findKey(this.facilityData, data =>
+      data.divisionIds?.includes(divisionId)
+    );
+
+    if (!facilityDataIncludesDivision)
+      this.facilityData = {
+        ...this.facilityData,
+        [facilityId]: {
+          ...(this.facilityData[facilityId] || []),
+          divisionIds: [...(divisionIdsArr || []), divisionId],
+        },
+      };
+  };
+
+  checkForFacilityConsistency = (teamCard: ITeamCard, game: IGame) => {
+    const facilityDivisions = this.facilityData[game.facilityId!]?.divisionIds;
+    let result = false;
+
+    if (teamCard.isPremier) {
+      const facilityWithThisDivision = findKey(this.facilityData, data =>
+        data.divisionIds?.includes(teamCard.divisionId)
+      );
+      if (facilityWithThisDivision !== undefined) {
+        result = Boolean(facilityWithThisDivision === game.facilityId);
+      } else {
+        result = true;
+      }
+    } else {
+      result = Boolean(facilityDivisions?.includes(teamCard.divisionId));
+    }
+
+    return result;
+  };
+
   handleUnequippedTeams = () => {
-    // Get min game guarantee teams
     const minGameGuaranteeTeams = this.teamCards.filter(
       teamCard => (teamCard.games?.length || 0) < this.minGameNum
     );
-    // Gather unequipped teams and update games
+
     const unequippedTeamCards: (ITeamCard | undefined)[] = [
       ...minGameGuaranteeTeams,
     ];
+
     this.updatedGames = this.updatedGames.map(game => {
       const { awayTeam, homeTeam } = game;
       if (!(awayTeam && homeTeam) && (awayTeam || homeTeam)) {
@@ -201,7 +248,7 @@ export default class Scheduler {
       }
       return game;
     });
-    // Settle unequipped teams in set KEY:VALUE
+
     const unequippedTeams: IUnequippedTeams = {};
     unequippedTeamCards.forEach(
       teamCard =>
@@ -216,7 +263,6 @@ export default class Scheduler {
         ))
     );
 
-    // Find games for every team set including constraints for both teams
     this.resolveUnequippedTeamGames(unequippedTeams);
   };
 
@@ -348,6 +394,7 @@ export default class Scheduler {
     const teamsInDivisions = {};
     this.teamCards.forEach(
       teamCard =>
+        !teamCard.isPremier &&
         (teamsInDivisions[teamCard.divisionId] =
           teamsInDivisions[teamCard.divisionId] + 1 || 1)
     );

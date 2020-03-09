@@ -10,6 +10,13 @@ interface ITimeValues {
   periodsPerGame: number;
 }
 
+export const setGameOptions = (event: EventDetailsDTO) => {
+  return {
+    minGameNum: event.min_num_of_games,
+    maxGameNum: event.min_num_of_games + 1,
+  };
+};
+
 export const getTimeValuesFromEvent = (
   event: EventDetailsDTO
 ): ITimeValues => ({

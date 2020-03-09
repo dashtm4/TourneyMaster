@@ -1,8 +1,8 @@
 import React from 'react';
+import { IField } from 'common/models/schedule/fields';
+import TeamDrop, { DropParams } from '../dnd/drop';
 import styles from '../styles.module.scss';
 import { IGame } from '../helper';
-import TeamDrop, { DropParams } from '../dnd/drop';
-import { IField } from 'common/models/schedule/fields';
 
 interface IProps {
   game: IGame;

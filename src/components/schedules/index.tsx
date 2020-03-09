@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import SchedulesMatrix from './matrix';
-import { calculateTimeSlots, getTimeValuesFromEvent } from './helper';
 import api from 'api/api';
 import { mapTeamsData, mapFieldsData } from './mapTournamentData';
 import { IFetchedTeam, ITeam } from 'common/models/schedule/teams';
@@ -9,6 +7,13 @@ import { IFacility } from 'common/models/facilities';
 import { IField } from 'common/models/schedule/fields';
 import { IField as IFetchedField } from 'common/models/field';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
+import {
+  calculateTimeSlots,
+  getTimeValuesFromEvent,
+  setGameOptions,
+} from './helper';
+import SchedulesMatrix from './matrix';
+import { IGameOptions } from './matrix/Scheduler';
 
 export interface ITimeSlot {
   id: number;
@@ -324,6 +329,7 @@ interface IState {
   timeSlots?: ITimeSlot[];
   teams?: ITeam[];
   fields?: IField[];
+  gameOptions?: IGameOptions;
 }
 
 class Schedules extends Component<{}, IState> {
@@ -333,8 +339,10 @@ class Schedules extends Component<{}, IState> {
     const fetchedEvents: EventDetailsDTO[] = await api.get(
       '/events?event_id=ADLNT001'
     );
+    const fetchedEvent = fetchedEvents[0];
 
-    const timeValues = getTimeValuesFromEvent(fetchedEvents[0]);
+    const gameOptions = setGameOptions(fetchedEvent);
+    const timeValues = getTimeValuesFromEvent(fetchedEvent);
     const timeSlots = calculateTimeSlots(timeValues);
 
     const fetchedTeams: IFetchedTeam[] = await api.get(
@@ -359,23 +367,24 @@ class Schedules extends Component<{}, IState> {
     );
 
     const mappedTeams: ITeam[] = mapTeamsData(fetchedTeams, fetchedDivisions);
-
     const mappedFields: IField[] = mapFieldsData(fetchedFields);
 
     this.setState({
       timeSlots,
+      gameOptions,
       teams: mappedTeams,
       fields: mappedFields,
     });
   }
 
   render() {
-    const { timeSlots, teams, fields } = this.state;
+    const { timeSlots, teams, fields, gameOptions } = this.state;
 
     return (
       <div>
         {teams?.length && timeSlots?.length && fields?.length && (
           <SchedulesMatrix
+            gameOptions={gameOptions}
             timeSlots={timeSlots}
             fields={fields}
             teams={teams}

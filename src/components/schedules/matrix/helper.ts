@@ -1,7 +1,8 @@
-import { ITimeSlot } from '..';
+import { orderBy } from 'lodash-es';
 import { IField } from 'common/models/schedule/fields';
-import { DropParams } from './dnd/drop';
 import { ITeamCard, ITeam } from 'common/models/schedule/teams';
+import { DropParams } from './dnd/drop';
+import { ITimeSlot } from '..';
 
 export enum TeamPositionEnum {
   'awayTeam' = 1,
@@ -24,6 +25,10 @@ export interface IDefinedGames {
   gameFields: number;
   games: IGame[];
 }
+
+export const sortFieldsByPremier = (fields: IField[]) => {
+  return orderBy(fields, ['isPremier', 'facilityId'], 'desc');
+};
 
 export const defineGames = (
   fields: IField[],
@@ -115,9 +120,7 @@ export const arrayAverageOccurrence = (array: any[]) => {
   let maxCount = 1;
   let modes = [];
 
-  for (var i = 0; i < array.length; i++) {
-    const el = array[i];
-
+  for (const el of array) {
     if (modeMap[el] == null) modeMap[el] = 1;
     else modeMap[el]++;
 
