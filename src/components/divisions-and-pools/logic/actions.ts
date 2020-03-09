@@ -123,10 +123,25 @@ export const updateDivision: ActionCreator<ThunkAction<
   { type: string }
 >> = (division: IDivision) => async (dispatch: Dispatch) => {
   try {
+    const allDivisions = await api.get(
+      `/divisions?event_id=${division.event_id}`
+    );
+
     await Yup.array()
       .of(divisionSchema)
-      .unique(division => division.long_name)
-      .validate(division);
+      .unique(
+        division => division.long_name,
+        'Oops. It looks like you already have division with the same long name. The division must have a unique long name.'
+      )
+      .unique(
+        division => division.short_name,
+        'Oops. It looks like you already have division with the same short name. The division must have a unique short name.'
+      )
+      .validate(
+        allDivisions.map((it: IDivision) =>
+          it.division_id === division.division_id ? division : it
+        )
+      );
 
     const response = await api.put(
       `/divisions?division_id=${division.division_id}`,
@@ -161,6 +176,20 @@ export const saveDivisions: ActionCreator<ThunkAction<
   dispatch: Dispatch
 ) => {
   try {
+    const allDivisions = await api.get(`/divisions?event_id=${eventId}`);
+
+    await Yup.array()
+      .of(divisionSchema)
+      .unique(
+        division => division.long_name,
+        'Oops. It looks like you already have division with the same long name. The division must have a unique long name.'
+      )
+      .unique(
+        division => division.short_name,
+        'Oops. It looks like you already have division with the same short name. The division must have a unique short name.'
+      )
+      .validate([...allDivisions, ...divisions]);
+
     for await (const division of divisions) {
       const data = {
         ...division,
@@ -219,8 +248,15 @@ export const savePool: ActionCreator<ThunkAction<
       ...pool,
       pool_id: getVarcharEight(),
     };
+    const allPools = await api.get(`/pools?division_id=${pool.division_id}`);
 
-    await poolSchema.validate(data);
+    await Yup.array()
+      .of(poolSchema)
+      .unique(
+        pool => pool.pool_name,
+        'Oops. It looks like you already have pool with the same name. The pool must have a unique name.'
+      )
+      .validate([...allPools, data]);
 
     const response = await api.post(`/pools`, data);
 

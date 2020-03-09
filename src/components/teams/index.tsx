@@ -11,9 +11,7 @@ import {
   Modal,
   PopupTeamEdit,
   Loader,
-  Toasts,
 } from 'components/common';
-import { teamSchema } from 'validations';
 import { AppState } from './logic/reducer';
 import { IDivision, IPool, ITeam } from '../../common/models';
 import styles from './styles.module.scss';
@@ -150,18 +148,12 @@ class Teams extends React.Component<
   onSaveTeam = async () => {
     const { configurableTeam } = this.state;
 
-    try {
-      await teamSchema.validateSync(configurableTeam);
-
-      if (configurableTeam) {
-        this.setState(({ teams }) => ({
-          teams: teams.map(it =>
-            it.team_id === configurableTeam.team_id ? configurableTeam : it
-          ),
-        }));
-      }
-    } catch (err) {
-      Toasts.errorToast(err.message);
+    if (configurableTeam) {
+      this.setState(({ teams }) => ({
+        teams: teams.map(it =>
+          it.team_id === configurableTeam.team_id ? configurableTeam : it
+        ),
+      }));
     }
 
     this.onCloseModal();
