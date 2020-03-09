@@ -132,7 +132,7 @@ const saveFacilities: ActionCreator<ThunkAction<
       .of(facilitySchema)
       .unique(
         facility => facility.facilities_description,
-        'Oops. It looks like you have facilities with the same name. The facility must have a unique name.'
+        'Oops. It looks like you already have facilities with the same name. The facility must have a unique name.'
       )
       .validate(facilities);
 
