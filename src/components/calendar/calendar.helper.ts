@@ -1,5 +1,5 @@
 import { ICalendarEvent, IEvent } from 'common/models/calendar';
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 
 export type ViewType = 'day' | 'week' | 'month' | 'listDay' | 'listMonth';
 type ButtonVariantType = 'squared' | 'squaredOutlined' | undefined;
@@ -36,17 +36,17 @@ export const buttonTypeEvent = (
 export const appropriateEvents = (
   events: Partial<ICalendarEvent>[]
 ): IEvent[] => {
-  const formatDate = (eventDate: string) => {
-    const date = new Date(eventDate);
+  // const formatDate = (eventDate: string) => {
+  //   const date = new Date(eventDate);
 
-    return format(new Date(date), `yyyy-MM-dd'T'HH:mm:ss`);
-  };
+  //   return format(new Date(date), `yyyy-MM-dd'T'HH:mm:ss`);
+  // };
 
   const eventTypeToCalendar = (event: Partial<ICalendarEvent>): IEvent => ({
     id: event.cal_event_id!,
     title: event.cal_event_title!,
-    start: formatDate(event.cal_event_startdate!),
-    end: formatDate(event.cal_event_enddate!),
+    start: new Date(event.cal_event_startdate!).toISOString(),
+    end: new Date(event.cal_event_enddate!).toISOString(),
     className: event.cal_event_type,
   });
 
@@ -90,5 +90,5 @@ export const setBlankNewEvent = (date?: string): Partial<ICalendarEvent> => ({
   cal_event_tag: '',
   cal_event_type: 'event',
   cal_event_desc: '',
-  has_reminder: 0,
+  has_reminder_YN: 0,
 });

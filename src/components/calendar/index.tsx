@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
-import { Button, Paper, HeadingLevelTwo } from 'components/common';
+import { HeadingLevelTwo } from 'components/common';
 import { ICalendarEvent } from 'common/models/calendar';
 import CreateDialog from './create-dialog';
 import styles from './styles.module.scss';
@@ -156,7 +156,7 @@ class Calendar extends Component<any, IState> {
 
     return (
       <div className={styles.container}>
-        <Paper>
+        {/* <Paper>
           <div className={styles.paperWrapper}>
             <Button
               label="Save"
@@ -165,7 +165,7 @@ class Calendar extends Component<any, IState> {
               onClick={this.onSave}
             />
           </div>
-        </Paper>
+        </Paper> */}
 
         <HeadingLevelTwo margin="24px 0">Calendar</HeadingLevelTwo>
 

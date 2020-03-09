@@ -7,7 +7,6 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import { capitalize } from 'lodash-es';
-import { format } from 'date-fns/esm';
 
 import { getViewType, buttonTypeView, ViewType } from '../calendar.helper';
 import { DatePicker, Button } from 'components/common';
@@ -86,7 +85,8 @@ export default (props: IProps) => {
   const handleDateClick = (arg: EventArg) => {
     const left = arg.jsEvent.x;
     const top = arg.jsEvent.y;
-    const date = format(arg.date, 'yyyy-MM-dd HH:mm:ss');
+    const date = new Date(arg.date).toISOString();
+    // format(arg.date, 'yyyy-MM-dd HH:mm:ss');
 
     const dateSelect = {
       left,
@@ -114,7 +114,6 @@ export default (props: IProps) => {
 
   const onEventResize = (eventResizeInfo: any) => {
     const { id, start, end } = eventResizeInfo.event;
-    console.log(start);
     const data = {
       cal_event_id: id,
       cal_event_startdate: start,

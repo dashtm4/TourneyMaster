@@ -14,12 +14,11 @@ export interface ICalendarEvent {
   cal_event_type: ButtonTypeEvent;
   cal_event_title: string;
   cal_event_desc: string;
-  cal_event_location: string;
   cal_event_startdate: string;
   cal_event_enddate: string;
   cal_event_datetime: string;
   cal_event_tag: string;
-  has_reminder: number;
+  has_reminder_YN: number;
   reminder_datetime: string;
   is_active_YN: number;
   created_by: string;
