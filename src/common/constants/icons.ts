@@ -21,6 +21,7 @@ enum Icons {
   EMODJI_OBJECTS = 'emodjiObjects',
   WARNING = 'warning',
   FILE_COPY = 'fileCopy',
+  CHECK_CIRCLE = 'checkCircle',
 }
 
 export { Icons };

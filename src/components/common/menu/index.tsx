@@ -1,16 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {
   ExpansionPanelWrapped,
   ExpansionPanelSummaryWrapped,
   ExpansionPanelDetailsWrapper,
 } from './expansion-panel-material';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { ProgressBar } from 'components/common';
 import { getIcon, stringToLink } from '../../../helpers';
 import { Icons } from '../../../common/constants/icons';
-import { MenuItem } from 'common/models/menu-list';
+import { IMenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
+
+const COMPLETED_ITEM_FILED = 'isCompleted';
 
 const STYLES_MENUITEM_ICON = {
   marginRight: '10px',
@@ -20,16 +23,46 @@ const STYLES_MENUITEM_ICON_COLLAPSED = {
   marginRight: 0,
 };
 
+const STYLES_CHECK_CIRCLE_ICON = {
+  width: '20px',
+  height: '20px',
+  fill: '#00CC47',
+  marginLeft: '10px',
+};
+
 interface Props {
-  list: MenuItem[];
+  list: IMenuItem[];
   eventId?: string;
   isAllowEdit: boolean;
+  isDraft?: boolean;
 }
 
-const Menu = ({ isAllowEdit, list, eventId }: Props) => {
+const Menu = ({ isAllowEdit, isDraft, list, eventId }: Props) => {
   const [isCollapsed, onCollapse] = React.useState(false);
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(list[0].title);
+  const [percentOfCompleted] = React.useState(() => {
+    if (!isDraft) {
+      return;
+    }
+
+    const completedItems = list.reduce(
+      (acc, it) => ({
+        shouldCompleted: it.hasOwnProperty(COMPLETED_ITEM_FILED)
+          ? acc.shouldCompleted + 1
+          : acc.shouldCompleted,
+        completed:
+          it.hasOwnProperty(COMPLETED_ITEM_FILED) && it.isCompleted
+            ? acc.completed + 1
+            : acc.completed,
+      }),
+      { shouldCompleted: 0, completed: 0 }
+    );
+
+    return Math.ceil(
+      (completedItems.completed / completedItems.shouldCompleted) * 100
+    );
+  });
 
   return (
     <aside
@@ -49,8 +82,10 @@ const Menu = ({ isAllowEdit, list, eventId }: Props) => {
     >
       <ul className={styles.list}>
         {list.map(menuItem => (
-          <li className={styles.itemTitle} key={menuItem.title}>
-            <ExpansionPanelWrapped disabled={!menuItem.isAllow && !isAllowEdit}>
+          <li className={styles.listItem} key={menuItem.title}>
+            <ExpansionPanelWrapped
+              disabled={!menuItem.isAllowEdit && !isAllowEdit}
+            >
               <ExpansionPanelSummaryWrapped
                 expandIcon={
                   menuItem.children.length !== 0 && !isCollapsed ? (
@@ -66,15 +101,19 @@ const Menu = ({ isAllowEdit, list, eventId }: Props) => {
                 )}
                 {!isCollapsed && (
                   <Link
-                    className={
+                    className={`${styles.itemTitle} ${
                       activeItem === menuItem.title
-                        ? styles.activeItemTitle
+                        ? styles.itemTitleActive
                         : ''
-                    }
+                    }`}
                     onClick={() => setActiveItem(menuItem.title)}
                     to={`${menuItem.link}/${eventId || ''}`}
                   >
                     {menuItem.title}
+                    {!isCollapsed &&
+                      isDraft &&
+                      menuItem.isCompleted &&
+                      getIcon(Icons.CHECK_CIRCLE, STYLES_CHECK_CIRCLE_ICON)}
                   </Link>
                 )}
               </ExpansionPanelSummaryWrapped>
@@ -100,6 +139,20 @@ const Menu = ({ isAllowEdit, list, eventId }: Props) => {
           </li>
         ))}
       </ul>
+      {!isCollapsed && isDraft && (
+        <div className={styles.progressBarWrapper}>
+          <ProgressBar completed={percentOfCompleted} />
+          <div className={styles.progressBarStatusWrapper}>
+            <p className={styles.progressBarStatus}>
+              <span>Status:</span> Draft
+            </p>
+            <p className={styles.progressBarComplete}>
+              <output>{`${percentOfCompleted}%`}</output>
+              Complete
+            </p>
+          </div>
+        </div>
+      )}
       <button
         className={styles.pinBtn}
         onClick={() => onSetCollapsibility(!isCollapsible)}

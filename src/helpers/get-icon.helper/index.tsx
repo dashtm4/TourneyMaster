@@ -21,6 +21,7 @@ import PublishIcon from '@material-ui/icons/Publish';
 import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
 import WarningIcon from '@material-ui/icons/Warning';
 import FileCopy from '@material-ui/icons/FileCopy';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { PinIcon } from './own-icons';
 import { Icons } from '../../common/constants/icons';
 
@@ -70,6 +71,8 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <WarningIcon style={iconStyles} />;
     case Icons.FILE_COPY:
       return <FileCopy style={iconStyles} />;
+    case Icons.CHECK_CIRCLE:
+      return <CheckCircleIcon style={iconStyles} />;
   }
 
   return <ClearIcon />;

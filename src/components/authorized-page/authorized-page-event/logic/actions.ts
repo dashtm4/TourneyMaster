@@ -20,14 +20,24 @@ const loadAuthPageData: ActionCreator<ThunkAction<
       type: LOAD_AUTH_PAGE_DATA_START,
     });
 
+    const event = await Api.get(`/events?event_id=${eventId}`);
+    const registration = await Api.get(`/registrations?event_id=${eventId}`);
     const facilities = await Api.get(`/facilities?event_id=${eventId}`);
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
+    const teams = await Api.get(`/teams?=event_id=${eventId}`);
 
     dispatch({
       type: LOAD_AUTH_PAGE_DATA_SUCCESS,
       payload: {
         facilities,
         divisions,
+        tournamentData: {
+          event: event[0],
+          registration: registration[0],
+          facilities,
+          divisions,
+          teams,
+        },
       },
     });
   } catch {

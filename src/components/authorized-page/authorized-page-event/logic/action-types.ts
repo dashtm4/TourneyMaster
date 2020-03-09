@@ -1,4 +1,4 @@
-import { IFacility, IDivision } from 'common/models';
+import { ITournamentData } from 'common/models';
 
 export const LOAD_AUTH_PAGE_DATA_START = 'LOAD_AUTH_PAGE_DATA_START';
 export const LOAD_AUTH_PAGE_DATA_SUCCESS = 'LOAD_AUTH_PAGE_DATA_SUCCESS';
@@ -13,8 +13,7 @@ export interface loadAuthPageDataStart {
 export interface loadAuthPageDataSuccess {
   type: 'LOAD_AUTH_PAGE_DATA_SUCCESS';
   payload: {
-    facilities: IFacility[];
-    divisions: IDivision[];
+    tournamentData: ITournamentData;
   };
 }
 

@@ -14,19 +14,32 @@ import {
   DIVISIONS_FETCH_SUCCESS,
   divisionsPoolsAction,
 } from 'components/divisions-and-pools/logic/actionTypes';
-import { MenuItem } from 'common/models';
-import { EventMenuTitles } from 'common/enums';
+import { sortByField } from 'helpers';
+import { IMenuItem, ITournamentData } from 'common/models';
+import {
+  EventMenuTitles,
+  EventMenuRegistrationTitles,
+  SortByFilesTypes,
+} from 'common/enums';
 
 const initialState = {
   isLoading: false,
   isLoaded: false,
   menuList: EventMenu,
+  tournamentData: {
+    event: null,
+    registration: null,
+    facilities: [],
+    divisions: [],
+    teams: [],
+  },
 };
 
 export interface AppState {
   isLoading: boolean;
   isLoaded: boolean;
-  menuList: MenuItem[];
+  menuList: IMenuItem[];
+  tournamentData: ITournamentData;
 }
 
 const pageEventReducer = (
@@ -41,30 +54,55 @@ const pageEventReducer = (
       };
     }
     case LOAD_AUTH_PAGE_DATA_SUCCESS: {
-      const { facilities, divisions } = action.payload;
+      const { tournamentData } = action.payload;
+      const {
+        event,
+        registration,
+        facilities,
+        divisions,
+        teams,
+      } = tournamentData;
 
       return {
         ...state,
+        tournamentData,
         isLoaded: true,
         isLoading: false,
         menuList: state.menuList.map(item => {
           switch (item.title) {
+            case EventMenuTitles.EVENT_DETAILS: {
+              return {
+                ...item,
+                isCompleted: Boolean(event),
+              };
+            }
             case EventMenuTitles.FACILITIES: {
               return {
                 ...item,
-                children: facilities
-                  .sort((a, b) =>
-                    a.facilities_description > b.facilities_description ? 1 : -1
-                  )
-                  .map(it => it.facilities_description),
+                isCompleted: facilities.length > 0,
+                children: sortByField(facilities, SortByFilesTypes.FACILITIES),
+              };
+            }
+            case EventMenuTitles.REGISTRATION: {
+              return {
+                ...item,
+                isCompleted: Boolean(registration),
+                children: registration
+                  ? Object.values(EventMenuRegistrationTitles)
+                  : [],
               };
             }
             case EventMenuTitles.DIVISIONS_AND_POOLS: {
               return {
                 ...item,
-                children: divisions
-                  .sort((a, b) => (a.short_name > b.short_name ? 1 : -1))
-                  .map(it => it.short_name),
+                isCompleted: divisions.length > 0,
+                children: sortByField(divisions, SortByFilesTypes.DIVISIONS),
+              };
+            }
+            case EventMenuTitles.TEAMS: {
+              return {
+                ...item,
+                isCompleted: teams.length > 0,
               };
             }
             default:
@@ -83,11 +121,7 @@ const pageEventReducer = (
           item.title === EventMenuTitles.FACILITIES
             ? {
                 ...item,
-                children: facilities
-                  .sort((a, b) =>
-                    a.facilities_description > b.facilities_description ? 1 : -1
-                  )
-                  .map(it => it.facilities_description),
+                children: sortByField(facilities, SortByFilesTypes.FACILITIES),
               }
             : item
         ),
@@ -100,9 +134,10 @@ const pageEventReducer = (
           item.title === EventMenuTitles.DIVISIONS_AND_POOLS
             ? {
                 ...item,
-                children: action.payload
-                  .sort((a, b) => (a.short_name > b.short_name ? 1 : -1))
-                  .map(it => it.short_name),
+                children: sortByField(
+                  action.payload,
+                  SortByFilesTypes.FACILITIES
+                ),
               }
             : item
         ),

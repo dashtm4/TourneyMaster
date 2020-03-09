@@ -19,7 +19,7 @@ import Scheduling from 'components/scheduling';
 import Teams from 'components/teams';
 import CreateTeam from 'components/teams/components/create-team';
 import { Routes } from 'common/constants';
-import { MenuItem, BindingAction } from 'common/models';
+import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
 import { Loader } from 'components/common';
 import styles from '../styles.module.scss';
 
@@ -30,7 +30,8 @@ interface MatchParams {
 interface Props {
   isLoading: boolean;
   isLoaded: boolean;
-  menuList: MenuItem[];
+  menuList: IMenuItem[];
+  tournamentData: ITournamentData;
   loadAuthPageData: (eventId: string) => void;
   clearAuthPageData: BindingAction;
 }
@@ -40,9 +41,10 @@ export const EmptyPage: React.FC = () => {
 };
 
 const AuthorizedPageEvent = ({
+  match,
   isLoaded,
   menuList,
-  match,
+  tournamentData,
   loadAuthPageData,
   clearAuthPageData,
 }: Props & RouteComponentProps<MatchParams>) => {
@@ -69,6 +71,7 @@ const AuthorizedPageEvent = ({
           list={menuList}
           eventId={eventId}
           isAllowEdit={Boolean(eventId)}
+          isDraft={Boolean(tournamentData.event?.event_status)}
         />
         <main className={styles.content}>
           <Switch>
@@ -103,6 +106,7 @@ interface IRootState {
 
 export default connect(
   ({ pageEvent }: IRootState) => ({
+    tournamentData: pageEvent.tournamentData,
     isLoading: pageEvent.isLoading,
     isLoaded: pageEvent.isLoaded,
     menuList: pageEvent.menuList,

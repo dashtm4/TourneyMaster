@@ -7,8 +7,6 @@ enum EventMenuTitles {
   ADVANCED_SETTINGS = 'Advanced Settings',
   FACILITIES = 'Facilities',
   REGISTRATION = 'Registration',
-  TEAMS_AND_ATHLETES = 'Teams and Athletes',
-  MAIN_CONTACT = 'Main Contact',
   DIVISIONS_AND_POOLS = 'Divisions & Pools',
   TEAMS = 'Teams',
   TEAM_MANAGEMENT = 'Team Management',
@@ -20,4 +18,10 @@ enum EventMenuTitles {
   REPORTING = 'Reporting',
 }
 
-export { EventMenuTitles };
+enum EventMenuRegistrationTitles {
+  PRIMARY_INFORMATION = 'Primary Information',
+  TEAMS_AND_ATHLETES = 'Teams and Athletes',
+  MAIN_CONTACT = 'Main Contact',
+}
+
+export { EventMenuTitles, EventMenuRegistrationTitles };
