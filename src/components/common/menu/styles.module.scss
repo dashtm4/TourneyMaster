@@ -127,3 +127,17 @@
     font-weight: bold;
   }
 }
+
+.doneBtnWrapper {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 19px;
+
+  button {
+    background-color: #00cc47;
+  }
+
+  button:hover {
+    background-color: #00cc47;
+  }
+}

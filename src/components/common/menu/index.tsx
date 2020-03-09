@@ -7,9 +7,10 @@ import {
   ExpansionPanelSummaryWrapped,
   ExpansionPanelDetailsWrapper,
 } from './expansion-panel-material';
-import { ProgressBar } from 'components/common';
+import { ProgressBar, Button } from 'components/common';
 import { getIcon, stringToLink, countCompletedPercent } from 'helpers';
 import { Icons } from 'common/constants/icons';
+import { ButtonColors, ButtonVarian } from 'common/enums';
 import { IMenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 
@@ -122,16 +123,29 @@ const Menu = ({ isAllowEdit, isDraft, list, eventId }: Props) => {
       </ul>
       {!isCollapsed && isDraft && (
         <div className={styles.progressBarWrapper}>
-          <ProgressBar completed={percentOfCompleted} />
-          <div className={styles.progressBarStatusWrapper}>
-            <p className={styles.progressBarStatus}>
-              <span>Status:</span> Draft
-            </p>
-            <p className={styles.progressBarComplete}>
-              <output>{`${percentOfCompleted}%`}</output>
-              Complete
-            </p>
-          </div>
+          {percentOfCompleted === 100 ? (
+            <span className={styles.doneBtnWrapper}>
+              <Button
+                icon={getIcon(Icons.DONE)}
+                label="Publish Tournament"
+                color={ButtonColors.INHERIT}
+                variant={ButtonVarian.CONTAINED}
+              />
+            </span>
+          ) : (
+            <>
+              <ProgressBar completed={percentOfCompleted} />
+              <div className={styles.progressBarStatusWrapper}>
+                <p className={styles.progressBarStatus}>
+                  <span>Status:</span> Draft
+                </p>
+                <p className={styles.progressBarComplete}>
+                  <output>{`${percentOfCompleted}%`}</output>
+                  Complete
+                </p>
+              </div>
+            </>
+          )}
         </div>
       )}
       <button

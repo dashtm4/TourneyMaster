@@ -22,6 +22,7 @@ enum Icons {
   WARNING = 'warning',
   FILE_COPY = 'fileCopy',
   CHECK_CIRCLE = 'checkCircle',
+  DONE = 'done',
 }
 
 export { Icons };
