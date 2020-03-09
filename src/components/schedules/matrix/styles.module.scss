@@ -1,5 +1,26 @@
 .table {
   color: #f0f0f0;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  width: 600px;
+  position: relative;
+  display: block;
+
+  @media only screen and (min-width: 950px) {
+    width: 890px;
+  }
+
+  @media only screen and (min-width: 1150px) {
+    width: 1090px;
+  }
+
+  @media only screen and (min-width: 1250px) {
+    width: 1230px;
+  }
+
+  @media only screen and (min-width: 1450px) {
+    width: 1370px;
+  }
 
   .fieldTh {
     background: #d5d5d5;

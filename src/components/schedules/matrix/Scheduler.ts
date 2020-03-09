@@ -60,6 +60,7 @@ export default class Scheduler {
     this.teamsInPlay = {};
     this.facilityData = {};
     this.poolsData = {};
+
     this.calculateTeamGameNum();
     this.setTeamsPerPools();
     this.calculateGamesForFacilities();

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import SchedulesMatrix from './matrix';
-import { calculateTimeSlots } from './helper';
+import { calculateTimeSlots, getTimeValuesFromEvent } from './helper';
 import api from 'api/api';
 import { mapTeamsData, mapFieldsData } from './mapTournamentData';
 import { IFetchedTeam, ITeam } from 'common/models/schedule/teams';
@@ -8,6 +8,7 @@ import { IFetchedDivision } from 'common/models/schedule/divisions';
 import { IFacility } from 'common/models/facilities';
 import { IField } from 'common/models/schedule/fields';
 import { IField as IFetchedField } from 'common/models/field';
+import { EventDetailsDTO } from 'components/event-details/logic/model';
 
 export interface ITimeSlot {
   id: number;
@@ -329,17 +330,12 @@ class Schedules extends Component<{}, IState> {
   state: IState = {};
 
   async componentDidMount() {
-    const firstGameTime = '08:00:00';
-    const lastGameEnd = '16:00:00';
-    const totalGameTime = 60;
-
-    const timeSlots = calculateTimeSlots(
-      firstGameTime,
-      lastGameEnd,
-      totalGameTime
+    const fetchedEvents: EventDetailsDTO[] = await api.get(
+      '/events?event_id=ADLNT001'
     );
 
-    this.setState({ timeSlots });
+    const timeValues = getTimeValuesFromEvent(fetchedEvents[0]);
+    const timeSlots = calculateTimeSlots(timeValues);
 
     const fetchedTeams: IFetchedTeam[] = await api.get(
       '/teams?event_id=ADLNT001'
@@ -362,14 +358,12 @@ class Schedules extends Component<{}, IState> {
       })
     );
 
-    const mappedTeams: ITeam[] = mapTeamsData(
-      fetchedTeams,
-      fetchedDivisions
-    ).slice(0, 60);
+    const mappedTeams: ITeam[] = mapTeamsData(fetchedTeams, fetchedDivisions);
 
     const mappedFields: IField[] = mapFieldsData(fetchedFields);
 
     this.setState({
+      timeSlots,
       teams: mappedTeams,
       fields: mappedFields,
     });

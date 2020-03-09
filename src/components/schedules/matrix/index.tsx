@@ -52,6 +52,7 @@ const SchedulesMatrix = (props: IProps) => {
             <RenderTimeSlot
               key={timeSlot.id}
               timeSlot={timeSlot}
+              fields={values.fields}
               games={selectProperGamesPerTimeSlot(
                 timeSlot,
                 values.updatedGames

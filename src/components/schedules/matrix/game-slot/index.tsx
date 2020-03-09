@@ -2,17 +2,22 @@ import React from 'react';
 import styles from '../styles.module.scss';
 import { IGame } from '../helper';
 import TeamDrop, { DropParams } from '../dnd/drop';
+import { IField } from 'common/models/schedule/fields';
 
 interface IProps {
   game: IGame;
+  field?: IField;
   moveCard: (params: DropParams) => void;
 }
 
 const RenderGameSlot = (props: IProps) => {
-  const { game, moveCard } = props;
+  const { game, moveCard, field } = props;
 
   return (
-    <td key={game.id}>
+    <td
+      key={game.id}
+      style={{ background: field?.isUnused ? '#e2e2e2' : 'transparent' }}
+    >
       <div className={styles.gameSlot}>
         <TeamDrop
           accept="teamdrop"
