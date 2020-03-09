@@ -3,7 +3,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 interface Props {
-  completed?: number;
+  completed?: number | null;
 }
 
 const useStyles = makeStyles({

@@ -41,13 +41,9 @@ const Menu = ({ isAllowEdit, isDraft, list, eventId }: Props) => {
   const [isCollapsed, onCollapse] = React.useState(false);
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(list[0].title);
-  const [percentOfCompleted] = React.useState(() => {
-    if (!isDraft) {
-      return;
-    }
-
-    return countCompletedPercent(list, COMPLETED_ITEM_FILED);
-  });
+  const percentOfCompleted = isDraft
+    ? countCompletedPercent(list, COMPLETED_ITEM_FILED)
+    : null;
 
   return (
     <aside

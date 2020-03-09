@@ -1,7 +1,7 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
 import {
-  authPageAction,
+  AuthPageAction,
   LOAD_AUTH_PAGE_DATA_START,
   LOAD_AUTH_PAGE_DATA_SUCCESS,
   LOAD_AUTH_PAGE_DATA_FAILURE,
@@ -13,7 +13,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
   void,
   {},
   null,
-  authPageAction
+  AuthPageAction
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   try {
     dispatch({

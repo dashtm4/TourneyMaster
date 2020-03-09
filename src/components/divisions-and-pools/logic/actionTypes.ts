@@ -23,4 +23,4 @@ export interface saveDivisionsSuccess {
   payload: IDivision[];
 }
 
-export type divisionsPoolsAction = loadDivisionsSuccess | saveDivisionsSuccess;
+export type DivisionsPoolsAction = loadDivisionsSuccess | saveDivisionsSuccess;

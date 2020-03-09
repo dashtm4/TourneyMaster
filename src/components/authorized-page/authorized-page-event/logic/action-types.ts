@@ -21,7 +21,7 @@ export interface cleatAuthPageData {
   type: 'CLEAR_AUTH_PAGE_DATA';
 }
 
-export type authPageAction =
+export type AuthPageAction =
   | loadAuthPageDataStart
   | loadAuthPageDataSuccess
   | cleatAuthPageData;

@@ -3,17 +3,24 @@ import {
   LOAD_AUTH_PAGE_DATA_START,
   LOAD_AUTH_PAGE_DATA_SUCCESS,
   CLEAR_AUTH_PAGE_DATA,
-  authPageAction,
+  AuthPageAction,
 } from './action-types';
 import {
-  LOAD_FACILITIES_SUCCESS,
+  REGISTRATION_UPDATE_SUCCESS,
+  RegistrationAction,
+} from 'components/registration/registration-edit/logic/actionTypes';
+import {
   SAVE_FACILITIES_SUCCESS,
   FacilitiesAction,
 } from 'components/facilities/logic/action-types';
 import {
   DIVISIONS_FETCH_SUCCESS,
-  divisionsPoolsAction,
+  DivisionsPoolsAction,
 } from 'components/divisions-and-pools/logic/actionTypes';
+import {
+  LOAD_DIVISIONS_TEAMS_SUCCESS,
+  TeamsAction,
+} from 'components/teams/logic/action-types';
 import { sortByField } from 'helpers';
 import { IMenuItem, ITournamentData } from 'common/models';
 import {
@@ -44,7 +51,12 @@ export interface AppState {
 
 const pageEventReducer = (
   state: AppState = initialState,
-  action: authPageAction | FacilitiesAction | divisionsPoolsAction
+  action:
+    | AuthPageAction
+    | FacilitiesAction
+    | DivisionsPoolsAction
+    | RegistrationAction
+    | TeamsAction
 ) => {
   switch (action.type) {
     case LOAD_AUTH_PAGE_DATA_START: {
@@ -111,7 +123,24 @@ const pageEventReducer = (
         }),
       };
     }
-    case LOAD_FACILITIES_SUCCESS:
+    case REGISTRATION_UPDATE_SUCCESS: {
+      const registration = action.payload;
+
+      return {
+        ...state,
+        menuList: state.menuList.map(item =>
+          item.title === EventMenuTitles.REGISTRATION
+            ? {
+                ...item,
+                isCompleted: Boolean(registration),
+                children: registration
+                  ? Object.values(EventMenuRegistrationTitles)
+                  : [],
+              }
+            : item
+        ),
+      };
+    }
     case SAVE_FACILITIES_SUCCESS: {
       const { facilities } = action.payload;
 
@@ -121,6 +150,7 @@ const pageEventReducer = (
           item.title === EventMenuTitles.FACILITIES
             ? {
                 ...item,
+                isCompleted: facilities.length > 0,
                 children: sortByField(facilities, SortByFilesTypes.FACILITIES),
               }
             : item
@@ -128,16 +158,31 @@ const pageEventReducer = (
       };
     }
     case DIVISIONS_FETCH_SUCCESS: {
+      const divisions = action.payload;
+
       return {
         ...state,
         menuList: state.menuList.map(item =>
           item.title === EventMenuTitles.DIVISIONS_AND_POOLS
             ? {
                 ...item,
-                children: sortByField(
-                  action.payload,
-                  SortByFilesTypes.FACILITIES
-                ),
+                isCompleted: divisions.length > 0,
+                children: sortByField(divisions, SortByFilesTypes.DIVISIONS),
+              }
+            : item
+        ),
+      };
+    }
+    case LOAD_DIVISIONS_TEAMS_SUCCESS: {
+      const { teams } = action.payload;
+
+      return {
+        ...state,
+        menuList: state.menuList.map(item =>
+          item.title === EventMenuTitles.TEAMS
+            ? {
+                ...item,
+                isCompleted: teams.length > 0,
               }
             : item
         ),
