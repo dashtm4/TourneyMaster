@@ -131,31 +131,31 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     );
   };
 
-  static getDerivedStateFromProps(
-    nextProps: IDivisionProps,
-    prevState: IAddDivisionState
-  ): Partial<IAddDivisionState> {
-    if (
-      nextProps.registration &&
-      !prevState.defaultDivision.entry_fee &&
-      !prevState.divisions[0]?.division_id
-    ) {
-      return {
-        defaultDivision: {
-          entry_fee: nextProps.registration.entry_fee,
-          max_num_teams: nextProps.registration.max_teams_per_division,
-        },
-        divisions: [
-          {
-            entry_fee: nextProps.registration.entry_fee,
-            max_num_teams: nextProps.registration.max_teams_per_division,
-          },
-        ],
-      };
-    } else {
-      return {};
-    }
-  }
+  // static getDerivedStateFromProps(
+  //   nextProps: IDivisionProps,
+  //   prevState: IAddDivisionState
+  // ): Partial<IAddDivisionState> {
+  //   if (
+  //     nextProps.registration &&
+  //     !prevState.defaultDivision.entry_fee &&
+  //     !prevState.divisions[0]?.division_id
+  //   ) {
+  //     return {
+  //       defaultDivision: {
+  //         entry_fee: nextProps.registration.entry_fee,
+  //         max_num_teams: nextProps.registration.max_teams_per_division,
+  //       },
+  //       divisions: [
+  //         {
+  //           entry_fee: nextProps.registration.entry_fee,
+  //           max_num_teams: nextProps.registration.max_teams_per_division,
+  //         },
+  //       ],
+  //     };
+  //   } else {
+  //     return {};
+  //   }
+  // }
 
   render() {
     return (
