@@ -5,11 +5,10 @@ import {
   Input,
   Button,
 } from 'components/common';
-import { IAddUserToOrg } from '../../types';
 import styles from './styles.module.scss';
 
 interface Props {
-  addUserToOrganization: ({ orgId, invCode }: IAddUserToOrg) => void;
+  addUserToOrganization: (invCode: string) => void;
 }
 
 const ApplyInvitation = ({ addUserToOrganization }: Props) => {
@@ -29,7 +28,7 @@ const ApplyInvitation = ({ addUserToOrganization }: Props) => {
         onSubmit={evt => {
           evt.preventDefault();
 
-          addUserToOrganization({ invCode });
+          addUserToOrganization(invCode);
         }}
         className={styles.section}
       >
@@ -41,7 +40,6 @@ const ApplyInvitation = ({ addUserToOrganization }: Props) => {
             value={invCode || ''}
             fullWidth={true}
             label="Invitation Code"
-            isRequired
           />
         </div>
         <div className={styles.sectionItem}>

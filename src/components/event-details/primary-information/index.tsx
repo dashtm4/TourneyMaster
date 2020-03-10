@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import CodeIcon from '@material-ui/icons/Code';
 
 import {
@@ -19,6 +19,7 @@ import { EventDetailsDTO } from '../logic/model';
 import Map from './map';
 import PlacesAutocompleteInput from './map/autocomplete';
 import { BindingCbWithTwo } from 'common/models';
+import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -31,7 +32,10 @@ enum sportsEnum {
   'Lacrosse' = 1,
   'Field Hockey' = 2,
 }
-
+enum genderEnum {
+  'Male' = 1,
+  'Female' = 2,
+}
 enum timeZoneEnum {
   'Eastern Standard Time' = -5,
   'Central Standard Time' = -6,
@@ -39,24 +43,46 @@ enum timeZoneEnum {
   'Pacific Standard Time' = -8,
 }
 
-const sportOptions = ['Lacrosse', 'Field Hockey'];
+const sportOptions = [
+  { label: 'Lacrosse', value: sportsEnum[1] },
+  { label: 'Field Hockey', value: sportsEnum[2] },
+];
 const timeZoneOptions = [
   'Eastern Standard Time',
   'Central Standard Time',
   'Mountain Standard Time',
   'Pacific Standard Time',
 ];
-const genderOptions = ['Male', 'Female'];
-enum genderEnum {
-  'Male' = 1,
-  'Female' = 2,
-}
+const genderOptions = [
+  { label: 'Male', value: genderEnum[1] },
+  { label: 'Female', value: genderEnum[2] },
+];
+
+const levelOptions = ['High School', 'Club', 'Youth', 'Other'];
 
 const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
   onChange,
 }: Props) => {
-  const { time_zone_utc, sport_id, event_startdate, event_enddate } = eventData;
+  const {
+    time_zone_utc,
+    event_startdate,
+    event_enddate,
+    event_level,
+  } = eventData;
+
+  const {
+    sportId: dropdownSportValue,
+    genderId: dropdownGenderValue,
+  } = getGenderAndSportById(eventData.sport_id);
+
+  const [genderId, onChangeGender] = useState(dropdownGenderValue);
+  const [sportId, onChangeSport] = useState(dropdownSportValue);
+
+  useEffect(() => {
+    const calculatedSportId = getIdByGenderAndSport(genderId, sportId);
+    onChange('sport_id', calculatedSportId);
+  }, [genderId, sportId]);
 
   const onNameChange = (e: InputTargetValue) =>
     onChange('event_name', e.target.value);
@@ -64,11 +90,15 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const onTagChange = (e: InputTargetValue) =>
     onChange('event_tag', e.target.value);
 
-  const onSportChange = (e: InputTargetValue) =>
-    onChange('sport_id', sportsEnum[e.target.value]);
+  const onSportChange = (e: InputTargetValue) => {
+    onChangeSport(sportsEnum[e.target.value]);
+  };
+  const onLevelChange = (e: InputTargetValue) =>
+    onChange('event_level', e.target.value);
 
-  const onGenderChange = (e: InputTargetValue) =>
-    onChange('gender_id', genderEnum[e.target.value]);
+  const onGenderChange = (e: InputTargetValue) => {
+    onChangeGender(genderEnum[e.target.value]);
+  };
 
   const onStartDate = (e: Date | string) => {
     if (!isNaN(Number(e))) {
@@ -95,7 +125,6 @@ const PrimaryInformationSection: React.FC<Props> = ({
     onChange('primary_location_lat', position.lat);
     onChange('primary_location_long', position.lng);
   };
-
   const { primary_location_lat: lat, primary_location_long: lng } = eventData;
 
   return (
@@ -124,15 +153,21 @@ const PrimaryInformationSection: React.FC<Props> = ({
             onChange={onTagChange}
           />
           <Select
-            options={sportOptions.map(type => ({ label: type, value: type }))}
+            options={sportOptions}
             label="Sport"
-            value={sport_id ? sportsEnum[sport_id!] : ''}
+            value={sportsEnum[dropdownSportValue]}
             onChange={onSportChange}
           />
           <Select
-            options={genderOptions.map(type => ({ label: type, value: type }))}
+            options={levelOptions.map(type => ({ label: type, value: type }))}
+            label="Level"
+            value={event_level || ''}
+            onChange={onLevelChange}
+          />
+          <Select
+            options={genderOptions}
             label="Gender"
-            value={genderOptions[0]}
+            value={genderEnum[dropdownGenderValue]}
             onChange={onGenderChange}
           />
         </div>

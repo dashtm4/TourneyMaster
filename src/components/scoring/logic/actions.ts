@@ -1,5 +1,6 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
+import * as Yup from 'yup';
 import {
   TeamsAction,
   LOAD_DIVISION_START,
@@ -16,6 +17,7 @@ import {
   DELETE_TEAM_SUCCESS,
   DELETE_TEAM_FAILURE,
 } from './action-types';
+import { teamSchema } from 'validations';
 import { ITeam } from '../../../common/models';
 import { Toasts } from 'components/common';
 import Api from 'api/api';
@@ -104,6 +106,22 @@ const editTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   team: ITeam
 ) => async (dispatch: Dispatch) => {
   try {
+    const allTeams = await Api.get(`/teams?event_id=${team.event_id}`);
+
+    await Yup.array()
+      .of(teamSchema)
+      .unique(
+        team => team.long_name,
+        'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
+      )
+      .unique(
+        team => team.short_name,
+        'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+      )
+      .validate(
+        allTeams.map((it: ITeam) => (it.team_id === team.team_id ? team : it))
+      );
+
     await Api.put(`/teams?team_id=${team.team_id}`, team);
 
     dispatch({
@@ -114,10 +132,12 @@ const editTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
     });
 
     Toasts.successToast('Teams saved successfully');
-  } catch {
+  } catch (err) {
     dispatch({
       type: EDIT_TEAM_FAILURE,
     });
+
+    Toasts.errorToast(err.message);
   }
 };
 

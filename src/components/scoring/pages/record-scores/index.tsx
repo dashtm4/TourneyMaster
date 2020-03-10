@@ -125,6 +125,7 @@ class RecordScores extends React.Component<
           divisions={divisions}
           teams={teams}
           fields={fields}
+          view={view}
           selectedDay={selectedDay}
           selectedDivision={selectedDivision}
           selectedTeam={selectedTeam}

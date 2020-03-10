@@ -8,6 +8,7 @@ export interface EventDetailsDTO {
   event_enddate: string;
   time_zone_utc: number;
   event_tag: string;
+  event_level: string;
   event_format_id: number;
   event_status: string;
   first_game_time: string;

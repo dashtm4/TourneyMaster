@@ -13,11 +13,11 @@ import {
   DELETE_ORGANIZATION_SUCCESS,
   DELETE_ORGANIZATION_FAILURE,
 } from './action-types';
+import { organizationSchema, applyInvitationSchema } from 'validations';
 import { Toasts } from 'components/common';
 import { IMember, IOrganization, IOrgMember } from 'common/models';
 import { getVarcharEight } from 'helpers';
 import { Auth } from 'aws-amplify';
-import { IAddUserToOrg } from '../types';
 
 const loadOrganizations: ActionCreator<ThunkAction<
   void,
@@ -45,39 +45,16 @@ const loadOrganizations: ActionCreator<ThunkAction<
   }
 };
 
-const createOrganization: ActionCreator<ThunkAction<
-  void,
-  {},
-  null,
-  organizationManagementAction
->> = organization => async (dispatch: Dispatch) => {
-  try {
-    await Api.post('/organizations', organization);
-
-    dispatch({
-      type: CREATE_ORGANIZATION_SUCCESS,
-      payload: {
-        organization,
-      },
-    });
-  } catch {
-    dispatch({
-      type: CREATE_ORGANIZATION_FAILURE,
-    });
-  }
-};
-
 const addUserToOrganization: ActionCreator<ThunkAction<
   void,
   {},
   null,
   organizationManagementAction
->> = ({ orgId, invCode }: IAddUserToOrg) => async (dispatch: Dispatch) => {
+>> = (invCode: string) => async (dispatch: Dispatch) => {
   try {
     const currentSession = await Auth.currentSession();
     const userEmail = currentSession.getIdToken().payload.email;
     const members = await Api.get(`/members?email_address=${userEmail}`);
-
     const member: IMember = members.find(
       (it: IMember) => it.email_address === userEmail
     );
@@ -85,8 +62,10 @@ const addUserToOrganization: ActionCreator<ThunkAction<
     const orgMembers = {
       member_id: member.member_id,
       org_member_id: getVarcharEight(),
-      org_id: orgId || invCode,
+      org_id: invCode,
     };
+
+    await applyInvitationSchema.validate(orgMembers);
 
     await Api.post('/org_members', orgMembers);
 
@@ -100,9 +79,60 @@ const addUserToOrganization: ActionCreator<ThunkAction<
     });
 
     Toasts.successToast('Success! You were added to the organization.');
-  } catch {
+  } catch (err) {
+    Toasts.errorToast(err.message);
+
     dispatch({
       type: ADD_USER_TO_ORGANIZATION_FAILURE,
+    });
+  }
+};
+
+const createOrganization: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  organizationManagementAction
+>> = (organizationData: IOrganization) => async (dispatch: Dispatch) => {
+  try {
+    const currentSession = await Auth.currentSession();
+    const userEmail = currentSession.getIdToken().payload.email;
+    const members = await Api.get(`/members?email_address=${userEmail}`);
+    const member: IMember = members.find(
+      (it: IMember) => it.email_address === userEmail
+    );
+
+    const organization = {
+      ...organizationData,
+      org_id: getVarcharEight(),
+      is_active_YN: 1,
+    };
+
+    const orgMembers = {
+      member_id: member.member_id,
+      org_member_id: getVarcharEight(),
+      org_id: organization.org_id,
+    };
+
+    await organizationSchema.validate(organization);
+
+    await Api.post('/organizations', organization);
+
+    await Api.post('/org_members', orgMembers);
+
+    dispatch({
+      type: CREATE_ORGANIZATION_SUCCESS,
+      payload: {
+        organization,
+      },
+    });
+
+    Toasts.successToast('Success! You were added to the organization.');
+  } catch (err) {
+    Toasts.errorToast(err.message);
+
+    dispatch({
+      type: CREATE_ORGANIZATION_FAILURE,
     });
   }
 };
