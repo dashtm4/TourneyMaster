@@ -36,18 +36,22 @@ export const buttonTypeEvent = (
 export const appropriateEvents = (
   events: Partial<ICalendarEvent>[]
 ): IEvent[] => {
-  // const formatDate = (eventDate: string) => {
-  //   const date = new Date(eventDate);
-
-  //   return format(new Date(date), `yyyy-MM-dd'T'HH:mm:ss`);
-  // };
-
   const eventTypeToCalendar = (event: Partial<ICalendarEvent>): IEvent => ({
     id: event.cal_event_id!,
     title: event.cal_event_title!,
-    start: new Date(event.cal_event_startdate!).toISOString(),
-    end: new Date(event.cal_event_enddate!).toISOString(),
+    start:
+      event.cal_event_type === 'event'
+        ? event.cal_event_startdate!
+        : event.cal_event_datetime!,
+    end:
+      event.cal_event_type === 'event'
+        ? event.cal_event_enddate!
+        : event.cal_event_datetime!,
     className: event.cal_event_type,
+    description: event.cal_event_desc,
+    tag: event.cal_event_tag,
+    type: event.cal_event_type!,
+    hasReminder: event.has_reminder_YN,
   });
 
   return events.map(eventTypeToCalendar);

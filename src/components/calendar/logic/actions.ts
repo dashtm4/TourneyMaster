@@ -117,6 +117,7 @@ export const saveCalendarEvent: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (event: ICalendarEvent) => async (_dispatch: Dispatch) => {
+  console.log(event);
   const response = await api.post('/calendar_events', event);
 
   if (response?.errorType === 'Error') {

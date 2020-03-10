@@ -147,6 +147,22 @@ class Calendar extends Component<any, IState> {
     }));
   };
 
+  onReminderAndTaskUpdate = (data: Partial<ICalendarEvent>) => {
+    this.props.updateCalendarEvent(data);
+    this.setState(({ eventsList }) => ({
+      eventsList: eventsList?.map(event =>
+        event.cal_event_id === data.cal_event_id
+          ? {
+              ...event,
+              cal_event_startdate: data.cal_event_startdate,
+              cal_event_enddate: data.cal_event_enddate,
+              cal_event_datetime: data.cal_event_datetime,
+            }
+          : event
+      ),
+    }));
+  };
+
   render() {
     const { dialogOpen, dateSelect, blankNewEvent, eventsList } = this.state;
 
@@ -181,6 +197,7 @@ class Calendar extends Component<any, IState> {
           onDatePressed={this.onDatePressed}
           onCreatePressed={this.onCreatePressed}
           onEventUpdate={this.onUpdateEvent}
+          onReminderAndTaskUpdate={this.onReminderAndTaskUpdate}
         />
       </div>
     );

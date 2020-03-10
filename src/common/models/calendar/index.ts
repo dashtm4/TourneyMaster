@@ -6,6 +6,10 @@ export interface IEvent {
   start: string;
   end: string;
   className?: string;
+  description?: string;
+  tag?: string;
+  type: string;
+  hasReminder?: number;
 }
 
 export interface ICalendarEvent {

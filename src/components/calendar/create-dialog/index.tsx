@@ -29,6 +29,7 @@ const defaultCalendarEvent = (): Partial<ICalendarEvent> => ({
   cal_event_title: '',
   cal_event_startdate: new Date().toISOString(),
   cal_event_enddate: new Date().toISOString(),
+  cal_event_datetime: new Date().toISOString(),
   cal_event_tag: '',
   cal_event_type: 'event',
   cal_event_desc: '',
@@ -50,6 +51,7 @@ export default (props: IProps) => {
         ...calendarEvent,
         cal_event_startdate: date! || calendarEvent.cal_event_startdate,
         cal_event_enddate: date! || calendarEvent.cal_event_enddate,
+        cal_event_datetime: date! || calendarEvent.cal_event_datetime,
       }),
     [dateSelect]
   );
@@ -61,7 +63,10 @@ export default (props: IProps) => {
   const buttonTypeEvents: ButtonTypeEvent[] = ['event', 'reminder', 'task'];
 
   const changeEventType = (type: ButtonTypeEvent) => {
-    setCalendarEvent({ ...calendarEvent, cal_event_type: type });
+    setCalendarEvent({
+      ...calendarEvent,
+      cal_event_type: type,
+    });
   };
 
   const updateEvent = (name: string, value: any) =>
@@ -82,7 +87,55 @@ export default (props: IProps) => {
     updateEvent('has_reminder_YN', event.target.checked ? 1 : 0);
   };
 
+  const onEventDateTimeChange = (value: Date | string) => {
+    setCalendarEvent({
+      ...calendarEvent,
+      cal_event_datetime: new Date(value).toISOString(),
+      cal_event_startdate: new Date(value).toISOString(),
+      cal_event_enddate: new Date(value).toISOString(),
+    });
+  };
+
   const onSaveClicked = () => onSave(calendarEvent);
+
+  const renderDatePicker = (eventType: any) => {
+    switch (eventType) {
+      case 'event':
+        return (
+          <>
+            <DatePicker
+              width="115px"
+              label=""
+              type="date"
+              viewType="input"
+              value={calendarEvent.cal_event_startdate}
+              onChange={onDateFromChange}
+            />
+            <span>&ndash;</span>
+            <DatePicker
+              width="115px"
+              label=""
+              type="date"
+              viewType="input"
+              value={calendarEvent.cal_event_enddate}
+              onChange={onDateToChange}
+            />
+          </>
+        );
+      case 'reminder':
+      case 'task':
+        return (
+          <DatePicker
+            width="257px"
+            label=""
+            type="date-time"
+            viewType="input"
+            value={calendarEvent.cal_event_datetime}
+            onChange={onEventDateTimeChange}
+          />
+        );
+    }
+  };
 
   const renderButtons = (eventTypes: ButtonTypeEvent[]) =>
     eventTypes.map((el: ButtonTypeEvent) => (
@@ -114,21 +167,8 @@ export default (props: IProps) => {
               placeholder="Title"
             />
             <div className={styles.withIconWrapper}>
-              <FontAwesomeIcon
-                icon={faCalendar}
-                style={{ marginRight: '7px' }}
-              />
-              <DatePicker
-                width="257px"
-                label=""
-                type="date-time"
-                viewType="input"
-                value={calendarEvent.cal_event_startdate}
-                onChange={onDateFromChange}
-              />
-              {calendarEvent.cal_event_type === 'event' && (
-                <span style={{ marginLeft: '5px' }}>&ndash;</span>
-              )}
+              <FontAwesomeIcon icon={faCalendar} />
+              {renderDatePicker(calendarEvent.cal_event_type)}
             </div>
             <div className={styles.withIconWrapper}>
               <FontAwesomeIcon icon={faAt} />
@@ -146,16 +186,6 @@ export default (props: IProps) => {
             <div className={styles.buttonsWrapper}>
               {renderButtons(buttonTypeEvents)}
             </div>
-            {calendarEvent.cal_event_type === 'event' && (
-              <DatePicker
-                width="262px"
-                label=""
-                type="date-time"
-                viewType="input"
-                value={calendarEvent.cal_event_enddate}
-                onChange={onDateToChange}
-              />
-            )}
             <div className={styles.withIconWrapper}>
               <FontAwesomeIcon icon={faAlignLeft} />
               <Input
