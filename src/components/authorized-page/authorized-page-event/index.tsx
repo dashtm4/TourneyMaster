@@ -27,6 +27,7 @@ import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
 import { EventStatuses } from 'common/enums';
 import { Loader } from 'components/common';
 import styles from '../styles.module.scss';
+import Footer from 'components/footer';
 
 interface MatchParams {
   eventId?: string;
@@ -71,7 +72,7 @@ const AuthorizedPageEvent = ({
   }
 
   return (
-    <>
+    <div className={styles.container}>
       <Header />
       <div className={styles.page}>
         <Menu
@@ -106,7 +107,8 @@ const AuthorizedPageEvent = ({
           </Switch>
         </main>
       </div>
-    </>
+      <Footer />
+    </div>
   );
 };
 

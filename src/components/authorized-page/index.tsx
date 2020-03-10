@@ -11,9 +11,10 @@ import OrganizationsManagement from '../organizations-management';
 import Calendar from 'components/calendar';
 import { EmptyPage } from './authorized-page-event/index';
 import Schedules from 'components/schedules';
+import Footer from 'components/footer';
 
 const AuthorizedPage = () => (
-  <>
+  <div className={styles.container}>
     <Header />
     <div className={styles.page}>
       <Menu list={MenuList} isAllowEdit={true} />
@@ -38,7 +39,8 @@ const AuthorizedPage = () => (
         </Switch>
       </main>
     </div>
-  </>
+    <Footer />
+  </div>
 );
 
 export default AuthorizedPage;
