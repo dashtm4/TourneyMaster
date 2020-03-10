@@ -9,28 +9,23 @@
   padding-bottom: 16px;
 }
 .buttonsGroup {
-  padding-top: 16px;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
 }
 
 .sectionItem {
+  display: flex;
   color: #6a6a6a;
-  padding-bottom: 4px;
+  padding-bottom: 10px;
   .title {
     font-weight: 600;
+    align-self: flex-end;
+    margin-right: 5px;
   }
 }
-
-.sectionRow {
-  display: flex;
+.sectionItemEdit {
+  @extend .sectionItem;
+  width: 350px;
   justify-content: space-between;
-  padding-bottom: 16px;
-}
-.sectionTitle {
-  color: #1c315f;
-  display: flex;
-  justify-content: space-between;
-  width: 747px;
 }

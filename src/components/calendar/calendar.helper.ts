@@ -48,6 +48,7 @@ export const appropriateEvents = (
         ? event.cal_event_enddate!
         : event.cal_event_datetime!,
     className: event.cal_event_type,
+    datetime: event.cal_event_datetime,
     description: event.cal_event_desc,
     tag: event.cal_event_tag,
     type: event.cal_event_type!,

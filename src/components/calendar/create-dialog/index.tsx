@@ -27,8 +27,8 @@ interface IProps {
 const defaultCalendarEvent = (): Partial<ICalendarEvent> => ({
   cal_event_id: getVarcharEight(),
   cal_event_title: '',
-  cal_event_startdate: new Date().toISOString(),
-  cal_event_enddate: new Date().toISOString(),
+  cal_event_startdate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+  cal_event_enddate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
   cal_event_datetime: new Date().toISOString(),
   cal_event_tag: '',
   cal_event_type: 'event',

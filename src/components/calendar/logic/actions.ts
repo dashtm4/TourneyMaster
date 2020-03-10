@@ -10,65 +10,11 @@ import { isCalendarEventValid } from './helper';
 import api from 'api/api';
 import { ThunkAction } from 'redux-thunk';
 
-// const eventsList: Partial<ICalendarEvent>[] = [
-//   {
-//     cal_event_title: 'Event Number One',
-//     cal_event_startdate: '2020-02-01T10:00:00',
-//     cal_event_enddate: '2020-02-05T12:00:00',
-//     // location: 'Some Location',
-//     cal_event_tag: 'Event tag',
-//     cal_event_type: 'event',
-//     // timeFrom: '2020-02-01T10:00:00',
-//     // timeTo: '2020-02-05T12:00:00',
-//     cal_event_desc: 'Description',
-//     has_reminder_YN: 0,
-//   },
-//   // {
-//   //   title: 'Event Number 2',
-//   //   dateFrom: '2020-03-01T10:00:00',
-//   //   dateTo: '2020-03-01T12:00:00',
-//   //   location: 'Location',
-//   //   eventTag: 'tag',
-//   //   cal_event_type: 'event',
-//   //   timeFrom: '2020-01-01T10:00:00',
-//   //   timeTo: '2020-01-02T12:00:00',
-//   //   description: 'Description',
-//   //   setReminder: false,
-//   // },
-//   // {
-//   //   title: 'Reminder Number One',
-//   //   dateFrom: '2020-02-07T18:35:00',
-//   //   dateTo: '2020-02-07T20:10:00',
-//   //   location: 'Some Location',
-//   //   eventTag: 'Event tag',
-//   //   cal_event_type: 'reminder',
-//   //   timeFrom: '2020-02-07T18:35:00',
-//   //   timeTo: '2020-02-07T20:10:00',
-//   //   description: 'Description',
-//   //   setReminder: false,
-//   // },
-//   // {
-//   //   title: 'Task Number One',
-//   //   dateFrom: '2020-02-10T11:00:00',
-//   //   dateTo: '2020-02-12T23:10:00',
-//   //   location: 'Some Location',
-//   //   eventTag: 'Event tag',
-//   //   cal_event_type: 'task',
-//   //   timeFrom: '2020-02-10T11:00:00',
-//   //   timeTo: '2020-02-12T23:10:00',
-//   //   description: 'Description',
-//   //   setReminder: false,
-//   // },
-// ];
-
 /**
  * Fake api calls
  */
 const post = async (_url: string, _data: any): Promise<any> =>
   await new Promise((res: any) => setTimeout(() => res(200), 1000));
-
-// const get = async (_url: string): Promise<any> =>
-//   await new Promise((res: any) => setTimeout(() => res(eventsList), 1000));
 
 /*
  * Actions
@@ -121,10 +67,10 @@ export const saveCalendarEvent: ActionCreator<ThunkAction<
   const response = await api.post('/calendar_events', event);
 
   if (response?.errorType === 'Error') {
-    return Toasts.errorToast("Couldn't create an event");
+    return Toasts.errorToast("Couldn't create");
   }
 
-  Toasts.successToast('Event is successfully created');
+  Toasts.successToast('Successfully created');
 };
 
 export const updateCalendarEvent: ActionCreator<ThunkAction<
@@ -141,8 +87,23 @@ export const updateCalendarEvent: ActionCreator<ThunkAction<
   );
 
   if (response?.errorType === 'Error') {
-    return Toasts.errorToast("Couldn't update an event");
+    return Toasts.errorToast("Couldn't update");
   }
 
-  Toasts.successToast('Event is successfully updated');
+  Toasts.successToast('Successfully updated');
+};
+
+export const deleteCalendarEvent: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (id: string) => async (_dispatch: Dispatch) => {
+  const response = await api.delete(`/calendar_events?cal_event_id=${id}`);
+
+  if (response?.errorType === 'Error') {
+    return Toasts.errorToast("Couldn't delete");
+  }
+
+  Toasts.successToast('Successfully deleted');
 };

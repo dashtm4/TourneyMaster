@@ -13,6 +13,7 @@ import {
   saveCalendar,
   saveCalendarEvent,
   updateCalendarEvent,
+  deleteCalendarEvent,
 } from './logic/actions';
 import {
   appropriateEvents,
@@ -31,6 +32,7 @@ interface IProps extends IMapStateToProps {
   saveCalendar: (data: Partial<ICalendarEvent>[]) => void;
   saveCalendarEvent: (event: Partial<ICalendarEvent>) => void;
   updateCalendarEvent: (event: Partial<ICalendarEvent>) => void;
+  deleteCalendarEvent: (id: string) => void;
 }
 
 interface IState {
@@ -163,6 +165,32 @@ class Calendar extends Component<any, IState> {
     }));
   };
 
+  onDeleteCalendarEvent = (id: string) => {
+    this.props.deleteCalendarEvent(id);
+    this.setState(({ eventsList }) => ({
+      eventsList: eventsList?.filter(event => event.cal_event_id !== id),
+    }));
+  };
+
+  onUpdateCalendarEventDetails = (data: Partial<ICalendarEvent>) => {
+    this.props.updateCalendarEvent(data);
+    this.setState(({ eventsList }) => ({
+      eventsList: eventsList?.map(event =>
+        event.cal_event_id === data.cal_event_id
+          ? {
+              ...event,
+              cal_event_datetime: data.cal_event_datetime,
+              cal_event_startdate: data.cal_event_startdate,
+              cal_event_enddate: data.cal_event_enddate,
+              cal_event_title: data.cal_event_title,
+              cal_event_desc: data.cal_event_desc,
+              cal_event_tag: data.cal_event_tag,
+            }
+          : event
+      ),
+    }));
+  };
+
   render() {
     const { dialogOpen, dateSelect, blankNewEvent, eventsList } = this.state;
 
@@ -198,6 +226,8 @@ class Calendar extends Component<any, IState> {
           onCreatePressed={this.onCreatePressed}
           onEventUpdate={this.onUpdateEvent}
           onReminderAndTaskUpdate={this.onReminderAndTaskUpdate}
+          onUpdateCalendarEventDetails={this.onUpdateCalendarEventDetails}
+          onDeleteCalendarEvent={this.onDeleteCalendarEvent}
         />
       </div>
     );
@@ -218,7 +248,13 @@ const mapStateToProps = (state: IRootState): IMapStateToProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
-    { getCalendarEvents, saveCalendar, saveCalendarEvent, updateCalendarEvent },
+    {
+      getCalendarEvents,
+      saveCalendar,
+      saveCalendarEvent,
+      updateCalendarEvent,
+      deleteCalendarEvent,
+    },
     dispatch
   );
 

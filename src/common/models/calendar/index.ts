@@ -5,6 +5,7 @@ export interface IEvent {
   title: string;
   start: string;
   end: string;
+  datetime?: string;
   className?: string;
   description?: string;
   tag?: string;

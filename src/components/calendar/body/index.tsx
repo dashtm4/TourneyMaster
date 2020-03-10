@@ -22,6 +22,8 @@ interface IProps {
   onDatePressed: (dateSelect: IDateSelect) => void;
   onEventUpdate: (event: Partial<ICalendarEvent>) => void;
   onReminderAndTaskUpdate: (event: Partial<ICalendarEvent>) => void;
+  onUpdateCalendarEventDetails: (event: Partial<ICalendarEvent>) => void;
+  onDeleteCalendarEvent: (id: string) => void;
 }
 
 interface EventArg {
@@ -41,6 +43,8 @@ export default (props: IProps) => {
     onDatePressed,
     onEventUpdate,
     onReminderAndTaskUpdate,
+    onDeleteCalendarEvent,
+    onUpdateCalendarEventDetails,
   } = props;
 
   const header = {
@@ -110,16 +114,18 @@ export default (props: IProps) => {
       tag,
       type,
       hasReminder,
+      datetime,
     } = eventClickInfo.event.extendedProps;
     setClickedEvent({
-      id,
-      title,
-      start,
-      end,
-      description,
-      tag,
-      type,
-      hasReminder,
+      cal_event_id: id,
+      cal_event_title: title,
+      cal_event_startdate: start,
+      cal_event_enddate: end,
+      cal_event_datetime: datetime,
+      cal_event_desc: description,
+      cal_event_tag: tag,
+      cal_event_type: type,
+      has_reminder_YN: hasReminder,
     });
     toggleModal(true);
   };
@@ -235,7 +241,13 @@ export default (props: IProps) => {
         </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={onModalClose}>
-        <InfoModal clickedEvent={clickedEvent} />
+        <InfoModal
+          clickedEvent={clickedEvent}
+          onDeleteCalendarEvent={onDeleteCalendarEvent}
+          onClose={onModalClose}
+          setClickedEvent={setClickedEvent}
+          onUpdateCalendarEventDetails={onUpdateCalendarEventDetails}
+        />
       </Modal>
     </div>
   );
