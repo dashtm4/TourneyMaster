@@ -8,9 +8,9 @@ import { AppState } from './logic/reducer';
 import Navigation from './components/navigation';
 import Scoring from './components/scoring';
 import { Loader, PopupExposure } from 'components/common';
-import { IDivision, ITeam, IField } from 'common/models';
+import { IDivision, ITeam } from 'common/models';
 import { Routes } from 'common/constants';
-import { DefaulSelectFalues } from './types';
+import { DefaulSelectFalues, IFieldWithRelated } from './types';
 
 enum DayTypes {
   DAY_ONE = 'Day 1',
@@ -32,7 +32,7 @@ interface Props {
   isLoaded: boolean;
   divisions: IDivision[];
   teams: ITeam[];
-  fields: IField[];
+  fields: IFieldWithRelated[];
   loadScoresData: (eventId: string) => void;
 }
 

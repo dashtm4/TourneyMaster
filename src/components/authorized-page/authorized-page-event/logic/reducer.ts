@@ -90,6 +90,8 @@ const pageEventReducer = (
               };
             }
             case EventMenuTitles.FACILITIES: {
+              console.log(sortByField(facilities, SortByFilesTypes.FACILITIES));
+
               return {
                 ...item,
                 isCompleted: facilities.length > 0,
@@ -144,6 +146,8 @@ const pageEventReducer = (
     }
     case SAVE_FACILITIES_SUCCESS: {
       const { facilities } = action.payload;
+
+      console.log(sortByField(facilities, SortByFilesTypes.FACILITIES));
 
       return {
         ...state,

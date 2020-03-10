@@ -1,5 +1,11 @@
-enum DefaulSelectFalues {
-  ALL = 'all'
+import { IField } from 'common/models';
+
+export interface IFieldWithRelated extends IField {
+  relatedTo: string;
 }
 
-export { DefaulSelectFalues }
+enum DefaulSelectFalues {
+  ALL = 'all',
+}
+
+export { DefaulSelectFalues };

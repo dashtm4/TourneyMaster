@@ -12,8 +12,13 @@ import {
 import { AppState } from './logic/reducer';
 import Navigation from './components/navigation';
 import ScoringItem from './components/scoring-Item';
-import { HeadingLevelTwo, Modal, Loader, PopupTeamEdit } from '../common';
-import { IDivision, IPool, ITeam, BindingCbWithOne } from '../../common/models';
+import {
+  HeadingLevelTwo,
+  Modal,
+  Loader,
+  PopupTeamEdit,
+} from 'components/common';
+import { IDivision, IPool, ITeam, BindingCbWithOne } from 'common/models';
 import styles from './styles.module.scss';
 
 interface MatchParams {
