@@ -3,7 +3,11 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { loadAuthPageData, clearAuthPageData } from './logic/actions';
+import {
+  loadAuthPageData,
+  clearAuthPageData,
+  publishTournament,
+} from './logic/actions';
 import { AppState } from './logic/reducer';
 import Header from 'components/header';
 import Menu from 'components/common/menu';
@@ -19,7 +23,8 @@ import Scheduling from 'components/scheduling';
 import Teams from 'components/teams';
 import CreateTeam from 'components/teams/components/create-team';
 import { Routes } from 'common/constants';
-import { MenuItem, BindingAction } from 'common/models';
+import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
+import { EventStatuses } from 'common/enums';
 import { Loader } from 'components/common';
 import styles from '../styles.module.scss';
 
@@ -30,9 +35,11 @@ interface MatchParams {
 interface Props {
   isLoading: boolean;
   isLoaded: boolean;
-  menuList: MenuItem[];
+  menuList: IMenuItem[];
+  tournamentData: ITournamentData;
   loadAuthPageData: (eventId: string) => void;
   clearAuthPageData: BindingAction;
+  publishTournament: (eventId: string) => void;
 }
 
 export const EmptyPage: React.FC = () => {
@@ -40,11 +47,13 @@ export const EmptyPage: React.FC = () => {
 };
 
 const AuthorizedPageEvent = ({
+  match,
   isLoaded,
   menuList,
-  match,
+  tournamentData,
   loadAuthPageData,
   clearAuthPageData,
+  publishTournament,
 }: Props & RouteComponentProps<MatchParams>) => {
   const eventId = match.params.eventId;
   React.useEffect(() => {
@@ -69,6 +78,10 @@ const AuthorizedPageEvent = ({
           list={menuList}
           eventId={eventId}
           isAllowEdit={Boolean(eventId)}
+          isDraft={Boolean(
+            tournamentData.event?.event_status === EventStatuses.DRAFT
+          )}
+          publishTournament={publishTournament}
         />
         <main className={styles.content}>
           <Switch>
@@ -103,10 +116,14 @@ interface IRootState {
 
 export default connect(
   ({ pageEvent }: IRootState) => ({
+    tournamentData: pageEvent.tournamentData,
     isLoading: pageEvent.isLoading,
     isLoaded: pageEvent.isLoaded,
     menuList: pageEvent.menuList,
   }),
   (dispatch: Dispatch) =>
-    bindActionCreators({ loadAuthPageData, clearAuthPageData }, dispatch)
+    bindActionCreators(
+      { loadAuthPageData, clearAuthPageData, publishTournament },
+      dispatch
+    )
 )(AuthorizedPageEvent);
