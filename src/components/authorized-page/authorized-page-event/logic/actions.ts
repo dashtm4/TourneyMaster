@@ -10,6 +10,7 @@ import {
   PUBLISH_TOURNAMENT_FAILURE,
 } from './action-types';
 import Api from 'api/api';
+import { Toasts } from 'components/common';
 import { IEventDetails } from 'common/models';
 import { EventStatuses } from 'common/enums';
 
@@ -79,6 +80,8 @@ const publishTournament: ActionCreator<ThunkAction<
         event: updatedEvent,
       },
     });
+
+    Toasts.successToast('Tournament successfully created.');
   } catch {
     dispatch({
       type: PUBLISH_TOURNAMENT_FAILURE,
