@@ -1,17 +1,22 @@
 import React from 'react';
-import { SectionDropdown } from 'components/common';
+import { SectionDropdown, SortTable } from 'components/common';
 import { MenuTitles } from 'common/enums';
+import { IRegistration } from 'common/models';
 
-const Reg = () => (
+interface Props {
+  registrations: IRegistration[];
+}
+
+const Registration = ({}: Props) => (
   <SectionDropdown
     id={MenuTitles.REGISTRATION}
     type="section"
     panelDetailsType="flat"
     isDefaultExpanded={true}
   >
-    <span>Tournaments</span>
-    <p>Content</p>
+    <span>Registration</span>
+    <SortTable />
   </SectionDropdown>
 );
 
-export default Reg;
+export default Registration;
