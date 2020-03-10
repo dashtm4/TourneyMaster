@@ -40,10 +40,10 @@ const ScoringFilter = ({
   selectedField,
   onChangeSelect,
   onChangeDay,
-}: Props) => {
-  return (
+}: Props) => (
+  <section>
+    <h3 className="visually-hidden">Scoring filters</h3>
     <form className={styles.scoringForm}>
-      <h3 className="visually-hidden">Scoring filters</h3>
       {Object.keys(DayTypes).map(it => (
         <Button
           onClick={() => onChangeDay(DayTypes[it])}
@@ -123,6 +123,6 @@ const ScoringFilter = ({
         Drag, drop, and zoom to navigate the schedule
       </CardMessage>
     </form>
-  );
-};
+  </section>
+);
 export default ScoringFilter;

@@ -54,7 +54,7 @@ export const saveRegistration: ActionCreator<ThunkAction<
 >> = (registration: IRegistration, eventId: string) => async (
   dispatch: Dispatch
 ) => {
-  if (registration.registration_id) {
+  if (registration?.registration_id) {
     dispatch(registrationFetchStart());
     const response = await api.put(
       `/registrations?registration_id=${registration.registration_id}`,

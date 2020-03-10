@@ -6,7 +6,12 @@ import { loadDivisionsTeams, loadPools, saveTeams } from './logic/actions';
 import Navigation from './components/navigation';
 import TeamManagement from './components/team-management';
 import PopupDeleteTeam from './components/popup-delete-team';
-import { HeadingLevelTwo, Modal, PopupTeamEdit, Loader } from '../common';
+import {
+  HeadingLevelTwo,
+  Modal,
+  PopupTeamEdit,
+  Loader,
+} from 'components/common';
 import { AppState } from './logic/reducer';
 import { IDivision, IPool, ITeam } from '../../common/models';
 import styles from './styles.module.scss';
@@ -140,7 +145,7 @@ class Teams extends React.Component<
       },
     }));
 
-  onSaveTeam = () => {
+  onSaveTeam = async () => {
     const { configurableTeam } = this.state;
 
     if (configurableTeam) {

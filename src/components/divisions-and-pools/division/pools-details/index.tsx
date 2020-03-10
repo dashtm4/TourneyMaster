@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './styles.module.scss';
-import Button from '../../common/buttons/button';
+import Button from '../../../common/buttons/button';
 import CreateIcon from '@material-ui/icons/Create';
 import Pool from './pool';
 import { IPool, ITeam, BindingCbWithOne, IDivision } from 'common/models';
@@ -8,8 +8,6 @@ import { Loader } from 'components/common';
 
 interface IPoolsDetailsProps {
   onAddPool: BindingCbWithOne<IDivision>;
-  getPools: BindingCbWithOne<string>;
-  getTeams: BindingCbWithOne<string>;
   division: IDivision;
   pools: IPool[];
   teams: ITeam[];
@@ -17,12 +15,6 @@ interface IPoolsDetailsProps {
 }
 
 class PoolsDetails extends React.Component<IPoolsDetailsProps> {
-  componentDidMount() {
-    if (!this.props.pools.length && !this.props.teams.length) {
-      this.props.getPools(this.props.division.division_id);
-      this.props.getTeams(this.props.division.division_id);
-    }
-  }
   onAdd = () => {
     this.props.onAddPool(this.props.division);
   };
