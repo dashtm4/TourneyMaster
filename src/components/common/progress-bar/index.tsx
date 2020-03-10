@@ -3,7 +3,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 interface Props {
-  completed: number;
+  completed?: number | null;
 }
 
 const useStyles = makeStyles({
@@ -14,7 +14,7 @@ const useStyles = makeStyles({
 
 const LinearProgressWrapped = withStyles({
   root: {
-    height: 10,
+    height: 8,
     backgroundColor: '#ffffff',
     borderRadius: 6,
   },
@@ -29,7 +29,7 @@ const ProgressBar = ({ completed }: Props) => {
 
   return (
     <div className={classes.root}>
-      <LinearProgressWrapped variant="determinate" value={completed} />
+      <LinearProgressWrapped variant="determinate" value={completed || 0} />
     </div>
   );
 };

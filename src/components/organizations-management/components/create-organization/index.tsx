@@ -103,7 +103,7 @@ const CreateOrganization = ({ createOrganization }: Props) => {
             </div>
             <div className={styles.sectionItem}>
               <Button
-                label="Add Organization"
+                label="Create Organization"
                 btnType="submit"
                 variant="contained"
                 color="primary"

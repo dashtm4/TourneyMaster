@@ -29,7 +29,7 @@ const EMPTY_FACILITY = {
 };
 
 const EMPTY_FIELD = {
-  field_name: null,
+  field_name: '',
   field_abbreviation: null,
   field_opentime: null,
   field_closetime: null,

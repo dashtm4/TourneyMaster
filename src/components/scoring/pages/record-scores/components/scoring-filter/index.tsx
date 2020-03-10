@@ -66,10 +66,12 @@ const ScoringFilter = ({
           name={FormFields.SELECTED_DIVISION}
           options={[
             { label: 'All', value: DefaulSelectFalues.ALL },
-            ...divisions.map(it => ({
-              label: it.short_name,
-              value: it.division_id,
-            })),
+            ...divisions
+              .sort((a, b) => (a.short_name > b.short_name ? 1 : -1))
+              .map(it => ({
+                label: it.short_name,
+                value: it.division_id,
+              })),
           ]}
         />
       </fieldset>
@@ -81,20 +83,22 @@ const ScoringFilter = ({
           name={FormFields.SELECTED_TEAM}
           options={[
             { label: 'All', value: DefaulSelectFalues.ALL },
-            ...teams.reduce(
-              (acc, it) =>
-                it.division_id === selectedDivision ||
-                selectedDivision === DefaulSelectFalues.ALL
-                  ? [
-                      ...acc,
-                      {
-                        label: it.short_name,
-                        value: it.team_id,
-                      } as ISelectOption,
-                    ]
-                  : acc,
-              [] as ISelectOption[]
-            ),
+            ...teams
+              .sort((a, b) => (a.short_name > b.short_name ? 1 : -1))
+              .reduce(
+                (acc, it) =>
+                  it.division_id === selectedDivision ||
+                  selectedDivision === DefaulSelectFalues.ALL
+                    ? [
+                        ...acc,
+                        {
+                          label: it.short_name,
+                          value: it.team_id,
+                        } as ISelectOption,
+                      ]
+                    : acc,
+                [] as ISelectOption[]
+              ),
           ]}
         />
       </fieldset>
@@ -106,13 +110,15 @@ const ScoringFilter = ({
           name={FormFields.SELECTED_FIELDS}
           options={[
             { label: 'All', value: DefaulSelectFalues.ALL },
-            ...fields.map(
-              it =>
-                ({
-                  label: it.field_name,
-                  value: it.field_id,
-                } as ISelectOption)
-            ),
+            ...fields
+              .sort((a, b) => (a.field_name > b.field_name ? 1 : -1))
+              .map(
+                it =>
+                  ({
+                    label: it.field_name,
+                    value: it.field_id,
+                  } as ISelectOption)
+              ),
           ]}
         />
       </fieldset>
