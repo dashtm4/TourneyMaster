@@ -18,6 +18,7 @@ import MultipleSearchSelect from './multiple-search-select';
 import PopupTeamEdit from './popup-team-edit';
 import Loader from './loader';
 import FileUpload from './file-upload';
+import ProgressBar from './progress-bar';
 import PopupExposure from './popup-exposure';
 import PopupConfirm from './popup-confirm';
 import SortTable from './sort-table';
@@ -48,4 +49,5 @@ export {
   PopupExposure,
   PopupConfirm,
   SortTable,
+  ProgressBar,
 };

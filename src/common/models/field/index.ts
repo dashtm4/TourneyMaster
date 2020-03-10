@@ -1,7 +1,7 @@
 export interface IField {
   field_id: string;
   facilities_id: string;
-  field_name: string | null;
+  field_name: string;
   field_abbreviation: string | null;
   field_opentime: string | null;
   field_closetime: string | null;
