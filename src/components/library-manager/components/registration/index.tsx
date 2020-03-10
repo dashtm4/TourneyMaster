@@ -7,7 +7,7 @@ interface Props {
   registrations: IRegistration[];
 }
 
-const Registration = ({}: Props) => (
+const Registration = ({ registrations }: Props) => (
   <SectionDropdown
     id={MenuTitles.REGISTRATION}
     type="section"
@@ -15,7 +15,7 @@ const Registration = ({}: Props) => (
     isDefaultExpanded={true}
   >
     <span>Registration</span>
-    <SortTable />
+    <SortTable rows={registrations} titleField={'reg_first_name'} />
   </SectionDropdown>
 );
 

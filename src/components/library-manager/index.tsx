@@ -19,11 +19,11 @@ interface Props {
 const LibraryManager = ({
   isLoading,
   registrations,
-}: // loadLibraryManagerData,
-Props) => {
-  // React.useEffect(() => {
-  //   loadLibraryManagerData();
-  // }, []);
+  loadLibraryManagerData,
+}: Props) => {
+  React.useEffect(() => {
+    loadLibraryManagerData();
+  }, []);
 
   if (isLoading) {
     return <Loader />;
