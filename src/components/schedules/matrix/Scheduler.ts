@@ -76,7 +76,7 @@ export default class Scheduler {
     this.calculateAvgStartTime();
     this.populateGameData();
     this.calculateTeamData();
-    this.handleUnequippedTeams();
+    // this.handleUnequippedTeams();
     this.calculateEmptyFields();
   }
 
@@ -95,21 +95,9 @@ export default class Scheduler {
   };
 
   calculateTeamData = () => {
-    this.teamCards.forEach(teamCard => {
-      const conditions = { isPremier: teamCard.isPremier };
-      const foundGame = this.findGame(teamCard, conditions);
-
-      if (foundGame) {
-        const updatedTeamCard = this.updateTeam(teamCard, foundGame);
-        this.updateFacilityData(teamCard, foundGame);
-        this.saveUpdatedTeam(updatedTeamCard);
-        this.setTeamInPlay(teamCard, foundGame);
-        this.updateGame(foundGame, updatedTeamCard);
-      }
-    });
-
+    const teamSets: IUnequippedTeams = this.rearrangeTeamsByConstraints();
+    this.manageGamesByTeamSets(teamSets);
     this.incrementGamePerTeam();
-
     const currentGamesPerTeam = this.getGamesPerTeam();
 
     if (
@@ -119,6 +107,56 @@ export default class Scheduler {
     ) {
       this.calculateTeamData();
     }
+  };
+
+  rearrangeTeamsByConstraints = () => {
+    const teams = {};
+    this.teamCards.forEach(teamCard => {
+      teams[teamCard.id] = this.teamCards.find(
+        tc =>
+          teamCard.id !== tc.id &&
+          teamCard.isPremier === tc.isPremier &&
+          teamCard.poolId &&
+          tc.poolId &&
+          teamCard.poolId === tc.poolId &&
+          !Object.keys(teams).find(key => key === teamCard.id) &&
+          !Object.keys(teams).find(key => key === tc.id) &&
+          !Object.keys(teams).find(key => teams[key]?.id === teamCard.id) &&
+          !this.teamsInPlay[teamCard.id]?.includes(tc.id) &&
+          !this.teamsInPlay[tc.id]?.includes(teamCard.id)
+      );
+    });
+    return teams;
+  };
+
+  manageGamesByTeamSets = (teamSets: IUnequippedTeams) => {
+    const foundGames: IGame[] = [];
+    Object.keys(teamSets).map(key => {
+      const teamOne = teamSets[key];
+      const teamTwo = this.teamCards.find(tc => tc.id === key);
+
+      if (!teamOne || !teamTwo) return;
+
+      const foundGame = this.findGame(teamOne, teamTwo);
+
+      if (foundGame) {
+        foundGames.push(foundGame);
+        [teamOne, teamTwo].map(team => {
+          const foundUpdatedGame = this.updatedGames.find(
+            game => game.id === foundGame.id
+          );
+
+          if (!foundUpdatedGame) return;
+
+          const updatedTeam = this.updateTeam(team, foundUpdatedGame!);
+          this.updateFacilityData(team, foundUpdatedGame);
+          this.saveUpdatedTeam(updatedTeam);
+          this.setTeamInPlay(team, foundUpdatedGame);
+          this.updateGame(foundUpdatedGame, updatedTeam);
+        });
+      }
+    });
+    return foundGames;
   };
 
   incrementGamePerTeam = () => {
@@ -139,26 +177,32 @@ export default class Scheduler {
     return returnNum || -1;
   };
 
-  findGame = (teamCard: ITeamCard, conditions?: IConditions) => {
+  findGame = (
+    teamOne: ITeamCard,
+    teamTwo: ITeamCard,
+    _conditions?: IConditions
+  ) => {
     const teamGames = this.updatedGames.filter(
       ({ awayTeam, homeTeam }) =>
-        awayTeam?.id === teamCard.id || homeTeam?.id === teamCard.id
+        awayTeam?.id === teamOne.id ||
+        homeTeam?.id === teamOne.id ||
+        awayTeam?.id === teamTwo?.id ||
+        homeTeam?.id === teamTwo?.id
     );
 
-    const teamTimeSlots = teamGames.map(game => game.timeSlotId);
+    let teamsTimeSlotIds = teamGames.map(game => game.timeSlotId);
+    teamsTimeSlotIds.forEach(timeSlotId =>
+      teamsTimeSlotIds.push(timeSlotId, timeSlotId + 1, timeSlotId - 1)
+    );
+    teamsTimeSlotIds = union(teamsTimeSlotIds).filter(id => id >= 0);
 
     return this.updatedGames.find(
       game =>
-        game.isPremier === conditions?.isPremier &&
-        (!game.awayTeam || !game.homeTeam) &&
-        game.awayTeam?.id !== teamCard.id &&
-        game.homeTeam?.id !== teamCard.id &&
-        this.gameStartsInProperTime(game, teamCard) &&
-        !teamTimeSlots.includes(game.timeSlotId) &&
-        !teamTimeSlots.includes(game.timeSlotId - 1) &&
-        !this.teamInPlayGames(teamCard, game) &&
-        this.checkForPoolsConsistency(teamCard, game) &&
-        this.checkForFacilityConsistency(teamCard, game)
+        game.isPremier === teamOne.isPremier &&
+        !game.awayTeam &&
+        !game.homeTeam &&
+        !teamsTimeSlotIds.includes(game.timeSlotId) &&
+        this.checkForFacilityConsistency(teamOne, game)
     );
   };
 
@@ -230,94 +274,94 @@ export default class Scheduler {
     return result;
   };
 
-  handleUnequippedTeams = () => {
-    const minGameGuaranteeTeams = this.teamCards.filter(
-      teamCard => (teamCard.games?.length || 0) < this.minGameNum
-    );
+  // handleUnequippedTeams = () => {
+  //   const minGameGuaranteeTeams = this.teamCards.filter(
+  //     teamCard => (teamCard.games?.length || 0) < this.minGameNum
+  //   );
 
-    const unequippedTeamCards: (ITeamCard | undefined)[] = [
-      ...minGameGuaranteeTeams,
-    ];
+  //   const unequippedTeamCards: (ITeamCard | undefined)[] = [
+  //     ...minGameGuaranteeTeams,
+  //   ];
 
-    this.updatedGames = this.updatedGames.map(game => {
-      const { awayTeam, homeTeam } = game;
-      if (!(awayTeam && homeTeam) && (awayTeam || homeTeam)) {
-        unequippedTeamCards.push(awayTeam || homeTeam);
-        delete game.awayTeam;
-        delete game.homeTeam;
-      }
-      return game;
-    });
+  //   this.updatedGames = this.updatedGames.map(game => {
+  //     const { awayTeam, homeTeam } = game;
+  //     if (!(awayTeam && homeTeam) && (awayTeam || homeTeam)) {
+  //       unequippedTeamCards.push(awayTeam || homeTeam);
+  //       delete game.awayTeam;
+  //       delete game.homeTeam;
+  //     }
+  //     return game;
+  //   });
 
-    const unequippedTeams: IUnequippedTeams = {};
-    unequippedTeamCards.forEach(
-      teamCard =>
-        (unequippedTeams[teamCard?.id!] = unequippedTeamCards.find(
-          team =>
-            !this.teamsInPlay[team?.id!]?.includes(teamCard?.id!) &&
-            !this.teamsInPlay[teamCard?.id!]?.includes(team?.id!) &&
-            teamCard?.poolId === team?.poolId &&
-            team?.isPremier === teamCard?.isPremier &&
-            team?.id !== teamCard?.id &&
-            !unequippedTeams[team.id]
-        ))
-    );
+  //   const unequippedTeams: IUnequippedTeams = {};
+  //   unequippedTeamCards.forEach(
+  //     teamCard =>
+  //       (unequippedTeams[teamCard?.id!] = unequippedTeamCards.find(
+  //         team =>
+  //           !this.teamsInPlay[team?.id!]?.includes(teamCard?.id!) &&
+  //           !this.teamsInPlay[teamCard?.id!]?.includes(team?.id!) &&
+  //           teamCard?.poolId === team?.poolId &&
+  //           team?.isPremier === teamCard?.isPremier &&
+  //           team?.id !== teamCard?.id &&
+  //           !unequippedTeams[team?.id!]
+  //       ))
+  //   );
 
-    this.resolveUnequippedTeamGames(unequippedTeams);
-  };
+  //   this.resolveUnequippedTeamGames(unequippedTeams);
+  // };
 
-  resolveUnequippedTeamGames = (teams: IUnequippedTeams) => {
-    const foundGames: IGame[] = [];
-    Object.keys(teams).forEach(teamId => {
-      const hostTeam = this.teamCards.find(tc => tc.id === teamId);
-      const team = teams[teamId];
+  // resolveUnequippedTeamGames = (teams: IUnequippedTeams) => {
+  //   const foundGames: IGame[] = [];
+  //   Object.keys(teams).forEach(teamId => {
+  //     const hostTeam = this.teamCards.find(tc => tc.id === teamId);
+  //     const team = teams[teamId];
 
-      if (!hostTeam || !team) return;
+  //     if (!hostTeam || !team) return;
 
-      const teamGames = this.updatedGames.filter(
-        ({ awayTeam, homeTeam }) =>
-          awayTeam?.id === hostTeam.id ||
-          homeTeam?.id === hostTeam.id ||
-          awayTeam?.id === team?.id ||
-          homeTeam?.id === team?.id
-      );
+  //     const teamGames = this.updatedGames.filter(
+  //       ({ awayTeam, homeTeam }) =>
+  //         awayTeam?.id === hostTeam.id ||
+  //         homeTeam?.id === hostTeam.id ||
+  //         awayTeam?.id === team?.id ||
+  //         homeTeam?.id === team?.id
+  //     );
 
-      let teamsTimeSlotIds = teamGames.map(game => game.timeSlotId);
-      teamsTimeSlotIds.forEach(timeSlotId =>
-        teamsTimeSlotIds.push(timeSlotId, timeSlotId + 1, timeSlotId - 1)
-      );
-      teamsTimeSlotIds = union(teamsTimeSlotIds).filter(id => id >= 0);
+  //     let teamsTimeSlotIds = teamGames.map(game => game.timeSlotId);
+  //     teamsTimeSlotIds.forEach(timeSlotId =>
+  //       teamsTimeSlotIds.push(timeSlotId, timeSlotId + 1, timeSlotId - 1)
+  //     );
+  //     teamsTimeSlotIds = union(teamsTimeSlotIds).filter(id => id >= 0);
 
-      const foundGame = this.updatedGames.find(
-        game =>
-          game.isPremier === hostTeam.isPremier &&
-          !game.awayTeam &&
-          !game.homeTeam &&
-          !teamsTimeSlotIds.includes(game.timeSlotId) &&
-          this.facilityData[game.facilityId!].divisionIds?.includes(
-            hostTeam.divisionId
-          ) &&
-          this.facilityData[game.facilityId!].divisionIds?.includes(
-            team.divisionId
-          )
-      );
+  //     const foundGame = this.updatedGames.find(
+  //       game =>
+  //         game.isPremier === hostTeam.isPremier &&
+  //         !game.awayTeam &&
+  //         !game.homeTeam &&
+  //         !teamsTimeSlotIds.includes(game.timeSlotId) &&
+  //         this.facilityData[game.facilityId!].divisionIds?.includes(
+  //           hostTeam.divisionId
+  //         ) &&
+  //         this.facilityData[game.facilityId!].divisionIds?.includes(
+  //           team.divisionId
+  //         )
+  //     );
 
-      if (foundGame) {
-        foundGames.push(foundGame);
-        [hostTeam, team].forEach(t => {
-          const foundUpdatedGame = this.updatedGames.find(
-            game => game.id === foundGame.id
-          );
-          if (!foundUpdatedGame) return;
+  //     if (foundGame) {
+  //       foundGames.push(foundGame);
+  //       [hostTeam, team].forEach(t => {
+  //         const foundUpdatedGame = this.updatedGames.find(
+  //           game => game.id === foundGame.id
+  //         );
+  //         if (!foundUpdatedGame) return;
 
-          const updatedTeam = this.updateTeam(t, foundUpdatedGame!);
-          this.saveUpdatedTeam(updatedTeam);
-          this.setTeamInPlay(t, foundGame);
-          this.updateGame(foundGame, updatedTeam);
-        });
-      }
-    });
-  };
+  //         const updatedTeam = this.updateTeam(t, foundUpdatedGame!);
+  //         this.saveUpdatedTeam(updatedTeam);
+  //         this.setTeamInPlay(t, foundGame);
+  //         this.updateGame(foundGame, updatedTeam);
+  //       });
+  //     }
+  //   });
+  // };
 
   updateTeam = (teamCard: ITeamCard, game: IGame) => {
     return {
@@ -407,7 +451,10 @@ export default class Scheduler {
     ).length;
 
     // If all teams can fit in one biggest facility then let it be
-    if (numberOfAllTeams <= this.facilityData[sortedFacilities[0]]?.gamesNum!) {
+    if (
+      numberOfAllTeams * this.minGameNum <=
+      this.facilityData[sortedFacilities[0]]?.gamesNum!
+    ) {
       this.facilityData[sortedFacilities[0]] = {
         ...this.facilityData[sortedFacilities[0]],
         divisionIds: [...sortedDivisions],

@@ -13,7 +13,14 @@ import {
   setGameOptions,
 } from './helper';
 import SchedulesMatrix from './matrix';
-import { IGameOptions } from './matrix/Scheduler';
+import Scheduler, { IGameOptions } from './matrix/Scheduler';
+import Diagnostics from './diagnostics';
+import { Button } from 'components/common';
+import {
+  sortFieldsByPremier,
+  defineGames,
+  IDefinedGames,
+} from './matrix/helper';
 
 export interface ITimeSlot {
   id: number;
@@ -330,10 +337,14 @@ interface IState {
   teams?: ITeam[];
   fields?: IField[];
   gameOptions?: IGameOptions;
+  diagnosticsOpen: boolean;
+  scheduling?: any;
 }
 
 class Schedules extends Component<{}, IState> {
-  state: IState = {};
+  state: IState = {
+    diagnosticsOpen: false,
+  };
 
   async componentDidMount() {
     const fetchedEvents: EventDetailsDTO[] = await api.get(
@@ -375,19 +386,77 @@ class Schedules extends Component<{}, IState> {
       teams: mappedTeams,
       fields: mappedFields,
     });
+
+    this.scheduling();
   }
 
+  scheduling = () => {
+    const { teams, fields, timeSlots, gameOptions } = this.state;
+    const sortedFields = sortFieldsByPremier(fields!);
+
+    const definedGames: IDefinedGames = defineGames(
+      sortedFields,
+      timeSlots!,
+      teams!
+    );
+    const { gameFields, games } = definedGames;
+
+    const scheduling = new Scheduler(
+      sortedFields,
+      teams!,
+      games,
+      timeSlots!,
+      gameOptions
+    );
+
+    this.setState({
+      scheduling: {
+        ...scheduling,
+        gameFields,
+      },
+    });
+  };
+
+  toggleDiagnostics = () => {
+    this.setState(({ diagnosticsOpen }) => ({
+      diagnosticsOpen: !diagnosticsOpen,
+    }));
+  };
+
   render() {
-    const { timeSlots, teams, fields, gameOptions } = this.state;
+    const {
+      timeSlots,
+      teams,
+      fields,
+      diagnosticsOpen,
+      scheduling,
+    } = this.state;
 
     return (
       <div>
-        {teams?.length && timeSlots?.length && fields?.length && (
-          <SchedulesMatrix
-            gameOptions={gameOptions}
-            timeSlots={timeSlots}
-            fields={fields}
-            teams={teams}
+        {teams?.length &&
+          timeSlots?.length &&
+          fields?.length &&
+          scheduling?.updatedGames && (
+            <SchedulesMatrix
+              scheduling={scheduling}
+              timeSlots={timeSlots}
+              fields={fields}
+              teams={teams}
+            />
+          )}
+
+        <Button
+          label="Secret button"
+          onClick={this.toggleDiagnostics}
+          variant="contained"
+          color="primary"
+        />
+        {scheduling?.updatedGames && (
+          <Diagnostics
+            scheduling={scheduling}
+            isOpen={diagnosticsOpen}
+            onClose={this.toggleDiagnostics}
           />
         )}
       </div>
