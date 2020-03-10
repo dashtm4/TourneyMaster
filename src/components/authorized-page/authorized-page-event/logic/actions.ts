@@ -11,7 +11,7 @@ import {
 } from './action-types';
 import Api from 'api/api';
 import { Toasts } from 'components/common';
-import { IEventDetails } from 'common/models';
+import { IEventDetails, IRegistration } from 'common/models';
 import { EventStatuses } from 'common/enums';
 
 const loadAuthPageData: ActionCreator<ThunkAction<
@@ -25,11 +25,19 @@ const loadAuthPageData: ActionCreator<ThunkAction<
       type: LOAD_AUTH_PAGE_DATA_START,
     });
 
-    const event = await Api.get(`/events?event_id=${eventId}`);
-    const registration = await Api.get(`/registrations?event_id=${eventId}`);
+    const events = await Api.get(`/events?event_id=${eventId}`);
+    const registrations = await Api.get(`/registrations?event_id=${eventId}`);
     const facilities = await Api.get(`/facilities?event_id=${eventId}`);
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
     const teams = await Api.get(`/teams?event_id=${eventId}`);
+
+    const currentEvent = events.find(
+      (it: IEventDetails) => it.event_id === eventId
+    );
+
+    const currentRegistration = registrations.find(
+      (it: IRegistration) => it.event_id === eventId
+    );
 
     dispatch({
       type: LOAD_AUTH_PAGE_DATA_SUCCESS,
@@ -37,8 +45,8 @@ const loadAuthPageData: ActionCreator<ThunkAction<
         facilities,
         divisions,
         tournamentData: {
-          event: event[0],
-          registration: registration[0],
+          event: currentEvent,
+          registration: currentRegistration,
           facilities,
           divisions,
           teams,
