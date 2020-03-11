@@ -13,6 +13,7 @@ import scheduling from 'components/scheduling/logic/reducer';
 import teams from 'components/teams/logic/reducer';
 import recordScores from 'components/scoring/pages/record-scores/logic/reducer';
 import organizationsManagement from 'components/organizations-management/logic/reducer';
+import libraryManager from 'components/library-manager/logic/reducer';
 
 const rootReducer = combineReducers({
   router: connectRouter(history),
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   scheduling,
   teams,
   organizationsManagement,
+  libraryManager,
 });
 
 export default rootReducer;

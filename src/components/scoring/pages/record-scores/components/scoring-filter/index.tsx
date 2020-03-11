@@ -2,10 +2,10 @@ import React from 'react';
 import { Button, Select, CardMessage } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { ISelectOption } from 'components/common/select';
-import { DayTypes } from '../../index';
-import { ButtonTypes } from 'common/enums';
-import { IDivision, ITeam, IField } from 'common/models';
-import { DefaulSelectFalues } from '../../types';
+import { sortByField } from 'helpers';
+import { ButtonTypes, SortByFilesTypes } from 'common/enums';
+import { IDivision, ITeam } from 'common/models';
+import { DefaulSelectFalues, IFieldWithRelated, DayTypes } from '../../types';
 import styles from './styles.module.scss';
 
 const CARD_MESSAGE_STYLES = {
@@ -21,7 +21,7 @@ enum FormFields {
 interface Props {
   divisions: IDivision[];
   teams: ITeam[];
-  fields: IField[];
+  fields: IFieldWithRelated[];
   selectedDay: DayTypes;
   selectedDivision: string;
   selectedTeam: string;
@@ -66,12 +66,10 @@ const ScoringFilter = ({
           name={FormFields.SELECTED_DIVISION}
           options={[
             { label: 'All', value: DefaulSelectFalues.ALL },
-            ...divisions
-              .sort((a, b) => (a.short_name > b.short_name ? 1 : -1))
-              .map(it => ({
-                label: it.short_name,
-                value: it.division_id,
-              })),
+            ...sortByField(divisions, SortByFilesTypes.DIVISIONS).map(it => ({
+              label: it.short_name,
+              value: it.division_id,
+            })),
           ]}
         />
       </fieldset>
@@ -83,22 +81,20 @@ const ScoringFilter = ({
           name={FormFields.SELECTED_TEAM}
           options={[
             { label: 'All', value: DefaulSelectFalues.ALL },
-            ...teams
-              .sort((a, b) => (a.short_name > b.short_name ? 1 : -1))
-              .reduce(
-                (acc, it) =>
-                  it.division_id === selectedDivision ||
-                  selectedDivision === DefaulSelectFalues.ALL
-                    ? [
-                        ...acc,
-                        {
-                          label: it.short_name,
-                          value: it.team_id,
-                        } as ISelectOption,
-                      ]
-                    : acc,
-                [] as ISelectOption[]
-              ),
+            ...sortByField(teams, SortByFilesTypes.TEAMS).reduce(
+              (acc, it) =>
+                it.division_id === selectedDivision ||
+                selectedDivision === DefaulSelectFalues.ALL
+                  ? [
+                      ...acc,
+                      {
+                        label: it.short_name,
+                        value: it.team_id,
+                      } as ISelectOption,
+                    ]
+                  : acc,
+              [] as ISelectOption[]
+            ),
           ]}
         />
       </fieldset>
@@ -110,15 +106,13 @@ const ScoringFilter = ({
           name={FormFields.SELECTED_FIELDS}
           options={[
             { label: 'All', value: DefaulSelectFalues.ALL },
-            ...fields
-              .sort((a, b) => (a.field_name > b.field_name ? 1 : -1))
-              .map(
-                it =>
-                  ({
-                    label: it.field_name,
-                    value: it.field_id,
-                  } as ISelectOption)
-              ),
+            ...sortByField(fields, SortByFilesTypes.RELATED_FIELDS).map(
+              it =>
+                ({
+                  label: `${it.relatedTo} - ${it.field_name}`,
+                  value: it.field_id,
+                } as ISelectOption)
+            ),
           ]}
         />
       </fieldset>

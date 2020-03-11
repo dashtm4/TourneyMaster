@@ -68,42 +68,40 @@ const OrganizationsList = ({ organizations, deleteOrganization }: Props) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {organizations
-                        .sort((a, b) => (a.org_name > b.org_name ? 1 : -1))
-                        .map((organization, index) => (
-                          <tr
-                            className={styles.listItem}
-                            key={organization.org_id}
-                          >
-                            <td>{`${index + 1}.`}</td>
-                            <td>{organization.org_name}</td>
-                            <td>{organization.org_tag}</td>
-                            <td>{organization.city}</td>
-                            <td>{organization.state}</td>
-                            <td>
-                              <button
-                                className={styles.codeBtn}
-                                onClick={() =>
-                                  copyToClipboard(organization?.org_id)
-                                }
-                              >
-                                {organization.org_id}
-                                {getIcon(Icons.FILE_COPY, COPY_ICON_STYLES)}
-                              </button>
-                            </td>
-                            <td>
-                              <span className={styles.delBtnWrapper}>
-                                <Button
-                                  onClick={() => onDeletePopup(organization)}
-                                  icon={getIcon(Icons.DELETE)}
-                                  label="Delete"
-                                  variant="text"
-                                  color="inherit"
-                                />
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
+                      {organizations.map((organization, index) => (
+                        <tr
+                          className={styles.listItem}
+                          key={organization.org_id}
+                        >
+                          <td>{`${index + 1}.`}</td>
+                          <td>{organization.org_name}</td>
+                          <td>{organization.org_tag}</td>
+                          <td>{organization.city}</td>
+                          <td>{organization.state}</td>
+                          <td>
+                            <button
+                              className={styles.codeBtn}
+                              onClick={() =>
+                                copyToClipboard(organization?.org_id)
+                              }
+                            >
+                              {organization.org_id}
+                              {getIcon(Icons.FILE_COPY, COPY_ICON_STYLES)}
+                            </button>
+                          </td>
+                          <td>
+                            <span className={styles.delBtnWrapper}>
+                              <Button
+                                onClick={() => onDeletePopup(organization)}
+                                icon={getIcon(Icons.DELETE)}
+                                label="Delete"
+                                variant="text"
+                                color="inherit"
+                              />
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </Paper>
