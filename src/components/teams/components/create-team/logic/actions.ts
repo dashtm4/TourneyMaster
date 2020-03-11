@@ -20,18 +20,30 @@ export const saveTeams: ActionCreator<ThunkAction<
 ) => async () => {
   try {
     const allTeams = await api.get(`/teams?event_id=${eventId}`);
+    const mappedDivisionTeams = Object.values(
+      [...allTeams, ...teams].reduce((acc, it: ITeam) => {
+        const divisionId = it.division_id;
 
-    await Yup.array()
-      .of(teamSchema)
-      .unique(
-        team => team.long_name,
-        'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
-      )
-      .unique(
-        team => team.short_name,
-        'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
-      )
-      .validate([...allTeams, ...teams]);
+        if (divisionId) {
+          acc[divisionId] = [...(acc[divisionId] || []), it];
+        }
+        return acc;
+      }, {})
+    );
+
+    for await (let mappedTeams of mappedDivisionTeams) {
+      await Yup.array()
+        .of(teamSchema)
+        .unique(
+          team => team.long_name,
+          'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
+        )
+        .unique(
+          team => team.short_name,
+          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+        )
+        .validate(mappedTeams);
+    }
 
     for await (const team of teams) {
       const data = {
