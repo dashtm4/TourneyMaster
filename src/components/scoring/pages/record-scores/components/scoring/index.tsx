@@ -1,7 +1,7 @@
 import React from 'react';
 import ScoringFilter from '../scoring-filter';
 import ScoringTable from '../scoring-table';
-import { DayTypes, ViewTypes } from '../../index';
+import { DayTypes, ViewTypes } from '../../types';
 import { IDivision, ITeam } from 'common/models';
 import { IFieldWithRelated } from '../../types';
 import styles from './styles.module.scss';

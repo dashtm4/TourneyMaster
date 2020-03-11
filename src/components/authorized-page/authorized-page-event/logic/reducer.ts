@@ -22,7 +22,7 @@ import {
   LOAD_DIVISIONS_TEAMS_SUCCESS,
   TeamsAction,
 } from 'components/teams/logic/action-types';
-import { sortByField } from 'helpers';
+import { sortTitleByField } from 'helpers';
 import { IMenuItem, ITournamentData } from 'common/models';
 import {
   EventMenuTitles,
@@ -90,12 +90,17 @@ const pageEventReducer = (
               };
             }
             case EventMenuTitles.FACILITIES: {
-              console.log(sortByField(facilities, SortByFilesTypes.FACILITIES));
+              console.log(
+                sortTitleByField(facilities, SortByFilesTypes.FACILITIES)
+              );
 
               return {
                 ...item,
                 isCompleted: facilities.length > 0,
-                children: sortByField(facilities, SortByFilesTypes.FACILITIES),
+                children: sortTitleByField(
+                  facilities,
+                  SortByFilesTypes.FACILITIES
+                ),
               };
             }
             case EventMenuTitles.REGISTRATION: {
@@ -111,7 +116,10 @@ const pageEventReducer = (
               return {
                 ...item,
                 isCompleted: divisions.length > 0,
-                children: sortByField(divisions, SortByFilesTypes.DIVISIONS),
+                children: sortTitleByField(
+                  divisions,
+                  SortByFilesTypes.DIVISIONS
+                ),
               };
             }
             case EventMenuTitles.TEAMS: {
@@ -147,8 +155,6 @@ const pageEventReducer = (
     case SAVE_FACILITIES_SUCCESS: {
       const { facilities } = action.payload;
 
-      console.log(sortByField(facilities, SortByFilesTypes.FACILITIES));
-
       return {
         ...state,
         menuList: state.menuList.map(item =>
@@ -156,7 +162,10 @@ const pageEventReducer = (
             ? {
                 ...item,
                 isCompleted: facilities.length > 0,
-                children: sortByField(facilities, SortByFilesTypes.FACILITIES),
+                children: sortTitleByField(
+                  facilities,
+                  SortByFilesTypes.FACILITIES
+                ),
               }
             : item
         ),
@@ -172,7 +181,10 @@ const pageEventReducer = (
             ? {
                 ...item,
                 isCompleted: divisions.length > 0,
-                children: sortByField(divisions, SortByFilesTypes.DIVISIONS),
+                children: sortTitleByField(
+                  divisions,
+                  SortByFilesTypes.DIVISIONS
+                ),
               }
             : item
         ),

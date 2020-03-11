@@ -4,6 +4,8 @@ import TeamItem from '../team-item';
 import { IPool, ITeam, IDivision } from '../../../../common/models';
 import { DndItems } from '../../types';
 import styles from './styles.module.scss';
+import { sortByField } from 'helpers';
+import { SortByFilesTypes } from 'common/enums';
 
 interface Props {
   pool?: IPool;
@@ -50,20 +52,18 @@ const PoolItem = ({
         </h5>
       )}
       <ul ref={isEdit ? drop : null} className={styles.teamList}>
-        {teams
-          .sort((a, b) => (a.short_name > b.short_name ? 1 : -1))
-          .map(it => (
-            <TeamItem
-              team={it}
-              divisionName={division ? division.long_name : ''}
-              poolName={pool?.pool_name}
-              isEdit={isEdit}
-              changePool={changePool}
-              onDeletePopupOpen={onDeletePopupOpen}
-              onEditPopupOpen={onEditPopupOpen}
-              key={it.team_id}
-            />
-          ))}
+        {sortByField(teams, SortByFilesTypes.TEAMS).map(it => (
+          <TeamItem
+            team={it}
+            divisionName={division ? division.long_name : ''}
+            poolName={pool?.pool_name}
+            isEdit={isEdit}
+            changePool={changePool}
+            onDeletePopupOpen={onDeletePopupOpen}
+            onEditPopupOpen={onEditPopupOpen}
+            key={it.team_id}
+          />
+        ))}
       </ul>
     </li>
   );

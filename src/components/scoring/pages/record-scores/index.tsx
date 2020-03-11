@@ -10,18 +10,12 @@ import Scoring from './components/scoring';
 import { Loader, PopupExposure } from 'components/common';
 import { IDivision, ITeam } from 'common/models';
 import { Routes } from 'common/constants';
-import { DefaulSelectFalues, IFieldWithRelated } from './types';
-
-enum DayTypes {
-  DAY_ONE = 'Day 1',
-  DAY_TWO = 'Day 2',
-  DAY_THREE = 'Day 3',
-}
-
-enum ViewTypes {
-  VIEW_ONLY = 'viewOnly',
-  ENTER_SCORES = 'enterScores',
-}
+import {
+  DefaulSelectFalues,
+  IFieldWithRelated,
+  ViewTypes,
+  DayTypes,
+} from './types';
 
 interface MatchParams {
   eventId?: string;
@@ -147,8 +141,6 @@ class RecordScores extends React.Component<
 interface IRootState {
   recordScores: AppState;
 }
-
-export { ViewTypes, DayTypes };
 
 export default connect(
   ({ recordScores }: IRootState) => ({
