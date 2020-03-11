@@ -8,7 +8,7 @@ import {
 } from 'components/common';
 import PopupDeleteOrganization from '../popup-delete-organization';
 import { IOrganization } from 'common/models';
-import { Icons } from 'common/constants';
+import { Icons } from 'common/enums';
 import { getIcon } from 'helpers';
 import styles from './styles.module.scss';
 

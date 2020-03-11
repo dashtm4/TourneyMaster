@@ -9,12 +9,10 @@ import {
 } from './expansion-panel-material';
 import { ProgressBar, Button } from 'components/common';
 import { getIcon, stringToLink, countCompletedPercent } from 'helpers';
-import { Icons } from 'common/constants/icons';
-import { ButtonColors, ButtonVarian } from 'common/enums';
+import { Icons } from 'common/enums/icons';
+import { ButtonColors, ButtonVarian, RequiredMenuKeys } from 'common/enums';
 import { IMenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
-
-const KEY_COMPLETED_ITEM = 'isCompleted';
 
 const STYLES_MENUITEM_ICON = {
   marginRight: '8px',
@@ -45,7 +43,7 @@ const Menu = ({
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(list[0].title);
   const percentOfCompleted = isDraft
-    ? countCompletedPercent(list, KEY_COMPLETED_ITEM)
+    ? countCompletedPercent(list, RequiredMenuKeys.IS_COMPLETED)
     : null;
 
   return (
@@ -94,7 +92,7 @@ const Menu = ({
                     {menuItem.title}
                     {!isCollapsed &&
                       isDraft &&
-                      menuItem.hasOwnProperty(KEY_COMPLETED_ITEM) &&
+                      menuItem.hasOwnProperty(RequiredMenuKeys.IS_COMPLETED) &&
                       (menuItem.isCompleted
                         ? getIcon(Icons.CHECK_CIRCLE, {
                             ...STYLES_PROGREES_ICON,

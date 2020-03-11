@@ -1,5 +1,4 @@
-import { Icons, Routes } from 'common/constants';
-import { EventMenuTitles } from 'common/enums';
+import { EventMenuTitles, Icons, Routes } from 'common/enums';
 
 export const EventMenu = [
   {

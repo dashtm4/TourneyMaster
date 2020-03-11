@@ -22,9 +22,13 @@ import AddDivision from 'components/divisions-and-pools/add-division';
 import Scheduling from 'components/scheduling';
 import Teams from 'components/teams';
 import CreateTeam from 'components/teams/components/create-team';
-import { Routes } from 'common/constants';
 import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
-import { EventStatuses } from 'common/enums';
+import {
+  EventStatuses,
+  Routes,
+  RequiredMenuKeys,
+  EventMenuTitles,
+} from 'common/enums';
 import { Loader } from 'components/common';
 import styles from '../styles.module.scss';
 
@@ -92,7 +96,20 @@ const AuthorizedPageEvent = ({
               path={Routes.DIVISIONS_AND_POOLS_ID}
               component={DivisionsAndPools}
             />
-            <Route path={Routes.SCHEDULING_ID} component={Scheduling} />
+            <Route
+              path={Routes.SCHEDULING_ID}
+              render={props => (
+                <Scheduling
+                  {...props}
+                  incompleteMenuItems={menuList.filter(
+                    it =>
+                      it.hasOwnProperty(RequiredMenuKeys.IS_COMPLETED) &&
+                      !it.isCompleted &&
+                      it.title !== EventMenuTitles.SCHEDULING
+                  )}
+                />
+              )}
+            />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
             <Route path={Routes.REPORTING_ID} component={EmptyPage} />

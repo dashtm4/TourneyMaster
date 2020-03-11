@@ -3,7 +3,7 @@ import { useDrag, DragSourceMonitor } from 'react-dnd';
 import { ITeam } from '../../../../common/models';
 import Button from '../../../common/buttons/button';
 import { getIcon } from '../../../../helpers/get-icon.helper';
-import { Icons } from '../../../../common/constants/icons';
+import { Icons } from '../../../../common/enums/icons';
 import { DndItems } from '../../types';
 import styles from './styles.module.scss';
 

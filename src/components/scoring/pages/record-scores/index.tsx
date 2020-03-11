@@ -9,7 +9,7 @@ import Navigation from './components/navigation';
 import Scoring from './components/scoring';
 import { Loader, PopupExposure } from 'components/common';
 import { IDivision, ITeam } from 'common/models';
-import { Routes } from 'common/constants';
+import { Routes } from 'common/enums';
 import {
   DefaulSelectFalues,
   IFieldWithRelated,

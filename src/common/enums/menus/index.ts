@@ -28,4 +28,13 @@ enum EventMenuRegistrationTitles {
   MAIN_CONTACT = 'Main Contact',
 }
 
-export { MenuTitles, EventMenuTitles, EventMenuRegistrationTitles };
+enum RequiredMenuKeys {
+  IS_COMPLETED = 'isCompleted',
+}
+
+export {
+  MenuTitles,
+  EventMenuTitles,
+  EventMenuRegistrationTitles,
+  RequiredMenuKeys,
+};

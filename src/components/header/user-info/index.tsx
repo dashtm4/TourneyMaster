@@ -2,7 +2,7 @@ import React from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import hisory from '../../../browserhistory';
-import { Routes } from '../../../common/constants';
+import { Routes } from 'common/enums';
 import styles from './style.module.scss';
 
 const USER_LOGO = '';

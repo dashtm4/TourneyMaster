@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'components/common';
 import history from 'browserhistory';
-import { Routes } from 'common/constants';
+import { Routes } from 'common/enums';
 import styles from './styles.module.scss';
 
 interface Props {
