@@ -79,9 +79,7 @@ export default (props: IProps) => {
     calendarApi = calendarRef!.current!.getApi();
   });
 
-  const changeView = (
-    view: 'day' | 'week' | 'month' | 'listDay' | 'listMonth'
-  ) => {
+  const changeView = (view: 'day' | 'week' | 'month') => {
     const viewType = getViewType(view);
     calendarApi.changeView(viewType);
     changeCurrentView(view);
@@ -157,15 +155,6 @@ export default (props: IProps) => {
         });
     }
   };
-  // const onEventResize = (eventResizeInfo: any) => {
-  //   const { id, start, end } = eventResizeInfo.event;
-  //   const data = {
-  //     cal_event_id: id,
-  //     cal_event_startdate: start,
-  //     cal_event_enddate: end,
-  //   };
-  //   onEventUpdate(data);
-  // };
 
   const renderButton = (buttonType: ViewType) => (
     <Button

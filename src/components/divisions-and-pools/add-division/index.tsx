@@ -150,8 +150,6 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
           },
         ],
       });
-    } else {
-      console.log('no');
     }
   }
 

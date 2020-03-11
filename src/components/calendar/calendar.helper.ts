@@ -1,22 +1,16 @@
 import { ICalendarEvent, IEvent } from 'common/models/calendar';
 // import { format } from 'date-fns';
 
-export type ViewType = 'day' | 'week' | 'month' | 'listDay' | 'listMonth';
+export type ViewType = 'day' | 'week' | 'month';
 type ButtonVariantType = 'squared' | 'squaredOutlined' | undefined;
 export type ButtonTypeEvent = 'event' | 'reminder' | 'task';
 
-export const getViewType = (
-  view: 'day' | 'week' | 'month' | 'listDay' | 'listMonth'
-) => {
+export const getViewType = (view: 'day' | 'week' | 'month') => {
   switch (view) {
     case 'day':
       return 'timeGridDay';
     case 'week':
       return 'timeGridWeek';
-    case 'listDay':
-      return 'listDay';
-    case 'listMonth':
-      return 'listMonth';
     default:
       return 'dayGridMonth';
   }
