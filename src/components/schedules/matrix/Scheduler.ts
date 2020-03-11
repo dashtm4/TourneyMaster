@@ -10,10 +10,13 @@ import {
   getSortedDesc,
 } from './helper';
 import { ITimeSlot } from '..';
+import { IScheduleFacility } from 'common/models/schedule/facilities';
+import { IScheduleDivision } from 'common/models/schedule/divisions';
 
 export interface IGameOptions {
   minGameNum?: number;
   maxGameNum?: number;
+  totalGameTime?: number;
 }
 
 interface IConditions {
@@ -36,11 +39,19 @@ interface IFacilityData {
   };
 }
 
+interface ITournamentBaseInfo {
+  facilities: IScheduleFacility[];
+  divisions: IScheduleDivision[];
+  gameOptions: IGameOptions;
+}
+
 export default class Scheduler {
   fields: IField[];
   teamCards: ITeamCard[];
   games: IGame[];
   timeSlots: ITimeSlot[];
+  facilities: IScheduleFacility[];
+  divisions: IScheduleDivision[];
   updatedGames: IGame[];
   teamsInPlay: IKeyId;
   facilityData: IFacilityData;
@@ -50,18 +61,23 @@ export default class Scheduler {
   poolsData: IKeyId;
   minGameNum = 3;
   maxGameNum = 5;
+  totalGameTime: number;
 
   constructor(
     fields: IField[],
     teamCards: ITeamCard[],
     games: IGame[],
     timeSlots: ITimeSlot[],
-    gameOptions?: IGameOptions
+    tournamentBaseInfo: ITournamentBaseInfo
   ) {
+    const { facilities, divisions, gameOptions } = tournamentBaseInfo || {};
+
     this.fields = fields;
     this.teamCards = teamCards;
     this.games = games;
     this.timeSlots = timeSlots;
+    this.facilities = facilities;
+    this.divisions = divisions;
     this.updatedGames = [];
     this.teamsInPlay = {};
     this.facilityData = {};
@@ -69,6 +85,7 @@ export default class Scheduler {
 
     this.minGameNum = gameOptions?.minGameNum || 3;
     this.maxGameNum = gameOptions?.maxGameNum || 5;
+    this.totalGameTime = gameOptions?.totalGameTime || 0;
 
     this.calculateTeamGameNum();
     this.setTeamsPerPools();

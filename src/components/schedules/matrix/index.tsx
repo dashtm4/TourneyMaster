@@ -10,13 +10,14 @@ import RenderFieldHeader from './field-header';
 import RenderTimeSlot from './time-slot';
 import styles from './styles.module.scss';
 import { IGameOptions } from './Scheduler';
+import { ISchedulerResult } from '..';
 
 interface IProps {
   timeSlots: ITimeSlot[];
   fields: IField[];
   teams: ITeam[];
   gameOptions?: IGameOptions;
-  scheduling: any;
+  scheduling: ISchedulerResult;
 }
 
 const SchedulesMatrix = (props: IProps) => {

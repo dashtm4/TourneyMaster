@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, ReactText } from 'react';
 import { Modal } from 'components/common';
 import styles from './styles.module.scss';
 import {
@@ -9,35 +9,104 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  TableSortLabel,
 } from '@material-ui/core';
+import { orderBy } from 'lodash-es';
+
+export interface IDiagnosticsInput {
+  header: string[];
+  body: Cell[][];
+}
 
 interface Props {
   isOpen: boolean;
-  scheduling: any;
+  tableData: IDiagnosticsInput;
   onClose: () => void;
 }
 
-class Diagnostics extends Component<Props> {
+interface State {
+  sortBy: string;
+  sortOrder: string;
+  tableData: IDiagnosticsInput;
+}
+
+type Cell = ReactText | undefined;
+
+enum sortOrderEnum {
+  asc = 1,
+  desc = 2,
+}
+
+class Diagnostics extends Component<Props, State> {
+  state = {
+    sortOrder: sortOrderEnum[1],
+    sortBy: '',
+    tableData: this.props.tableData,
+  };
+
+  sortData = (sortByArg: string, sortOrderArg?: 'asc' | 'desc') => {
+    const sortBy = this.state.tableData.header.indexOf(sortByArg);
+
+    this.setState(({ sortOrder, tableData }) => ({
+      sortBy: sortByArg,
+      sortOrder:
+        sortOrderArg || sortOrderEnum[sortOrder] === 1
+          ? sortOrderEnum[2]
+          : sortOrderEnum[1],
+      tableData: {
+        ...tableData,
+        body: orderBy(
+          tableData.body,
+          sortBy,
+          sortOrder === 'asc' ? 'asc' : 'desc'
+        ),
+      },
+    }));
+  };
+
+  createTableCell = (cellText: Cell, index: number, isHeader?: boolean) => (
+    <TableCell
+      className={styles.tableCell}
+      key={'cell-' + index}
+      align="center"
+    >
+      {cellText}
+
+      {isHeader && (
+        <TableSortLabel
+          active={cellText === this.state.sortBy}
+          direction={this.state.sortOrder === 'asc' ? 'asc' : 'desc'}
+          onClick={() => this.sortData(String(cellText))}
+        />
+      )}
+    </TableCell>
+  );
+
+  createTableRow = (cells: Cell[], index?: number, isHeader?: boolean) => (
+    <TableRow key={index} hover={true}>
+      {cells.map((cell: Cell, cellIndex: number) =>
+        this.createTableCell(cell, cellIndex, isHeader)
+      )}
+    </TableRow>
+  );
+
   render() {
     const { isOpen, onClose } = this.props;
-    const align = 'center';
+    const { tableData } = this.state;
+    const { header, body } = tableData;
 
     return (
       <Modal isOpen={isOpen} onClose={onClose}>
         <Paper className={styles.root}>
           <TableContainer className={styles.container}>
-            <Table stickyHeader aria-label="sticky table">
+            <Table stickyHeader={true} aria-label="sticky table">
               <TableHead>
-                <TableRow>
-                  <TableCell align={align} style={{ minWidth: 130 }}>
-                    asd
-                  </TableCell>
-                </TableRow>
+                {this.createTableRow(header, undefined, true)}
               </TableHead>
               <TableBody>
-                <TableRow hover role="checkbox" tabIndex={-1}>
-                  <TableCell align={align}>CELL</TableCell>
-                </TableRow>
+                {body.map((element, index) =>
+                  this.createTableRow(element, index)
+                )}
               </TableBody>
             </Table>
           </TableContainer>

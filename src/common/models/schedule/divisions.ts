@@ -27,3 +27,9 @@ export interface IFetchedDivision {
   updated_by: string;
   updated_datetime: string;
 }
+
+export interface IScheduleDivision {
+  id: string;
+  name: string;
+  isPremier: boolean;
+}

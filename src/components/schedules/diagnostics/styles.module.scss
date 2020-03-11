@@ -1,7 +1,13 @@
 .root {
   width: 100%;
+  padding: 16px;
+  background-color: #f4f4f4 !important;
 }
 
 .container {
   max-height: 440px;
+
+  .tableCell {
+    min-width: 130px;
+  }
 }

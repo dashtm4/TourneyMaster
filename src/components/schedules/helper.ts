@@ -10,10 +10,37 @@ interface ITimeValues {
   periodsPerGame: number;
 }
 
+const calculateTotalGameTime = (
+  preGameWarmup: string | null,
+  periodDuration: string,
+  timeBtwnPeriods: string,
+  periodsPerGame: number
+) => {
+  const preGameWarmupMin = getTimeFromString(preGameWarmup!, 'minutes');
+  const periodDurationMin = getTimeFromString(periodDuration, 'minutes');
+  const timeBtwnPeriodsMin = getTimeFromString(timeBtwnPeriods, 'minutes');
+  return (
+    preGameWarmupMin + periodDurationMin * periodsPerGame + timeBtwnPeriodsMin
+  );
+};
+
 export const setGameOptions = (event: EventDetailsDTO) => {
+  const {
+    min_num_of_games,
+    pre_game_warmup,
+    period_duration,
+    time_btwn_periods,
+    periods_per_game,
+  } = event;
   return {
-    minGameNum: event.min_num_of_games,
-    maxGameNum: event.min_num_of_games + 1,
+    minGameNum: min_num_of_games,
+    maxGameNum: min_num_of_games + 1,
+    totalGameTime: calculateTotalGameTime(
+      pre_game_warmup,
+      period_duration,
+      time_btwn_periods,
+      periods_per_game
+    ),
   };
 };
 
@@ -41,12 +68,12 @@ export const calculateTimeSlots = (timeValues: ITimeValues) => {
 
   const firstGameTimeMin = getTimeFromString(firstGameTime, 'minutes');
   const lastGameEndMin = getTimeFromString(lastGameEnd, 'minutes');
-  const preGameWarmupMin = getTimeFromString(preGameWarmup!, 'minutes');
-  const periodDurationMin = getTimeFromString(periodDuration, 'minutes');
-  const timeBtwnPeriodsMin = getTimeFromString(timeBtwnPeriods, 'minutes');
-
-  const totalGameTime =
-    preGameWarmupMin + periodDurationMin * periodsPerGame + timeBtwnPeriodsMin;
+  const totalGameTime = calculateTotalGameTime(
+    preGameWarmup,
+    periodDuration,
+    timeBtwnPeriods,
+    periodsPerGame
+  );
   const timeSlots = [];
 
   const timeSlotsNum = Math.floor(
