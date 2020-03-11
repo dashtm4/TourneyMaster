@@ -1,4 +1,4 @@
 const generateAbbrName = (title: string) =>
-  title.replace(/(\w)\w*\W*/g, (_, i) => i.toUpperCase());
+  title.replace(/(\d*\w)\w*\W*/g, (_, i) => i.toUpperCase());
 
 export { generateAbbrName };

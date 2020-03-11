@@ -90,10 +90,6 @@ const pageEventReducer = (
               };
             }
             case EventMenuTitles.FACILITIES: {
-              console.log(
-                sortTitleByField(facilities, SortByFilesTypes.FACILITIES)
-              );
-
               return {
                 ...item,
                 isCompleted: facilities.length > 0,
