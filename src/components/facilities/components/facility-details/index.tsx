@@ -11,7 +11,7 @@ import {
   HeadingLevelThree,
   CardMessage,
 } from '../../../common';
-import { Icons } from 'common/constants/icons';
+import { Icons } from 'common/enums/icons';
 import { FileUploadTypes, AcceptFileTypes } from '../../../common/file-upload';
 import {
   IFacility,

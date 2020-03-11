@@ -24,7 +24,7 @@ import FileCopy from '@material-ui/icons/FileCopy';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import DoneIcon from '@material-ui/icons/Done';
 import { PinIcon } from './own-icons';
-import { Icons } from '../../common/constants/icons';
+import { Icons } from '../../common/enums/icons';
 
 const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
   switch (icon) {

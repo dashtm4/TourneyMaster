@@ -4,8 +4,8 @@ import { CardMessageTypes } from 'components/common/card-message/types';
 import { ISelectOption } from 'components/common/select';
 import { sortByField } from 'helpers';
 import { ButtonTypes, SortByFilesTypes } from 'common/enums';
-import { IDivision, ITeam } from 'common/models';
-import { DefaulSelectFalues, IFieldWithRelated, DayTypes } from '../../types';
+import { IDivision, ITeam, IEventSummary } from 'common/models';
+import { DefaulSelectFalues, DayTypes } from '../../types';
 import styles from './styles.module.scss';
 
 const CARD_MESSAGE_STYLES = {
@@ -21,7 +21,7 @@ enum FormFields {
 interface Props {
   divisions: IDivision[];
   teams: ITeam[];
-  fields: IFieldWithRelated[];
+  fields: IEventSummary[];
   selectedDay: DayTypes;
   selectedDivision: string;
   selectedTeam: string;
@@ -106,10 +106,10 @@ const ScoringFilter = ({
           name={FormFields.SELECTED_FIELDS}
           options={[
             { label: 'All', value: DefaulSelectFalues.ALL },
-            ...sortByField(fields, SortByFilesTypes.RELATED_FIELDS).map(
+            ...sortByField(fields, SortByFilesTypes.FACILITIES_INITIALS).map(
               it =>
                 ({
-                  label: `${it.relatedTo} - ${it.field_name}`,
+                  label: `${it.facilities_initials} - ${it.field_name}`,
                   value: it.field_id,
                 } as ISelectOption)
             ),

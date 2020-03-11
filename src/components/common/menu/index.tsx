@@ -9,26 +9,19 @@ import {
 } from './expansion-panel-material';
 import { ProgressBar, Button } from 'components/common';
 import { getIcon, stringToLink, countCompletedPercent } from 'helpers';
-import { Icons } from 'common/constants/icons';
-import { ButtonColors, ButtonVarian } from 'common/enums';
+import { Icons } from 'common/enums/icons';
+import { ButtonColors, ButtonVarian, RequiredMenuKeys } from 'common/enums';
 import { IMenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 
-const COMPLETED_ITEM_FILED = 'isCompleted';
-
 const STYLES_MENUITEM_ICON = {
-  marginRight: '10px',
+  marginRight: '8px',
 };
 
-const STYLES_MENUITEM_ICON_COLLAPSED = {
-  marginRight: 0,
-};
-
-const STYLES_CHECK_CIRCLE_ICON = {
+const STYLES_PROGREES_ICON = {
   width: '20px',
   height: '20px',
-  fill: '#00CC47',
-  marginLeft: '10px',
+  marginLeft: '9px',
 };
 
 interface Props {
@@ -50,7 +43,7 @@ const Menu = ({
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(list[0].title);
   const percentOfCompleted = isDraft
-    ? countCompletedPercent(list, COMPLETED_ITEM_FILED)
+    ? countCompletedPercent(list, RequiredMenuKeys.IS_COMPLETED)
     : null;
 
   return (
@@ -84,9 +77,7 @@ const Menu = ({
               >
                 {getIcon(
                   menuItem.icon,
-                  isCollapsed
-                    ? STYLES_MENUITEM_ICON_COLLAPSED
-                    : STYLES_MENUITEM_ICON
+                  !isCollapsed ? STYLES_MENUITEM_ICON : undefined
                 )}
                 {!isCollapsed && (
                   <Link
@@ -101,8 +92,16 @@ const Menu = ({
                     {menuItem.title}
                     {!isCollapsed &&
                       isDraft &&
-                      menuItem.isCompleted &&
-                      getIcon(Icons.CHECK_CIRCLE, STYLES_CHECK_CIRCLE_ICON)}
+                      menuItem.hasOwnProperty(RequiredMenuKeys.IS_COMPLETED) &&
+                      (menuItem.isCompleted
+                        ? getIcon(Icons.CHECK_CIRCLE, {
+                            ...STYLES_PROGREES_ICON,
+                            fill: '#00CC47',
+                          })
+                        : getIcon(Icons.WARNING, {
+                            ...STYLES_PROGREES_ICON,
+                            fill: '#FFCB00',
+                          }))}
                   </Link>
                 )}
               </ExpansionPanelSummaryWrapped>

@@ -4,7 +4,7 @@ import withProtectedRoute from '../hocs/withProtectedRoute';
 import withUnprotectedRoute from '../hocs/withUnprotectedRoute';
 import LoginPage from './login-page';
 import AuthorizedPage from './authorized-page';
-import { Routes } from '../common/constants';
+import { Routes } from 'common/enums';
 import AuthorizedPageEvent from './authorized-page/authorized-page-event';
 import Toastr from 'components/common/toastr';
 

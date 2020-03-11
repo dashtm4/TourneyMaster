@@ -20,6 +20,7 @@ import {
 } from 'components/divisions-and-pools/logic/actionTypes';
 import {
   LOAD_DIVISIONS_TEAMS_SUCCESS,
+  SAVE_TEAMS_SUCCESS,
   TeamsAction,
 } from 'components/teams/logic/action-types';
 import { sortTitleByField } from 'helpers';
@@ -121,7 +122,8 @@ const pageEventReducer = (
             case EventMenuTitles.TEAMS: {
               return {
                 ...item,
-                isCompleted: teams.length > 0,
+                isCompleted:
+                  teams.filter(it => it.division_id && it.pool_id).length > 0,
               };
             }
             default:
@@ -186,7 +188,8 @@ const pageEventReducer = (
         ),
       };
     }
-    case LOAD_DIVISIONS_TEAMS_SUCCESS: {
+    case LOAD_DIVISIONS_TEAMS_SUCCESS:
+    case SAVE_TEAMS_SUCCESS: {
       const { teams } = action.payload;
 
       return {
@@ -195,7 +198,8 @@ const pageEventReducer = (
           item.title === EventMenuTitles.TEAMS
             ? {
                 ...item,
-                isCompleted: teams.length > 0,
+                isCompleted:
+                  teams.filter(it => it.division_id && it.pool_id).length > 0,
               }
             : item
         ),

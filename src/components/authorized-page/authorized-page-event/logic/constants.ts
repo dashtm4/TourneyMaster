@@ -1,5 +1,4 @@
-import { Icons, Routes } from 'common/constants';
-import { EventMenuTitles } from 'common/enums';
+import { EventMenuTitles, Icons, Routes } from 'common/enums';
 
 export const EventMenu = [
   {
@@ -58,7 +57,7 @@ export const EventMenu = [
       // EventMenuTitles.TOURNAMENT_PLAY, EventMenuTitles.BRACKETS
     ],
     isAllowEdit: false,
-    // isCompleted: false,
+    isCompleted: false,
   },
   {
     title: EventMenuTitles.SCORING,
