@@ -6,19 +6,24 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { capitalize } from 'lodash-es';
-import { format } from 'date-fns/esm';
 
 import { getViewType, buttonTypeView, ViewType } from '../calendar.helper';
 import { DatePicker, Button } from 'components/common';
 import styles from './styles.module.scss';
-import { IEvent } from 'common/models/calendar';
+import { IEvent, ICalendarEvent } from 'common/models/calendar';
 import { IDateSelect } from '../calendar.model';
 import './main.scss';
+import Modal from 'components/common/modal';
+import InfoModal from '../info-modal';
 
 interface IProps {
   onCreatePressed: () => void;
   eventsList?: IEvent[];
   onDatePressed: (dateSelect: IDateSelect) => void;
+  onEventUpdate: (event: Partial<ICalendarEvent>) => void;
+  onReminderAndTaskUpdate: (event: Partial<ICalendarEvent>) => void;
+  onUpdateCalendarEventDetails: (event: Partial<ICalendarEvent>) => void;
+  onDeleteCalendarEvent: (id: string) => void;
 }
 
 interface EventArg {
@@ -32,7 +37,15 @@ interface EventArg {
 }
 
 export default (props: IProps) => {
-  const { eventsList, onCreatePressed, onDatePressed } = props;
+  const {
+    eventsList,
+    onCreatePressed,
+    onDatePressed,
+    onEventUpdate,
+    onReminderAndTaskUpdate,
+    onDeleteCalendarEvent,
+    onUpdateCalendarEventDetails,
+  } = props;
 
   const header = {
     left: '',
@@ -43,16 +56,22 @@ export default (props: IProps) => {
   const eventTimeFormat = {
     hour: '2-digit',
     minute: '2-digit',
-    hour12: false,
-    meridiem: false,
+    hour12: true,
+    meridiem: true,
   };
 
   const [currentDate, changeCurrentDate] = useState(new Date());
   const [currentView, changeCurrentView] = useState<ViewType>('month');
 
+  const [isModalOpen, toggleModal] = useState(false);
+  const [clickedEvent, setClickedEvent] = useState<any>(null);
+
   const calendarRef = React.createRef<FullCalendar>();
   const plugins = [dayGridPlugin, timeGridPlugin, interactionPlugin];
-  const columnHeaderFormat = { weekday: 'long' };
+  const columnHeaderFormat = {
+    weekday: 'long',
+    day: 'numeric',
+  };
 
   let calendarApi: Calendar;
 
@@ -74,7 +93,8 @@ export default (props: IProps) => {
   const handleDateClick = (arg: EventArg) => {
     const left = arg.jsEvent.x;
     const top = arg.jsEvent.y;
-    const date = format(arg.date, 'yyyy-MM-dd HH:mm:ss');
+    const date = new Date(arg.date).toISOString();
+    // format(arg.date, 'yyyy-MM-dd HH:mm:ss');
 
     const dateSelect = {
       left,
@@ -85,11 +105,56 @@ export default (props: IProps) => {
     onDatePressed(dateSelect);
   };
 
-  const handleEventClick = (arg: any) => {
-    console.log(arg);
+  const handleEventClick = (eventClickInfo: any) => {
+    const { id, title, start, end } = eventClickInfo.event;
+    const {
+      description,
+      tag,
+      type,
+      hasReminder,
+      datetime,
+    } = eventClickInfo.event.extendedProps;
+    setClickedEvent({
+      cal_event_id: id,
+      cal_event_title: title,
+      cal_event_startdate: start,
+      cal_event_enddate: end,
+      cal_event_datetime: datetime,
+      cal_event_desc: description,
+      cal_event_tag: tag,
+      cal_event_type: type,
+      has_reminder_YN: hasReminder,
+    });
+    toggleModal(true);
   };
 
-  const onEventDrop = () => {};
+  const onModalClose = () => {
+    toggleModal(false);
+  };
+
+  const onEventDrop = (eventDropInfo: any) => {
+    const { id, start, end, classNames } = eventDropInfo.event;
+    const eventType = classNames[0];
+    console.log(end);
+    switch (eventType) {
+      case 'event':
+        return onEventUpdate({
+          cal_event_id: id,
+          cal_event_startdate: new Date(start).toISOString(),
+          cal_event_enddate: end
+            ? new Date(end).toISOString()
+            : new Date(start).toISOString(),
+        });
+      case 'reminder':
+      case 'task':
+        return onReminderAndTaskUpdate({
+          cal_event_id: id,
+          cal_event_startdate: new Date(start).toISOString(),
+          cal_event_enddate: new Date(start).toISOString(),
+          cal_event_datetime: new Date(start).toISOString(),
+        });
+    }
+  };
 
   const renderButton = (buttonType: ViewType) => (
     <Button
@@ -101,31 +166,39 @@ export default (props: IProps) => {
     />
   );
 
+  const renderDatePicker = () => {
+    const view = currentView === 'month' ? 'month' : 'date';
+    const dateFormat = currentView === 'month' ? 'MMMM yyyy' : 'MMMM dd, yyyy';
+    return (
+      <DatePicker
+        views={[view]}
+        width="250px"
+        label=""
+        type="date"
+        dateFormat={dateFormat}
+        value={String(currentDate)}
+        onChange={onDateChange}
+      />
+    );
+  };
+
   const renderBadge = (color: string, label: string) => (
     <div className={styles.badgeWrapper}>
       <div style={{ background: color }} />
       <span>{label}</span>
     </div>
   );
-
+  console.log(eventsList);
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <Button
-          label="Create +"
+          label="Create Event/Reminder/Task"
           color="primary"
           variant="contained"
           onClick={onCreatePressed}
         />
-        <DatePicker
-          views={['month']}
-          width="200px"
-          label=""
-          type="date"
-          dateFormat="MMMM yyyy"
-          value={String(currentDate)}
-          onChange={onDateChange}
-        />
+        {renderDatePicker()}
         <div className={styles.buttonsWrapper}>
           {renderButton('day')}
           {renderButton('week')}
@@ -137,6 +210,7 @@ export default (props: IProps) => {
           firstDay={1}
           droppable={true}
           editable={true}
+          eventDurationEditable={false}
           defaultView="dayGridMonth"
           eventTimeFormat={eventTimeFormat}
           columnHeaderFormat={columnHeaderFormat}
@@ -147,6 +221,7 @@ export default (props: IProps) => {
           dateClick={handleDateClick}
           eventClick={handleEventClick}
           eventDrop={onEventDrop}
+          displayEventTime={false}
         />
         <div className={styles.badgeContainer}>
           {renderBadge('#1c315f', 'Event')}
@@ -154,6 +229,15 @@ export default (props: IProps) => {
           {renderBadge('#00a3ea', 'Task')}
         </div>
       </div>
+      <Modal isOpen={isModalOpen} onClose={onModalClose}>
+        <InfoModal
+          clickedEvent={clickedEvent}
+          onDeleteCalendarEvent={onDeleteCalendarEvent}
+          onClose={onModalClose}
+          setClickedEvent={setClickedEvent}
+          onUpdateCalendarEventDetails={onUpdateCalendarEventDetails}
+        />
+      </Modal>
     </div>
   );
 };
