@@ -58,7 +58,7 @@ export const EventMenu = [
       // EventMenuTitles.TOURNAMENT_PLAY, EventMenuTitles.BRACKETS
     ],
     isAllowEdit: false,
-    // isCompleted: false,
+    isCompleted: false,
   },
   {
     title: EventMenuTitles.SCORING,
