@@ -3,7 +3,7 @@ enum SortByFilesTypes {
   DIVISIONS = 'short_name',
   ORGANIZATIONS = 'org_name',
   TEAMS = 'short_name',
-  RELATED_FIELDS = 'relatedTo',
+  FACILITIES_INITIALS = 'facilities_initials',
 }
 
 export { SortByFilesTypes };

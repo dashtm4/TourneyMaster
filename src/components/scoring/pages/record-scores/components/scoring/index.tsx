@@ -2,14 +2,13 @@ import React from 'react';
 import ScoringFilter from '../scoring-filter';
 import ScoringTable from '../scoring-table';
 import { DayTypes, ViewTypes } from '../../types';
-import { IDivision, ITeam } from 'common/models';
-import { IFieldWithRelated } from '../../types';
+import { IDivision, ITeam, IEventSummary } from 'common/models';
 import styles from './styles.module.scss';
 
 interface Props {
   divisions: IDivision[];
   teams: ITeam[];
-  fields: IFieldWithRelated[];
+  fields: IEventSummary[];
   view: ViewTypes;
   selectedDay: DayTypes;
   selectedDivision: string;
