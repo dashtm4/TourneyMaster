@@ -3,7 +3,8 @@ import {
   LOAD_SCORES_DATA_SUCCESS,
   RecordScoresAction,
 } from './action-types';
-import { IDivision, ITeam, IField } from 'common/models';
+import { IDivision, ITeam } from 'common/models';
+import { IFieldWithRelated } from '../types';
 
 const initialState = {
   divisions: [],
@@ -16,7 +17,7 @@ const initialState = {
 export interface AppState {
   divisions: IDivision[];
   teams: ITeam[];
-  fields: IField[];
+  fields: IFieldWithRelated[];
   isLoading: boolean;
   isLoaded: boolean;
 }

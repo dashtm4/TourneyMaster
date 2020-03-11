@@ -1,4 +1,5 @@
-import { Icons, Routes } from '../../../common/constants';
+import { Icons, Routes } from 'common/constants';
+import { MenuTitles } from 'common/enums';
 
 export const MenuList = [
   {
@@ -12,13 +13,13 @@ export const MenuList = [
     icon: Icons.INSERT_DRIVE,
     link: Routes.LIBRARY_MANAGER,
     children: [
-      'Tournaments',
-      'Facilities',
-      'Registration',
-      'Divisions & Pools',
-      'Team Management',
-      'Scheduling',
-      'Messaging',
+      // 'Tournaments',
+      // 'Facilities',
+      MenuTitles.REGISTRATION,
+      // 'Divisions & Pools',
+      // 'Team Management',
+      // 'Scheduling',
+      // 'Messaging',
     ],
   },
   {

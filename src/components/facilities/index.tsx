@@ -110,11 +110,15 @@ class Facilities extends React.Component<
           <ul className={styles.facilitiesList}>
             {facilities
               .sort((a, b) => {
-                if (a.isChange || b.isChange) return 0;
+                if (a.isChange || b.isChange) {
+                  return 0;
+                }
 
-                return a.facilities_description > b.facilities_description
-                  ? 1
-                  : -1;
+                return a.facilities_description.localeCompare(
+                  b.facilities_description,
+                  undefined,
+                  { numeric: true }
+                );
               })
               .map((facilitiy, idx) => (
                 <li
