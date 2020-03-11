@@ -166,7 +166,10 @@ const InfoModal = ({
               label=""
               type="date"
               viewType="input"
-              value={clickedEvent.cal_event_enddate}
+              value={
+                clickedEvent.cal_event_enddate ||
+                clickedEvent.cal_event_startdate
+              }
               onChange={onDateToChange}
             />
           </div>
