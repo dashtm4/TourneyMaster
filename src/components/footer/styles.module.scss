@@ -1,22 +1,114 @@
-.container {
+.footerContainer {
   flex-shrink: 0;
+  font-family: 'Open Sans';
+  font-size: 14px;
+  // background-image: linear-gradient(169.56deg, #073b65 0%, #0079ae 100%);
+  background: linear-gradient(
+    121deg,
+    rgba(7, 59, 101, 1) 38%,
+    rgba(0, 121, 174, 1) 100%
+  );
+
+  box-shadow: 0px -3px 20px -8px #00000070;
+  padding: 15px 10px;
+  color: white;
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
-  font-family: 'Open Sans';
-  width: 100%;
-  height: 60px;
-  color: white;
-  background-color: #073b65;
-  background-image: linear-gradient(169.56deg, #073b65 0%, #0079ae 100%);
-  box-shadow: 0px -3px 20px -8px #00000070;
+  justify-content: space-around;
 
   .logo {
-    width: 61px;
-    height: 48px;
-
+    width: 121px;
+    height: 108px;
+    margin: 17px 0 10px 20px;
     &:hover {
       cursor: pointer;
     }
   }
+
+  .footerLeft,
+  .footerCenter,
+  .footerRight {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .footerLeft {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .footerCopyright {
+    font-size: 14px;
+    font-weight: normal;
+    margin: 0;
+  }
+
+  /* Footer Center */
+
+  .footerCenter {
+    width: 30%;
+    align-self: center;
+    .footerWithIcon {
+      display: flex;
+      margin-bottom: 5px;
+      &:last-of-type {
+        margin: 0;
+      }
+      svg {
+        align-self: center;
+        margin-right: 10px;
+      }
+    }
+    p {
+      display: inline-block;
+      color: #ffffff;
+      font-weight: 400;
+      vertical-align: middle;
+      margin: 0;
+      align-self: center;
+      a {
+        color: white;
+        text-decoration: none;
+      }
+    }
+  }
+
+  .footerRight {
+    // width: 30%;
+    .footerLinks {
+      margin: 0;
+      padding: 0;
+
+      a {
+        color: white;
+        display: inline-block;
+        line-height: 1.8;
+        font-weight: 400;
+        text-decoration: none;
+      }
+    }
+  }
 }
+
+// .footerContainer .footerIcons {
+//   margin-top: 25px;
+// }
+
+// .footerContainer .footerIcons a {
+//   display: inline-block;
+//   width: 35px;
+//   height: 35px;
+//   cursor: pointer;
+//   background-color: #33383b;
+//   border-radius: 2px;
+
+//   font-size: 20px;
+//   color: #ffffff;
+//   text-align: center;
+//   line-height: 35px;
+
+//   margin-right: 3px;
+//   margin-bottom: 5px;
+// }
