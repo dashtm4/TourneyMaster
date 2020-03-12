@@ -64,7 +64,9 @@ const Menu = ({
         }
       }}
     >
-      {eventName && <b className={styles.eventTitle}>{eventName}</b>}
+      {!isCollapsed && eventName && (
+        <b className={styles.eventTitle}>{eventName}</b>
+      )}
       <ul className={styles.list}>
         {list.map(menuItem => (
           <li className={styles.listItem} key={menuItem.title}>
