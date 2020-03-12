@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { AppState } from './logic/reducer';
 import { loadUserData, saveUserData, changeUser } from './logic/actions';
 import Navigation from './components/navigations';
-import EditProfile from './components/edit-profile';
+import UserProfile from './components/user-profile';
 import { HeadingLevelTwo, Loader } from 'components/common';
 import { BindingAction, BindingCbWithOne, IMember } from 'common/models';
 import { IUtilitiesMember } from './types';
@@ -46,7 +46,7 @@ const Utilities = ({
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>Utilities</HeadingLevelTwo>
         </div>
-        <EditProfile userData={userData} changeUser={changeUser} />
+        <UserProfile userData={userData} changeUser={changeUser} />
       </form>
     </section>
   );
