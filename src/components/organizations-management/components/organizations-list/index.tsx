@@ -7,7 +7,7 @@ import {
   Paper,
 } from 'components/common';
 import PopupDeleteOrganization from '../popup-delete-organization';
-import { IOrganization } from 'common/models';
+import { IOrganization, BindingCbWithOne } from 'common/models';
 import { Icons } from 'common/enums';
 import { getIcon } from 'helpers';
 import styles from './styles.module.scss';
@@ -20,6 +20,9 @@ const COPY_ICON_STYLES = {
 interface Props {
   organizations: IOrganization[];
   deleteOrganization: (organization: IOrganization) => void;
+  index: number;
+  expanded: boolean;
+  onToggleOne: BindingCbWithOne<number>;
 }
 
 const copyToClipboard = (id: string) => {
@@ -33,8 +36,18 @@ const copyToClipboard = (id: string) => {
   Toasts.successToast('The invitation code was successfully copied');
 };
 
-const OrganizationsList = ({ organizations, deleteOrganization }: Props) => {
+const OrganizationsList = ({
+  organizations,
+  deleteOrganization,
+  expanded,
+  onToggleOne,
+  index,
+}: Props) => {
   const [configOrg, onDeletePopup] = React.useState<null | IOrganization>(null);
+
+  const onSectionToggle = () => {
+    onToggleOne(index);
+  };
 
   return (
     <>
@@ -43,6 +56,8 @@ const OrganizationsList = ({ organizations, deleteOrganization }: Props) => {
         useBorder={true}
         isDefaultExpanded={true}
         panelDetailsType="flat"
+        expanded={expanded}
+        onToggle={onSectionToggle}
       >
         <HeadingLevelThree>
           <span>Organizations List</span>

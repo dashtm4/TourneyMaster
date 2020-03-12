@@ -8,7 +8,7 @@ import {
   HeadingLevelThree,
   PopupConfirm,
 } from 'components/common';
-import { IConfigurableOrganization } from 'common/models';
+import { IConfigurableOrganization, BindingCbWithOne } from 'common/models';
 import { Icons } from 'common/enums';
 import styles from './styles.module.scss';
 
@@ -28,13 +28,25 @@ const EMPTY_ORGANIZATION = {
 
 interface Props {
   createOrganization: (organizationData: IConfigurableOrganization) => void;
+  index: number;
+  expanded: boolean;
+  onToggleOne: BindingCbWithOne<number>;
 }
 
-const CreateOrganization = ({ createOrganization }: Props) => {
+const CreateOrganization = ({
+  createOrganization,
+  expanded,
+  onToggleOne,
+  index,
+}: Props) => {
   const [organization, onChange] = React.useState<IConfigurableOrganization>(
     EMPTY_ORGANIZATION
   );
   const [isOpenConfirmPopup, onConfirmPopup] = React.useState(false);
+
+  const onSectionToggle = () => {
+    onToggleOne(index);
+  };
 
   return (
     <>
@@ -43,6 +55,8 @@ const CreateOrganization = ({ createOrganization }: Props) => {
         useBorder={true}
         isDefaultExpanded={false}
         panelDetailsType="flat"
+        expanded={expanded}
+        onToggle={onSectionToggle}
       >
         <HeadingLevelThree>
           <span>Create Organization</span>
