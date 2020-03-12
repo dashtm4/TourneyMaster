@@ -21,15 +21,15 @@ import {
   getTimeValuesFromEvent,
   setGameOptions,
 } from './helper';
-import SchedulesMatrix from './matrix';
-import Scheduler, { IGameOptions } from './matrix/Scheduler';
+import SchedulesMatrix from 'components/common/matrix-table';
+import Scheduler, { IGameOptions } from './Scheduler';
 import Diagnostics from './diagnostics';
 import { Button } from 'components/common';
 import {
   sortFieldsByPremier,
   defineGames,
   IDefinedGames,
-} from './matrix/helper';
+} from 'components/common/matrix-table/helper';
 import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
 import formatDivisionsDiagnostics from './diagnostics/divisionsDiagnostics';
 

@@ -2,7 +2,7 @@ import { orderBy } from 'lodash-es';
 import { IField } from 'common/models/schedule/fields';
 import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 import { DropParams } from './dnd/drop';
-import { ITimeSlot } from '..';
+import { ITimeSlot } from 'components/schedules';
 
 export enum TeamPositionEnum {
   'awayTeam' = 1,

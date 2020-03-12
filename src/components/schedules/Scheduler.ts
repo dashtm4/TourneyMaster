@@ -8,8 +8,8 @@ import {
   arrayAverageOccurrence,
   getSortedByGamesNum,
   getSortedDesc,
-} from './helper';
-import { ITimeSlot } from '..';
+} from 'components/common/matrix-table/helper';
+import { ITimeSlot } from './index';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IScheduleDivision } from 'common/models/schedule/divisions';
 
@@ -208,18 +208,16 @@ export default class Scheduler {
         homeTeam?.id === teamTwo?.id
     );
 
-    let teamsTimeSlotIds = teamGames.map(game => game.timeSlotId);
-    teamsTimeSlotIds.forEach(timeSlotId =>
-      teamsTimeSlotIds.push(timeSlotId, timeSlotId + 1, timeSlotId - 1)
-    );
-    teamsTimeSlotIds = union(teamsTimeSlotIds).filter(id => id >= 0);
-
     return this.updatedGames.find(
       game =>
         (ignorePremier || game.isPremier === teamOne.isPremier) &&
         !game.awayTeam &&
         !game.homeTeam &&
-        (includeBackToBack || !teamsTimeSlotIds.includes(game.timeSlotId)) &&
+        this.checkTimeSlotsConsistency(
+          teamGames,
+          game.timeSlotId,
+          includeBackToBack
+        ) &&
         this.checkForFacilityConsistency(teamOne, game)
     );
   };
@@ -270,6 +268,31 @@ export default class Scheduler {
           divisionIds: [...(divisionIdsArr || []), divisionId],
         },
       };
+  };
+
+  checkTimeSlotsConsistency = (
+    teamGames: IGame[],
+    gameTimeSlotId: number,
+    includeBackToBack?: boolean
+  ) => {
+    const teamTimeSlotIds = teamGames.map(game => game.timeSlotId);
+    let backToBackTimeSlotIds: number[] = [];
+    teamTimeSlotIds.map(
+      timeSlotId =>
+        (backToBackTimeSlotIds = [
+          ...(backToBackTimeSlotIds || []),
+          timeSlotId,
+          timeSlotId - 1,
+          timeSlotId + 1,
+        ])
+    );
+    backToBackTimeSlotIds = union(backToBackTimeSlotIds).filter(id => id >= 0);
+
+    const timeSlots = includeBackToBack
+      ? backToBackTimeSlotIds
+      : teamTimeSlotIds;
+
+    return !timeSlots.includes(gameTimeSlotId);
   };
 
   checkForFacilityConsistency = (teamCard: ITeamCard, game: IGame) => {

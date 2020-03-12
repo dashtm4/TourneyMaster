@@ -34,7 +34,7 @@ export const setGameOptions = (event: EventDetailsDTO) => {
   } = event;
   return {
     minGameNum: min_num_of_games,
-    maxGameNum: min_num_of_games + 1,
+    maxGameNum: min_num_of_games,
     totalGameTime: calculateTotalGameTime(
       pre_game_warmup,
       period_duration,

@@ -3,14 +3,14 @@ import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { IField } from 'common/models/schedule/fields';
 import { ITeam } from 'common/models/schedule/teams';
-import { ITimeSlot } from '..';
+import { ITimeSlot } from 'components/schedules';
 import { selectProperGamesPerTimeSlot } from './helper';
 import TeamCard from './dnd/drag';
 import RenderFieldHeader from './field-header';
 import RenderTimeSlot from './time-slot';
 import styles from './styles.module.scss';
-import { IGameOptions } from './Scheduler';
-import { ISchedulerResult } from '..';
+import { IGameOptions } from 'components/schedules/Scheduler';
+import { ISchedulerResult } from 'components/schedules';
 
 interface IProps {
   timeSlots: ITimeSlot[];
