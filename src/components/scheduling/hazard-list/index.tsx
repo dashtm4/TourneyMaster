@@ -19,10 +19,11 @@ const STYLES_MENU_ITEM = {
 
 const IncompleteItemDesc = {
   [EventMenuTitles.EVENT_DETAILS]: 'It is impossible.',
-  [EventMenuTitles.FACILITIES]: 'Descriptions',
-  [EventMenuTitles.REGISTRATION]: 'Descriptions',
-  [EventMenuTitles.DIVISIONS_AND_POOLS]: 'Descriptions',
-  [EventMenuTitles.TEAMS]: 'Descriptions',
+  [EventMenuTitles.FACILITIES]: 'You need to create at least one facility.',
+  [EventMenuTitles.REGISTRATION]: 'You need to create a registration.',
+  [EventMenuTitles.DIVISIONS_AND_POOLS]:
+    'You need to create at least one division&pool.',
+  [EventMenuTitles.TEAMS]: 'All teams must be assigned.',
 };
 
 interface Props {
@@ -32,10 +33,15 @@ interface Props {
 const HazardList = ({ incompleteMenuItems }: Props) => {
   return (
     <section className={styles.wrapper}>
-      <h3 className={styles.hazardTitle}>
-        {getIcon(Icons.WARNING, STYLES_WARNING_ICON)} You need to fill in
-        everything to create a schedule.
-      </h3>
+      <header className={styles.hazardHeader}>
+        <h3 className={styles.hazardTitle}>
+          {getIcon(Icons.WARNING, STYLES_WARNING_ICON)} We need setup to be
+          complete to start making the schedule!
+        </h3>
+        <p className={styles.hazardTitleDesc}>
+          Please address the below items so that we can proceed.
+        </p>
+      </header>
       <dl className={styles.hazardList}>
         {incompleteMenuItems.map(it => (
           <React.Fragment key={it.title}>
