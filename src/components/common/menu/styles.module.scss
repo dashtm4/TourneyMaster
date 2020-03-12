@@ -1,4 +1,6 @@
 .dashboardMenu {
+  z-index: 10;
+
   position: sticky;
   top: 0;
   width: 270px;
@@ -13,10 +15,26 @@
   box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.2);
 }
 
+.eventTitle {
+  display: block;
+
+  padding: 0 10px;
+  margin: 0 0 5px;
+
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  color: #ffffff;
+
+  overflow: hidden;
+}
+
 .dashboardMenuCollapsed {
   @extend .dashboardMenu;
 
   width: 69px;
+  min-width: unset;
 }
 
 .list {
