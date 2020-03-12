@@ -1,46 +1,30 @@
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { IField, ITeam, ITimeSlot } from '..';
-import {
-  IGame,
-  defineGames,
-  IDefinedGames,
-  updateTeamCards,
-  selectProperGamesPerTimeSlot,
-  settleTeamsPerGames,
-} from './helper';
+import { IField } from 'common/models/schedule/fields';
+import { ITeam } from 'common/models/schedule/teams';
+import { ITimeSlot } from 'components/schedules';
+import { selectProperGamesPerTimeSlot } from './helper';
 import TeamCard from './dnd/drag';
 import RenderFieldHeader from './field-header';
 import RenderTimeSlot from './time-slot';
-import { DropParams } from './dnd/drop';
 import styles from './styles.module.scss';
-
-export interface ITeamCard extends ITeam {
-  fieldId?: number;
-  timeSlotId?: number;
-  teamPosition?: number;
-}
+import { IGameOptions } from 'components/schedules/Scheduler';
+import { ISchedulerResult } from 'components/schedules';
 
 interface IProps {
   timeSlots: ITimeSlot[];
   fields: IField[];
   teams: ITeam[];
+  gameOptions?: IGameOptions;
+  scheduling: ISchedulerResult;
 }
 
 const SchedulesMatrix = (props: IProps) => {
-  const { fields, timeSlots, teams } = props;
-  const [teamCards, setTeamCards] = useState<ITeamCard[]>(teams);
+  const { scheduling } = props;
+  const { fields, gameFields, timeSlots, teamCards, updatedGames } = scheduling;
 
-  const definedGames: IDefinedGames = defineGames(fields, timeSlots, teams);
-  const { gameFields, games } = definedGames;
-
-  const moveCard = useCallback(
-    (params: DropParams) => setTeamCards(updateTeamCards(params, teamCards)),
-    [teamCards]
-  );
-
-  const allocatedGames: IGame[] = settleTeamsPerGames(games, teamCards);
+  const moveCard = () => null;
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -56,7 +40,8 @@ const SchedulesMatrix = (props: IProps) => {
             <RenderTimeSlot
               key={timeSlot.id}
               timeSlot={timeSlot}
-              games={selectProperGamesPerTimeSlot(timeSlot, allocatedGames)}
+              fields={fields}
+              games={selectProperGamesPerTimeSlot(timeSlot, updatedGames)}
               moveCard={moveCard}
             />
           ))}
