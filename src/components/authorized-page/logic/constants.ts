@@ -1,4 +1,4 @@
-import { Icons, Routes } from '../../../common/constants';
+import { MenuTitles, Icons, Routes } from 'common/enums';
 
 export const MenuList = [
   {
@@ -8,17 +8,17 @@ export const MenuList = [
     children: [],
   },
   {
-    title: 'Library Manager',
+    title: MenuTitles.LIBRARY_MANAGER,
     icon: Icons.INSERT_DRIVE,
     link: Routes.LIBRARY_MANAGER,
     children: [
-      'Tournaments',
-      'Facilities',
-      'Registration',
-      'Divisions & Pools',
-      'Team Management',
-      'Scheduling',
-      'Messaging',
+      // 'Tournaments',
+      // 'Facilities',
+      MenuTitles.REGISTRATION,
+      // 'Divisions & Pools',
+      // 'Team Management',
+      // 'Scheduling',
+      // 'Messaging',
     ],
   },
   {
@@ -40,10 +40,10 @@ export const MenuList = [
     children: [],
   },
   {
-    title: 'Utilities',
+    title: MenuTitles.UTILITIES,
     icon: Icons.SETTINGS,
     link: Routes.UTILITIES,
-    children: ['Edit Profile', 'Email Setup'],
+    children: [MenuTitles.EDIT_PROFILE, MenuTitles.EMAIL_SETUP],
   },
   {
     title: 'Event Day Complexities',

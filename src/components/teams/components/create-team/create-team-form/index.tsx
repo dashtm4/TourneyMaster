@@ -2,7 +2,9 @@ import React from 'react';
 import { Input, Select } from 'components/common/';
 import Checkbox from 'components/common/buttons/checkbox';
 import styles from '../styles.module.scss';
+import { sortByField } from 'helpers';
 import { IDivision, ITeam } from 'common/models';
+import { SortByFilesTypes } from 'common/enums';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -78,14 +80,13 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
       schedule_restrictions,
     } = this.props.team;
 
-    const divisionsOptions = this.props.divisions
-      .sort((a: IDivision, b: IDivision) =>
-        a.short_name.localeCompare(b.short_name)
-      )
-      .map((division: IDivision) => ({
-        label: division.short_name,
-        value: division.division_id,
-      }));
+    const divisionsOptions = sortByField(
+      this.props.divisions,
+      SortByFilesTypes.DIVISIONS
+    ).map((division: IDivision) => ({
+      label: division.short_name,
+      value: division.division_id,
+    }));
 
     const levelOptions = [
       { label: 'AA', value: 'AA' },

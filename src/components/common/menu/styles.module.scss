@@ -1,7 +1,10 @@
 .dashboardMenu {
+  z-index: 10;
+
   position: sticky;
   top: 0;
   width: 270px;
+  min-width: 270px;
   padding: 15px 23px;
 
   background-color: #073b65;
@@ -14,10 +17,26 @@
   margin-bottom: 100px;
 }
 
+.eventTitle {
+  display: block;
+
+  padding: 0 10px;
+  margin: 0 0 5px;
+
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  color: #ffffff;
+
+  overflow: hidden;
+}
+
 .dashboardMenuCollapsed {
   @extend .dashboardMenu;
 
   width: 69px;
+  min-width: unset;
 }
 
 .list {

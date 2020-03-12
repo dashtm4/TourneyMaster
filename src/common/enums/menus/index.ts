@@ -1,3 +1,11 @@
+enum MenuTitles {
+  LIBRARY_MANAGER = 'Library Manager',
+  REGISTRATION = 'Registration',
+  UTILITIES = 'Utilities',
+  EDIT_PROFILE = 'Edit Profile',
+  EMAIL_SETUP = 'Email Setup',
+}
+
 enum EventMenuTitles {
   EVENT_DETAILS = 'Event Details',
   PRIMARY_INFORMATION = 'Primary Information',
@@ -24,4 +32,13 @@ enum EventMenuRegistrationTitles {
   MAIN_CONTACT = 'Main Contact',
 }
 
-export { EventMenuTitles, EventMenuRegistrationTitles };
+enum RequiredMenuKeys {
+  IS_COMPLETED = 'isCompleted',
+}
+
+export {
+  MenuTitles,
+  EventMenuTitles,
+  EventMenuRegistrationTitles,
+  RequiredMenuKeys,
+};

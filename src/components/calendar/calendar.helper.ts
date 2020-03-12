@@ -1,5 +1,5 @@
 import { ICalendarEvent, IEvent } from 'common/models/calendar';
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 
 export type ViewType = 'day' | 'week' | 'month';
 type ButtonVariantType = 'squared' | 'squaredOutlined' | undefined;
@@ -10,7 +10,7 @@ export const getViewType = (view: 'day' | 'week' | 'month') => {
     case 'day':
       return 'timeGridDay';
     case 'week':
-      return 'dayGridWeek';
+      return 'timeGridWeek';
     default:
       return 'dayGridMonth';
   }
@@ -27,21 +27,26 @@ export const buttonTypeEvent = (
   currentType: ButtonTypeEvent
 ) => (type === currentType ? 'squared' : 'squaredOutlined');
 
-export const appropriateEvents = (events: ICalendarEvent[]): IEvent[] => {
-  const formatDate = (eventDate: string, eventTime: string) => {
-    const date = new Date(eventDate);
-    const time = new Date(eventTime);
-    const timeH = format(time, 'HH');
-    const timeM = format(time, 'mm');
-
-    return format(new Date(date), `yyyy-MM-dd'T'${timeH}:${timeM}:00`);
-  };
-
-  const eventTypeToCalendar = (event: ICalendarEvent): IEvent => ({
-    title: event.title,
-    start: formatDate(event.dateFrom, event.timeFrom),
-    end: formatDate(event.dateTo, event.timeTo),
-    className: event.type,
+export const appropriateEvents = (
+  events: Partial<ICalendarEvent>[]
+): IEvent[] => {
+  const eventTypeToCalendar = (event: Partial<ICalendarEvent>): IEvent => ({
+    id: event.cal_event_id!,
+    title: event.cal_event_title!,
+    start:
+      event.cal_event_type === 'event'
+        ? event.cal_event_startdate!
+        : event.cal_event_datetime!,
+    end:
+      event.cal_event_type === 'event'
+        ? event.cal_event_enddate!
+        : event.cal_event_datetime!,
+    className: event.cal_event_type,
+    datetime: event.cal_event_datetime,
+    description: event.cal_event_desc,
+    tag: event.cal_event_tag,
+    type: event.cal_event_type!,
+    hasReminder: event.has_reminder_YN,
   });
 
   return events.map(eventTypeToCalendar);
@@ -77,15 +82,12 @@ export const calculateDialogPosition = (left: number, top: number) => {
   return { leftPosition, topPosition };
 };
 
-export const setBlankNewEvent = (date?: string): ICalendarEvent => ({
-  title: 'New Event',
-  dateFrom: date || new Date().toISOString(),
-  dateTo: date || new Date().toISOString(),
-  location: '',
-  eventTag: '',
-  type: 'event',
-  timeFrom: new Date().toISOString(),
-  timeTo: new Date().toISOString(),
-  description: '',
-  setReminder: false,
+export const setBlankNewEvent = (date?: string): Partial<ICalendarEvent> => ({
+  cal_event_title: 'New Event',
+  cal_event_startdate: date || new Date().toISOString(),
+  cal_event_enddate: date || new Date().toISOString(),
+  cal_event_tag: '',
+  cal_event_type: 'event',
+  cal_event_desc: '',
+  has_reminder_YN: 0,
 });

@@ -7,7 +7,6 @@ import {
   LOAD_SCORES_DATA_FAILURE,
 } from './action-types';
 import Api from 'api/api';
-import { IFacility } from 'common/models';
 
 const loadScoresData: ActionCreator<ThunkAction<
   void,
@@ -22,20 +21,14 @@ const loadScoresData: ActionCreator<ThunkAction<
 
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
     const teams = await Api.get(`/teams?event_id=${eventId}`);
-    // const fields = await Api.get(`/fields?event_id=${eventId}`);
-    const facilities = await Api.get(`/facilities?event_id=${eventId}`);
-    const fields = await Promise.all(
-      facilities.map((it: IFacility) =>
-        Api.get(`/fields?facilities_id=${it.facilities_id}`)
-      )
-    );
+    const eventSummary = await Api.get(`/event_summary?event_id=${eventId}`);
 
-    await dispatch({
+    dispatch({
       type: LOAD_SCORES_DATA_SUCCESS,
       payload: {
         divisions,
         teams,
-        fields: fields.flat(),
+        eventSummary,
       },
     });
   } catch {

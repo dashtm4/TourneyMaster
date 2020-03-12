@@ -136,8 +136,6 @@ const saveFacilities: ActionCreator<ThunkAction<
       )
       .validate(facilities);
 
-    console.log(fields);
-
     await Yup.array()
       .of(fieldSchema)
       .unique(

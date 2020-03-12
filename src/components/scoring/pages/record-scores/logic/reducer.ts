@@ -3,12 +3,12 @@ import {
   LOAD_SCORES_DATA_SUCCESS,
   RecordScoresAction,
 } from './action-types';
-import { IDivision, ITeam, IField } from 'common/models';
+import { IDivision, ITeam, IEventSummary } from 'common/models';
 
 const initialState = {
   divisions: [],
   teams: [],
-  fields: [],
+  eventSummary: [],
   isLoading: false,
   isLoaded: false,
 };
@@ -16,7 +16,7 @@ const initialState = {
 export interface AppState {
   divisions: IDivision[];
   teams: ITeam[];
-  fields: IField[];
+  eventSummary: IEventSummary[];
   isLoading: boolean;
   isLoaded: boolean;
 }
@@ -30,13 +30,13 @@ const recordScoresReducer = (
       return { ...initialState, isLoading: true };
     }
     case LOAD_SCORES_DATA_SUCCESS: {
-      const { divisions, teams, fields } = action.payload;
+      const { divisions, teams, eventSummary } = action.payload;
 
       return {
         ...state,
         divisions,
         teams,
-        fields,
+        eventSummary,
         isLoading: false,
         isLoaded: true,
       };

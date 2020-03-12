@@ -3,7 +3,12 @@ import moment from 'moment';
 import { SectionDropdown, Loader } from '../../../common';
 import GroupItem from '../group-item';
 import styles from './styles.module.scss';
-import { IDivision, IPool, ITeam } from '../../../../common/models';
+import {
+  IDivision,
+  IPool,
+  ITeam,
+  BindingCbWithOne,
+} from '../../../../common/models';
 
 interface Props {
   division: IDivision;
@@ -16,6 +21,9 @@ interface Props {
     divisionName: string,
     poolName: string
   ) => void;
+  expanded: boolean;
+  onToggleOne: BindingCbWithOne<number>;
+  index: number;
 }
 
 const ScoringItem = ({
@@ -25,6 +33,9 @@ const ScoringItem = ({
   loadPools,
   loadTeams,
   onOpenTeamDetails,
+  expanded,
+  index,
+  onToggleOne,
 }: Props) => {
   if (!division.isPoolsLoading && !division.isPoolsLoaded) {
     loadPools(division.division_id);
@@ -34,9 +45,18 @@ const ScoringItem = ({
     return <Loader />;
   }
 
+  const onSectionToggle = () => {
+    onToggleOne(index);
+  };
+
   return (
     <li>
-      <SectionDropdown isDefaultExpanded={true} headingColor={'#1C315F'}>
+      <SectionDropdown
+        isDefaultExpanded={true}
+        headingColor={'#1C315F'}
+        expanded={expanded !== undefined && expanded}
+        onToggle={onSectionToggle}
+      >
         <span>
           {division.short_name} ({division.long_name})
         </span>

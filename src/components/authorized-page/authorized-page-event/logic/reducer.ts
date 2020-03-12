@@ -20,9 +20,10 @@ import {
 } from 'components/divisions-and-pools/logic/actionTypes';
 import {
   LOAD_DIVISIONS_TEAMS_SUCCESS,
+  SAVE_TEAMS_SUCCESS,
   TeamsAction,
 } from 'components/teams/logic/action-types';
-import { sortByField } from 'helpers';
+import { sortTitleByField } from 'helpers';
 import { IMenuItem, ITournamentData } from 'common/models';
 import {
   EventMenuTitles,
@@ -93,7 +94,10 @@ const pageEventReducer = (
               return {
                 ...item,
                 isCompleted: facilities.length > 0,
-                children: sortByField(facilities, SortByFilesTypes.FACILITIES),
+                children: sortTitleByField(
+                  facilities,
+                  SortByFilesTypes.FACILITIES
+                ),
               };
             }
             case EventMenuTitles.REGISTRATION: {
@@ -109,13 +113,17 @@ const pageEventReducer = (
               return {
                 ...item,
                 isCompleted: divisions.length > 0,
-                children: sortByField(divisions, SortByFilesTypes.DIVISIONS),
+                children: sortTitleByField(
+                  divisions,
+                  SortByFilesTypes.DIVISIONS
+                ),
               };
             }
             case EventMenuTitles.TEAMS: {
               return {
                 ...item,
-                isCompleted: teams.length > 0,
+                isCompleted:
+                  teams.filter(it => it.division_id && it.pool_id).length > 0,
               };
             }
             default:
@@ -152,7 +160,10 @@ const pageEventReducer = (
             ? {
                 ...item,
                 isCompleted: facilities.length > 0,
-                children: sortByField(facilities, SortByFilesTypes.FACILITIES),
+                children: sortTitleByField(
+                  facilities,
+                  SortByFilesTypes.FACILITIES
+                ),
               }
             : item
         ),
@@ -168,13 +179,17 @@ const pageEventReducer = (
             ? {
                 ...item,
                 isCompleted: divisions.length > 0,
-                children: sortByField(divisions, SortByFilesTypes.DIVISIONS),
+                children: sortTitleByField(
+                  divisions,
+                  SortByFilesTypes.DIVISIONS
+                ),
               }
             : item
         ),
       };
     }
-    case LOAD_DIVISIONS_TEAMS_SUCCESS: {
+    case LOAD_DIVISIONS_TEAMS_SUCCESS:
+    case SAVE_TEAMS_SUCCESS: {
       const { teams } = action.payload;
 
       return {
@@ -183,7 +198,8 @@ const pageEventReducer = (
           item.title === EventMenuTitles.TEAMS
             ? {
                 ...item,
-                isCompleted: teams.length > 0,
+                isCompleted:
+                  teams.filter(it => it.division_id && it.pool_id).length > 0,
               }
             : item
         ),

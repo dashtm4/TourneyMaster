@@ -18,6 +18,9 @@ interface IDivisionProps {
   areDetailsLoading: boolean;
   eventId: string;
   divisions: IDivision[];
+  expanded: boolean;
+  onToggleOne: BindingCbWithOne<number>;
+  index: number;
 }
 
 class Division extends React.PureComponent<IDivisionProps> {
@@ -37,13 +40,19 @@ class Division extends React.PureComponent<IDivisionProps> {
     });
   };
 
+  onSectionToggle = () => {
+    this.props.onToggleOne(this.props.index);
+  };
+
   render() {
     const { division, pools, teams } = this.props;
     return (
       <SectionDropdown
-        id={division.short_name}
         isDefaultExpanded={true}
+        id={division.short_name}
         panelDetailsType="flat"
+        expanded={this.props.expanded !== undefined && this.props.expanded}
+        onToggle={this.onSectionToggle}
       >
         <div className={styles.sectionTitle}>
           <div>{`Division: ${division.short_name}`}</div>

@@ -3,23 +3,25 @@ import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators } from 'redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faFileUpload } from '@fortawesome/free-solid-svg-icons';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { getScheduling, createNewVersion, INewVersion } from './logic/actions';
-import { HeadingLevelTwo, Paper, Button } from 'components/common';
+import { HeadingLevelTwo, Paper, Button, Loader } from 'components/common';
 import TourneyArchitect from './tourney-architect';
 import TournamentPlay from './tournament-play';
+import HazardList from './hazard-list';
 import styles from './styles.module.scss';
 import Brackets from './brackets';
 import { ISchedule } from 'common/models/schedule';
 import { ISchedulingState } from './logic/reducer';
 import CreateNewModal from './create-new-modal';
+import { IMenuItem } from 'common/models';
 
 interface IProps {
   match: any;
   getScheduling: (eventId?: number) => void;
   createNewVersion: (data: INewVersion) => void;
   schedule?: ISchedule;
+  incompleteMenuItems: IMenuItem[];
 }
 
 interface IState {
@@ -75,7 +77,14 @@ class Scheduling extends Component<IProps, IState> {
   };
 
   render() {
+    const { incompleteMenuItems } = this.props;
     const { schedule, createModalOpen, loading } = this.state;
+    const { eventId } = this.props.match?.params;
+    const isAllowCreate = incompleteMenuItems.length === 0;
+
+    if (loading) {
+      return <Loader />;
+    }
 
     return (
       <div className={styles.container}>
@@ -92,6 +101,7 @@ class Scheduling extends Component<IProps, IState> {
                 label="Load From Library"
                 color="secondary"
                 variant="text"
+                disabled={!isAllowCreate}
               />
               &nbsp;
               <Button
@@ -99,6 +109,7 @@ class Scheduling extends Component<IProps, IState> {
                 label="Upload From File"
                 color="secondary"
                 variant="text"
+                disabled={!isAllowCreate}
               />
             </div>
             <Button
@@ -106,14 +117,10 @@ class Scheduling extends Component<IProps, IState> {
               color="primary"
               variant="contained"
               onClick={this.onCreatePressed}
+              disabled={!isAllowCreate}
             />
           </Paper>
         </section>
-        {loading && (
-          <div className={styles.loader}>
-            <CircularProgress />
-          </div>
-        )}
         {schedule && (
           <>
             <HeadingLevelTwo margin="24px 0px">Scheduling</HeadingLevelTwo>
@@ -130,7 +137,13 @@ class Scheduling extends Component<IProps, IState> {
             <Brackets onManageBrackets={this.onCallAction} />
           </>
         )}
-        {!schedule && !loading && (
+        {!schedule && !isAllowCreate && (
+          <HazardList
+            incompleteMenuItems={incompleteMenuItems}
+            eventId={eventId}
+          />
+        )}
+        {!schedule && isAllowCreate && !loading && (
           <div className={styles.noFoundWrapper}>
             <span>No Schedules found</span>
           </div>

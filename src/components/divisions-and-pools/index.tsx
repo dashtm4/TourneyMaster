@@ -32,6 +32,8 @@ interface IDivisionsAndPoolsProps {
 interface IDivisionAndPoolsState {
   isModalOpen: boolean;
   selected: Partial<IDivision>;
+  expanded: boolean[];
+  expandAll: boolean;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -39,11 +41,40 @@ class DivisionsAndPools extends React.Component<
   IDivisionAndPoolsState
 > {
   eventId = this.props.match.params.eventId;
-  state = { isModalOpen: false, selected: this.props.divisions[0] };
+  state = {
+    isModalOpen: false,
+    selected: this.props.divisions[0],
+    expanded: [],
+    expandAll: false,
+  };
 
   componentDidMount() {
     this.props.getDivisions(this.eventId);
   }
+
+  componentDidUpdate(prevProps: any, prevState: any) {
+    if (
+      prevProps.divisions !== this.props.divisions &&
+      !prevState.expanded.length
+    ) {
+      this.setState({ expanded: this.props.divisions.map(_division => true) });
+    }
+  }
+
+  onToggleAll = () => {
+    this.setState({
+      expanded: this.state.expanded.map(_e => this.state.expandAll),
+      expandAll: !this.state.expandAll,
+    });
+  };
+
+  onToggleOne = (indexPanel: number) => {
+    this.setState({
+      expanded: this.state.expanded.map((e: boolean, index: number) =>
+        index === indexPanel ? !e : e
+      ),
+    });
+  };
 
   onAddDivision = () => {
     const path = this.eventId
@@ -95,45 +126,58 @@ class DivisionsAndPools extends React.Component<
           </div>
           {isLoading && this.Loading()}
           {divisions.length && !isLoading ? (
-            <ul className={styles.divisionsList}>
-              {divisions.map(division => (
-                <li key={division.division_id}>
-                  <Division
-                    eventId={this.eventId}
-                    division={division}
-                    pools={pools.filter(
-                      pool => pool.division_id === division.division_id
-                    )}
-                    teams={teams.filter(
-                      team => team.division_id === division.division_id
-                    )}
-                    onAddPool={this.onAddPool}
-                    getPools={this.props.getPools}
-                    getTeams={this.props.getTeams}
-                    areDetailsLoading={this.props.areDetailsLoading}
-                    divisions={this.props.divisions}
-                  />
-                </li>
-              ))}
-              {this.state.selected && (
-                <Modal
-                  isOpen={this.state.isModalOpen}
-                  onClose={this.onModalClose}
-                >
-                  <AddPool
-                    division={this.state.selected}
+            <>
+              <div className={styles.buttonContainer}>
+                <Button
+                  label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                  variant="text"
+                  color="secondary"
+                  onClick={this.onToggleAll}
+                />
+              </div>
+              <ul className={styles.divisionsList}>
+                {divisions.map((division, index) => (
+                  <li key={division.division_id}>
+                    <Division
+                      eventId={this.eventId}
+                      division={division}
+                      pools={pools.filter(
+                        pool => pool.division_id === division.division_id
+                      )}
+                      teams={teams.filter(
+                        team => team.division_id === division.division_id
+                      )}
+                      onAddPool={this.onAddPool}
+                      getPools={this.props.getPools}
+                      getTeams={this.props.getTeams}
+                      areDetailsLoading={this.props.areDetailsLoading}
+                      divisions={this.props.divisions}
+                      expanded={this.state.expanded[index]}
+                      index={index}
+                      onToggleOne={this.onToggleOne}
+                    />
+                  </li>
+                ))}
+                {this.state.selected && (
+                  <Modal
+                    isOpen={this.state.isModalOpen}
                     onClose={this.onModalClose}
-                    savePool={this.props.savePool}
-                    numOfTeams={
-                      teams.filter(
-                        team =>
-                          team.division_id === this.state.selected.division_id
-                      ).length
-                    }
-                  />
-                </Modal>
-              )}
-            </ul>
+                  >
+                    <AddPool
+                      division={this.state.selected}
+                      onClose={this.onModalClose}
+                      savePool={this.props.savePool}
+                      numOfTeams={
+                        teams.filter(
+                          team =>
+                            team.division_id === this.state.selected.division_id
+                        ).length
+                      }
+                    />
+                  </Modal>
+                )}
+              </ul>
+            </>
           ) : (
             !isLoading && (
               <div className={styles.noFoundWrapper}>

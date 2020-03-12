@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '../../../common/buttons/button';
 import { getIcon } from '../../../../helpers/get-icon.helper';
-import { Icons } from '../../../../common/constants/icons';
+import { Icons } from '../../../../common/enums/icons';
 import { BindingAction } from '../../../../common/models';
 import styles from './styles.module.scss';
 import { History } from 'history';
@@ -34,7 +34,7 @@ const Navigation = ({
 
     history.push(path);
   };
-  
+
   return (
     <div className={styles.navWrapper}>
       <p>

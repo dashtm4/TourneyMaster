@@ -1,4 +1,4 @@
-import { IDivision, ITeam, IField } from 'common/models';
+import { IDivision, ITeam, IEventSummary } from 'common/models';
 
 export const LOAD_SCORES_DATA_START = 'RECORD_SCORES:LOAD_SCORES_DATA_START';
 
@@ -17,7 +17,7 @@ export interface loadScoresDataSuccess {
   payload: {
     divisions: IDivision[];
     teams: ITeam[];
-    fields: IField[];
+    eventSummary: IEventSummary[];
   };
 }
 

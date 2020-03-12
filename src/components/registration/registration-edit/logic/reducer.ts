@@ -5,8 +5,9 @@ import {
   REGISTRATION_FETCH_START,
   DIVISIONS_FETCH_SUCCESS,
 } from './actionTypes';
-import { IRegistration } from 'common/models/registration';
-import { IDivision } from 'common/models';
+import { sortByField } from 'helpers';
+import { IDivision, IRegistration } from 'common/models';
+import { SortByFilesTypes } from 'common/enums';
 
 export interface IState {
   data?: Partial<IRegistration>;
@@ -59,9 +60,7 @@ export default (
     case DIVISIONS_FETCH_SUCCESS: {
       return {
         ...state,
-        divisions: action.payload.sort((a: IDivision, b: IDivision) =>
-          a.short_name.localeCompare(b.short_name)
-        ),
+        divisions: sortByField(action.payload, SortByFilesTypes.DIVISIONS),
         isLoading: false,
         error: false,
       };
