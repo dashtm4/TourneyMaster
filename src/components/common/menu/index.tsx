@@ -30,6 +30,7 @@ interface Props {
   isAllowEdit: boolean;
   isDraft?: boolean;
   publishTournament?: (eventId: string) => void;
+  eventName?: string;
 }
 
 const Menu = ({
@@ -37,6 +38,7 @@ const Menu = ({
   isDraft,
   list,
   eventId,
+  eventName,
   publishTournament,
 }: Props) => {
   const [isCollapsed, onCollapse] = React.useState(false);
@@ -62,6 +64,7 @@ const Menu = ({
         }
       }}
     >
+      {eventName && <b className={styles.eventTitle}>{eventName}</b>}
       <ul className={styles.list}>
         {list.map(menuItem => (
           <li className={styles.listItem} key={menuItem.title}>

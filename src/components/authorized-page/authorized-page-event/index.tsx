@@ -60,6 +60,7 @@ const AuthorizedPageEvent = ({
   publishTournament,
 }: Props & RouteComponentProps<MatchParams>) => {
   const eventId = match.params.eventId;
+  const { event } = tournamentData;
   React.useEffect(() => {
     if (eventId) {
       loadAuthPageData(eventId);
@@ -82,9 +83,8 @@ const AuthorizedPageEvent = ({
           list={menuList}
           eventId={eventId}
           isAllowEdit={Boolean(eventId)}
-          isDraft={Boolean(
-            tournamentData.event?.event_status === EventStatuses.DRAFT
-          )}
+          isDraft={Boolean(event?.event_status === EventStatuses.DRAFT)}
+          eventName={event?.event_name || ''}
           publishTournament={publishTournament}
         />
         <main className={styles.content}>
