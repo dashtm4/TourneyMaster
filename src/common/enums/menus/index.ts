@@ -1,5 +1,7 @@
 enum MenuTitles {
   REGISTRATION = 'Registration',
+  EDIT_PROFILE = 'Edit Profile',
+  EMAIL_SETUP = 'Email Setup',
 }
 
 enum EventMenuTitles {
