@@ -1,5 +1,6 @@
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import * as Yup from 'yup';
 import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
@@ -20,6 +21,7 @@ import {
   UPLOAD_FILE_MAP_FAILURE,
 } from './action-types';
 import Api from 'api/api';
+import { facilitySchema, fieldSchema } from 'validations';
 import { getVarcharEight, uploadFile } from 'helpers';
 import { IFacility, IField, IUploadFile } from 'common/models';
 
@@ -126,6 +128,22 @@ const saveFacilities: ActionCreator<ThunkAction<
   dispatch: Dispatch
 ) => {
   try {
+    await Yup.array()
+      .of(facilitySchema)
+      .unique(
+        facility => facility.facilities_description,
+        'Oops. It looks like you already have facilities with the same name. The facility must have a unique name.'
+      )
+      .validate(facilities);
+
+    await Yup.array()
+      .of(fieldSchema)
+      .unique(
+        field => field.field_name,
+        'Oops. It looks like you already have fields with the same name. The field must have a unique name.'
+      )
+      .validate(fields);
+
     for await (let facility of facilities) {
       const copiedFacility = { ...facility };
 
@@ -173,10 +191,12 @@ const saveFacilities: ActionCreator<ThunkAction<
     });
 
     Toasts.successToast('Facilities saved successfully');
-  } catch {
+  } catch (err) {
     dispatch({
       type: SAVE_FACILITIES_FAILURE,
     });
+
+    Toasts.errorToast(err.message);
   }
 };
 

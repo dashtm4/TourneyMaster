@@ -39,6 +39,8 @@ type State = {
   eventId: string | undefined;
   event?: Partial<EventDetailsDTO>;
   error: boolean;
+  expanded: boolean[];
+  expandAll: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
@@ -46,6 +48,8 @@ class EventDetails extends Component<Props, State> {
     eventId: undefined,
     event: undefined,
     error: false,
+    expanded: [true, true, true, true],
+    expandAll: false,
   };
 
   componentDidMount() {
@@ -113,6 +117,21 @@ class EventDetails extends Component<Props, State> {
     this.props.createEvent(event);
   };
 
+  onToggleAll = () => {
+    this.setState({
+      expanded: this.state.expanded.map(_e => this.state.expandAll),
+      expandAll: !this.state.expandAll,
+    });
+  };
+
+  onToggleOne = (indexPanel: number) => {
+    this.setState({
+      expanded: this.state.expanded.map((e: boolean, index: number) =>
+        index === indexPanel ? !e : e
+      ),
+    });
+  };
+
   render() {
     const eventTypeOptions = ['Tournament', 'Showcase'];
 
@@ -133,16 +152,42 @@ class EventDetails extends Component<Props, State> {
           </div>
         </Paper>
         <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
-        <PrimaryInformationSection eventData={event} onChange={this.onChange} />
+        <div className={styles.buttonContainer}>
+          <Button
+            label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+            variant="text"
+            color="secondary"
+            onClick={this.onToggleAll}
+          />
+        </div>
+        <PrimaryInformationSection
+          eventData={event}
+          onChange={this.onChange}
+          index={0}
+          expanded={this.state.expanded[0]}
+          onToggleOne={this.onToggleOne}
+        />
         <EventStructureSection
           eventData={event}
           eventTypeOptions={eventTypeOptions}
           onChange={this.onChange}
+          index={1}
+          expanded={this.state.expanded[1]}
+          onToggleOne={this.onToggleOne}
         />
-        <PlayoffsSection eventData={event} onChange={this.onChange} />
+        <PlayoffsSection
+          eventData={event}
+          onChange={this.onChange}
+          index={2}
+          expanded={this.state.expanded[2]}
+          onToggleOne={this.onToggleOne}
+        />
         <MediaAssetsSection
           onFileUpload={this.onFileUpload}
           onFileRemove={this.onFileRemove}
+          index={3}
+          expanded={this.state.expanded[3]}
+          onToggleOne={this.onToggleOne}
         />
       </div>
     );

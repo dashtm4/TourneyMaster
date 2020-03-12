@@ -3,8 +3,8 @@ import { useDropzone } from 'react-dropzone';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { getIcon } from '../../../helpers/get-icon.helper';
-import { Icons } from 'common/constants';
+import { getIcon } from 'helpers/get-icon.helper';
+import { Icons } from 'common/enums';
 import { Button } from 'components/common';
 import styles from './styles.module.scss';
 

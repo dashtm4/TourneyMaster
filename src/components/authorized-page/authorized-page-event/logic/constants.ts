@@ -1,9 +1,7 @@
-import { Icons, Routes } from 'common/constants';
-import { EventMenuTitles } from 'common/enums';
+import { EventMenuTitles, Icons, Routes } from 'common/enums';
 
 export const EventMenu = [
   {
-    isAllow: true,
     title: EventMenuTitles.EVENT_DETAILS,
     icon: Icons.PERSON,
     link: Routes.EVENT_DETAILS,
@@ -13,34 +11,34 @@ export const EventMenu = [
       EventMenuTitles.PLAYOFFS,
       EventMenuTitles.MEDIA_ASSETS,
     ],
+    isAllowEdit: true,
+    isCompleted: false,
   },
   {
-    isAllow: false,
     title: EventMenuTitles.FACILITIES,
     icon: Icons.PLACE,
     link: Routes.FACILITIES,
     children: [],
+    isAllowEdit: false,
+    isCompleted: false,
   },
   {
-    isAllow: false,
     title: EventMenuTitles.REGISTRATION,
     icon: Icons.LIST,
     link: Routes.REGISTRATION,
-    children: [
-      EventMenuTitles.PRIMARY_INFORMATION,
-      EventMenuTitles.TEAMS_AND_ATHLETES,
-      EventMenuTitles.MAIN_CONTACT,
-    ],
+    children: [],
+    isAllowEdit: false,
+    isCompleted: false,
   },
   {
-    isAllow: false,
     title: EventMenuTitles.DIVISIONS_AND_POOLS,
     icon: Icons.PEOPLE,
     link: Routes.DIVISIONS_AND_POOLS,
     children: [],
+    isAllowEdit: false,
+    isCompleted: false,
   },
   {
-    isAllow: false,
     title: EventMenuTitles.TEAMS,
     icon: Icons.TEAM,
     link: Routes.TEAMS,
@@ -48,28 +46,31 @@ export const EventMenu = [
       EventMenuTitles.TEAM_MANAGEMENT,
       // EventMenuTitles.REQUEST_MANAGER,
     ],
+    isAllowEdit: false,
+    isCompleted: false,
   },
   {
-    isAllow: false,
     title: EventMenuTitles.SCHEDULING,
     icon: Icons.CLOCK,
     link: Routes.SCHEDULING,
     children: [
       // EventMenuTitles.TOURNAMENT_PLAY, EventMenuTitles.BRACKETS
     ],
+    isAllowEdit: false,
+    isCompleted: false,
   },
   {
-    isAllow: false,
     title: EventMenuTitles.SCORING,
     link: Routes.SCORING,
     icon: Icons.SCORING,
     children: [],
+    isAllowEdit: false,
   },
   {
-    isAllow: false,
     title: EventMenuTitles.REPORTING,
     link: Routes.REPORTING,
     icon: Icons.REPORT,
     children: [],
+    isAllowEdit: false,
   },
 ];

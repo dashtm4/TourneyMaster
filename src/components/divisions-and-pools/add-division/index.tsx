@@ -14,23 +14,27 @@ import {
 } from '../logic/actions';
 import {
   BindingCbWithOne,
-  BindingAction,
   BindingCbWithTwo,
+  BindingCbWithThree,
 } from 'common/models/callback';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteDivision from '../add-division/delete-division';
 import Modal from 'components/common/modal';
-import { IDivision } from 'common/models';
+import { IDivision, ITeam, IPool } from 'common/models';
 import { IRegistration } from 'common/models/registration';
+import CancelPopup from '../../common/cancel-popup';
 
 interface ILocationState {
   divisionId: string;
+  pools: IPool[];
+  teams: ITeam[];
 }
 
 interface IAddDivisionState {
   defaultDivision: Partial<{ entry_fee: number; max_num_teams: number }>;
   divisions: Partial<IDivision>[];
   isModalOpen: boolean;
+  isModalConfirmOpen: boolean;
 }
 
 interface IDivisionProps {
@@ -42,7 +46,7 @@ interface IDivisionProps {
   saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
   getDivision: BindingCbWithOne<string>;
   updateDivision: BindingCbWithOne<Partial<IDivision>>;
-  deleteDivision: BindingAction;
+  deleteDivision: BindingCbWithThree<string, IPool[], ITeam[]>;
   getRegistration: BindingCbWithOne<string>;
 }
 
@@ -53,6 +57,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     defaultDivision: {},
     divisions: [{}],
     isModalOpen: false,
+    isModalConfirmOpen: false,
   };
 
   componentDidMount() {
@@ -76,7 +81,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   };
 
   onCancel = () => {
-    this.props.history.goBack();
+    this.setState({ isModalConfirmOpen: true });
   };
 
   onSave = () => {
@@ -98,7 +103,9 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   onModalClose = () => {
     this.setState({ isModalOpen: false });
   };
-
+  onModalConfirmClose = () => {
+    this.setState({ isModalConfirmOpen: false });
+  };
   renderHeading = () => {
     const text = this.divisionId ? 'Edit Division' : 'Add Division';
     return <HeadingLevelTwo>{text}</HeadingLevelTwo>;
@@ -124,29 +131,25 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     );
   };
 
-  static getDerivedStateFromProps(
-    nextProps: IDivisionProps,
-    prevState: IAddDivisionState
-  ): Partial<IAddDivisionState> {
+  componentDidUpdate(prevProps: IDivisionProps, prevState: IAddDivisionState) {
     if (
-      nextProps.registration &&
-      !prevState.defaultDivision.entry_fee &&
-      !prevState.divisions[0]?.division_id
+      this.props.registration &&
+      !prevState.divisions[0]?.division_id &&
+      prevProps.registration !== this.props.registration
     ) {
-      return {
+      console.log('upd');
+      this.setState({
         defaultDivision: {
-          entry_fee: nextProps.registration.entry_fee,
-          max_num_teams: nextProps.registration.max_teams_per_division,
+          entry_fee: this.props.registration.entry_fee,
+          max_num_teams: this.props.registration.max_teams_per_division,
         },
         divisions: [
           {
-            entry_fee: nextProps.registration.entry_fee,
-            max_num_teams: nextProps.registration.max_teams_per_division,
+            entry_fee: this.props.registration.entry_fee,
+            max_num_teams: this.props.registration.max_teams_per_division,
           },
         ],
-      };
-    } else {
-      return {};
+      });
     }
   }
 
@@ -188,7 +191,15 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
             divisionId={this.divisionId}
             onClose={this.onModalClose}
             deleteDivision={this.props.deleteDivision}
+            pools={this.props.location.state?.pools}
+            teams={this.props.location.state?.teams}
           />
+        </Modal>
+        <Modal
+          isOpen={this.state.isModalConfirmOpen}
+          onClose={this.onModalConfirmClose}
+        >
+          <CancelPopup onSave={this.onSave} />
         </Modal>
       </section>
     );

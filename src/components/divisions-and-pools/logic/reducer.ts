@@ -3,7 +3,7 @@ import {
   DIVISIONS_FETCH_FAILURE,
   POOLS_FETCH_SUCCESS,
   TEAMS_FETCH_SUCCESS,
-  FETCH_START,
+  FETCH_DETAILS_START,
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
@@ -11,6 +11,8 @@ import {
   REGISTRATION_FETCH_SUCCESS,
 } from './actionTypes';
 import { IPool, ITeam, IDivision } from 'common/models';
+import { sortByField } from 'helpers';
+import { SortByFilesTypes } from 'common/enums';
 import { IRegistration } from 'common/models/registration';
 
 export interface IState {
@@ -38,15 +40,13 @@ export default (
   action: { type: string; payload?: any }
 ) => {
   switch (action.type) {
-    case FETCH_START: {
-      return { ...defaultState };
+    case FETCH_DETAILS_START: {
+      return { ...state, pools: [], teams: [], areDetailsLoading: true };
     }
     case DIVISIONS_FETCH_SUCCESS: {
       return {
         ...state,
-        data: action.payload.sort((a: IDivision, b: IDivision) =>
-          a.short_name.localeCompare(b.short_name)
-        ),
+        data: sortByField(action.payload, SortByFilesTypes.DIVISIONS),
         isLoading: false,
         error: false,
       };

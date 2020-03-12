@@ -5,15 +5,27 @@ import {
   Input,
   Button,
 } from 'components/common';
-import { IAddUserToOrg } from '../../types';
 import styles from './styles.module.scss';
+import { BindingCbWithOne } from 'common/models';
 
 interface Props {
-  addUserToOrganization: ({ orgId, invCode }: IAddUserToOrg) => void;
+  addUserToOrganization: (invCode: string) => void;
+  index: number;
+  expanded: boolean;
+  onToggleOne: BindingCbWithOne<number>;
 }
 
-const ApplyInvitation = ({ addUserToOrganization }: Props) => {
+const ApplyInvitation = ({
+  addUserToOrganization,
+  expanded,
+  onToggleOne,
+  index,
+}: Props) => {
   const [invCode, onChange] = React.useState('');
+
+  const onSectionToggle = () => {
+    onToggleOne(index);
+  };
 
   return (
     <SectionDropdown
@@ -21,6 +33,8 @@ const ApplyInvitation = ({ addUserToOrganization }: Props) => {
       useBorder={true}
       isDefaultExpanded={false}
       panelDetailsType="flat"
+      expanded={expanded}
+      onToggle={onSectionToggle}
     >
       <HeadingLevelThree>
         <span>Apply Invitation</span>
@@ -29,7 +43,7 @@ const ApplyInvitation = ({ addUserToOrganization }: Props) => {
         onSubmit={evt => {
           evt.preventDefault();
 
-          addUserToOrganization({ invCode });
+          addUserToOrganization(invCode);
         }}
         className={styles.section}
       >
@@ -41,7 +55,6 @@ const ApplyInvitation = ({ addUserToOrganization }: Props) => {
             value={invCode || ''}
             fullWidth={true}
             label="Invitation Code"
-            isRequired
           />
         </div>
         <div className={styles.sectionItem}>

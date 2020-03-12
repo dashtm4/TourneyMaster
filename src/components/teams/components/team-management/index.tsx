@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import DivisionItem from '../division-item';
 import { SectionDropdown } from '../../../common';
 import { IDivision, IPool, ITeam } from '../../../../common/models';
 import { EventMenuTitles } from 'common/enums';
 import styles from './styles.module.scss';
+import Button from 'components/common/buttons/button';
 
 interface Props {
   divisions: IDivision[];
@@ -33,44 +34,81 @@ const TeamManagement = ({
   loadPools,
   onDeletePopupOpen,
   onEditPopupOpen,
-}: Props) => (
-  <li>
-    <SectionDropdown
-      id={EventMenuTitles.TEAM_MANAGEMENT}
-      type="section"
-      isDefaultExpanded={true}
-    >
-      <span>Team Management</span>
-      <ul className={styles.divisionList}>
-        {divisions.map(division => (
+}: Props) => {
+  const [expanded, setExpanded] = useState([
+    ...divisions.map(_division => true),
+    true,
+  ]);
+  const [expandAll, setExpandAll] = useState(false);
+
+  const onToggleAll = () => {
+    setExpanded(expanded.map(_e => expandAll));
+    setExpandAll(!expandAll);
+  };
+
+  const onToggleOne = (indexPanel: number) => {
+    setExpanded(
+      expanded.map((e: boolean, index: number) =>
+        index === indexPanel ? !e : e
+      )
+    );
+  };
+
+  return (
+    <li>
+      <SectionDropdown
+        id={EventMenuTitles.TEAM_MANAGEMENT}
+        type="section"
+        isDefaultExpanded={true}
+      >
+        <span>Team Management</span>
+        <ul className={styles.divisionList}>
+          {divisions.length ? (
+            <div className={styles.buttonContainer}>
+              <Button
+                label={expandAll ? 'Expand All' : 'Collapse All'}
+                variant="text"
+                color="secondary"
+                onClick={onToggleAll}
+              />
+            </div>
+          ) : null}
+          {divisions.map((division, index) => (
+            <DivisionItem
+              division={division}
+              pools={pools.filter(
+                pool => pool.division_id === division.division_id
+              )}
+              teams={teams}
+              isEdit={isEdit}
+              isUnassigned={false}
+              changePool={changePool}
+              loadPools={loadPools}
+              onDeletePopupOpen={onDeletePopupOpen}
+              onEditPopupOpen={onEditPopupOpen}
+              key={division.division_id}
+              expanded={expanded[index]}
+              index={index}
+              onToggleOne={onToggleOne}
+            />
+          ))}
           <DivisionItem
-            division={division}
-            pools={pools.filter(
-              pool => pool.division_id === division.division_id
-            )}
             teams={teams}
+            pools={[]}
             isEdit={isEdit}
-            isUnassigned={false}
+            isUnassigned={true}
             changePool={changePool}
             loadPools={loadPools}
             onDeletePopupOpen={onDeletePopupOpen}
             onEditPopupOpen={onEditPopupOpen}
-            key={division.division_id}
+            expanded={expanded[expanded.length - 1]}
+            index={expanded.length - 1}
+            onToggleOne={onToggleOne}
           />
-        ))}
-        <DivisionItem
-          teams={teams}
-          pools={[]}
-          isEdit={isEdit}
-          isUnassigned={true}
-          changePool={changePool}
-          loadPools={loadPools}
-          onDeletePopupOpen={onDeletePopupOpen}
-          onEditPopupOpen={onEditPopupOpen}
-        />
-      </ul>
-    </SectionDropdown>
-  </li>
-);
+        </ul>
+      </SectionDropdown>
+    </li>
+  );
+};
 
 export default TeamManagement;

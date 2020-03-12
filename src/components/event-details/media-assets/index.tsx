@@ -10,14 +10,18 @@ import { EventMenuTitles } from 'common/enums';
 import { IIconFile } from '../logic/model';
 import { UploadLogoTypes } from '../state';
 import styles from '../styles.module.scss';
+import { BindingCbWithOne } from 'common/models';
 
 interface IProps {
   onFileUpload: (files: IIconFile[]) => void;
   onFileRemove: (files: IIconFile[]) => void;
+  expanded: boolean;
+  onToggleOne: BindingCbWithOne<number>;
+  index: number;
 }
 
 const MediaAssetsSection: React.FC<IProps> = props => {
-  const { onFileUpload, onFileRemove } = props;
+  const { onFileUpload, onFileRemove, expanded, index, onToggleOne } = props;
 
   const populateFileObj = (
     files: File[],
@@ -36,6 +40,10 @@ const MediaAssetsSection: React.FC<IProps> = props => {
   const onMobileFileRemove = (files: File[]) =>
     onFileRemove(populateFileObj(files, UploadLogoTypes.MOBILE));
 
+  const onSectionToggle = () => {
+    onToggleOne(index);
+  };
+
   return (
     <SectionDropdown
       id={EventMenuTitles.MEDIA_ASSETS}
@@ -43,6 +51,8 @@ const MediaAssetsSection: React.FC<IProps> = props => {
       panelDetailsType="flat"
       isDefaultExpanded={true}
       useBorder={true}
+      expanded={expanded}
+      onToggle={onSectionToggle}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Media Assets</span>

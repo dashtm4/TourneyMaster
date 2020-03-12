@@ -1,58 +1,54 @@
-import { Icons, Routes } from '../../../common/constants';
+import { MenuTitles, Icons, Routes } from 'common/enums';
 
 export const MenuList = [
   {
-    isAllow: true,
     title: 'My Dashboard',
     icon: Icons.PERSON,
     link: Routes.DASHBOARD,
     children: [],
   },
   {
-    isAllow: true,
-    title: 'Library Manager',
+    title: MenuTitles.LIBRARY_MANAGER,
     icon: Icons.INSERT_DRIVE,
     link: Routes.LIBRARY_MANAGER,
     children: [
-      'Tournaments',
-      'Facilities',
-      'Registration',
-      'Divisions & Pools',
-      'Team Management',
-      'Scheduling',
-      'Messaging',
+      // 'Tournaments',
+      // 'Facilities',
+      MenuTitles.REGISTRATION,
+      // 'Divisions & Pools',
+      // 'Team Management',
+      // 'Scheduling',
+      // 'Messaging',
     ],
   },
   {
-    isAllow: true,
     title: 'EventLink',
     icon: Icons.EMAIL,
     link: Routes.EVENT_LINK,
     children: ['Messaging', 'Schedule Review'],
   },
   {
-    isAllow: true,
     title: 'Collaboration',
     icon: Icons.PEOPLE,
     link: Routes.COLLABORATION,
     children: [],
   },
   {
-    isAllow: true,
     title: 'Calendar',
     icon: Icons.CALENDAR,
     link: Routes.CALENDAR,
     children: [],
   },
   {
-    isAllow: true,
-    title: 'Utilities',
+    title: MenuTitles.UTILITIES,
     icon: Icons.SETTINGS,
     link: Routes.UTILITIES,
-    children: ['Edit Profile', 'Email Setup'],
+    children: [
+      MenuTitles.USER_PROFILE,
+      // MenuTitles.EMAIL_SETUP
+    ],
   },
   {
-    isAllow: true,
     title: 'Event Day Complexities',
     link: Routes.EVENT_DAY_COMPLEXITIES,
     icon: Icons.ERROR,

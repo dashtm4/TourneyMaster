@@ -11,8 +11,8 @@ import {
 } from './actionTypes';
 
 import api from 'api/api';
+import { eventDetailsSchema } from 'validations';
 import { EventDetailsDTO, IIconFile } from './model';
-import { requiredFieldsNotEmpty } from '../state';
 import history from 'browserhistory';
 import { Toasts } from 'components/common';
 
@@ -54,23 +54,24 @@ export const saveEventDetails: ActionCreator<ThunkAction<
   null,
   EventDetailsAction
 >> = (eventDetails: EventDetailsDTO) => async (dispatch: Dispatch) => {
-  const allRequiredFields = requiredFieldsNotEmpty(eventDetails);
+  try {
+    await eventDetailsSchema.validate(eventDetails);
 
-  if (!allRequiredFields)
-    return Toasts.errorToast('All required fields must be filled');
+    const response = await api.put(
+      `/events?event_id=${eventDetails.event_id}`,
+      eventDetails
+    );
 
-  const response = await api.put(
-    `/events?event_id=${eventDetails.event_id}`,
-    eventDetails
-  );
+    if (response?.errorType !== undefined) {
+      return Toasts.errorToast("Couldn't save the changes");
+    }
 
-  if (response?.errorType !== undefined) {
-    return Toasts.errorToast("Couldn't save the changes");
+    Toasts.successToast('Changes successfully saved');
+
+    dispatch<any>(getEventDetails(eventDetails.event_id));
+  } catch (err) {
+    Toasts.errorToast(err.message);
   }
-
-  Toasts.successToast('Changes successfully saved');
-
-  dispatch<any>(getEventDetails(eventDetails.event_id));
 };
 
 export const createEvent: ActionCreator<ThunkAction<
@@ -79,21 +80,22 @@ export const createEvent: ActionCreator<ThunkAction<
   null,
   EventDetailsAction
 >> = (eventDetails: EventDetailsDTO) => async (dispatch: Dispatch) => {
-  const allRequiredFields = requiredFieldsNotEmpty(eventDetails);
+  try {
+    await eventDetailsSchema.validate(eventDetails);
 
-  if (!allRequiredFields)
-    return Toasts.errorToast('All required fields must be filled');
+    const response = await api.post('/events', eventDetails);
 
-  const response = await api.post('/events', eventDetails);
+    if (response?.errorType !== undefined)
+      return Toasts.errorToast("Couldn't save the changes");
 
-  if (response?.errorType !== undefined)
-    return Toasts.errorToast("Couldn't save the changes");
+    Toasts.successToast('Changes successfully saved');
 
-  Toasts.successToast('Changes successfully saved');
+    history.replace(`/event/event-details/${eventDetails.event_id}`);
 
-  history.replace(`/event/event-details/${eventDetails.event_id}`);
-
-  dispatch<any>(getEventDetails(eventDetails.event_id));
+    dispatch<any>(getEventDetails(eventDetails.event_id));
+  } catch (err) {
+    Toasts.errorToast(err.message);
+  }
 };
 
 // export const uploadFiles = (files: IIconFile[]) => () => {

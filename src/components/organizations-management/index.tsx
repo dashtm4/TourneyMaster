@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -17,68 +18,86 @@ import {
   BindingAction,
   IConfigurableOrganization,
 } from 'common/models';
-import { IAddUserToOrg } from './types';
-import { getVarcharEight } from 'helpers';
 import styles from './styles.module.scss';
+import Button from 'components/common/buttons/button';
 
 interface Props {
   isLoading: boolean;
   isLoaded: boolean;
   organizations: IOrganization[];
   loadOrganizations: BindingAction;
-  createOrganization: (organization: IOrganization) => void;
-  addUserToOrganization: ({ orgId, invCode }: IAddUserToOrg) => void;
+  createOrganization: (organization: IConfigurableOrganization) => void;
+  addUserToOrganization: (invCode: string) => void;
   deleteOrganization: (organization: IOrganization) => void;
 }
 
-class OrganizationsManagement extends React.Component<Props> {
-  componentDidMount() {
-    const { loadOrganizations } = this.props;
+const OrganizationsManagement = ({
+  organizations,
+  isLoading,
+  addUserToOrganization,
+  createOrganization,
+  deleteOrganization,
+  loadOrganizations,
+}: Props) => {
+  const [expanded, setExpanded] = React.useState([true, true, true]);
+  const [expandAll, setExpandAll] = React.useState(false);
 
+  React.useEffect(() => {
     loadOrganizations();
+  }, []);
+
+  if (isLoading) {
+    return <Loader />;
   }
 
-  addOrganization = async (organizationData: IConfigurableOrganization) => {
-    const { createOrganization, addUserToOrganization } = this.props;
-
-    const organization = {
-      ...organizationData,
-      org_id: getVarcharEight(),
-      is_active_YN: 1,
-    };
-
-    await createOrganization(organization);
-
-    addUserToOrganization({ orgId: organization.org_id });
+  const onToggleAll = () => {
+    setExpanded(expanded.map(_e => expandAll));
+    setExpandAll(!expandAll);
   };
 
-  render() {
-    const {
-      organizations,
-      isLoading,
-      addUserToOrganization,
-      deleteOrganization,
-    } = this.props;
-
-    if (isLoading) {
-      return <Loader />;
-    }
-
-    return (
-      <section className={styles.container}>
-        <div className={styles.heading}>
-          <HeadingLevelTwo>Organizations Management</HeadingLevelTwo>
-        </div>
-        <OrganizationsList
-          organizations={organizations}
-          deleteOrganization={deleteOrganization}
-        />
-        <CreateOrganization addOrganization={this.addOrganization} />
-        <ApplyInvitation addUserToOrganization={addUserToOrganization} />
-      </section>
+  const onToggleOne = (indexPanel: number) => {
+    setExpanded(
+      expanded.map((e: boolean, index: number) =>
+        index === indexPanel ? !e : e
+      )
     );
-  }
-}
+  };
+
+  return (
+    <section className={styles.container}>
+      <div className={styles.heading}>
+        <HeadingLevelTwo>Organizations Management</HeadingLevelTwo>
+      </div>
+      <div className={styles.buttonContainer}>
+        <Button
+          label={expandAll ? 'Expand All' : 'Collapse All'}
+          variant="text"
+          color="secondary"
+          onClick={onToggleAll}
+        />
+      </div>
+      <OrganizationsList
+        organizations={organizations}
+        deleteOrganization={deleteOrganization}
+        index={0}
+        expanded={expanded[0]}
+        onToggleOne={onToggleOne}
+      />
+      <CreateOrganization
+        createOrganization={createOrganization}
+        index={1}
+        expanded={expanded[1]}
+        onToggleOne={onToggleOne}
+      />
+      <ApplyInvitation
+        addUserToOrganization={addUserToOrganization}
+        index={2}
+        expanded={expanded[2]}
+        onToggleOne={onToggleOne}
+      />
+    </section>
+  );
+};
 
 interface IRootState {
   organizationsManagement: AppState;

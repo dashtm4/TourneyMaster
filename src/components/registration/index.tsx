@@ -16,13 +16,15 @@ import {
 import RegistrationEdit from 'components/registration/registration-edit';
 import { IRegistration } from 'common/models/registration';
 import { BindingCbWithOne, BindingCbWithTwo, IDivision } from 'common/models';
-import { EventMenuTitles } from 'common/enums';
+import { EventMenuRegistrationTitles } from 'common/enums';
 import { History } from 'history';
 import { Loader } from 'components/common';
 
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
   isEdit: boolean;
+  expanded: boolean[];
+  expandAll: boolean;
 }
 
 interface IRegistrationProps {
@@ -41,7 +43,12 @@ class RegistrationView extends React.Component<
   IRegistrationState
 > {
   eventId = this.props.match.params.eventId;
-  state = { registration: undefined, isEdit: false };
+  state = {
+    registration: undefined,
+    isEdit: false,
+    expanded: [true, true, true],
+    expandAll: false,
+  };
 
   componentDidMount() {
     this.props.getRegistration(this.eventId);
@@ -76,6 +83,21 @@ class RegistrationView extends React.Component<
   onSaveClick = () => {
     this.props.saveRegistration(this.state.registration, this.eventId);
     this.setState({ isEdit: false });
+  };
+
+  onToggleAll = () => {
+    this.setState({
+      expanded: this.state.expanded.map(_e => this.state.expandAll),
+      expandAll: !this.state.expandAll,
+    });
+  };
+
+  onToggleOne = (indexPanel: number) => {
+    this.setState({
+      expanded: this.state.expanded.map((e: boolean, index: number) =>
+        index === indexPanel ? !e : e
+      ),
+    });
   };
 
   static getDerivedStateFromProps(
@@ -121,12 +143,22 @@ class RegistrationView extends React.Component<
             {this.props.isLoading && <Loader />}
             {registration && !this.props.isLoading ? (
               <ul className={styles.libraryList}>
+                <div className={styles.buttonContainer}>
+                  <Button
+                    label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                    variant="text"
+                    color="secondary"
+                    onClick={this.onToggleAll}
+                  />
+                </div>
                 <li>
                   <SectionDropdown
-                    id={EventMenuTitles.PRIMARY_INFORMATION}
+                    id={EventMenuRegistrationTitles.PRIMARY_INFORMATION}
                     type="section"
                     panelDetailsType="flat"
                     isDefaultExpanded={true}
+                    expanded={this.state.expanded[0]}
+                    onToggle={() => this.onToggleOne(0)}
                   >
                     <span>Primary Information</span>
                     <PrimaryInformation
@@ -141,10 +173,12 @@ class RegistrationView extends React.Component<
                 </li>
                 <li>
                   <SectionDropdown
-                    id={EventMenuTitles.TEAMS_AND_ATHLETES}
+                    id={EventMenuRegistrationTitles.TEAMS_AND_ATHLETES}
                     type="section"
                     panelDetailsType="flat"
                     isDefaultExpanded={true}
+                    expanded={this.state.expanded[1]}
+                    onToggle={() => this.onToggleOne(1)}
                   >
                     <span>Teams & Athletes</span>
                     <TeamsAthletesInfo data={registration} />
@@ -152,10 +186,12 @@ class RegistrationView extends React.Component<
                 </li>
                 <li>
                   <SectionDropdown
-                    id={EventMenuTitles.MAIN_CONTACT}
+                    id={EventMenuRegistrationTitles.MAIN_CONTACT}
                     type="section"
                     panelDetailsType="flat"
                     isDefaultExpanded={true}
+                    expanded={this.state.expanded[2]}
+                    onToggle={() => this.onToggleOne(2)}
                   >
                     <span>Main Contact</span>
                     <MainContact data={registration} />

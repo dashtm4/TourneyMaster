@@ -2,10 +2,10 @@ import React from 'react';
 import { Button, Select, CardMessage } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { ISelectOption } from 'components/common/select';
-import { DayTypes } from '../../index';
-import { ButtonTypes } from 'common/enums';
-import { IDivision, ITeam, IField } from 'common/models';
-import { DefaulSelectFalues } from '../../types';
+import { sortByField } from 'helpers';
+import { ButtonTypes, SortByFilesTypes } from 'common/enums';
+import { IDivision, ITeam, IEventSummary } from 'common/models';
+import { DefaulSelectFalues, DayTypes } from '../../types';
 import styles from './styles.module.scss';
 
 const CARD_MESSAGE_STYLES = {
@@ -21,7 +21,7 @@ enum FormFields {
 interface Props {
   divisions: IDivision[];
   teams: ITeam[];
-  fields: IField[];
+  fields: IEventSummary[];
   selectedDay: DayTypes;
   selectedDivision: string;
   selectedTeam: string;
@@ -40,10 +40,10 @@ const ScoringFilter = ({
   selectedField,
   onChangeSelect,
   onChangeDay,
-}: Props) => {
-  return (
+}: Props) => (
+  <section>
+    <h3 className="visually-hidden">Scoring filters</h3>
     <form className={styles.scoringForm}>
-      <h3 className="visually-hidden">Scoring filters</h3>
       {Object.keys(DayTypes).map(it => (
         <Button
           onClick={() => onChangeDay(DayTypes[it])}
@@ -66,7 +66,7 @@ const ScoringFilter = ({
           name={FormFields.SELECTED_DIVISION}
           options={[
             { label: 'All', value: DefaulSelectFalues.ALL },
-            ...divisions.map(it => ({
+            ...sortByField(divisions, SortByFilesTypes.DIVISIONS).map(it => ({
               label: it.short_name,
               value: it.division_id,
             })),
@@ -81,7 +81,7 @@ const ScoringFilter = ({
           name={FormFields.SELECTED_TEAM}
           options={[
             { label: 'All', value: DefaulSelectFalues.ALL },
-            ...teams.reduce(
+            ...sortByField(teams, SortByFilesTypes.TEAMS).reduce(
               (acc, it) =>
                 it.division_id === selectedDivision ||
                 selectedDivision === DefaulSelectFalues.ALL
@@ -106,10 +106,10 @@ const ScoringFilter = ({
           name={FormFields.SELECTED_FIELDS}
           options={[
             { label: 'All', value: DefaulSelectFalues.ALL },
-            ...fields.map(
+            ...sortByField(fields, SortByFilesTypes.FACILITIES_INITIALS).map(
               it =>
                 ({
-                  label: it.field_name,
+                  label: `${it.facilities_initials} - ${it.field_name}`,
                   value: it.field_id,
                 } as ISelectOption)
             ),
@@ -123,6 +123,6 @@ const ScoringFilter = ({
         Drag, drop, and zoom to navigate the schedule
       </CardMessage>
     </form>
-  );
-};
+  </section>
+);
 export default ScoringFilter;

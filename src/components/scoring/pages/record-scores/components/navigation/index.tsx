@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'components/common';
 import { ButtonTypes } from 'common/enums';
-import { ViewTypes } from '../../index';
+import { ViewTypes } from '../../types';
 import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 

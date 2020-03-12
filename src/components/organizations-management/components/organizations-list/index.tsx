@@ -4,10 +4,11 @@ import {
   HeadingLevelThree,
   Toasts,
   Button,
+  Paper,
 } from 'components/common';
 import PopupDeleteOrganization from '../popup-delete-organization';
-import { IOrganization } from 'common/models';
-import { Icons } from 'common/constants';
+import { IOrganization, BindingCbWithOne } from 'common/models';
+import { Icons } from 'common/enums';
 import { getIcon } from 'helpers';
 import styles from './styles.module.scss';
 
@@ -19,6 +20,9 @@ const COPY_ICON_STYLES = {
 interface Props {
   organizations: IOrganization[];
   deleteOrganization: (organization: IOrganization) => void;
+  index: number;
+  expanded: boolean;
+  onToggleOne: BindingCbWithOne<number>;
 }
 
 const copyToClipboard = (id: string) => {
@@ -32,8 +36,18 @@ const copyToClipboard = (id: string) => {
   Toasts.successToast('The invitation code was successfully copied');
 };
 
-const OrganizationsList = ({ organizations, deleteOrganization }: Props) => {
+const OrganizationsList = ({
+  organizations,
+  deleteOrganization,
+  expanded,
+  onToggleOne,
+  index,
+}: Props) => {
   const [configOrg, onDeletePopup] = React.useState<null | IOrganization>(null);
+
+  const onSectionToggle = () => {
+    onToggleOne(index);
+  };
 
   return (
     <>
@@ -42,6 +56,8 @@ const OrganizationsList = ({ organizations, deleteOrganization }: Props) => {
         useBorder={true}
         isDefaultExpanded={true}
         panelDetailsType="flat"
+        expanded={expanded}
+        onToggle={onSectionToggle}
       >
         <HeadingLevelThree>
           <span>Organizations List</span>
@@ -53,23 +69,21 @@ const OrganizationsList = ({ organizations, deleteOrganization }: Props) => {
                 Organizations to which you currently belong:
               </p>
               <div className={styles.orgTableWrapper}>
-                <table className={styles.orgTable}>
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>Name</th>
-                      <th>@Tag</th>
-                      <th>City</th>
-                      <th>State</th>
-                      <th>Invitation Code</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {organizations
-                      .sort((a, b) => (a.org_name > b.org_name ? 1 : -1))
-                      .map((organization, index) => (
+                <Paper>
+                  <table className={styles.orgTable}>
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>@Tag</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Invitation Code</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {organizations.map((organization, index) => (
                         <tr
                           className={styles.listItem}
                           key={organization.org_id}
@@ -103,8 +117,9 @@ const OrganizationsList = ({ organizations, deleteOrganization }: Props) => {
                           </td>
                         </tr>
                       ))}
-                  </tbody>
-                </table>
+                    </tbody>
+                  </table>
+                </Paper>
               </div>
             </>
           ) : (

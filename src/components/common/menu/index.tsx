@@ -1,111 +1,83 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { HashLink } from 'react-router-hash-link';
-import {
-  ExpansionPanelWrapped,
-  ExpansionPanelSummaryWrapped,
-  ExpansionPanelDetailsWrapper,
-} from './expansion-panel-material';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { getIcon, stringToLink } from '../../../helpers';
-import { Icons } from '../../../common/constants/icons';
-import { MenuItem } from 'common/models/menu-list';
+import TournamentStatus from './components/tournament-status';
+import MenuItem from './components/menu-item';
+import { getIcon, countCompletedPercent } from 'helpers';
+import { Icons } from 'common/enums/icons';
+import { RequiredMenuKeys, EventStatuses } from 'common/enums';
+import { IMenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 
-const STYLES_MENUITEM_ICON = {
-  marginRight: '10px',
-};
-
-const STYLES_MENUITEM_ICON_COLLAPSED = {
-  marginRight: 0,
-};
-
-interface Props {
-  list: MenuItem[];
-  eventId?: string;
-  isAllowEdit: boolean;
+enum MenuCollapsedTypes {
+  PIN = 'Pin',
+  UNPIN = 'Unpin',
 }
 
-const Menu = ({ isAllowEdit, list, eventId }: Props) => {
+interface Props {
+  list: IMenuItem[];
+  isAllowEdit: boolean;
+  eventId?: string;
+  tournamentStatus?: EventStatuses;
+  changeTournamentStatus?: (status: EventStatuses) => void;
+  eventName?: string;
+}
+
+const Menu = ({
+  list,
+  eventId,
+  eventName,
+  isAllowEdit,
+  tournamentStatus,
+  changeTournamentStatus,
+}: Props) => {
   const [isCollapsed, onCollapse] = React.useState(false);
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(list[0].title);
+  const percentOfCompleted = countCompletedPercent(
+    list,
+    RequiredMenuKeys.IS_COMPLETED
+  );
 
   return (
     <aside
       className={`${styles.dashboardMenu} ${
         isCollapsed ? styles.dashboardMenuCollapsed : ''
       } `}
-      onMouseOver={() => {
-        if (isCollapsible) {
-          onCollapse(false);
-        }
-      }}
-      onMouseOut={() => {
-        if (isCollapsible) {
-          onCollapse(true);
-        }
-      }}
+      onMouseEnter={() => isCollapsible && onCollapse(false)}
+      onMouseLeave={() => isCollapsible && onCollapse(true)}
     >
+      {!isCollapsed && eventName && (
+        <b className={styles.eventTitle}>{eventName}</b>
+      )}
       <ul className={styles.list}>
         {list.map(menuItem => (
-          <li className={styles.itemTitle} key={menuItem.title}>
-            <ExpansionPanelWrapped disabled={!menuItem.isAllow && !isAllowEdit}>
-              <ExpansionPanelSummaryWrapped
-                expandIcon={
-                  menuItem.children.length !== 0 && !isCollapsed ? (
-                    <ExpandMoreIcon />
-                  ) : null
-                }
-              >
-                {getIcon(
-                  menuItem.icon,
-                  isCollapsed
-                    ? STYLES_MENUITEM_ICON_COLLAPSED
-                    : STYLES_MENUITEM_ICON
-                )}
-                {!isCollapsed && (
-                  <Link
-                    className={
-                      activeItem === menuItem.title
-                        ? styles.activeItemTitle
-                        : ''
-                    }
-                    onClick={() => setActiveItem(menuItem.title)}
-                    to={`${menuItem.link}/${eventId || ''}`}
-                  >
-                    {menuItem.title}
-                  </Link>
-                )}
-              </ExpansionPanelSummaryWrapped>
-              {menuItem.children.length !== 0 && (
-                <ExpansionPanelDetailsWrapper>
-                  <ul className={styles.subList}>
-                    {menuItem.children.map((menuSubItem: string) => (
-                      <li className={styles.subListItem} key={menuSubItem}>
-                        <HashLink
-                          onClick={() => setActiveItem(menuItem.title)}
-                          to={`${menuItem.link}/${eventId || ''}#${stringToLink(
-                            menuSubItem
-                          )}`}
-                        >
-                          {menuSubItem}
-                        </HashLink>
-                      </li>
-                    ))}
-                  </ul>
-                </ExpansionPanelDetailsWrapper>
-              )}
-            </ExpansionPanelWrapped>
-          </li>
+          <MenuItem
+            eventId={eventId}
+            menuItem={menuItem}
+            tournamentStatus={tournamentStatus}
+            isAllowEdit={isAllowEdit}
+            isCollapsed={isCollapsed}
+            isActiveItem={activeItem === menuItem.title}
+            setActiveItem={setActiveItem}
+            key={menuItem.title}
+          />
         ))}
       </ul>
+      {!isCollapsed && tournamentStatus && (
+        <TournamentStatus
+          tournamentStatus={tournamentStatus}
+          percentOfCompleted={percentOfCompleted}
+          changeTournamentStatus={changeTournamentStatus}
+        />
+      )}
       <button
         className={styles.pinBtn}
         onClick={() => onSetCollapsibility(!isCollapsible)}
       >
         {getIcon(Icons.PIN)}
-        {!isCollapsed && `${isCollapsible ? 'Pin' : 'Unpin'}  Menu`}
+        {!isCollapsed &&
+          `${
+            isCollapsible ? MenuCollapsedTypes.PIN : MenuCollapsedTypes.UNPIN
+          }  Menu`}
       </button>
     </aside>
   );

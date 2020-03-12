@@ -1,5 +1,6 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
+import * as Yup from 'yup';
 import {
   TeamsAction,
   LOAD_DIVISION_START,
@@ -16,9 +17,15 @@ import {
   DELETE_TEAM_SUCCESS,
   DELETE_TEAM_FAILURE,
 } from './action-types';
+import { AppState } from './reducer';
+import Api from 'api/api';
+import { teamSchema } from 'validations';
 import { ITeam } from '../../../common/models';
 import { Toasts } from 'components/common';
-import Api from 'api/api';
+
+type IAppState = {
+  scoring: AppState;
+};
 
 const loadDivision: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   eventId: string
@@ -100,10 +107,33 @@ const loadTeams: ActionCreator<ThunkAction<
   }
 };
 
-const editTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
-  team: ITeam
-) => async (dispatch: Dispatch) => {
+const editTeam = (team: ITeam) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
   try {
+    const { teams } = getState().scoring;
+
+    await Yup.array()
+      .of(teamSchema)
+      .unique(
+        team => team.long_name,
+        'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
+      )
+      .unique(
+        team => team.short_name,
+        'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+      )
+      .validate(
+        teams.reduce((acc, it) => {
+          if (it.team_id === team.team_id) {
+            return [...acc, team];
+          }
+
+          return it.division_id === team.division_id ? [...acc, it] : acc;
+        }, [] as ITeam[])
+      );
+
     await Api.put(`/teams?team_id=${team.team_id}`, team);
 
     dispatch({
@@ -114,10 +144,12 @@ const editTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
     });
 
     Toasts.successToast('Teams saved successfully');
-  } catch {
+  } catch (err) {
     dispatch({
       type: EDIT_TEAM_FAILURE,
     });
+
+    Toasts.errorToast(err.message);
   }
 };
 

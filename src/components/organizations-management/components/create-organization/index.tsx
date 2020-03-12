@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   SectionDropdown,
   Button,
@@ -7,9 +8,9 @@ import {
   HeadingLevelThree,
   PopupConfirm,
 } from 'components/common';
-import { Icons } from 'common/constants';
+import { IConfigurableOrganization, BindingCbWithOne } from 'common/models';
+import { Icons } from 'common/enums';
 import styles from './styles.module.scss';
-import { IConfigurableOrganization } from 'common/models';
 
 const CONFIRM_POPUP_MESSAGE =
   'You are about to create a new organization. Are you sure?';
@@ -26,14 +27,26 @@ const EMPTY_ORGANIZATION = {
 };
 
 interface Props {
-  addOrganization: (organizationData: IConfigurableOrganization) => void;
+  createOrganization: (organizationData: IConfigurableOrganization) => void;
+  index: number;
+  expanded: boolean;
+  onToggleOne: BindingCbWithOne<number>;
 }
 
-const CreateOrganization = ({ addOrganization }: Props) => {
+const CreateOrganization = ({
+  createOrganization,
+  expanded,
+  onToggleOne,
+  index,
+}: Props) => {
   const [organization, onChange] = React.useState<IConfigurableOrganization>(
     EMPTY_ORGANIZATION
   );
   const [isOpenConfirmPopup, onConfirmPopup] = React.useState(false);
+
+  const onSectionToggle = () => {
+    onToggleOne(index);
+  };
 
   return (
     <>
@@ -42,6 +55,8 @@ const CreateOrganization = ({ addOrganization }: Props) => {
         useBorder={true}
         isDefaultExpanded={false}
         panelDetailsType="flat"
+        expanded={expanded}
+        onToggle={onSectionToggle}
       >
         <HeadingLevelThree>
           <span>Create Organization</span>
@@ -53,7 +68,7 @@ const CreateOrganization = ({ addOrganization }: Props) => {
             reminders.
           </CardMessage>
           <form
-            onSubmit={evt => {
+            onSubmit={(evt: any) => {
               evt.preventDefault();
 
               onConfirmPopup(true);
@@ -67,7 +82,6 @@ const CreateOrganization = ({ addOrganization }: Props) => {
                 value={organization.org_name || ''}
                 fullWidth={true}
                 label="Organization Name"
-                isRequired
               />
             </div>
             <div className={styles.sectionItem}>
@@ -103,7 +117,7 @@ const CreateOrganization = ({ addOrganization }: Props) => {
             </div>
             <div className={styles.sectionItem}>
               <Button
-                label="Add Organization"
+                label="Create Organization"
                 btnType="submit"
                 variant="contained"
                 color="primary"
@@ -118,9 +132,8 @@ const CreateOrganization = ({ addOrganization }: Props) => {
         onClose={() => onConfirmPopup(false)}
         onCanceClick={() => onConfirmPopup(false)}
         onYesClick={() => {
-          addOrganization(organization);
+          createOrganization(organization);
           onConfirmPopup(false);
-          onChange(EMPTY_ORGANIZATION);
         }}
       />
     </>

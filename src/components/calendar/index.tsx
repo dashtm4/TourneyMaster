@@ -2,13 +2,19 @@ import React, { Component } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
-import { Button, Paper, HeadingLevelTwo } from 'components/common';
+import { HeadingLevelTwo } from 'components/common';
 import { ICalendarEvent } from 'common/models/calendar';
 import CreateDialog from './create-dialog';
 import styles from './styles.module.scss';
 import CalendarBody from './body';
 
-import { getCalendarEvents, saveCalendar } from './logic/actions';
+import {
+  getCalendarEvents,
+  saveCalendar,
+  saveCalendarEvent,
+  updateCalendarEvent,
+  deleteCalendarEvent,
+} from './logic/actions';
 import {
   appropriateEvents,
   calculateDialogPosition,
@@ -17,23 +23,26 @@ import {
 import { IDateSelect } from './calendar.model';
 
 interface IMapStateToProps {
-  eventsList?: ICalendarEvent[];
+  eventsList?: Partial<ICalendarEvent>[];
   calendarEventCreated: boolean;
 }
 
 interface IProps extends IMapStateToProps {
   getCalendarEvents: () => void;
-  saveCalendar: (data: ICalendarEvent[]) => void;
+  saveCalendar: (data: Partial<ICalendarEvent>[]) => void;
+  saveCalendarEvent: (event: Partial<ICalendarEvent>) => void;
+  updateCalendarEvent: (event: Partial<ICalendarEvent>) => void;
+  deleteCalendarEvent: (id: string) => void;
 }
 
 interface IState {
   dialogOpen: boolean;
-  blankNewEvent?: ICalendarEvent;
+  blankNewEvent?: Partial<ICalendarEvent>;
   dateSelect: IDateSelect;
-  eventsList?: ICalendarEvent[];
+  eventsList?: Partial<ICalendarEvent>[];
 }
 
-class Calendar extends Component<IProps, IState> {
+class Calendar extends Component<any, IState> {
   state = {
     dialogOpen: false,
     blankNewEvent: undefined,
@@ -117,10 +126,68 @@ class Calendar extends Component<IProps, IState> {
     this.setState({ dialogOpen: false, blankNewEvent: undefined });
   };
 
-  onCalendarEvent = (calendarEvent: ICalendarEvent) => {
+  onCalendarEvent = (calendarEvent: Partial<ICalendarEvent>) => {
     this.onDialogClose();
     this.setState(({ eventsList }) => ({
       eventsList: [...eventsList, calendarEvent],
+    }));
+    this.props.saveCalendarEvent(calendarEvent);
+  };
+
+  onUpdateEvent = (data: Partial<ICalendarEvent>) => {
+    this.props.updateCalendarEvent(data);
+    this.setState(({ eventsList }) => ({
+      eventsList: eventsList?.map(event =>
+        event.cal_event_id === data.cal_event_id
+          ? {
+              ...event,
+              cal_event_startdate: data.cal_event_startdate,
+              cal_event_enddate: data.cal_event_enddate,
+            }
+          : event
+      ),
+    }));
+  };
+
+  onReminderAndTaskUpdate = (data: Partial<ICalendarEvent>) => {
+    this.props.updateCalendarEvent(data);
+    this.setState(({ eventsList }) => ({
+      eventsList: eventsList?.map(event =>
+        event.cal_event_id === data.cal_event_id
+          ? {
+              ...event,
+              cal_event_startdate: data.cal_event_startdate,
+              cal_event_enddate: data.cal_event_enddate,
+              cal_event_datetime: data.cal_event_datetime,
+            }
+          : event
+      ),
+    }));
+  };
+
+  onDeleteCalendarEvent = (id: string) => {
+    this.props.deleteCalendarEvent(id);
+    this.setState(({ eventsList }) => ({
+      eventsList: eventsList?.filter(event => event.cal_event_id !== id),
+    }));
+  };
+
+  onUpdateCalendarEventDetails = (data: Partial<ICalendarEvent>) => {
+    this.props.updateCalendarEvent(data);
+    this.setState(({ eventsList }) => ({
+      eventsList: eventsList?.map(event =>
+        event.cal_event_id === data.cal_event_id
+          ? {
+              ...event,
+              cal_event_datetime: data.cal_event_datetime,
+              cal_event_startdate: data.cal_event_startdate,
+              cal_event_enddate: data.cal_event_enddate,
+              cal_event_title: data.cal_event_title,
+              cal_event_desc: data.cal_event_desc,
+              cal_event_tag: data.cal_event_tag,
+            }
+          : event
+      ),
     }));
   };
 
@@ -133,7 +200,7 @@ class Calendar extends Component<IProps, IState> {
 
     return (
       <div className={styles.container}>
-        <Paper>
+        {/* <Paper>
           <div className={styles.paperWrapper}>
             <Button
               label="Save"
@@ -142,7 +209,7 @@ class Calendar extends Component<IProps, IState> {
               onClick={this.onSave}
             />
           </div>
-        </Paper>
+        </Paper> */}
 
         <HeadingLevelTwo margin="24px 0">Calendar</HeadingLevelTwo>
 
@@ -157,6 +224,10 @@ class Calendar extends Component<IProps, IState> {
           eventsList={appropriateEvents(events || [])}
           onDatePressed={this.onDatePressed}
           onCreatePressed={this.onCreatePressed}
+          onEventUpdate={this.onUpdateEvent}
+          onReminderAndTaskUpdate={this.onReminderAndTaskUpdate}
+          onUpdateCalendarEventDetails={this.onUpdateCalendarEventDetails}
+          onDeleteCalendarEvent={this.onDeleteCalendarEvent}
         />
       </div>
     );
@@ -165,7 +236,7 @@ class Calendar extends Component<IProps, IState> {
 
 interface IRootState {
   calendar: {
-    events?: ICalendarEvent[];
+    events?: Partial<ICalendarEvent>[];
     eventJustCreated: boolean;
   };
 }
@@ -176,6 +247,15 @@ const mapStateToProps = (state: IRootState): IMapStateToProps => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
-  bindActionCreators({ getCalendarEvents, saveCalendar }, dispatch);
+  bindActionCreators(
+    {
+      getCalendarEvents,
+      saveCalendar,
+      saveCalendarEvent,
+      updateCalendarEvent,
+      deleteCalendarEvent,
+    },
+    dispatch
+  );
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar);

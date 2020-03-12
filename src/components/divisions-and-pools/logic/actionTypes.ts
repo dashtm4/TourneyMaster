@@ -4,7 +4,7 @@ export const DIVISIONS_FETCH_SUCCESS = 'DIVISIONS_FETCH_SUCCESS';
 export const DIVISIONS_FETCH_FAILURE = 'DIVISIONS_FETCH_FAILURE';
 export const POOLS_FETCH_SUCCESS = 'POOLS_FETCH_SUCCESS';
 export const TEAMS_FETCH_SUCCESS = 'TEAMS_FETCH_SUCCESS';
-export const FETCH_START = 'FETCH_START';
+export const FETCH_DETAILS_START = 'FETCH_DETAILS_START';
 export const ADD_DIVISION_SUCCESS = 'ADD_DIVISION_SUCCESS';
 export const UPDATE_DIVISION_SUCCESS = 'UPDATE_DIVISION_SUCCESS';
 export const DELETE_DIVISION_SUCCESS = 'DELETE_DIVISION_SUCCESS';
@@ -23,4 +23,4 @@ export interface saveDivisionsSuccess {
   payload: IDivision[];
 }
 
-export type divisionsPoolsAction = loadDivisionsSuccess | saveDivisionsSuccess;
+export type DivisionsPoolsAction = loadDivisionsSuccess | saveDivisionsSuccess;
