@@ -1,5 +1,7 @@
 :local(.page) {
-  flex: 1 1 auto;
+  // flex: 1 1 auto;
+  flex-grow: 1;
+  flex-shrink: 0;
 
   display: flex;
   align-items: flex-start;
@@ -17,3 +19,13 @@
 
   padding-left: 30px;
 }
+
+.container {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+// .footer {
+//   flex-shrink: 0;
+// }

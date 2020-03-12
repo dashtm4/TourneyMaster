@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import {
   loadAuthPageData,
   clearAuthPageData,
-  publishTournament,
+  changeTournamentStatus,
 } from './logic/actions';
 import { AppState } from './logic/reducer';
 import Header from 'components/header';
@@ -24,13 +24,14 @@ import Teams from 'components/teams';
 import CreateTeam from 'components/teams/components/create-team';
 import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
 import {
-  EventStatuses,
   Routes,
   RequiredMenuKeys,
   EventMenuTitles,
+  EventStatuses,
 } from 'common/enums';
 import { Loader } from 'components/common';
 import styles from '../styles.module.scss';
+import Footer from 'components/footer';
 
 interface MatchParams {
   eventId?: string;
@@ -43,7 +44,7 @@ interface Props {
   tournamentData: ITournamentData;
   loadAuthPageData: (eventId: string) => void;
   clearAuthPageData: BindingAction;
-  publishTournament: (eventId: string) => void;
+  changeTournamentStatus: (status: EventStatuses) => void;
 }
 
 export const EmptyPage: React.FC = () => {
@@ -57,7 +58,7 @@ const AuthorizedPageEvent = ({
   tournamentData,
   loadAuthPageData,
   clearAuthPageData,
-  publishTournament,
+  changeTournamentStatus,
 }: Props & RouteComponentProps<MatchParams>) => {
   const eventId = match.params.eventId;
   const { event } = tournamentData;
@@ -76,16 +77,16 @@ const AuthorizedPageEvent = ({
   }
 
   return (
-    <>
+    <div className={styles.container}>
       <Header />
       <div className={styles.page}>
         <Menu
           list={menuList}
           eventId={eventId}
           isAllowEdit={Boolean(eventId)}
-          isDraft={Boolean(event?.event_status === EventStatuses.DRAFT)}
+          tournamentStatus={event?.event_status}
           eventName={event?.event_name || ''}
-          publishTournament={publishTournament}
+          changeTournamentStatus={changeTournamentStatus}
         />
         <main className={styles.content}>
           <Switch>
@@ -123,7 +124,8 @@ const AuthorizedPageEvent = ({
           </Switch>
         </main>
       </div>
-    </>
+      <Footer />
+    </div>
   );
 };
 
@@ -140,7 +142,7 @@ export default connect(
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadAuthPageData, clearAuthPageData, publishTournament },
+      { loadAuthPageData, clearAuthPageData, changeTournamentStatus },
       dispatch
     )
 )(AuthorizedPageEvent);
