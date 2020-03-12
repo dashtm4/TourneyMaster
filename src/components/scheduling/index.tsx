@@ -23,6 +23,7 @@ interface IProps {
   getScheduling: (eventId?: number) => void;
   createNewVersion: (data: INewVersion) => void;
   schedule?: ISchedule;
+  schedulingIsLoading: boolean;
   incompleteMenuItems: IMenuItem[];
 }
 
@@ -44,16 +45,15 @@ class Scheduling extends Component<IProps, IState> {
     this.props.getScheduling(eventId);
   }
 
-  componentDidUpdate() {
-    const { schedule } = this.props;
-    const { schedule: stateSchedule, loading } = this.state;
+  componentDidUpdate(prevProps: IProps) {
+    const { schedulingIsLoading: prevSchedulingIsLoading } = prevProps;
+    const { schedule, schedulingIsLoading } = this.props;
 
-    if (schedule && !stateSchedule) {
-      this.setState({ schedule, loading: false });
-    }
-
-    if (schedule === null && loading) {
-      this.setState({ loading: false });
+    if (prevSchedulingIsLoading !== schedulingIsLoading) {
+      this.setState({
+        loading: schedulingIsLoading,
+        schedule,
+      });
     }
   }
 
@@ -163,6 +163,7 @@ interface IRootState {
 
 const mapStateToProps = (store: IRootState) => ({
   schedule: store.scheduling?.schedule,
+  schedulingIsLoading: store.scheduling?.schedulingIsLoading,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
