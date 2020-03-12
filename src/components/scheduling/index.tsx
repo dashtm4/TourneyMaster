@@ -79,6 +79,7 @@ class Scheduling extends Component<IProps, IState> {
   render() {
     const { incompleteMenuItems } = this.props;
     const { schedule, createModalOpen, loading } = this.state;
+    const { eventId } = this.props.match?.params;
     const isAllowCreate = incompleteMenuItems.length === 0;
 
     if (loading) {
@@ -137,7 +138,10 @@ class Scheduling extends Component<IProps, IState> {
           </>
         )}
         {!schedule && !isAllowCreate && (
-          <HazardList incompleteMenuItems={incompleteMenuItems} />
+          <HazardList
+            incompleteMenuItems={incompleteMenuItems}
+            eventId={eventId}
+          />
         )}
         {!schedule && isAllowCreate && !loading && (
           <div className={styles.noFoundWrapper}>

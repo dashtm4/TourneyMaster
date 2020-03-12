@@ -5,10 +5,16 @@ enum ButtonTypes {
 
 enum ButtonColors {
   INHERIT = 'inherit',
+  PRIMATY = 'primary',
 }
 
 enum ButtonVarian {
   CONTAINED = 'contained',
 }
 
-export { ButtonTypes, ButtonColors, ButtonVarian };
+enum ButtonFormTypes {
+  SUBMIT = 'submit',
+  BUTTON = 'button',
+}
+
+export { ButtonTypes, ButtonColors, ButtonVarian, ButtonFormTypes };

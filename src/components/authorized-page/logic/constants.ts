@@ -8,7 +8,7 @@ export const MenuList = [
     children: [],
   },
   {
-    title: 'Library Manager',
+    title: MenuTitles.LIBRARY_MANAGER,
     icon: Icons.INSERT_DRIVE,
     link: Routes.LIBRARY_MANAGER,
     children: [
@@ -40,10 +40,10 @@ export const MenuList = [
     children: [],
   },
   {
-    title: 'Utilities',
+    title: MenuTitles.UTILITIES,
     icon: Icons.SETTINGS,
     link: Routes.UTILITIES,
-    children: ['Edit Profile', 'Email Setup'],
+    children: [MenuTitles.EDIT_PROFILE, MenuTitles.EMAIL_SETUP],
   },
   {
     title: 'Event Day Complexities',
