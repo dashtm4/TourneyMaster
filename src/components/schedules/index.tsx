@@ -24,7 +24,7 @@ import {
 import SchedulesMatrix from 'components/common/matrix-table';
 import Scheduler, { IGameOptions } from './Scheduler';
 import Diagnostics from './diagnostics';
-import { Button } from 'components/common';
+import { Button, Loader } from 'components/common';
 import {
   sortFieldsByPremier,
   defineGames,
@@ -54,15 +54,21 @@ export interface ISchedulerResult extends Scheduler {
   gameFields: number;
 }
 
-class Schedules extends Component<{}, IState> {
+interface IProps {
+  match: any;
+}
+
+class Schedules extends Component<IProps, IState> {
   state: IState = {
     teamsDiagnosticsOpen: false,
     divisionsDiagnosticsOpen: false,
   };
 
   async componentDidMount() {
+    const { eventId } = this.props.match?.params;
+
     const fetchedEvents: EventDetailsDTO[] = await api.get(
-      '/events?event_id=ADLNT001'
+      `/events?event_id=${eventId}`
     );
     const fetchedEvent = fetchedEvents[0];
 
@@ -71,14 +77,14 @@ class Schedules extends Component<{}, IState> {
     const timeSlots = calculateTimeSlots(timeValues);
 
     const fetchedTeams: IFetchedTeam[] = await api.get(
-      '/teams?event_id=ADLNT001'
+      `/teams?event_id=${eventId}`
     );
     const fetchedDivisions: IFetchedDivision[] = await api.get(
-      '/divisions?event_id=ADLNT001'
+      `/divisions?event_id=${eventId}`
     );
 
     const fetchedFacilities: IFetchedFacility[] = await api.get(
-      '/facilities?event_id=ADLNT001'
+      `/facilities?event_id=${eventId}`
     );
 
     const fetchedFields: IFetchedField[] = [];
@@ -186,6 +192,7 @@ class Schedules extends Component<{}, IState> {
 
     return (
       <div>
+        {(!teams?.length || !fields?.length) && <Loader />}
         {teamsTableData && teamsTableData?.body?.length && (
           <>
             <Button
