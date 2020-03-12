@@ -4,7 +4,7 @@ import {
   CHANGE_USER,
   UtilitiesAction,
 } from './action-types';
-import { IMember } from 'common/models';
+import { IUtilitiesMember } from '../types';
 
 const initialState = {
   isLoading: false,
@@ -15,7 +15,7 @@ const initialState = {
 export interface AppState {
   isLoading: boolean;
   isLoaded: boolean;
-  userData: IMember | null;
+  userData: IUtilitiesMember | null;
 }
 
 const utilitiesReducer = (

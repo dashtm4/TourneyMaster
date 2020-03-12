@@ -2,6 +2,7 @@ import React from 'react';
 import { HeadingLevelThree, SectionDropdown, Input } from 'components/common';
 import { MenuTitles } from 'common/enums';
 import { IMember, BindingCbWithOne } from 'common/models';
+import { IUtilitiesMember } from '../../types';
 import styles from './styles.module.scss';
 
 enum FormFields {
@@ -11,8 +12,8 @@ enum FormFields {
 }
 
 interface Props {
-  userData: IMember;
-  changeUser: BindingCbWithOne<Partial<IMember>>;
+  userData: IMember | IUtilitiesMember;
+  changeUser: BindingCbWithOne<Partial<IMember | IUtilitiesMember>>;
 }
 
 const EditProfile = ({ userData, changeUser }: Props) => (

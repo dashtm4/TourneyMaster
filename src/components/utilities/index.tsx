@@ -1,26 +1,30 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { AppState } from './logic/reducer';
-import { loadUserData, changeUser } from './logic/actions';
+import { loadUserData, saveUserData, changeUser } from './logic/actions';
 import Navigation from './components/navigations';
 import EditProfile from './components/edit-profile';
 import { HeadingLevelTwo, Loader } from 'components/common';
-import { BindingAction, IMember, BindingCbWithOne } from 'common/models';
+import { BindingAction, BindingCbWithOne, IMember } from 'common/models';
+import { IUtilitiesMember } from './types';
 import styles from './styles.module.scss';
 
 interface Props {
   isLoading: boolean;
   isLoaded: boolean;
-  userData: IMember | null;
+  userData: IMember | IUtilitiesMember | null;
   loadUserData: BindingAction;
-  changeUser: BindingCbWithOne<Partial<IMember>>;
+  saveUserData: BindingAction;
+  changeUser: BindingCbWithOne<Partial<IUtilitiesMember>>;
 }
 
 const Utilities = ({
   isLoading,
   userData,
   loadUserData,
+  saveUserData,
   changeUser,
 }: Props) => {
   React.useEffect(() => {
@@ -38,7 +42,7 @@ const Utilities = ({
           evt.preventDefault();
         }}
       >
-        <Navigation />
+        <Navigation onSaveUser={saveUserData} />
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>Utilities</HeadingLevelTwo>
         </div>
@@ -63,6 +67,7 @@ export default connect(
       {
         loadUserData,
         changeUser,
+        saveUserData,
       },
       dispatch
     )
