@@ -28,9 +28,10 @@ const IncompleteItemDesc = {
 
 interface Props {
   incompleteMenuItems: IMenuItem[];
+  eventId: string;
 }
 
-const HazardList = ({ incompleteMenuItems }: Props) => {
+const HazardList = ({ incompleteMenuItems, eventId }: Props) => {
   return (
     <section className={styles.wrapper}>
       <header className={styles.hazardHeader}>
@@ -46,7 +47,7 @@ const HazardList = ({ incompleteMenuItems }: Props) => {
         {incompleteMenuItems.map(it => (
           <React.Fragment key={it.title}>
             <dt>
-              <Link to={it.link}>{it.title}</Link>
+              <Link to={`${it.link}/${eventId}`}>{it.title}</Link>
             </dt>
             <dd>
               {getIcon(it.icon, STYLES_MENU_ITEM)}
