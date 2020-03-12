@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { History } from 'history';
 import { Dispatch, bindActionCreators } from 'redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faFileUpload } from '@fortawesome/free-solid-svg-icons';
@@ -18,6 +19,7 @@ import { IMenuItem } from 'common/models';
 
 interface IProps {
   match: any;
+  history: History;
   getScheduling: (eventId?: number) => void;
   createNewVersion: (data: INewVersion) => void;
   schedule?: ISchedule;
@@ -69,6 +71,8 @@ class Scheduling extends Component<IProps, IState> {
 
   onCreateNew = (data: INewVersion) => {
     this.setState({ createModalOpen: false });
+    const { eventId } = this.props.match?.params;
+    this.props.history.push(`/schedules/${eventId}`);
     this.props.createNewVersion(data);
   };
 

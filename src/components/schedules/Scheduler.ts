@@ -275,22 +275,23 @@ export default class Scheduler {
     gameTimeSlotId: number,
     includeBackToBack?: boolean
   ) => {
-    const teamTimeSlotIds = teamGames.map(game => game.timeSlotId);
-    let backToBackTimeSlotIds: number[] = [];
-    teamTimeSlotIds.map(
+    const backToBackTimeSlots = teamGames.map(game => game.timeSlotId);
+    let regularTimeSlots: number[] = [];
+
+    backToBackTimeSlots.forEach(
       timeSlotId =>
-        (backToBackTimeSlotIds = [
-          ...(backToBackTimeSlotIds || []),
+        (regularTimeSlots = [
+          ...(regularTimeSlots || []),
           timeSlotId,
           timeSlotId - 1,
           timeSlotId + 1,
         ])
     );
-    backToBackTimeSlotIds = union(backToBackTimeSlotIds).filter(id => id >= 0);
+    regularTimeSlots = union(regularTimeSlots).filter(id => id >= 0);
 
     const timeSlots = includeBackToBack
-      ? backToBackTimeSlotIds
-      : teamTimeSlotIds;
+      ? backToBackTimeSlots
+      : regularTimeSlots;
 
     return !timeSlots.includes(gameTimeSlotId);
   };
@@ -432,17 +433,27 @@ export default class Scheduler {
   };
 
   getUnsatisfiedTeams = (options?: { isPremier?: boolean }) => {
-    return this.teamCards.filter(teamCard =>
-      teamCard.poolId && options?.isPremier
-        ? teamCard.isPremier
-        : true && (teamCard.games?.length || 0) < this.minGameNum
-    );
+    const { isPremier } = options || {};
+
+    return this.teamCards.filter(teamCard => {
+      if (!teamCard.poolId) return false;
+
+      if (!(teamCard.games?.length! < this.minGameNum)) return false;
+
+      if (isPremier !== undefined) {
+        if (teamCard.isPremier !== isPremier) {
+          return false;
+        }
+      }
+
+      return true;
+    });
   };
 
   settleMinGameTeams = (
     teams: ITeamCard[],
     isPremier: boolean,
-    options: IFindGameOptions
+    options?: IFindGameOptions
   ) => {
     const filteredTeams = teams.filter(team => team.isPremier === isPremier);
     const rearrangedTeams = this.rearrangeTeamsByConstraints(filteredTeams);
@@ -466,7 +477,12 @@ export default class Scheduler {
     }
 
     // settle those regular teams as well
-    this.settleMinGameTeams(teams, false, options);
+    this.settleMinGameTeams(teams, false);
+    const teamsLeftovers = this.getUnsatisfiedTeams({ isPremier: false });
+
+    if (teamsLeftovers?.length) {
+      this.settleMinGameTeams(teams, false, options);
+    }
   };
 
   calculateAvgStartTime = () => {
