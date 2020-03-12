@@ -175,24 +175,17 @@ class Schedules extends Component<{}, IState> {
       scheduling,
     } = this.state;
 
-    const teamsTableData = scheduling && formatTeamsDiagnostics(scheduling);
-    const divisionsTableData =
-      scheduling && formatDivisionsDiagnostics(scheduling);
+    let teamsTableData;
+    let divisionsTableData;
+
+    if (scheduling) {
+      teamsTableData = formatTeamsDiagnostics(scheduling);
+      divisionsTableData = formatDivisionsDiagnostics(scheduling);
+      console.log('scheduler', scheduling);
+    }
 
     return (
       <div>
-        {teams?.length &&
-          timeSlots?.length &&
-          fields?.length &&
-          scheduling?.updatedGames && (
-            <SchedulesMatrix
-              scheduling={scheduling}
-              timeSlots={timeSlots}
-              fields={fields}
-              teams={teams}
-            />
-          )}
-
         {teamsTableData && teamsTableData?.body?.length && (
           <>
             <Button
@@ -224,6 +217,18 @@ class Schedules extends Component<{}, IState> {
             />
           </>
         )}
+
+        {teams?.length &&
+          timeSlots?.length &&
+          fields?.length &&
+          scheduling?.updatedGames && (
+            <SchedulesMatrix
+              scheduling={scheduling}
+              timeSlots={timeSlots}
+              fields={fields}
+              teams={teams}
+            />
+          )}
       </div>
     );
   }

@@ -75,7 +75,7 @@ class Diagnostics extends Component<Props, State> {
       {isHeader && (
         <TableSortLabel
           active={cellText === this.state.sortBy}
-          direction={this.state.sortOrder === 'asc' ? 'asc' : 'desc'}
+          direction={this.state.sortOrder === 'asc' ? 'desc' : 'asc'}
           onClick={() => this.sortData(String(cellText))}
         />
       )}

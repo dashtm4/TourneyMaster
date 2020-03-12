@@ -28,10 +28,10 @@ const calculateDivisionTournamentTime = (
   const teamsTournamentTime = teams.map(team =>
     calculateTeamTournamentTime(team, updatedGames, totalGameTime)
   );
-  const avgTournamentTime =
-    teamsTournamentTime
-      .map(time => getTimeFromString(time, 'minutes'))
-      .reduce((a, b) => a + b) / teams.length;
+  const tournamentTimeTotal = teamsTournamentTime
+    .map(time => getTimeFromString(time, 'minutes'))
+    .reduce((a, b) => a + b);
+  const avgTournamentTime = Math.round(tournamentTimeTotal / teams.length);
 
   return timeToString(avgTournamentTime);
 };
@@ -93,7 +93,7 @@ const formatDivisionsDiagnostics = (schedulerResult: ISchedulerResult) => {
     '# of Teams',
     '# of Games',
     '# of Fields',
-    'Tournament Time',
+    'Avg. Time / Team',
     'Facility Name',
   ];
 
