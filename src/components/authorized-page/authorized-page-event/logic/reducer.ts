@@ -31,6 +31,13 @@ import {
   SortByFilesTypes,
 } from 'common/enums';
 
+export interface IPageEventState {
+  isLoading: boolean;
+  isLoaded: boolean;
+  menuList: IMenuItem[];
+  tournamentData: ITournamentData;
+}
+
 const initialState = {
   isLoading: false,
   isLoaded: false,
@@ -44,15 +51,8 @@ const initialState = {
   },
 };
 
-export interface AppState {
-  isLoading: boolean;
-  isLoaded: boolean;
-  menuList: IMenuItem[];
-  tournamentData: ITournamentData;
-}
-
 const pageEventReducer = (
-  state: AppState = initialState,
+  state: IPageEventState = initialState,
   action:
     | AuthPageAction
     | FacilitiesAction
