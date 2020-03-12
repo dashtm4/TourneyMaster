@@ -8,6 +8,7 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { stringToLink } from 'helpers';
 import styles from './styles.module.scss';
+import { BindingAction } from 'common/models';
 
 type DropdownType = 'section' | 'block';
 
@@ -19,6 +20,8 @@ interface Props {
   headingColor?: string;
   useBorder?: boolean;
   panelDetailsType?: string;
+  expanded?: boolean;
+  onToggle?: BindingAction;
 }
 
 const setStyleOnType = (type?: DropdownType) => {
@@ -63,11 +66,14 @@ const SectionDropdown = ({
   isDefaultExpanded,
   useBorder,
   panelDetailsType,
+  expanded,
+  onToggle,
 }: Props) => (
   <section className={styles.section} id={id ? stringToLink(id) : undefined}>
     <ExpansionPanel
       style={setStyleOnType(type)}
       defaultExpanded={isDefaultExpanded}
+      expanded={expanded}
     >
       <ExpansionPanelSummary
         style={{
@@ -78,6 +84,7 @@ const SectionDropdown = ({
         expandIcon={setExpandIcon(type)}
         aria-controls="panel1a-content"
         id="panel1a-header"
+        onClick={onToggle}
       >
         <HeadeingLevelThree color={headingColor}>
           {children[0]}

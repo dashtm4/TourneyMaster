@@ -20,6 +20,7 @@ import {
 } from 'components/common';
 import { IDivision, IPool, ITeam, BindingCbWithOne } from 'common/models';
 import styles from './styles.module.scss';
+import Button from 'components/common/buttons/button';
 
 interface MatchParams {
   eventId?: string;
@@ -43,6 +44,8 @@ interface State {
   currentDivision: string | null;
   currentPool: string | null;
   isModalOpen: boolean;
+  expanded: boolean[];
+  expandAll: boolean;
 }
 
 class Sсoring extends React.Component<
@@ -57,6 +60,8 @@ class Sсoring extends React.Component<
       currentPool: null,
       changeableTeam: null,
       isModalOpen: false,
+      expanded: [],
+      expandAll: false,
     };
   }
 
@@ -115,6 +120,27 @@ class Sсoring extends React.Component<
       currentPool: null,
     });
 
+  componentDidUpdate(prevProps: any, prevState: any) {
+    if (prevProps.divisions.length && !prevState.expanded.length) {
+      this.setState({ expanded: this.props.divisions.map(_division => true) });
+    }
+  }
+
+  onToggleAll = () => {
+    this.setState({
+      expanded: this.state.expanded.map(_e => this.state.expandAll),
+      expandAll: !this.state.expandAll,
+    });
+  };
+
+  onToggleOne = (indexPanel: number) => {
+    this.setState({
+      expanded: this.state.expanded.map((e: boolean, index: number) =>
+        index === indexPanel ? !e : e
+      ),
+    });
+  };
+
   render() {
     const {
       isModalOpen,
@@ -141,8 +167,18 @@ class Sсoring extends React.Component<
         <Navigation eventId={this.props.match.params.eventId} />
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>Scoring</HeadingLevelTwo>
+          {divisions.length ? (
+            <div className={styles.buttonContainer}>
+              <Button
+                label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                variant="text"
+                color="secondary"
+                onClick={this.onToggleAll}
+              />
+            </div>
+          ) : null}
           <ul className={styles.scoringList}>
-            {divisions.map(division => (
+            {divisions.map((division, index) => (
               <ScoringItem
                 division={division}
                 pools={pools.filter(
@@ -153,6 +189,9 @@ class Sсoring extends React.Component<
                 loadTeams={loadTeams}
                 onOpenTeamDetails={this.onOpenTeamDetails}
                 key={division.division_id}
+                expanded={this.state.expanded[index]}
+                index={index}
+                onToggleOne={this.onToggleOne}
               />
             ))}
           </ul>

@@ -3,7 +3,12 @@ import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import PoolItem from '../pool-item';
 import { SectionDropdown, Loader } from '../../../common';
-import { IDivision, IPool, ITeam } from '../../../../common/models';
+import {
+  IDivision,
+  IPool,
+  ITeam,
+  BindingCbWithOne,
+} from '../../../../common/models';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -24,6 +29,9 @@ interface Props {
     divisionName: string,
     poolName: string
   ) => void;
+  expanded?: boolean;
+  onToggleOne?: BindingCbWithOne<number>;
+  index?: number;
 }
 
 const DivisionItem = ({
@@ -36,6 +44,9 @@ const DivisionItem = ({
   loadPools,
   onDeletePopupOpen,
   onEditPopupOpen,
+  expanded,
+  index,
+  onToggleOne,
 }: Props) => {
   if (division && !division.isPoolsLoading && !division.isPoolsLoaded) {
     loadPools(division.division_id);
@@ -45,6 +56,10 @@ const DivisionItem = ({
     return <Loader />;
   }
 
+  const onSectionToggle = () => {
+    onToggleOne && onToggleOne(index!);
+  };
+
   return (
     <li className={styles.divisionItem}>
       <SectionDropdown
@@ -52,6 +67,8 @@ const DivisionItem = ({
         type="section"
         panelDetailsType="flat"
         headingColor="#1C315F"
+        expanded={expanded !== undefined && expanded}
+        onToggle={onSectionToggle}
       >
         <span>
           {isUnassigned ? 'Unassigned' : `Division: ${division?.long_name}`}{' '}
