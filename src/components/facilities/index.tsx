@@ -22,6 +22,7 @@ import {
   BindingCbWithTwo,
 } from '../../common/models/callback';
 import styles from './styles.module.scss';
+import Button from 'components/common/buttons/button';
 
 const MOCKED_EVENT_ID = 'ABC123';
 
@@ -41,11 +42,15 @@ interface Props {
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
+  expanded: boolean[];
+  expandAll: boolean;
 }
 
 class Facilities extends React.Component<
   Props & RouteComponentProps<MatchParams>
 > {
+  state = { expanded: [], expandAll: false };
+
   componentDidMount() {
     const { loadFacilities } = this.props;
     const eventId = this.props.match.params.eventId;
@@ -68,6 +73,27 @@ class Facilities extends React.Component<
     const { facilities, fields, saveFacilities } = this.props;
 
     saveFacilities(facilities, fields);
+  };
+
+  componentDidUpdate(prevProps: any, prevState: any) {
+    if (prevProps.facilities.length && !prevState.expanded.length) {
+      this.setState({ expanded: this.props.facilities.map(_facility => true) });
+    }
+  }
+
+  onToggleAll = () => {
+    this.setState({
+      expanded: this.state.expanded.map(_e => this.state.expandAll),
+      expandAll: !this.state.expandAll,
+    });
+  };
+
+  onToggleOne = (indexPanel: number) => {
+    this.setState({
+      expanded: this.state.expanded.map((e: boolean, index: number) =>
+        index === indexPanel ? !e : e
+      ),
+    });
   };
 
   render() {
@@ -108,6 +134,16 @@ class Facilities extends React.Component<
             />
           </div>
           <ul className={styles.facilitiesList}>
+            {facilities.length ? (
+              <div className={styles.buttonContainer}>
+                <Button
+                  label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                  variant="text"
+                  color="secondary"
+                  onClick={this.onToggleAll}
+                />
+              </div>
+            ) : null}
             {facilities
               .sort((a, b) => {
                 if (a.isChange || b.isChange) {
@@ -136,6 +172,9 @@ class Facilities extends React.Component<
                     updateFacilities={updateFacilities}
                     updateField={updateField}
                     uploadFileMap={uploadFileMap}
+                    expanded={this.state.expanded[idx]}
+                    index={idx}
+                    onToggleOne={this.onToggleOne}
                   />
                 </li>
               ))}
