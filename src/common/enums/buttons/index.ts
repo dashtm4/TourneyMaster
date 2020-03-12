@@ -3,4 +3,18 @@ enum ButtonTypes {
   SQUARED_OUTLINED = 'squaredOutlined',
 }
 
-export { ButtonTypes };
+enum ButtonColors {
+  INHERIT = 'inherit',
+  PRIMATY = 'primary',
+}
+
+enum ButtonVarian {
+  CONTAINED = 'contained',
+}
+
+enum ButtonFormTypes {
+  SUBMIT = 'submit',
+  BUTTON = 'button',
+}
+
+export { ButtonTypes, ButtonColors, ButtonVarian, ButtonFormTypes };

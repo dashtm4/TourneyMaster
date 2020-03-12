@@ -1,3 +1,11 @@
+enum MenuTitles {
+  LIBRARY_MANAGER = 'Library Manager',
+  REGISTRATION = 'Registration',
+  UTILITIES = 'Utilities',
+  EDIT_PROFILE = 'Edit Profile',
+  EMAIL_SETUP = 'Email Setup',
+}
+
 enum EventMenuTitles {
   EVENT_DETAILS = 'Event Details',
   PRIMARY_INFORMATION = 'Primary Information',
@@ -7,8 +15,6 @@ enum EventMenuTitles {
   ADVANCED_SETTINGS = 'Advanced Settings',
   FACILITIES = 'Facilities',
   REGISTRATION = 'Registration',
-  TEAMS_AND_ATHLETES = 'Teams and Athletes',
-  MAIN_CONTACT = 'Main Contact',
   DIVISIONS_AND_POOLS = 'Divisions & Pools',
   TEAMS = 'Teams',
   TEAM_MANAGEMENT = 'Team Management',
@@ -20,4 +26,19 @@ enum EventMenuTitles {
   REPORTING = 'Reporting',
 }
 
-export { EventMenuTitles };
+enum EventMenuRegistrationTitles {
+  PRIMARY_INFORMATION = 'Primary Information',
+  TEAMS_AND_ATHLETES = 'Teams and Athletes',
+  MAIN_CONTACT = 'Main Contact',
+}
+
+enum RequiredMenuKeys {
+  IS_COMPLETED = 'isCompleted',
+}
+
+export {
+  MenuTitles,
+  EventMenuTitles,
+  EventMenuRegistrationTitles,
+  RequiredMenuKeys,
+};

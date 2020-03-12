@@ -8,9 +8,9 @@ import {
   HeadingLevelThree,
   PopupConfirm,
 } from 'components/common';
-import { Icons } from 'common/constants';
-import styles from './styles.module.scss';
 import { IConfigurableOrganization } from 'common/models';
+import { Icons } from 'common/enums';
+import styles from './styles.module.scss';
 
 const CONFIRM_POPUP_MESSAGE =
   'You are about to create a new organization. Are you sure?';
@@ -103,7 +103,7 @@ const CreateOrganization = ({ createOrganization }: Props) => {
             </div>
             <div className={styles.sectionItem}>
               <Button
-                label="Add Organization"
+                label="Create Organization"
                 btnType="submit"
                 variant="contained"
                 color="primary"

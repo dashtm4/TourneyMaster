@@ -4,7 +4,7 @@ import FieldItem from './components/field-item';
 import { getIcon } from '../../../helpers/get-icon.helper';
 import { BindingAction } from '../../../common/models/callback';
 import { ITeam } from '../../../common/models/teams';
-import { Icons } from '../../../common/constants/icons';
+import { Icons } from '../../../common/enums/icons';
 import styles from './styles.module.scss';
 
 const EDIT_ICON_STYLES = {

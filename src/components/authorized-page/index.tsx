@@ -1,22 +1,24 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Header from '../header';
-// import Menu from '../common/menu';
-// import { MenuList } from './constants/MenuList';
-import { Routes } from '../../common/constants';
-import styles from './styles.module.scss';
+import Menu from '../common/menu';
+import { MenuList } from './logic/constants';
 import Dashboard from '../dashboard';
 import LibraryManager from '../library-manager';
 import OrganizationsManagement from '../organizations-management';
 import Calendar from 'components/calendar';
+import Utilities from 'components/utilities';
 import { EmptyPage } from './authorized-page-event/index';
 import Schedules from 'components/schedules';
+import Footer from 'components/footer';
+import { Routes } from 'common/enums';
+import styles from './styles.module.scss';
 
 const AuthorizedPage = () => (
-  <>
+  <div className={styles.container}>
     <Header />
     <div className={styles.page}>
-      {/* <Menu list={MenuList} isAllowEdit={true} /> */}
+      <Menu list={MenuList} isAllowEdit={true} />
       <main className={styles.content}>
         <Switch>
           <Route path={Routes.SCHEDULES} component={Schedules} />
@@ -28,7 +30,7 @@ const AuthorizedPage = () => (
             component={OrganizationsManagement}
           />
           <Route path={Routes.CALENDAR} component={Calendar} />
-          <Route path={Routes.UTILITIES} component={EmptyPage} />
+          <Route path={Routes.UTILITIES} component={Utilities} />
           <Route path={Routes.EVENT_DAY_COMPLEXITIES} component={EmptyPage} />
           <Route
             path={Routes.ORGANIZATIONS_MANAGEMENT}
@@ -38,7 +40,8 @@ const AuthorizedPage = () => (
         </Switch>
       </main>
     </div>
-  </>
+    <Footer />
+  </div>
 );
 
 export default AuthorizedPage;

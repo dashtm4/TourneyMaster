@@ -7,6 +7,8 @@ import {
   DELETE_ORGANIZATION_SUCCESS,
 } from './action-types';
 import { IOrganization } from '../../../common/models';
+import { sortByField } from 'helpers';
+import { SortByFilesTypes } from 'common/enums';
 
 const initialState = {
   isLoading: false,
@@ -35,7 +37,10 @@ const organizationsManagementReducer = (
         ...state,
         isLoaded: true,
         isLoading: false,
-        organizations,
+        organizations: sortByField(
+          organizations,
+          SortByFilesTypes.ORGANIZATIONS
+        ),
       };
     }
     case CREATE_ORGANIZATION_SUCCESS: {

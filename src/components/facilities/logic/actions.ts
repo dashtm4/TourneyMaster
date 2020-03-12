@@ -21,7 +21,7 @@ import {
   UPLOAD_FILE_MAP_FAILURE,
 } from './action-types';
 import Api from 'api/api';
-import { facilitySchema } from 'validations';
+import { facilitySchema, fieldSchema } from 'validations';
 import { getVarcharEight, uploadFile } from 'helpers';
 import { IFacility, IField, IUploadFile } from 'common/models';
 
@@ -135,6 +135,14 @@ const saveFacilities: ActionCreator<ThunkAction<
         'Oops. It looks like you already have facilities with the same name. The facility must have a unique name.'
       )
       .validate(facilities);
+
+    await Yup.array()
+      .of(fieldSchema)
+      .unique(
+        field => field.field_name,
+        'Oops. It looks like you already have fields with the same name. The field must have a unique name.'
+      )
+      .validate(fields);
 
     for await (let facility of facilities) {
       const copiedFacility = { ...facility };

@@ -131,29 +131,25 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     );
   };
 
-  static getDerivedStateFromProps(
-    nextProps: IDivisionProps,
-    prevState: IAddDivisionState
-  ): Partial<IAddDivisionState> {
+  componentDidUpdate(prevProps: IDivisionProps, prevState: IAddDivisionState) {
     if (
-      nextProps.registration &&
-      !prevState.defaultDivision.entry_fee &&
-      !prevState.divisions[0]?.division_id
+      this.props.registration &&
+      !prevState.divisions[0]?.division_id &&
+      prevProps.registration !== this.props.registration
     ) {
-      return {
+      console.log('upd');
+      this.setState({
         defaultDivision: {
-          entry_fee: nextProps.registration.entry_fee,
-          max_num_teams: nextProps.registration.max_teams_per_division,
+          entry_fee: this.props.registration.entry_fee,
+          max_num_teams: this.props.registration.max_teams_per_division,
         },
         divisions: [
           {
-            entry_fee: nextProps.registration.entry_fee,
-            max_num_teams: nextProps.registration.max_teams_per_division,
+            entry_fee: this.props.registration.entry_fee,
+            max_num_teams: this.props.registration.max_teams_per_division,
           },
         ],
-      };
-    } else {
-      return {};
+      });
     }
   }
 
