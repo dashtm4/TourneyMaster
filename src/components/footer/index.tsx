@@ -14,54 +14,52 @@ const Footer: React.FC = () => {
   return (
     <footer className={styles.footerContainer}>
       <div className={styles.footerCenter}>
-        <div>
-          <div className={styles.logoContainer}>
-            <ul className={styles.footerLinks}>
-              <li>
-                <a href="https://www.tourneymaster.org/privacy-policy/">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="https://www.tourneymaster.org/terms-of-service/">
-                  Terms of Service
-                </a>
-              </li>
-            </ul>
-            <img
-              src={logo}
-              onClick={onLogoClick}
-              className={styles.logo}
-              alt="logo"
-            />
-            <ul className={styles.footerLinks}>
-              <li>
-                <a href="https://www.tourneymaster.org/support/">Support</a>
-              </li>
-              <li>
-                <a href="https://www.tourneymaster.org/about/">About</a>
-              </li>
-            </ul>
-          </div>
-          <div className={styles.line} />
-          <div className={styles.addressInfoContainer}>
-            <div className={styles.footerWithIcon}>
-              <PlaceIcon />
-              <p>One World Trade Center, Suite 8500, New York NY 10007</p>
-            </div>
-
-            <div className={styles.footerWithIcon}>
-              <PhoneIcon />
-              <p>+1.212.377.7020</p>
-            </div>
-
-            <div className={styles.footerWithIcon}>
-              <EmailIcon />
-              <p>info@tourneymaster.com</p>
-            </div>
-          </div>
-          <p className={styles.footerCopyright}>Tourney Master &copy; 2020</p>
+        <div className={styles.logoContainer}>
+          <ul className={styles.footerLinks}>
+            <li>
+              <a href="https://www.tourneymaster.org/privacy-policy/">
+                Privacy Policy
+              </a>
+            </li>
+            <li>
+              <a href="https://www.tourneymaster.org/terms-of-service/">
+                Terms of Service
+              </a>
+            </li>
+          </ul>
+          <img
+            src={logo}
+            onClick={onLogoClick}
+            className={styles.logo}
+            alt="logo"
+          />
+          <ul className={styles.footerLinks}>
+            <li>
+              <a href="https://www.tourneymaster.org/support/">Support</a>
+            </li>
+            <li>
+              <a href="https://www.tourneymaster.org/about/">About</a>
+            </li>
+          </ul>
         </div>
+        <div className={styles.line} />
+        <div className={styles.addressInfoContainer}>
+          <div className={styles.footerWithIcon}>
+            <PlaceIcon />
+            <p>One World Trade Center, Suite 8500, New York NY 10007</p>
+          </div>
+
+          <div className={styles.footerWithIcon}>
+            <PhoneIcon />
+            <p>+1.212.377.7020</p>
+          </div>
+
+          <div className={styles.footerWithIcon}>
+            <EmailIcon />
+            <p>info@tourneymaster.com</p>
+          </div>
+        </div>
+        <p className={styles.footerCopyright}>Tourney Master &copy; 2020</p>
       </div>
     </footer>
   );
