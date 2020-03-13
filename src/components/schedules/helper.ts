@@ -82,7 +82,10 @@ export const calculateTimeSlots = (timeValues: ITimeValues) => {
 
   for (let i = 0; i < timeSlotsNum; i++) {
     const timeInMin = firstGameTimeMin + totalGameTime * i;
-    const timeInStringFormat = timeToString(timeInMin);
+
+    const validMinutes = 5 * Math.ceil(timeInMin / 5);
+    const timeInStringFormat = timeToString(validMinutes);
+
     timeSlots.push({
       id: i,
       time: timeInStringFormat,

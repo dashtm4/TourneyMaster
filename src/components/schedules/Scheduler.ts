@@ -1,4 +1,4 @@
-import { union, findKey, find, keys } from 'lodash-es';
+import { union, findKey, find, keys, orderBy } from 'lodash-es';
 import { getTimeFromString } from 'helpers/stringTimeOperations';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
@@ -450,39 +450,47 @@ export default class Scheduler {
     });
   };
 
-  settleMinGameTeams = (
-    teams: ITeamCard[],
-    isPremier: boolean,
-    options?: IFindGameOptions
-  ) => {
-    const filteredTeams = teams.filter(team => team.isPremier === isPremier);
-    const rearrangedTeams = this.rearrangeTeamsByConstraints(filteredTeams);
+  settleMinGameTeams = (teams: ITeamCard[], options?: IFindGameOptions) => {
+    const rearrangedTeams = this.rearrangeTeamsByConstraints(teams);
     const foundGames = this.manageGamesByTeamSets(rearrangedTeams, options);
     return foundGames;
   };
 
   handleMinGameMinimum = () => {
-    const teams = this.getUnsatisfiedTeams();
+    const myFunction = (
+      isPremier: boolean,
+      gameOptions: IFindGameOptions,
+      recursor: number = 0
+    ) => {
+      const unsatisfiedTeams = this.getUnsatisfiedTeams({ isPremier });
+      const sortedTeams = orderBy(unsatisfiedTeams, 'games.length');
+      const divideBy =
+        recursor === 0 ? sortedTeams[0]?.games?.length : this.maxGameNum;
+      recursor++;
 
-    const options = { includeBackToBack: true };
-    const premierOptions = { ...options, ignorePremier: true };
+      const teams = sortedTeams.filter(
+        team => team.games?.length! <= divideBy!
+      );
 
-    // settle PREMIER teams on PREMIER fields only
-    this.settleMinGameTeams(teams, true, options);
+      this.settleMinGameTeams(teams, gameOptions);
 
-    // if some premier teams are still unsatisfied -> settle them on REGULAR fields too
-    const premierTeamsLeftovers = this.getUnsatisfiedTeams({ isPremier: true });
-    if (premierTeamsLeftovers?.length) {
-      this.settleMinGameTeams(teams, true, premierOptions);
-    }
+      const unsatisfiedTeamsLeft = this.getUnsatisfiedTeams({ isPremier });
+      const sortedTeamsLeft = orderBy(unsatisfiedTeamsLeft, 'games.length');
 
-    // settle those regular teams as well
-    this.settleMinGameTeams(teams, false);
-    const teamsLeftovers = this.getUnsatisfiedTeams({ isPremier: false });
+      if (sortedTeamsLeft.length && recursor <= this.minGameNum) {
+        myFunction(isPremier, gameOptions, recursor);
+      }
+    };
 
-    if (teamsLeftovers?.length) {
-      this.settleMinGameTeams(teams, false, options);
-    }
+    // premier teams --> premier fields (back-to-back)
+    myFunction(true, { includeBackToBack: true });
+    // premier teams --> regular fields (w/o back-to-back)
+    myFunction(true, { ignorePremier: true });
+    // premier teams --> regular fields (back-to-back)
+    myFunction(true, { includeBackToBack: true, ignorePremier: true });
+
+    // regular teams (back-to-back)
+    myFunction(false, { includeBackToBack: true });
   };
 
   calculateAvgStartTime = () => {
