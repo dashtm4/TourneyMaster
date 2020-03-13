@@ -12,6 +12,13 @@ import {
 } from './action-types';
 import { IFacility, IField } from '../../../common/models';
 
+export interface IFacilitiesState {
+  isLoading: boolean;
+  isLoaded: boolean;
+  facilities: IFacility[];
+  fields: IField[];
+}
+
 const initialState = {
   isLoading: false,
   isLoaded: false,
@@ -19,15 +26,8 @@ const initialState = {
   fields: [],
 };
 
-export interface AppState {
-  isLoading: boolean;
-  isLoaded: boolean;
-  facilities: IFacility[];
-  fields: IField[];
-}
-
 const facilitiesReducer = (
-  state: AppState = initialState,
+  state: IFacilitiesState = initialState,
   action: FacilitiesAction
 ) => {
   switch (action.type) {

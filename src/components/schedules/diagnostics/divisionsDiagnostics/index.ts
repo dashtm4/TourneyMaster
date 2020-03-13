@@ -1,7 +1,7 @@
 import { union, keys, filter, find } from 'lodash-es';
 import { ISchedulerResult } from 'components/schedules';
 import { calculateTeamTournamentTime } from '../teamsDiagnostics';
-import { getTimeFromString, timeToString } from 'helpers/stringTimeOperations';
+import { getTimeFromString, timeToString } from 'helpers';
 
 const calculateDivisionFieldsNumber = (
   divisionId: string,

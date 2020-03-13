@@ -13,6 +13,8 @@ export interface IFacility {
   facility_lat: number | null;
   facility_long: number | null;
   facility_sort: string | null;
+  first_game_time: string | null;
+  last_game_end: string | null;
   public_access_YN: string | null;
   restrooms: string | null;
   num_toilets: string | null;

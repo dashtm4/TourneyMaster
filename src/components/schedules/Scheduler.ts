@@ -1,5 +1,5 @@
 import { union, findKey, find, keys, orderBy } from 'lodash-es';
-import { getTimeFromString } from 'helpers/stringTimeOperations';
+import { getTimeFromString } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
 import {
