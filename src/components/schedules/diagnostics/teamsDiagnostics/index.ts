@@ -1,7 +1,7 @@
 import { find } from 'lodash-es';
 import { ISchedulerResult } from 'components/schedules';
 import { ITeamCard } from 'common/models/schedule/teams';
-import { getTimeFromString, timeToString } from 'helpers/stringTimeOperations';
+import { getTimeFromString, timeToString } from 'helpers';
 import { IGame } from 'components/common/matrix-table/helper';
 
 export const calculateTeamTournamentTime = (

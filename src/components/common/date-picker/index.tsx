@@ -25,6 +25,7 @@ interface IDatePickerProps {
   dateFormat?: string;
   viewType?: 'default' | 'input';
   fullWidth?: boolean;
+  disabled?: boolean;
 }
 
 const DatePicker: React.FC<IDatePickerProps> = ({
@@ -38,6 +39,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   dateFormat,
   viewType,
   fullWidth,
+  disabled,
 }) => {
   const renderInputDatePicker = () => (
     <InputDatePicker
@@ -51,6 +53,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       value={value}
       format={dateFormat || 'MM/dd/yyyy'}
       onChange={onChange}
+      disabled={disabled}
     />
   );
   const renderDatePicker = () => (
@@ -65,6 +68,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       value={value}
       format={dateFormat || 'MM/dd/yyyy'}
       onChange={onChange}
+      disabled={disabled}
     />
   );
   const renderInputTimePicker = () => (
@@ -78,6 +82,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       placeholder="08:00 AM"
       value={value}
       onChange={onChange}
+      disabled={disabled}
     />
   );
   const renderTimePicker = () => (
@@ -92,6 +97,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       mask="__:__ _M"
       value={value}
       onChange={onChange}
+      disabled={disabled}
     />
   );
 
@@ -106,6 +112,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       inputVariant="outlined"
       value={value}
       onChange={onChange}
+      disabled={disabled}
     />
   );
 
@@ -117,12 +124,12 @@ const DatePicker: React.FC<IDatePickerProps> = ({
 
   const renderPicker = () => {
     switch (type) {
-      case 'date':
-        return chooseDatePicker();
+      case 'time':
+        return chooseTimePicker();
       case 'date-time':
         return renderDateTimePicker();
       default:
-        return chooseTimePicker();
+        return chooseDatePicker();
     }
   };
 

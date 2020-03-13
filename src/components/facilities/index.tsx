@@ -2,7 +2,7 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
-import { AppState } from './logic/reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import {
   loadFacilities,
   loadFields,
@@ -185,12 +185,8 @@ class Facilities extends React.Component<
   }
 }
 
-interface IRootState {
-  facilities: AppState;
-}
-
 export default connect(
-  (state: IRootState) => ({
+  (state: IAppState) => ({
     isLoading: state.facilities.isLoading,
     facilities: state.facilities.facilities,
     fields: state.facilities.fields,

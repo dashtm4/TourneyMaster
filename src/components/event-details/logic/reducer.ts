@@ -25,9 +25,6 @@ export default (state = defaultState, action: EventDetailsAction) => {
     case EVENT_DETAILS_FETCH_START: {
       return {
         ...state,
-        data: {
-          ...state.data,
-        },
         isEventLoading: true,
       };
     }

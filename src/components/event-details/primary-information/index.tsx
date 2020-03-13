@@ -21,6 +21,7 @@ import Map from './map';
 import PlacesAutocompleteInput from './map/autocomplete';
 import { BindingCbWithTwo, BindingCbWithOne } from 'common/models';
 import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
+import { timeToDate, dateToTime } from 'helpers';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -75,6 +76,8 @@ const PrimaryInformationSection: React.FC<Props> = ({
     time_zone_utc,
     event_startdate,
     event_enddate,
+    first_game_time,
+    last_game_end,
     event_level,
   } = eventData;
 
@@ -118,6 +121,12 @@ const PrimaryInformationSection: React.FC<Props> = ({
 
   const onEndDate = (e: Date | string) =>
     !isNaN(Number(e)) && onChange('event_enddate', new Date(e).toISOString());
+
+  const onFirstGameTime = (e: Date | string) =>
+    !isNaN(Number(e)) && onChange('first_game_time', dateToTime(e));
+
+  const onLastGameTime = (e: Date | string) =>
+    !isNaN(Number(e)) && onChange('last_game_end', dateToTime(e));
 
   const onTimeZone = (e: InputTargetValue) =>
     onChange('time_zone_utc', timeZoneEnum[e.target.value]);
@@ -189,18 +198,34 @@ const PrimaryInformationSection: React.FC<Props> = ({
           <div className={styles.piSection}>
             <div className={styles.piDetailsSecond}>
               <DatePicker
-                minWidth="170px"
+                minWidth="100%"
                 label="Start Date"
                 type="date"
                 value={event_startdate}
                 onChange={onStartDate}
               />
               <DatePicker
-                minWidth="170px"
+                minWidth="100%"
                 label="End Date"
                 type="date"
                 value={event_enddate}
                 onChange={onEndDate}
+              />
+            </div>
+            <div className={styles.gameTimesWrapper}>
+              <DatePicker
+                minWidth="100%"
+                label="First Game Start"
+                type="time"
+                value={timeToDate(first_game_time!)}
+                onChange={onFirstGameTime}
+              />
+              <DatePicker
+                minWidth="100%"
+                label="Last Game End"
+                type="time"
+                value={timeToDate(last_game_end!)}
+                onChange={onLastGameTime}
               />
               <Select
                 options={timeZoneOptions.map(type => ({

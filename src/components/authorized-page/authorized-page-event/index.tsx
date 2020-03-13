@@ -8,7 +8,7 @@ import {
   clearAuthPageData,
   changeTournamentStatus,
 } from './logic/actions';
-import { AppState } from './logic/reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
 import Menu from 'components/common/menu';
 import Facilities from 'components/facilities';
@@ -131,12 +131,8 @@ const AuthorizedPageEvent = ({
   );
 };
 
-interface IRootState {
-  pageEvent: AppState;
-}
-
 export default connect(
-  ({ pageEvent }: IRootState) => ({
+  ({ pageEvent }: IAppState) => ({
     tournamentData: pageEvent.tournamentData,
     isLoading: pageEvent.isLoading,
     isLoaded: pageEvent.isLoaded,
