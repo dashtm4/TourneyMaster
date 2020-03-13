@@ -11,7 +11,7 @@ import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
-import { getTimeFromString, timeToString } from 'helpers/stringTimeOperations';
+import { getTimeFromString, timeToString } from 'helpers';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 

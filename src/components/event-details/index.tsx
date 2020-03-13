@@ -115,12 +115,14 @@ class EventDetails extends Component<Props, State> {
 
   render() {
     const eventTypeOptions = ['Tournament', 'Showcase'];
-
     const { event } = this.state;
     const { isEventLoading } = this.props.event;
-    return !event || isEventLoading ? (
-      <Loader />
-    ) : (
+
+    if (!event || isEventLoading) {
+      return <Loader />;
+    }
+
+    return (
       <div className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.paperWrapper}>

@@ -1,3 +1,10 @@
+import moment from 'moment';
+
+const timeToDate = (time: string) =>
+  moment(time.split(':').join(''), 'HHmmss').format();
+
+const dateToTime = (date: Date | string) => moment(date).format('HH:mm:ss');
+
 const getTimeFromString = (
   time: string,
   type: 'hours' | 'minutes' | 'seconds'
@@ -32,4 +39,4 @@ const timeToString = (time: number): string => {
     .join(':');
 };
 
-export { getTimeFromString, timeToString };
+export { timeToDate, dateToTime, getTimeFromString, timeToString };

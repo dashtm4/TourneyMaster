@@ -13,8 +13,8 @@ export interface IEventDetails {
   event_tag: string | null;
   event_format_id: number | null;
   event_status: EventStatuses;
-  first_game_time: string | null;
-  last_game_end: string | null;
+  first_game_time: string;
+  last_game_end: string;
   num_of_locations: number | null;
   primary_location_desc: string | null;
   primary_location_city: string | null;

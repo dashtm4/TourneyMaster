@@ -117,12 +117,12 @@ const DatePicker: React.FC<IDatePickerProps> = ({
 
   const renderPicker = () => {
     switch (type) {
-      case 'date':
-        return chooseDatePicker();
+      case 'time':
+        return chooseTimePicker();
       case 'date-time':
         return renderDateTimePicker();
       default:
-        return chooseTimePicker();
+        return chooseDatePicker();
     }
   };
 
