@@ -12,6 +12,7 @@ import { EventMenuTitles } from 'common/enums';
 import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
 import { getTimeFromString, timeToString } from 'helpers';
+import { BindingCbWithOne } from 'common/models';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -37,12 +38,18 @@ interface Props {
   eventTypeOptions: string[];
   eventData: Partial<EventDetailsDTO>;
   onChange: any;
+  expanded: boolean;
+  onToggleOne: BindingCbWithOne<number>;
+  index: number;
 }
 
 const EventStructureSection: React.FC<Props> = ({
   eventTypeOptions,
   eventData,
   onChange,
+  expanded,
+  index,
+  onToggleOne,
 }: Props) => {
   const {
     show_goals_scored,
@@ -104,6 +111,10 @@ const EventStructureSection: React.FC<Props> = ({
     return onChange('time_btwn_periods', timeInString);
   };
 
+  const onSectionToggle = () => {
+    onToggleOne(index);
+  };
+
   const resultsDisplayOptions = [
     { label: 'Show Goals Scored', checked: Boolean(show_goals_scored) },
     { label: 'Show Goals Allowed', checked: Boolean(show_goals_allowed) },
@@ -131,6 +142,8 @@ const EventStructureSection: React.FC<Props> = ({
       panelDetailsType="flat"
       isDefaultExpanded={true}
       useBorder={true}
+      expanded={expanded}
+      onToggle={onSectionToggle}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Event Structure</span>

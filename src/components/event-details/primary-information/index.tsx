@@ -19,7 +19,7 @@ import { EventDetailsDTO } from '../logic/model';
 
 import Map from './map';
 import PlacesAutocompleteInput from './map/autocomplete';
-import { BindingCbWithTwo } from 'common/models';
+import { BindingCbWithTwo, BindingCbWithOne } from 'common/models';
 import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
 import { timeToDate, dateToTime } from 'helpers';
 
@@ -28,6 +28,9 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 interface Props {
   eventData: Partial<EventDetailsDTO>;
   onChange: BindingCbWithTwo<string, string | number>;
+  expanded: boolean;
+  onToggleOne: BindingCbWithOne<number>;
+  index: number;
 }
 
 enum sportsEnum {
@@ -65,6 +68,9 @@ const levelOptions = ['High School', 'Club', 'Youth', 'Other'];
 const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
   onChange,
+  expanded,
+  index,
+  onToggleOne,
 }: Props) => {
   const {
     time_zone_utc,
@@ -135,6 +141,11 @@ const PrimaryInformationSection: React.FC<Props> = ({
     onChange('primary_location_lat', position.lat);
     onChange('primary_location_long', position.lng);
   };
+
+  const onSectionToggle = () => {
+    onToggleOne(index);
+  };
+
   const { primary_location_lat: lat, primary_location_long: lng } = eventData;
 
   return (
@@ -144,6 +155,8 @@ const PrimaryInformationSection: React.FC<Props> = ({
       panelDetailsType="flat"
       isDefaultExpanded={true}
       useBorder={true}
+      expanded={expanded}
+      onToggle={onSectionToggle}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Primary Information</span>

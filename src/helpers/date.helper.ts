@@ -7,7 +7,7 @@ const dateToTime = (date: Date | string) => moment(date).format('HH:mm:ss');
 
 const getTimeFromString = (
   time: string,
-  type: 'hours' | 'minutes' | 'seconds'
+  type: 'hours' | 'minutes' | 'seconds' | 'hh' | 'mm' | 'ss'
 ): number => {
   if (!time) {
     return 0;
@@ -22,6 +22,12 @@ const getTimeFromString = (
       return hours * 60 + minutes;
     case 'seconds':
       return hours * 3600 + minutes * 60 + seconds;
+    case 'hh':
+      return hours;
+    case 'mm':
+      return minutes;
+    case 'ss':
+      return seconds;
     default:
       return -1;
   }

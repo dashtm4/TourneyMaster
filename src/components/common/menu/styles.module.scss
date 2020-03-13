@@ -13,6 +13,8 @@
   border-radius: 5px;
 
   box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.2);
+
+  margin-bottom: 100px;
 }
 
 .eventTitle {
@@ -44,59 +46,6 @@
   list-style: none;
 }
 
-.subList {
-  margin: 0;
-  padding: 0;
-
-  list-style: none;
-
-  overflow: hidden;
-}
-
-.listItem {
-  display: flex;
-  align-items: center;
-
-  white-space: nowrap;
-  font-size: 16px;
-  line-height: 22px;
-  font-weight: normal;
-  color: #ffffff;
-
-  a {
-    color: #ffffff;
-    text-decoration: none;
-  }
-
-  svg {
-    fill: #ffffff;
-  }
-}
-
-.itemTitle {
-  display: flex;
-  align-items: center;
-
-  &Active {
-    font-weight: 700;
-  }
-}
-
-.subListItem {
-  margin: 0 0 25px 15px;
-
-  color: #ffffff;
-
-  white-space: nowrap;
-  text-overflow: ellipsis;
-
-  overflow: hidden;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
 .pinBtn {
   display: flex;
   align-items: center;
@@ -123,40 +72,5 @@
 
     width: 20px;
     margin-right: 5px;
-  }
-}
-
-.progressBarWrapper {
-  margin-bottom: 5px;
-}
-
-.progressBarStatusWrapper {
-  display: flex;
-  justify-content: space-between;
-
-  margin-top: 8px;
-}
-
-.progressBarStatus,
-.progressBarComplete {
-  color: #ffffff;
-
-  span,
-  output {
-    font-weight: bold;
-  }
-}
-
-.doneBtnWrapper {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 19px;
-
-  button {
-    background-color: #00cc47;
-  }
-
-  button:hover {
-    background-color: #00cc47;
   }
 }

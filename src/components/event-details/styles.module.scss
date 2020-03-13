@@ -218,3 +218,7 @@ $sectionBodyPadding: 20px 0;
     }
   }
 }
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+}

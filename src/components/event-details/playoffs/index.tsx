@@ -16,6 +16,7 @@ import { EventDetailsDTO } from '../logic/model';
 import Dnd from '../dnd';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import { BindingCbWithOne } from 'common/models';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -57,6 +58,9 @@ enum numTeamsBracketEnum {
 interface Props {
   eventData: Partial<EventDetailsDTO>;
   onChange: any;
+  expanded: boolean;
+  onToggleOne: BindingCbWithOne<number>;
+  index: number;
 }
 
 const rankingFactorDivisions = [
@@ -75,7 +79,13 @@ const rankingFactorPools = [
   { id: 5, text: 'Goals Allowed' },
 ];
 
-const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
+const PlayoffsSection: React.FC<Props> = ({
+  eventData,
+  onChange,
+  expanded,
+  index,
+  onToggleOne,
+}: Props) => {
   const {
     playoffs_exist,
     bracket_type,
@@ -118,6 +128,10 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
     console.log('cards:', name, cards);
   };
 
+  const onSectionToggle = () => {
+    onToggleOne(index);
+  };
+
   return (
     <SectionDropdown
       id={EventMenuTitles.PLAYOFFS}
@@ -125,6 +139,8 @@ const PlayoffsSection: React.FC<Props> = ({ eventData, onChange }: Props) => {
       panelDetailsType="flat"
       isDefaultExpanded={true}
       useBorder={true}
+      expanded={expanded}
+      onToggle={onSectionToggle}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Playoffs</span>

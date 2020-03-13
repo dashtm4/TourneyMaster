@@ -7,6 +7,10 @@ import {
   AuthPageAction,
 } from './action-types';
 import {
+  EVENT_DETAILS_FETCH_SUCCESS,
+  EventDetailsAction,
+} from 'components/event-details/logic/actionTypes';
+import {
   REGISTRATION_UPDATE_SUCCESS,
   RegistrationAction,
 } from 'components/registration/registration-edit/logic/actionTypes';
@@ -55,6 +59,7 @@ const pageEventReducer = (
   state: IPageEventState = initialState,
   action:
     | AuthPageAction
+    | EventDetailsAction
     | FacilitiesAction
     | DivisionsPoolsAction
     | RegistrationAction
@@ -130,6 +135,17 @@ const pageEventReducer = (
               return item;
           }
         }),
+      };
+    }
+    case EVENT_DETAILS_FETCH_SUCCESS: {
+      const events = action.payload;
+
+      return {
+        ...state,
+        tournamentData: {
+          ...state.tournamentData,
+          event: events[0],
+        },
       };
     }
     case REGISTRATION_UPDATE_SUCCESS: {

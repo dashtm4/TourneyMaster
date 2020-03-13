@@ -9,18 +9,17 @@ import OrganizationsManagement from '../organizations-management';
 import Calendar from 'components/calendar';
 import Utilities from 'components/utilities';
 import { EmptyPage } from './authorized-page-event/index';
-import Schedules from 'components/schedules';
+import Footer from 'components/footer';
 import { Routes } from 'common/enums';
 import styles from './styles.module.scss';
 
 const AuthorizedPage = () => (
-  <>
+  <div className={styles.container}>
     <Header />
     <div className={styles.page}>
       <Menu list={MenuList} isAllowEdit={true} />
       <main className={styles.content}>
         <Switch>
-          <Route path={Routes.SCHEDULES} component={Schedules} />
           <Route path={Routes.DASHBOARD} component={Dashboard} />
           <Route path={Routes.LIBRARY_MANAGER} component={LibraryManager} />
           <Route path={Routes.EVENT_LINK} component={EmptyPage} />
@@ -39,7 +38,8 @@ const AuthorizedPage = () => (
         </Switch>
       </main>
     </div>
-  </>
+    <Footer />
+  </div>
 );
 
 export default AuthorizedPage;

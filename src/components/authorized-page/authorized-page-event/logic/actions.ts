@@ -9,10 +9,15 @@ import {
   PUBLISH_TOURNAMENT_SUCCESS,
   PUBLISH_TOURNAMENT_FAILURE,
 } from './action-types';
+import { AppState } from './reducer';
 import Api from 'api/api';
 import { Toasts } from 'components/common';
 import { IEventDetails, IRegistration } from 'common/models';
 import { EventStatuses } from 'common/enums';
+
+type IAppState = {
+  pageEvent: AppState;
+};
 
 const loadAuthPageData: ActionCreator<ThunkAction<
   void,
@@ -64,23 +69,19 @@ const clearAuthPageData = () => ({
   type: CLEAR_AUTH_PAGE_DATA,
 });
 
-const publishTournament: ActionCreator<ThunkAction<
-  void,
-  {},
-  null,
-  AuthPageAction
->> = (eventId: string) => async (dispatch: Dispatch) => {
+const changeTournamentStatus = (status: EventStatuses) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
   try {
-    const events = await Api.get(`/events?event_id=${eventId}`);
-    const currentEvent = events.find(
-      (it: IEventDetails) => it.event_id === eventId
-    );
-    const updatedEvent = {
-      ...currentEvent,
-      event_status: EventStatuses.PUBLIHSED,
-    };
+    const { tournamentData } = getState().pageEvent;
 
-    Api.put(`/events?event_id=${updatedEvent.event_id}`, updatedEvent);
+    const updatedEvent = {
+      ...tournamentData.event,
+      event_status: status,
+    } as IEventDetails;
+
+    await Api.put(`/events?event_id=${updatedEvent.event_id}`, updatedEvent);
 
     dispatch({
       type: PUBLISH_TOURNAMENT_SUCCESS,
@@ -89,7 +90,7 @@ const publishTournament: ActionCreator<ThunkAction<
       },
     });
 
-    Toasts.successToast('Tournament successfully created.');
+    Toasts.successToast('Changes successfully saved.');
   } catch {
     dispatch({
       type: PUBLISH_TOURNAMENT_FAILURE,
@@ -97,4 +98,4 @@ const publishTournament: ActionCreator<ThunkAction<
   }
 };
 
-export { loadAuthPageData, clearAuthPageData, publishTournament };
+export { loadAuthPageData, clearAuthPageData, changeTournamentStatus };
