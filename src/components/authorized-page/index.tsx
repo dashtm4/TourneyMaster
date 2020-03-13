@@ -13,6 +13,7 @@ import Schedules from 'components/schedules';
 import Footer from 'components/footer';
 import { Routes } from 'common/enums';
 import styles from './styles.module.scss';
+import GamedayComplexities from 'components/gameday-complexities';
 
 const AuthorizedPage = () => (
   <div className={styles.container}>
@@ -31,7 +32,10 @@ const AuthorizedPage = () => (
           />
           <Route path={Routes.CALENDAR} component={Calendar} />
           <Route path={Routes.UTILITIES} component={Utilities} />
-          <Route path={Routes.EVENT_DAY_COMPLEXITIES} component={EmptyPage} />
+          <Route
+            path={Routes.EVENT_DAY_COMPLEXITIES}
+            component={GamedayComplexities}
+          />
           <Route
             path={Routes.ORGANIZATIONS_MANAGEMENT}
             component={OrganizationsManagement}

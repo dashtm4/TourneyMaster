@@ -7,43 +7,63 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import styles from './styles.module.scss';
 
 interface IProps {
-  options: Partial<{ title: string }>[];
-  placeholder: string;
-  width?: number;
+  options: { label: string; value: string }[];
+  placeholder?: string;
+  width?: string;
+  label?: string;
+  onChange: any;
+  value: { label: string; value: string }[];
 }
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const MultipleSearchSelect = ({ options, placeholder, width }: IProps) => {
+const MultipleSearchSelect = ({
+  options,
+  placeholder,
+  width,
+  label,
+  onChange,
+  value,
+}: IProps) => {
   return (
     <Autocomplete
       multiple={true}
+      size="small"
       options={options}
       disableCloseOnSelect={true}
-      getOptionLabel={(option: any) => option.title}
-      renderOption={(option, { selected }) => (
-        <>
-          <Checkbox
-            icon={icon}
-            checkedIcon={checkedIcon}
-            style={{ marginRight: 8 }}
-            checked={selected}
-          />
-          {option.title}
-        </>
-      )}
+      getOptionSelected={(option, _value) => option.label === _value.label}
+      getOptionLabel={(option: any) => option.label}
+      onChange={onChange}
+      value={value || []}
+      renderOption={(option, { selected }) => {
+        return (
+          <>
+            <Checkbox
+              icon={icon}
+              checkedIcon={checkedIcon}
+              style={{ marginRight: 8 }}
+              checked={selected}
+            />
+            {option.label}
+          </>
+        );
+      }}
       className={styles.autocomplete}
       style={{ width }}
       renderInput={(params: RenderInputParams) => (
-        <TextField
-          className={styles.input}
-          {...params}
-          variant="outlined"
-          size="small"
-          placeholder={placeholder}
-          fullWidth={true}
-        />
+        <div className={styles.container}>
+          <span className={styles.label}>{label}</span>
+          <TextField
+            type="text"
+            className={styles.input}
+            {...params}
+            variant="outlined"
+            size="small"
+            placeholder={placeholder}
+            fullWidth={true}
+          />
+        </div>
       )}
     />
   );
