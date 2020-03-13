@@ -1,4 +1,4 @@
-import { getTimeFromString, timeToString } from 'helpers/stringTimeOperations';
+import { getTimeFromString, timeToString } from 'helpers';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 
 interface ITimeValues {
