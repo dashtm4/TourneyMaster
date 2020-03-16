@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from '../styles.module.scss';
 import { Input, Checkbox, CardMessage } from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import { BindingCbWithTwo } from 'common/models';
 import { IRegistration } from 'common/models/registration';
 
@@ -31,7 +32,10 @@ const MainContact = ({ data, onChange }: IMainContactProps) => {
     <div className={styles.section}>
       <div className={styles.sectionTooltipRow}>
         <div className={styles.sectionItem} style={{ width: '51.5%' }} />
-        <CardMessage type="emodjiObjects" style={{ fontSize: '10xp' }}>
+        <CardMessage
+          type={CardMessageTypes.EMODJI_OBJECTS}
+          style={{ fontSize: '10xp' }}
+        >
           Admin, Tourney Director, Boys Lead, etc.
         </CardMessage>
       </div>

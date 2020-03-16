@@ -8,6 +8,11 @@ export enum DayTypes {
   DAY_THREE = 'Day 3',
 }
 
+export enum OptimizeTypes {
+  MIN_RANK = 'Min Rank Difference',
+  MAX_RANK = 'Max Rank Difference',
+}
+
 export interface IScheduleFilter {
   selectedDay: DayTypes;
   selectedDivision: string;

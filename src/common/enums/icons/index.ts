@@ -23,6 +23,9 @@ enum Icons {
   FILE_COPY = 'fileCopy',
   CHECK_CIRCLE = 'checkCircle',
   DONE = 'done',
+  SETTINGS_BACKUP_RESTORE = 'settingsBackupRestore',
+  LOCK = 'lock',
+  LOCK_OPEN = 'lockOpen',
 }
 
 export { Icons };

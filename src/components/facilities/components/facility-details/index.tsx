@@ -12,6 +12,7 @@ import {
   CardMessage,
   DatePicker,
 } from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import { FileUploadTypes, AcceptFileTypes } from '../../../common/file-upload';
 import PlacesAutocompleteInput from '../../../event-details/primary-information/map/autocomplete';
 import Map from '../../../event-details/primary-information/map';
@@ -22,7 +23,6 @@ import {
   IUploadFile,
   BindingCbWithOne,
 } from 'common/models';
-import { Icons } from 'common/enums/icons';
 import styles from './styles.module.scss';
 
 enum FormFields {
@@ -436,7 +436,7 @@ class FacilityDetails extends React.Component<Props, State> {
                     disabled={!isEdit}
                   />
                 </div>
-                <CardMessage type={Icons.EMODJI_OBJECTS}>
+                <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
                   Notify your attendees they need to know something. For
                   example, if cars will be aggressively ticketed, parking will
                   be tight, etc.

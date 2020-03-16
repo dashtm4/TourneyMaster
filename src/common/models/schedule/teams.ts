@@ -23,9 +23,9 @@ export interface IFetchedTeam {
   updated_datetime?: string | null;
 
   //! dell it
-  errors?: string[];
   divisionShortName: string;
   divisionHex: string;
+  errors?: string[];
 }
 
 export interface ITeam {
@@ -37,9 +37,9 @@ export interface ITeam {
   isPremier: boolean;
 
   //! dell it
-  errors?: string[];
   divisionShortName: string;
   divisionHex: string;
+  errors?: string[];
 }
 
 export interface ITeamCard extends ITeam {

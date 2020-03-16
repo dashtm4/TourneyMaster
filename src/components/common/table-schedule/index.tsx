@@ -2,10 +2,16 @@ import React from 'react';
 import ListUnassigned from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
+import TableActions from './components/table-actions';
 import { MatrixTable } from 'components/common';
 import { IDivision, ITeam, IEventSummary } from 'common/models';
 import { getUnassignedTeams } from './helpers';
-import { DayTypes, DefaulSelectFalues, IScheduleFilter } from './types';
+import {
+  DayTypes,
+  DefaulSelectFalues,
+  IScheduleFilter,
+  OptimizeTypes,
+} from './types';
 import styles from './styles.module.scss';
 
 import {
@@ -32,14 +38,21 @@ const TableSchedule = ({ divisions, teams, eventSummary }: Props) => {
   const [filterValues, onFilterValueChange] = React.useState<IScheduleFilter>(
     SCHEDULE_FILTER_FALUES
   );
+  const [optimizeBy, onOptimizeClick] = React.useState<OptimizeTypes>(
+    OptimizeTypes.MIN_RANK
+  );
   const [isHeatmap, onHeatmapChange] = React.useState<boolean>(false);
+
+  //! dell
   const unassignedTeams = getUnassignedTeams(mockedTeamCards);
 
   return (
     <section>
       <h2 className="visually-hidden">Schedule table</h2>
       <div className={styles.scheduleTableWrapper}>
-        <ListUnassigned teams={unassignedTeams} />
+        {unassignedTeams.length > 0 && (
+          <ListUnassigned teams={unassignedTeams} />
+        )}
         <div className={styles.tableWrapper}>
           <Filter
             divisions={divisions}
@@ -61,6 +74,15 @@ const TableSchedule = ({ divisions, teams, eventSummary }: Props) => {
         isHeatmap={isHeatmap}
         onHeatmapChange={onHeatmapChange}
       />
+      {unassignedTeams.length > 0 && (
+        <TableActions
+          optimizeBy={optimizeBy}
+          onUndoClick={() => {}}
+          onLockAllClick={() => {}}
+          onUnlockAllClick={() => {}}
+          onOptimizeClick={onOptimizeClick}
+        />
+      )}
     </section>
   );
 };

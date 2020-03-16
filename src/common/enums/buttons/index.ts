@@ -6,10 +6,12 @@ enum ButtonTypes {
 enum ButtonColors {
   INHERIT = 'inherit',
   PRIMATY = 'primary',
+  SECONDARY = 'secondary',
 }
 
 enum ButtonVarian {
   CONTAINED = 'contained',
+  TEXT = 'text',
 }
 
 enum ButtonFormTypes {
