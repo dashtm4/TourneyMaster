@@ -33,7 +33,7 @@ const Footer: React.FC = () => {
             className={styles.logo}
             alt="logo"
           />
-          <ul className={styles.footerLinks}>
+          <ul className={styles.footerLinksRight}>
             <li>
               <a href="https://www.tourneymaster.org/support/">Support</a>
             </li>
