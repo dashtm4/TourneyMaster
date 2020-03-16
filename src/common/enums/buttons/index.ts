@@ -6,6 +6,7 @@ enum ButtonTypes {
 enum ButtonColors {
   INHERIT = 'inherit',
   PRIMATY = 'primary',
+  SECONDARY = 'secondary',
 }
 
 enum ButtonVarian {
