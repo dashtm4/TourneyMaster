@@ -22,7 +22,6 @@ import ProgressBar from './progress-bar';
 import PopupExposure from './popup-exposure';
 import PopupConfirm from './popup-confirm';
 import SortTable from './sort-table';
-import MatrixTable from './matrix-table';
 import * as Toasts from './toastr/showToasts';
 
 export {
@@ -51,5 +50,4 @@ export {
   PopupConfirm,
   SortTable,
   ProgressBar,
-  MatrixTable
 };

@@ -21,7 +21,7 @@ enum FormFields {
 interface Props {
   divisions: IDivision[];
   teams: ITeam[];
-  eventSummary: IEventSummary[];
+  fields: IEventSummary[];
   selectedDay: DayTypes;
   selectedDivision: string;
   selectedTeam: string;
@@ -33,7 +33,7 @@ interface Props {
 const ScoringFilter = ({
   divisions,
   teams,
-  eventSummary,
+  fields,
   selectedDay,
   selectedDivision,
   selectedTeam,
@@ -106,7 +106,7 @@ const ScoringFilter = ({
           name={FormFields.SELECTED_FIELDS}
           options={[
             { label: 'All', value: DefaulSelectFalues.ALL },
-            ...sortByField(eventSummary, SortByFilesTypes.FACILITIES_INITIALS).map(
+            ...sortByField(fields, SortByFilesTypes.FACILITIES_INITIALS).map(
               it =>
                 ({
                   label: `${it.facilities_initials} - ${it.field_name}`,

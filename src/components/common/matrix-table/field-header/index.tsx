@@ -15,7 +15,7 @@ const RenderFieldHeader = (props: IProps) => {
       className={styles.fieldTh}
       style={{ opacity: field.isUnused ? 0.4 : 1 }}
     >
-      {field.isPremier ? '*' : ''} {field.name}
+      {field.isPremier ? '*' : ''} {field.name} ({field.facilityId})
     </th>
   );
 };
