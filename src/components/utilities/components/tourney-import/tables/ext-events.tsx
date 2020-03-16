@@ -119,7 +119,7 @@ const ExtEventsTable = ({ events }: Props) => {
           <TableRow>
             <TableCell align="left">Tournament ID</TableCell>
             <TableCell align="left">Division ID</TableCell>
-            <TableCell align="left">Poll Description</TableCell>
+            <TableCell align="left">Pool Description</TableCell>
             <TableCell align="left">Team ID</TableCell>
           </TableRow>
         </TableHead>
