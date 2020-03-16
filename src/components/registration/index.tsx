@@ -139,12 +139,14 @@ class RegistrationView extends React.Component<
           <div className={styles.sectionContainer}>
             <div className={styles.heading}>
               <HeadingLevelTwo>Registration</HeadingLevelTwo>
-              <Button
-                label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
-                variant="text"
-                color="secondary"
-                onClick={this.onToggleAll}
-              />
+              {registration && (
+                <Button
+                  label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                  variant="text"
+                  color="secondary"
+                  onClick={this.onToggleAll}
+                />
+              )}
             </div>
             {this.props.isLoading && <Loader />}
             {registration && !this.props.isLoading ? (
