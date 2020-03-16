@@ -3,6 +3,11 @@
   display: flex;
   justify-content: space-between;
 }
+
+.headingContainer {
+  margin: 24px 0;
+}
+
 .sectionContainer {
   width: 100%;
   min-width: 792px;
@@ -25,4 +30,8 @@
   .cardMessageContainer {
     padding-top: 25px;
   }
+}
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
 }
