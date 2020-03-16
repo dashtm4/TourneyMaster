@@ -222,8 +222,9 @@ const pageEventReducer = (
                 ...item,
                 isCompleted:
                   teams.length > 0 &&
-                  teams.filter(it => !it.division_id || !it.pool_id).length ===
-                    0,
+                  teams.filter(
+                    it => !it.division_id || !it.pool_id || it.isDelete
+                  ).length === 0,
               }
             : item
         ),
