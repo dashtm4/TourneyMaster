@@ -15,6 +15,7 @@ interface IProps {
   games: IGame[];
   timeSlots: ITimeSlot[];
   isHeatmap: boolean;
+  isEnterScores?: boolean;
 }
 
 const TRANSFORM_WRAPPER_OPTIONS = {
@@ -23,7 +24,7 @@ const TRANSFORM_WRAPPER_OPTIONS = {
 };
 
 const SchedulesMatrix = (props: IProps) => {
-  const { fields, timeSlots, games, isHeatmap } = props;
+  const { fields, timeSlots, games, isHeatmap, isEnterScores } = props;
 
   const moveCard = () => null;
 
@@ -55,6 +56,7 @@ const SchedulesMatrix = (props: IProps) => {
                       games={selectProperGamesPerTimeSlot(timeSlot, games)}
                       moveCard={moveCard}
                       isHeatmap={isHeatmap}
+                      isEnterScores={isEnterScores}
                     />
                   ))}
                 </tbody>

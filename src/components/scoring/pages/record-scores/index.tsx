@@ -9,7 +9,6 @@ import Navigation from './components/navigation';
 import { Loader, PopupExposure, TableSchedule } from 'components/common';
 import { IDivision, ITeam, IEventSummary, IField } from 'common/models';
 import { Routes } from 'common/enums';
-import { ViewTypes } from './types';
 import styles from './styles.module.scss';
 
 interface MatchParams {
@@ -28,7 +27,7 @@ interface Props {
 
 interface State {
   isExposurePopupOpen: boolean;
-  view: ViewTypes;
+  isEnterScores: boolean;
 }
 
 class RecordScores extends React.Component<
@@ -39,8 +38,8 @@ class RecordScores extends React.Component<
     super(props);
 
     this.state = {
-      view: ViewTypes.VIEW_ONLY,
       isExposurePopupOpen: false,
+      isEnterScores: false,
     };
   }
 
@@ -53,12 +52,7 @@ class RecordScores extends React.Component<
     }
   }
 
-  onChangeSelect = ({
-    target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) =>
-    this.setState({ [name]: value } as Pick<any, keyof State>);
-
-  onChangeView = (type: ViewTypes) => this.setState({ view: type });
+  onChangeView = (flag: boolean) => this.setState({ isEnterScores: flag });
 
   leavePage = () => {
     const eventId = this.props.match.params.eventId;
@@ -79,7 +73,7 @@ class RecordScores extends React.Component<
   onClosePopup = () => this.setState({ isExposurePopupOpen: false });
 
   render() {
-    const { view, isExposurePopupOpen } = this.state;
+    const { isEnterScores, isExposurePopupOpen } = this.state;
 
     const { isLoaded, divisions, teams, eventSummary } = this.props;
 
@@ -90,7 +84,7 @@ class RecordScores extends React.Component<
     return (
       <>
         <Navigation
-          view={view}
+          isEnterScores={isEnterScores}
           onLeavePage={this.onLeavePage}
           onChangeView={this.onChangeView}
         />
@@ -100,6 +94,7 @@ class RecordScores extends React.Component<
             divisions={divisions}
             teams={teams}
             eventSummary={eventSummary}
+            isEnterScores={isEnterScores}
           />
         </section>
         <PopupExposure

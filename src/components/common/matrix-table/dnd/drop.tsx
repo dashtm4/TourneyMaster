@@ -33,6 +33,7 @@ interface Props {
   timeSlotId: number;
   teamPosition: 1 | 2;
   isHeatmap?: boolean;
+  isEnterScores?: boolean;
 }
 
 export default (props: Props) => {
@@ -44,6 +45,7 @@ export default (props: Props) => {
     timeSlotId,
     teamPosition,
     isHeatmap,
+    isEnterScores,
   } = props;
 
   const onDropFunc = (data: OnDropData) => {
@@ -101,12 +103,19 @@ export default (props: Props) => {
         </p>
       )}
       <p className={styles.cardOptionsWrapper}>
-        <button className={styles.lockBtn}>
-          {getIcon(team.isLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
-            fill: isHeatmap ? '#ffffff' : '#00A3EA',
-          })}
-          <span className="visually-hidden">Unlock/Lock team</span>
-        </button>
+        {isEnterScores && (
+          <label className={styles.scoresInputWrapper}>
+            <input type="number" value="0" />
+          </label>
+        )}
+        {!isEnterScores && (
+          <button className={styles.lockBtn}>
+            {getIcon(team.isLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+              fill: isHeatmap ? '#ffffff' : '#00A3EA',
+            })}
+            <span className="visually-hidden">Unlock/Lock team</span>
+          </button>
+        )}
       </p>
     </div>
   );

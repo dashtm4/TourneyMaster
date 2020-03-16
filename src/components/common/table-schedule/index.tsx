@@ -32,9 +32,15 @@ interface Props {
   divisions: IDivision[];
   teams: ITeam[];
   eventSummary: IEventSummary[];
+  isEnterScores: boolean;
 }
 
-const TableSchedule = ({ divisions, teams, eventSummary }: Props) => {
+const TableSchedule = ({
+  divisions,
+  teams,
+  eventSummary,
+  isEnterScores,
+}: Props) => {
   const [filterValues, onFilterValueChange] = React.useState<IScheduleFilter>(
     SCHEDULE_FILTER_FALUES
   );
@@ -66,6 +72,7 @@ const TableSchedule = ({ divisions, teams, eventSummary }: Props) => {
             fields={mockedFields}
             timeSlots={mockedTimeSlots}
             isHeatmap={isHeatmap}
+            isEnterScores={isEnterScores}
           />
         </div>
       </div>

@@ -8,11 +8,12 @@ interface IProps {
   game: IGame;
   field?: IField;
   isHeatmap: boolean;
+  isEnterScores?: boolean;
   moveCard: (params: DropParams) => void;
 }
 
 const RenderGameSlot = (props: IProps) => {
-  const { game, moveCard, field, isHeatmap } = props;
+  const { game, moveCard, field, isHeatmap, isEnterScores } = props;
 
   return (
     <td
@@ -28,6 +29,7 @@ const RenderGameSlot = (props: IProps) => {
           timeSlotId={game.timeSlotId}
           onDrop={moveCard}
           isHeatmap={isHeatmap}
+          isEnterScores={isEnterScores}
         />
         <TeamDrop
           accept="teamdrop"
@@ -37,6 +39,7 @@ const RenderGameSlot = (props: IProps) => {
           timeSlotId={game.timeSlotId}
           onDrop={moveCard}
           isHeatmap={isHeatmap}
+          isEnterScores={isEnterScores}
         />
       </div>
     </td>
