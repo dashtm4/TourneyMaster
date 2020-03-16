@@ -15,7 +15,7 @@ const DivisionHeatmap = ({ divisions, isHeatmap, onHeatmapChange }: Props) => {
   const CHECKBOX_OPTION = { label: 'Division Heatmap', checked: isHeatmap };
 
   return (
-    <form className={styles.wrapper}>
+    <form className={styles.form}>
       <div className={styles.checkboxWrapper}>
         <Checkbox
           options={[CHECKBOX_OPTION]}

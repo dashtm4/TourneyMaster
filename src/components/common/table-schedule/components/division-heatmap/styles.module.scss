@@ -1,17 +1,11 @@
-.wrapper {
+.form {
   display: flex;
   align-items: center;
 }
 
-.checkboxWrapper {
-  margin-right: 12px;
-}
-
 .divisionsList {
-  display: flex;
-
   margin: 0;
-  padding: 0;
+  padding: 7px 0 0;
 
   list-style: none;
 }
@@ -20,20 +14,23 @@
   display: flex;
   align-items: center;
 
-  margin-right: 5px;
-  padding-top: 7px;
+  margin-right: 6px;
 
+  color: #6a6a6a;
   font-size: 16px;
   line-height: 22px;
-  color: #6a6a6a;
+
+  &:last-child {
+    margin-left: 0px;
+  }
 }
 
 .divisionColor {
   display: block;
-
-  width: 16px;
-  height: 16px;
   margin-right: 6px;
+
+  height: 16px;
+  width: 16px;
 
   border-radius: 50%;
 }

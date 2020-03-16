@@ -23,7 +23,7 @@ export interface IFetchedTeam {
   updated_datetime?: string | null;
 
   //! dell it
-  hasErrors?: boolean;
+  errors?: string[];
   divisionShortName: string;
   divisionHex: string;
 }
@@ -37,7 +37,7 @@ export interface ITeam {
   isPremier: boolean;
 
   //! dell it
-  hasErrors?: boolean;
+  errors?: string[];
   divisionShortName: string;
   divisionHex: string;
 }

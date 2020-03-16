@@ -41,7 +41,19 @@ const mockedTeamCards = [
     teamPosition: 0,
     divisionShortName: '2020',
     divisionHex: '#1C315F',
-    hasErrors: true,
+    errors: ['This team cannot play at this time.'],
+  },
+  {
+    id: '2',
+    name: 'unassigned Team',
+    startTime: 'startTime0',
+    poolId: 'poolId0',
+    divisionId: 'divisionId0',
+    isPremier: false,
+    games: [0, 1, 2],
+    teamPosition: 0,
+    divisionShortName: '2020',
+    divisionHex: '#1C315F',
   },
 ];
 

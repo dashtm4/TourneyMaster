@@ -32,7 +32,7 @@ interface Props {
   fieldId: string;
   timeSlotId: number;
   teamPosition: 1 | 2;
-  isHeatmap: boolean;
+  isHeatmap?: boolean;
 }
 
 export default (props: Props) => {
@@ -71,7 +71,7 @@ export default (props: Props) => {
     <div
       ref={drop}
       className={`${styles.cardContainer} ${
-        team.hasErrors ? styles.cardContainerError : ''
+        team.errors ? styles.cardContainerError : ''
       } ${isHeatmap ? styles.cardContainerHeatmap : ''}`}
       style={{
         opacity: isActive ? 0.3 : '',
@@ -79,9 +79,9 @@ export default (props: Props) => {
         backgroundColor: isHeatmap ? team.divisionHex : '',
       }}
     >
-      {team.hasErrors ? (
+      {team.errors ? (
         <Tooltip
-          title={`${team.name}(${team.divisionShortName}) cannot play at this time.`}
+          title={team.errors.join(';')}
           type={TooltipMessageTypes.WARNING}
         >
           <p className={styles.cardNameWrapper}>
