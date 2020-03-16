@@ -1,0 +1,39 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.checkboxWrapper {
+  margin-right: 12px;
+}
+
+.divisionsList {
+  display: flex;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.divisionItem {
+  display: flex;
+  align-items: center;
+
+  margin-right: 5px;
+  padding-top: 7px;
+
+  font-size: 16px;
+  line-height: 22px;
+  color: #6a6a6a;
+}
+
+.divisionColor {
+  display: block;
+
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+
+  border-radius: 50%;
+}

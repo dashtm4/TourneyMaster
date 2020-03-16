@@ -7,11 +7,12 @@ import { IGame } from '../helper';
 interface IProps {
   game: IGame;
   field?: IField;
+  isHeatmap: boolean;
   moveCard: (params: DropParams) => void;
 }
 
 const RenderGameSlot = (props: IProps) => {
-  const { game, moveCard, field } = props;
+  const { game, moveCard, field, isHeatmap } = props;
 
   return (
     <td
@@ -26,6 +27,7 @@ const RenderGameSlot = (props: IProps) => {
           teamPosition={1}
           timeSlotId={game.timeSlotId}
           onDrop={moveCard}
+          isHeatmap={isHeatmap}
         />
         <TeamDrop
           accept="teamdrop"
@@ -34,6 +36,7 @@ const RenderGameSlot = (props: IProps) => {
           teamPosition={2}
           timeSlotId={game.timeSlotId}
           onDrop={moveCard}
+          isHeatmap={isHeatmap}
         />
       </div>
     </td>

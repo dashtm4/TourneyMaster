@@ -10,11 +10,12 @@ interface IProps {
   timeSlot: ITimeSlot;
   games: IGame[];
   fields: IField[];
+  isHeatmap: boolean;
   moveCard: (params: DropParams) => void;
 }
 
 const RenderTimeSlot = (props: IProps) => {
-  const { timeSlot, games, moveCard, fields } = props;
+  const { timeSlot, games, moveCard, fields, isHeatmap } = props;
 
   const formatTimeSlot = (time: string) => {
     if (!time) return;
@@ -32,6 +33,7 @@ const RenderTimeSlot = (props: IProps) => {
         <RenderGameSlot
           key={game.id}
           game={game}
+          isHeatmap={isHeatmap}
           field={findFielForGameSlot(game)}
           moveCard={moveCard}
         />

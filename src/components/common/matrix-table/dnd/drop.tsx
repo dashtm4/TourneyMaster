@@ -1,9 +1,17 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
 import { ITeamCard } from 'common/models/schedule/teams';
+import { getIcon } from 'helpers';
 import { Tooltip } from 'components/common';
 import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
+import { Icons } from 'common/enums';
 import styles from './styles.module.scss';
+
+const ERROR_ICON_STYLES = {
+  flexShrink: 0,
+  width: '17px',
+  fill: '#FF0F19',
+};
 
 interface OnDropData {
   id: string;
@@ -24,10 +32,19 @@ interface Props {
   fieldId: string;
   timeSlotId: number;
   teamPosition: 1 | 2;
+  isHeatmap: boolean;
 }
 
 export default (props: Props) => {
-  const { team, accept, onDrop, fieldId, timeSlotId, teamPosition } = props;
+  const {
+    team,
+    accept,
+    onDrop,
+    fieldId,
+    timeSlotId,
+    teamPosition,
+    isHeatmap,
+  } = props;
 
   const onDropFunc = (data: OnDropData) => {
     onDrop({
@@ -55,10 +72,11 @@ export default (props: Props) => {
       ref={drop}
       className={`${styles.cardContainer} ${
         team.hasErrors ? styles.cardContainerError : ''
-      }`}
+      } ${isHeatmap ? styles.cardContainerHeatmap : ''}`}
       style={{
-        opacity: isActive ? 0.3 : 1,
-        background: isActive ? '#343434' : 'initial',
+        opacity: isActive ? 0.3 : '',
+        background: isActive ? '#343434' : '',
+        backgroundColor: isHeatmap ? team.divisionHex : '',
       }}
     >
       {team.hasErrors ? (
@@ -67,12 +85,19 @@ export default (props: Props) => {
           type={TooltipMessageTypes.WARNING}
         >
           <p className={styles.cardNameWrapper}>
-            {team.name}({team.divisionShortName})
+            <span
+              className={`${styles.cardTextWrapper} ${styles.cardTextWrapperError}`}
+            >
+              {team.name}({team.divisionShortName})
+            </span>
+            {getIcon(Icons.ERROR, ERROR_ICON_STYLES)}
           </p>
         </Tooltip>
       ) : (
         <p className={styles.cardNameWrapper}>
-          {team.name}({team.divisionShortName})
+          <span className={styles.cardTextWrapper}>
+            {team.name}({team.divisionShortName})
+          </span>
         </p>
       )}
       <p className={styles.cardOptionsWrapper}>
