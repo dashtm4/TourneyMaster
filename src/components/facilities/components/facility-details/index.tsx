@@ -25,6 +25,10 @@ import {
 } from 'common/models';
 import styles from './styles.module.scss';
 
+const STYLES_FACILITIES_DESCRIPTION_CARD_MESSAGE = {
+  marginTop: '10px',
+};
+
 enum FormFields {
   FACILITIES_DESCRIPTION = 'facilities_description',
   ADDRESS_ONE = 'address1',
@@ -133,8 +137,6 @@ class FacilityDetails extends React.Component<Props, State> {
     } = this.props;
     const { isEdit, isRestRoomDetails, isParkingDetails } = this.state;
 
-    console.log(facility);
-
     if (
       !facility.isNew &&
       !facility.isFieldsLoading &&
@@ -178,6 +180,13 @@ class FacilityDetails extends React.Component<Props, State> {
                   label="Facility Name"
                   width="100%"
                 />
+                <CardMessage
+                  type={CardMessageTypes.EMODJI_OBJECTS}
+                  style={STYLES_FACILITIES_DESCRIPTION_CARD_MESSAGE}
+                >
+                  The Initials of the facility name will be used as the
+                  facilities abbreviation in reports.
+                </CardMessage>
               </fieldset>
               <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
                 <PlacesAutocompleteInput
