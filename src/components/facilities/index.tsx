@@ -76,8 +76,13 @@ class Facilities extends React.Component<
   };
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    if (prevProps.facilities.length && !prevState.expanded.length) {
-      this.setState({ expanded: this.props.facilities.map(_facility => true) });
+    if (
+      (prevProps.facilities.length && !prevState.expanded.length) ||
+      prevProps.facilities !== this.props.facilities
+    ) {
+      this.setState({
+        expanded: this.props.facilities.map(_facility => true),
+      });
     }
   }
 
