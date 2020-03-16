@@ -18,6 +18,8 @@
   min-width: 792px;
 }
 .heading {
+  display: flex;
+  justify-content: space-between;
   margin: 24px 0;
 }
 .sectionContainer {

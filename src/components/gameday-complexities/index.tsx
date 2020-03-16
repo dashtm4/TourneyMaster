@@ -110,17 +110,13 @@ class GamedayComplexities extends React.Component<Props, State> {
         </Paper>
         <div className={styles.headingContainer}>
           <HeadingLevelTwo>Event Day Complexities</HeadingLevelTwo>
+          <Button
+            label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+            variant="text"
+            color="secondary"
+            onClick={this.onToggleAll}
+          />
         </div>
-        {mockData.length && (
-          <div className={styles.buttonContainer}>
-            <Button
-              label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
-              variant="text"
-              color="secondary"
-              onClick={this.onToggleAll}
-            />
-          </div>
-        )}
         {mockData.length
           ? mockData.map((plan, index) => (
               <BackupPlan
