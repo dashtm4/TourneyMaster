@@ -8,12 +8,18 @@
   color: #2d2d2d;
   font-weight: 600;
   width: 110px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 2px 8px;
 }
 
 .dragContainer {
   background: #4a4a4a;
-  color: white;
+  color: #ededed;
+  font-size: 15px;
   border-radius: 4px;
   padding: 4px 10px;
-  display: inline;
+  display: inline-block;
+  margin: 5px 5px 0 0px;
 }

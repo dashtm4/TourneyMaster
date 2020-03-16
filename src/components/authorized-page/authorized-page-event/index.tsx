@@ -8,7 +8,7 @@ import {
   clearAuthPageData,
   changeTournamentStatus,
 } from './logic/actions';
-import { AppState } from './logic/reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
 import Menu from 'components/common/menu';
 import Facilities from 'components/facilities';
@@ -32,6 +32,7 @@ import {
 import { Loader } from 'components/common';
 import styles from '../styles.module.scss';
 import Footer from 'components/footer';
+import Schedules from 'components/schedules';
 
 interface MatchParams {
   eventId?: string;
@@ -111,6 +112,7 @@ const AuthorizedPageEvent = ({
                 />
               )}
             />
+            <Route path={Routes.SCHEDULES_ID} component={Schedules} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
             <Route path={Routes.REPORTING_ID} component={EmptyPage} />
@@ -129,12 +131,8 @@ const AuthorizedPageEvent = ({
   );
 };
 
-interface IRootState {
-  pageEvent: AppState;
-}
-
 export default connect(
-  ({ pageEvent }: IRootState) => ({
+  ({ pageEvent }: IAppState) => ({
     tournamentData: pageEvent.tournamentData,
     isLoading: pageEvent.isLoading,
     isLoaded: pageEvent.isLoaded,

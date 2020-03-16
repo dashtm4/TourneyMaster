@@ -16,38 +16,40 @@ interface Props {
   changeUser: BindingCbWithOne<Partial<IMember | IUtilitiesMember>>;
 }
 
-const EditProfile = ({ userData, changeUser }: Props) => (
+const UserProfile = ({ userData, changeUser }: Props) => (
   <SectionDropdown
-    id={MenuTitles.EDIT_PROFILE}
+    id={MenuTitles.USER_PROFILE}
     type="section"
     panelDetailsType="flat"
     isDefaultExpanded={true}
   >
     <HeadingLevelThree>
-      <span className={styles.detailsSubtitle}>{MenuTitles.EDIT_PROFILE}</span>
+      <span className={styles.detailsSubtitle}>{MenuTitles.USER_PROFILE}</span>
     </HeadingLevelThree>
     <div className={styles.editProfileForm}>
-      <fieldset className={styles.inputWrapper}>
-        <Input
-          onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
-            changeUser({ [FormFields.FIRST_NAME]: evt.target.value })
-          }
-          value={userData.first_name || ''}
-          label="First name"
-          fullWidth={true}
-        />
-      </fieldset>
-      <fieldset className={styles.inputWrapper}>
-        <Input
-          onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
-            changeUser({ [FormFields.LAST_NAME]: evt.target.value })
-          }
-          value={userData.last_name || ''}
-          label="Last name"
-          fullWidth={true}
-        />
-      </fieldset>
-      <fieldset className={styles.inputWrapper}>
+      <div className={styles.userNameWrapper}>
+        <fieldset>
+          <Input
+            onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
+              changeUser({ [FormFields.FIRST_NAME]: evt.target.value })
+            }
+            value={userData.first_name || ''}
+            label="First name"
+            fullWidth={true}
+          />
+        </fieldset>
+        <fieldset>
+          <Input
+            onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
+              changeUser({ [FormFields.LAST_NAME]: evt.target.value })
+            }
+            value={userData.last_name || ''}
+            label="Last name"
+            fullWidth={true}
+          />
+        </fieldset>
+      </div>
+      <fieldset className={styles.userTagFieldset}>
         <Input
           onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
             changeUser({ [FormFields.MEMBER_TAG]: evt.target.value })
@@ -62,4 +64,4 @@ const EditProfile = ({ userData, changeUser }: Props) => (
   </SectionDropdown>
 );
 
-export default EditProfile;
+export default UserProfile;

@@ -17,8 +17,7 @@ import { getEvents } from './logic/actions';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { Loader } from 'components/common';
 import { data, notificationData } from './mockData';
-import { ITeam } from 'common/models';
-import { IField } from 'components/schedules';
+import { ITeam, IField } from 'common/models';
 
 interface IFieldWithEventId extends IField {
   event_id: string;

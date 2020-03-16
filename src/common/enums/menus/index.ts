@@ -2,7 +2,9 @@ enum MenuTitles {
   LIBRARY_MANAGER = 'Library Manager',
   REGISTRATION = 'Registration',
   UTILITIES = 'Utilities',
-  EDIT_PROFILE = 'Edit Profile',
+  USER_PROFILE = 'User Profile',
+  TOURNEY_IMPORT = 'Tourney Import',
+  TOURNEY_IMPORT_TITLE = 'Import External Tournanment Wizard',
   EMAIL_SETUP = 'Email Setup',
 }
 

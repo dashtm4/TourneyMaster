@@ -4,21 +4,37 @@ import { ITimeSlot } from 'components/schedules';
 import { IGame } from '../helper';
 import RenderGameSlot from '../game-slot';
 import { DropParams } from '../dnd/drop';
+import { IField } from 'common/models/schedule/fields';
 
 interface IProps {
   timeSlot: ITimeSlot;
   games: IGame[];
+  fields: IField[];
   moveCard: (params: DropParams) => void;
 }
 
 const RenderTimeSlot = (props: IProps) => {
-  const { timeSlot, games, moveCard } = props;
+  const { timeSlot, games, moveCard, fields } = props;
+
+  const formatTimeSlot = (time: string) => {
+    if (!time) return;
+    return time.slice(0, 5);
+  };
+
+  const findFielForGameSlot = (game: IGame) => {
+    return fields.find(field => field.id === game.fieldId);
+  };
 
   return (
     <tr key={timeSlot.id} className={styles.timeSlotRow}>
-      <th>{timeSlot.time}</th>
+      <th>{formatTimeSlot(timeSlot.time)}</th>
       {games.map((game: IGame) => (
-        <RenderGameSlot key={game.id} game={game} moveCard={moveCard} />
+        <RenderGameSlot
+          key={game.id}
+          game={game}
+          field={findFielForGameSlot(game)}
+          moveCard={moveCard}
+        />
       ))}
     </tr>
   );

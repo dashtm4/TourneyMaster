@@ -9,15 +9,11 @@ import {
   PUBLISH_TOURNAMENT_SUCCESS,
   PUBLISH_TOURNAMENT_FAILURE,
 } from './action-types';
-import { AppState } from './reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { Toasts } from 'components/common';
 import { IEventDetails, IRegistration } from 'common/models';
 import { EventStatuses } from 'common/enums';
-
-type IAppState = {
-  pageEvent: AppState;
-};
 
 const loadAuthPageData: ActionCreator<ThunkAction<
   void,

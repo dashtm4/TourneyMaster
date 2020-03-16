@@ -19,6 +19,7 @@ import {
   IConfigurableOrganization,
 } from 'common/models';
 import styles from './styles.module.scss';
+import Button from 'components/common/buttons/button';
 
 interface Props {
   isLoading: boolean;
@@ -38,6 +39,9 @@ const OrganizationsManagement = ({
   deleteOrganization,
   loadOrganizations,
 }: Props) => {
+  const [expanded, setExpanded] = React.useState([true, true, true]);
+  const [expandAll, setExpandAll] = React.useState(false);
+
   React.useEffect(() => {
     loadOrganizations();
   }, []);
@@ -46,17 +50,51 @@ const OrganizationsManagement = ({
     return <Loader />;
   }
 
+  const onToggleAll = () => {
+    setExpanded(expanded.map(_e => expandAll));
+    setExpandAll(!expandAll);
+  };
+
+  const onToggleOne = (indexPanel: number) => {
+    setExpanded(
+      expanded.map((e: boolean, index: number) =>
+        index === indexPanel ? !e : e
+      )
+    );
+  };
+
   return (
     <section className={styles.container}>
       <div className={styles.heading}>
         <HeadingLevelTwo>Organizations Management</HeadingLevelTwo>
       </div>
+      <div className={styles.buttonContainer}>
+        <Button
+          label={expandAll ? 'Expand All' : 'Collapse All'}
+          variant="text"
+          color="secondary"
+          onClick={onToggleAll}
+        />
+      </div>
       <OrganizationsList
         organizations={organizations}
         deleteOrganization={deleteOrganization}
+        index={0}
+        expanded={expanded[0]}
+        onToggleOne={onToggleOne}
       />
-      <CreateOrganization createOrganization={createOrganization} />
-      <ApplyInvitation addUserToOrganization={addUserToOrganization} />
+      <CreateOrganization
+        createOrganization={createOrganization}
+        index={1}
+        expanded={expanded[1]}
+        onToggleOne={onToggleOne}
+      />
+      <ApplyInvitation
+        addUserToOrganization={addUserToOrganization}
+        index={2}
+        expanded={expanded[2]}
+        onToggleOne={onToggleOne}
+      />
     </section>
   );
 };

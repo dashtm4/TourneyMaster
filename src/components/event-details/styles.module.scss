@@ -57,6 +57,17 @@ $sectionBodyPadding: 20px 0;
       justify-content: space-between;
       padding-bottom: 20px;
       & > * {
+        width: 48%;
+      }
+    }
+
+    .gameTimesWrapper {
+      display: flex;
+      justify-content: space-between;
+
+      margin-bottom: 20px;
+
+      & > * {
         width: 30%;
       }
     }
@@ -206,4 +217,8 @@ $sectionBodyPadding: 20px 0;
       }
     }
   }
+}
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { History } from 'history';
 import { Dispatch, bindActionCreators } from 'redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faFileUpload } from '@fortawesome/free-solid-svg-icons';
@@ -18,9 +19,11 @@ import { IMenuItem } from 'common/models';
 
 interface IProps {
   match: any;
+  history: History;
   getScheduling: (eventId?: number) => void;
   createNewVersion: (data: INewVersion) => void;
   schedule?: ISchedule;
+  schedulingIsLoading: boolean;
   incompleteMenuItems: IMenuItem[];
 }
 
@@ -42,16 +45,15 @@ class Scheduling extends Component<IProps, IState> {
     this.props.getScheduling(eventId);
   }
 
-  componentDidUpdate() {
-    const { schedule } = this.props;
-    const { schedule: stateSchedule, loading } = this.state;
+  componentDidUpdate(prevProps: IProps) {
+    const { schedulingIsLoading: prevSchedulingIsLoading } = prevProps;
+    const { schedule, schedulingIsLoading } = this.props;
 
-    if (schedule && !stateSchedule) {
-      this.setState({ schedule, loading: false });
-    }
-
-    if (schedule === null && loading) {
-      this.setState({ loading: false });
+    if (prevSchedulingIsLoading !== schedulingIsLoading) {
+      this.setState({
+        loading: schedulingIsLoading,
+        schedule,
+      });
     }
   }
 
@@ -69,6 +71,8 @@ class Scheduling extends Component<IProps, IState> {
 
   onCreateNew = (data: INewVersion) => {
     this.setState({ createModalOpen: false });
+    const { eventId } = this.props.match?.params;
+    this.props.history.push(`/schedules/${eventId}`);
     this.props.createNewVersion(data);
   };
 
@@ -159,6 +163,7 @@ interface IRootState {
 
 const mapStateToProps = (store: IRootState) => ({
   schedule: store.scheduling?.schedule,
+  schedulingIsLoading: store.scheduling?.schedulingIsLoading,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>

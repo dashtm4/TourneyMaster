@@ -4,8 +4,7 @@ import {
   FACILITIES_FETCH_SUCCESS,
   FIELDS_FETCH_SUCCESS,
 } from './actionTypes';
-import { IFacility } from 'common/models';
-import { IField } from 'components/schedules';
+import { IFacility, IField } from 'common/models';
 
 export interface IState {
   data?: EventDetailsDTO[];

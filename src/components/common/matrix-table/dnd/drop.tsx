@@ -3,13 +3,13 @@ import { useDrop } from 'react-dnd';
 import styles from './styles.module.scss';
 
 interface OnDropData {
-  id: number;
+  id: string;
   text: string;
   type: string;
 }
 
 export interface DropParams extends OnDropData {
-  fieldId: number;
+  fieldId: string;
   timeSlotId: number;
   teamPosition: number;
 }
@@ -17,9 +17,8 @@ export interface DropParams extends OnDropData {
 interface Props {
   text: string;
   accept: string;
-  id: number;
   onDrop: (params: DropParams) => void;
-  fieldId: number;
+  fieldId: string;
   timeSlotId: number;
   teamPosition: 1 | 2;
 }

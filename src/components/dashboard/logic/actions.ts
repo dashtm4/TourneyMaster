@@ -10,8 +10,7 @@ import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { Toasts } from 'components/common';
-import { IFacility, ITeam } from 'common/models';
-import { IField } from 'components/schedules';
+import { IFacility, ITeam, IField } from 'common/models';
 
 export const fetchStart = (): { type: string } => ({
   type: DASHBOARD_FETCH_START,

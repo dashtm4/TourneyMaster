@@ -1,13 +1,23 @@
-import { ITeam, IField, ITimeSlot } from '..';
-import { ITeamCard } from './index';
+import { orderBy } from 'lodash-es';
+import { IField } from 'common/models/schedule/fields';
+import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 import { DropParams } from './dnd/drop';
+import { ITimeSlot } from 'components/schedules';
+
+export enum TeamPositionEnum {
+  'awayTeam' = 1,
+  'homeTeam' = 2,
+}
 
 export interface IGame {
   id: number;
-  homeTeam?: ITeam;
-  awayTeam?: ITeam;
+  startTime?: string;
+  facilityId?: string;
+  homeTeam?: ITeamCard;
+  awayTeam?: ITeamCard;
   timeSlotId: number;
-  fieldId: number;
+  fieldId: string;
+  isPremier?: boolean;
 }
 
 export interface IDefinedGames {
@@ -16,12 +26,15 @@ export interface IDefinedGames {
   games: IGame[];
 }
 
+export const sortFieldsByPremier = (fields: IField[]) => {
+  return orderBy(fields, ['isPremier', 'facilityId'], 'desc');
+};
+
 export const defineGames = (
   fields: IField[],
   timeSlots: ITimeSlot[],
   _teams: ITeam[]
 ): IDefinedGames => {
-  // const teamsNumber = teams.length;
   const fieldsNumber = fields.length;
   const timeSlotsNumber = timeSlots.length;
   const gamesNumber = fieldsNumber * timeSlotsNumber;
@@ -29,7 +42,7 @@ export const defineGames = (
   const games: IGame[] = [];
   for (let i = 1; i <= gamesNumber; i++) {
     const timeSlotId = Math.ceil(i / fieldsNumber) - 1;
-    const fieldId = i - Math.ceil(timeSlotId * fieldsNumber) - 1;
+    const fieldId = fields[i - Math.ceil(timeSlotId * fieldsNumber) - 1].id;
 
     games.push({
       id: i,
@@ -100,3 +113,33 @@ export const settleTeamsPerGames = (games: IGame[], teamCards: ITeamCard[]) =>
       homeTeam,
     };
   });
+
+export const arrayAverageOccurrence = (array: any[]) => {
+  if (array.length === 0) return null;
+  const modeMap = {};
+  let maxCount = 1;
+  let modes = [];
+
+  for (const el of array) {
+    if (modeMap[el] == null) modeMap[el] = 1;
+    else modeMap[el]++;
+
+    if (modeMap[el] > maxCount) {
+      modes = [el];
+      maxCount = modeMap[el];
+    } else if (modeMap[el] === maxCount) {
+      modes.push(el);
+      maxCount = modeMap[el];
+    }
+  }
+
+  return modes[0];
+};
+
+export const getSortedByGamesNum = (data: any) =>
+  Object.keys(data).sort((a, b) =>
+    data[a].gamesNum < data[b].gamesNum ? 1 : -1
+  );
+
+export const getSortedDesc = (data: any) =>
+  Object.keys(data).sort((a, b) => (data[a] < data[b] ? 1 : -1));

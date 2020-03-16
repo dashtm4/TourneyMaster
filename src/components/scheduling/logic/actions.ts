@@ -1,7 +1,11 @@
 import { Dispatch } from 'redux';
 import api from 'api/api';
 import { ISchedule } from 'common/models/schedule';
-import { SCHEDULE_FETCH_SUCCESS, SCHEDULE_FETCH_FAILURE } from './actionTypes';
+import {
+  SCHEDULE_FETCH_IN_PROGRESS,
+  SCHEDULE_FETCH_SUCCESS,
+  SCHEDULE_FETCH_FAILURE,
+} from './actionTypes';
 import { IAppState as EventDetailsState } from 'components/event-details/logic/reducer';
 
 type IState = {
@@ -12,6 +16,10 @@ export interface INewVersion {
   name: string;
   tag: string;
 }
+
+const scheduleFetchInProgress = () => ({
+  type: SCHEDULE_FETCH_IN_PROGRESS,
+});
 
 const scheduleFetchSuccess = (payload: ISchedule) => ({
   type: SCHEDULE_FETCH_SUCCESS,
@@ -29,6 +37,8 @@ export const getScheduling = (eventId?: number) => async (
   const { event } = getState();
   const eventIdFromState = event?.data?.event_id;
 
+  dispatch(scheduleFetchInProgress());
+
   const response = await api.get(
     `/schedules?event_id=${eventId || eventIdFromState}`
   );
@@ -38,7 +48,7 @@ export const getScheduling = (eventId?: number) => async (
     return;
   }
 
-  scheduleFetchFailure();
+  dispatch(scheduleFetchFailure());
 };
 
 export const createNewVersion = (data: INewVersion) => () => {

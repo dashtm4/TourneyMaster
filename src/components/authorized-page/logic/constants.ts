@@ -43,7 +43,11 @@ export const MenuList = [
     title: MenuTitles.UTILITIES,
     icon: Icons.SETTINGS,
     link: Routes.UTILITIES,
-    children: [MenuTitles.EDIT_PROFILE, MenuTitles.EMAIL_SETUP],
+    children: [
+      MenuTitles.USER_PROFILE,
+      MenuTitles.TOURNEY_IMPORT
+      // MenuTitles.EMAIL_SETUP
+    ],
   },
   {
     title: 'Event Day Complexities',
