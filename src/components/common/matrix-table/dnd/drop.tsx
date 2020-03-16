@@ -1,6 +1,17 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
+import { ITeamCard } from 'common/models/schedule/teams';
+import { getIcon } from 'helpers';
+import { Tooltip } from 'components/common';
+import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
+import { Icons } from 'common/enums';
 import styles from './styles.module.scss';
+
+const ERROR_ICON_STYLES = {
+  flexShrink: 0,
+  width: '17px',
+  fill: '#FF0F19',
+};
 
 interface OnDropData {
   id: string;
@@ -15,16 +26,27 @@ export interface DropParams extends OnDropData {
 }
 
 interface Props {
-  text: string;
+  team: ITeamCard;
   accept: string;
   onDrop: (params: DropParams) => void;
   fieldId: string;
   timeSlotId: number;
   teamPosition: 1 | 2;
+  isHeatmap?: boolean;
+  isEnterScores?: boolean;
 }
 
 export default (props: Props) => {
-  const { text, accept, onDrop, fieldId, timeSlotId, teamPosition } = props;
+  const {
+    team,
+    accept,
+    onDrop,
+    fieldId,
+    timeSlotId,
+    teamPosition,
+    isHeatmap,
+    isEnterScores,
+  } = props;
 
   const onDropFunc = (data: OnDropData) => {
     onDrop({
@@ -50,13 +72,51 @@ export default (props: Props) => {
   return (
     <div
       ref={drop}
-      className={styles.cardContainer}
+      className={`${styles.cardContainer} ${
+        team.errors ? styles.cardContainerError : ''
+      } ${isHeatmap ? styles.cardContainerHeatmap : ''}`}
       style={{
-        opacity: isActive ? 0.3 : 1,
-        background: isActive ? '#343434' : 'initial',
+        opacity: isActive ? 0.3 : '',
+        background: isActive ? '#343434' : '',
+        backgroundColor: isHeatmap ? team.divisionHex : '',
       }}
     >
-      {text}
+      {team.errors ? (
+        <Tooltip
+          title={team.errors.join(';')}
+          type={TooltipMessageTypes.WARNING}
+        >
+          <p className={styles.cardNameWrapper}>
+            <span
+              className={`${styles.cardTextWrapper} ${styles.cardTextWrapperError}`}
+            >
+              {team.name}({team.divisionShortName})
+            </span>
+            {getIcon(Icons.ERROR, ERROR_ICON_STYLES)}
+          </p>
+        </Tooltip>
+      ) : (
+        <p className={styles.cardNameWrapper}>
+          <span className={styles.cardTextWrapper}>
+            {team.name}({team.divisionShortName})
+          </span>
+        </p>
+      )}
+      <p className={styles.cardOptionsWrapper}>
+        {isEnterScores && (
+          <label className={styles.scoresInputWrapper}>
+            <input type="number" value="0" />
+          </label>
+        )}
+        {!isEnterScores && (
+          <button className={styles.lockBtn}>
+            {getIcon(team.isLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+              fill: isHeatmap ? '#ffffff' : '#00A3EA',
+            })}
+            <span className="visually-hidden">Unlock/Lock team</span>
+          </button>
+        )}
+      </p>
     </div>
   );
 };

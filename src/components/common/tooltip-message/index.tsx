@@ -1,7 +1,7 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import { TooltipMessageTypes } from './Types';
+import { TooltipMessageTypes } from './types';
 
 interface Props {
   disabled?: boolean;

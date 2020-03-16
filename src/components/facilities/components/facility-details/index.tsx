@@ -12,6 +12,7 @@ import {
   CardMessage,
   DatePicker,
 } from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import { FileUploadTypes, AcceptFileTypes } from '../../../common/file-upload';
 import PlacesAutocompleteInput from '../../../event-details/primary-information/map/autocomplete';
 import Map from '../../../event-details/primary-information/map';
@@ -22,8 +23,11 @@ import {
   IUploadFile,
   BindingCbWithOne,
 } from 'common/models';
-import { Icons } from 'common/enums/icons';
 import styles from './styles.module.scss';
+
+const STYLES_FACILITIES_DESCRIPTION_CARD_MESSAGE = {
+  marginTop: '10px',
+};
 
 enum FormFields {
   FACILITIES_DESCRIPTION = 'facilities_description',
@@ -133,8 +137,6 @@ class FacilityDetails extends React.Component<Props, State> {
     } = this.props;
     const { isEdit, isRestRoomDetails, isParkingDetails } = this.state;
 
-    console.log(Boolean(facility.parking_available));
-
     if (
       !facility.isNew &&
       !facility.isFieldsLoading &&
@@ -178,6 +180,13 @@ class FacilityDetails extends React.Component<Props, State> {
                   label="Facility Name"
                   width="100%"
                 />
+                <CardMessage
+                  type={CardMessageTypes.EMODJI_OBJECTS}
+                  style={STYLES_FACILITIES_DESCRIPTION_CARD_MESSAGE}
+                >
+                  The Initials of the facility name will be used as the
+                  facilities abbreviation in reports.
+                </CardMessage>
               </fieldset>
               <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
                 <PlacesAutocompleteInput
@@ -436,7 +445,7 @@ class FacilityDetails extends React.Component<Props, State> {
                     disabled={!isEdit}
                   />
                 </div>
-                <CardMessage type={Icons.EMODJI_OBJECTS}>
+                <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
                   Notify your attendees they need to know something. For
                   example, if cars will be aggressively ticketed, parking will
                   be tight, etc.

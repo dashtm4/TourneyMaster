@@ -3,6 +3,7 @@ import { Button, Paper, CardMessage, HeadingLevelTwo } from 'components/common';
 import styles from './styles.module.scss';
 import rain from '../../assets/rain.svg';
 import Modal from 'components/common/modal';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import CreateBackupModal from './create-backup-modal';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { connect } from 'react-redux';
@@ -86,7 +87,7 @@ class GamedayComplexities extends React.Component<Props, State> {
         </p>
         <img src={rain} className={styles.image} alt="rain" />
         <div className={styles.cardMessageContainer}>
-          <CardMessage type="emodjiObjects">
+          <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
             Click “Create Backup Plan” in the Utility Bar to get started
           </CardMessage>
         </div>

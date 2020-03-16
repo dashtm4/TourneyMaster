@@ -128,7 +128,9 @@ const pageEventReducer = (
               return {
                 ...item,
                 isCompleted:
-                  teams.filter(it => it.division_id && it.pool_id).length > 0,
+                  teams.length > 0 &&
+                  teams.filter(it => !it.division_id || !it.pool_id).length ===
+                    0,
               };
             }
             default:
@@ -215,7 +217,10 @@ const pageEventReducer = (
             ? {
                 ...item,
                 isCompleted:
-                  teams.filter(it => it.division_id && it.pool_id).length > 0,
+                  teams.length > 0 &&
+                  teams.filter(
+                    it => !it.division_id || !it.pool_id || it.isDelete
+                  ).length === 0,
               }
             : item
         ),

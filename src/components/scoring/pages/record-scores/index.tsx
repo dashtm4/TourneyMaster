@@ -6,11 +6,10 @@ import History from 'browserhistory';
 import { loadScoresData } from './logic/actions';
 import { AppState } from './logic/reducer';
 import Navigation from './components/navigation';
-import Scoring from './components/scoring';
-import { Loader, PopupExposure } from 'components/common';
+import { Loader, PopupExposure, TableSchedule } from 'components/common';
 import { IDivision, ITeam, IEventSummary } from 'common/models';
 import { Routes } from 'common/enums';
-import { DefaulSelectFalues, ViewTypes, DayTypes } from './types';
+import styles from './styles.module.scss';
 
 interface MatchParams {
   eventId?: string;
@@ -21,17 +20,13 @@ interface Props {
   isLoaded: boolean;
   divisions: IDivision[];
   teams: ITeam[];
-  fields: IEventSummary[];
+  eventSummary: IEventSummary[];
   loadScoresData: (eventId: string) => void;
 }
 
 interface State {
   isExposurePopupOpen: boolean;
-  view: ViewTypes;
-  selectedDay: DayTypes;
-  selectedDivision: string;
-  selectedTeam: string;
-  selectedField: string;
+  isEnterScores: boolean;
 }
 
 class RecordScores extends React.Component<
@@ -42,12 +37,8 @@ class RecordScores extends React.Component<
     super(props);
 
     this.state = {
-      view: ViewTypes.VIEW_ONLY,
-      selectedDay: DayTypes.DAY_ONE,
-      selectedDivision: DefaulSelectFalues.ALL,
-      selectedTeam: DefaulSelectFalues.ALL,
-      selectedField: DefaulSelectFalues.ALL,
       isExposurePopupOpen: false,
+      isEnterScores: false,
     };
   }
 
@@ -60,14 +51,7 @@ class RecordScores extends React.Component<
     }
   }
 
-  onChangeSelect = ({
-    target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) =>
-    this.setState({ [name]: value } as Pick<any, keyof State>);
-
-  onChangeView = (type: ViewTypes) => this.setState({ view: type });
-
-  onChangeDay = (day: DayTypes) => this.setState({ selectedDay: day });
+  onChangeView = (flag: boolean) => this.setState({ isEnterScores: flag });
 
   leavePage = () => {
     const eventId = this.props.match.params.eventId;
@@ -88,16 +72,9 @@ class RecordScores extends React.Component<
   onClosePopup = () => this.setState({ isExposurePopupOpen: false });
 
   render() {
-    const {
-      view,
-      selectedDay,
-      selectedDivision,
-      selectedTeam,
-      selectedField,
-      isExposurePopupOpen,
-    } = this.state;
+    const { isEnterScores, isExposurePopupOpen } = this.state;
 
-    const { isLoading, divisions, teams, fields } = this.props;
+    const { isLoading, divisions, teams, eventSummary } = this.props;
 
     if (isLoading) {
       return <Loader />;
@@ -106,22 +83,19 @@ class RecordScores extends React.Component<
     return (
       <>
         <Navigation
-          view={view}
+          isEnterScores={isEnterScores}
           onLeavePage={this.onLeavePage}
           onChangeView={this.onChangeView}
         />
-        <Scoring
-          divisions={divisions}
-          teams={teams}
-          fields={fields}
-          view={view}
-          selectedDay={selectedDay}
-          selectedDivision={selectedDivision}
-          selectedTeam={selectedTeam}
-          selectedField={selectedField}
-          onChangeSelect={this.onChangeSelect}
-          onChangeDay={this.onChangeDay}
-        />
+        <section className={styles.scoringWrapper}>
+          <h2 className="visually-hidden">Scoring</h2>
+          <TableSchedule
+            divisions={divisions}
+            teams={teams}
+            eventSummary={eventSummary}
+            isEnterScores={isEnterScores}
+          />
+        </section>
         <PopupExposure
           isOpen={isExposurePopupOpen}
           onClose={this.onClosePopup}
@@ -143,7 +117,7 @@ export default connect(
     isLoaded: recordScores.isLoaded,
     divisions: recordScores.divisions,
     teams: recordScores.teams,
-    fields: recordScores.eventSummary,
+    eventSummary: recordScores.eventSummary,
   }),
   (dispatch: Dispatch) => bindActionCreators({ loadScoresData }, dispatch)
 )(RecordScores);

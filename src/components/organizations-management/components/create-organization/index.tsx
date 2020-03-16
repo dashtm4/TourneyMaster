@@ -8,8 +8,8 @@ import {
   HeadingLevelThree,
   PopupConfirm,
 } from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import { IConfigurableOrganization, BindingCbWithOne } from 'common/models';
-import { Icons } from 'common/enums';
 import styles from './styles.module.scss';
 
 const CONFIRM_POPUP_MESSAGE =
@@ -62,7 +62,10 @@ const CreateOrganization = ({
           <span>Create Organization</span>
         </HeadingLevelThree>
         <div className={styles.section}>
-          <CardMessage type={Icons.EMODJI_OBJECTS} style={CARD_MESSAGE_STYLES}>
+          <CardMessage
+            type={CardMessageTypes.EMODJI_OBJECTS}
+            style={CARD_MESSAGE_STYLES}
+          >
             Create a common calendar where you and your organization’s
             collaborators can see each others notes, requests, tasks, and
             reminders.
