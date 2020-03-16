@@ -49,6 +49,8 @@
       justify-content: center;
     }
     .footerLinks {
+      padding: 0;
+      width: 108px;
       a {
         color: white;
         display: inline-block;
@@ -56,6 +58,10 @@
         font-weight: 400;
         text-decoration: none;
       }
+    }
+    .footerLinksRight {
+      @extend .footerLinks;
+      text-align: right;
     }
   }
 }
