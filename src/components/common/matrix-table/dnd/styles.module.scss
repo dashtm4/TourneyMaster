@@ -1,22 +1,31 @@
 .cardContainer {
   position: relative;
 
+  display: flex;
+  align-items: center;
+
   width: 180px;
   height: 24px;
-  padding: 3px 0 3px 30px;
+  padding: 0 0 0 30px;
   margin: 0 0 4px;
 
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 12px;
   line-height: 17px;
-  color: #ffffff;
+  color: #6a6a6a;
 
   border-radius: 2px;
 
-  background-color: red !important;
+  background-color: #ffffff !important;
 
   overflow: hidden;
+
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+
+  &Error {
+    border: 1px solid #ff0f19;
+  }
 
   &::before {
     position: absolute;
@@ -31,6 +40,18 @@
 
     background-color: #cdcfd2;
   }
+}
+
+.cardNameWrapper {
+  flex-grow: 1;
+
+  overflow: hidden;
+}
+
+.cardOptionsWrapper {
+  width: 32px;
+
+  border-left: 1ps solid #f4f4f4;
 }
 
 .dragContainer {

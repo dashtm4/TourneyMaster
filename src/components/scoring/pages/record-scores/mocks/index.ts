@@ -15,8 +15,8 @@ const mockedFields = [
 
 const mockedTeamCards = [
   {
-    id: 'LaxWorld Club',
-    name: 'name0',
+    id: '0',
+    name: 'LaxWorld Club',
     startTime: 'startTime0',
     poolId: 'poolId0',
     divisionId: 'divisionId0',
@@ -25,10 +25,12 @@ const mockedTeamCards = [
     fieldId: 'fieldId0',
     timeSlotId: 0,
     teamPosition: 0,
+    divisionShortName: '2020',
+    divisionHex: '#1C315F',
   },
   {
-    id: 'Big 4 HHH',
-    name: 'name2',
+    id: '1',
+    name: 'Big 4 HHH',
     startTime: 'startTime2',
     poolId: 'poolId2',
     divisionId: 'divisionId2',
@@ -37,6 +39,9 @@ const mockedTeamCards = [
     fieldId: 'fieldId2',
     timeSlotId: 0,
     teamPosition: 0,
+    divisionShortName: '2020',
+    divisionHex: '#1C315F',
+    hasErrors: true,
   },
 ];
 

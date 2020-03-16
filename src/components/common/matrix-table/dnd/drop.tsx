@@ -1,5 +1,8 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
+import { ITeamCard } from 'common/models/schedule/teams';
+import { Tooltip } from 'components/common';
+import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 import styles from './styles.module.scss';
 
 interface OnDropData {
@@ -15,7 +18,7 @@ export interface DropParams extends OnDropData {
 }
 
 interface Props {
-  text: string;
+  team: ITeamCard;
   accept: string;
   onDrop: (params: DropParams) => void;
   fieldId: string;
@@ -24,7 +27,7 @@ interface Props {
 }
 
 export default (props: Props) => {
-  const { text, accept, onDrop, fieldId, timeSlotId, teamPosition } = props;
+  const { team, accept, onDrop, fieldId, timeSlotId, teamPosition } = props;
 
   const onDropFunc = (data: OnDropData) => {
     onDrop({
@@ -50,13 +53,31 @@ export default (props: Props) => {
   return (
     <div
       ref={drop}
-      className={styles.cardContainer}
+      className={`${styles.cardContainer} ${
+        team.hasErrors ? styles.cardContainerError : ''
+      }`}
       style={{
         opacity: isActive ? 0.3 : 1,
         background: isActive ? '#343434' : 'initial',
       }}
     >
-      {text}
+      {team.hasErrors ? (
+        <Tooltip
+          title={`${team.name}(${team.divisionShortName}) cannot play at this time.`}
+          type={TooltipMessageTypes.WARNING}
+        >
+          <p className={styles.cardNameWrapper}>
+            {team.name}({team.divisionShortName})
+          </p>
+        </Tooltip>
+      ) : (
+        <p className={styles.cardNameWrapper}>
+          {team.name}({team.divisionShortName})
+        </p>
+      )}
+      <p className={styles.cardOptionsWrapper}>
+        <button>1</button>
+      </p>
     </div>
   );
 };

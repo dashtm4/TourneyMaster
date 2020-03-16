@@ -21,6 +21,11 @@ export interface IFetchedTeam {
   created_datetime: string;
   updated_by?: string | null;
   updated_datetime?: string | null;
+
+  //! dell it
+  hasErrors?: boolean;
+  divisionShortName: string;
+  divisionHex: string;
 }
 
 export interface ITeam {
@@ -30,6 +35,11 @@ export interface ITeam {
   poolId: string;
   divisionId: string;
   isPremier: boolean;
+
+  //! dell it
+  hasErrors?: boolean;
+  divisionShortName: string;
+  divisionHex: string;
 }
 
 export interface ITeamCard extends ITeam {

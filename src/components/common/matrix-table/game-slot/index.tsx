@@ -21,7 +21,7 @@ const RenderGameSlot = (props: IProps) => {
       <div className={styles.gameSlot}>
         <TeamDrop
           accept="teamdrop"
-          text={game.awayTeam?.id!}
+          team={game.awayTeam!}
           fieldId={game.fieldId}
           teamPosition={1}
           timeSlotId={game.timeSlotId}
@@ -29,7 +29,7 @@ const RenderGameSlot = (props: IProps) => {
         />
         <TeamDrop
           accept="teamdrop"
-          text={game.homeTeam?.id!}
+          team={game.homeTeam!}
           fieldId={game.fieldId}
           teamPosition={2}
           timeSlotId={game.timeSlotId}
