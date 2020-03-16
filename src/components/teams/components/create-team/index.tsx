@@ -13,8 +13,7 @@ import {
   ITeam,
   BindingCbWithThree,
 } from 'common/models';
-import Modal from 'components/common/modal';
-import CancelPopup from 'components/common/cancel-popup';
+import { PopupExposure } from 'components/common';
 
 interface ICreateTeamState {
   teams: Partial<ITeam>[];
@@ -42,16 +41,12 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
   };
 
   onCancel = () => {
-    const changesMade = Object.entries(this.state.teams[0]).length !== 0;
-    if (changesMade) {
-      this.setState({ isModalOpen: true });
-    } else {
-      this.props.history.goBack();
-    }
+    this.setState({ isModalOpen: true });
   };
 
   onSave = () => {
     this.props.saveTeams(this.state.teams, this.eventId, this.props.history);
+    this.setState({ isModalOpen: false });
   };
 
   onAddTeam = () => {
@@ -60,6 +55,10 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
 
   onModalClose = () => {
     this.setState({ isModalOpen: false });
+  };
+
+  onExit = () => {
+    this.props.history.goBack();
   };
 
   render() {
@@ -101,9 +100,12 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
           color="secondary"
           onClick={this.onAddTeam}
         />
-        <Modal isOpen={this.state.isModalOpen} onClose={this.onModalClose}>
-          <CancelPopup onSave={this.onSave} />
-        </Modal>
+        <PopupExposure
+          isOpen={this.state.isModalOpen}
+          onClose={this.onModalClose}
+          onExitClick={this.onExit}
+          onSaveClick={this.onSave}
+        />
       </section>
     );
   }
