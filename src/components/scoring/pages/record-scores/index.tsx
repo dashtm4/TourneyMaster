@@ -6,11 +6,13 @@ import History from 'browserhistory';
 import { loadScoresData } from './logic/actions';
 import { AppState } from './logic/reducer';
 import Navigation from './components/navigation';
-import Scoring from './components/scoring';
+import ScoringFilter from './components/scoring-filter';
+import ScoringTable from './components/scoring-table';
 import { Loader, PopupExposure } from 'components/common';
-import { IDivision, ITeam, IEventSummary } from 'common/models';
+import { IDivision, ITeam, IEventSummary, IField } from 'common/models';
 import { Routes } from 'common/enums';
 import { DefaulSelectFalues, ViewTypes, DayTypes } from './types';
+import styles from './styles.module.scss';
 
 interface MatchParams {
   eventId?: string;
@@ -20,8 +22,9 @@ interface Props {
   isLoading: boolean;
   isLoaded: boolean;
   divisions: IDivision[];
+  fields: IField[];
   teams: ITeam[];
-  fields: IEventSummary[];
+  eventSummary: IEventSummary[];
   loadScoresData: (eventId: string) => void;
 }
 
@@ -97,9 +100,9 @@ class RecordScores extends React.Component<
       isExposurePopupOpen,
     } = this.state;
 
-    const { isLoading, divisions, teams, fields } = this.props;
+    const { isLoaded, divisions, fields, teams, eventSummary } = this.props;
 
-    if (isLoading) {
+    if (!isLoaded) {
       return <Loader />;
     }
 
@@ -110,18 +113,26 @@ class RecordScores extends React.Component<
           onLeavePage={this.onLeavePage}
           onChangeView={this.onChangeView}
         />
-        <Scoring
-          divisions={divisions}
-          teams={teams}
-          fields={fields}
-          view={view}
-          selectedDay={selectedDay}
-          selectedDivision={selectedDivision}
-          selectedTeam={selectedTeam}
-          selectedField={selectedField}
-          onChangeSelect={this.onChangeSelect}
-          onChangeDay={this.onChangeDay}
-        />
+        <section className={styles.scoringWrapper}>
+          <h2 className="visually-hidden">Scoring</h2>
+          <ScoringFilter
+            divisions={divisions}
+            teams={teams}
+            eventSummary={eventSummary}
+            selectedDay={selectedDay}
+            selectedDivision={selectedDivision}
+            selectedTeam={selectedTeam}
+            selectedField={selectedField}
+            onChangeSelect={this.onChangeSelect}
+            onChangeDay={this.onChangeDay}
+          />
+          <ScoringTable
+            divisions={divisions}
+            teams={teams}
+            fields={fields}
+            isEnterScores={view === ViewTypes.ENTER_SCORES}
+          />
+        </section>
         <PopupExposure
           isOpen={isExposurePopupOpen}
           onClose={this.onClosePopup}
@@ -142,8 +153,9 @@ export default connect(
     isLoading: recordScores.isLoading,
     isLoaded: recordScores.isLoaded,
     divisions: recordScores.divisions,
+    fields: recordScores.fields,
     teams: recordScores.teams,
-    fields: recordScores.eventSummary,
+    eventSummary: recordScores.eventSummary,
   }),
   (dispatch: Dispatch) => bindActionCreators({ loadScoresData }, dispatch)
 )(RecordScores);

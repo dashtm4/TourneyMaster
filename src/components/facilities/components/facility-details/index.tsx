@@ -133,7 +133,7 @@ class FacilityDetails extends React.Component<Props, State> {
     } = this.props;
     const { isEdit, isRestRoomDetails, isParkingDetails } = this.state;
 
-    console.log(Boolean(facility.parking_available));
+    console.log(facility);
 
     if (
       !facility.isNew &&

@@ -1,56 +1,59 @@
-.table {
-  color: #f0f0f0;
-  overflow-y: hidden;
-  overflow-x: scroll;
-  width: 600px;
+.section {
   position: relative;
-  display: block;
 
-  @media only screen and (min-width: 950px) {
-    width: 890px;
-  }
+  height: 330px;
+}
 
-  @media only screen and (min-width: 1150px) {
-    width: 1090px;
-  }
+.tableWrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 
-  @media only screen and (min-width: 1250px) {
-    width: 1230px;
-  }
+  overflow: hidden;
 
-  @media only screen and (min-width: 1450px) {
-    width: 1370px;
-  }
+  background-color: #b1b1b1;
+}
+
+.table {
+  display: flex;
+  flex-wrap: nowrap;
+
+  min-width: 100%;
+
+  background-color: #f4f4f4;
+
+  color: #f0f0f0;
 
   .fieldTh {
-    background: #d5d5d5;
-    color: #363636;
-    padding: 5px 10px;
-    border-radius: 2px;
+    padding: 9px 0 12px;
+
+    text-align: center;
     font-size: 14px;
-    min-width: 100px;
-    border: 1px solid #b4b4b4;
+    line-height: 19px;
+    font-weight: 400;
+    color: #00a3ea;
   }
 
   .timeSlotRow {
     th {
-      background: #d5d5d5;
-      padding: 10px;
-      min-width: 50px;
-      border-radius: 2px;
-      font-size: 14px;
-      color: #414141;
-      border: 1px solid #b4b4b4;
-    }
-    td {
-      padding: 10px;
-      background: #e7e7e7;
-      border: 1px solid rgb(29, 29, 29);
-      font-size: 14px;
-      color: #d8d7d7;
       min-width: 100px;
-      border-color: #a7a7a7;
-      height: 63px;
+
+      padding-top: 17px;
+
+      vertical-align: top;
+      text-align: center;
+      font-size: 14px;
+      line-height: 19px;
+      font-weight: 400;
+      color: #00a3ea;
+    }
+
+    td {
+      padding: 0 16px 12px 0;
+    }
+
+    td:last-child {
+      padding-right: 0;
     }
   }
 
