@@ -212,10 +212,6 @@ const pageEventReducer = (
 
       return {
         ...state,
-        tournamentData: {
-          ...state.tournamentData,
-          teams,
-        },
         menuList: state.menuList.map(item =>
           item.title === EventMenuTitles.TEAMS
             ? {

@@ -173,7 +173,7 @@ class Schedules extends Component<IProps, IState> {
 
   render() {
     const {
-      timeSlots,
+      // timeSlots,
       teams,
       fields,
       teamsDiagnosticsOpen,
@@ -225,20 +225,18 @@ class Schedules extends Component<IProps, IState> {
           </>
         )}
 
-        {teams?.length &&
+        {/* {teams?.length &&
           timeSlots?.length &&
           fields?.length &&
-          scheduling?.updatedGames &&
-          null
-        // (
-        //   <SchedulesMatrix
-        //     scheduling={scheduling}
-        //     timeSlots={timeSlots}
-        //     fields={fields}
-        //     teams={teams}
-        //   />
-        // )
-        }
+          scheduling?.updatedGames && (
+            <SchedulesMatrix
+              // scheduling={scheduling}
+              timeSlots={timeSlots}
+              fields={fields}
+              teams={teams}
+              isHeatmap={false}
+            />
+          )} */}
       </div>
     );
   }

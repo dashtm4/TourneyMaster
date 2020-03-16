@@ -53,7 +53,7 @@ const TableSchedule = ({
   const unassignedTeams = getUnassignedTeams(mockedTeamCards);
 
   return (
-    <section>
+    <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
       <div className={styles.scheduleTableWrapper}>
         {unassignedTeams.length > 0 && (

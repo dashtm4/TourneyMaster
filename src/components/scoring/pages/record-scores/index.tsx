@@ -7,7 +7,7 @@ import { loadScoresData } from './logic/actions';
 import { AppState } from './logic/reducer';
 import Navigation from './components/navigation';
 import { Loader, PopupExposure, TableSchedule } from 'components/common';
-import { IDivision, ITeam, IEventSummary, IField } from 'common/models';
+import { IDivision, ITeam, IEventSummary } from 'common/models';
 import { Routes } from 'common/enums';
 import styles from './styles.module.scss';
 
@@ -19,7 +19,6 @@ interface Props {
   isLoading: boolean;
   isLoaded: boolean;
   divisions: IDivision[];
-  fields: IField[];
   teams: ITeam[];
   eventSummary: IEventSummary[];
   loadScoresData: (eventId: string) => void;
@@ -75,9 +74,9 @@ class RecordScores extends React.Component<
   render() {
     const { isEnterScores, isExposurePopupOpen } = this.state;
 
-    const { isLoaded, divisions, teams, eventSummary } = this.props;
+    const { isLoading, divisions, teams, eventSummary } = this.props;
 
-    if (!isLoaded) {
+    if (isLoading) {
       return <Loader />;
     }
 
@@ -117,7 +116,6 @@ export default connect(
     isLoading: recordScores.isLoading,
     isLoaded: recordScores.isLoaded,
     divisions: recordScores.divisions,
-    fields: recordScores.fields,
     teams: recordScores.teams,
     eventSummary: recordScores.eventSummary,
   }),

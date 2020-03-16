@@ -3,6 +3,8 @@ enum MenuTitles {
   REGISTRATION = 'Registration',
   UTILITIES = 'Utilities',
   USER_PROFILE = 'User Profile',
+  TOURNEY_IMPORT = 'Tourney Import',
+  TOURNEY_IMPORT_TITLE = 'Import External Tournanment Wizard',
   EMAIL_SETUP = 'Email Setup',
 }
 
