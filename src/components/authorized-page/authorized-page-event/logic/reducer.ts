@@ -210,15 +210,12 @@ const pageEventReducer = (
 
       return {
         ...state,
-        tournamentData: {
-          ...state.tournamentData,
-          teams,
-        },
         menuList: state.menuList.map(item =>
           item.title === EventMenuTitles.TEAMS
             ? {
                 ...item,
-                isCompleted: !teams.some(it => !it.division_id || !it.pool_id),
+                isCompleted:
+                  teams.filter(it => it.division_id && it.pool_id).length > 0,
               }
             : item
         ),

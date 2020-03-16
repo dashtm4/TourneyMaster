@@ -1,36 +1,17 @@
 .cardContainer {
-  position: relative;
-
-  width: 180px;
-  height: 24px;
-  padding: 3px 0 3px 30px;
-  margin: 0 0 4px;
-
+  border: 1px solid #c3c3c3;
+  border-radius: 3px;
+  background: #4a4a4a;
+  padding: 2px 14px;
+  height: 27px;
+  margin-bottom: 4px;
+  color: #2d2d2d;
+  font-weight: 600;
+  width: 110px;
   white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 12px;
-  line-height: 17px;
-  color: #ffffff;
-
-  border-radius: 2px;
-
-  background-color: red !important;
-
   overflow: hidden;
-
-  &::before {
-    position: absolute;
-    top: 4px;
-    left: 8px;
-
-    content: '';
-    height: 14px;
-    width: 14px;
-
-    border-radius: 50%;
-
-    background-color: #cdcfd2;
-  }
+  text-overflow: ellipsis;
+  padding: 2px 8px;
 }
 
 .dragContainer {
