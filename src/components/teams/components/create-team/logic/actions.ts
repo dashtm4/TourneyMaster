@@ -26,7 +26,10 @@ export const saveTeams: ActionCreator<ThunkAction<
 
         if (divisionId) {
           acc[divisionId] = [...(acc[divisionId] || []), it];
+        } else {
+          acc['unassigned'] = [...(acc['unassigned'] || []), it];
         }
+
         return acc;
       }, {})
     );

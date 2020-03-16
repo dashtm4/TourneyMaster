@@ -1,0 +1,81 @@
+import React from 'react';
+import styles from './styles.module.scss';
+import { BindingAction, IFacility } from 'common/models';
+import CreateBackupForm from '../create-backup-form';
+import Button from 'components/common/buttons/button';
+import { EventDetailsDTO } from 'components/event-details/logic/model';
+import { IField } from 'common/models';
+
+interface Props {
+  onCancel: BindingAction;
+  events: EventDetailsDTO[];
+  facilities: IFacility[];
+  fields: IField[];
+}
+
+interface State {
+  backupPlans: any[];
+}
+
+class CreateBackupModal extends React.Component<Props, State> {
+  state = { backupPlans: [{ type: 1 }] };
+
+  onChange = (name: string, value: string | number, index: number) => {
+    this.setState(({ backupPlans }) => ({
+      backupPlans: backupPlans.map(plan =>
+        plan === backupPlans[index] ? { ...plan, [name]: value } : plan
+      ),
+    }));
+  };
+
+  onAddAdditionalPlan = () => {
+    this.setState({ backupPlans: [...this.state.backupPlans, { type: 1 }] });
+  };
+
+  render() {
+    const { onCancel } = this.props;
+    const { backupPlans } = this.state;
+    return (
+      <div className={styles.container}>
+        <div className={styles.title}>Backup Plan</div>
+        {backupPlans.map((plan: any, index: number) => (
+          <CreateBackupForm
+            key={index}
+            index={index}
+            backupPlan={plan}
+            onChange={this.onChange}
+            events={this.props.events}
+            facilities={this.props.facilities}
+            fields={this.props.fields}
+          />
+        ))}
+        <Button
+          label="+ Add Additional Game Impacted"
+          variant="text"
+          color="secondary"
+          onClick={this.onAddAdditionalPlan}
+        />
+        <div className={styles.buttonsGroup}>
+          <Button
+            label="Cancel"
+            variant="text"
+            color="secondary"
+            onClick={onCancel}
+          />
+          <Button
+            label="Save Backup Plan to Library"
+            variant="contained"
+            color="primary"
+          />
+          <Button
+            label="Activate and Publish Backup Plan"
+            variant="contained"
+            color="primary"
+          />
+        </div>
+      </div>
+    );
+  }
+}
+
+export default CreateBackupModal;

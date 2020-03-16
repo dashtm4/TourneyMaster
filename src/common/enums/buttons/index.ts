@@ -11,6 +11,7 @@ enum ButtonColors {
 
 enum ButtonVarian {
   CONTAINED = 'contained',
+  TEXT = 'text',
 }
 
 enum ButtonFormTypes {

@@ -21,7 +21,7 @@ import {
   getTimeValuesFromEvent,
   setGameOptions,
 } from './helper';
-import SchedulesMatrix from 'components/common/matrix-table';
+// import SchedulesMatrix from 'components/common/matrix-table';
 import Scheduler, { IGameOptions } from './Scheduler';
 import Diagnostics from './diagnostics';
 import { Button, Loader } from 'components/common';
@@ -173,7 +173,7 @@ class Schedules extends Component<IProps, IState> {
 
   render() {
     const {
-      timeSlots,
+      // timeSlots,
       teams,
       fields,
       teamsDiagnosticsOpen,
@@ -225,17 +225,18 @@ class Schedules extends Component<IProps, IState> {
           </>
         )}
 
-        {teams?.length &&
+        {/* {teams?.length &&
           timeSlots?.length &&
           fields?.length &&
           scheduling?.updatedGames && (
             <SchedulesMatrix
-              scheduling={scheduling}
+              // scheduling={scheduling}
               timeSlots={timeSlots}
               fields={fields}
               teams={teams}
+              isHeatmap={false}
             />
-          )}
+          )} */}
       </div>
     );
   }
