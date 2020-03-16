@@ -26,6 +26,7 @@ export interface IFetchedTeam {
   divisionShortName: string;
   divisionHex: string;
   errors?: string[];
+  isLocked?: boolean;
 }
 
 export interface ITeam {
@@ -40,6 +41,7 @@ export interface ITeam {
   divisionShortName: string;
   divisionHex: string;
   errors?: string[];
+  isLocked?: boolean;
 }
 
 export interface ITeamCard extends ITeam {

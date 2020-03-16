@@ -27,6 +27,7 @@ const mockedTeamCards = [
     teamPosition: 0,
     divisionShortName: '2020',
     divisionHex: '#1C315F',
+    isLocked: true,
   },
   {
     id: '1',
@@ -45,7 +46,7 @@ const mockedTeamCards = [
   },
   {
     id: '2',
-    name: 'unassigned Team',
+    name: 'unassigned team',
     startTime: 'startTime0',
     poolId: 'poolId0',
     divisionId: 'divisionId0',

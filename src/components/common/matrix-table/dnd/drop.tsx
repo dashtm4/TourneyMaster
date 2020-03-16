@@ -101,7 +101,12 @@ export default (props: Props) => {
         </p>
       )}
       <p className={styles.cardOptionsWrapper}>
-        <button>1</button>
+        <button className={styles.lockBtn}>
+          {getIcon(team.isLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+            fill: isHeatmap ? '#ffffff' : '#00A3EA',
+          })}
+          <span className="visually-hidden">Unlock/Lock team</span>
+        </button>
       </p>
     </div>
   );

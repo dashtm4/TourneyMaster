@@ -95,3 +95,19 @@
   display: inline-block;
   margin: 5px 5px 0 0px;
 }
+
+.lockBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: transparent;
+
+  border: 0;
+
+  cursor: pointer;
+
+  svg {
+    width: 20px;
+  }
+}
