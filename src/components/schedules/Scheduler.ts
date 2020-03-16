@@ -1,4 +1,4 @@
-import { union, findKey, find, keys, orderBy } from 'lodash-es';
+import { union, findKey, find, keys } from 'lodash-es';
 import { getTimeFromString } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
@@ -71,6 +71,7 @@ export default class Scheduler {
     timeSlots: ITimeSlot[],
     tournamentBaseInfo: ITournamentBaseInfo
   ) {
+    console.clear();
     const { facilities, divisions, gameOptions } = tournamentBaseInfo || {};
 
     this.fields = fields;
@@ -94,7 +95,6 @@ export default class Scheduler {
     this.calculateAvgStartTime();
     this.populateGameData();
     this.calculateTeamData();
-    this.handleMinGameMinimum();
     this.calculateEmptyFields();
   }
 
@@ -107,19 +107,89 @@ export default class Scheduler {
     }));
   };
 
-  calculateTeamData = () => {
-    const teamSets: IUnequippedTeams = this.rearrangeTeamsByConstraints();
-    this.manageGamesByTeamSets(teamSets);
-    this.incrementGamePerTeam();
-    const currentGamesPerTeam = this.getGamesPerTeam();
+  handlePremierGames = (recursor = 1) => {
+    // set premier teams
+    const premierTeams = this.getUnsatisfiedTeams({ isPremier: true });
+    this.settleMinGameTeams(premierTeams);
 
-    if (
-      this.teamGameNum &&
-      currentGamesPerTeam < this.teamGameNum &&
-      currentGamesPerTeam < this.maxGameNum
-    ) {
-      this.calculateTeamData();
+    // set unsatisfied premier teams WITH back-to-back
+    const premierTeamsWBTB = this.getUnsatisfiedTeams({
+      isPremier: true,
+      gamesNum: recursor,
+    });
+
+    if (premierTeamsWBTB) {
+      this.settleMinGameTeams(premierTeamsWBTB, {
+        includeBackToBack: true,
+      });
     }
+
+    // set unsatisfied premier teams WITHOUT back-to-back on REGULAR fields
+    const premierTeamsRegularWOBTB = this.getUnsatisfiedTeams({
+      isPremier: true,
+      gamesNum: recursor,
+    });
+
+    if (premierTeamsRegularWOBTB) {
+      this.settleMinGameTeams(premierTeamsRegularWOBTB, {
+        ignorePremier: true,
+      });
+    }
+
+    // set unsatisfied premier teams WITH back-to-back on REGULAR fields
+    const premierTeamsRegularWBTB = this.getUnsatisfiedTeams({
+      isPremier: true,
+      gamesNum: recursor,
+    });
+
+    if (premierTeamsRegularWBTB) {
+      this.settleMinGameTeams(premierTeamsRegularWBTB, {
+        ignorePremier: true,
+        includeBackToBack: true,
+      });
+    }
+
+    // start recursion if needed
+    if (recursor < this.minGameNum) {
+      this.handlePremierGames(++recursor);
+    }
+  };
+
+  handleRegularGames = (recursor = 1) => {
+    // settle regular teams on regular fields
+    const regularTeams = this.getUnsatisfiedTeams({
+      isPremier: false,
+      gamesNum: recursor,
+    });
+    this.settleMinGameTeams(regularTeams);
+
+    // settle unsatisfied regular teams one more time
+    const unsatisfiedTeams = this.getUnsatisfiedTeams({
+      isPremier: false,
+      gamesNum: recursor,
+    });
+    this.settleMinGameTeams(unsatisfiedTeams);
+
+    // settle unsatisfied regular teams on regular fields with back-to-back
+    const unsatisfiedTeamsStill = this.getUnsatisfiedTeams({
+      isPremier: false,
+      gamesNum: recursor,
+    });
+
+    if (unsatisfiedTeamsStill?.length) {
+      this.settleMinGameTeams(unsatisfiedTeamsStill, {
+        includeBackToBack: true,
+      });
+    }
+
+    if (recursor < this.minGameNum) {
+      this.handleRegularGames(++recursor);
+    }
+  };
+
+  calculateTeamData = () => {
+    this.handlePremierGames();
+    this.handleRegularGames();
   };
 
   rearrangeTeamsByConstraints = (teamCards?: ITeamCard[]) => {
@@ -210,6 +280,8 @@ export default class Scheduler {
 
     return this.updatedGames.find(
       game =>
+        game.timeSlotId !== undefined &&
+        game.startTime &&
         (ignorePremier || game.isPremier === teamOne.isPremier) &&
         !game.awayTeam &&
         !game.homeTeam &&
@@ -432,13 +504,17 @@ export default class Scheduler {
     });
   };
 
-  getUnsatisfiedTeams = (options?: { isPremier?: boolean }) => {
-    const { isPremier } = options || {};
+  getUnsatisfiedTeams = (options?: {
+    isPremier?: boolean;
+    gamesNum?: number;
+  }) => {
+    const { isPremier, gamesNum } = options || {};
 
     return this.teamCards.filter(teamCard => {
       if (!teamCard.poolId) return false;
 
-      if (!(teamCard.games?.length! < this.minGameNum)) return false;
+      if (!((teamCard.games?.length || 0) < (gamesNum || this.minGameNum)))
+        return false;
 
       if (isPremier !== undefined) {
         if (teamCard.isPremier !== isPremier) {
@@ -454,43 +530,6 @@ export default class Scheduler {
     const rearrangedTeams = this.rearrangeTeamsByConstraints(teams);
     const foundGames = this.manageGamesByTeamSets(rearrangedTeams, options);
     return foundGames;
-  };
-
-  handleMinGameMinimum = () => {
-    const myFunction = (
-      isPremier: boolean,
-      gameOptions: IFindGameOptions,
-      recursor: number = 0
-    ) => {
-      const unsatisfiedTeams = this.getUnsatisfiedTeams({ isPremier });
-      const sortedTeams = orderBy(unsatisfiedTeams, 'games.length');
-      const divideBy =
-        recursor === 0 ? sortedTeams[0]?.games?.length : this.maxGameNum;
-      recursor++;
-
-      const teams = sortedTeams.filter(
-        team => team.games?.length! <= divideBy!
-      );
-
-      this.settleMinGameTeams(teams, gameOptions);
-
-      const unsatisfiedTeamsLeft = this.getUnsatisfiedTeams({ isPremier });
-      const sortedTeamsLeft = orderBy(unsatisfiedTeamsLeft, 'games.length');
-
-      if (sortedTeamsLeft.length && recursor <= this.minGameNum) {
-        myFunction(isPremier, gameOptions, recursor);
-      }
-    };
-
-    // premier teams --> premier fields (back-to-back)
-    myFunction(true, { includeBackToBack: true });
-    // premier teams --> regular fields (w/o back-to-back)
-    myFunction(true, { ignorePremier: true });
-    // premier teams --> regular fields (back-to-back)
-    myFunction(true, { includeBackToBack: true, ignorePremier: true });
-
-    // regular teams (back-to-back)
-    myFunction(false, { includeBackToBack: true });
   };
 
   calculateAvgStartTime = () => {
