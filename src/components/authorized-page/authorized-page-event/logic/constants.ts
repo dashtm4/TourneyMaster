@@ -55,7 +55,8 @@ export const EventMenu = [
     link: Routes.SCHEDULING,
     children: [
       EventMenuTitles.TOURNEY_ARCHITECT,
-      // EventMenuTitles.TOURNAMENT_PLAY, EventMenuTitles.BRACKETS
+      EventMenuTitles.TOURNAMENT_PLAY,
+      EventMenuTitles.BRACKETS,
     ],
     isAllowEdit: false,
     isCompleted: false,

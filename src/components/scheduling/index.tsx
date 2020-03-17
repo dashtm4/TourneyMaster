@@ -90,39 +90,40 @@ class Scheduling extends Component<IProps, IState> {
     }
 
     return (
-      <div className={styles.container}>
+      <>
+        <div className={styles.container}>
+          <Navigation
+            isAllowCreate={isAllowCreate}
+            onCreatePressed={this.onCreatePressed}
+          />
+          {isAllowCreate ? (
+            <>
+              <HeadingLevelTwo margin="24px 0px">Scheduling</HeadingLevelTwo>
+              <TourneyArchitect
+                schedule={schedule}
+                onChange={this.onChange}
+                onViewEventMatrix={this.onCallAction}
+              />
+              <TournamentPlay
+                onEditScheduleDetails={this.onCallAction}
+                onManageTournamentPlay={this.onCallAction}
+                onSaveScheduleCSV={this.onCallAction}
+              />
+              <Brackets onManageBrackets={this.onCallAction} />
+            </>
+          ) : (
+            <HazardList
+              incompleteMenuItems={incompleteMenuItems}
+              eventId={eventId}
+            />
+          )}
+        </div>
         <CreateNewModal
           isOpen={createModalOpen}
           onSave={this.onCreateNew}
           onClose={this.onCreateClosed}
         />
-        <Navigation
-          isAllowCreate={isAllowCreate}
-          onCreatePressed={this.onCreatePressed}
-        />
-        {schedule && (
-          <>
-            <HeadingLevelTwo margin="24px 0px">Scheduling</HeadingLevelTwo>
-            <TourneyArchitect
-              schedule={schedule}
-              onChange={this.onChange}
-              onViewEventMatrix={this.onCallAction}
-            />
-            <TournamentPlay
-              onEditScheduleDetails={this.onCallAction}
-              onManageTournamentPlay={this.onCallAction}
-              onSaveScheduleCSV={this.onCallAction}
-            />
-            <Brackets onManageBrackets={this.onCallAction} />
-          </>
-        )}
-        {!schedule && !isAllowCreate && (
-          <HazardList
-            incompleteMenuItems={incompleteMenuItems}
-            eventId={eventId}
-          />
-        )}
-      </div>
+      </>
     );
   }
 }
