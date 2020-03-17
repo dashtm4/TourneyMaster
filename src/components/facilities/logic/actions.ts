@@ -199,6 +199,7 @@ const saveFacilities: ActionCreator<ThunkAction<
       type: SAVE_FACILITIES_SUCCESS,
       payload: {
         facilities,
+        fields,
       },
     });
 

@@ -3,44 +3,71 @@ import {
   SCHEDULE_FETCH_SUCCESS,
   SCHEDULE_FETCH_FAILURE,
   SCHEDULE_FETCH_IN_PROGRESS,
+  ADD_NEW_SCHEDULE,
+  CHANGE_SCHEDULE,
 } from './actionTypes';
 import { ISchedule } from 'common/models/schedule';
 
 export interface ISchedulingState {
+  schedule: ISchedule | null;
+  schedules: ISchedule[];
+  isLoading: boolean;
+  isLoaded: boolean;
   error: boolean;
-  schedule?: ISchedule;
-  schedulingIsLoading: boolean;
 }
 
 const appState: ISchedulingState = {
+  schedule: null,
+  schedules: [],
+  isLoading: false,
+  isLoaded: false,
   error: false,
-  schedule: undefined,
-  schedulingIsLoading: false,
 };
 
 export default (state = appState, action: ScheduleActionType) => {
   switch (action.type) {
     case SCHEDULE_FETCH_IN_PROGRESS: {
       return {
-        ...state,
-        schedulingIsLoading: true,
+        ...appState,
+        isLoading: true,
       };
     }
-    case SCHEDULE_FETCH_SUCCESS:
+    case SCHEDULE_FETCH_SUCCESS: {
+      const { schedules } = action.payload;
+
       return {
         ...state,
-        error: false,
-        schedule: action.payload,
-        schedulingIsLoading: false,
+        isLoading: false,
+        isLoaded: true,
+        schedules,
       };
-
-    case SCHEDULE_FETCH_FAILURE:
+    }
+    case SCHEDULE_FETCH_FAILURE: {
       return {
         ...state,
         error: true,
         schedulingIsLoading: false,
       };
+    }
+    case ADD_NEW_SCHEDULE: {
+      const { newSchedule } = action.payload;
 
+      return {
+        ...state,
+        schedule: newSchedule,
+      };
+    }
+    case CHANGE_SCHEDULE: {
+      const { scheduleKey } = action.payload;
+
+      return {
+        ...state,
+        schedule: {
+          ...state.schedule,
+          ...scheduleKey,
+        },
+      };
+    }
     default:
       return state;
   }

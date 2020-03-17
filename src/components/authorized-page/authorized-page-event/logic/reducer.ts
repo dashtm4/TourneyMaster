@@ -52,6 +52,7 @@ const initialState = {
     facilities: [],
     divisions: [],
     teams: [],
+    fields: [],
   },
 };
 
@@ -169,7 +170,7 @@ const pageEventReducer = (
       };
     }
     case SAVE_FACILITIES_SUCCESS: {
-      const { facilities } = action.payload;
+      const { facilities, fields } = action.payload;
 
       return {
         ...state,
@@ -185,6 +186,11 @@ const pageEventReducer = (
               }
             : item
         ),
+        tournamentData: {
+          ...state.tournamentData,
+          facilities,
+          fields,
+        },
       };
     }
     case DIVISIONS_FETCH_SUCCESS: {

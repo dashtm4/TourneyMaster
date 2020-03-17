@@ -2,7 +2,7 @@ import moment from 'moment';
 
 const timeToDate = (time: string) => {
   if (!time) {
-    return '00:00:00';
+    return new Date();
   }
 
   return moment(time.split(':').join(''), 'HHmmss').format();

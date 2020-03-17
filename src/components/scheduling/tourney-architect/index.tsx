@@ -13,30 +13,40 @@ import {
   CardMessage,
 } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
-import { ISchedule } from 'common/models/schedule';
-import { stringToLink, getIcon } from 'helpers';
+import {
+  stringToLink,
+  getIcon,
+  getTimeFromString,
+  timeToString,
+} from 'helpers';
 import { EventMenuTitles, Icons } from 'common/enums';
+import { ISchedule } from 'common/models/schedule';
+import { ArchitectFormFields } from '../types';
 
 const STYLES_INFO_ICON = {
   marginLeft: '5px',
   fill: '#00A3EA',
 };
 
+const gameStartOptions = ['10', '15'];
+
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface IProps {
-  schedule?: ISchedule;
+  schedule: ISchedule;
   onChange: (name: string, value: any) => void;
   onViewEventMatrix: () => void;
 }
 
 export default (props: IProps) => {
   const { schedule, onChange, onViewEventMatrix } = props;
-  const gameStartOptions = ['10'];
 
-  const localChange = (event: InputTargetValue) => {
-    const { name, value } = event.target;
+  const localChange = ({ target: { name, value } }: InputTargetValue) => {
     onChange(name, value);
+  };
+
+  const onTimeChage = ({ target: { name, value } }: InputTargetValue) => {
+    onChange(name, timeToString(Number(value)));
   };
 
   const renderSectionCell = (name: string, value: any, infoIcon?: boolean) => (
@@ -70,11 +80,15 @@ export default (props: IProps) => {
       </HeadingLevelThree>
       <div className={styles.tourneyArchitect}>
         <div className={styles.taFirst}>
-          {renderSectionCell('Number of Fields', `${8}`, true)}
+          {renderSectionCell(
+            'Number of Fields',
+            `${schedule.num_fields}`,
+            true
+          )}
           {renderSectionCell('Play Time Window', `${8.3} - ${5.3}`, true)}
           {renderSectionCell(
             'Teams Registered/Max',
-            `${schedule?.num_teams}/${24}`,
+            `${2}/${schedule.num_teams}`,
             true
           )}
         </div>
@@ -84,28 +98,58 @@ export default (props: IProps) => {
               label: option,
               value: option,
             }))}
-            value={gameStartOptions[0]}
-            label="Games Start On"
-            name="gamesStartOn"
             onChange={localChange}
+            value={schedule.games_start_on || gameStartOptions[0]}
+            name={ArchitectFormFields.GAMES_START_ON}
+            label="Games Start On"
             width="100px"
             align="center"
           />
           <fieldset className={styles.numberGames}>
             <legend>Min/Max # of Games</legend>
             <div className={styles.numberGamesWrapper}>
-              <Input width="50px" minWidth="50px" type="number" />
+              <Input
+                onChange={localChange}
+                value={schedule.min_num_of_games || ''}
+                name={ArchitectFormFields.MIN_NUM_OF_GAMES}
+                width="50px"
+                minWidth="50px"
+                type="number"
+              />
               <Input width="50px" minWidth="50px" type="number" />
             </div>
           </fieldset>
-          <Input width="100px" type="number" align="center" label="Warmup" />
           <Input
+            onChange={onTimeChage}
+            value={getTimeFromString(
+              schedule.pre_game_warmup!,
+              'minutes'
+            ).toString()}
+            name={ArchitectFormFields.PRE_GAME_WARMUP}
+            width="100px"
+            type="number"
+            align="center"
+            label="Warmup"
+          />
+          <Input
+            onChange={onTimeChage}
+            value={getTimeFromString(
+              schedule.period_duration!,
+              'minutes'
+            ).toString()}
+            name={ArchitectFormFields.PERIOD_DURATION}
             width="100px"
             type="number"
             align="center"
             label="Division Duration(2)"
           />
           <Input
+            onChange={onTimeChage}
+            value={getTimeFromString(
+              schedule.time_btwn_periods!,
+              'minutes'
+            ).toString()}
+            name={ArchitectFormFields.TIME_BTWN_PERIODS}
             width="100px"
             type="number"
             align="center"
@@ -113,7 +157,15 @@ export default (props: IProps) => {
           />
         </div>
         <div className={styles.taThird}>
-          {renderSectionCell('Game Runtime', `${50} Minutes`)}
+          {renderSectionCell(
+            'Game Runtime',
+            `${getTimeFromString(schedule.period_duration!, 'minutes') +
+              getTimeFromString(schedule.pre_game_warmup!, 'minutes') +
+              getTimeFromString(
+                schedule.time_btwn_periods!,
+                'minutes'
+              )} Minutes`
+          )}
           {renderSectionCell('Total Game Slots', `${128}`)}
           {renderSectionCell('Average Games per Team', `${4}`)}
           <Button
