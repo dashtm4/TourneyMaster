@@ -4,6 +4,8 @@ enum ArchitectFormFields {
   PRE_GAME_WARMUP = 'pre_game_warmup',
   PERIOD_DURATION = 'period_duration',
   TIME_BTWN_PERIODS = 'time_btwn_periods',
+  NAME = 'name',
+  TAG = 'tage',
 }
 
 export { ArchitectFormFields };

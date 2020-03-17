@@ -24,6 +24,6 @@ export interface ISchedule {
   first_window_time: string | null;
   last_window_time: string | null;
   total_game_slots: string | null;
-  name: string;
-  tag: string;
+  name: string | null;
+  tag: string | null;
 }

@@ -69,11 +69,13 @@ class Scheduling extends Component<IProps, IState> {
     this.setState({ createModalOpen: true });
   };
 
-  onCreateNew = (data: INewVersion) => {
-    this.setState({ createModalOpen: false });
-    const { eventId } = this.props.match?.params;
-    this.props.history.push(`/schedules/${eventId}`);
-    this.props.createNewVersion(data);
+  onCreateNew = () => {
+    console.log('saved!');
+
+    // this.setState({ createModalOpen: false });
+    // const { eventId } = this.props.match?.params;
+    // this.props.history.push(`/schedules/${eventId}`);
+    // this.props.createNewVersion(data);
   };
 
   onCreateClosed = () => {
@@ -120,9 +122,11 @@ class Scheduling extends Component<IProps, IState> {
           )}
         </div>
         <CreateNewModal
+          schedule={schedule}
           isOpen={createModalOpen}
           onSave={this.onCreateNew}
           onClose={this.onCreateClosed}
+          onChange={this.onChange}
         />
       </>
     );
