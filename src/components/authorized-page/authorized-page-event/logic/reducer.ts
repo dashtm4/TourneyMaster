@@ -82,11 +82,6 @@ const pageEventReducer = (
         teams,
       } = tournamentData;
 
-      console.log(
-        teams.length,
-        teams.filter(it => !it.pool_id)
-      );
-
       return {
         ...state,
         tournamentData,

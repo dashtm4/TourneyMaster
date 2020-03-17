@@ -20,19 +20,6 @@
     align-items: center;
   }
 
-  .paper {
-    width: 100%;
-    top: 0;
-    z-index: 2;
-    position: sticky;
-
-    > div {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-  }
-
   .errorMessage {
     font-size: 17px;
     color: red;

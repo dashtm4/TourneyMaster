@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { History } from 'history';
 import { Dispatch, bindActionCreators } from 'redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileExport, faFileUpload } from '@fortawesome/free-solid-svg-icons';
 
 import { getScheduling, createNewVersion, INewVersion } from './logic/actions';
-import { HeadingLevelTwo, Paper, Button, Loader } from 'components/common';
+import { HeadingLevelTwo, Loader } from 'components/common';
+import Navigation from './navigation';
 import TourneyArchitect from './tourney-architect';
 import TournamentPlay from './tournament-play';
 import HazardList from './hazard-list';
@@ -97,34 +96,10 @@ class Scheduling extends Component<IProps, IState> {
           onSave={this.onCreateNew}
           onClose={this.onCreateClosed}
         />
-        <section className={styles.paper}>
-          <Paper>
-            <div>
-              <Button
-                icon={<FontAwesomeIcon icon={faFileExport} />}
-                label="Load From Library"
-                color="secondary"
-                variant="text"
-                disabled={!isAllowCreate}
-              />
-              &nbsp;
-              <Button
-                icon={<FontAwesomeIcon icon={faFileUpload} />}
-                label="Upload From File"
-                color="secondary"
-                variant="text"
-                disabled={!isAllowCreate}
-              />
-            </div>
-            <Button
-              label="Create New Version"
-              color="primary"
-              variant="contained"
-              onClick={this.onCreatePressed}
-              disabled={!isAllowCreate}
-            />
-          </Paper>
-        </section>
+        <Navigation
+          isAllowCreate={isAllowCreate}
+          onCreatePressed={this.onCreatePressed}
+        />
         {schedule && (
           <>
             <HeadingLevelTwo margin="24px 0px">Scheduling</HeadingLevelTwo>
@@ -146,11 +121,6 @@ class Scheduling extends Component<IProps, IState> {
             incompleteMenuItems={incompleteMenuItems}
             eventId={eventId}
           />
-        )}
-        {!schedule && isAllowCreate && !loading && (
-          <div className={styles.noFoundWrapper}>
-            <span>No Schedules found</span>
-          </div>
         )}
       </div>
     );
