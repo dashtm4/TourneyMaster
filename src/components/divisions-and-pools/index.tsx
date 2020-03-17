@@ -123,18 +123,18 @@ class DivisionsAndPools extends React.Component<
         <div className={styles.sectionContainer}>
           <div className={styles.headingContainer}>
             <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>
+            {divisions?.length ? (
+              <Button
+                label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                variant="text"
+                color="secondary"
+                onClick={this.onToggleAll}
+              />
+            ) : null}
           </div>
           {isLoading && this.Loading()}
           {divisions.length && !isLoading ? (
             <>
-              <div className={styles.buttonContainer}>
-                <Button
-                  label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
-                  variant="text"
-                  color="secondary"
-                  onClick={this.onToggleAll}
-                />
-              </div>
               <ul className={styles.divisionsList}>
                 {divisions.map((division, index) => (
                   <li key={division.division_id}>

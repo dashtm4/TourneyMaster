@@ -67,8 +67,6 @@ const OrganizationsManagement = ({
     <section className={styles.container}>
       <div className={styles.heading}>
         <HeadingLevelTwo>Organizations Management</HeadingLevelTwo>
-      </div>
-      <div className={styles.buttonContainer}>
         <Button
           label={expandAll ? 'Expand All' : 'Collapse All'}
           variant="text"

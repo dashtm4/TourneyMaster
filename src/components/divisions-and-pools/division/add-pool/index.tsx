@@ -3,17 +3,19 @@ import Input from 'components/common/input';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 import { BindingCbWithOne, BindingAction, IDivision } from 'common/models';
+import { PopupExposure } from 'components/common';
 
 interface IAddPoolState {
   divisions_id?: string;
   pool_name: string;
   pool_tag: string;
+  isModalConfirmOpen: boolean;
 }
 
 interface IAddPoolProps {
   division: IDivision;
   numOfTeams: number;
-  savePool: BindingCbWithOne<IAddPoolState>;
+  savePool: BindingCbWithOne<Partial<IAddPoolState>>;
   onClose: BindingAction;
 }
 
@@ -22,6 +24,7 @@ class AddPool extends React.Component<IAddPoolProps, IAddPoolState> {
     division_id: this.props.division.division_id,
     pool_name: '',
     pool_tag: '',
+    isModalConfirmOpen: false,
   };
 
   onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +33,14 @@ class AddPool extends React.Component<IAddPoolProps, IAddPoolState> {
 
   onTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ pool_tag: e.target.value });
+  };
+
+  onModalClose = () => {
+    this.setState({ isModalConfirmOpen: false });
+  };
+
+  onCancelClick = () => {
+    this.setState({ isModalConfirmOpen: true });
   };
 
   onSave = () => {
@@ -80,7 +91,7 @@ class AddPool extends React.Component<IAddPoolProps, IAddPoolState> {
               label="Cancel"
               variant="text"
               color="secondary"
-              onClick={this.props.onClose}
+              onClick={this.onCancelClick}
             />
             <Button
               label="Save"
@@ -90,6 +101,12 @@ class AddPool extends React.Component<IAddPoolProps, IAddPoolState> {
             />
           </div>
         </div>
+        <PopupExposure
+          isOpen={this.state.isModalConfirmOpen}
+          onClose={this.onModalClose}
+          onExitClick={this.props.onClose}
+          onSaveClick={this.onSave}
+        />
       </div>
     );
   }
