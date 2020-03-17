@@ -27,6 +27,8 @@ export const mapTeamsData = (
     startTime: '08:00:00',
     poolId: team.pool_id,
     divisionId: team.division_id,
+    divisionShortName: team.divisionShortName,
+    divisionHex: team.divisionHex,
     isPremier: teamPremierByDivision(team, divisions),
   }));
 

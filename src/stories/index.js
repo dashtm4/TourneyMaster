@@ -21,7 +21,7 @@ import Paper from '../components/common/paper';
 import CardMessage from '../components/common/card-message';
 import { CardMessageTypes } from '../components/common/card-message/types';
 import TooltipMessage from '../components/common/tooltip-message';
-import { TooltipMessageTypes } from '../components/common/tooltip-message/Types';
+import { TooltipMessageTypes } from '../components/common/tooltip-message/types';
 import DashboardMenu from '../components/common/menu';
 
 storiesOf('TourneyMaster', module)

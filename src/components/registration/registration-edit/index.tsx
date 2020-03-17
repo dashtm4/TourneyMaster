@@ -9,6 +9,7 @@ import TeamsAthletesInfo from './teams-athletes';
 import MainContact from './main-contact';
 import { IRegistration } from 'common/models/registration';
 import { BindingAction, BindingCbWithTwo } from 'common/models';
+import { PopupExposure } from 'components/common';
 
 interface IRegistrationEditProps {
   onCancel: BindingAction;
@@ -17,7 +18,24 @@ interface IRegistrationEditProps {
   onChange: BindingCbWithTwo<string, any>;
 }
 
-class RegistrationEdit extends React.Component<IRegistrationEditProps, {}> {
+interface IRegistrationEditState {
+  isExposurePopupOpen: boolean;
+}
+
+class RegistrationEdit extends React.Component<
+  IRegistrationEditProps,
+  IRegistrationEditState
+> {
+  state = { isExposurePopupOpen: false };
+
+  onModalClose = () => {
+    this.setState({ isExposurePopupOpen: false });
+  };
+
+  onCancelClick = () => {
+    this.setState({ isExposurePopupOpen: true });
+  };
+
   render() {
     return (
       <section>
@@ -28,7 +46,7 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, {}> {
                 label="Cancel"
                 variant="text"
                 color="secondary"
-                onClick={this.props.onCancel}
+                onClick={this.onCancelClick}
               />
               <Button
                 label="Save"
@@ -85,6 +103,12 @@ class RegistrationEdit extends React.Component<IRegistrationEditProps, {}> {
             </li>
           </ul>
         </div>
+        <PopupExposure
+          isOpen={this.state.isExposurePopupOpen}
+          onClose={this.onModalClose}
+          onExitClick={this.props.onCancel}
+          onSaveClick={this.props.onSave}
+        />
       </section>
     );
   }

@@ -76,8 +76,13 @@ class Facilities extends React.Component<
   };
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    if (prevProps.facilities.length && !prevState.expanded.length) {
-      this.setState({ expanded: this.props.facilities.map(_facility => true) });
+    if (
+      (prevProps.facilities.length && !prevState.expanded.length) ||
+      prevProps.facilities !== this.props.facilities
+    ) {
+      this.setState({
+        expanded: this.props.facilities.map(_facility => true),
+      });
     }
   }
 
@@ -120,30 +125,30 @@ class Facilities extends React.Component<
             <HeadingLevelTwo>Facilities</HeadingLevelTwo>
           </div>
           <div className={styles.numberWrapper}>
-            <span className={styles.numberTitleWrapper}>
-              Number of Facilities
-            </span>
-            <Select
-              onChange={this.onChangeFacilitiesCount}
-              value={`${facilities.length || ''}`}
-              options={Array.from(
-                new Array(facilities.length + 1),
-                (_, idx) => ({ label: `${idx + 1}`, value: `${idx + 1}` })
-              )}
-              width="160px"
-            />
-          </div>
-          <ul className={styles.facilitiesList}>
-            {facilities.length ? (
-              <div className={styles.buttonContainer}>
+            <div className={styles.numberTitleWrapper}>
+              <div>Number of Facilities</div>
+            </div>
+            <div className={styles.numberContainer}>
+              <Select
+                onChange={this.onChangeFacilitiesCount}
+                value={`${facilities.length || ''}`}
+                options={Array.from(
+                  new Array(facilities.length + 1),
+                  (_, idx) => ({ label: `${idx + 1}`, value: `${idx + 1}` })
+                )}
+                width="160px"
+              />
+              {facilities?.length ? (
                 <Button
                   label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
                   variant="text"
                   color="secondary"
                   onClick={this.onToggleAll}
                 />
-              </div>
-            ) : null}
+              ) : null}
+            </div>
+          </div>
+          <ul className={styles.facilitiesList}>
             {facilities
               .sort((a, b) => {
                 if (a.isChange || b.isChange) {

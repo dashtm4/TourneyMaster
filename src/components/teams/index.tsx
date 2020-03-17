@@ -11,6 +11,7 @@ import {
   Modal,
   PopupTeamEdit,
   Loader,
+  PopupExposure,
 } from 'components/common';
 import { AppState } from './logic/reducer';
 import { IDivision, IPool, ITeam } from '../../common/models';
@@ -39,6 +40,7 @@ interface State {
   isEdit: boolean;
   isEditPopupOpen: boolean;
   isDeletePopupOpen: boolean;
+  isConfirmModalOpen: boolean;
 }
 
 class Teams extends React.Component<
@@ -56,6 +58,7 @@ class Teams extends React.Component<
       isEdit: false,
       isEditPopupOpen: false,
       isDeletePopupOpen: false,
+      isConfirmModalOpen: false,
     };
   }
 
@@ -105,12 +108,13 @@ class Teams extends React.Component<
     if (eventId) {
       saveTeams(teams);
     }
+    this.setState({ isConfirmModalOpen: false, isEdit: false });
   };
 
   onCancelClick = () => {
     const { teams } = this.props;
 
-    this.setState({ isEdit: false, teams });
+    this.setState({ isEdit: false, teams, isConfirmModalOpen: false });
   };
 
   onDeletePopupOpen = (team: ITeam) =>
@@ -167,6 +171,14 @@ class Teams extends React.Component<
       isDeletePopupOpen: false,
     });
 
+  onConfirmModalClose = () => {
+    this.setState({ isConfirmModalOpen: false });
+  };
+
+  onCancel = () => {
+    this.setState({ isConfirmModalOpen: true });
+  };
+
   render() {
     const { isLoading, divisions, pools, loadPools } = this.props;
 
@@ -191,7 +203,7 @@ class Teams extends React.Component<
             isEdit={isEdit}
             onEditClick={this.onEditClick}
             onSaveClick={this.onSaveClick}
-            onCancelClick={this.onCancelClick}
+            onCancelClick={this.onCancel}
             history={this.props.history}
             eventId={this.props.match.params.eventId}
           />
@@ -236,6 +248,12 @@ class Teams extends React.Component<
             )}
           </>
         </Modal>
+        <PopupExposure
+          isOpen={this.state.isConfirmModalOpen}
+          onClose={this.onConfirmModalClose}
+          onExitClick={this.onCancelClick}
+          onSaveClick={this.onSaveClick}
+        />
       </>
     );
   }

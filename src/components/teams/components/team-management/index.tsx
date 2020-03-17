@@ -41,7 +41,9 @@ const TeamManagement = ({
   ]);
   const [expandAll, setExpandAll] = useState(false);
 
-  const onToggleAll = () => {
+  const onToggleAll = (e: any) => {
+    e.stopPropagation();
+
     setExpanded(expanded.map(_e => expandAll));
     setExpandAll(!expandAll);
   };
@@ -61,8 +63,8 @@ const TeamManagement = ({
         type="section"
         isDefaultExpanded={true}
       >
-        <span>Team Management</span>
-        <ul className={styles.divisionList}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div>Team Management</div>
           {divisions.length ? (
             <div className={styles.buttonContainer}>
               <Button
@@ -73,6 +75,8 @@ const TeamManagement = ({
               />
             </div>
           ) : null}
+        </div>
+        <ul className={styles.divisionList}>
           {divisions.map((division, index) => (
             <DivisionItem
               division={division}

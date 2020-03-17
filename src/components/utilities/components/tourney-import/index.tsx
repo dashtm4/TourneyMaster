@@ -56,7 +56,7 @@ const TourneyImport: React.FC<Props> = ({
                 onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
                   onGetTid(evt.target.value)
                 }
-                label="Enter the Identifier of the External Tournanment: "
+                label="Enter the Identifier of the External Tournament: "
                 fullWidth={true}
               />
             </div>

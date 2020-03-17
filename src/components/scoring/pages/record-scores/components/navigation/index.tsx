@@ -1,24 +1,23 @@
 import React from 'react';
 import { Button } from 'components/common';
 import { ButtonTypes } from 'common/enums';
-import { ViewTypes } from '../../types';
 import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 
 interface Props {
-  view: ViewTypes;
-  onChangeView: (type: ViewTypes) => void;
+  isEnterScores: boolean;
+  onChangeView: (flag: boolean) => void;
   onLeavePage: BindingAction;
 }
 
-const Navigation = ({ view, onChangeView, onLeavePage }: Props) => (
+const Navigation = ({ isEnterScores, onChangeView, onLeavePage }: Props) => (
   <div className={styles.navWrapper}>
     <p className={styles.btnsViewWrapper}>
       <span className={styles.btnWrapper}>
         <Button
-          onClick={() => onChangeView(ViewTypes.VIEW_ONLY)}
+          onClick={() => onChangeView(false)}
           type={
-            view === ViewTypes.VIEW_ONLY
+            isEnterScores
               ? ButtonTypes.SQUARED
               : ButtonTypes.SQUARED_OUTLINED
           }
@@ -28,9 +27,9 @@ const Navigation = ({ view, onChangeView, onLeavePage }: Props) => (
         />
       </span>
       <Button
-        onClick={() => onChangeView(ViewTypes.ENTER_SCORES)}
+        onClick={() => onChangeView(true)}
         type={
-          view === ViewTypes.VIEW_ONLY
+          isEnterScores
             ? ButtonTypes.SQUARED_OUTLINED
             : ButtonTypes.SQUARED
         }
