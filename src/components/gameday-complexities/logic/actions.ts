@@ -2,6 +2,9 @@ import {
   EVENTS_FETCH_SUCCESS,
   FACILITIES_FETCH_SUCCESS,
   FIELDS_FETCH_SUCCESS,
+  BACKUP_PLANS_FETCH_SUCCESS,
+  ADD_BACKUP_PLAN_SUCCESS,
+  DELETE_BACKUP_PLAN,
 } from './actionTypes';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { ActionCreator, Dispatch } from 'redux';
@@ -9,6 +12,8 @@ import { ThunkAction } from 'redux-thunk';
 import api from 'api/api';
 import { Toasts } from 'components/common';
 import { IFacility, IField } from 'common/models';
+import { IBackupPlan } from 'common/models/backup_plan';
+import { getVarcharEight } from 'helpers';
 
 export const eventsFetchSuccess = (
   payload: EventDetailsDTO[]
@@ -28,6 +33,27 @@ export const fieldsFetchSuccess = (
   payload: IField[]
 ): { type: string; payload: IField[] } => ({
   type: FIELDS_FETCH_SUCCESS,
+  payload,
+});
+
+export const backupPlansFetchSuccess = (
+  payload: IBackupPlan[]
+): { type: string; payload: IBackupPlan[] } => ({
+  type: BACKUP_PLANS_FETCH_SUCCESS,
+  payload,
+});
+
+export const addBackupPlanSuccess = (
+  payload: IBackupPlan
+): { type: string; payload: IBackupPlan } => ({
+  type: ADD_BACKUP_PLAN_SUCCESS,
+  payload,
+});
+
+export const deleteBackupPlanSuccess = (
+  payload: string
+): { type: string; payload: string } => ({
+  type: DELETE_BACKUP_PLAN,
   payload,
 });
 
@@ -68,4 +94,78 @@ export const getFields: ActionCreator<ThunkAction<
     return Toasts.errorToast("Couldn't load fields");
   }
   dispatch(fieldsFetchSuccess(fields));
+};
+
+export const getBackupPlans: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = () => async (dispatch: Dispatch) => {
+  const backupPlans = await api.get('/backup_plans');
+  if (!backupPlans) {
+    return Toasts.errorToast("Couldn't load backup plans");
+  }
+  dispatch(backupPlansFetchSuccess(backupPlans));
+};
+
+export const saveBackupPlans: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (backupPlans: any[]) => async (dispatch: Dispatch) => {
+  for await (const backupPlan of backupPlans) {
+    if (
+      !backupPlan.backup_name ||
+      !backupPlan.event_id ||
+      !backupPlan.facilities_impacted?.length ||
+      !backupPlan.fields_impacted?.length ||
+      !backupPlan.timeslots_impacted?.length
+    ) {
+      return Toasts.errorToast('All fields are required!');
+    }
+
+    const data = {
+      ...backupPlan,
+      facilities_impacted: JSON.stringify(
+        backupPlan.facilities_impacted.map((fac: any) => fac.value)
+      ),
+      fields_impacted: JSON.stringify(
+        backupPlan.fields_impacted.map((field: any) => field.value)
+      ),
+      timeslots_impacted:
+        backupPlan.backup_type === 'cancel_games'
+          ? JSON.stringify(
+              backupPlan.timeslots_impacted.map(
+                (timeslot: any) => timeslot.value
+              )
+            )
+          : backupPlan.timeslots_impacted,
+      backup_plan_id: getVarcharEight(),
+    };
+
+    const response = await api.post(`/backup_plans`, data);
+
+    if (response?.errorType === 'Error') {
+      return Toasts.errorToast("Couldn't add a division");
+    }
+    dispatch(addBackupPlanSuccess(data));
+  }
+
+  Toasts.successToast('Backup Plan is successfully added');
+};
+
+export const deleteBackupPlan: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (id: string) => async (dispatch: Dispatch) => {
+  const backupPlan = await api.delete(`/backup_plans?backup_plan_id=${id}`);
+  if (!backupPlan) {
+    return Toasts.errorToast("Couldn't delete a backup plans");
+  }
+  dispatch(deleteBackupPlanSuccess(id));
+  Toasts.successToast('Backup Plan is successfully deleted');
 };

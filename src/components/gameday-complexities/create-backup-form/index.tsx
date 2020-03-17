@@ -5,8 +5,16 @@ import { BindingCbWithThree, IFacility } from 'common/models';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { IField } from 'common/models';
 import MultipleSearch from 'components/common/multiple-search-select';
+import {
+  getFacilitiesOptionsForEvent,
+  getFieldsOptionsForFacilities,
+} from '../helper';
 
-const options = [{ value: 'Option', label: 'Option' }];
+const options = [{ value: '05:00 PM', label: '05:00 PM' }];
+const optionsTimeslots = [
+  { value: '05:00 PM', label: '05:00 PM' },
+  { value: '06:00 PM', label: '06:00 PM' },
+];
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -19,58 +27,69 @@ interface Props {
   fields: IField[];
 }
 
-enum OptionsEnum {
-  'Cancel Games' = 1,
-  'Modify Start Times' = 2,
-  'Modify Game Lengths' = 3,
+export enum OptionsEnum {
+  'Cancel Games' = 'cancel_games',
+  'Modify Start Times' = 'modify_start_time',
+  'Modify Game Lengths' = 'modify_game_lengths',
+}
+
+export enum TypeOptionsEnum {
+  'cancel_games' = 'Cancel Games',
+  'modify_start_time' = 'Modify Start Times',
+  'modify_game_lengths' = 'Modify Game Lengths',
 }
 
 class CreateBackupForm extends React.Component<Props> {
   onNameChange = (e: InputTargetValue) =>
-    this.props.onChange('name', e.target.value, this.props.index);
+    this.props.onChange('backup_name', e.target.value, this.props.index);
 
-  onTournamentChange = (e: InputTargetValue) =>
-    this.props.onChange('tournament', e.target.value, this.props.index);
+  onTournamentChange = (e: InputTargetValue) => {
+    this.props.onChange('event_id', e.target.value, this.props.index);
+    this.props.onChange('facilities_impacted', '', this.props.index);
+    this.props.onChange('fields_impacted', '', this.props.index);
+  };
 
-  onTypeChange = (e: InputTargetValue) =>
-    this.props.onChange('type', OptionsEnum[e.target.value], this.props.index);
+  onTypeChange = (e: InputTargetValue) => {
+    this.props.onChange(
+      'backup_type',
+      OptionsEnum[e.target.value],
+      this.props.index
+    );
+    this.props.onChange('timeslots_impacted', '', this.props.index);
+  };
 
   onFacilitiesChange = (_event: InputTargetValue, values: any) => {
-    this.props.onChange('facilities', values, this.props.index);
+    this.props.onChange('facilities_impacted', values, this.props.index);
   };
 
   onFieldsChange = (_event: InputTargetValue, values: any) =>
-    this.props.onChange('fields', values, this.props.index);
+    this.props.onChange('fields_impacted', values, this.props.index);
 
-  onTimeslotsChange = (e: InputTargetValue) =>
-    this.props.onChange('timeslots', e.target.value, this.props.index);
+  onTimeslotsChange = (_event: InputTargetValue, values: any) => {
+    this.props.onChange('timeslots_impacted', values, this.props.index);
+  };
+
+  onTimeslotChange = (e: InputTargetValue) =>
+    this.props.onChange('timeslots_impacted', e.target.value, this.props.index);
 
   onChangeToChange = (e: InputTargetValue) =>
-    this.props.onChange('change_to', e.target.value, this.props.index);
+    this.props.onChange('change_value', e.target.value, this.props.index);
 
-  onLengthsChange = (e: InputTargetValue) =>
-    this.props.onChange('lengths', e.target.value, this.props.index);
-
-  renderTimeslots = (
-    type: string,
-    timeslots: string,
-    changeTo: string,
-    changeLengths: string
-  ) => {
+  renderTimeslots = (type: string, timeslots: any, changeTo: string) => {
     switch (String(type)) {
-      case '1':
+      case 'cancel_games':
         return (
           <div className={styles.item}>
-            <Select
+            <MultipleSearch
               label="Timeslots"
-              options={options}
               width={'282px'}
-              value={timeslots || ''}
+              options={optionsTimeslots}
               onChange={this.onTimeslotsChange}
+              value={timeslots || []}
             />
           </div>
         );
-      case '2':
+      case 'modify_start_time':
         return (
           <div className={styles.itemDouble}>
             <Select
@@ -78,7 +97,7 @@ class CreateBackupForm extends React.Component<Props> {
               options={options}
               width={'131px'}
               value={timeslots || ''}
-              onChange={this.onTimeslotsChange}
+              onChange={this.onTimeslotChange}
             />
             <Select
               label="Change To"
@@ -89,7 +108,7 @@ class CreateBackupForm extends React.Component<Props> {
             />
           </div>
         );
-      case '3':
+      case 'modify_game_lengths':
         return (
           <div className={styles.itemDouble}>
             <Select
@@ -97,15 +116,15 @@ class CreateBackupForm extends React.Component<Props> {
               options={options}
               width={'131px'}
               value={timeslots || ''}
-              onChange={this.onTimeslotsChange}
+              onChange={this.onTimeslotChange}
             />
             <Input
               width={'131px'}
               type={'number'}
               label="Change To"
               placeholder="Minutes"
-              onChange={this.onLengthsChange}
-              value={changeLengths || ''}
+              onChange={this.onChangeToChange}
+              value={changeTo || ''}
             />
           </div>
         );
@@ -114,15 +133,15 @@ class CreateBackupForm extends React.Component<Props> {
 
   render() {
     const {
-      name,
-      tournament,
-      type,
-      facilities,
-      fields,
-      timeslots,
-      change_to,
-      lengths,
+      backup_name,
+      event_id,
+      backup_type,
+      facilities_impacted,
+      fields_impacted,
+      timeslots_impacted,
+      change_value,
     } = this.props.backupPlan;
+
     const { events, facilities: allFacilities, fields: allFields } = this.props;
 
     const eventsOptions = events.map(event => ({
@@ -130,22 +149,14 @@ class CreateBackupForm extends React.Component<Props> {
       value: event.event_id,
     }));
 
-    const facilitiesOptions = allFacilities
-      .filter(facility => facility.event_id === tournament)
-      .map(facility => ({
-        label: facility.facilities_description,
-        value: facility.facilities_id,
-      }));
+    const facilitiesOptions = getFacilitiesOptionsForEvent(
+      allFacilities,
+      event_id
+    );
 
-    const fieldsOptions = allFields
-      .filter(
-        field =>
-          facilities &&
-          facilities
-            .map((fac: { label: string; value: string }) => fac.value)
-            .includes(field.facilities_id)
-      )
-      .map(field => ({ label: field.field_name, value: field.field_id }));
+    const fieldsOptions =
+      facilities_impacted &&
+      getFieldsOptionsForFacilities(allFields, facilities_impacted);
 
     return (
       <div className={styles.formContainer}>
@@ -155,15 +166,15 @@ class CreateBackupForm extends React.Component<Props> {
               fullWidth={true}
               label="Name"
               onChange={this.onNameChange}
-              value={name || ''}
+              value={backup_name || ''}
             />
           </div>
           <div className={styles.item}>
             <Select
-              label="Tournament Impacted"
+              label="Event Impacted"
               options={eventsOptions}
               onChange={this.onTournamentChange}
-              value={tournament || ''}
+              value={event_id || ''}
             />
           </div>
           <div className={styles.itemLarge}>
@@ -176,40 +187,46 @@ class CreateBackupForm extends React.Component<Props> {
               ]}
               formLabel="Type"
               onChange={this.onTypeChange}
-              checked={OptionsEnum[type] || OptionsEnum[1]}
+              checked={
+                TypeOptionsEnum[backup_type] || OptionsEnum['Cancel Game']
+              }
             />
           </div>
         </div>
         <div className={styles.row}>
-          {tournament && (
+          {event_id && (
             <div className={styles.item}>
               <MultipleSearch
                 label="Facilities Impacted"
                 width={'282px'}
                 options={facilitiesOptions}
                 onChange={this.onFacilitiesChange}
-                value={facilities || []}
+                value={facilities_impacted || []}
               />
             </div>
           )}
 
-          {facilities?.length ? (
+          {facilities_impacted?.length ? (
             <div className={styles.item}>
               <MultipleSearch
                 label="Fields Impacted"
                 width={'282px'}
                 options={fieldsOptions}
                 onChange={this.onFieldsChange}
-                value={fields || []}
+                value={fields_impacted || []}
               />
             </div>
           ) : null}
 
-          {fields?.length
-            ? this.renderTimeslots(type, timeslots, change_to, lengths)
+          {fields_impacted?.length
+            ? this.renderTimeslots(
+                backup_type,
+                timeslots_impacted,
+                change_value
+              )
             : null}
 
-          {tournament && (
+          {event_id && (
             <div className={styles.item}>
               <>
                 <span>or</span>
