@@ -1,5 +1,5 @@
 import { getTimeFromString, timeToString } from 'helpers';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
+import { IEventDetails } from 'common/models';
 
 interface ITimeValues {
   firstGameTime: string;
@@ -24,7 +24,7 @@ const calculateTotalGameTime = (
   );
 };
 
-export const setGameOptions = (event: EventDetailsDTO) => {
+export const setGameOptions = (event: IEventDetails) => {
   const {
     min_num_of_games,
     pre_game_warmup,
@@ -33,26 +33,24 @@ export const setGameOptions = (event: EventDetailsDTO) => {
     periods_per_game,
   } = event;
   return {
-    minGameNum: min_num_of_games,
-    maxGameNum: min_num_of_games,
+    minGameNum: min_num_of_games || undefined,
+    maxGameNum: min_num_of_games || undefined,
     totalGameTime: calculateTotalGameTime(
       pre_game_warmup,
-      period_duration,
-      time_btwn_periods,
-      periods_per_game
+      period_duration!,
+      time_btwn_periods!,
+      periods_per_game!
     ),
   };
 };
 
-export const getTimeValuesFromEvent = (
-  event: EventDetailsDTO
-): ITimeValues => ({
+export const getTimeValuesFromEvent = (event: IEventDetails): ITimeValues => ({
   firstGameTime: event.first_game_time,
   lastGameEnd: event.last_game_end,
   preGameWarmup: event.pre_game_warmup,
-  periodDuration: event.period_duration,
-  timeBtwnPeriods: event.time_btwn_periods,
-  periodsPerGame: event.periods_per_game,
+  periodDuration: event.period_duration!,
+  timeBtwnPeriods: event.time_btwn_periods!,
+  periodsPerGame: event.periods_per_game!,
 });
 
 export const calculateTimeSlots = (timeValues: ITimeValues) => {

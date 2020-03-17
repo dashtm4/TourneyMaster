@@ -13,11 +13,14 @@ import {
   OptimizeTypes,
 } from './types';
 import styles from './styles.module.scss';
+import { IGame } from '../matrix-table/helper';
+import { IField } from 'common/models/schedule/fields';
+import ITimeSlot from 'common/models/schedule/timeSlots';
 
 import {
-  mockedFields,
-  mockedGames,
-  mockedTimeSlots,
+  // mockedFields,
+  // mockedGames,
+  // mockedTimeSlots,
   mockedTeamCards,
 } from './mocks';
 
@@ -31,6 +34,9 @@ const SCHEDULE_FILTER_FALUES = {
 interface Props {
   divisions: IDivision[];
   teams: ITeam[];
+  games: IGame[];
+  fields: IField[];
+  timeSlots: ITimeSlot[];
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
 }
@@ -38,6 +44,9 @@ interface Props {
 const TableSchedule = ({
   divisions,
   teams,
+  games,
+  fields,
+  timeSlots,
   eventSummary,
   isEnterScores,
 }: Props) => {
@@ -68,9 +77,9 @@ const TableSchedule = ({
             onChangeFilterValue={onFilterValueChange}
           />
           <MatrixTable
-            games={mockedGames}
-            fields={mockedFields}
-            timeSlots={mockedTimeSlots}
+            games={games}
+            fields={fields}
+            timeSlots={timeSlots}
             isHeatmap={isHeatmap}
             isEnterScores={isEnterScores}
           />

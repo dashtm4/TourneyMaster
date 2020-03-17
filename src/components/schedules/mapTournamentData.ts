@@ -1,13 +1,10 @@
-import { IFetchedTeam, ITeam } from 'common/models/schedule/teams';
-import { IFetchedDivision } from 'common/models/schedule/divisions';
+import { ITeam as IFetchedTeam, IDivision } from 'common/models';
+import { ITeam } from 'common/models/schedule/teams';
 import { IField as IFetchedField } from 'common/models/field';
 import { IField } from 'common/models/schedule/fields';
 import { IFacility as IFetchedFacility } from 'common/models';
 
-const teamPremierByDivision = (
-  team: IFetchedTeam,
-  divisions: IFetchedDivision[]
-) => {
+const teamPremierByDivision = (team: IFetchedTeam, divisions: IDivision[]) => {
   const division = divisions.find(
     element => element.division_id === team.division_id
   );
@@ -15,10 +12,18 @@ const teamPremierByDivision = (
   return Boolean(division.is_premier_YN);
 };
 
-export const mapTeamsData = (
-  teams: IFetchedTeam[],
-  divisions: IFetchedDivision[]
+const getDivisionValueByTeamId = (
+  divisions: IDivision[],
+  divisionId: string,
+  key: string
 ) => {
+  const division = divisions.find(
+    element => element.division_id === divisionId
+  );
+  return division ? division[key] : undefined;
+};
+
+export const mapTeamsData = (teams: IFetchedTeam[], divisions: IDivision[]) => {
   let mappedTeams: ITeam[];
 
   mappedTeams = teams.map(team => ({
@@ -26,9 +31,17 @@ export const mapTeamsData = (
     name: team.short_name,
     startTime: '08:00:00',
     poolId: team.pool_id,
-    divisionId: team.division_id,
-    divisionShortName: team.divisionShortName,
-    divisionHex: team.divisionHex,
+    divisionId: team.division_id!,
+    divisionShortName: getDivisionValueByTeamId(
+      divisions,
+      team.division_id!,
+      'short_name'
+    ),
+    divisionHex: getDivisionValueByTeamId(
+      divisions,
+      team.division_id!,
+      'division_hex'
+    ),
     isPremier: teamPremierByDivision(team, divisions),
   }));
 
@@ -58,7 +71,7 @@ export const mapFacilitiesData = (facilities: IFetchedFacility[]) => {
   return mappedFacilities;
 };
 
-export const mapDivisionsData = (divisions: IFetchedDivision[]) => {
+export const mapDivisionsData = (divisions: IDivision[]) => {
   const mappedDivisions = divisions.map(division => ({
     id: division.division_id,
     name: division.short_name,

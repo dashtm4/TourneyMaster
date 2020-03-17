@@ -13,5 +13,5 @@ export interface ITournamentData {
   facilities: IFacility[];
   divisions: IDivision[];
   teams: ITeam[];
-  fields?: IField[];
+  fields: IField[];
 }

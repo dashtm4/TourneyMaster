@@ -6,7 +6,7 @@ import History from 'browserhistory';
 import { loadScoresData } from './logic/actions';
 import { AppState } from './logic/reducer';
 import Navigation from './components/navigation';
-import { Loader, PopupExposure, TableSchedule } from 'components/common';
+import { Loader, PopupExposure /*, TableSchedule */ } from 'components/common';
 import { IDivision, ITeam, IEventSummary } from 'common/models';
 import { Routes } from 'common/enums';
 import styles from './styles.module.scss';
@@ -74,7 +74,7 @@ class RecordScores extends React.Component<
   render() {
     const { isEnterScores, isExposurePopupOpen } = this.state;
 
-    const { isLoading, divisions, teams, eventSummary } = this.props;
+    const { isLoading /*, divisions, teams, eventSummary */ } = this.props;
 
     if (isLoading) {
       return <Loader />;
@@ -89,12 +89,12 @@ class RecordScores extends React.Component<
         />
         <section className={styles.scoringWrapper}>
           <h2 className="visually-hidden">Scoring</h2>
-          <TableSchedule
+          {/* <TableSchedule
             divisions={divisions}
             teams={teams}
             eventSummary={eventSummary}
             isEnterScores={isEnterScores}
-          />
+          /> */}
         </section>
         <PopupExposure
           isOpen={isExposurePopupOpen}

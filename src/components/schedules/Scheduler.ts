@@ -309,6 +309,7 @@ export default class Scheduler {
 
   setTeamsPerPools = () => {
     this.teamCards.map(teamCard => {
+      if (!teamCard.poolId) return;
       this.poolsData[teamCard.poolId] = [
         ...(this.poolsData[teamCard.poolId] || []),
         teamCard.id,
@@ -317,6 +318,7 @@ export default class Scheduler {
   };
 
   checkForPoolsConsistency = (teamCard: ITeamCard, game: IGame) => {
+    if (!teamCard.poolId) return;
     const { awayTeam } = game;
     return awayTeam
       ? !!this.poolsData[teamCard.poolId].includes(awayTeam?.id)

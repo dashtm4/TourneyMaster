@@ -73,24 +73,24 @@ export default (props: Props) => {
     <div
       ref={drop}
       className={`${styles.cardContainer} ${
-        team.errors ? styles.cardContainerError : ''
+        team?.errors ? styles.cardContainerError : ''
       } ${isHeatmap ? styles.cardContainerHeatmap : ''}`}
       style={{
         opacity: isActive ? 0.3 : '',
         background: isActive ? '#343434' : '',
-        backgroundColor: isHeatmap ? team.divisionHex : '',
+        backgroundColor: isHeatmap ? team?.divisionHex : '',
       }}
     >
-      {team.errors ? (
+      {team?.errors ? (
         <Tooltip
-          title={team.errors.join(';')}
+          title={team?.errors.join(';')}
           type={TooltipMessageTypes.WARNING}
         >
           <p className={styles.cardNameWrapper}>
             <span
               className={`${styles.cardTextWrapper} ${styles.cardTextWrapperError}`}
             >
-              {team.name}({team.divisionShortName})
+              {team?.name}({team?.divisionShortName})
             </span>
             {getIcon(Icons.ERROR, ERROR_ICON_STYLES)}
           </p>
@@ -98,7 +98,7 @@ export default (props: Props) => {
       ) : (
         <p className={styles.cardNameWrapper}>
           <span className={styles.cardTextWrapper}>
-            {team.name}({team.divisionShortName})
+            {team?.id}({team?.divisionShortName})
           </span>
         </p>
       )}
@@ -110,7 +110,7 @@ export default (props: Props) => {
         )}
         {!isEnterScores && (
           <button className={styles.lockBtn}>
-            {getIcon(team.isLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+            {getIcon(team?.isLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
               fill: isHeatmap ? '#ffffff' : '#00A3EA',
             })}
             <span className="visually-hidden">Unlock/Lock team</span>
