@@ -166,17 +166,17 @@ class Sсoring extends React.Component<
       <section>
         <Navigation eventId={this.props.match.params.eventId} />
         <div className={styles.headingWrapper}>
-          <HeadingLevelTwo>Scoring</HeadingLevelTwo>
-          {divisions.length ? (
-            <div className={styles.buttonContainer}>
+          <div className={styles.headerContainer}>
+            <HeadingLevelTwo>Scoring</HeadingLevelTwo>
+            {divisions?.length ? (
               <Button
                 label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
                 variant="text"
                 color="secondary"
                 onClick={this.onToggleAll}
               />
-            </div>
-          ) : null}
+            ) : null}
+          </div>
           <ul className={styles.scoringList}>
             {divisions.map((division, index) => (
               <ScoringItem

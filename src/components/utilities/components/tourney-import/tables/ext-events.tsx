@@ -119,7 +119,7 @@ const ExtEventsTable = ({ events }: Props) => {
           <TableRow>
             <TableCell align="left">Tournament ID</TableCell>
             <TableCell align="left">Division ID</TableCell>
-            <TableCell align="left">Poll Description</TableCell>
+            <TableCell align="left">Pool Description</TableCell>
             <TableCell align="left">Team ID</TableCell>
           </TableRow>
         </TableHead>
@@ -127,8 +127,8 @@ const ExtEventsTable = ({ events }: Props) => {
           {(rowsPerPage > 0
             ? events.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : events
-          ).map(row => (
-            <TableRow key={row.IDTournament}>
+          ).map((row, index) => (
+            <TableRow key={index}>
               <TableCell component="th" scope="row">
                 {row.IDTournament}
               </TableCell>
@@ -144,19 +144,22 @@ const ExtEventsTable = ({ events }: Props) => {
           )}
         </TableBody>
         <TableFooter>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-            count={events.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            SelectProps={{
-              inputProps: { 'aria-label': 'rows per page' },
-              native: true,
-            }}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-            ActionsComponent={TablePaginationActions}
-          />
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+              colSpan={4}
+              count={events.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              SelectProps={{
+                inputProps: { 'aria-label': 'rows per page' },
+                native: true,
+              }}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
         </TableFooter>
       </Table>
     </TableContainer>

@@ -86,9 +86,11 @@ const SectionDropdown = ({
         id="panel1a-header"
         onClick={onToggle}
       >
-        <HeadeingLevelThree color={headingColor}>
-          {children[0]}
-        </HeadeingLevelThree>
+        <span style={{ width: '100%' }}>
+          <HeadeingLevelThree color={headingColor}>
+            {children[0]}
+          </HeadeingLevelThree>
+        </span>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails
         style={

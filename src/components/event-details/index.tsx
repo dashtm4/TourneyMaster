@@ -153,8 +153,8 @@ class EventDetails extends Component<Props, State> {
             />
           </div>
         </Paper>
-        <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
-        <div className={styles.buttonContainer}>
+        <div className={styles.headingContainer}>
+          <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
           <Button
             label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
             variant="text"

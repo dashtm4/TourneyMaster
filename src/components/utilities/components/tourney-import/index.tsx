@@ -7,7 +7,7 @@ import { BindingCbWithOne } from 'common/models';
 
 interface Props {
   onGetTid: BindingCbWithOne<any>;
-  jobStatus: string;
+  jobStatus: Array<string>;
   events: any;
   games: any;
   pools: any;
@@ -28,15 +28,11 @@ const TourneyImport: React.FC<Props> = ({
 }) => {
   const [showData, setShowData] = React.useState(false);
   React.useEffect(() => {
-    console.log('[Events]', events);
-    console.log('[Games]', games);
-    console.log('[Pools]', pools);
-    console.log('[Locations]', locations);
     if (events.length !== 0 && games.length !== 0 && pools.length !== 0 && locations.length !== 0) {
       setShowData(true);
       onDataLoaded(true);
     }
-  }, [jobStatus, events, games, pools, locations, onDataLoaded]);
+  }, [events, games, pools, locations, onDataLoaded]);
 
   return (
     <SectionDropdown
@@ -56,22 +52,25 @@ const TourneyImport: React.FC<Props> = ({
                 onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
                   onGetTid(evt.target.value)
                 }
-                label="Enter the Identifier of the External Tournanment: "
+                label="Enter the Identifier of the External Tournament: "
                 fullWidth={true}
               />
             </div>
-          ) : (
-              <div className={styles.tournanmentBody}>
-                <br />
-                <div className={styles.tabHeader}>
-                  <h3 className={styles.status}>{jobStatus}</h3>
-                </div>
-                {
-                  showData ? <FullWidthTabs events={events} locations={locations} pools={pools} games={games} /> : null
-                }
-              </div>
-            )
+          ) : null
         }
+        <div className={styles.tournanmentBody}>
+          <br />
+          <div className={styles.tabHeader}>
+            {
+              jobStatus.map((status, index) => {
+                return (status !== '') ? <h3 className={styles.status} key={index}>{(index + 1)}. {status}</h3> : null
+              })
+            }
+          </div>
+          {
+            showData ? <FullWidthTabs events={events} locations={locations} pools={pools} games={games} /> : null
+          }
+        </div>
       </div>
     </SectionDropdown>
   )
