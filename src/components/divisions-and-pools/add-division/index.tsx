@@ -22,7 +22,7 @@ import DeleteDivision from '../add-division/delete-division';
 import Modal from 'components/common/modal';
 import { IDivision, ITeam, IPool } from 'common/models';
 import { IRegistration } from 'common/models/registration';
-import CancelPopup from '../../common/cancel-popup';
+import { PopupExposure } from 'components/common';
 
 interface ILocationState {
   divisionId: string;
@@ -88,6 +88,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     this.divisionId
       ? this.props.updateDivision(this.state.divisions[0])
       : this.props.saveDivisions(this.state.divisions, this.eventId);
+    this.setState({ isModalConfirmOpen: false });
   };
 
   onAddDivision = () => {
@@ -106,6 +107,11 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   onModalConfirmClose = () => {
     this.setState({ isModalConfirmOpen: false });
   };
+
+  onExit = () => {
+    this.props.history.goBack();
+  };
+
   renderHeading = () => {
     const text = this.divisionId ? 'Edit Division' : 'Add Division';
     return <HeadingLevelTwo>{text}</HeadingLevelTwo>;
@@ -195,12 +201,18 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
             teams={this.props.location.state?.teams}
           />
         </Modal>
-        <Modal
+        <PopupExposure
+          isOpen={this.state.isModalConfirmOpen}
+          onClose={this.onModalConfirmClose}
+          onExitClick={this.onExit}
+          onSaveClick={this.onSave}
+        />
+        {/* <Modal
           isOpen={this.state.isModalConfirmOpen}
           onClose={this.onModalConfirmClose}
         >
           <CancelPopup onSave={this.onSave} />
-        </Modal>
+        </Modal> */}
       </section>
     );
   }

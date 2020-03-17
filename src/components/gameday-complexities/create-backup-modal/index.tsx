@@ -5,6 +5,7 @@ import CreateBackupForm from '../create-backup-form';
 import Button from 'components/common/buttons/button';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { IField } from 'common/models';
+import { PopupExposure } from 'components/common';
 
 interface Props {
   onCancel: BindingAction;
@@ -15,10 +16,11 @@ interface Props {
 
 interface State {
   backupPlans: any[];
+  isConfirmModalOpen: boolean;
 }
 
 class CreateBackupModal extends React.Component<Props, State> {
-  state = { backupPlans: [{ type: 1 }] };
+  state = { backupPlans: [{ type: 1 }], isConfirmModalOpen: false };
 
   onChange = (name: string, value: string | number, index: number) => {
     this.setState(({ backupPlans }) => ({
@@ -28,12 +30,29 @@ class CreateBackupModal extends React.Component<Props, State> {
     }));
   };
 
+  onModalClose = () => {
+    this.setState({ isConfirmModalOpen: false });
+  };
+
+  onExit = () => {
+    this.setState({ isConfirmModalOpen: false });
+    this.props.onCancel();
+  };
+
+  onCancelClick = () => {
+    this.setState({ isConfirmModalOpen: true });
+  };
+
   onAddAdditionalPlan = () => {
     this.setState({ backupPlans: [...this.state.backupPlans, { type: 1 }] });
   };
 
+  onSave = () => {
+    this.setState({ isConfirmModalOpen: false });
+    this.props.onCancel();
+  };
+
   render() {
-    const { onCancel } = this.props;
     const { backupPlans } = this.state;
     return (
       <div className={styles.container}>
@@ -60,7 +79,7 @@ class CreateBackupModal extends React.Component<Props, State> {
             label="Cancel"
             variant="text"
             color="secondary"
-            onClick={onCancel}
+            onClick={this.onCancelClick}
           />
           <Button
             label="Save Backup Plan to Library"
@@ -73,6 +92,12 @@ class CreateBackupModal extends React.Component<Props, State> {
             color="primary"
           />
         </div>
+        <PopupExposure
+          isOpen={this.state.isConfirmModalOpen}
+          onClose={this.onModalClose}
+          onExitClick={this.onExit}
+          onSaveClick={this.onSave}
+        />
       </div>
     );
   }
