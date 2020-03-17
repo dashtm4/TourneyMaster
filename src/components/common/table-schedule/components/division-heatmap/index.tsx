@@ -28,7 +28,9 @@ const DivisionHeatmap = ({ divisions, isHeatmap, onHeatmapChange }: Props) => {
             <span
               className={styles.divisionColor}
               style={{
-                backgroundColor: `#${it.division_hex}` || DEFAUL_DIVISION_COLOR,
+                backgroundColor: it.division_hex
+                  ? `#${it.division_hex}`
+                  : DEFAUL_DIVISION_COLOR,
               }}
             />
             {it.short_name}
