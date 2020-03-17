@@ -1,5 +1,5 @@
 import { find } from 'lodash-es';
-import { ISchedulerResult } from 'components/schedules';
+import Scheduler from 'components/schedules/Scheduler';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { getTimeFromString, timeToString } from 'helpers';
 import { IGame } from 'components/common/matrix-table/helper';
@@ -29,7 +29,7 @@ export const calculateTeamTournamentTime = (
 
 const calculateTeamDiagnostics = (
   teamCard: ITeamCard,
-  schedulerResult: ISchedulerResult
+  schedulerResult: Scheduler
 ) => {
   const { fields, updatedGames, divisions, totalGameTime } = schedulerResult;
 
@@ -66,7 +66,7 @@ const calculateTeamDiagnostics = (
   ];
 };
 
-const formatTeamsDiagnostics = (schedulerResult: ISchedulerResult) => {
+const formatTeamsDiagnostics = (schedulerResult: Scheduler) => {
   const { teamCards } = schedulerResult;
   const teamsArr = teamCards.map(teamCard =>
     calculateTeamDiagnostics(teamCard, schedulerResult)

@@ -32,7 +32,7 @@ interface Props {
   divisions: IDivision[];
   teams: ITeam[];
   eventSummary: IEventSummary[];
-  isEnterScores: boolean;
+  isEnterScores?: boolean;
 }
 
 const TableSchedule = ({

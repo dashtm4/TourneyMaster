@@ -27,6 +27,11 @@ import {
   SAVE_TEAMS_SUCCESS,
   TeamsAction,
 } from 'components/teams/logic/action-types';
+import {
+  FETCH_FIELDS_SUCCESS,
+  FETCH_FIELDS_FAILURE,
+  FieldsAction,
+} from 'components/schedules/logic/actionTypes';
 import { sortTitleByField } from 'helpers';
 import { IMenuItem, ITournamentData } from 'common/models';
 import {
@@ -64,6 +69,7 @@ const pageEventReducer = (
     | DivisionsPoolsAction
     | RegistrationAction
     | TeamsAction
+    | FieldsAction
 ) => {
   switch (action.type) {
     case LOAD_AUTH_PAGE_DATA_START: {
@@ -245,6 +251,22 @@ const pageEventReducer = (
     case CLEAR_AUTH_PAGE_DATA: {
       return { ...initialState };
     }
+    case FETCH_FIELDS_SUCCESS:
+      return {
+        ...state,
+        tournamentData: {
+          ...state.tournamentData,
+          fields: action.payload,
+        },
+      };
+    case FETCH_FIELDS_FAILURE:
+      return {
+        ...state,
+        tournamentData: {
+          ...state.tournamentData,
+          fields: undefined,
+        },
+      };
     default:
       return state;
   }

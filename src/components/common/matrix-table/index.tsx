@@ -2,7 +2,7 @@ import React from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { ITimeSlot } from 'components/schedules';
+import ITimeSlot from 'common/models/schedule/timeSlots';
 import { selectProperGamesPerTimeSlot, IGame } from './helper';
 import RenderFieldHeader from './field-header';
 import RenderTimeSlot from './time-slot';

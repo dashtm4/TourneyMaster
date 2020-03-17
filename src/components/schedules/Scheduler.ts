@@ -9,7 +9,7 @@ import {
   getSortedByGamesNum,
   getSortedDesc,
 } from 'components/common/matrix-table/helper';
-import { ITimeSlot } from './index';
+import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IScheduleDivision } from 'common/models/schedule/divisions';
 

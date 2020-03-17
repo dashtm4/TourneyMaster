@@ -1,11 +1,11 @@
 import { union, keys, filter, find, orderBy } from 'lodash-es';
-import { ISchedulerResult } from 'components/schedules';
+import Scheduler from 'components/schedules/Scheduler';
 import { calculateTeamTournamentTime } from '../teamsDiagnostics';
 import { getTimeFromString, timeToString } from 'helpers';
 
 const calculateDivisionFieldsNumber = (
   divisionId: string,
-  schedulerResult: ISchedulerResult
+  schedulerResult: Scheduler
 ) => {
   const { teamCards } = schedulerResult;
 
@@ -20,7 +20,7 @@ const calculateDivisionFieldsNumber = (
 
 const calculateDivisionTournamentTime = (
   divisionId: string,
-  schedulerResult: ISchedulerResult
+  schedulerResult: Scheduler
 ) => {
   const { teamCards, updatedGames, totalGameTime } = schedulerResult;
 
@@ -38,7 +38,7 @@ const calculateDivisionTournamentTime = (
 
 const getTournamentTimeBy = (
   divisionId: string,
-  schedulerResult: ISchedulerResult,
+  schedulerResult: Scheduler,
   orderedBy: 'min' | 'max'
 ) => {
   const { teamCards, updatedGames, totalGameTime } = schedulerResult;
@@ -56,7 +56,7 @@ const getTournamentTimeBy = (
 
 const calculateDivisionDiagnostics = (
   divisionId: string,
-  schedulerResult: ISchedulerResult
+  schedulerResult: Scheduler
 ) => {
   const {
     divisions,
@@ -107,7 +107,7 @@ const calculateDivisionDiagnostics = (
   ];
 };
 
-const formatDivisionsDiagnostics = (schedulerResult: ISchedulerResult) => {
+const formatDivisionsDiagnostics = (schedulerResult: Scheduler) => {
   const { teamCards } = schedulerResult;
 
   const allDivisionsArr = teamCards.map(teamCard => teamCard.divisionId);

@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '../styles.module.scss';
-import { ITimeSlot } from 'components/schedules';
+import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IGame } from '../helper';
 import RenderGameSlot from '../game-slot';
 import { DropParams } from '../dnd/drop';
