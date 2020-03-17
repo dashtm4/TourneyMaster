@@ -127,8 +127,8 @@ const ExtPoolsTable = ({ pools }: Props) => {
           {(rowsPerPage > 0
             ? pools.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : pools
-          ).map(row => (
-            <TableRow key={row.IDTournament}>
+          ).map((row, index) => (
+            <TableRow key={index}>
               <TableCell component="th" scope="row">
                 {row.IDTournament}
               </TableCell>
@@ -144,19 +144,22 @@ const ExtPoolsTable = ({ pools }: Props) => {
           )}
         </TableBody>
         <TableFooter>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-            count={pools.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            SelectProps={{
-              inputProps: { 'aria-label': 'rows per page' },
-              native: true,
-            }}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-            ActionsComponent={TablePaginationActions}
-          />
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+              colSpan={4}
+              count={pools.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              SelectProps={{
+                inputProps: { 'aria-label': 'rows per page' },
+                native: true,
+              }}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
         </TableFooter>
       </Table>
     </TableContainer>
