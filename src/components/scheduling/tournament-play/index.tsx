@@ -15,6 +15,8 @@ import {
   Button,
   Paper,
 } from 'components/common';
+import { stringToLink } from 'helpers';
+import { EventMenuTitles } from 'common/enums';
 import styles from '../styles.module.scss';
 
 interface IProps {
@@ -31,9 +33,16 @@ export default (props: IProps) => {
   } = props;
 
   return (
-    <SectionDropdown type="section" isDefaultExpanded={true} useBorder={true}>
+    <SectionDropdown
+      type="section"
+      isDefaultExpanded={true}
+      useBorder={true}
+      id={stringToLink(EventMenuTitles.TOURNAMENT_PLAY)}
+    >
       <HeadingLevelThree>
-        <span className={styles.blockHeading}>Tournament Play</span>
+        <span className={styles.blockHeading}>
+          {EventMenuTitles.TOURNAMENT_PLAY}
+        </span>
       </HeadingLevelThree>
       <div className={styles.tournamentPlay}>
         <Paper padding={20}>

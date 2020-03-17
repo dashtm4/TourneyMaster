@@ -6,14 +6,14 @@ import {
 } from './actionTypes';
 import { EventDetailsDTO } from './model';
 
-export interface IAppState {
+export interface IEventState {
   data?: EventDetailsDTO;
   error: boolean;
   isEventLoading: boolean;
   isEventLoaded: boolean;
 }
 
-const defaultState: IAppState = {
+const defaultState: IEventState = {
   data: undefined,
   isEventLoading: false,
   isEventLoaded: false,

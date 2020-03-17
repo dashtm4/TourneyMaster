@@ -14,7 +14,7 @@ interface ImportProps {
 }
 
 export const ProfileNavigation = ({ onSaveUser }: ProfileProps) => (
-  <p className={styles.wrapper}>
+  <div className={styles.wrapper}>
     <Button
       onClick={onSaveUser}
       label="Save"
@@ -22,7 +22,7 @@ export const ProfileNavigation = ({ onSaveUser }: ProfileProps) => (
       color={ButtonColors.PRIMATY}
       btnType={ButtonFormTypes.SUBMIT}
     />
-  </p>
+  </div>
 );
 
 export const ImportNavigation = ({ onPreview, dataLoaded }: ImportProps) => {
@@ -38,7 +38,7 @@ export const ImportNavigation = ({ onPreview, dataLoaded }: ImportProps) => {
 
   return (
     dataLoaded ? (
-      <p className={styles.wrapper}>
+      <div className={styles.wrapper}>
         <div className={styles.buttonGroup}>
           <Button
             label="Cancel"
@@ -53,9 +53,9 @@ export const ImportNavigation = ({ onPreview, dataLoaded }: ImportProps) => {
             btnType={ButtonFormTypes.SUBMIT}
           />
         </div>
-      </p>
+      </div>
     ) : (
-        <p className={styles.wrapper}>
+        <div className={styles.wrapper}>
           <Button
             onClick={onPreview}
             label="Preview"
@@ -63,7 +63,7 @@ export const ImportNavigation = ({ onPreview, dataLoaded }: ImportProps) => {
             color={ButtonColors.PRIMATY}
             btnType={ButtonFormTypes.SUBMIT}
           />
-        </p>
+        </div>
       )
   )
 };

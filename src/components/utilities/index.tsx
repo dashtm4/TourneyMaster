@@ -33,7 +33,7 @@ const Utilities = ({
 }: Props) => {
   const [tournamentLoaded, SetTournamentLoaded] = React.useState(true);
   const [idTournament, setIdTournament] = React.useState('');
-  const [jobStatus, setJobStatus] = React.useState('');
+  const [jobStatus, setJobStatus] = React.useState<string[]>([]);
   const [events, setEvents] = React.useState('');
   const [games, setGames] = React.useState('');
   const [pools, setPools] = React.useState('');
@@ -43,11 +43,7 @@ const Utilities = ({
 
   React.useEffect(() => {
     if (location.hash === '#user-profile') {
-      console.log('[HAS: user-profile]');
       loadUserData();
-    }
-    else {
-      console.log('[HAS: tournament-import]');
     }
 
   }, [location.hash]);
@@ -73,16 +69,28 @@ const Utilities = ({
       .then(res => {
         SetTournamentLoaded(true);
         dataLoadedHandler(true);
-        setJobStatus(res[0].status);
+
         if (res[0].status.includes('Complete:')) {
+
+          jobStatus.push(statusFilter(res[0].status));
+          setJobStatus([...jobStatus]);
           getTournamentData();
         }
         else {
+          jobStatus.push(res[0].status);
+          setJobStatus([...jobStatus]);
           setTimeout(() => getStatus(localJobId), 5000);
         }
       })
+  }
 
-    return true;
+  function statusFilter(status: String) {
+    let splitedStatus = status.split(" ").reverse();
+    let fixedSecond = parseFloat(splitedStatus[1]).toFixed(2);
+    splitedStatus[1] = fixedSecond;
+    let updatedStatus = splitedStatus.reverse().join(" ");
+
+    return updatedStatus;
   }
 
   function getTournamentData() {

@@ -26,6 +26,7 @@ enum Icons {
   SETTINGS_BACKUP_RESTORE = 'settingsBackupRestore',
   LOCK = 'lock',
   LOCK_OPEN = 'lockOpen',
+  INFO = 'info',
 }
 
 export { Icons };

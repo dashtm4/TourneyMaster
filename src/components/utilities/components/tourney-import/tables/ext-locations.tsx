@@ -132,8 +132,8 @@ const ExtLocationsTable = ({ locations }: Props) => {
           {(rowsPerPage > 0
             ? locations.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : locations
-          ).map(row => (
-            <TableRow key={row.Name}>
+          ).map((row, index) => (
+            <TableRow key={index}>
               <TableCell component="th" scope="row">
                 {row.Name}
               </TableCell>
@@ -154,19 +154,22 @@ const ExtLocationsTable = ({ locations }: Props) => {
           )}
         </TableBody>
         <TableFooter>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-            count={locations.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            SelectProps={{
-              inputProps: { 'aria-label': 'rows per page' },
-              native: true,
-            }}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-            ActionsComponent={TablePaginationActions}
-          />
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+              colSpan={9}
+              count={locations.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              SelectProps={{
+                inputProps: { 'aria-label': 'rows per page' },
+                native: true,
+              }}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
         </TableFooter>
       </Table>
     </TableContainer>
