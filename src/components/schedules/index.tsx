@@ -187,7 +187,6 @@ class Schedules extends Component<IProps, IState> {
     if (scheduling) {
       teamsTableData = formatTeamsDiagnostics(scheduling);
       divisionsTableData = formatDivisionsDiagnostics(scheduling);
-      console.log('scheduler', scheduling);
     }
 
     return (

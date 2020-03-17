@@ -24,6 +24,7 @@ enum EventMenuTitles {
   TOURNAMENT_PLAY = 'Tournament Play',
   BRACKETS = 'Brackets',
   SCHEDULING = 'Scheduling',
+  TOURNEY_ARCHITECT = 'Tourney Architect',
   SCORING = 'Scoring',
   REPORTING = 'Reporting',
 }

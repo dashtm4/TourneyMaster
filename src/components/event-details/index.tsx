@@ -9,7 +9,7 @@ import {
   removeFiles,
 } from './logic/actions';
 import { EventDetailsDTO, IIconFile } from './logic/model';
-import { IAppState } from './logic/reducer';
+import { IEventState } from './logic/reducer';
 
 import PrimaryInformationSection from './primary-information';
 import EventStructureSection from './event-structure';
@@ -23,7 +23,7 @@ import styles from './styles.module.scss';
 import { eventState } from './state';
 
 interface IMapStateProps {
-  event: IAppState;
+  event: IEventState;
 }
 
 interface Props extends IMapStateProps {
@@ -197,7 +197,7 @@ class EventDetails extends Component<Props, State> {
 }
 
 interface IRootState {
-  event: IAppState;
+  event: IEventState;
 }
 
 const mapStateToProps = (state: IRootState): IMapStateProps => ({

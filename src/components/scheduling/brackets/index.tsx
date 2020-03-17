@@ -10,6 +10,8 @@ import {
   Paper,
 } from 'components/common';
 import styles from '../styles.module.scss';
+import { stringToLink } from 'helpers';
+import { EventMenuTitles } from 'common/enums';
 
 interface IProps {
   onManageBrackets: () => void;
@@ -19,9 +21,14 @@ export default (props: IProps) => {
   const { onManageBrackets } = props;
 
   return (
-    <SectionDropdown type="section" isDefaultExpanded={true} useBorder={true}>
+    <SectionDropdown
+      type="section"
+      isDefaultExpanded={true}
+      useBorder={true}
+      id={stringToLink(EventMenuTitles.BRACKETS)}
+    >
       <HeadingLevelThree>
-        <span className={styles.blockHeading}>Brackets</span>
+        <span className={styles.blockHeading}>{EventMenuTitles.BRACKETS}</span>
       </HeadingLevelThree>
       <div className={styles.brackets}>
         <Paper padding={20}>

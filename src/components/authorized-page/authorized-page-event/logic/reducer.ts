@@ -52,6 +52,7 @@ const initialState = {
     facilities: [],
     divisions: [],
     teams: [],
+    fields: [],
   },
 };
 
@@ -81,11 +82,6 @@ const pageEventReducer = (
         divisions,
         teams,
       } = tournamentData;
-
-      console.log(
-        teams.length,
-        teams.filter(it => !it.pool_id)
-      );
 
       return {
         ...state,
@@ -174,7 +170,7 @@ const pageEventReducer = (
       };
     }
     case SAVE_FACILITIES_SUCCESS: {
-      const { facilities } = action.payload;
+      const { facilities, fields } = action.payload;
 
       return {
         ...state,
@@ -190,6 +186,11 @@ const pageEventReducer = (
               }
             : item
         ),
+        tournamentData: {
+          ...state.tournamentData,
+          facilities,
+          fields,
+        },
       };
     }
     case DIVISIONS_FETCH_SUCCESS: {

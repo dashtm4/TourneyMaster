@@ -12,7 +12,7 @@ import {
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { Toasts } from 'components/common';
-import { IEventDetails, IRegistration } from 'common/models';
+import { IEventDetails, IRegistration, IFacility } from 'common/models';
 import { EventStatuses } from 'common/enums';
 
 const loadAuthPageData: ActionCreator<ThunkAction<
@@ -31,6 +31,13 @@ const loadAuthPageData: ActionCreator<ThunkAction<
     const facilities = await Api.get(`/facilities?event_id=${eventId}`);
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
     const teams = await Api.get(`/teams?event_id=${eventId}`);
+    const fields = (
+      await Promise.all(
+        facilities.map((it: IFacility) =>
+          Api.get(`/fields?facilities_id=${it.facilities_id}`)
+        )
+      )
+    ).flat();
 
     const currentEvent = events.find(
       (it: IEventDetails) => it.event_id === eventId
@@ -49,6 +56,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
           event: currentEvent,
           registration: currentRegistration,
           facilities,
+          fields,
           divisions,
           teams,
         },

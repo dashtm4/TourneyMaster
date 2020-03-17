@@ -2,63 +2,63 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { History } from 'history';
 import { Dispatch, bindActionCreators } from 'redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileExport, faFileUpload } from '@fortawesome/free-solid-svg-icons';
 
-import { getScheduling, createNewVersion, INewVersion } from './logic/actions';
-import { HeadingLevelTwo, Paper, Button, Loader } from 'components/common';
+import {
+  getScheduling,
+  createNewVersion,
+  addNewSchedule,
+  changeSchedule,
+  INewVersion,
+} from './logic/actions';
+import { HeadingLevelTwo, Loader } from 'components/common';
+import Navigation from './navigation';
 import TourneyArchitect from './tourney-architect';
 import TournamentPlay from './tournament-play';
 import HazardList from './hazard-list';
 import styles from './styles.module.scss';
 import Brackets from './brackets';
 import { ISchedule } from 'common/models/schedule';
-import { ISchedulingState } from './logic/reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import CreateNewModal from './create-new-modal';
-import { IMenuItem } from 'common/models';
+import { IMenuItem, BindingAction, BindingCbWithOne } from 'common/models';
 
 interface IProps {
+  schedule: ISchedule | null;
+  schedules: ISchedule[];
+  incompleteMenuItems: IMenuItem[];
   match: any;
   history: History;
-  getScheduling: (eventId?: number) => void;
+  isLoading: boolean;
+  isLoaded: boolean;
+  getScheduling: (eventId: string) => void;
   createNewVersion: (data: INewVersion) => void;
-  schedule?: ISchedule;
-  schedulingIsLoading: boolean;
-  incompleteMenuItems: IMenuItem[];
+  addNewSchedule: BindingAction;
+  changeSchedule: BindingCbWithOne<Partial<ISchedule>>;
 }
 
 interface IState {
-  loading: boolean;
   createModalOpen: boolean;
-  schedule?: ISchedule;
 }
 
 class Scheduling extends Component<IProps, IState> {
   state = {
-    loading: true,
     createModalOpen: false,
-    schedule: undefined,
   };
 
   componentDidMount() {
     const { eventId } = this.props.match?.params;
-    this.props.getScheduling(eventId);
-  }
+    const { getScheduling, addNewSchedule } = this.props;
 
-  componentDidUpdate(prevProps: IProps) {
-    const { schedulingIsLoading: prevSchedulingIsLoading } = prevProps;
-    const { schedule, schedulingIsLoading } = this.props;
-
-    if (prevSchedulingIsLoading !== schedulingIsLoading) {
-      this.setState({
-        loading: schedulingIsLoading,
-        schedule,
-      });
+    if (eventId) {
+      getScheduling(eventId);
+      addNewSchedule();
     }
   }
 
   onChange = (name: string, value: any) => {
-    console.log(name, value);
+    const { changeSchedule } = this.props;
+
+    changeSchedule({ [name]: value });
   };
 
   onCallAction = () => {
@@ -69,11 +69,13 @@ class Scheduling extends Component<IProps, IState> {
     this.setState({ createModalOpen: true });
   };
 
-  onCreateNew = (data: INewVersion) => {
-    this.setState({ createModalOpen: false });
-    const { eventId } = this.props.match?.params;
-    this.props.history.push(`/schedules/${eventId}`);
-    this.props.createNewVersion(data);
+  onCreateNew = () => {
+    console.log('saved!');
+
+    // this.setState({ createModalOpen: false });
+    // const { eventId } = this.props.match?.params;
+    // this.props.history.push(`/schedules/${eventId}`);
+    // this.props.createNewVersion(data);
   };
 
   onCreateClosed = () => {
@@ -81,92 +83,67 @@ class Scheduling extends Component<IProps, IState> {
   };
 
   render() {
-    const { incompleteMenuItems } = this.props;
-    const { schedule, createModalOpen, loading } = this.state;
+    const { incompleteMenuItems, isLoading, schedule } = this.props;
+    const { createModalOpen } = this.state;
     const { eventId } = this.props.match?.params;
     const isAllowCreate = incompleteMenuItems.length === 0;
 
-    if (loading) {
+    if (isLoading || !schedule) {
       return <Loader />;
     }
 
     return (
-      <div className={styles.container}>
+      <>
+        <div className={styles.container}>
+          <Navigation
+            isAllowCreate={isAllowCreate}
+            onCreatePressed={this.onCreatePressed}
+          />
+          {isAllowCreate ? (
+            <>
+              <HeadingLevelTwo margin="24px 0px">Scheduling</HeadingLevelTwo>
+              <TourneyArchitect
+                schedule={schedule}
+                onChange={this.onChange}
+                onViewEventMatrix={this.onCallAction}
+              />
+              <TournamentPlay
+                onEditScheduleDetails={this.onCallAction}
+                onManageTournamentPlay={this.onCallAction}
+                onSaveScheduleCSV={this.onCallAction}
+              />
+              <Brackets onManageBrackets={this.onCallAction} />
+            </>
+          ) : (
+            <HazardList
+              incompleteMenuItems={incompleteMenuItems}
+              eventId={eventId}
+            />
+          )}
+        </div>
         <CreateNewModal
+          schedule={schedule}
           isOpen={createModalOpen}
           onSave={this.onCreateNew}
           onClose={this.onCreateClosed}
+          onChange={this.onChange}
         />
-        <section className={styles.paper}>
-          <Paper>
-            <div>
-              <Button
-                icon={<FontAwesomeIcon icon={faFileExport} />}
-                label="Load From Library"
-                color="secondary"
-                variant="text"
-                disabled={!isAllowCreate}
-              />
-              &nbsp;
-              <Button
-                icon={<FontAwesomeIcon icon={faFileUpload} />}
-                label="Upload From File"
-                color="secondary"
-                variant="text"
-                disabled={!isAllowCreate}
-              />
-            </div>
-            <Button
-              label="Create New Version"
-              color="primary"
-              variant="contained"
-              onClick={this.onCreatePressed}
-              disabled={!isAllowCreate}
-            />
-          </Paper>
-        </section>
-        {schedule && (
-          <>
-            <HeadingLevelTwo margin="24px 0px">Scheduling</HeadingLevelTwo>
-            <TourneyArchitect
-              schedule={schedule}
-              onChange={this.onChange}
-              onViewEventMatrix={this.onCallAction}
-            />
-            <TournamentPlay
-              onEditScheduleDetails={this.onCallAction}
-              onManageTournamentPlay={this.onCallAction}
-              onSaveScheduleCSV={this.onCallAction}
-            />
-            <Brackets onManageBrackets={this.onCallAction} />
-          </>
-        )}
-        {!schedule && !isAllowCreate && (
-          <HazardList
-            incompleteMenuItems={incompleteMenuItems}
-            eventId={eventId}
-          />
-        )}
-        {!schedule && isAllowCreate && !loading && (
-          <div className={styles.noFoundWrapper}>
-            <span>No Schedules found</span>
-          </div>
-        )}
-      </div>
+      </>
     );
   }
 }
 
-interface IRootState {
-  scheduling: ISchedulingState;
-}
-
-const mapStateToProps = (store: IRootState) => ({
-  schedule: store.scheduling?.schedule,
-  schedulingIsLoading: store.scheduling?.schedulingIsLoading,
+const mapStateToProps = ({ scheduling }: IAppState) => ({
+  schedule: scheduling.schedule,
+  schedules: scheduling.schedules,
+  isLoading: scheduling.isLoading,
+  isLoaded: scheduling.isLoaded,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
-  bindActionCreators({ getScheduling, createNewVersion }, dispatch);
+  bindActionCreators(
+    { getScheduling, createNewVersion, addNewSchedule, changeSchedule },
+    dispatch
+  );
 
 export default connect(mapStateToProps, mapDispatchToProps)(Scheduling);

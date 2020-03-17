@@ -83,6 +83,7 @@ export interface saveFacilities {
   type: 'FACILITIES:SAVE_FACILITIES_SUCCESS';
   payload: {
     facilities: IFacility[];
+    fields: IField[];
   };
 }
 
