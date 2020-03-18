@@ -51,7 +51,7 @@ class Division extends React.PureComponent<IDivisionProps> {
         isDefaultExpanded={true}
         id={division.short_name}
         panelDetailsType="flat"
-        expanded={this.props.expanded !== undefined && this.props.expanded}
+        expanded={this.props.expanded}
         onToggle={this.onSectionToggle}
       >
         <div className={styles.sectionTitle}>

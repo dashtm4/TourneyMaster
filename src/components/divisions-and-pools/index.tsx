@@ -133,7 +133,7 @@ class DivisionsAndPools extends React.Component<
             ) : null}
           </div>
           {isLoading && this.Loading()}
-          {divisions.length && !isLoading ? (
+          {divisions.length && !isLoading && this.state.expanded.length ? (
             <>
               <ul className={styles.divisionsList}>
                 {divisions.map((division, index) => (
