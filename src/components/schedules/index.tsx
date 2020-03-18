@@ -13,7 +13,7 @@ import {
 import { fetchFields, fetchEventSummary } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
-import { TableSchedule } from 'components/common';
+import { TableSchedule, Button } from 'components/common';
 import {
   defineGames,
   IDefinedGames,
@@ -31,7 +31,10 @@ import {
   setGameOptions,
 } from './helper';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
-// import { ITeam as IFetchedTeam } from 'common/models';
+import Diagnostics, { IDiagnosticsInput } from './diagnostics';
+import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
+import formatDivisionsDiagnostics from './diagnostics/divisionsDiagnostics';
+import styles from './styles.module.scss';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -57,8 +60,11 @@ interface State {
   timeSlots?: ITimeSlot[];
   teams?: ITeam[];
   fields?: IField[];
+  facilities?: IScheduleFacility[];
   schedulerResult?: Scheduler;
   divisions?: IFetchedDivision[];
+  teamsDiagnostics?: IDiagnosticsInput;
+  divisionsDiagnostics?: IDiagnosticsInput;
   teamsDiagnosticsOpen: boolean;
   divisionsDiagnosticsOpen: boolean;
 }
@@ -119,39 +125,119 @@ class Schedules extends Component<Props, State> {
       tournamentBaseInfo
     );
 
+    this.setState(
+      {
+        schedulerResult,
+        fields: sortedFields,
+        facilities: mappedFacilities,
+        timeSlots,
+      },
+      this.calculateDiagnostics
+    );
+  };
+
+  calculateDiagnostics = () => {
+    const { schedulerResult } = this.state;
+    if (!schedulerResult) return;
+
+    const teamsDiagnostics = formatTeamsDiagnostics(schedulerResult);
+    const divisionsDiagnostics = formatDivisionsDiagnostics(schedulerResult);
+
     this.setState({
-      schedulerResult,
-      fields: sortedFields,
-      timeSlots,
+      teamsDiagnostics,
+      divisionsDiagnostics,
     });
   };
 
+  openTeamsDiagnostics = () =>
+    this.setState({
+      teamsDiagnosticsOpen: true,
+    });
+
+  openDivisionsDiagnostics = () =>
+    this.setState({
+      divisionsDiagnosticsOpen: true,
+    });
+
+  closeDiagnostics = () =>
+    this.setState({
+      teamsDiagnosticsOpen: false,
+      divisionsDiagnosticsOpen: false,
+    });
+
   render() {
     const { divisions, teams, event, eventSummary } = this.props;
-    const { fields, timeSlots, schedulerResult } = this.state;
+    const {
+      fields,
+      timeSlots,
+      schedulerResult,
+      facilities,
+      teamsDiagnostics,
+      divisionsDiagnostics,
+      teamsDiagnosticsOpen,
+      divisionsDiagnosticsOpen,
+    } = this.state;
 
     const { updatedGames } = schedulerResult || {};
 
+    const loadCondition = !!(
+      fields?.length &&
+      updatedGames &&
+      timeSlots?.length &&
+      divisions?.length &&
+      facilities?.length &&
+      teams?.length &&
+      event &&
+      eventSummary?.length
+    );
+
     return (
       <div>
-        {!!(
-          divisions?.length &&
-          teams?.length &&
-          event &&
-          eventSummary?.length &&
-          fields?.length &&
-          timeSlots?.length &&
-          updatedGames
-        ) && (
+        {loadCondition && (
           <TableSchedule
-            fields={fields}
-            games={updatedGames}
-            timeSlots={timeSlots}
-            divisions={divisions}
-            teams={teams}
-            eventSummary={eventSummary}
+            fields={fields!}
+            games={updatedGames!}
+            timeSlots={timeSlots!}
+            divisions={divisions!}
+            facilities={facilities!}
+            teams={teams!}
+            eventSummary={eventSummary!}
           />
         )}
+
+        <div className={styles.diagnosticsContainer}>
+          {loadCondition && teamsDiagnostics && (
+            <>
+              <Button
+                label="Teams Diagnostics"
+                variant="contained"
+                color="primary"
+                onClick={this.openTeamsDiagnostics}
+              />
+              <Diagnostics
+                isOpen={teamsDiagnosticsOpen}
+                tableData={teamsDiagnostics}
+                onClose={this.closeDiagnostics}
+              />
+            </>
+          )}
+
+          {loadCondition && divisionsDiagnostics && (
+            <>
+              <Button
+                label="Divisions Diagnostics"
+                variant="contained"
+                color="primary"
+                onClick={this.openDivisionsDiagnostics}
+              />
+              <Diagnostics
+                isOpen={divisionsDiagnosticsOpen}
+                tableData={divisionsDiagnostics}
+                onClose={this.closeDiagnostics}
+              />
+            </>
+          )}
+        </div>
       </div>
     );
   }

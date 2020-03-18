@@ -37,11 +37,11 @@ export const mapTeamsData = (teams: IFetchedTeam[], divisions: IDivision[]) => {
       team.division_id!,
       'short_name'
     ),
-    divisionHex: getDivisionValueByTeamId(
+    divisionHex: `#${getDivisionValueByTeamId(
       divisions,
       team.division_id!,
       'division_hex'
-    ),
+    )}`,
     isPremier: teamPremierByDivision(team, divisions),
   }));
 
@@ -65,6 +65,7 @@ export const mapFacilitiesData = (facilities: IFetchedFacility[]) => {
   const mappedFacilities = facilities.map(facility => ({
     id: facility.facilities_id,
     name: facility.facilities_description,
+    abbr: facility.facilities_abbr,
     fields: facility.num_fields,
   }));
 

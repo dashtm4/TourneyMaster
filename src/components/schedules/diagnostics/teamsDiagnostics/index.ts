@@ -1,4 +1,4 @@
-import { find } from 'lodash-es';
+import { find, orderBy, union } from 'lodash-es';
 import Scheduler from 'components/schedules/Scheduler';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { getTimeFromString, timeToString } from 'helpers';
@@ -27,6 +27,22 @@ export const calculateTeamTournamentTime = (
   return timeToString(lastGameTime - firstGameTime);
 };
 
+const calculateBackToBacks = (teamCard: ITeamCard, games: IGame[]) => {
+  const teamGames = games.filter(game => teamCard.games?.includes(game.id));
+  const timeSlots = teamGames.map(game => game.timeSlotId);
+  const timeSlotsSorted = orderBy(timeSlots, [], 'asc');
+  const backToBacks: number[] = [];
+
+  timeSlotsSorted.map((ts, index, arr) =>
+    arr[index] === arr[index - 1] || arr[index] - arr[index - 1] === 1
+      ? backToBacks.push(arr[index - 1], ts)
+      : null
+  );
+
+  const backToBackUnique = union(backToBacks);
+  return backToBackUnique.length;
+};
+
 const calculateTeamDiagnostics = (
   teamCard: ITeamCard,
   schedulerResult: Scheduler
@@ -47,7 +63,7 @@ const calculateTeamDiagnostics = (
     totalGameTime
   );
 
-  const numOfBackToBacks = 0;
+  const numOfBackToBacks = calculateBackToBacks(teamCard, updatedGames);
   const fieldIds = teamGames.map(game => game.fieldId);
   const fieldNames = fields
     .filter(field => fieldIds.includes(field.id))

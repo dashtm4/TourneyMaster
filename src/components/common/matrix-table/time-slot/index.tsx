@@ -5,6 +5,7 @@ import { IGame } from '../helper';
 import RenderGameSlot from '../game-slot';
 import { DropParams } from '../dnd/drop';
 import { IField } from 'common/models/schedule/fields';
+import moment from 'moment';
 
 interface IProps {
   timeSlot: ITimeSlot;
@@ -19,8 +20,9 @@ const RenderTimeSlot = (props: IProps) => {
   const { timeSlot, games, moveCard, fields, isHeatmap, isEnterScores } = props;
 
   const formatTimeSlot = (time: string) => {
-    if (!time) return;
-    return time.slice(0, 5);
+    if (!time || typeof time !== 'string') return;
+    const timeValue = time.slice(0, 5);
+    return moment(timeValue, ['HH:mm']).format('hh:mm A');
   };
 
   const findFielForGameSlot = (game: IGame) => {

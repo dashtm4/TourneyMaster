@@ -23,6 +23,7 @@ import {
   // mockedTimeSlots,
   mockedTeamCards,
 } from './mocks';
+import { IScheduleFacility } from 'common/models/schedule/facilities';
 
 const SCHEDULE_FILTER_FALUES = {
   selectedDay: DayTypes.DAY_ONE,
@@ -37,6 +38,7 @@ interface Props {
   games: IGame[];
   fields: IField[];
   timeSlots: ITimeSlot[];
+  facilities: IScheduleFacility[];
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
 }
@@ -46,6 +48,7 @@ const TableSchedule = ({
   teams,
   games,
   fields,
+  facilities,
   timeSlots,
   eventSummary,
   isEnterScores,
@@ -57,6 +60,12 @@ const TableSchedule = ({
     OptimizeTypes.MIN_RANK
   );
   const [isHeatmap, onHeatmapChange] = React.useState<boolean>(false);
+
+  // teams state
+
+  // get unassigned
+
+  // get teams for games
 
   //! dell
   const unassignedTeams = getUnassignedTeams(mockedTeamCards);
@@ -80,6 +89,7 @@ const TableSchedule = ({
             games={games}
             fields={fields}
             timeSlots={timeSlots}
+            facilities={facilities}
             isHeatmap={isHeatmap}
             isEnterScores={isEnterScores}
           />

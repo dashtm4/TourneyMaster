@@ -71,7 +71,6 @@ export default class Scheduler {
     timeSlots: ITimeSlot[],
     tournamentBaseInfo: ITournamentBaseInfo
   ) {
-    console.clear();
     const { facilities, divisions, gameOptions } = tournamentBaseInfo || {};
 
     this.fields = fields;

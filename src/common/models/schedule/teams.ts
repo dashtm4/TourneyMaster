@@ -30,12 +30,8 @@ export interface ITeam {
   poolId: string | null;
   divisionId: string;
   isPremier: boolean;
-
-  //! dell it
-  divisionShortName: string;
-  divisionHex: string;
-  errors?: string[];
-  isLocked?: boolean;
+  divisionShortName?: string;
+  divisionHex?: string;
 }
 
 export interface ITeamCard extends ITeam {
@@ -43,4 +39,8 @@ export interface ITeamCard extends ITeam {
   fieldId?: string;
   timeSlotId?: number;
   teamPosition?: number;
+
+  //
+  errors?: string[];
+  isLocked?: boolean;
 }
