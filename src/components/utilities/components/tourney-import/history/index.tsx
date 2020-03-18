@@ -1,9 +1,24 @@
 import React from 'react';
 import { HeadingLevelThree, SectionDropdown } from 'components/common';
 import { MenuTitles } from 'common/enums';
+import HistoryTable from './history-table';
 import styles from './styles.module.scss';
+import Api from 'api/api';
 
 const History = () => {
+  const [histories, setHistories] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    getHistory();
+  }, []);
+
+  function getHistory() {
+    Api.get('/ext_events')
+      .then(res => {
+        setHistories(res);
+      })
+  }
+
   return (
     <SectionDropdown
       id={MenuTitles.TOURNEY_HISTORY_TITLE}
@@ -14,7 +29,8 @@ const History = () => {
       <HeadingLevelThree>
         <span className={styles.detailsSubtitle}>{MenuTitles.TOURNEY_HISTORY_TITLE}</span>
       </HeadingLevelThree>
-      <div>Historical Imorts Table</div>
+
+      <HistoryTable histories={histories} />
     </SectionDropdown>
   )
 };
