@@ -107,7 +107,7 @@ export default (props: IProps) => {
               value: option,
             }))}
             onChange={localChange}
-            value={schedule.games_start_on || ''}
+            value={schedule.games_start_on}
             name={ArchitectFormFields.GAMES_START_ON}
             label="Games Start On"
             width="100px"
