@@ -1,0 +1,10 @@
+.diagnosticsContainer {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: 'flex';
+  justify-content: 'space-between';
+
+  > button {
+    margin-right: 10px;
+  }
+}

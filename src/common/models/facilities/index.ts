@@ -2,6 +2,7 @@ export interface IFacility {
   facilities_id: string;
   event_id: string;
   facilities_description: string;
+  facilities_abbr: string | null;
   num_fields: number | null;
   facilities_tag: string | null;
   address1: string | null;

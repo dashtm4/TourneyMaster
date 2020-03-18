@@ -16,6 +16,7 @@ import organizationsManagement from 'components/organizations-management/logic/r
 import libraryManager from 'components/library-manager/logic/reducer';
 import utilities from 'components/utilities/logic/reducer';
 import complexities from 'components/gameday-complexities/logic/reducer';
+import schedules from 'components/schedules/logic/reducer';
 
 const rootReducer = combineReducers({
   router: connectRouter(history),
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   scoring,
   recordScores,
   scheduling,
+  schedules,
   teams,
   organizationsManagement,
   libraryManager,

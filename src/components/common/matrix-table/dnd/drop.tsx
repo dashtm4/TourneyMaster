@@ -69,36 +69,29 @@ export default (props: Props) => {
   const { isOver, canDrop } = dropItem;
   const isActive = isOver && canDrop;
 
-  return (
-    <div
-      ref={drop}
-      className={`${styles.cardContainer} ${
-        team.errors ? styles.cardContainerError : ''
-      } ${isHeatmap ? styles.cardContainerHeatmap : ''}`}
-      style={{
-        opacity: isActive ? 0.3 : '',
-        background: isActive ? '#343434' : '',
-        backgroundColor: isHeatmap ? team.divisionHex : '',
-      }}
+  const renderTeamCardErrors = (teamCard: ITeamCard) => (
+    <Tooltip
+      title={teamCard?.errors?.join(';')!}
+      type={TooltipMessageTypes.WARNING}
     >
-      {team.errors ? (
-        <Tooltip
-          title={team.errors.join(';')}
-          type={TooltipMessageTypes.WARNING}
+      <p className={styles.cardNameWrapper}>
+        <span
+          className={`${styles.cardTextWrapper} ${styles.cardTextWrapperError}`}
         >
-          <p className={styles.cardNameWrapper}>
-            <span
-              className={`${styles.cardTextWrapper} ${styles.cardTextWrapperError}`}
-            >
-              {team.name}({team.divisionShortName})
-            </span>
-            {getIcon(Icons.ERROR, ERROR_ICON_STYLES)}
-          </p>
-        </Tooltip>
-      ) : (
+          {teamCard.name}({teamCard.divisionShortName})
+        </span>
+        {getIcon(Icons.ERROR, ERROR_ICON_STYLES)}
+      </p>
+    </Tooltip>
+  );
+
+  const renderTeamCard = (teamCard: ITeamCard) => (
+    <>
+      {teamCard.errors?.length && renderTeamCardErrors(teamCard)}
+      {!teamCard.errors?.length && (
         <p className={styles.cardNameWrapper}>
           <span className={styles.cardTextWrapper}>
-            {team.name}({team.divisionShortName})
+            {teamCard.id}&nbsp;({teamCard.divisionShortName})
           </span>
         </p>
       )}
@@ -110,13 +103,29 @@ export default (props: Props) => {
         )}
         {!isEnterScores && (
           <button className={styles.lockBtn}>
-            {getIcon(team.isLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+            {getIcon(teamCard.isLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
               fill: isHeatmap ? '#ffffff' : '#00A3EA',
             })}
             <span className="visually-hidden">Unlock/Lock team</span>
           </button>
         )}
       </p>
+    </>
+  );
+
+  return (
+    <div
+      ref={drop}
+      className={`${styles.cardContainer} ${
+        team?.errors ? styles.cardContainerError : ''
+      } ${isHeatmap ? styles.cardContainerHeatmap : ''}`}
+      style={{
+        opacity: isActive ? 0.3 : '',
+        background: isActive ? '#343434' : '',
+        backgroundColor: isHeatmap ? team?.divisionHex || '' : '',
+      }}
+    >
+      {team && renderTeamCard(team)}
     </div>
   );
 };

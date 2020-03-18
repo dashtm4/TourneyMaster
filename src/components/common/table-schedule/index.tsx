@@ -13,13 +13,17 @@ import {
   OptimizeTypes,
 } from './types';
 import styles from './styles.module.scss';
+import { IGame } from '../matrix-table/helper';
+import { IField } from 'common/models/schedule/fields';
+import ITimeSlot from 'common/models/schedule/timeSlots';
 
 import {
-  mockedFields,
-  mockedGames,
-  mockedTimeSlots,
+  // mockedFields,
+  // mockedGames,
+  // mockedTimeSlots,
   mockedTeamCards,
 } from './mocks';
+import { IScheduleFacility } from 'common/models/schedule/facilities';
 
 const SCHEDULE_FILTER_FALUES = {
   selectedDay: DayTypes.DAY_ONE,
@@ -31,13 +35,21 @@ const SCHEDULE_FILTER_FALUES = {
 interface Props {
   divisions: IDivision[];
   teams: ITeam[];
+  games: IGame[];
+  fields: IField[];
+  timeSlots: ITimeSlot[];
+  facilities: IScheduleFacility[];
   eventSummary: IEventSummary[];
-  isEnterScores: boolean;
+  isEnterScores?: boolean;
 }
 
 const TableSchedule = ({
   divisions,
   teams,
+  games,
+  fields,
+  facilities,
+  timeSlots,
   eventSummary,
   isEnterScores,
 }: Props) => {
@@ -48,6 +60,12 @@ const TableSchedule = ({
     OptimizeTypes.MIN_RANK
   );
   const [isHeatmap, onHeatmapChange] = React.useState<boolean>(false);
+
+  // teams state
+
+  // get unassigned
+
+  // get teams for games
 
   //! dell
   const unassignedTeams = getUnassignedTeams(mockedTeamCards);
@@ -68,9 +86,10 @@ const TableSchedule = ({
             onChangeFilterValue={onFilterValueChange}
           />
           <MatrixTable
-            games={mockedGames}
-            fields={mockedFields}
-            timeSlots={mockedTimeSlots}
+            games={games}
+            fields={fields}
+            timeSlots={timeSlots}
+            facilities={facilities}
             isHeatmap={isHeatmap}
             isEnterScores={isEnterScores}
           />

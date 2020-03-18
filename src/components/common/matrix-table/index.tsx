@@ -2,13 +2,14 @@ import React from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { ITimeSlot } from 'components/schedules';
+import ITimeSlot from 'common/models/schedule/timeSlots';
 import { selectProperGamesPerTimeSlot, IGame } from './helper';
 import RenderFieldHeader from './field-header';
 import RenderTimeSlot from './time-slot';
 import { IField } from 'common/models/schedule/fields';
 import styles from './styles.module.scss';
 import './styles.scss';
+import { IScheduleFacility } from 'common/models/schedule/facilities';
 
 const TRANSFORM_WRAPPER_OPTIONS = {
   minScale: 0.1,
@@ -19,14 +20,25 @@ interface IProps {
   games: IGame[];
   fields: IField[];
   timeSlots: ITimeSlot[];
+  facilities: IScheduleFacility[];
   isHeatmap: boolean;
   isEnterScores?: boolean;
 }
 
 const SchedulesMatrix = (props: IProps) => {
-  const { fields, timeSlots, games, isHeatmap, isEnterScores } = props;
+  const {
+    fields,
+    timeSlots,
+    games,
+    facilities,
+    isHeatmap,
+    isEnterScores,
+  } = props;
 
   const moveCard = () => null;
+
+  const takeFacilityByFieldId = (facilityId: string) =>
+    facilities.find(facility => facility.id === facilityId);
 
   return (
     <section className={styles.section}>
@@ -45,7 +57,11 @@ const SchedulesMatrix = (props: IProps) => {
                   <tr>
                     <td />
                     {fields.map((field: any) => (
-                      <RenderFieldHeader key={field.id} field={field} />
+                      <RenderFieldHeader
+                        key={field.id}
+                        field={field}
+                        facility={takeFacilityByFieldId(field.facilityId)}
+                      />
                     ))}
                   </tr>
                   {timeSlots.map((timeSlot: ITimeSlot) => (

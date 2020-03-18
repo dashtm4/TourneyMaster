@@ -1,4 +1,4 @@
-import { ITimeSlot } from 'components/schedules';
+import ITimeSlot from 'common/models/schedule/timeSlots';
 
 export interface ISchedule {
   schedule_id: string;

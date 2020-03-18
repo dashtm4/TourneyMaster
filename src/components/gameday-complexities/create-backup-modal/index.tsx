@@ -1,28 +1,33 @@
 import React from 'react';
 import styles from './styles.module.scss';
-import { BindingAction, IFacility } from 'common/models';
+import { BindingAction, IFacility, BindingCbWithOne } from 'common/models';
 import CreateBackupForm from '../create-backup-form';
 import Button from 'components/common/buttons/button';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { IField } from 'common/models';
 import { PopupExposure } from 'components/common';
+import { IBackupPlan } from 'common/models/backup_plan';
 
 interface Props {
   onCancel: BindingAction;
   events: EventDetailsDTO[];
   facilities: IFacility[];
   fields: IField[];
+  saveBackupPlans: BindingCbWithOne<Partial<IBackupPlan>[]>;
 }
 
 interface State {
-  backupPlans: any[];
+  backupPlans: Partial<IBackupPlan>[];
   isConfirmModalOpen: boolean;
 }
 
 class CreateBackupModal extends React.Component<Props, State> {
-  state = { backupPlans: [{ type: 1 }], isConfirmModalOpen: false };
+  state = {
+    backupPlans: [{ backup_type: 'cancel_games' }],
+    isConfirmModalOpen: false,
+  };
 
-  onChange = (name: string, value: string | number, index: number) => {
+  onChange = (name: string, value: any, index: number) => {
     this.setState(({ backupPlans }) => ({
       backupPlans: backupPlans.map(plan =>
         plan === backupPlans[index] ? { ...plan, [name]: value } : plan
@@ -44,20 +49,29 @@ class CreateBackupModal extends React.Component<Props, State> {
   };
 
   onAddAdditionalPlan = () => {
-    this.setState({ backupPlans: [...this.state.backupPlans, { type: 1 }] });
+    this.setState({
+      backupPlans: [...this.state.backupPlans, { backup_type: 'cancel_games' }],
+    });
   };
 
   onSave = () => {
+    this.props.saveBackupPlans(this.state.backupPlans);
     this.setState({ isConfirmModalOpen: false });
+    this.props.onCancel();
+  };
+
+  onSaveToLibrary = () => {
+    this.props.saveBackupPlans(this.state.backupPlans);
     this.props.onCancel();
   };
 
   render() {
     const { backupPlans } = this.state;
+
     return (
       <div className={styles.container}>
         <div className={styles.title}>Backup Plan</div>
-        {backupPlans.map((plan: any, index: number) => (
+        {backupPlans.map((plan, index) => (
           <CreateBackupForm
             key={index}
             index={index}
@@ -85,6 +99,7 @@ class CreateBackupModal extends React.Component<Props, State> {
             label="Save Backup Plan to Library"
             variant="contained"
             color="primary"
+            onClick={this.onSaveToLibrary}
           />
           <Button
             label="Activate and Publish Backup Plan"

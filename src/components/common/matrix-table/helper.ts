@@ -1,8 +1,8 @@
 import { orderBy } from 'lodash-es';
 import { IField } from 'common/models/schedule/fields';
-import { ITeamCard, ITeam } from 'common/models/schedule/teams';
+import { ITeamCard } from 'common/models/schedule/teams';
 import { DropParams } from './dnd/drop';
-import { ITimeSlot } from 'components/schedules';
+import ITimeSlot from 'common/models/schedule/timeSlots';
 
 export enum TeamPositionEnum {
   'awayTeam' = 1,
@@ -32,8 +32,7 @@ export const sortFieldsByPremier = (fields: IField[]) => {
 
 export const defineGames = (
   fields: IField[],
-  timeSlots: ITimeSlot[],
-  _teams: ITeam[]
+  timeSlots: ITimeSlot[]
 ): IDefinedGames => {
   const fieldsNumber = fields.length;
   const timeSlotsNumber = timeSlots.length;
