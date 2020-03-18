@@ -34,15 +34,24 @@
   }
 }
 
+.teamEdit {
+  @extend .team;
+  cursor: grab;
+}
+
 .teamBtnsWrapper {
   margin: 0;
 }
 
 .delBtnWrapper {
-  display: inline-block;
-
-  margin-right: -10px;
-
-  vertical-align: middle;
   color: #ff0f19;
+}
+
+.btnsWrapper {
+  display: flex;
+}
+
+.iconWrapper {
+  padding: 6px 8px;
+  display: flex;
 }

@@ -6,6 +6,7 @@ import { getIcon } from '../../../../helpers/get-icon.helper';
 import { Icons } from '../../../../common/enums/icons';
 import { DndItems } from '../../types';
 import styles from './styles.module.scss';
+import moveIcon from 'assets/moveIcon.png';
 
 const EDIT_ICON_STYLES = {
   width: '21px',
@@ -14,7 +15,9 @@ const EDIT_ICON_STYLES = {
 };
 
 const DELETE_ICON_STYLES = {
+  width: '21px',
   margin: '0',
+  fill: '#ff0f19',
 };
 
 const BTN_STYLES = {
@@ -67,28 +70,43 @@ const TeamItem = ({
   });
 
   return (
-    <li ref={isEdit ? drag : null} className={styles.team}>
+    <li
+      ref={isEdit ? drag : null}
+      className={isEdit ? styles.teamEdit : styles.team}
+    >
       <span>{team.short_name}</span>
       {isEdit && (
         <p className={styles.btnsWrapper}>
-          <span className={styles.delBtnWrapper}>
-            <Button
-              onClick={() => onDeletePopupOpen(team)}
-              icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
-              label={<span className="visually-hidden">Delete team</span>}
-              variant="text"
-              color="inherit"
-              btnStyles={BTN_STYLES}
-            />
-          </span>
+          <Button
+            onClick={() => onDeletePopupOpen(team)}
+            icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
+            label={<span className="visually-hidden">Delete team</span>}
+            variant="text"
+            color="inherit"
+            type="icon"
+            btnStyles={BTN_STYLES}
+          />
           <Button
             onClick={() => onEditPopupOpen(team, divisionName, poolName || '')}
             icon={getIcon(Icons.EDIT, EDIT_ICON_STYLES)}
             label={<span className="visually-hidden">Edit team</span>}
             variant="text"
             color="secondary"
+            type="icon"
             btnStyles={BTN_STYLES}
           />
+          {isEdit && (
+            <div className={styles.iconWrapper}>
+              <img
+                src={moveIcon}
+                style={{
+                  width: '21px',
+                  height: '21px',
+                  alignSelf: 'center',
+                }}
+              />
+            </div>
+          )}
         </p>
       )}
     </li>

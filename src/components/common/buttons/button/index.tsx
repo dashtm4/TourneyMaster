@@ -6,7 +6,13 @@ interface IButtonProps {
   label: string | JSX.Element;
   color: 'primary' | 'secondary' | 'inherit' | 'default' | undefined;
   variant: 'text' | 'outlined' | 'contained' | undefined;
-  type?: 'squared' | 'danger' | 'squaredOutlined' | 'dangerLink' | undefined;
+  type?:
+    | 'squared'
+    | 'danger'
+    | 'squaredOutlined'
+    | 'dangerLink'
+    | 'icon'
+    | undefined;
   btnType?: 'button' | 'submit';
   btnStyles?: object;
   icon?: JSX.Element;
@@ -38,7 +44,9 @@ const Button: React.FC<IButtonProps> = ({
     }}
     type={btnType}
   >
-    <div className={icon && styles.iconWrapper}>{icon}</div>
+    <div className={type === 'icon' ? styles.icon : icon && styles.iconWrapper}>
+      {icon}
+    </div>
     {label}
   </MuiButton>
 );
