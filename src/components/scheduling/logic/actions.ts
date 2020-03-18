@@ -1,26 +1,25 @@
 import { Dispatch } from 'redux';
 import api from 'api/api';
-import { ISchedule } from 'common/models/schedule';
+import { ISchedule, IConfigurableSchedule } from 'common/models/schedule';
+import { Toasts } from 'components/common';
 import {
   SCHEDULE_FETCH_IN_PROGRESS,
   SCHEDULE_FETCH_SUCCESS,
   SCHEDULE_FETCH_FAILURE,
+  CREATE_NEW_SCHEDULE_SUCCESS,
+  CREATE_NEW_SCHEDULE_FAILURE,
   ADD_NEW_SCHEDULE,
   CHANGE_SCHEDULE,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
+import { scheduleSchema } from 'validations';
 import { IAppState } from 'reducers/root-reducer.types';
+import History from 'browserhistory';
 import {
   getVarcharEight,
   getTimeValuesFromEvent,
   calculateTimeSlots,
-  formatTimeSlot,
 } from 'helpers';
-
-export interface INewVersion {
-  name: string;
-  tag: string;
-}
 
 const scheduleFetchInProgress = () => ({
   type: SCHEDULE_FETCH_IN_PROGRESS,
@@ -42,9 +41,6 @@ export const addNewSchedule = () => async (
   getState: () => IAppState
 ) => {
   const { tournamentData } = getState().pageEvent;
-  const playTimeWindow = calculateTimeSlots(
-    getTimeValuesFromEvent(tournamentData.event!)
-  );
 
   const newSchedule = {
     ...EMPTY_SCHEDULE,
@@ -58,12 +54,9 @@ export const addNewSchedule = () => async (
     pre_game_warmup: tournamentData.event?.pre_game_warmup,
     period_duration: tournamentData.event?.period_duration,
     time_btwn_periods: tournamentData.event?.time_btwn_periods,
-    first_window_time: playTimeWindow
-      ? formatTimeSlot(playTimeWindow[0].time)
-      : '00:00',
-    last_window_time: playTimeWindow
-      ? formatTimeSlot(playTimeWindow[playTimeWindow?.length - 1].time)
-      : '00:00',
+    time_slots: calculateTimeSlots(
+      getTimeValuesFromEvent(tournamentData.event!)
+    ),
   };
 
   dispatch({
@@ -97,6 +90,25 @@ export const getScheduling = (eventId: string) => async (
   dispatch(scheduleFetchFailure());
 };
 
-export const createNewVersion = (data: INewVersion) => () => {
-  console.log('create New Version', data);
+export const createNewSchedule = (schedule: IConfigurableSchedule) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    await scheduleSchema.validate(schedule);
+
+    dispatch({
+      type: CREATE_NEW_SCHEDULE_SUCCESS,
+      payload: {
+        schedule,
+      },
+    });
+
+    History.push(`/schedules/${schedule.event_id}`);
+  } catch (err) {
+    Toasts.errorToast(err.message);
+
+    dispatch({
+      type: CREATE_NEW_SCHEDULE_FAILURE,
+    });
+  }
 };

@@ -5,10 +5,9 @@ import { Dispatch, bindActionCreators } from 'redux';
 
 import {
   getScheduling,
-  createNewVersion,
+  createNewSchedule,
   addNewSchedule,
   changeSchedule,
-  INewVersion,
 } from './logic/actions';
 import { HeadingLevelTwo, Loader } from 'components/common';
 import Navigation from './navigation';
@@ -31,7 +30,7 @@ interface IProps {
   isLoading: boolean;
   isLoaded: boolean;
   getScheduling: (eventId: string) => void;
-  createNewVersion: (data: INewVersion) => void;
+  createNewSchedule: (schedule: IConfigurableSchedule) => void;
   addNewSchedule: BindingAction;
   changeSchedule: BindingCbWithOne<Partial<ISchedule>>;
 }
@@ -65,21 +64,18 @@ class Scheduling extends Component<IProps, IState> {
     this.setState({ createModalOpen: true });
   };
 
-  onCreateNew = () => {
-    console.log('saved!');
-
-    // this.setState({ createModalOpen: false });
-    // const { eventId } = this.props.match?.params;
-    // this.props.history.push(`/schedules/${eventId}`);
-    // this.props.createNewVersion(data);
-  };
-
   onCreateClosed = () => {
     this.setState({ createModalOpen: false });
   };
 
   render() {
-    const { incompleteMenuItems, isLoading, schedule } = this.props;
+    const {
+      schedule,
+      schedules,
+      incompleteMenuItems,
+      isLoading,
+      createNewSchedule,
+    } = this.props;
     const { createModalOpen } = this.state;
     const { eventId } = this.props.match?.params;
     const isAllowCreate = incompleteMenuItems.length === 0;
@@ -103,12 +99,16 @@ class Scheduling extends Component<IProps, IState> {
                 onChange={this.onChange}
                 onViewEventMatrix={() => {}}
               />
-              <TournamentPlay
-                onEditScheduleDetails={() => {}}
-                onManageTournamentPlay={() => {}}
-                onSaveScheduleCSV={() => {}}
-              />
-              <Brackets onManageBrackets={() => {}} />
+              {schedules.length > 0 && (
+                <>
+                  <TournamentPlay
+                    onEditScheduleDetails={() => {}}
+                    onManageTournamentPlay={() => {}}
+                    onSaveScheduleCSV={() => {}}
+                  />
+                  <Brackets onManageBrackets={() => {}} />
+                </>
+              )}
             </>
           ) : (
             <HazardList
@@ -120,7 +120,7 @@ class Scheduling extends Component<IProps, IState> {
         <CreateNewModal
           schedule={schedule}
           isOpen={createModalOpen}
-          onSave={this.onCreateNew}
+          onCreate={createNewSchedule}
           onClose={this.onCreateClosed}
           onChange={this.onChange}
         />
@@ -138,7 +138,7 @@ const mapStateToProps = ({ scheduling }: IAppState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
-    { getScheduling, createNewVersion, addNewSchedule, changeSchedule },
+    { getScheduling, createNewSchedule, addNewSchedule, changeSchedule },
     dispatch
   );
 

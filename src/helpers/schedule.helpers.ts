@@ -76,6 +76,7 @@ const calculateTimeSlots = (timeValues: ITimeValues) => {
 
 const formatTimeSlot = (time: string) => {
   if (!time) return;
+
   return time.slice(0, 5);
 };
 

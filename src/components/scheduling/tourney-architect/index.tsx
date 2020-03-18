@@ -18,6 +18,7 @@ import {
   getIcon,
   getTimeFromString,
   timeToString,
+  formatTimeSlot,
 } from 'helpers';
 import { EventMenuTitles, Icons } from 'common/enums';
 import { IConfigurableSchedule } from 'common/models';
@@ -88,7 +89,9 @@ export default (props: IProps) => {
           )}
           {renderSectionCell(
             'Play Time Window',
-            `${schedule.first_window_time} - ${schedule.last_window_time}`,
+            `${formatTimeSlot(schedule.time_slots[0].time)} - ${formatTimeSlot(
+              schedule.time_slots[schedule.time_slots.length - 1].time
+            )}`,
             true
           )}
           {renderSectionCell(
@@ -104,7 +107,7 @@ export default (props: IProps) => {
               value: option,
             }))}
             onChange={localChange}
-            value={schedule.games_start_on || gameStartOptions[0]}
+            value={schedule.games_start_on || ''}
             name={ArchitectFormFields.GAMES_START_ON}
             label="Games Start On"
             width="100px"

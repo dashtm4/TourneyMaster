@@ -2,7 +2,6 @@ import React from 'react';
 import { Modal, HeadingLevelFour, Input, Button } from 'components/common';
 import styles from './styles.module.scss';
 import { IConfigurableSchedule } from 'common/models/schedule';
-import { BindingAction } from 'common/models';
 import { ArchitectFormFields } from '../types';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
@@ -11,19 +10,19 @@ interface IProps {
   schedule: IConfigurableSchedule;
   isOpen: boolean;
   onChange: (name: string, value: any) => void;
-  onSave: BindingAction;
+  onCreate: (schedule: IConfigurableSchedule) => void;
   onClose: () => void;
 }
 
 const CreateNewModal = (props: IProps) => {
-  const { schedule, isOpen, onSave, onClose, onChange } = props;
+  const { schedule, isOpen, onCreate, onClose, onChange } = props;
 
   const localChange = ({ target: { name, value } }: InputTargetValue) => {
     onChange(name, value);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={() => null}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <div className={styles.wrapper}>
         <HeadingLevelFour>
           <span>Create Schedule</span>
@@ -70,10 +69,14 @@ const CreateNewModal = (props: IProps) => {
             onClick={onClose}
           />
           <Button
-            label="Save"
+            label="Create"
             color="primary"
             variant="contained"
-            onClick={onSave}
+            onClick={() => {
+              onCreate(schedule);
+
+              onClose();
+            }}
           />
         </div>
       </div>

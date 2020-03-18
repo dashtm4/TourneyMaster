@@ -1,3 +1,5 @@
+import { ITimeSlot } from 'components/schedules';
+
 export interface ISchedule {
   schedule_id: string;
   event_id: string;
@@ -26,7 +28,6 @@ export interface ISchedule {
 export interface IConfigurableSchedule extends ISchedule {
   num_fields: number | null;
   periods_per_game: number;
-  first_window_time: string | null;
-  last_window_time: string | null;
+  time_slots: ITimeSlot[];
   total_game_slots: string | null;
 }
