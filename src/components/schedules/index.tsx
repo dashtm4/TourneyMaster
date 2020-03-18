@@ -76,10 +76,15 @@ class Schedules extends Component<Props, State> {
   };
 
   componentDidMount() {
-    const { facilities } = this.props;
+    const { facilities, match } = this.props;
+    const { eventId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
-    if (facilitiesIds?.length) this.props.fetchFields(facilitiesIds);
-    this.props.fetchEventSummary('ADLNT001');
+
+    if (facilitiesIds?.length) {
+      this.props.fetchFields(facilitiesIds);
+    }
+
+    this.props.fetchEventSummary(eventId);
     this.calculateSchedules();
   }
 
