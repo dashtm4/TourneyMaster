@@ -4,28 +4,12 @@ import { BindingAction } from 'common/models';
 import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
 import styles from './styles.module.scss';
 
-interface ProfileProps {
-  onSaveUser: BindingAction;
-}
-
-interface ImportProps {
+interface Props {
   onPreview: BindingAction;
   dataLoaded: Boolean;
 }
 
-export const ProfileNavigation = ({ onSaveUser }: ProfileProps) => (
-  <div className={styles.wrapper}>
-    <Button
-      onClick={onSaveUser}
-      label="Save"
-      variant={ButtonVarian.CONTAINED}
-      color={ButtonColors.PRIMATY}
-      btnType={ButtonFormTypes.SUBMIT}
-    />
-  </div>
-);
-
-export const ImportNavigation = ({ onPreview, dataLoaded }: ImportProps) => {
+export const Navigation = ({ onPreview, dataLoaded }: Props) => {
   // function onCommitData() {
   //   const data = getData('events');
   //   console.log(data);

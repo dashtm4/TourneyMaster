@@ -117,10 +117,11 @@ const ExtEventsTable = ({ events }: Props) => {
       <Table className={classes.table} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
-            <TableCell align="left">Tournament ID</TableCell>
-            <TableCell align="left">Division ID</TableCell>
-            <TableCell align="left">Pool Description</TableCell>
-            <TableCell align="left">Team ID</TableCell>
+            <TableCell align="left">Name</TableCell>
+            <TableCell align="left">Sport</TableCell>
+            <TableCell align="left">Start Date</TableCell>
+            <TableCell align="left">End Date</TableCell>
+            <TableCell align="left">Display Location</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -130,16 +131,17 @@ const ExtEventsTable = ({ events }: Props) => {
           ).map((row, index) => (
             <TableRow key={index}>
               <TableCell component="th" scope="row">
-                {row.IDTournament}
+                {row.name}
               </TableCell>
-              <TableCell align="left">{row.IDDivision}</TableCell>
-              <TableCell align="left">{row.pool_description}</TableCell>
-              <TableCell align="left">{row.IDTeam}</TableCell>
+              <TableCell align="left">{row.sport}</TableCell>
+              <TableCell align="left">{row.StartDate}</TableCell>
+              <TableCell align="left">{row.EndDate}</TableCell>
+              <TableCell align="left">{row.DisplayLocation}</TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
+              <TableCell colSpan={5} />
             </TableRow>
           )}
         </TableBody>
@@ -147,7 +149,7 @@ const ExtEventsTable = ({ events }: Props) => {
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={4}
+              colSpan={5}
               count={events.length}
               rowsPerPage={rowsPerPage}
               page={page}
