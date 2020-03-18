@@ -108,7 +108,7 @@ class DivisionsAndPools extends React.Component<
   render() {
     const { divisions, pools, teams, isLoading } = this.props;
     return (
-      <section>
+      <section className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.mainMenu}>
             <div />

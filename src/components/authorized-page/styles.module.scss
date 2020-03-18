@@ -1,5 +1,6 @@
 :local(.page) {
   // flex: 1 1 auto;
+  height: 100%;
   flex-grow: 1;
   flex-shrink: 0;
 
@@ -15,6 +16,7 @@
 }
 
 :local(.content) {
+  height: 100%;
   flex-grow: 1;
 
   padding-left: 30px;

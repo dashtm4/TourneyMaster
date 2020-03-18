@@ -7,6 +7,7 @@ const LOADER_DEFAULT_STYLES = {
   alignItems: 'center',
   width: '100%',
   padding: '15px',
+  height: '100%',
 };
 
 interface Props {
