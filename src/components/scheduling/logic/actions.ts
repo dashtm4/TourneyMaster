@@ -1,4 +1,5 @@
 import { Dispatch } from 'redux';
+import { Auth } from 'aws-amplify';
 import api from 'api/api';
 import { ISchedule, IConfigurableSchedule } from 'common/models/schedule';
 import { Toasts } from 'components/common';
@@ -15,6 +16,7 @@ import { EMPTY_SCHEDULE } from './constants';
 import { scheduleSchema } from 'validations';
 import { IAppState } from 'reducers/root-reducer.types';
 import History from 'browserhistory';
+import { IMember } from 'common/models';
 import {
   getVarcharEight,
   getTimeValuesFromEvent,
@@ -41,11 +43,18 @@ export const addNewSchedule = () => async (
   getState: () => IAppState
 ) => {
   const { tournamentData } = getState().pageEvent;
+  const currentSession = await Auth.currentSession();
+  const userEmail = currentSession.getIdToken().payload.email;
+  const members = await api.get(`/members?email_address=${userEmail}`);
+  const member: IMember = members.find(
+    (it: IMember) => it.email_address === userEmail
+  );
 
   const newSchedule = {
     ...EMPTY_SCHEDULE,
     schedule_id: getVarcharEight(),
     event_id: tournamentData.event?.event_id,
+    member_id: member.member_id,
     num_divisions: tournamentData.divisions.length,
     num_teams: tournamentData.teams.length,
     num_fields: tournamentData.fields.length,
