@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
-import { Navigation } from './navigation';
 import Import from './import';
 import History from './history';
 import { HeadingLevelTwo, Loader } from 'components/common';
@@ -106,7 +105,6 @@ const TourneyImportWizard = () => {
           evt.preventDefault();
         }}
       >
-        <Navigation onPreview={startJob} dataLoaded={dataLoaded} />
 
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>External Tourney Import Wizard</HeadingLevelTwo>
@@ -119,6 +117,7 @@ const TourneyImportWizard = () => {
           locations={locations}
           onDataLoaded={dataLoadedHandler}
           dataLoaded={dataLoaded}
+          onPreview={startJob}
         />
 
         <History />

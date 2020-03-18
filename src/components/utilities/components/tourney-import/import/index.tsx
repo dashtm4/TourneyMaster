@@ -2,8 +2,11 @@ import React from 'react';
 import styles from './styles.module.scss';
 import { MenuTitles } from 'common/enums';
 import { HeadingLevelThree, SectionDropdown, Input } from 'components/common';
-import { BindingCbWithOne } from 'common/models';
+import { BindingAction, BindingCbWithOne } from 'common/models';
 import FullWidthTabs from './tab';
+import { Button } from 'components/common';
+import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
+import history from '../../../../../browserhistory';
 
 interface Props {
   onGetTid: BindingCbWithOne<any>;
@@ -13,6 +16,7 @@ interface Props {
   locations: any;
   onDataLoaded: BindingCbWithOne<any>;
   dataLoaded: Boolean;
+  onPreview: BindingAction;
 }
 
 const TourneyImport: React.FC<Props> = ({
@@ -22,7 +26,8 @@ const TourneyImport: React.FC<Props> = ({
   games,
   locations,
   onDataLoaded,
-  dataLoaded
+  dataLoaded,
+  onPreview
 }) => {
   const [showData, setShowData] = React.useState(false);
   React.useEffect(() => {
@@ -53,6 +58,23 @@ const TourneyImport: React.FC<Props> = ({
                 label="Enter the Identifier of the External Tournament: "
                 fullWidth={true}
               />
+
+              <div className={styles.buttonGroup}>
+                <Button
+                  label="Cancel"
+                  onClick={() => history.push('/dashboard')}
+                  variant={ButtonVarian.CONTAINED}
+                  color={ButtonColors.SECONDARY}
+                  btnType={ButtonFormTypes.SUBMIT}
+                />
+                <Button
+                  label="Submit"
+                  onClick={onPreview}
+                  variant={ButtonVarian.CONTAINED}
+                  color={ButtonColors.PRIMATY}
+                  btnType={ButtonFormTypes.SUBMIT}
+                />
+              </div>
             </div>
           ) : null
         }
