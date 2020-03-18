@@ -86,10 +86,14 @@ export default (props: IProps) => {
             `${schedule.num_fields}`,
             true
           )}
-          {renderSectionCell('Play Time Window', `${8.3} - ${5.3}`, true)}
+          {renderSectionCell(
+            'Play Time Window',
+            `${schedule.first_window_time} - ${schedule.last_window_time}`,
+            true
+          )}
           {renderSectionCell(
             'Teams Registered/Max',
-            `${2}/${schedule.num_teams}`,
+            `${schedule.num_teams}/${schedule.num_teams}`,
             true
           )}
         </div>
@@ -167,7 +171,8 @@ export default (props: IProps) => {
         <div className={styles.taThird}>
           {renderSectionCell(
             'Game Runtime',
-            `${schedule.periods_per_game * getTimeFromString(schedule.period_duration!, 'minutes') +
+            `${schedule.periods_per_game *
+              getTimeFromString(schedule.period_duration!, 'minutes') +
               getTimeFromString(schedule.pre_game_warmup!, 'minutes') +
               getTimeFromString(
                 schedule.time_btwn_periods!,
@@ -175,7 +180,13 @@ export default (props: IProps) => {
               )} Minutes`
           )}
           {renderSectionCell('Total Game Slots', `${128}`)}
-          {renderSectionCell('Average Games per Team', `${4}`)}
+          {renderSectionCell(
+            'Average Games per Team',
+            `${Math.floor(
+              Number(schedule.max_num_games) +
+                Number(schedule.min_num_games) / 2
+            )}`
+          )}
           <Button
             label="View Matrix"
             icon={<FontAwesomeIcon icon={faEye} />}

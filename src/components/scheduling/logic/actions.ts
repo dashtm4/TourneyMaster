@@ -10,7 +10,12 @@ import {
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
 import { IAppState } from 'reducers/root-reducer.types';
-import { getVarcharEight } from 'helpers';
+import {
+  getVarcharEight,
+  getTimeValuesFromEvent,
+  calculateTimeSlots,
+  formatTimeSlot,
+} from 'helpers';
 
 export interface INewVersion {
   name: string;
@@ -37,6 +42,9 @@ export const addNewSchedule = () => async (
   getState: () => IAppState
 ) => {
   const { tournamentData } = getState().pageEvent;
+  const playTimeWindow = calculateTimeSlots(
+    getTimeValuesFromEvent(tournamentData.event!)
+  );
 
   const newSchedule = {
     ...EMPTY_SCHEDULE,
@@ -50,6 +58,12 @@ export const addNewSchedule = () => async (
     pre_game_warmup: tournamentData.event?.pre_game_warmup,
     period_duration: tournamentData.event?.period_duration,
     time_btwn_periods: tournamentData.event?.time_btwn_periods,
+    first_window_time: playTimeWindow
+      ? formatTimeSlot(playTimeWindow[0].time)
+      : '00:00',
+    last_window_time: playTimeWindow
+      ? formatTimeSlot(playTimeWindow[playTimeWindow?.length - 1].time)
+      : '00:00',
   };
 
   dispatch({

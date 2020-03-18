@@ -24,7 +24,7 @@ const calculateTotalGameTime = (
   );
 };
 
-export const getTimeValuesFromEvent = (event: IEventDetails): ITimeValues => ({
+const getTimeValuesFromEvent = (event: IEventDetails): ITimeValues => ({
   firstGameTime: event.first_game_time,
   lastGameEnd: event.last_game_end,
   preGameWarmup: event.pre_game_warmup,
@@ -33,8 +33,9 @@ export const getTimeValuesFromEvent = (event: IEventDetails): ITimeValues => ({
   periodsPerGame: event.periods_per_game,
 });
 
-export const calculateTimeSlots = (timeValues: ITimeValues) => {
+const calculateTimeSlots = (timeValues: ITimeValues) => {
   if (!timeValues) return;
+
   const {
     firstGameTime,
     lastGameEnd,
@@ -71,4 +72,16 @@ export const calculateTimeSlots = (timeValues: ITimeValues) => {
   }
 
   return timeSlots;
+};
+
+const formatTimeSlot = (time: string) => {
+  if (!time) return;
+  return time.slice(0, 5);
+};
+
+export {
+  calculateTotalGameTime,
+  getTimeValuesFromEvent,
+  calculateTimeSlots,
+  formatTimeSlot,
 };
