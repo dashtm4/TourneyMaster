@@ -3,6 +3,8 @@ enum MenuTitles {
   REGISTRATION = 'Registration',
   UTILITIES = 'Utilities',
   USER_PROFILE = 'User Profile',
+  TOURNEY_IMPORT = 'Tourney Import',
+  TOURNEY_IMPORT_TITLE = 'Import External Tournament Wizard',
   EMAIL_SETUP = 'Email Setup',
 }
 
@@ -22,6 +24,7 @@ enum EventMenuTitles {
   TOURNAMENT_PLAY = 'Tournament Play',
   BRACKETS = 'Brackets',
   SCHEDULING = 'Scheduling',
+  TOURNEY_ARCHITECT = 'Tourney Architect',
   SCORING = 'Scoring',
   REPORTING = 'Reporting',
 }

@@ -8,6 +8,7 @@ import {
   Select,
   Input,
 } from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
@@ -154,7 +155,7 @@ const PlayoffsSection: React.FC<Props> = ({
             ]}
             onChange={onPlayoffs}
           />
-          <CardMessage type="emodjiObjects">
+          <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
             Playoff settings include Bracket Type, # of Teams, and Ranking
             Factors
           </CardMessage>
@@ -210,7 +211,7 @@ const PlayoffsSection: React.FC<Props> = ({
                   />
                 </DndProvider>
               </div>
-              <CardMessage type="emodjiObjects">
+              <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
                 Drag and Drop to reorder Ranking Factors
               </CardMessage>
               <Checkbox

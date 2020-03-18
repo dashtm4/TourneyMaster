@@ -1,0 +1,106 @@
+import React from 'react';
+import styles from './styles.module.scss';
+import { BindingAction, IFacility } from 'common/models';
+import CreateBackupForm from '../create-backup-form';
+import Button from 'components/common/buttons/button';
+import { EventDetailsDTO } from 'components/event-details/logic/model';
+import { IField } from 'common/models';
+import { PopupExposure } from 'components/common';
+
+interface Props {
+  onCancel: BindingAction;
+  events: EventDetailsDTO[];
+  facilities: IFacility[];
+  fields: IField[];
+}
+
+interface State {
+  backupPlans: any[];
+  isConfirmModalOpen: boolean;
+}
+
+class CreateBackupModal extends React.Component<Props, State> {
+  state = { backupPlans: [{ type: 1 }], isConfirmModalOpen: false };
+
+  onChange = (name: string, value: string | number, index: number) => {
+    this.setState(({ backupPlans }) => ({
+      backupPlans: backupPlans.map(plan =>
+        plan === backupPlans[index] ? { ...plan, [name]: value } : plan
+      ),
+    }));
+  };
+
+  onModalClose = () => {
+    this.setState({ isConfirmModalOpen: false });
+  };
+
+  onExit = () => {
+    this.setState({ isConfirmModalOpen: false });
+    this.props.onCancel();
+  };
+
+  onCancelClick = () => {
+    this.setState({ isConfirmModalOpen: true });
+  };
+
+  onAddAdditionalPlan = () => {
+    this.setState({ backupPlans: [...this.state.backupPlans, { type: 1 }] });
+  };
+
+  onSave = () => {
+    this.setState({ isConfirmModalOpen: false });
+    this.props.onCancel();
+  };
+
+  render() {
+    const { backupPlans } = this.state;
+    return (
+      <div className={styles.container}>
+        <div className={styles.title}>Backup Plan</div>
+        {backupPlans.map((plan: any, index: number) => (
+          <CreateBackupForm
+            key={index}
+            index={index}
+            backupPlan={plan}
+            onChange={this.onChange}
+            events={this.props.events}
+            facilities={this.props.facilities}
+            fields={this.props.fields}
+          />
+        ))}
+        <Button
+          label="+ Add Additional Game Impacted"
+          variant="text"
+          color="secondary"
+          onClick={this.onAddAdditionalPlan}
+        />
+        <div className={styles.buttonsGroup}>
+          <Button
+            label="Cancel"
+            variant="text"
+            color="secondary"
+            onClick={this.onCancelClick}
+          />
+          <Button
+            label="Save Backup Plan to Library"
+            variant="contained"
+            color="primary"
+          />
+          <Button
+            label="Activate and Publish Backup Plan"
+            variant="contained"
+            color="primary"
+          />
+        </div>
+        <PopupExposure
+          isOpen={this.state.isConfirmModalOpen}
+          onClose={this.onModalClose}
+          onExitClick={this.onExit}
+          onSaveClick={this.onSave}
+        />
+      </div>
+    );
+  }
+}
+
+export default CreateBackupModal;

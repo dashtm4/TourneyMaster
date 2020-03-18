@@ -9,10 +9,10 @@ import OrganizationsManagement from '../organizations-management';
 import Calendar from 'components/calendar';
 import Utilities from 'components/utilities';
 import { EmptyPage } from './authorized-page-event/index';
-import Schedules from 'components/schedules';
 import Footer from 'components/footer';
 import { Routes } from 'common/enums';
 import styles from './styles.module.scss';
+import GamedayComplexities from 'components/gameday-complexities';
 
 const AuthorizedPage = () => (
   <div className={styles.container}>
@@ -21,7 +21,6 @@ const AuthorizedPage = () => (
       <Menu list={MenuList} isAllowEdit={true} />
       <main className={styles.content}>
         <Switch>
-          <Route path={Routes.SCHEDULES} component={Schedules} />
           <Route path={Routes.DASHBOARD} component={Dashboard} />
           <Route path={Routes.LIBRARY_MANAGER} component={LibraryManager} />
           <Route path={Routes.EVENT_LINK} component={EmptyPage} />
@@ -31,7 +30,10 @@ const AuthorizedPage = () => (
           />
           <Route path={Routes.CALENDAR} component={Calendar} />
           <Route path={Routes.UTILITIES} component={Utilities} />
-          <Route path={Routes.EVENT_DAY_COMPLEXITIES} component={EmptyPage} />
+          <Route
+            path={Routes.EVENT_DAY_COMPLEXITIES}
+            component={GamedayComplexities}
+          />
           <Route
             path={Routes.ORGANIZATIONS_MANAGEMENT}
             component={OrganizationsManagement}

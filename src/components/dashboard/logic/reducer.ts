@@ -6,7 +6,7 @@ import {
   DASHBOARD_FETCH_START,
 } from './actionTypes';
 import { EventDetailsDTO } from '../../event-details/logic/model';
-import { ITeam, IField } from 'components/schedules';
+import { ITeam, IField } from 'common/models';
 
 export interface IState {
   data?: EventDetailsDTO[];

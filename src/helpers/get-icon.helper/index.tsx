@@ -23,6 +23,10 @@ import WarningIcon from '@material-ui/icons/Warning';
 import FileCopy from '@material-ui/icons/FileCopy';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import DoneIcon from '@material-ui/icons/Done';
+import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
+import LockIcon from '@material-ui/icons/Lock';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import InfoIcon from '@material-ui/icons/Info';
 import { PinIcon } from './own-icons';
 import { Icons } from '../../common/enums/icons';
 
@@ -76,6 +80,14 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <CheckCircleIcon style={iconStyles} />;
     case Icons.DONE:
       return <DoneIcon style={iconStyles} />;
+    case Icons.SETTINGS_BACKUP_RESTORE:
+      return <SettingsBackupRestoreIcon style={iconStyles} />;
+    case Icons.LOCK:
+      return <LockIcon style={iconStyles} />;
+    case Icons.LOCK_OPEN:
+      return <LockOpenIcon style={iconStyles} />;
+    case Icons.INFO:
+      return <InfoIcon style={iconStyles} />;
   }
 
   return <ClearIcon />;

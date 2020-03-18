@@ -1,0 +1,27 @@
+.section {
+  height: inherit;
+
+  padding: 8px 5px 5px;
+  margin: 26px 8px 0 0;
+
+  background-color: #ececec;
+
+  border-radius: 2px;
+}
+
+.title {
+  margin: 0 0 18px;
+
+  text-align: center;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 700;
+  color: #6a6a6a;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}

@@ -20,6 +20,7 @@ import {
   UPLOAD_FILE_MAP_SUCCESS,
   UPLOAD_FILE_MAP_FAILURE,
 } from './action-types';
+import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { facilitySchema, fieldSchema } from 'validations';
 import { getVarcharEight, uploadFile } from 'helpers';
@@ -81,17 +82,28 @@ const loadFields: ActionCreator<ThunkAction<
   }
 };
 
-const addEmptyFacility = (eventId: string): FacilitiesAction => ({
-  type: ADD_EMPTY_FACILITY,
-  payload: {
-    facility: {
-      ...EMPTY_FACILITY,
-      facilities_id: getVarcharEight(),
-      isNew: true,
-      event_id: eventId,
+const addEmptyFacility = (eventId: string) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
+  const { tournamentData } = getState().pageEvent;
+
+  const emptyFacility = {
+    ...EMPTY_FACILITY,
+    event_id: eventId,
+    facilities_id: getVarcharEight(),
+    first_game_time: tournamentData.event?.first_game_time,
+    last_game_end: tournamentData.event?.last_game_end,
+    isNew: true,
+  };
+
+  dispatch({
+    type: ADD_EMPTY_FACILITY,
+    payload: {
+      facility: emptyFacility,
     },
-  },
-});
+  });
+};
 
 const addEmptyField = (facilityId: string): FacilitiesAction => ({
   type: ADD_EMPTY_FIELD,
@@ -187,6 +199,7 @@ const saveFacilities: ActionCreator<ThunkAction<
       type: SAVE_FACILITIES_SUCCESS,
       payload: {
         facilities,
+        fields,
       },
     });
 

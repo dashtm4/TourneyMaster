@@ -35,6 +35,13 @@ import {
   SortByFilesTypes,
 } from 'common/enums';
 
+export interface IPageEventState {
+  isLoading: boolean;
+  isLoaded: boolean;
+  menuList: IMenuItem[];
+  tournamentData: ITournamentData;
+}
+
 const initialState = {
   isLoading: false,
   isLoaded: false,
@@ -45,18 +52,12 @@ const initialState = {
     facilities: [],
     divisions: [],
     teams: [],
+    fields: [],
   },
 };
 
-export interface AppState {
-  isLoading: boolean;
-  isLoaded: boolean;
-  menuList: IMenuItem[];
-  tournamentData: ITournamentData;
-}
-
 const pageEventReducer = (
-  state: AppState = initialState,
+  state: IPageEventState = initialState,
   action:
     | AuthPageAction
     | EventDetailsAction
@@ -128,7 +129,9 @@ const pageEventReducer = (
               return {
                 ...item,
                 isCompleted:
-                  teams.filter(it => it.division_id && it.pool_id).length > 0,
+                  teams.length > 0 &&
+                  teams.filter(it => !it.division_id || !it.pool_id).length ===
+                    0,
               };
             }
             default:
@@ -167,7 +170,7 @@ const pageEventReducer = (
       };
     }
     case SAVE_FACILITIES_SUCCESS: {
-      const { facilities } = action.payload;
+      const { facilities, fields } = action.payload;
 
       return {
         ...state,
@@ -183,6 +186,11 @@ const pageEventReducer = (
               }
             : item
         ),
+        tournamentData: {
+          ...state.tournamentData,
+          facilities,
+          fields,
+        },
       };
     }
     case DIVISIONS_FETCH_SUCCESS: {
@@ -215,7 +223,10 @@ const pageEventReducer = (
             ? {
                 ...item,
                 isCompleted:
-                  teams.filter(it => it.division_id && it.pool_id).length > 0,
+                  teams.length > 0 &&
+                  teams.filter(
+                    it => !it.division_id || !it.pool_id || it.isDelete
+                  ).length === 0,
               }
             : item
         ),

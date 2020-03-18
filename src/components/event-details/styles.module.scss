@@ -5,6 +5,12 @@ $sectionBodyPadding: 20px 0;
   height: 100%;
   min-width: 792px;
 
+  .headingContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .paperWrapper {
     display: flex;
     justify-content: flex-end;
@@ -56,6 +62,17 @@ $sectionBodyPadding: 20px 0;
 
       justify-content: space-between;
       padding-bottom: 20px;
+      & > * {
+        width: 48%;
+      }
+    }
+
+    .gameTimesWrapper {
+      display: flex;
+      justify-content: space-between;
+
+      margin-bottom: 20px;
+
       & > * {
         width: 30%;
       }

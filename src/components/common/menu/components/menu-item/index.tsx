@@ -76,7 +76,7 @@ const MenuItem = ({
           </Link>
         )}
       </ExpansionPanelSummaryWrapped>
-      {menuItem.children.length !== 0 && (
+      {!isCollapsed && menuItem.children.length !== 0 && (
         <ExpansionPanelDetailsWrapper>
           <ul className={styles.subList}>
             {menuItem.children.map((menuSubItem: string) => (

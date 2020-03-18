@@ -9,7 +9,7 @@ import {
   removeFiles,
 } from './logic/actions';
 import { EventDetailsDTO, IIconFile } from './logic/model';
-import { IAppState } from './logic/reducer';
+import { IEventState } from './logic/reducer';
 
 import PrimaryInformationSection from './primary-information';
 import EventStructureSection from './event-structure';
@@ -23,7 +23,7 @@ import styles from './styles.module.scss';
 import { eventState } from './state';
 
 interface IMapStateProps {
-  event: IAppState;
+  event: IEventState;
 }
 
 interface Props extends IMapStateProps {
@@ -134,12 +134,14 @@ class EventDetails extends Component<Props, State> {
 
   render() {
     const eventTypeOptions = ['Tournament', 'Showcase'];
-
     const { event } = this.state;
     const { isEventLoading } = this.props.event;
-    return !event || isEventLoading ? (
-      <Loader />
-    ) : (
+
+    if (!event || isEventLoading) {
+      return <Loader />;
+    }
+
+    return (
       <div className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.paperWrapper}>
@@ -151,8 +153,8 @@ class EventDetails extends Component<Props, State> {
             />
           </div>
         </Paper>
-        <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
-        <div className={styles.buttonContainer}>
+        <div className={styles.headingContainer}>
+          <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
           <Button
             label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
             variant="text"
@@ -195,7 +197,7 @@ class EventDetails extends Component<Props, State> {
 }
 
 interface IRootState {
-  event: IAppState;
+  event: IEventState;
 }
 
 const mapStateToProps = (state: IRootState): IMapStateProps => ({

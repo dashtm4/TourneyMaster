@@ -10,18 +10,24 @@ import {
   SectionDropdown,
   HeadingLevelThree,
   CardMessage,
-} from '../../../common';
-import { Icons } from 'common/enums/icons';
+  DatePicker,
+} from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import { FileUploadTypes, AcceptFileTypes } from '../../../common/file-upload';
+import PlacesAutocompleteInput from '../../../event-details/primary-information/map/autocomplete';
+import Map from '../../../event-details/primary-information/map';
+import { timeToDate, dateToTime } from 'helpers';
 import {
   IFacility,
   IField,
   IUploadFile,
   BindingCbWithOne,
-} from '../../../../common/models';
+} from 'common/models';
 import styles from './styles.module.scss';
-import PlacesAutocompleteInput from '../../../event-details/primary-information/map/autocomplete';
-import Map from '../../../event-details/primary-information/map';
+
+const STYLES_FACILITIES_DESCRIPTION_CARD_MESSAGE = {
+  marginTop: '10px',
+};
 
 enum FormFields {
   FACILITIES_DESCRIPTION = 'facilities_description',
@@ -30,6 +36,8 @@ enum FormFields {
   RESTROOM = 'restrooms',
   NUM_TOILETS = 'num_toilets',
   RESTROOM_DETAILS = 'restroom_details',
+  FIRST_GAME_TIME = 'first_game_time',
+  LAST_GAME_END = 'last_game_end',
   PARKING_AVAILABLE = 'parking_available',
   PARKING_PROXIMITY = 'parking_proximity',
   GOLF_CARTS_AVAILABE = 'golf_carts_availabe',
@@ -46,6 +54,8 @@ const FACILITY_FIELD_MAP_KEY = 'field_map_URL';
 
 interface State {
   isEdit: boolean;
+  isRestRoomDetails: boolean;
+  isParkingDetails: boolean;
 }
 
 interface Props {
@@ -68,18 +78,15 @@ class FacilityDetails extends React.Component<Props, State> {
 
     this.state = {
       isEdit: Boolean(props.facility.isNew),
+      isRestRoomDetails: Boolean(props.facility.restroom_details),
+      isParkingDetails: Boolean(props.facility.parking_details),
     };
   }
 
-  onChangeFacility = ({ target: { name, value } }: any) => {
+  onChangeFacility = (name: FormFields, value: string | number) => {
     const { facility, updateFacilities } = this.props;
 
     updateFacilities({ ...facility, [name]: value });
-  };
-
-  onChangeAddress = (address: string) => {
-    const { facility, updateFacilities } = this.props;
-    updateFacilities({ ...facility, address1: address });
   };
 
   onAdressSelect = (position: any) => {
@@ -128,7 +135,7 @@ class FacilityDetails extends React.Component<Props, State> {
       loadFields,
       addEmptyField,
     } = this.props;
-    const { isEdit } = this.state;
+    const { isEdit, isRestRoomDetails, isParkingDetails } = this.state;
 
     if (
       !facility.isNew &&
@@ -160,38 +167,82 @@ class FacilityDetails extends React.Component<Props, State> {
                 Location {facilitiyNumber}
               </h3>
               <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
-                <legend className={styles.fieldTitle}>Facility Name</legend>
                 <Input
-                  onChange={this.onChangeFacility}
+                  onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
+                    this.onChangeFacility(
+                      FormFields.FACILITIES_DESCRIPTION,
+                      evt.target.value
+                    )
+                  }
                   value={facility.facilities_description || ''}
-                  name={FormFields.FACILITIES_DESCRIPTION}
-                  placeholder={'Main Stadium'}
                   disabled={!isEdit}
-                  width={'100%'}
+                  placeholder={'Main Stadium'}
+                  label="Facility Name"
+                  width="100%"
                 />
+                <CardMessage
+                  type={CardMessageTypes.EMODJI_OBJECTS}
+                  style={STYLES_FACILITIES_DESCRIPTION_CARD_MESSAGE}
+                >
+                  The Initials of the facility name will be used as the
+                  facilities abbreviation in reports.
+                </CardMessage>
               </fieldset>
               <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
                 <PlacesAutocompleteInput
                   onSelect={this.onAdressSelect}
-                  onChange={this.onChangeAddress}
+                  onChange={(address: string) =>
+                    this.onChangeFacility(FormFields.ADDRESS_ONE, address)
+                  }
                   address={facility.address1 || ''}
                   disabled={!isEdit}
                   label={'Facility Address'}
                 />
               </fieldset>
+              <div className={`${styles.filedset} ${styles.filedsetGameTimes}`}>
+                <DatePicker
+                  minWidth="100%"
+                  label="First Game Start"
+                  type="time"
+                  value={timeToDate(facility.first_game_time || '')}
+                  onChange={(date: Date) =>
+                    this.onChangeFacility(
+                      FormFields.FIRST_GAME_TIME,
+                      dateToTime(date)
+                    )
+                  }
+                  disabled={!isEdit}
+                />
+                <DatePicker
+                  minWidth="100%"
+                  label="Last Game End"
+                  type="time"
+                  value={timeToDate(facility.last_game_end || '')}
+                  onChange={(date: Date) =>
+                    this.onChangeFacility(
+                      FormFields.LAST_GAME_END,
+                      dateToTime(date)
+                    )
+                  }
+                  disabled={!isEdit}
+                />
+              </div>
               <fieldset
                 className={`${styles.filedset} ${styles.filedsetFields}`}
               >
-                <legend className={styles.fieldTitle}>Number of Fields</legend>
                 <Select
                   onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-                    if (evt.target.value > fields.length.toString()) {
-                      this.onChangeFacility(evt);
+                    const inputValue = evt.target.value;
+
+                    console.log(inputValue > fields.length.toString());
+
+                    if (inputValue > fields.length.toString()) {
+                      this.onChangeFacility(FormFields.NUM_FIELDS, +inputValue);
+
                       addEmptyField(facility.facilities_id);
                     }
                   }}
                   value={`${fields.length || ''}`}
-                  name={FormFields.NUM_FIELDS}
                   options={Array.from(
                     new Array(fields.length + 1),
                     (_, idx) => ({
@@ -200,6 +251,7 @@ class FacilityDetails extends React.Component<Props, State> {
                     })
                   )}
                   width="100%"
+                  label="Number of Fields"
                   disabled={!isEdit}
                 />
               </fieldset>
@@ -244,58 +296,65 @@ class FacilityDetails extends React.Component<Props, State> {
             <fieldset
               className={`${styles.filedset} ${styles.filedsetRestrooms}`}
             >
-              <legend className={styles.fieldTitle}>Restrooms</legend>
               <Select
-                onChange={this.onChangeFacility}
+                onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
+                  this.onChangeFacility(FormFields.RESTROOM, evt.target.value)
+                }
                 value={facility.restrooms || ''}
                 name="restrooms"
                 options={['In Facility', 'Portable'].map(type => ({
                   label: type,
                   value: type,
                 }))}
-                width="100%"
                 disabled={!isEdit}
+                width="100%"
+                label="Restrooms"
               />
             </fieldset>
             <fieldset
               className={`${styles.filedset} ${styles.filedsetToiltes}`}
             >
-              <legend className={styles.fieldTitle}># Portable Toilets</legend>
               <Input
-                onChange={this.onChangeFacility}
-                value={facility.num_toilets ? `${facility.num_toilets}` : ''}
+                onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
+                  this.onChangeFacility(
+                    FormFields.NUM_TOILETS,
+                    evt.target.value
+                  )
+                }
+                value={facility.num_toilets || ''}
                 name={FormFields.NUM_TOILETS}
-                placeholder="5"
-                width="100%"
                 disabled={!isEdit}
+                width="100%"
+                label="# Portable Toilets"
               />
             </fieldset>
           </div>
           <fieldset className={`${styles.filedset} ${styles.restroomDetails}`}>
             <Checkbox
               onChange={() =>
-                this.onChangeFacility({
-                  target: {
-                    name: FormFields.RESTROOM_DETAILS,
-                    value: facility.restroom_details || ' ',
-                  },
-                })
+                this.setState(({ isRestRoomDetails }) => ({
+                  isRestRoomDetails: !isRestRoomDetails,
+                }))
               }
               options={[
                 {
                   label: 'Restroom Details',
-                  checked: Boolean(facility.restroom_details),
+                  checked: isRestRoomDetails,
                   disabled: !isEdit,
                 },
               ]}
             />
-            {facility.restroom_details && (
+            {(isRestRoomDetails || facility.restroom_details) && (
               <Input
-                onChange={this.onChangeFacility}
-                value={facility.restroom_details}
-                name={FormFields.RESTROOM_DETAILS}
-                width="100%"
+                onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
+                  this.onChangeFacility(
+                    FormFields.RESTROOM_DETAILS,
+                    evt.target.value
+                  )
+                }
+                value={facility.restroom_details || ''}
                 disabled={!isEdit}
+                width="100%"
               />
             )}
           </fieldset>
@@ -303,9 +362,13 @@ class FacilityDetails extends React.Component<Props, State> {
             <fieldset
               className={`${styles.filedset} ${styles.filedsetParkingAvailable}`}
             >
-              <legend className={styles.fieldTitle}>Parking Available</legend>
               <Select
-                onChange={this.onChangeFacility}
+                onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
+                  this.onChangeFacility(
+                    FormFields.PARKING_AVAILABLE,
+                    evt.target.value
+                  )
+                }
                 value={facility.parking_available || ''}
                 name="parking_available"
                 options={Object.keys(ParkingAvailableOptions).map(type => ({
@@ -314,37 +377,33 @@ class FacilityDetails extends React.Component<Props, State> {
                 }))}
                 width="100%"
                 disabled={!isEdit}
+                label="Parking Available"
               />
             </fieldset>
             <fieldset
               className={`${styles.filedset} ${styles.filedsetDistanceFields}`}
             >
-              <legend className={styles.fieldTitle}>
-                Main Parking - Distance to Fields (approx)
-              </legend>
               <Input
-                onChange={this.onChangeFacility}
-                value={
-                  facility.parking_proximity
-                    ? `${facility.parking_proximity}`
-                    : ''
+                onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
+                  this.onChangeFacility(
+                    FormFields.PARKING_PROXIMITY,
+                    evt.target.value
+                  )
                 }
-                name={FormFields.PARKING_PROXIMITY}
+                value={facility.parking_proximity || ''}
+                disabled={!isEdit}
                 placeholder="Meters"
                 width="100%"
-                disabled={!isEdit}
+                label="Main Parking - Distance to Fields (approx)"
               />
             </fieldset>
             <fieldset className={`${styles.filedset} ${styles.filedsetGolf}`}>
-              <legend className="visually-hidden">Golf Carts </legend>
               <Checkbox
                 onChange={() =>
-                  this.onChangeFacility({
-                    target: {
-                      name: FormFields.GOLF_CARTS_AVAILABE,
-                      value: facility.golf_carts_availabe ? null : true,
-                    },
-                  })
+                  this.onChangeFacility(
+                    FormFields.GOLF_CARTS_AVAILABE,
+                    facility.golf_carts_availabe ? 0 : 1
+                  )
                 }
                 options={[
                   {
@@ -359,33 +418,34 @@ class FacilityDetails extends React.Component<Props, State> {
           <fieldset className={`${styles.filedset} ${styles.parkingDetails}`}>
             <Checkbox
               onChange={() =>
-                this.onChangeFacility({
-                  target: {
-                    name: FormFields.PARKING_DETAILS,
-                    value: facility.parking_details || ' ',
-                  },
-                })
+                this.setState(({ isParkingDetails }) => ({
+                  isParkingDetails: !isParkingDetails,
+                }))
               }
               options={[
                 {
                   label: 'Parking Details',
-                  checked: Boolean(facility.parking_details),
+                  checked: isParkingDetails,
                   disabled: !isEdit,
                 },
               ]}
             />
-            {facility.parking_details && (
+            {(isParkingDetails || facility.parking_details) && (
               <>
                 <div className={styles.parkingDetailsWrapper}>
                   <Input
-                    onChange={this.onChangeFacility}
-                    value={facility.parking_details}
-                    name={FormFields.PARKING_DETAILS}
+                    onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
+                      this.onChangeFacility(
+                        FormFields.PARKING_DETAILS,
+                        evt.target.value
+                      )
+                    }
+                    value={facility.parking_details || ''}
                     width="100%"
                     disabled={!isEdit}
                   />
                 </div>
-                <CardMessage type={Icons.EMODJI_OBJECTS}>
+                <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
                   Notify your attendees they need to know something. For
                   example, if cars will be aggressively ticketed, parking will
                   be tight, etc.
