@@ -1,7 +1,6 @@
-import { orderBy } from 'lodash-es';
+import { orderBy, findIndex } from 'lodash-es';
 import { IField } from 'common/models/schedule/fields';
 import { ITeamCard } from 'common/models/schedule/teams';
-import { DropParams } from './dnd/drop';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 
 export enum TeamPositionEnum {
@@ -62,56 +61,16 @@ export const selectProperGamesPerTimeSlot = (
   games: IGame[]
 ) => games.filter((game: IGame) => game.timeSlotId === timeSlot.id);
 
-export const updateTeamCards = (params: DropParams, teamCards: ITeamCard[]) => {
-  const { id, fieldId, timeSlotId, teamPosition } = params;
-  return teamCards.map((teamCard: ITeamCard) => {
-    let updatedTeamCard = teamCard;
-    if (
-      teamCard.fieldId === fieldId &&
-      teamCard.timeSlotId === timeSlotId &&
-      teamCard.teamPosition === teamPosition
-    ) {
-      delete updatedTeamCard.fieldId;
-      delete updatedTeamCard.timeSlotId;
-      delete updatedTeamCard.teamPosition;
-      return updatedTeamCard;
-    }
-    if (teamCard.id === id) {
-      updatedTeamCard = {
-        ...updatedTeamCard,
-        fieldId,
-        timeSlotId,
-        teamPosition,
-      };
-      return updatedTeamCard;
-    }
-
-    return teamCard;
-  });
-};
-
 export const settleTeamsPerGames = (games: IGame[], teamCards: ITeamCard[]) =>
-  games.map((game: IGame) => {
-    const awayTeam = teamCards.find(
-      (teamCard: ITeamCard) =>
-        teamCard.fieldId === game.fieldId &&
-        teamCard.timeSlotId === game.timeSlotId &&
-        teamCard.teamPosition === 1
-    );
-
-    const homeTeam = teamCards.find(
-      (teamCard: ITeamCard) =>
-        teamCard.fieldId === game.fieldId &&
-        teamCard.timeSlotId === game.timeSlotId &&
-        teamCard.teamPosition === 2
-    );
-
-    return {
-      ...game,
-      awayTeam,
-      homeTeam,
-    };
-  });
+  games.map(game => ({
+    ...game,
+    awayTeam: teamCards.find(
+      team => findIndex(team.games, { id: game.id, teamPosition: 1 }) >= 0
+    ),
+    homeTeam: teamCards.find(
+      team => findIndex(team.games, { id: game.id, teamPosition: 2 }) >= 0
+    ),
+  }));
 
 export const arrayAverageOccurrence = (array: any[]) => {
   if (array.length === 0) return null;
