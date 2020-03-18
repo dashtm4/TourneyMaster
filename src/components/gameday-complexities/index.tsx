@@ -7,18 +7,34 @@ import { CardMessageTypes } from 'components/common/card-message/types';
 import CreateBackupModal from './create-backup-modal';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { connect } from 'react-redux';
-import { getEvents, getFacilities, getFields } from './logic/actions';
-import { BindingAction, IFacility } from 'common/models';
+import {
+  getEvents,
+  getFacilities,
+  getFields,
+  getBackupPlans,
+  saveBackupPlans,
+  deleteBackupPlan,
+  updateBackupPlan,
+} from './logic/actions';
+import { BindingAction, IFacility, BindingCbWithOne } from 'common/models';
 import { IField } from 'common/models';
 import BackupPlan from './backup-plan';
+import { IBackupPlan } from 'common/models/backup_plan';
+import { Loader } from 'components/common';
 
 interface Props {
   getEvents: BindingAction;
   getFacilities: BindingAction;
   getFields: BindingAction;
+  getBackupPlans: BindingAction;
+  saveBackupPlans: BindingCbWithOne<Partial<IBackupPlan>[]>;
+  deleteBackupPlan: BindingCbWithOne<string>;
+  updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
   events: EventDetailsDTO[];
   facilities: IFacility[];
   fields: IField[];
+  backupPlans: IBackupPlan[];
+  isLoading: boolean;
 }
 
 interface State {
@@ -27,31 +43,23 @@ interface State {
   expandAll: boolean;
 }
 
-const mockData = [
-  {
-    name: "The Predicted Nor'easter Backup Plan",
-    eventName: "Men's Spring Thaw",
-    type: 'Cancel Games',
-  },
-  {
-    name: "The Predicted Nor'easter Backup Plan",
-    eventName: "Men's Spring Thaw",
-    type: 'Cancel Games',
-  },
-];
-
 class GamedayComplexities extends React.Component<Props, State> {
-  state = { isModalOpen: false, expanded: [], expandAll: false };
+  state = {
+    isModalOpen: false,
+    expanded: [],
+    expandAll: false,
+  };
 
   componentDidMount() {
     this.props.getEvents();
     this.props.getFacilities();
     this.props.getFields();
+    this.props.getBackupPlans();
   }
 
-  componentDidUpdate(_prevProps: any, prevState: any) {
-    if (!prevState.expanded.length) {
-      this.setState({ expanded: mockData.map(_plan => true) });
+  componentDidUpdate(_prevProps: Props, _prevState: State) {
+    if (this.props.backupPlans !== _prevProps.backupPlans) {
+      this.setState({ expanded: this.props.backupPlans.map(_plan => true) });
     }
   }
 
@@ -96,6 +104,7 @@ class GamedayComplexities extends React.Component<Props, State> {
   };
 
   render() {
+    const { backupPlans, isLoading } = this.props;
     return (
       <>
         <Paper sticky={true}>
@@ -118,25 +127,34 @@ class GamedayComplexities extends React.Component<Props, State> {
             onClick={this.onToggleAll}
           />
         </div>
-        {mockData.length
-          ? mockData.map((plan, index) => (
-              <BackupPlan
-                key={index}
-                name={plan.name}
-                eventName={plan.eventName}
-                type={plan.type}
-                expanded={this.state.expanded[index]}
-                index={index}
-                onToggleOne={this.onToggleOne}
-              />
-            ))
-          : this.renderEmpty()}
+        {isLoading && <Loader />}
+        {backupPlans.length && !isLoading
+          ? backupPlans.map((plan, index) => {
+              return (
+                plan.backup_plan_id && (
+                  <BackupPlan
+                    key={index}
+                    events={this.props.events}
+                    facilities={this.props.facilities}
+                    fields={this.props.fields}
+                    data={plan}
+                    expanded={this.state.expanded[index]}
+                    index={index}
+                    onToggleOne={this.onToggleOne}
+                    deleteBackupPlan={this.props.deleteBackupPlan}
+                    updateBackupPlan={this.props.updateBackupPlan}
+                  />
+                )
+              );
+            })
+          : !isLoading && this.renderEmpty()}
         <Modal isOpen={this.state.isModalOpen} onClose={this.onModalClose}>
           <CreateBackupModal
             onCancel={this.onModalClose}
             events={this.props.events}
             facilities={this.props.facilities}
             fields={this.props.fields}
+            saveBackupPlans={this.props.saveBackupPlans}
           />
         </Modal>
       </>
@@ -149,6 +167,8 @@ interface IState {
     data: EventDetailsDTO[];
     facilities: IFacility[];
     fields: IField[];
+    backupPlans: IBackupPlan[];
+    isLoading: boolean;
   };
 }
 
@@ -156,12 +176,18 @@ const mapStateToProps = (state: IState) => ({
   events: state.complexities.data,
   facilities: state.complexities.facilities,
   fields: state.complexities.fields,
+  backupPlans: state.complexities.backupPlans,
+  isLoading: state.complexities.isLoading,
 });
 
 const mapDispatchToProps = {
   getEvents,
   getFacilities,
   getFields,
+  getBackupPlans,
+  saveBackupPlans,
+  deleteBackupPlan,
+  updateBackupPlan,
 };
 
 export default connect(

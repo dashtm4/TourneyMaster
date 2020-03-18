@@ -1,24 +1,110 @@
 import React from 'react';
 import styles from './styles.module.scss';
-import { SectionDropdown, Button } from 'components/common';
+import { SectionDropdown, Button, PopupConfirm } from 'components/common';
 import CreateIcon from '@material-ui/icons/Create';
-import { BindingCbWithOne } from 'common/models';
+import { BindingCbWithOne, IFacility, IField } from 'common/models';
+import { IBackupPlan } from 'common/models/backup_plan';
+import { EventDetailsDTO } from 'components/event-details/logic/model';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Modal from 'components/common/modal';
+import EditBackupForm from '../edit-backup-form';
 
 interface Props {
-  name: string;
-  eventName: string;
-  type: string;
+  events: EventDetailsDTO[];
+  facilities: IFacility[];
+  fields: IField[];
+  data: IBackupPlan;
   expanded: boolean;
   index: number;
   onToggleOne: BindingCbWithOne<number>;
+  deleteBackupPlan: BindingCbWithOne<string>;
+  updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
 }
 
-class BackupPlan extends React.Component<Props> {
+interface State {
+  isEditOpen: boolean;
+  isDeleteOpen: boolean;
+}
+
+enum TypeOptionsEnum {
+  'cancel_games' = 'Cancel Games',
+  'modify_start_time' = 'Modify Start Times',
+  'modify_game_lengths' = 'Modify Game Lengths',
+}
+
+class BackupPlan extends React.Component<Props, State> {
+  state = { isEditOpen: false, isDeleteOpen: false };
   onSectionToggle = () => {
     this.props.onToggleOne(this.props.index);
   };
+
+  renderFacilitiesAndFields = (
+    facilities: { name: string; id: string }[],
+    fields: { field_id: string; field_name: string; facilities_id: string }[]
+  ) => {
+    return facilities.map(facility => (
+      <div key={facility.id}>
+        {`${facility.name} / `}
+        {fields
+          .filter(field => field.facilities_id === facility.id)
+          .map(field => (
+            <span key={field.field_id}>{`${field.field_name}, `}</span>
+          ))}
+      </div>
+    ));
+  };
+
+  onDelete = () => {
+    this.props.deleteBackupPlan(this.props.data.backup_plan_id);
+    this.setState({ isDeleteOpen: false });
+  };
+
+  onEditClose = () => {
+    this.setState({ isEditOpen: false });
+  };
+
+  onEditClick = () => {
+    this.setState({ isEditOpen: true });
+  };
+
+  onDeleteClose = () => {
+    this.setState({ isDeleteOpen: false });
+  };
+
+  onDeleteClick = () => {
+    this.setState({ isDeleteOpen: true });
+  };
+
   render() {
-    const { name, eventName, type } = this.props;
+    const {
+      backup_name,
+      event_id,
+      backup_type,
+      fields_impacted,
+      facilities_impacted,
+    } = this.props.data;
+
+    const eventName = this.props.events
+      .filter(event => event.event_id === event_id)
+      .map(event => event.event_name);
+
+    const facilities = this.props.facilities
+      .filter(facility =>
+        JSON.parse(facilities_impacted).includes(facility.facilities_id)
+      )
+      .map(facility => ({
+        name: facility.facilities_description,
+        id: facility.facilities_id,
+      }));
+
+    const fields = this.props.fields
+      .filter(field => JSON.parse(fields_impacted).includes(field.field_id))
+      .map(({ field_id, field_name, facilities_id }) => ({
+        field_id,
+        field_name,
+        facilities_id,
+      }));
+
     return (
       <div className={styles.container}>
         <SectionDropdown
@@ -26,30 +112,41 @@ class BackupPlan extends React.Component<Props> {
           expanded={this.props.expanded !== undefined && this.props.expanded}
           onToggle={this.onSectionToggle}
         >
-          <div className={styles.sectionTitle}>{name || ''}</div>
+          <div className={styles.sectionTitle}>{backup_name || ''}</div>
           <div className={styles.sectionContent}>
             <div className={styles.info}>
               <div>
-                <span className={styles.title}>Tournament:</span>{' '}
-                {eventName || ''}
+                <span className={styles.title}>Event:</span> {eventName || ''}
               </div>
               <div>
-                <span className={styles.title}>Type:</span> {type || ''}
+                <span className={styles.title}>Type:</span>{' '}
+                {TypeOptionsEnum[backup_type] || ''}
               </div>
             </div>
             <div className={styles.details}>
               <div>
                 <span className={styles.title}>Games Selected to Change</span>
               </div>
-              <div>Main Stadium / Field 1, Field 2 / 2:00 PM, 5:00 PM</div>
+              <div>{this.renderFacilitiesAndFields(facilities, fields)}</div>
             </div>
             <div className={styles.buttonsContainer}>
-              <Button
-                label="Edit Backup"
-                variant="text"
-                color="secondary"
-                icon={<CreateIcon />}
-              />
+              <div>
+                <Button
+                  label="Edit Backup"
+                  variant="text"
+                  color="secondary"
+                  icon={<CreateIcon />}
+                  onClick={this.onEditClick}
+                />
+                <Button
+                  label="Delete Backup"
+                  variant="text"
+                  color="secondary"
+                  type="dangerLink"
+                  icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
+                  onClick={this.onDeleteClick}
+                />
+              </div>
               <Button
                 label="Activate Backup Plan"
                 variant="contained"
@@ -58,6 +155,24 @@ class BackupPlan extends React.Component<Props> {
             </div>
           </div>
         </SectionDropdown>
+        <Modal isOpen={this.state.isEditOpen} onClose={this.onEditClose}>
+          <EditBackupForm
+            backupPlan={this.props.data}
+            events={this.props.events}
+            facilities={this.props.facilities}
+            fields={this.props.fields}
+            updateBackupPlan={this.props.updateBackupPlan}
+            onEditClose={this.onEditClose}
+          />
+        </Modal>
+        <PopupConfirm
+          message="Are you sure you want to delete this backup plan?"
+          isOpen={this.state.isDeleteOpen}
+          onClose={this.onDeleteClose}
+          onCanceClick={this.onDeleteClose}
+          onYesClick={this.onDelete}
+          type="warning"
+        />
       </div>
     );
   }
