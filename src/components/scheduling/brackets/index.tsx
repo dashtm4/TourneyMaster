@@ -12,9 +12,10 @@ import {
 import styles from '../styles.module.scss';
 import { stringToLink } from 'helpers';
 import { EventMenuTitles } from 'common/enums';
+import { BindingAction } from 'common/models';
 
 interface IProps {
-  onManageBrackets: () => void;
+  onManageBrackets: BindingAction;
 }
 
 export default (props: IProps) => {

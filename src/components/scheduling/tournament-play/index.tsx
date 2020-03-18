@@ -17,12 +17,13 @@ import {
 } from 'components/common';
 import { stringToLink } from 'helpers';
 import { EventMenuTitles } from 'common/enums';
+import { BindingAction } from 'common/models';
 import styles from '../styles.module.scss';
 
 interface IProps {
-  onEditScheduleDetails: () => void;
-  onManageTournamentPlay: () => void;
-  onSaveScheduleCSV: () => void;
+  onEditScheduleDetails: BindingAction;
+  onManageTournamentPlay: BindingAction;
+  onSaveScheduleCSV: BindingAction;
 }
 
 export default (props: IProps) => {

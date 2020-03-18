@@ -1,21 +1,27 @@
 import { Dispatch } from 'redux';
+import { Auth } from 'aws-amplify';
 import api from 'api/api';
-import { ISchedule } from 'common/models/schedule';
+import { ISchedule, IConfigurableSchedule } from 'common/models/schedule';
+import { Toasts } from 'components/common';
 import {
   SCHEDULE_FETCH_IN_PROGRESS,
   SCHEDULE_FETCH_SUCCESS,
   SCHEDULE_FETCH_FAILURE,
+  CREATE_NEW_SCHEDULE_SUCCESS,
+  CREATE_NEW_SCHEDULE_FAILURE,
   ADD_NEW_SCHEDULE,
   CHANGE_SCHEDULE,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
+import { scheduleSchema } from 'validations';
 import { IAppState } from 'reducers/root-reducer.types';
-import { getVarcharEight } from 'helpers';
-
-export interface INewVersion {
-  name: string;
-  tag: string;
-}
+import History from 'browserhistory';
+import { IMember } from 'common/models';
+import {
+  getVarcharEight,
+  getTimeValuesFromEvent,
+  calculateTimeSlots,
+} from 'helpers';
 
 const scheduleFetchInProgress = () => ({
   type: SCHEDULE_FETCH_IN_PROGRESS,
@@ -37,18 +43,29 @@ export const addNewSchedule = () => async (
   getState: () => IAppState
 ) => {
   const { tournamentData } = getState().pageEvent;
+  const currentSession = await Auth.currentSession();
+  const userEmail = currentSession.getIdToken().payload.email;
+  const members = await api.get(`/members?email_address=${userEmail}`);
+  const member: IMember = members.find(
+    (it: IMember) => it.email_address === userEmail
+  );
 
   const newSchedule = {
     ...EMPTY_SCHEDULE,
     schedule_id: getVarcharEight(),
     event_id: tournamentData.event?.event_id,
+    member_id: member.member_id,
     num_divisions: tournamentData.divisions.length,
     num_teams: tournamentData.teams.length,
     num_fields: tournamentData.fields.length,
-    min_num_of_games: tournamentData.event?.min_num_of_games,
+    min_num_games: tournamentData.event?.min_num_of_games,
+    periods_per_game: tournamentData.event?.periods_per_game || 2,
     pre_game_warmup: tournamentData.event?.pre_game_warmup,
     period_duration: tournamentData.event?.period_duration,
     time_btwn_periods: tournamentData.event?.time_btwn_periods,
+    time_slots: calculateTimeSlots(
+      getTimeValuesFromEvent(tournamentData.event!)
+    ),
   };
 
   dispatch({
@@ -82,6 +99,25 @@ export const getScheduling = (eventId: string) => async (
   dispatch(scheduleFetchFailure());
 };
 
-export const createNewVersion = (data: INewVersion) => () => {
-  console.log('create New Version', data);
+export const createNewSchedule = (schedule: IConfigurableSchedule) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    await scheduleSchema.validate(schedule);
+
+    dispatch({
+      type: CREATE_NEW_SCHEDULE_SUCCESS,
+      payload: {
+        schedule,
+      },
+    });
+
+    History.push(`/schedules/${schedule.event_id}`);
+  } catch (err) {
+    Toasts.errorToast(err.message);
+
+    dispatch({
+      type: CREATE_NEW_SCHEDULE_FAILURE,
+    });
+  }
 };

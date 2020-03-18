@@ -18,9 +18,11 @@ import {
   getIcon,
   getTimeFromString,
   timeToString,
+  formatTimeSlot,
 } from 'helpers';
 import { EventMenuTitles, Icons } from 'common/enums';
-import { ISchedule } from 'common/models/schedule';
+import { IConfigurableSchedule } from 'common/models';
+import { BindingAction } from 'common/models';
 import { ArchitectFormFields } from '../types';
 
 const STYLES_INFO_ICON = {
@@ -28,14 +30,14 @@ const STYLES_INFO_ICON = {
   fill: '#00A3EA',
 };
 
-const gameStartOptions = ['10', '15'];
+const gameStartOptions = ['5', '10', '15'];
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface IProps {
-  schedule: ISchedule;
+  schedule: IConfigurableSchedule;
   onChange: (name: string, value: any) => void;
-  onViewEventMatrix: () => void;
+  onViewEventMatrix: BindingAction;
 }
 
 export default (props: IProps) => {
@@ -85,10 +87,16 @@ export default (props: IProps) => {
             `${schedule.num_fields}`,
             true
           )}
-          {renderSectionCell('Play Time Window', `${8.3} - ${5.3}`, true)}
+          {renderSectionCell(
+            'Play Time Window',
+            `${formatTimeSlot(schedule.time_slots[0].time)} - ${formatTimeSlot(
+              schedule.time_slots[schedule.time_slots.length - 1].time
+            )}`,
+            true
+          )}
           {renderSectionCell(
             'Teams Registered/Max',
-            `${2}/${schedule.num_teams}`,
+            `${schedule.num_teams}/${schedule.num_teams}`,
             true
           )}
         </div>
@@ -99,7 +107,7 @@ export default (props: IProps) => {
               value: option,
             }))}
             onChange={localChange}
-            value={schedule.games_start_on || gameStartOptions[0]}
+            value={schedule.games_start_on || ''}
             name={ArchitectFormFields.GAMES_START_ON}
             label="Games Start On"
             width="100px"
@@ -110,13 +118,20 @@ export default (props: IProps) => {
             <div className={styles.numberGamesWrapper}>
               <Input
                 onChange={localChange}
-                value={schedule.min_num_of_games || ''}
-                name={ArchitectFormFields.MIN_NUM_OF_GAMES}
+                value={schedule.min_num_games || ''}
+                name={ArchitectFormFields.MIN_NUM_GAMES}
                 width="50px"
                 minWidth="50px"
                 type="number"
               />
-              <Input width="50px" minWidth="50px" type="number" />
+              <Input
+                onChange={localChange}
+                value={schedule.max_num_games || ''}
+                name={ArchitectFormFields.MAX_NUM_GAMES}
+                width="50px"
+                minWidth="50px"
+                type="number"
+              />
             </div>
           </fieldset>
           <Input
@@ -141,7 +156,7 @@ export default (props: IProps) => {
             width="100px"
             type="number"
             align="center"
-            label="Division Duration(2)"
+            label={`Division Duration(${schedule.periods_per_game})`}
           />
           <Input
             onChange={onTimeChage}
@@ -159,7 +174,8 @@ export default (props: IProps) => {
         <div className={styles.taThird}>
           {renderSectionCell(
             'Game Runtime',
-            `${getTimeFromString(schedule.period_duration!, 'minutes') +
+            `${schedule.periods_per_game *
+              getTimeFromString(schedule.period_duration!, 'minutes') +
               getTimeFromString(schedule.pre_game_warmup!, 'minutes') +
               getTimeFromString(
                 schedule.time_btwn_periods!,
@@ -167,7 +183,13 @@ export default (props: IProps) => {
               )} Minutes`
           )}
           {renderSectionCell('Total Game Slots', `${128}`)}
-          {renderSectionCell('Average Games per Team', `${4}`)}
+          {renderSectionCell(
+            'Average Games per Team',
+            `${Math.floor(
+              Number(schedule.max_num_games) +
+                Number(schedule.min_num_games) / 2
+            )}`
+          )}
           <Button
             label="View Matrix"
             icon={<FontAwesomeIcon icon={faEye} />}

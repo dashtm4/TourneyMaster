@@ -22,9 +22,9 @@ export interface IEventDetails {
   primary_location_long: string | null;
   primary_location_lat: string | null;
   pre_game_warmup: string | null;
-  period_duration: string | null;
-  time_btwn_periods: string | null;
-  periods_per_game: number | null;
+  period_duration: string;
+  time_btwn_periods: string;
+  periods_per_game: number;
   exclusive_time_ranges_YN: number | null;
   waivers_required: number | null;
   waiverhub_utilized: null;

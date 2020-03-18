@@ -5,10 +5,9 @@ import { Dispatch, bindActionCreators } from 'redux';
 
 import {
   getScheduling,
-  createNewVersion,
+  createNewSchedule,
   addNewSchedule,
   changeSchedule,
-  INewVersion,
 } from './logic/actions';
 import { HeadingLevelTwo, Loader } from 'components/common';
 import Navigation from './navigation';
@@ -17,13 +16,13 @@ import TournamentPlay from './tournament-play';
 import HazardList from './hazard-list';
 import styles from './styles.module.scss';
 import Brackets from './brackets';
-import { ISchedule } from 'common/models/schedule';
+import { ISchedule, IConfigurableSchedule } from 'common/models/schedule';
 import { IAppState } from 'reducers/root-reducer.types';
 import CreateNewModal from './create-new-modal';
 import { IMenuItem, BindingAction, BindingCbWithOne } from 'common/models';
 
 interface IProps {
-  schedule: ISchedule | null;
+  schedule: IConfigurableSchedule | null;
   schedules: ISchedule[];
   incompleteMenuItems: IMenuItem[];
   match: any;
@@ -31,7 +30,7 @@ interface IProps {
   isLoading: boolean;
   isLoaded: boolean;
   getScheduling: (eventId: string) => void;
-  createNewVersion: (data: INewVersion) => void;
+  createNewSchedule: (schedule: IConfigurableSchedule) => void;
   addNewSchedule: BindingAction;
   changeSchedule: BindingCbWithOne<Partial<ISchedule>>;
 }
@@ -61,21 +60,8 @@ class Scheduling extends Component<IProps, IState> {
     changeSchedule({ [name]: value });
   };
 
-  onCallAction = () => {
-    console.log('Call action');
-  };
-
   onCreatePressed = () => {
     this.setState({ createModalOpen: true });
-  };
-
-  onCreateNew = () => {
-    console.log('saved!');
-
-    // this.setState({ createModalOpen: false });
-    // const { eventId } = this.props.match?.params;
-    // this.props.history.push(`/schedules/${eventId}`);
-    // this.props.createNewVersion(data);
   };
 
   onCreateClosed = () => {
@@ -83,7 +69,13 @@ class Scheduling extends Component<IProps, IState> {
   };
 
   render() {
-    const { incompleteMenuItems, isLoading, schedule } = this.props;
+    const {
+      schedule,
+      schedules,
+      incompleteMenuItems,
+      isLoading,
+      createNewSchedule,
+    } = this.props;
     const { createModalOpen } = this.state;
     const { eventId } = this.props.match?.params;
     const isAllowCreate = incompleteMenuItems.length === 0;
@@ -105,14 +97,18 @@ class Scheduling extends Component<IProps, IState> {
               <TourneyArchitect
                 schedule={schedule}
                 onChange={this.onChange}
-                onViewEventMatrix={this.onCallAction}
+                onViewEventMatrix={() => {}}
               />
-              <TournamentPlay
-                onEditScheduleDetails={this.onCallAction}
-                onManageTournamentPlay={this.onCallAction}
-                onSaveScheduleCSV={this.onCallAction}
-              />
-              <Brackets onManageBrackets={this.onCallAction} />
+              {schedules.length > 0 && (
+                <>
+                  <TournamentPlay
+                    onEditScheduleDetails={() => {}}
+                    onManageTournamentPlay={() => {}}
+                    onSaveScheduleCSV={() => {}}
+                  />
+                  <Brackets onManageBrackets={() => {}} />
+                </>
+              )}
             </>
           ) : (
             <HazardList
@@ -124,7 +120,7 @@ class Scheduling extends Component<IProps, IState> {
         <CreateNewModal
           schedule={schedule}
           isOpen={createModalOpen}
-          onSave={this.onCreateNew}
+          onCreate={createNewSchedule}
           onClose={this.onCreateClosed}
           onChange={this.onChange}
         />
@@ -142,7 +138,7 @@ const mapStateToProps = ({ scheduling }: IAppState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
-    { getScheduling, createNewVersion, addNewSchedule, changeSchedule },
+    { getScheduling, createNewSchedule, addNewSchedule, changeSchedule },
     dispatch
   );
 
