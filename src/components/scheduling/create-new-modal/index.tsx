@@ -39,16 +39,17 @@ const CreateNewModal = (props: IProps) => {
             value={schedule.schedule_tag || ''}
             label="Tag"
             name={ArchitectFormFields.SCHEDULT_TAG}
+            startAdornment="@"
           />
         </div>
         <div className={styles.firstRow}>
           <div className={styles.infoCell}>
             <span>Divisions:</span>
-            <p>2</p>
+            <p>{schedule.num_divisions}</p>
           </div>
           <div className={styles.infoCell}>
             <span>Teams:</span>
-            <p>24</p>
+            <p>{schedule.num_teams}</p>
           </div>
         </div>
         <div className={styles.secondRow}>
