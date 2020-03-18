@@ -76,7 +76,9 @@ const CreateNewModal = (props: IProps) => {
             onClick={() => {
               onCreate(schedule);
 
-              onClose();
+              if (schedule.schedule_name && schedule.schedule_tag) {
+                onClose();
+              }
             }}
           />
         </div>

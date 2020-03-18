@@ -29,7 +29,7 @@ import {
   getTimeValuesFromEvent,
   calculateTimeSlots,
   setGameOptions,
-} from './helper';
+} from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import Diagnostics, { IDiagnosticsInput } from './diagnostics';
 import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';

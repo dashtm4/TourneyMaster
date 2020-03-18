@@ -1,5 +1,6 @@
 import { getTimeFromString, timeToString } from 'helpers';
 import { IEventDetails } from 'common/models';
+import moment from 'moment';
 
 interface ITimeValues {
   firstGameTime: string;
@@ -9,6 +10,26 @@ interface ITimeValues {
   timeBtwnPeriods: string;
   periodsPerGame: number;
 }
+
+const setGameOptions = (event: IEventDetails) => {
+  const {
+    min_num_of_games,
+    pre_game_warmup,
+    period_duration,
+    time_btwn_periods,
+    periods_per_game,
+  } = event;
+  return {
+    minGameNum: min_num_of_games || undefined,
+    maxGameNum: min_num_of_games || undefined,
+    totalGameTime: calculateTotalGameTime(
+      pre_game_warmup,
+      period_duration!,
+      time_btwn_periods!,
+      periods_per_game!
+    ),
+  };
+};
 
 const calculateTotalGameTime = (
   preGameWarmup: string | null,
@@ -75,12 +96,13 @@ const calculateTimeSlots = (timeValues: ITimeValues) => {
 };
 
 const formatTimeSlot = (time: string) => {
-  if (!time) return;
-
-  return time.slice(0, 5);
+  if (!time || typeof time !== 'string') return;
+  const timeValue = time.slice(0, 5);
+  return moment(timeValue, ['HH:mm']).format('hh:mm A');
 };
 
 export {
+  setGameOptions,
   calculateTotalGameTime,
   getTimeValuesFromEvent,
   calculateTimeSlots,

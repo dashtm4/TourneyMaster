@@ -22,6 +22,7 @@ import {
   getTimeValuesFromEvent,
   calculateTimeSlots,
 } from 'helpers';
+import { gameStartOnOptions } from '../types';
 
 const scheduleFetchInProgress = () => ({
   type: SCHEDULE_FETCH_IN_PROGRESS,
@@ -59,10 +60,12 @@ export const addNewSchedule = () => async (
     num_teams: tournamentData.teams.length,
     num_fields: tournamentData.fields.length,
     min_num_games: tournamentData.event?.min_num_of_games,
+    max_num_games: Number(tournamentData.event?.min_num_of_games) + 1,
     periods_per_game: tournamentData.event?.periods_per_game || 2,
     pre_game_warmup: tournamentData.event?.pre_game_warmup,
     period_duration: tournamentData.event?.period_duration,
     time_btwn_periods: tournamentData.event?.time_btwn_periods,
+    games_start_on: gameStartOnOptions[0],
     time_slots: calculateTimeSlots(
       getTimeValuesFromEvent(tournamentData.event!)
     ),
