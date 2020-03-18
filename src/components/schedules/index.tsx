@@ -1,244 +1,267 @@
 import React, { Component } from 'react';
-import api from 'api/api';
-import {
-  mapTeamsData,
-  mapFieldsData,
-  mapFacilitiesData,
-  mapDivisionsData,
-} from './mapTournamentData';
-import { IFetchedTeam, ITeam } from 'common/models/schedule/teams';
+import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
+import ITimeSlot from 'common/models/schedule/timeSlots';
+import { ITeam } from 'common/models/schedule/teams';
+import { IField } from 'common/models/schedule/fields';
+import Scheduler from './Scheduler';
+import { ISchedulesState } from './logic/reducer';
 import {
   IFetchedDivision,
   IScheduleDivision,
 } from 'common/models/schedule/divisions';
-import { IScheduleFacility } from 'common/models/schedule/facilities';
-import { IFacility as IFetchedFacility } from 'common/models/facilities';
-import { IField } from 'common/models/schedule/fields';
-import { IField as IFetchedField } from 'common/models/field';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
+import { fetchFields, fetchEventSummary } from './logic/actions';
+import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
+import { ITournamentData } from 'common/models/tournament';
+import { TableSchedule, Button } from 'components/common';
 import {
-  calculateTimeSlots,
-  getTimeValuesFromEvent,
-  setGameOptions,
-} from './helper';
-// import SchedulesMatrix from 'components/common/matrix-table';
-import Scheduler, { IGameOptions } from './Scheduler';
-import Diagnostics from './diagnostics';
-import { Button, Loader } from 'components/common';
-import {
-  sortFieldsByPremier,
   defineGames,
   IDefinedGames,
+  sortFieldsByPremier,
 } from 'components/common/matrix-table/helper';
+import {
+  mapFieldsData,
+  mapTeamsData,
+  mapFacilitiesData,
+  mapDivisionsData,
+} from './mapTournamentData';
+import {
+  getTimeValuesFromEvent,
+  calculateTimeSlots,
+  setGameOptions,
+} from './helper';
+import { IScheduleFacility } from 'common/models/schedule/facilities';
+import Diagnostics, { IDiagnosticsInput } from './diagnostics';
 import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
 import formatDivisionsDiagnostics from './diagnostics/divisionsDiagnostics';
+import styles from './styles.module.scss';
 
-export interface ITimeSlot {
-  id: number;
-  time: string;
+type PartialTournamentData = Partial<ITournamentData>;
+type PartialSchedules = Partial<ISchedulesState>;
+interface IMapStateToProps extends PartialTournamentData, PartialSchedules {}
+
+interface IMapDispatchToProps {
+  fetchFields: (facilitiesIds: string[]) => void;
+  fetchEventSummary: (eventId: string) => void;
 }
 
-interface IState {
-  timeSlots?: ITimeSlot[];
-  teams?: ITeam[];
-  fields?: IField[];
-  gameOptions?: IGameOptions;
-  teamsDiagnosticsOpen: boolean;
-  divisionsDiagnosticsOpen: boolean;
-  scheduling?: ISchedulerResult;
-  divisions?: IScheduleDivision[];
-  facilities?: IScheduleFacility[];
-}
-
-export interface ISchedulerResult extends Scheduler {
-  gameFields: number;
-}
-
-interface IProps {
+interface ComponentProps {
   match: any;
 }
 
-class Schedules extends Component<IProps, IState> {
-  state: IState = {
+interface IRootState {
+  pageEvent?: IPageEventState;
+  schedules?: ISchedulesState;
+}
+
+type Props = IMapStateToProps & IMapDispatchToProps & ComponentProps;
+
+interface State {
+  timeSlots?: ITimeSlot[];
+  teams?: ITeam[];
+  fields?: IField[];
+  facilities?: IScheduleFacility[];
+  schedulerResult?: Scheduler;
+  divisions?: IFetchedDivision[];
+  teamsDiagnostics?: IDiagnosticsInput;
+  divisionsDiagnostics?: IDiagnosticsInput;
+  teamsDiagnosticsOpen: boolean;
+  divisionsDiagnosticsOpen: boolean;
+}
+
+class Schedules extends Component<Props, State> {
+  state: State = {
     teamsDiagnosticsOpen: false,
     divisionsDiagnosticsOpen: false,
   };
 
-  async componentDidMount() {
-    const { eventId } = this.props.match?.params;
-
-    const fetchedEvents: EventDetailsDTO[] = await api.get(
-      `/events?event_id=${eventId}`
-    );
-    const fetchedEvent = fetchedEvents[0];
-
-    const gameOptions = setGameOptions(fetchedEvent);
-    const timeValues = getTimeValuesFromEvent(fetchedEvent);
-    const timeSlots = calculateTimeSlots(timeValues);
-
-    const fetchedTeams: IFetchedTeam[] = await api.get(
-      `/teams?event_id=${eventId}`
-    );
-    const fetchedDivisions: IFetchedDivision[] = await api.get(
-      `/divisions?event_id=${eventId}`
-    );
-
-    const fetchedFacilities: IFetchedFacility[] = await api.get(
-      `/facilities?event_id=${eventId}`
-    );
-
-    const fetchedFields: IFetchedField[] = [];
-    await Promise.all(
-      fetchedFacilities.map(async ff => {
-        const fields = await api.get(
-          `/fields?facilities_id=${ff.facilities_id}`
-        );
-        if (fields?.length) fetchedFields.push(...fields);
-      })
-    );
-
-    const mappedTeams: ITeam[] = mapTeamsData(fetchedTeams, fetchedDivisions);
-    const mappedFields: IField[] = mapFieldsData(fetchedFields);
-    const mappedFacilities: IScheduleFacility[] = mapFacilitiesData(
-      fetchedFacilities
-    );
-    const mappedDivisions: IScheduleDivision[] = mapDivisionsData(
-      fetchedDivisions
-    );
-
-    this.setState({
-      timeSlots,
-      gameOptions,
-      teams: mappedTeams,
-      fields: mappedFields,
-      divisions: mappedDivisions,
-      facilities: mappedFacilities,
-    });
-
-    this.scheduling();
+  componentDidMount() {
+    const { facilities } = this.props;
+    const facilitiesIds = facilities?.map(f => f.facilities_id);
+    if (facilitiesIds?.length) this.props.fetchFields(facilitiesIds);
+    this.props.fetchEventSummary('ADLNT001');
+    this.calculateSchedules();
   }
 
-  scheduling = () => {
-    const {
-      teams,
-      fields,
-      timeSlots,
-      facilities,
-      divisions,
-      gameOptions,
-    } = this.state;
-    const sortedFields = sortFieldsByPremier(fields!);
+  calculateSchedules = () => {
+    const { fields, event, teams, divisions, facilities } = this.props;
 
-    const definedGames: IDefinedGames = defineGames(
-      sortedFields,
-      timeSlots!,
-      teams!
-    );
-    const { gameFields, games } = definedGames;
+    if (
+      !fields?.length ||
+      !teams?.length ||
+      !facilities?.length ||
+      !divisions?.length ||
+      !event
+    )
+      return;
 
-    if (!divisions || !facilities || !gameOptions) return;
+    const timeValues = getTimeValuesFromEvent(event);
+    const timeSlots = calculateTimeSlots(timeValues);
+
+    const mappedFields = mapFieldsData(fields);
+    const sortedFields = sortFieldsByPremier(mappedFields);
+
+    const definedGames: IDefinedGames = defineGames(sortedFields, timeSlots!);
+    const { games } = definedGames;
+
+    const mappedTeams: ITeam[] = mapTeamsData(teams, divisions);
+
+    const gameOptions = setGameOptions(event);
+
+    const mappedFacilities: IScheduleFacility[] = mapFacilitiesData(facilities);
+    const mappedDivisions: IScheduleDivision[] = mapDivisionsData(divisions);
 
     const tournamentBaseInfo = {
-      facilities,
-      divisions,
+      facilities: mappedFacilities,
+      divisions: mappedDivisions,
       gameOptions,
     };
 
-    const scheduling: Scheduler = new Scheduler(
+    const schedulerResult: Scheduler = new Scheduler(
       sortedFields,
-      teams!,
+      mappedTeams,
       games,
       timeSlots!,
       tournamentBaseInfo
     );
 
-    this.setState({
-      scheduling: {
-        ...scheduling,
-        gameFields,
+    this.setState(
+      {
+        schedulerResult,
+        fields: sortedFields,
+        facilities: mappedFacilities,
+        timeSlots,
       },
+      this.calculateDiagnostics
+    );
+  };
+
+  calculateDiagnostics = () => {
+    const { schedulerResult } = this.state;
+    if (!schedulerResult) return;
+
+    const teamsDiagnostics = formatTeamsDiagnostics(schedulerResult);
+    const divisionsDiagnostics = formatDivisionsDiagnostics(schedulerResult);
+
+    this.setState({
+      teamsDiagnostics,
+      divisionsDiagnostics,
     });
   };
 
-  toggleTeamsDiagnostics = () => {
-    this.setState(({ teamsDiagnosticsOpen }) => ({
-      teamsDiagnosticsOpen: !teamsDiagnosticsOpen,
-    }));
-  };
+  openTeamsDiagnostics = () =>
+    this.setState({
+      teamsDiagnosticsOpen: true,
+    });
 
-  toggleDivisionDiagnostics = () =>
-    this.setState(({ divisionsDiagnosticsOpen }) => ({
-      divisionsDiagnosticsOpen: !divisionsDiagnosticsOpen,
-    }));
+  openDivisionsDiagnostics = () =>
+    this.setState({
+      divisionsDiagnosticsOpen: true,
+    });
+
+  closeDiagnostics = () =>
+    this.setState({
+      teamsDiagnosticsOpen: false,
+      divisionsDiagnosticsOpen: false,
+    });
 
   render() {
+    const { divisions, teams, event, eventSummary } = this.props;
     const {
-      // timeSlots,
-      teams,
       fields,
+      timeSlots,
+      schedulerResult,
+      facilities,
+      teamsDiagnostics,
+      divisionsDiagnostics,
       teamsDiagnosticsOpen,
       divisionsDiagnosticsOpen,
-      scheduling,
     } = this.state;
 
-    let teamsTableData;
-    let divisionsTableData;
+    const { updatedGames } = schedulerResult || {};
 
-    if (scheduling) {
-      teamsTableData = formatTeamsDiagnostics(scheduling);
-      divisionsTableData = formatDivisionsDiagnostics(scheduling);
-    }
+    const loadCondition = !!(
+      fields?.length &&
+      updatedGames &&
+      timeSlots?.length &&
+      divisions?.length &&
+      facilities?.length &&
+      teams?.length &&
+      event &&
+      eventSummary?.length
+    );
 
     return (
       <div>
-        {(!teams?.length || !fields?.length) && <Loader />}
-        {teamsTableData && teamsTableData?.body?.length && (
-          <>
-            <Button
-              label="Open Teams Diagnostics"
-              onClick={this.toggleTeamsDiagnostics}
-              variant="contained"
-              color="primary"
-            />
-            <Diagnostics
-              tableData={teamsTableData}
-              isOpen={teamsDiagnosticsOpen}
-              onClose={this.toggleTeamsDiagnostics}
-            />
-          </>
+        {loadCondition && (
+          <TableSchedule
+            fields={fields!}
+            games={updatedGames!}
+            timeSlots={timeSlots!}
+            divisions={divisions!}
+            facilities={facilities!}
+            teams={teams!}
+            eventSummary={eventSummary!}
+          />
         )}
 
-        {divisionsTableData && divisionsTableData?.body?.length && (
-          <>
-            <Button
-              label="Open Divisions Diagnostics"
-              onClick={this.toggleDivisionDiagnostics}
-              variant="contained"
-              color="primary"
-            />
-            <Diagnostics
-              tableData={divisionsTableData}
-              isOpen={divisionsDiagnosticsOpen}
-              onClose={this.toggleDivisionDiagnostics}
-            />
-          </>
-        )}
+        <div className={styles.diagnosticsContainer}>
+          {loadCondition && teamsDiagnostics && (
+            <>
+              <Button
+                label="Teams Diagnostics"
+                variant="contained"
+                color="primary"
+                onClick={this.openTeamsDiagnostics}
+              />
+              <Diagnostics
+                isOpen={teamsDiagnosticsOpen}
+                tableData={teamsDiagnostics}
+                onClose={this.closeDiagnostics}
+              />
+            </>
+          )}
 
-        {/* {teams?.length &&
-          timeSlots?.length &&
-          fields?.length &&
-          scheduling?.updatedGames && (
-            <SchedulesMatrix
-              // scheduling={scheduling}
-              timeSlots={timeSlots}
-              fields={fields}
-              teams={teams}
-              isHeatmap={false}
-            />
-          )} */}
+          {loadCondition && divisionsDiagnostics && (
+            <>
+              <Button
+                label="Divisions Diagnostics"
+                variant="contained"
+                color="primary"
+                onClick={this.openDivisionsDiagnostics}
+              />
+              <Diagnostics
+                isOpen={divisionsDiagnosticsOpen}
+                tableData={divisionsDiagnostics}
+                onClose={this.closeDiagnostics}
+              />
+            </>
+          )}
+        </div>
       </div>
     );
   }
 }
 
-export default Schedules;
+const mapStateToProps = ({ pageEvent, schedules }: IRootState) => ({
+  event: pageEvent?.tournamentData.event,
+  facilities: pageEvent?.tournamentData.facilities,
+  divisions: pageEvent?.tournamentData.divisions,
+  teams: pageEvent?.tournamentData.teams,
+  fields: pageEvent?.tournamentData.fields,
+  eventSummary: schedules?.eventSummary,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators(
+    {
+      fetchFields,
+      fetchEventSummary,
+    },
+    dispatch
+  );
+
+export default connect<IMapStateToProps, IMapDispatchToProps>(
+  mapStateToProps,
+  mapDispatchToProps
+)(Schedules);

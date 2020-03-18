@@ -1,11 +1,11 @@
-import { union, keys, filter, find } from 'lodash-es';
-import { ISchedulerResult } from 'components/schedules';
+import { union, keys, filter, find, orderBy } from 'lodash-es';
+import Scheduler from 'components/schedules/Scheduler';
 import { calculateTeamTournamentTime } from '../teamsDiagnostics';
 import { getTimeFromString, timeToString } from 'helpers';
 
 const calculateDivisionFieldsNumber = (
   divisionId: string,
-  schedulerResult: ISchedulerResult
+  schedulerResult: Scheduler
 ) => {
   const { teamCards } = schedulerResult;
 
@@ -20,7 +20,7 @@ const calculateDivisionFieldsNumber = (
 
 const calculateDivisionTournamentTime = (
   divisionId: string,
-  schedulerResult: ISchedulerResult
+  schedulerResult: Scheduler
 ) => {
   const { teamCards, updatedGames, totalGameTime } = schedulerResult;
 
@@ -36,9 +36,27 @@ const calculateDivisionTournamentTime = (
   return timeToString(avgTournamentTime);
 };
 
+const getTournamentTimeBy = (
+  divisionId: string,
+  schedulerResult: Scheduler,
+  orderedBy: 'min' | 'max'
+) => {
+  const { teamCards, updatedGames, totalGameTime } = schedulerResult;
+  const teams = filter(teamCards, ['divisionId', divisionId]);
+  const teamsTournamentTime = teams.map(team =>
+    calculateTeamTournamentTime(team, updatedGames, totalGameTime)
+  );
+  switch (orderedBy) {
+    case 'max':
+      return orderBy(teamsTournamentTime, [], 'desc')[0];
+    default:
+      return orderBy(teamsTournamentTime, [], 'asc')[0];
+  }
+};
+
 const calculateDivisionDiagnostics = (
   divisionId: string,
-  schedulerResult: ISchedulerResult
+  schedulerResult: Scheduler
 ) => {
   const {
     divisions,
@@ -61,6 +79,16 @@ const calculateDivisionDiagnostics = (
     divisionId,
     schedulerResult
   );
+  const minTournamentTime = getTournamentTimeBy(
+    divisionId,
+    schedulerResult,
+    'min'
+  );
+  const maxTournamentTime = getTournamentTimeBy(
+    divisionId,
+    schedulerResult,
+    'max'
+  );
   const facilityId = keys(facilityData).find(key =>
     facilityData[key]?.divisionIds?.includes(divisionId)
   );
@@ -73,11 +101,13 @@ const calculateDivisionDiagnostics = (
     numOfGames.length,
     numOfFields,
     tournamentTime,
+    minTournamentTime,
+    maxTournamentTime,
     facility,
   ];
 };
 
-const formatDivisionsDiagnostics = (schedulerResult: ISchedulerResult) => {
+const formatDivisionsDiagnostics = (schedulerResult: Scheduler) => {
   const { teamCards } = schedulerResult;
 
   const allDivisionsArr = teamCards.map(teamCard => teamCard.divisionId);
@@ -94,6 +124,8 @@ const formatDivisionsDiagnostics = (schedulerResult: ISchedulerResult) => {
     '# of Games',
     '# of Fields',
     'Avg. Time / Team',
+    'Min. Time / Team',
+    'Max. Time / Team',
     'Facility Name',
   ];
 
