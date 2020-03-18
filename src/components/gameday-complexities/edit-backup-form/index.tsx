@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Select, Radio, Button } from 'components/common';
-import { IFacility } from 'common/models';
+import { IFacility, BindingCbWithOne, BindingAction } from 'common/models';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { IField } from 'common/models';
 import MultipleSearch from 'components/common/multiple-search-select';
@@ -13,6 +13,8 @@ import {
   getFacilitiesOptionsForEvent,
   getFieldsOptionsForFacilities,
 } from '../helper';
+import { IBackupPlan } from 'common/models/backup_plan';
+import { IMultipleSelectOption } from '../create-backup-form';
 
 const options = [{ value: '05:00 PM', label: '05:00 PM' }];
 const optionsTimeslots = [
@@ -23,13 +25,19 @@ const optionsTimeslots = [
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
-  backupPlan: any;
+  backupPlan: IBackupPlan;
   events: EventDetailsDTO[];
   facilities: IFacility[];
   fields: IField[];
+  updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
+  onEditClose: BindingAction;
 }
 
-class CreateBackupForm extends React.Component<Props, any> {
+interface State {
+  backupPlan: any;
+}
+
+class CreateBackupForm extends React.Component<Props, State> {
   state = { backupPlan: {} };
 
   componentDidMount() {
@@ -44,15 +52,18 @@ class CreateBackupForm extends React.Component<Props, any> {
           this.props.fields,
           this.props.backupPlan.fields_impacted
         ),
-        timeslots_impacted: mapTimeslotsToOptions(
-          this.props.backupPlan.timeslots_impacted
-        ),
+        timeslots_impacted:
+          this.props.backupPlan.timeslots_impacted &&
+          mapTimeslotsToOptions(
+            this.props.backupPlan.timeslots_impacted,
+            this.props.backupPlan.backup_type
+          ),
       },
     });
   }
 
-  onChange = (name: string, value: string | number) => {
-    this.setState(({ backupPlan }: any) => ({
+  onChange = (name: string, value: any) => {
+    this.setState(({ backupPlan }) => ({
       backupPlan: { ...backupPlan, [name]: value },
     }));
   };
@@ -71,14 +82,22 @@ class CreateBackupForm extends React.Component<Props, any> {
     this.onChange('timeslots_impacted', '');
   };
 
-  onFacilitiesChange = (_event: InputTargetValue, values: any) => {
+  onFacilitiesChange = (
+    _event: InputTargetValue,
+    values: IMultipleSelectOption[]
+  ) => {
     this.onChange('facilities_impacted', values);
   };
 
-  onFieldsChange = (_event: InputTargetValue, values: any) =>
-    this.onChange('fields_impacted', values);
+  onFieldsChange = (
+    _event: InputTargetValue,
+    values: IMultipleSelectOption[]
+  ) => this.onChange('fields_impacted', values);
 
-  onTimeslotsChange = (_event: InputTargetValue, values: any) => {
+  onTimeslotsChange = (
+    _event: InputTargetValue,
+    values: IMultipleSelectOption[]
+  ) => {
     this.onChange('timeslots_impacted', values);
   };
 
@@ -87,6 +106,11 @@ class CreateBackupForm extends React.Component<Props, any> {
 
   onChangeToChange = (e: InputTargetValue) =>
     this.onChange('change_value', e.target.value);
+
+  onSave = () => {
+    this.props.updateBackupPlan(this.state.backupPlan);
+    this.props.onEditClose();
+  };
 
   renderTimeslots = (type: string, timeslots: any, changeTo: string) => {
     switch (String(type)) {
@@ -170,7 +194,6 @@ class CreateBackupForm extends React.Component<Props, any> {
     const fieldsOptions =
       facilities_impacted &&
       getFieldsOptionsForFacilities(allFields, facilities_impacted);
-
     return (
       <div className={styles.container}>
         <div className={styles.title}>Edit Backup</div>
@@ -260,13 +283,13 @@ class CreateBackupForm extends React.Component<Props, any> {
             label="Cancel"
             variant="text"
             color="secondary"
-            onClick={() => {}}
+            onClick={this.props.onEditClose}
           />
           <Button
             label="Save"
             variant="contained"
             color="primary"
-            onClick={() => {}}
+            onClick={this.onSave}
           />
         </div>
       </div>

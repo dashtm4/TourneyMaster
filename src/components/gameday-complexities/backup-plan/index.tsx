@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './styles.module.scss';
-import { SectionDropdown, Button } from 'components/common';
+import { SectionDropdown, Button, PopupConfirm } from 'components/common';
 import CreateIcon from '@material-ui/icons/Create';
 import { BindingCbWithOne, IFacility, IField } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
@@ -18,6 +18,12 @@ interface Props {
   index: number;
   onToggleOne: BindingCbWithOne<number>;
   deleteBackupPlan: BindingCbWithOne<string>;
+  updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
+}
+
+interface State {
+  isEditOpen: boolean;
+  isDeleteOpen: boolean;
 }
 
 enum TypeOptionsEnum {
@@ -26,8 +32,8 @@ enum TypeOptionsEnum {
   'modify_game_lengths' = 'Modify Game Lengths',
 }
 
-class BackupPlan extends React.Component<Props, any> {
-  state = { isEditOpen: false };
+class BackupPlan extends React.Component<Props, State> {
+  state = { isEditOpen: false, isDeleteOpen: false };
   onSectionToggle = () => {
     this.props.onToggleOne(this.props.index);
   };
@@ -50,6 +56,7 @@ class BackupPlan extends React.Component<Props, any> {
 
   onDelete = () => {
     this.props.deleteBackupPlan(this.props.data.backup_plan_id);
+    this.setState({ isDeleteOpen: false });
   };
 
   onEditClose = () => {
@@ -58,6 +65,14 @@ class BackupPlan extends React.Component<Props, any> {
 
   onEditClick = () => {
     this.setState({ isEditOpen: true });
+  };
+
+  onDeleteClose = () => {
+    this.setState({ isDeleteOpen: false });
+  };
+
+  onDeleteClick = () => {
+    this.setState({ isDeleteOpen: true });
   };
 
   render() {
@@ -129,7 +144,7 @@ class BackupPlan extends React.Component<Props, any> {
                   color="secondary"
                   type="dangerLink"
                   icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
-                  onClick={this.onDelete}
+                  onClick={this.onDeleteClick}
                 />
               </div>
               <Button
@@ -146,8 +161,18 @@ class BackupPlan extends React.Component<Props, any> {
             events={this.props.events}
             facilities={this.props.facilities}
             fields={this.props.fields}
+            updateBackupPlan={this.props.updateBackupPlan}
+            onEditClose={this.onEditClose}
           />
         </Modal>
+        <PopupConfirm
+          message="Are you sure you want to delete this backup plan?"
+          isOpen={this.state.isDeleteOpen}
+          onClose={this.onDeleteClose}
+          onCanceClick={this.onDeleteClose}
+          onYesClick={this.onDelete}
+          type="warning"
+        />
       </div>
     );
   }

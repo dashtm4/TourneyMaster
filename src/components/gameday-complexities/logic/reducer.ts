@@ -6,6 +6,7 @@ import {
   BACKUP_PLANS_FETCH_SUCCESS,
   ADD_BACKUP_PLAN_SUCCESS,
   DELETE_BACKUP_PLAN,
+  UPDATE_BACKUP_PLAN,
 } from './actionTypes';
 import { IFacility, IField } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
@@ -70,6 +71,16 @@ export default (
         ...state,
         backupPlans: state.backupPlans.filter(
           backupPlan => backupPlan.backup_plan_id !== action.payload
+        ),
+      };
+    }
+    case UPDATE_BACKUP_PLAN: {
+      return {
+        ...state,
+        backupPlans: state.backupPlans.map(backupPlan =>
+          backupPlan.backup_plan_id === action.payload.backup_plan_id
+            ? action.payload
+            : backupPlan
         ),
       };
     }

@@ -14,6 +14,7 @@ import {
   getBackupPlans,
   saveBackupPlans,
   deleteBackupPlan,
+  updateBackupPlan,
 } from './logic/actions';
 import { BindingAction, IFacility, BindingCbWithOne } from 'common/models';
 import { IField } from 'common/models';
@@ -28,6 +29,7 @@ interface Props {
   getBackupPlans: BindingAction;
   saveBackupPlans: BindingCbWithOne<Partial<IBackupPlan>[]>;
   deleteBackupPlan: BindingCbWithOne<string>;
+  updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
   events: EventDetailsDTO[];
   facilities: IFacility[];
   fields: IField[];
@@ -140,6 +142,7 @@ class GamedayComplexities extends React.Component<Props, State> {
                     index={index}
                     onToggleOne={this.onToggleOne}
                     deleteBackupPlan={this.props.deleteBackupPlan}
+                    updateBackupPlan={this.props.updateBackupPlan}
                   />
                 )
               );
@@ -184,6 +187,7 @@ const mapDispatchToProps = {
   getBackupPlans,
   saveBackupPlans,
   deleteBackupPlan,
+  updateBackupPlan,
 };
 
 export default connect(

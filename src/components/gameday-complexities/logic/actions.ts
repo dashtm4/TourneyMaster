@@ -5,6 +5,7 @@ import {
   BACKUP_PLANS_FETCH_SUCCESS,
   ADD_BACKUP_PLAN_SUCCESS,
   DELETE_BACKUP_PLAN,
+  UPDATE_BACKUP_PLAN,
 } from './actionTypes';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { ActionCreator, Dispatch } from 'redux';
@@ -14,6 +15,7 @@ import { Toasts } from 'components/common';
 import { IFacility, IField } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
 import { getVarcharEight } from 'helpers';
+import { stringifyBackupPlan } from '../helper';
 
 export const eventsFetchSuccess = (
   payload: EventDetailsDTO[]
@@ -54,6 +56,13 @@ export const deleteBackupPlanSuccess = (
   payload: string
 ): { type: string; payload: string } => ({
   type: DELETE_BACKUP_PLAN,
+  payload,
+});
+
+export const updateBackupPlanSuccess = (
+  payload: Partial<IBackupPlan>
+): { type: string; payload: Partial<IBackupPlan> } => ({
+  type: UPDATE_BACKUP_PLAN,
   payload,
 });
 
@@ -114,7 +123,7 @@ export const saveBackupPlans: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (backupPlans: any[]) => async (dispatch: Dispatch) => {
+>> = (backupPlans: IBackupPlan[]) => async (dispatch: Dispatch) => {
   for await (const backupPlan of backupPlans) {
     if (
       !backupPlan.backup_name ||
@@ -126,25 +135,11 @@ export const saveBackupPlans: ActionCreator<ThunkAction<
       return Toasts.errorToast('All fields are required!');
     }
 
+    const stringifiedBackupPlan = stringifyBackupPlan(backupPlan);
     const data = {
-      ...backupPlan,
-      facilities_impacted: JSON.stringify(
-        backupPlan.facilities_impacted.map((fac: any) => fac.value)
-      ),
-      fields_impacted: JSON.stringify(
-        backupPlan.fields_impacted.map((field: any) => field.value)
-      ),
-      timeslots_impacted:
-        backupPlan.backup_type === 'cancel_games'
-          ? JSON.stringify(
-              backupPlan.timeslots_impacted.map(
-                (timeslot: any) => timeslot.value
-              )
-            )
-          : backupPlan.timeslots_impacted,
+      ...stringifiedBackupPlan,
       backup_plan_id: getVarcharEight(),
     };
-
     const response = await api.post(`/backup_plans`, data);
 
     if (response?.errorType === 'Error') {
@@ -168,4 +163,33 @@ export const deleteBackupPlan: ActionCreator<ThunkAction<
   }
   dispatch(deleteBackupPlanSuccess(id));
   Toasts.successToast('Backup Plan is successfully deleted');
+};
+
+export const updateBackupPlan: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (backupPlan: IBackupPlan) => async (dispatch: Dispatch) => {
+  if (
+    !backupPlan.backup_name ||
+    !backupPlan.event_id ||
+    !backupPlan.facilities_impacted?.length ||
+    !backupPlan.fields_impacted?.length ||
+    !backupPlan.timeslots_impacted?.length
+  ) {
+    return Toasts.errorToast('All fields are required!');
+  }
+
+  const data = stringifyBackupPlan(backupPlan);
+
+  const response = await api.put(
+    `/backup_plans?backup_plan_id=${data.backup_plan_id}`,
+    data
+  );
+  if (!response) {
+    return Toasts.errorToast("Couldn't update a backup plans");
+  }
+  dispatch(updateBackupPlanSuccess(data));
+  Toasts.successToast('Backup Plan is successfully updated');
 };

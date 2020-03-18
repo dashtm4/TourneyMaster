@@ -27,7 +27,7 @@ class CreateBackupModal extends React.Component<Props, State> {
     isConfirmModalOpen: false,
   };
 
-  onChange = (name: string, value: string | number, index: number) => {
+  onChange = (name: string, value: any, index: number) => {
     this.setState(({ backupPlans }) => ({
       backupPlans: backupPlans.map(plan =>
         plan === backupPlans[index] ? { ...plan, [name]: value } : plan
@@ -71,7 +71,7 @@ class CreateBackupModal extends React.Component<Props, State> {
     return (
       <div className={styles.container}>
         <div className={styles.title}>Backup Plan</div>
-        {backupPlans.map((plan: any, index: number) => (
+        {backupPlans.map((plan, index) => (
           <CreateBackupForm
             key={index}
             index={index}

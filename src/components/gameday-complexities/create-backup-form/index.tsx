@@ -21,10 +21,15 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 interface Props {
   index: number;
   backupPlan: any;
-  onChange: BindingCbWithThree<string, string, number>;
+  onChange: BindingCbWithThree<string, any, number>;
   events: EventDetailsDTO[];
   facilities: IFacility[];
   fields: IField[];
+}
+
+export interface IMultipleSelectOption {
+  label: string;
+  value: string;
 }
 
 export enum OptionsEnum {
@@ -58,14 +63,22 @@ class CreateBackupForm extends React.Component<Props> {
     this.props.onChange('timeslots_impacted', '', this.props.index);
   };
 
-  onFacilitiesChange = (_event: InputTargetValue, values: any) => {
+  onFacilitiesChange = (
+    _event: InputTargetValue,
+    values: IMultipleSelectOption[]
+  ) => {
     this.props.onChange('facilities_impacted', values, this.props.index);
   };
 
-  onFieldsChange = (_event: InputTargetValue, values: any) =>
-    this.props.onChange('fields_impacted', values, this.props.index);
+  onFieldsChange = (
+    _event: InputTargetValue,
+    values: IMultipleSelectOption[]
+  ) => this.props.onChange('fields_impacted', values, this.props.index);
 
-  onTimeslotsChange = (_event: InputTargetValue, values: any) => {
+  onTimeslotsChange = (
+    _event: InputTargetValue,
+    values: IMultipleSelectOption[]
+  ) => {
     this.props.onChange('timeslots_impacted', values, this.props.index);
   };
 
@@ -76,7 +89,7 @@ class CreateBackupForm extends React.Component<Props> {
     this.props.onChange('change_value', e.target.value, this.props.index);
 
   renderTimeslots = (type: string, timeslots: any, changeTo: string) => {
-    switch (String(type)) {
+    switch (type) {
       case 'cancel_games':
         return (
           <div className={styles.item}>
