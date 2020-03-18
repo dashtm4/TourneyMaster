@@ -70,7 +70,6 @@ export default (props: IProps) => {
   const plugins = [dayGridPlugin, timeGridPlugin, interactionPlugin];
   const columnHeaderFormat = {
     weekday: 'long',
-    day: 'numeric',
   };
 
   let calendarApi: Calendar;
@@ -135,7 +134,7 @@ export default (props: IProps) => {
   const onEventDrop = (eventDropInfo: any) => {
     const { id, start, end, classNames } = eventDropInfo.event;
     const eventType = classNames[0];
-    console.log(end);
+
     switch (eventType) {
       case 'event':
         return onEventUpdate({
