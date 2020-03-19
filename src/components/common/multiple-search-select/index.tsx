@@ -5,14 +5,17 @@ import { Checkbox, TextField } from '@material-ui/core';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import styles from './styles.module.scss';
+import './styles.scss';
+
+export type MultipleSelectionField = { label: string; value: string };
 
 interface IProps {
-  options: { label: string; value: string }[];
+  options: MultipleSelectionField[];
   placeholder?: string;
   width?: string;
   label?: string;
   onChange: any;
-  value: { label: string; value: string }[];
+  value: MultipleSelectionField[];
 }
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -32,7 +35,7 @@ const MultipleSearchSelect = ({
       size="small"
       options={options}
       disableCloseOnSelect={true}
-      getOptionSelected={(option, _value) => option.label === _value.label}
+      getOptionSelected={(option, _value) => option.value === _value.value}
       getOptionLabel={(option: any) => option.label}
       onChange={onChange}
       value={value || []}

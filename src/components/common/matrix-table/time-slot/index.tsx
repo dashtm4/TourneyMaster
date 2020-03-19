@@ -26,16 +26,20 @@ const RenderTimeSlot = (props: IProps) => {
   return (
     <tr key={timeSlot.id} className={styles.timeSlotRow}>
       <th>{formatTimeSlot(timeSlot.time)}</th>
-      {games.map((game: IGame) => (
-        <RenderGameSlot
-          key={game.id}
-          game={game}
-          isHeatmap={isHeatmap}
-          isEnterScores={isEnterScores}
-          field={findFielForGameSlot(game)}
-          moveCard={moveCard}
-        />
-      ))}
+      {games
+        .filter(
+          game => !fields.find(field => field.id === game.fieldId)?.isUnused
+        )
+        .map((game: IGame) => (
+          <RenderGameSlot
+            key={game.id}
+            game={game}
+            isHeatmap={isHeatmap}
+            isEnterScores={isEnterScores}
+            field={findFielForGameSlot(game)}
+            moveCard={moveCard}
+          />
+        ))}
     </tr>
   );
 };

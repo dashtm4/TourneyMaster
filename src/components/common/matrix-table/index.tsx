@@ -56,13 +56,15 @@ const SchedulesMatrix = (props: IProps) => {
                 <tbody>
                   <tr>
                     <td />
-                    {fields.map((field: any) => (
-                      <RenderFieldHeader
-                        key={field.id}
-                        field={field}
-                        facility={takeFacilityByFieldId(field.facilityId)}
-                      />
-                    ))}
+                    {fields
+                      .filter(field => !field.isUnused)
+                      .map((field: IField) => (
+                        <RenderFieldHeader
+                          key={field.id}
+                          field={field}
+                          facility={takeFacilityByFieldId(field.facilityId)}
+                        />
+                      ))}
                   </tr>
                   {timeSlots.map((timeSlot: ITimeSlot) => (
                     <RenderTimeSlot
