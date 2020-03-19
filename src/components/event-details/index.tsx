@@ -190,6 +190,7 @@ class EventDetails extends Component<Props, State> {
           index={3}
           expanded={this.state.expanded[3]}
           onToggleOne={this.onToggleOne}
+          logo={event.desktop_icon_URL}
         />
       </div>
     );
