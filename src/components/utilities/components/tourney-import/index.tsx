@@ -20,6 +20,10 @@ const TourneyImportWizard = () => {
 
   function Progress() {
     setCompleted(oldCompleted => {
+      if (oldCompleted > 90) {
+        return 90;
+      }
+
       const diff = Math.random() * 2;
       return Math.min(oldCompleted + diff, 100);
     });
