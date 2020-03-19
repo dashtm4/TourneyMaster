@@ -7,6 +7,7 @@ import FullWidthTabs from './tab';
 import { Button } from 'components/common';
 import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
 import history from '../../../../../browserhistory';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 interface Props {
   onGetTid: BindingCbWithOne<any>;
@@ -17,6 +18,7 @@ interface Props {
   onDataLoaded: BindingCbWithOne<any>;
   dataLoaded: Boolean;
   onPreview: BindingAction;
+  completed: any;
 }
 
 const TourneyImport: React.FC<Props> = ({
@@ -27,15 +29,19 @@ const TourneyImport: React.FC<Props> = ({
   locations,
   onDataLoaded,
   dataLoaded,
-  onPreview
+  onPreview,
+  completed
 }) => {
   const [showData, setShowData] = React.useState(false);
+
   React.useEffect(() => {
     if (events.length !== 0 && games.length !== 0 && locations.length !== 0) {
       setShowData(true);
       onDataLoaded(true);
     }
   }, [events, games, locations, onDataLoaded]);
+
+
 
   return (
     <SectionDropdown
@@ -63,7 +69,7 @@ const TourneyImport: React.FC<Props> = ({
                 <Button
                   label="Cancel"
                   onClick={() => history.push('/dashboard')}
-                  variant={ButtonVarian.CONTAINED}
+                  variant='text'
                   color={ButtonColors.SECONDARY}
                   btnType={ButtonFormTypes.SUBMIT}
                 />
@@ -81,6 +87,7 @@ const TourneyImport: React.FC<Props> = ({
         {
           jobStatus.length ? (
             <div className={styles.tournanmentBody}>
+              <LinearProgress variant="determinate" value={completed} />
               <br />
               <div className={styles.tabHeader}>
                 {

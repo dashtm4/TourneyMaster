@@ -2,6 +2,7 @@
 import React from 'react';
 import Import from './import';
 import History from './history';
+import { Navigation } from './navigation';
 import { HeadingLevelTwo, Loader } from 'components/common';
 import styles from './styles.module.scss';
 import Api from 'api/api';
@@ -14,8 +15,28 @@ const TourneyImportWizard = () => {
   const [games, setGames] = React.useState('');
   const [locations, setLocations] = React.useState('');
   const [dataLoaded, setDataLoaded] = React.useState<Boolean>(false);
+  const [completed, setCompleted] = React.useState(0);
+
+
+  function Progress() {
+    setCompleted(oldCompleted => {
+      const diff = Math.random() * 2;
+      return Math.min(oldCompleted + diff, 100);
+    });
+
+    if (completed >= 90) {
+      return false;
+    }
+    else {
+      setTimeout(() => {
+        Progress();
+      }, 500);
+    }
+  };
 
   function startJob() {
+    Progress();
+
     if (idTournament === '' || idTournament === null || idTournament === undefined)
       return false
 
@@ -41,6 +62,7 @@ const TourneyImportWizard = () => {
 
           jobStatus.push(statusFilter(res[0].status));
           setJobStatus([...jobStatus]);
+          setCompleted(100);
           getTournamentData();
         }
         else {
@@ -106,6 +128,7 @@ const TourneyImportWizard = () => {
         }}
       >
 
+        <Navigation />
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>External Tourney Import Wizard</HeadingLevelTwo>
         </div>
@@ -118,6 +141,7 @@ const TourneyImportWizard = () => {
           onDataLoaded={dataLoadedHandler}
           dataLoaded={dataLoaded}
           onPreview={startJob}
+          completed={completed}
         />
 
         <History />
