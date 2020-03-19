@@ -71,7 +71,7 @@ export const EventMenu = [
   {
     title: EventMenuTitles.REPORTING,
     link: Routes.REPORTING,
-    icon: Icons.REPORT,
+    icon: Icons.DESCRIPTION,
     children: [],
     isAllowEdit: false,
   },

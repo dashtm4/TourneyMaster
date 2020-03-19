@@ -1,5 +1,5 @@
 import React, { Component, ReactText } from 'react';
-import { Modal } from 'components/common';
+import { Modal, Button } from 'components/common';
 import styles from './styles.module.scss';
 import {
   Paper,
@@ -12,6 +12,9 @@ import {
   TableSortLabel,
 } from '@material-ui/core';
 import { orderBy } from 'lodash-es';
+import { getIcon, onExelSave } from 'helpers';
+import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
+import { DiagnosticTypes } from '../types';
 
 export interface IDiagnosticsInput {
   header: string[];
@@ -21,6 +24,7 @@ export interface IDiagnosticsInput {
 interface Props {
   isOpen: boolean;
   tableData: IDiagnosticsInput;
+  diagnosticType: DiagnosticTypes;
   onClose: () => void;
 }
 
@@ -91,9 +95,11 @@ class Diagnostics extends Component<Props, State> {
   );
 
   render() {
-    const { isOpen, onClose } = this.props;
+    const { isOpen, onClose, diagnosticType } = this.props;
     const { tableData } = this.state;
     const { header, body } = tableData;
+
+    const onSave = () => onExelSave(header, body, diagnosticType);
 
     return (
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -110,6 +116,15 @@ class Diagnostics extends Component<Props, State> {
               </TableBody>
             </Table>
           </TableContainer>
+          <div className={styles.btnsWrapper}>
+            <Button
+              onClick={onSave}
+              icon={getIcon(Icons.DESCRIPTION)}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Save in XLSX"
+            />
+          </div>
           {/* <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
