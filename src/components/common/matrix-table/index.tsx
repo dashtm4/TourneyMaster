@@ -7,6 +7,7 @@ import { selectProperGamesPerTimeSlot, IGame } from './helper';
 import RenderFieldHeader from './field-header';
 import RenderTimeSlot from './time-slot';
 import { IField } from 'common/models/schedule/fields';
+import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 import './styles.scss';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
@@ -23,6 +24,11 @@ interface IProps {
   facilities: IScheduleFacility[];
   isHeatmap: boolean;
   isEnterScores?: boolean;
+}
+
+interface IPinchProps {
+  zoomIn: BindingAction;
+  zoomOut: BindingAction;
 }
 
 const SchedulesMatrix = (props: IProps) => {
@@ -48,37 +54,49 @@ const SchedulesMatrix = (props: IProps) => {
           defaultPositionX={0.01}
           defaultPositionY={0.01}
           defaultScale={1}
-          options={TRANSFORM_WRAPPER_OPTIONS}
+          options={{ ...TRANSFORM_WRAPPER_OPTIONS, disabled: false }}
         >
-          <TransformComponent>
-            <DndProvider backend={HTML5Backend}>
-              <table className={styles.table}>
-                <tbody>
-                  <tr>
-                    <td />
-                    {fields.map((field: any) => (
-                      <RenderFieldHeader
-                        key={field.id}
-                        field={field}
-                        facility={takeFacilityByFieldId(field.facilityId)}
-                      />
-                    ))}
-                  </tr>
-                  {timeSlots.map((timeSlot: ITimeSlot) => (
-                    <RenderTimeSlot
-                      key={timeSlot.id}
-                      timeSlot={timeSlot}
-                      fields={fields}
-                      games={selectProperGamesPerTimeSlot(timeSlot, games)}
-                      moveCard={moveCard}
-                      isHeatmap={isHeatmap}
-                      isEnterScores={isEnterScores}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </DndProvider>
-          </TransformComponent>
+          {({ zoomIn, zoomOut }: IPinchProps) => (
+            <>
+              <p className={styles.zoomCntrols}>
+                <button onClick={zoomIn}>
+                  &#43;<span className="visually-hidden">Zoom in</span>
+                </button>
+                <button onClick={zoomOut}>
+                  &#45;<span className="visually-hidden">Zoom out</span>
+                </button>
+              </p>
+              <TransformComponent>
+                <DndProvider backend={HTML5Backend}>
+                  <table className={styles.table}>
+                    <tbody>
+                      <tr>
+                        <td />
+                        {fields.map((field: any) => (
+                          <RenderFieldHeader
+                            key={field.id}
+                            field={field}
+                            facility={takeFacilityByFieldId(field.facilityId)}
+                          />
+                        ))}
+                      </tr>
+                      {timeSlots.map((timeSlot: ITimeSlot) => (
+                        <RenderTimeSlot
+                          key={timeSlot.id}
+                          timeSlot={timeSlot}
+                          fields={fields}
+                          games={selectProperGamesPerTimeSlot(timeSlot, games)}
+                          moveCard={moveCard}
+                          isHeatmap={isHeatmap}
+                          isEnterScores={isEnterScores}
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                </DndProvider>
+              </TransformComponent>
+            </>
+          )}
         </TransformWrapper>
       </div>
     </section>
