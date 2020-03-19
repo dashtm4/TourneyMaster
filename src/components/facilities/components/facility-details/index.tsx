@@ -56,6 +56,7 @@ interface State {
   isEdit: boolean;
   isRestRoomDetails: boolean;
   isParkingDetails: boolean;
+  currentLocation: { lat: number; lng: number };
 }
 
 interface Props {
@@ -80,7 +81,25 @@ class FacilityDetails extends React.Component<Props, State> {
       isEdit: Boolean(props.facility.isNew),
       isRestRoomDetails: Boolean(props.facility.restroom_details),
       isParkingDetails: Boolean(props.facility.parking_details),
+      currentLocation: {
+        lat: 40.73061,
+        lng: -73.935242,
+      },
     };
+  }
+
+  componentDidMount() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords: { latitude, longitude } }) =>
+          this.setState({
+            currentLocation: {
+              lat: latitude,
+              lng: longitude,
+            },
+          })
+      );
+    }
   }
 
   onChangeFacility = (name: FormFields, value: string | number) => {
@@ -257,14 +276,12 @@ class FacilityDetails extends React.Component<Props, State> {
               </fieldset>
             </div>
             <div className={styles.section}>
-              {lat && lng && (
-                <Map
-                  position={{
-                    lat,
-                    lng,
-                  }}
-                />
-              )}
+              <Map
+                position={{
+                  lat: lat || this.state.currentLocation.lat,
+                  lng: lng || this.state.currentLocation.lng,
+                }}
+              />
             </div>
             <div className={`${styles.section} ${styles.btnContainer}`}>
               <Button
