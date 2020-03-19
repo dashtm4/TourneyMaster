@@ -12,7 +12,6 @@ import { BindingCbWithOne } from 'common/models/callback';
 import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
-
 import Division from './division';
 
 interface IDivisionsAndPoolsProps {
