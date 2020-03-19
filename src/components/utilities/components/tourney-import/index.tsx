@@ -16,32 +16,22 @@ const TourneyImportWizard = () => {
   const [locations, setLocations] = React.useState('');
   const [dataLoaded, setDataLoaded] = React.useState<Boolean>(false);
   const [completed, setCompleted] = React.useState(0);
-  const [timer, setTimer] = React.useState(false);
 
-  function Progress() {
-    setCompleted(oldCompleted => {
-      if (oldCompleted > 90 && !timer) {
-        return 90;
-      }
-      else {
-        const diff = Math.random() * 2;
+  React.useEffect(() => {
+    function progress() {
+      setCompleted(oldCompleted => {
+        const diff = Math.random() * 0.6;
         return Math.min(oldCompleted + diff, 100);
-      }
-    });
+      });
+    }
 
-    if (completed >= 90) {
-      return false;
-    }
-    else {
-      setTimeout(() => {
-        Progress();
-      }, 500);
-    }
-  };
+    const timer = setInterval(progress, 500);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   function startJob() {
-    Progress();
-
     if (idTournament === '' || idTournament === null || idTournament === undefined)
       return false
 
@@ -64,7 +54,6 @@ const TourneyImportWizard = () => {
         dataLoadedHandler(true);
 
         if (res[0].status.includes('Complete:')) {
-          setTimer(true);
           jobStatus.push(statusFilter(res[0].status));
           setJobStatus([...jobStatus]);
           setCompleted(100);
