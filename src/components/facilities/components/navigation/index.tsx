@@ -7,9 +7,10 @@ import styles from './styles.module.scss';
 
 interface Props {
   onClick: BindingAction;
+  onCancelClick: BindingAction;
 }
 
-const Navigation = ({ onClick }: Props) => (
+const Navigation = ({ onClick, onCancelClick }: Props) => (
   <p className={styles.wrapper}>
     <span className={styles.linkWrapper}>
       <Button
@@ -25,12 +26,20 @@ const Navigation = ({ onClick }: Props) => (
         color="secondary"
       />
     </span>
-    <Button
-      onClick={onClick}
-      label="Save"
-      variant="contained"
-      color="primary"
-    />
+    <span className={styles.btnsWrapper}>
+      <Button
+        onClick={onCancelClick}
+        label="Cancel"
+        variant="text"
+        color="secondary"
+      />
+      <Button
+        onClick={onClick}
+        label="Save"
+        variant="contained"
+        color="primary"
+      />
+    </span>
   </p>
 );
 

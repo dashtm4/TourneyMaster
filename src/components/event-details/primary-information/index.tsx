@@ -184,7 +184,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
           <Select
             options={levelOptions.map(type => ({ label: type, value: type }))}
             label="Level"
-            value={event_level || ''}
+            value={event_level || levelOptions[3]}
             onChange={onLevelChange}
           />
           <Select
