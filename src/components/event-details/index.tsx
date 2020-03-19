@@ -21,6 +21,8 @@ import { IUploadFile } from 'common/models';
 import { uploadFile } from 'helpers';
 import styles from './styles.module.scss';
 import { eventState } from './state';
+import history from '../../browserhistory';
+import { PopupExposure } from 'components/common';
 
 interface IMapStateProps {
   event: IEventState;
@@ -41,6 +43,7 @@ type State = {
   error: boolean;
   expanded: boolean[];
   expandAll: boolean;
+  isModalOpen: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
@@ -50,6 +53,7 @@ class EventDetails extends Component<Props, State> {
     error: false,
     expanded: [true, true, true, true],
     expandAll: false,
+    isModalOpen: false,
   };
 
   componentDidMount() {
@@ -107,6 +111,9 @@ class EventDetails extends Component<Props, State> {
 
   onSave = () => {
     const { event, eventId } = this.state;
+
+    this.setState({ isModalOpen: false });
+
     if (!event) return;
 
     if (eventId) {
@@ -132,6 +139,18 @@ class EventDetails extends Component<Props, State> {
     });
   };
 
+  onModalClose = () => {
+    this.setState({ isModalOpen: false });
+  };
+
+  onCancelClick = () => {
+    this.setState({ isModalOpen: true });
+  };
+
+  onCancel = () => {
+    history.push('/');
+  };
+
   render() {
     const eventTypeOptions = ['Tournament', 'Showcase'];
     const { event } = this.state;
@@ -145,6 +164,14 @@ class EventDetails extends Component<Props, State> {
       <div className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.paperWrapper}>
+            {!this.props.match?.params.eventId && (
+              <Button
+                label="Cancel"
+                color="secondary"
+                variant="text"
+                onClick={this.onCancelClick}
+              />
+            )}
             <Button
               label="Save"
               color="primary"
@@ -190,6 +217,12 @@ class EventDetails extends Component<Props, State> {
           index={3}
           expanded={this.state.expanded[3]}
           onToggleOne={this.onToggleOne}
+        />
+        <PopupExposure
+          isOpen={this.state.isModalOpen}
+          onClose={this.onModalClose}
+          onExitClick={this.onCancel}
+          onSaveClick={this.onSave}
         />
       </div>
     );
