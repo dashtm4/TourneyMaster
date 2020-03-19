@@ -15,6 +15,14 @@ import { eventDetailsSchema } from 'validations';
 import { EventDetailsDTO, IIconFile } from './model';
 import history from 'browserhistory';
 import { Toasts } from 'components/common';
+import {
+  IDivision,
+  IFacility,
+  ITeam,
+  IRegistration,
+  IPool,
+  IField,
+} from 'common/models';
 
 export const eventDetailsFetchStart = () => ({
   type: EVENT_DETAILS_FETCH_START,
@@ -123,4 +131,49 @@ export const removeFiles = (files: IIconFile[]) => () => {
       .then(() => Toasts.successToast(`${file.name} was successfully removed`))
       .catch(() => Toasts.errorToast(`${file.name} failed to remove`));
   });
+};
+
+export const deleteEvent: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  EventDetailsAction
+>> = (eventId: string) => async (_dispatch: Dispatch) => {
+  // Delete EVENT
+  await api.delete(`/events?event_id=${eventId}`);
+
+  //DELETE REGISTRATION
+  const registrations = await api.get(`/registrations?event_id=${eventId}`);
+  registrations.forEach((registration: IRegistration) =>
+    api.delete(`/registrations?registration_id=${registration.registration_id}`)
+  );
+
+  // DELETE DIVISIONS&POOLS
+  const divisions = await api.get(`/divisions?event_id=${eventId}`);
+  divisions.forEach(async (division: IDivision) => {
+    const pools = await api.get(`/pools?division_id=${division.division_id}`);
+    pools.forEach((pool: IPool) =>
+      api.delete(`/pools?pool_id=${pool.pool_id}`)
+    );
+    api.delete(`/divisions?division_id=${division.division_id}`);
+  });
+
+  // DELETE TEAMS
+  const teams = await api.get(`/teams?event_id=${eventId}`);
+  teams.forEach((team: ITeam) => api.delete(`/teams?team_id=${team.team_id}`));
+
+  //DELETE FACILITIES&FIELDS
+  const facilities = await api.get(`/facilities?event_id=${eventId}`);
+  facilities.forEach(async (facility: IFacility) => {
+    const fields = await api.get(
+      `/fields?facilities_id=${facility.facilities_id}`
+    );
+    fields.forEach((field: IField) =>
+      api.delete(`/fields?field_id=${field.field_id}`)
+    );
+    api.delete(`/facilities?facilities_id=${facility.facilities_id}`);
+  });
+
+  Toasts.successToast('Event is successfully deleted');
+  history.push('/');
 };
