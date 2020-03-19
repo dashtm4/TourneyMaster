@@ -179,7 +179,11 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
           </div>
         </div>
         <div className={styles.tournamentsListContainer}>
-          {this.props.isLoading && <Loader />}
+          {this.props.isLoading && (
+            <div className={styles.loaderContainer}>
+              <Loader />
+            </div>
+          )}
           {filteredEvents?.length && !this.props.isLoading
             ? filteredEvents.map((event: EventDetailsDTO) => (
                 <TournamentCard
