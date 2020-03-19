@@ -205,13 +205,13 @@ $sectionBodyPadding: 20px 0;
     .uploadWrapper {
       display: flex;
       justify-content: space-between;
-      width: 760px;
+      width: 100%;
       min-width: 228px;
 
       .uploadBlock {
         display: flex;
         flex-direction: column;
-        padding-right: 50px;
+        width: 45%;
 
         .uploadBlockTitle {
           font-size: 16px;
