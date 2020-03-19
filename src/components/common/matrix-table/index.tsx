@@ -48,7 +48,7 @@ const SchedulesMatrix = (props: IProps) => {
           defaultPositionX={0.01}
           defaultPositionY={0.01}
           defaultScale={1}
-          options={TRANSFORM_WRAPPER_OPTIONS}
+          options={{ ...TRANSFORM_WRAPPER_OPTIONS, disabled: false }}
         >
           <TransformComponent>
             <DndProvider backend={HTML5Backend}>

@@ -2,7 +2,6 @@ import * as Yup from 'yup';
 
 const scheduleSchema = Yup.object({
   schedule_name: Yup.string().required('Schedule name is required to fill!'),
-  schedule_tag: Yup.string().required('Schedule tag is required to fill!'),
   min_num_games: Yup.string().required(
     'Min num games Duration is required to fill!'
   ),

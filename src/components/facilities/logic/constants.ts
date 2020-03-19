@@ -1,5 +1,6 @@
 const EMPTY_FACILITY = {
   facilities_description: '',
+  facilities_abbr: null,
   num_fields: null,
   facilities_tag: null,
   address1: null,
@@ -22,10 +23,6 @@ const EMPTY_FACILITY = {
   field_map_URL: null,
   is_active_YN: 0,
   in_library_YN: null,
-  created_by: null,
-  created_datetime: null,
-  updated_by: null,
-  updated_datetime: null,
 };
 
 const EMPTY_FIELD = {

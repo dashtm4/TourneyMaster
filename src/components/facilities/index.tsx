@@ -23,6 +23,8 @@ import {
 } from '../../common/models/callback';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
+import { PopupExposure } from 'components/common';
+import history from '../../browserhistory';
 
 const MOCKED_EVENT_ID = 'ABC123';
 
@@ -44,12 +46,13 @@ interface Props {
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
   expanded: boolean[];
   expandAll: boolean;
+  isModalOpen: boolean;
 }
 
 class Facilities extends React.Component<
   Props & RouteComponentProps<MatchParams>
 > {
-  state = { expanded: [], expandAll: false };
+  state = { expanded: [], expandAll: false, isModalOpen: false };
 
   componentDidMount() {
     const { loadFacilities } = this.props;
@@ -73,6 +76,8 @@ class Facilities extends React.Component<
     const { facilities, fields, saveFacilities } = this.props;
 
     saveFacilities(facilities, fields);
+
+    this.setState({ isModalOpen: false });
   };
 
   componentDidUpdate(prevProps: any, prevState: any) {
@@ -101,6 +106,18 @@ class Facilities extends React.Component<
     });
   };
 
+  onModalClose = () => {
+    this.setState({ isModalOpen: false });
+  };
+
+  onCancelClick = () => {
+    this.setState({ isModalOpen: true });
+  };
+
+  onCancel = () => {
+    history.push('/');
+  };
+
   render() {
     const {
       isLoading,
@@ -119,7 +136,10 @@ class Facilities extends React.Component<
 
     return (
       <section>
-        <Navigation onClick={this.savingFacilities} />
+        <Navigation
+          onClick={this.savingFacilities}
+          onCancelClick={this.onCancelClick}
+        />
         <div className={styles.sectionWrapper}>
           <div className={styles.headingWrapper}>
             <HeadingLevelTwo>Facilities</HeadingLevelTwo>
@@ -185,6 +205,12 @@ class Facilities extends React.Component<
               ))}
           </ul>
         </div>
+        <PopupExposure
+          isOpen={this.state.isModalOpen}
+          onClose={this.onModalClose}
+          onExitClick={this.onCancel}
+          onSaveClick={this.savingFacilities}
+        />
       </section>
     );
   }

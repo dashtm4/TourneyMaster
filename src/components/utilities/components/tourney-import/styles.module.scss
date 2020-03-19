@@ -1,32 +1,3 @@
-.tournanment {
-  width: calc(100% - 20px);
-}
-.tournanmentHeader {
-  width: 100%;
-  margin-bottom: 2rem;
-  > div {
-    display: flex;
-    flex-direction: row;
-    >span {
-      display: block;
-      line-height: 42px;
-      margin-right: 20px;
-      margin-bottom: 0 !important;
-    }
-  }
-}
-.tournanmentBody {
-  .status {
-    font-size: 16px;
-    font-weight: 600;
-    color: #6a6a6a;
-    margin-bottom: 7px;
-  }
-}
-.tabHeader {
-  min-height: 3.5rem;
-  margin-bottom: 1.5rem;
-}
-.tabRoot {
-  width: 100%;
+:local(.headingWrapper) {
+  margin-bottom: 25px;
 }

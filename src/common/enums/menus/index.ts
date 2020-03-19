@@ -4,7 +4,8 @@ enum MenuTitles {
   UTILITIES = 'Utilities',
   USER_PROFILE = 'User Profile',
   TOURNEY_IMPORT = 'Tourney Import',
-  TOURNEY_IMPORT_TITLE = 'Import External Tournament Wizard',
+  TOURNEY_IMPORT_TITLE = 'Import New Tournament',
+  TOURNEY_HISTORY_TITLE = 'Historical Imports',
   EMAIL_SETUP = 'Email Setup',
 }
 
