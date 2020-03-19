@@ -164,14 +164,12 @@ class EventDetails extends Component<Props, State> {
       <div className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.paperWrapper}>
-            {!this.props.match?.params.eventId && (
-              <Button
-                label="Cancel"
-                color="secondary"
-                variant="text"
-                onClick={this.onCancelClick}
-              />
-            )}
+            <Button
+              label="Cancel"
+              color="secondary"
+              variant="text"
+              onClick={this.onCancelClick}
+            />
             <Button
               label="Save"
               color="primary"

@@ -20,3 +20,8 @@
 :local(.linkWrapper) {
   display: flex;
 }
+:local(.btnsWrapper) {
+  & > :first-child {
+    margin-right: 15px;
+  }
+}
