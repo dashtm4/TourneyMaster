@@ -1,10 +1,11 @@
-import { orderBy } from 'lodash-es';
+import { orderBy, findIndex } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from '../matrix-table/helper';
 import { IScheduleFilter, DayTypes, DefaulSelectFalues } from './types';
 import { MultipleSelectionField } from '../multiple-search-select';
 import { IDivision, IEventSummary } from 'common/models';
 import { SortByFilesTypes } from 'common/enums';
+import { IField } from 'common/models/schedule/fields';
 
 const getUnassignedTeams = (teams: ITeamCard[]) =>
   teams.filter(it => !it.fieldId && !it.timeSlotId);
@@ -65,6 +66,20 @@ export const mapFilterValues = (
   );
 
   return { filteredTeams };
+};
+
+export const mapUnusedFields = (fields: IField[], games: IGame[]) => {
+  const filledGames = games.filter(
+    game => game.awayTeam?.id || game.homeTeam?.id
+  );
+  const usedFieldIds = fields
+    .map(field => field.id)
+    .filter(fieldId => findIndex(filledGames, { fieldId }) >= 0);
+
+  return fields.map(field => ({
+    ...field,
+    isUnused: !usedFieldIds.includes(field.id),
+  }));
 };
 
 export const selectDivisionsFilter = (divisions: IDivision[]) => [

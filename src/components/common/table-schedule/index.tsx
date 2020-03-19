@@ -11,6 +11,7 @@ import {
   mapFilterValues,
   applyFilters,
   handleFilterData,
+  mapUnusedFields,
 } from './helpers';
 import { IScheduleFilter, OptimizeTypes } from './types';
 import styles from './styles.module.scss';
@@ -52,12 +53,13 @@ const TableSchedule = ({
     OptimizeTypes.MIN_RANK
   );
 
-  const [isHeatmap, onHeatmapChange] = React.useState<boolean>(false);
+  const [isHeatmap, onHeatmapChange] = React.useState<boolean>(true);
 
   const filledGames = settleTeamsPerGames(games, teamCards);
   const filteredGames = mapGamesByFilter([...filledGames], filterValues);
 
   const { filteredTeams } = mapFilterValues(teamCards, filterValues);
+  const updatedFields = mapUnusedFields(fields, filteredGames);
 
   const unassignedTeams = getUnassignedTeams(mockedTeamCards);
 
@@ -89,7 +91,7 @@ const TableSchedule = ({
           />
           <MatrixTable
             games={filteredGames}
-            fields={fields}
+            fields={updatedFields}
             timeSlots={timeSlots}
             facilities={facilities}
             isHeatmap={isHeatmap}
