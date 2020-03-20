@@ -177,14 +177,16 @@ class EventDetails extends Component<Props, State> {
         <div className={styles.headingContainer}>
           <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
           <div>
-            <Button
-              label="Delete Event"
-              variant="text"
-              color="secondary"
-              type="dangerLink"
-              icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
-              onClick={this.onDeleteClick}
-            />
+            {this.props.match?.params.eventId && (
+              <Button
+                label="Delete Event"
+                variant="text"
+                color="secondary"
+                type="dangerLink"
+                icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
+                onClick={this.onDeleteClick}
+              />
+            )}
             <Button
               label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
               variant="text"
