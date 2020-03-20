@@ -1,16 +1,15 @@
 import React from 'react';
-import { Page, Text, View, Document, Image } from '@react-pdf/renderer';
+import { Page, Text, View, Document } from '@react-pdf/renderer';
 import moment from 'moment';
-import { formatTimeSlot } from 'helpers';
+import Header from './components/header';
+import TableThead from './components/table-thead';
+import TableTbody from './components/table-tbody';
 import { IEventDetails } from 'common/models';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
-import TMLogo from 'assets/logo.png';
 import { styles } from './styles';
-
-import { selectProperGamesPerTimeSlot } from 'components/common/matrix-table/helper';
 
 interface IPDFProps {
   event: IEventDetails;
@@ -30,15 +29,7 @@ const PDFScheduleTable = ({
   return (
     <Document>
       <Page size="A4" orientation="landscape" style={styles.page}>
-        <View style={styles.header} fixed>
-          <View>
-            <Text>{event.event_name}</Text>
-            <Text>Event Schedule ({'<< Schedule Name>>'})</Text>
-          </View>
-          <View style={styles.logoWrapper}>
-            <Image src={event.event_logo_path || TMLogo} style={styles.logo} />
-          </View>
-        </View>
+        <Header event={event} />
         {facilities.map(facility => {
           const filtredFields = fields.filter(
             field => field.facilityId === facility.id
@@ -56,55 +47,22 @@ const PDFScheduleTable = ({
                 let splitIdx = 0;
 
                 if (idx % 4 === 0 || idx === 0) {
-                  if (idx !== 0) splitIdx += idx;
+                  if (idx > 0) splitIdx += idx;
 
                   return [
                     ...acc,
                     <View key={field.id}>
-                      <View style={styles.thead}>
-                        {filtredFields
-                          .map(field => (
-                            <Text key={field.id} style={styles.fieldName}>
-                              {`${field.name} ${facility.abbr}`}
-                            </Text>
-                          ))
-                          .slice(splitIdx, splitIdx + 4)}
-                      </View>
-                      <View style={styles.tbody}>
-                        {timeSlots.map((timeSlot: ITimeSlot) => (
-                          <View
-                            key={timeSlot.id}
-                            style={styles.timeSlotRow}
-                            wrap={false}
-                          >
-                            <Text style={styles.timeSlot}>
-                              {formatTimeSlot(timeSlot.time)}
-                            </Text>
-                            {selectProperGamesPerTimeSlot(timeSlot, games)
-                              .reduce((acc, game) => {
-                                return game.facilityId === facility.id
-                                  ? [
-                                      ...acc,
-                                      <View
-                                        style={styles.gameWrapper}
-                                        key={game.id}
-                                      >
-                                        <Text style={styles.gameTeamName}>
-                                          {game.awayTeam?.name &&
-                                            `${game.awayTeam?.name}(${game.awayTeam?.divisionShortName})`}
-                                        </Text>
-                                        <Text style={styles.gameTeamName}>
-                                          {game.homeTeam?.name &&
-                                            `${game.homeTeam?.name}(${game.homeTeam?.divisionShortName})`}
-                                        </Text>
-                                      </View>,
-                                    ]
-                                  : acc;
-                              }, [] as JSX.Element[])
-                              .slice(splitIdx, splitIdx + 4)}
-                          </View>
-                        ))}
-                      </View>
+                      <TableThead
+                        facility={facility}
+                        fields={filtredFields}
+                        splitIdx={splitIdx}
+                      />
+                      <TableTbody
+                        facility={facility}
+                        timeSlots={timeSlots}
+                        games={games}
+                        splitIdx={splitIdx}
+                      />
                     </View>,
                   ];
                 } else {
