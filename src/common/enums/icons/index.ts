@@ -27,6 +27,7 @@ enum Icons {
   LOCK = 'lock',
   LOCK_OPEN = 'lockOpen',
   INFO = 'info',
+  DESCRIPTION = 'description',
 }
 
 export { Icons };
