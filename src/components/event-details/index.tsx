@@ -176,21 +176,23 @@ class EventDetails extends Component<Props, State> {
         </Paper>
         <div className={styles.headingContainer}>
           <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
-          <Button
-            label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
-            variant="text"
-            color="secondary"
-            onClick={this.onToggleAll}
-          />
+          <div>
+            <Button
+              label="Delete Event"
+              variant="text"
+              color="secondary"
+              type="dangerLink"
+              icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
+              onClick={this.onDeleteClick}
+            />
+            <Button
+              label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+              variant="text"
+              color="secondary"
+              onClick={this.onToggleAll}
+            />
+          </div>
         </div>
-        <Button
-          label="Delete Event"
-          variant="text"
-          color="secondary"
-          type="dangerLink"
-          icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
-          onClick={this.onDeleteClick}
-        />
         <PrimaryInformationSection
           eventData={event}
           onChange={this.onChange}
