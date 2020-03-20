@@ -1,5 +1,5 @@
 import React from 'react';
-import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import ListUnassigned from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
@@ -137,17 +137,6 @@ const TableSchedule = ({
           />
         </PDFDownloadLink>
       </div>
-      <p>
-        <PDFViewer width="500" height="400">
-          <PDFScheduleTable
-            event={event}
-            games={games}
-            fields={fields}
-            timeSlots={timeSlots}
-            facilities={facilities}
-          />
-        </PDFViewer>
-      </p>
     </section>
   );
 };

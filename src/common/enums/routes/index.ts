@@ -32,9 +32,6 @@ enum Routes {
   REPORTING_ID = '/event/reporting/:eventId?',
   RECORD_SCORES = '/event/record-scores/',
   RECORD_SCORES_ID = '/event/record-scores/:eventId?',
-
-  // !dell
-  REACT_PDF = '/react-pdf',
 }
 
 export { Routes };
