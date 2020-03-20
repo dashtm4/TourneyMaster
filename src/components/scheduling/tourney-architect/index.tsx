@@ -66,8 +66,6 @@ export default (props: IProps) => {
     </div>
   );
 
-  console.log(schedule.time_slots);
-
   return (
     <SectionDropdown
       type="section"
@@ -186,8 +184,9 @@ export default (props: IProps) => {
           {renderSectionCell(
             'Average Games per Team',
             `${Math.floor(
-              Number(schedule.max_num_games) +
-                Number(schedule.min_num_games) / 2
+              (Number(schedule.max_num_games) +
+                Number(schedule.min_num_games)) /
+                2
             )}`
           )}
           <Button

@@ -35,6 +35,7 @@ import { IScheduleFacility } from 'common/models/schedule/facilities';
 import Diagnostics, { IDiagnosticsInput } from './diagnostics';
 import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
 import formatDivisionsDiagnostics from './diagnostics/divisionsDiagnostics';
+import { DiagnosticTypes } from './types';
 import styles from './styles.module.scss';
 
 type PartialTournamentData = Partial<ITournamentData>;
@@ -270,6 +271,7 @@ class Schedules extends Component<Props, State> {
                 isOpen={teamsDiagnosticsOpen}
                 tableData={teamsDiagnostics}
                 onClose={this.closeDiagnostics}
+                diagnosticType={DiagnosticTypes.TEAMS_DIAGNOSTICS}
               />
             </>
           )}
@@ -286,6 +288,7 @@ class Schedules extends Component<Props, State> {
                 isOpen={divisionsDiagnosticsOpen}
                 tableData={divisionsDiagnostics}
                 onClose={this.closeDiagnostics}
+                diagnosticType={DiagnosticTypes.DIVISIONS_DIAGNOSTICS}
               />
             </>
           )}
