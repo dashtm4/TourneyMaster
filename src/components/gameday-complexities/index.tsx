@@ -128,7 +128,7 @@ class GamedayComplexities extends React.Component<Props, State> {
           />
         </div>
         {isLoading && <Loader />}
-        {backupPlans.length && !isLoading
+        {backupPlans.length && !isLoading && this.state.expanded.length
           ? backupPlans.map((plan, index) => {
               return (
                 plan.backup_plan_id && (
