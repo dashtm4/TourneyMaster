@@ -1,67 +1,77 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
-import { HeadingLevelThree, SectionDropdown, Input } from 'components/common';
-import { MenuTitles } from 'common/enums';
-import { IMember, BindingCbWithOne } from 'common/models';
-import { IUtilitiesMember } from '../../types';
+import { Dispatch, bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { AppState } from './logic/reducer';
+import { loadUserData, saveUserData, changeUser } from './logic/actions';
+import { Navigation } from './navigation';
+import Profile from './profile';
+import { HeadingLevelTwo, Loader } from 'components/common';
+import { BindingAction, BindingCbWithOne, IMember } from 'common/models';
+import { IUtilitiesMember } from './types';
 import styles from './styles.module.scss';
-
-enum FormFields {
-  FIRST_NAME = 'first_name',
-  LAST_NAME = 'last_name',
-  MEMBER_TAG = 'member_tag',
-}
-
 interface Props {
-  userData: IMember | IUtilitiesMember;
-  changeUser: BindingCbWithOne<Partial<IMember | IUtilitiesMember>>;
+  isLoading: boolean;
+  isLoaded: boolean;
+  userData: IMember | IUtilitiesMember | null;
+  loadUserData: BindingAction;
+  saveUserData: BindingAction;
+  changeUser: BindingCbWithOne<Partial<IUtilitiesMember>>;
 }
 
-const UserProfile = ({ userData, changeUser }: Props) => (
-  <SectionDropdown
-    id={MenuTitles.USER_PROFILE}
-    type="section"
-    panelDetailsType="flat"
-    isDefaultExpanded={true}
-  >
-    <HeadingLevelThree>
-      <span className={styles.detailsSubtitle}>{MenuTitles.USER_PROFILE}</span>
-    </HeadingLevelThree>
-    <div className={styles.editProfileForm}>
-      <div className={styles.userNameWrapper}>
-        <fieldset>
-          <Input
-            onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
-              changeUser({ [FormFields.FIRST_NAME]: evt.target.value })
-            }
-            value={userData.first_name || ''}
-            label="First name"
-            fullWidth={true}
-          />
-        </fieldset>
-        <fieldset>
-          <Input
-            onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
-              changeUser({ [FormFields.LAST_NAME]: evt.target.value })
-            }
-            value={userData.last_name || ''}
-            label="Last name"
-            fullWidth={true}
-          />
-        </fieldset>
-      </div>
-      <fieldset className={styles.userTagFieldset}>
-        <Input
-          onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
-            changeUser({ [FormFields.MEMBER_TAG]: evt.target.value })
-          }
-          value={userData.member_tag || ''}
-          label="User tag"
-          fullWidth={true}
-          startAdornment="@"
-        />
-      </fieldset>
-    </div>
-  </SectionDropdown>
-);
+const UserProfile = ({
+  isLoading,
+  userData,
+  loadUserData,
+  saveUserData,
+  changeUser,
+}: Props) => {
 
-export default UserProfile;
+  React.useEffect(() => {
+    loadUserData();
+  }, []);
+
+  if (isLoading || !userData) {
+    return <Loader />;
+  }
+
+  return (
+    <section>
+      <form
+        onSubmit={evt => {
+          evt.preventDefault();
+        }}
+      >
+        <Navigation onSaveUser={saveUserData} />
+
+        <div className={styles.headingWrapper}>
+          <HeadingLevelTwo>Utilities</HeadingLevelTwo>
+        </div>
+
+        <Profile userData={userData} changeUser={changeUser} />
+
+      </form>
+    </section>
+  );
+};
+
+interface IRootState {
+  utilities: AppState;
+}
+
+export default connect(
+  ({ utilities }: IRootState) => ({
+    isLoading: utilities.isLoading,
+    isLoaded: utilities.isLoaded,
+    userData: utilities.userData,
+  }),
+  (dispatch: Dispatch) =>
+    bindActionCreators(
+      {
+        loadUserData,
+        changeUser,
+        saveUserData,
+      },
+      dispatch
+    )
+)(UserProfile);

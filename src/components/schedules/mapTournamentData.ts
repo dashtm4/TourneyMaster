@@ -23,6 +23,16 @@ const getDivisionValueByTeamId = (
   return division ? division[key] : undefined;
 };
 
+const getTeamDivisionHex = (team: IFetchedTeam, divisions: IDivision[]) => {
+  const hex = getDivisionValueByTeamId(
+    divisions,
+    team.division_id!,
+    'division_hex'
+  );
+
+  return hex ? `#${hex}` : undefined;
+};
+
 export const mapTeamsData = (teams: IFetchedTeam[], divisions: IDivision[]) => {
   let mappedTeams: ITeam[];
 
@@ -37,11 +47,7 @@ export const mapTeamsData = (teams: IFetchedTeam[], divisions: IDivision[]) => {
       team.division_id!,
       'short_name'
     ),
-    divisionHex: `#${getDivisionValueByTeamId(
-      divisions,
-      team.division_id!,
-      'division_hex'
-    )}`,
+    divisionHex: getTeamDivisionHex(team, divisions),
     isPremier: teamPremierByDivision(team, divisions),
   }));
 

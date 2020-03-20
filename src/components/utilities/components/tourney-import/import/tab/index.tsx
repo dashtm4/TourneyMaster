@@ -6,10 +6,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import ExtEventsTable from './tables/ext-events';
-import ExtGamesTable from './tables/ext-games';
-import ExtPoolsTable from './tables/ext-pools';
-import ExtLocationsTable from './tables/ext-locations';
+import ExtEventsTable from '../tables/ext-events';
+import ExtGamesTable from '../tables/ext-games';
+import ExtLocationsTable from '../tables/ext-locations';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -21,7 +20,6 @@ interface TabPanelProps {
 interface Props {
   events: any;
   locations: any;
-  pools: any;
   games: any;
 }
 
@@ -56,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const FullWidthTabs = ({ events, locations, pools, games }: Props) => {
+const FullWidthTabs = ({ events, locations, games }: Props) => {
   const classes = useStyles();
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
@@ -84,8 +82,7 @@ const FullWidthTabs = ({ events, locations, pools, games }: Props) => {
         >
           <Tab label="Event Summary" {...a11yProps(0)} />
           <Tab label="Location Details" {...a11yProps(1)} />
-          <Tab label="Pools" {...a11yProps(2)} />
-          <Tab label="Games" {...a11yProps(3)} />
+          <Tab label="Games" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <SwipeableViews
@@ -100,9 +97,6 @@ const FullWidthTabs = ({ events, locations, pools, games }: Props) => {
           <ExtLocationsTable locations={locations} />
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          <ExtPoolsTable pools={pools} />
-        </TabPanel>
-        <TabPanel value={value} index={3} dir={theme.direction}>
           <ExtGamesTable games={games} />
         </TabPanel>
       </SwipeableViews>

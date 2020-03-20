@@ -4,43 +4,34 @@ import ListUnassigned from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
+import PDFScheduleTable from 'pdg-layouts/schedule-table';
 import { MatrixTable, Button } from 'components/common';
 import { getIcon } from 'helpers';
-import { IDivision, ITeam, IEventSummary, IEventDetails } from 'common/models';
+import { IDivision, IEventSummary, IEventDetails } from 'common/models';
 import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
-import { getUnassignedTeams } from './helpers';
-import {
-  DayTypes,
-  DefaulSelectFalues,
-  IScheduleFilter,
-  OptimizeTypes,
-} from './types';
-import { IGame } from '../matrix-table/helper';
+import { IScheduleFilter, OptimizeTypes } from './types';
+import { IGame, settleTeamsPerGames } from '../matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import styles from './styles.module.scss';
 
-import PDFScheduleTable from 'pdg-layouts/schedule-table';
-
 import {
-  // mockedFields,
-  // mockedGames,
-  // mockedTimeSlots,
-  mockedTeamCards,
-} from './mocks';
-import { IScheduleFacility } from 'common/models/schedule/facilities';
+  getUnassignedTeams,
+  mapGamesByFilter,
+  mapFilterValues,
+  applyFilters,
+  handleFilterData,
+  mapUnusedFields,
+} from './helpers';
 
-const SCHEDULE_FILTER_FALUES = {
-  selectedDay: DayTypes.DAY_ONE,
-  selectedDivision: DefaulSelectFalues.ALL,
-  selectedTeam: DefaulSelectFalues.ALL,
-  selectedField: DefaulSelectFalues.ALL,
-};
+import { mockedTeamCards } from './mocks';
+import { IScheduleFacility } from 'common/models/schedule/facilities';
+import { ITeamCard } from 'common/models/schedule/teams';
 
 interface Props {
   event: IEventDetails;
   divisions: IDivision[];
-  teams: ITeam[];
+  teamCards: ITeamCard[];
   games: IGame[];
   fields: IField[];
   timeSlots: ITimeSlot[];
@@ -52,7 +43,7 @@ interface Props {
 const TableSchedule = ({
   event,
   divisions,
-  teams,
+  teamCards: propsTeamCards,
   games,
   fields,
   facilities,
@@ -60,22 +51,36 @@ const TableSchedule = ({
   eventSummary,
   isEnterScores,
 }: Props) => {
-  const [filterValues, onFilterValueChange] = React.useState<IScheduleFilter>(
-    SCHEDULE_FILTER_FALUES
+  const [teamCards] = React.useState(propsTeamCards);
+
+  const [filterValues, changeFilterValues] = React.useState<IScheduleFilter>(
+    applyFilters(divisions, teamCards, eventSummary)
   );
+
   const [optimizeBy, onOptimizeClick] = React.useState<OptimizeTypes>(
     OptimizeTypes.MIN_RANK
   );
-  const [isHeatmap, onHeatmapChange] = React.useState<boolean>(false);
 
-  // teams state
+  const [isHeatmap, onHeatmapChange] = React.useState<boolean>(true);
 
-  // get unassigned
+  const filledGames = settleTeamsPerGames(games, teamCards);
+  const filteredGames = mapGamesByFilter([...filledGames], filterValues);
 
-  // get teams for games
+  const { filteredTeams } = mapFilterValues(teamCards, filterValues);
+  const updatedFields = mapUnusedFields(fields, filteredGames);
 
-  //! dell
   const unassignedTeams = getUnassignedTeams(mockedTeamCards);
+
+  const onFilterChange = (data: IScheduleFilter) => {
+    const filterData = handleFilterData(
+      filterValues,
+      data,
+      divisions,
+      teamCards,
+      eventSummary
+    );
+    changeFilterValues(filterData);
+  };
 
   return (
     <section className={styles.section}>
@@ -87,14 +92,14 @@ const TableSchedule = ({
         <div className={styles.tableWrapper}>
           <Filter
             divisions={divisions}
-            teams={teams}
+            teams={filteredTeams}
             eventSummary={eventSummary}
             filterValues={filterValues}
-            onChangeFilterValue={onFilterValueChange}
+            onChangeFilterValue={onFilterChange}
           />
           <MatrixTable
-            games={games}
-            fields={fields}
+            games={filteredGames}
+            fields={updatedFields}
             timeSlots={timeSlots}
             facilities={facilities}
             isHeatmap={isHeatmap}

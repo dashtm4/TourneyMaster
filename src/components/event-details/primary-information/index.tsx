@@ -89,10 +89,29 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const [genderId, onChangeGender] = useState(dropdownGenderValue);
   const [sportId, onChangeSport] = useState(dropdownSportValue);
 
+  const [currentLocation, setCurrentLocation] = useState({
+    lat: 40.73061,
+    lng: -73.935242,
+  });
+
   useEffect(() => {
     const calculatedSportId = getIdByGenderAndSport(genderId, sportId);
     onChange('sport_id', calculatedSportId);
+
+    setLocation();
   }, [genderId, sportId]);
+
+  const setLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords: { latitude, longitude } }) =>
+          setCurrentLocation({
+            lat: latitude,
+            lng: longitude,
+          })
+      );
+    }
+  };
 
   const onNameChange = (e: InputTargetValue) =>
     onChange('event_name', e.target.value);
@@ -184,7 +203,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
           <Select
             options={levelOptions.map(type => ({ label: type, value: type }))}
             label="Level"
-            value={event_level || ''}
+            value={event_level || levelOptions[3]}
             onChange={onLevelChange}
           />
           <Select
@@ -257,14 +276,12 @@ const PrimaryInformationSection: React.FC<Props> = ({
             </div>
           </div>
           <div className={styles.mapContainer}>
-            {lat && lng && (
-              <Map
-                position={{
-                  lat,
-                  lng,
-                }}
-              />
-            )}
+            <Map
+              position={{
+                lat: lat || currentLocation.lat,
+                lng: lng || currentLocation.lng,
+              }}
+            />
           </div>
         </div>
         <Button

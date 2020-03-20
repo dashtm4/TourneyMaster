@@ -13,6 +13,7 @@ import Footer from 'components/footer';
 import { Routes } from 'common/enums';
 import styles from './styles.module.scss';
 import GamedayComplexities from 'components/gameday-complexities';
+import ScrollTopButton from 'components/common/scroll-top-button';
 
 const AuthorizedPage = () => (
   <div className={styles.container}>
@@ -40,6 +41,7 @@ const AuthorizedPage = () => (
           />
           <Route path={Routes.DEFAULT} component={Dashboard} />
         </Switch>
+        <ScrollTopButton />
       </main>
     </div>
     <Footer />

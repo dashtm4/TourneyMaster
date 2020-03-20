@@ -115,11 +115,11 @@ const InfoModal = ({
     return editable ? (
       <Input
         width="248px"
-        value={clickedEvent.cal_event_type || ''}
+        value={capitalize(clickedEvent.cal_event_type) || ''}
         disabled={true}
       />
     ) : (
-      clickedEvent.cal_event_type || '—'
+      capitalize(clickedEvent.cal_event_type) || '—'
     );
   };
 
@@ -193,7 +193,7 @@ const InfoModal = ({
             onChange={onEventDateTimeChange}
           />
         ) : (
-          `${format(clickedEvent.cal_event_startdate, 'MM-dd-yyyy, hh:mm a')}`
+          `${format(clickedEvent.cal_event_startdate, 'MM-dd-yyyy, h:mm a')}`
         );
     }
   };

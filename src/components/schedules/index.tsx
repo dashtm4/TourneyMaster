@@ -29,7 +29,7 @@ import {
   getTimeValuesFromEvent,
   calculateTimeSlots,
   setGameOptions,
-} from './helper';
+} from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import Diagnostics, { IDiagnosticsInput } from './diagnostics';
 import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
@@ -77,10 +77,15 @@ class Schedules extends Component<Props, State> {
   };
 
   componentDidMount() {
-    const { facilities } = this.props;
+    const { facilities, match } = this.props;
+    const { eventId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
-    if (facilitiesIds?.length) this.props.fetchFields(facilitiesIds);
-    this.props.fetchEventSummary('ADLNT001');
+
+    if (facilitiesIds?.length) {
+      this.props.fetchFields(facilitiesIds);
+    }
+
+    this.props.fetchEventSummary(eventId);
     this.calculateSchedules();
   }
 
@@ -167,7 +172,7 @@ class Schedules extends Component<Props, State> {
     });
 
   render() {
-    const { divisions, teams, event, eventSummary } = this.props;
+    const { divisions, event, eventSummary } = this.props;
     const {
       fields,
       timeSlots,
@@ -179,15 +184,15 @@ class Schedules extends Component<Props, State> {
       divisionsDiagnosticsOpen,
     } = this.state;
 
-    const { updatedGames } = schedulerResult || {};
+    const { games, teamCards } = schedulerResult || {};
 
     const loadCondition = !!(
       fields?.length &&
-      updatedGames &&
+      games?.length &&
       timeSlots?.length &&
       divisions?.length &&
       facilities?.length &&
-      teams?.length &&
+      teamCards?.length &&
       event &&
       eventSummary?.length
     );
@@ -198,11 +203,11 @@ class Schedules extends Component<Props, State> {
           <TableSchedule
             event={event!}
             fields={fields!}
-            games={updatedGames!}
+            games={games!}
             timeSlots={timeSlots!}
             divisions={divisions!}
             facilities={facilities!}
-            teams={teams!}
+            teamCards={teamCards!}
             eventSummary={eventSummary!}
           />
         )}
