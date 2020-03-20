@@ -17,6 +17,9 @@ export interface IGame {
   timeSlotId: number;
   fieldId: string;
   isPremier?: boolean;
+  // added new
+  scheduleVersionId?: string;
+  createDate?: string;
 }
 
 export interface IDefinedGames {

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { History } from 'history';
 import { bindActionCreators, Dispatch } from 'redux';
 import ITimeSlot from 'common/models/schedule/timeSlots';
-import { ITeam } from 'common/models/schedule/teams';
+import { ITeam, ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
 import Scheduler from './Scheduler';
 import { ISchedulesState } from './logic/reducer';
@@ -11,7 +11,7 @@ import {
   IFetchedDivision,
   IScheduleDivision,
 } from 'common/models/schedule/divisions';
-import { fetchFields, fetchEventSummary } from './logic/actions';
+import { fetchFields, fetchEventSummary, saveDraft } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
 import { TableSchedule, Button, Paper, PopupExposure } from 'components/common';
@@ -19,6 +19,7 @@ import {
   defineGames,
   IDefinedGames,
   sortFieldsByPremier,
+  settleTeamsPerGames,
 } from 'components/common/matrix-table/helper';
 import {
   mapFieldsData,
@@ -37,14 +38,27 @@ import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
 import formatDivisionsDiagnostics from './diagnostics/divisionsDiagnostics';
 import { DiagnosticTypes } from './types';
 import styles from './styles.module.scss';
+import { fillSchedulesTable } from './logic/schedules-table/actions';
+import { ISchedulesTableState } from './logic/schedules-table/schedulesTableReducer';
+import { mapSchedulesTeamCards, mapScheduleData } from './mapScheduleData';
+import { ISchedulingState } from 'components/scheduling/logic/reducer';
+import { IConfigurableSchedule, ISchedule } from 'common/models';
+import { errorToast } from 'components/common/toastr/showToasts';
+import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
-interface IMapStateToProps extends PartialTournamentData, PartialSchedules {}
+interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
+  schedulesTeamCards?: ITeamCard[];
+  draftSaved?: boolean;
+  scheduleData?: IConfigurableSchedule | null;
+}
 
 interface IMapDispatchToProps {
+  saveDraft: (scheduleData: ISchedule, scheduleDetails: any[]) => void;
   fetchFields: (facilitiesIds: string[]) => void;
   fetchEventSummary: (eventId: string) => void;
+  fillSchedulesTable: (teamCards: ITeamCard[]) => void;
 }
 
 interface ComponentProps {
@@ -55,6 +69,8 @@ interface ComponentProps {
 interface IRootState {
   pageEvent?: IPageEventState;
   schedules?: ISchedulesState;
+  schedulesTable?: ISchedulesTableState;
+  scheduling?: ISchedulingState;
 }
 
 type Props = IMapStateToProps & IMapDispatchToProps & ComponentProps;
@@ -144,6 +160,8 @@ class Schedules extends Component<Props, State> {
       },
       this.calculateDiagnostics
     );
+
+    this.props.fillSchedulesTable(schedulerResult.teamCards);
   };
 
   calculateDiagnostics = () => {
@@ -189,8 +207,24 @@ class Schedules extends Component<Props, State> {
     this.props.history.goBack();
   };
 
-  onSaveDraft = () => {
-    const { cancelConfirmationOpen } = this.state;
+  onSaveDraft = async () => {
+    const { cancelConfirmationOpen, schedulerResult } = this.state;
+    const { games } = schedulerResult || {};
+    const { schedulesTeamCards, scheduleData } = this.props;
+
+    if (!games || !schedulesTeamCards || !scheduleData)
+      return errorToast("Couldn't save the data");
+
+    const schedulesTableGames = settleTeamsPerGames(games, schedulesTeamCards);
+
+    const schedule = mapScheduleData(scheduleData);
+    const scheduleDetails: ISchedulesDetails[] = await mapSchedulesTeamCards(
+      schedule,
+      schedulesTableGames,
+      true
+    );
+
+    this.props.saveDraft(schedule, scheduleDetails);
 
     if (cancelConfirmationOpen) {
       this.closeCancelConfirmation();
@@ -199,7 +233,13 @@ class Schedules extends Component<Props, State> {
   };
 
   render() {
-    const { divisions, event, eventSummary } = this.props;
+    const {
+      divisions,
+      event,
+      eventSummary,
+      schedulesTeamCards,
+      draftSaved,
+    } = this.props;
     const {
       fields,
       timeSlots,
@@ -222,7 +262,8 @@ class Schedules extends Component<Props, State> {
       facilities?.length &&
       teamCards?.length &&
       event &&
-      eventSummary?.length
+      eventSummary?.length &&
+      schedulesTeamCards?.length
     );
 
     return (
@@ -240,6 +281,7 @@ class Schedules extends Component<Props, State> {
                 label="Save Draft"
                 variant="contained"
                 color="primary"
+                disabled={draftSaved}
                 onClick={this.onSaveDraft}
               />
             </div>
@@ -253,7 +295,7 @@ class Schedules extends Component<Props, State> {
             timeSlots={timeSlots!}
             divisions={divisions!}
             facilities={facilities!}
-            teamCards={teamCards!}
+            teamCards={schedulesTeamCards!}
             eventSummary={eventSummary!}
           />
         )}
@@ -306,20 +348,30 @@ class Schedules extends Component<Props, State> {
   }
 }
 
-const mapStateToProps = ({ pageEvent, schedules }: IRootState) => ({
+const mapStateToProps = ({
+  pageEvent,
+  schedules,
+  scheduling,
+  schedulesTable,
+}: IRootState) => ({
   event: pageEvent?.tournamentData.event,
   facilities: pageEvent?.tournamentData.facilities,
   divisions: pageEvent?.tournamentData.divisions,
   teams: pageEvent?.tournamentData.teams,
   fields: pageEvent?.tournamentData.fields,
   eventSummary: schedules?.eventSummary,
+  schedulesTeamCards: schedulesTable?.current,
+  draftSaved: schedules?.draftIsAlreadySaved,
+  scheduleData: scheduling?.schedule,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     {
+      saveDraft,
       fetchFields,
       fetchEventSummary,
+      fillSchedulesTable,
     },
     dispatch
   );

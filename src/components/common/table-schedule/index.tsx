@@ -35,7 +35,7 @@ interface Props {
 
 const TableSchedule = ({
   divisions,
-  teamCards: propsTeamCards,
+  teamCards,
   games,
   fields,
   facilities,
@@ -43,7 +43,7 @@ const TableSchedule = ({
   eventSummary,
   isEnterScores,
 }: Props) => {
-  const [teamCards] = React.useState(propsTeamCards);
+  // const [teamCards] = React.useState(propsTeamCards);
 
   const [filterValues, changeFilterValues] = React.useState<IScheduleFilter>(
     applyFilters(divisions, teamCards, eventSummary)
