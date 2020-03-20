@@ -27,6 +27,11 @@ const ApplyInvitation = ({
     onToggleOne(index);
   };
 
+  const onApplyInvitation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addUserToOrganization(invCode);
+  };
+
   return (
     <SectionDropdown
       type="section"
@@ -36,17 +41,19 @@ const ApplyInvitation = ({
       expanded={expanded}
       onToggle={onSectionToggle}
     >
-      <HeadingLevelThree>
-        <span>Apply Invitation</span>
-      </HeadingLevelThree>
-      <form
-        onSubmit={evt => {
-          evt.preventDefault();
-
-          addUserToOrganization(invCode);
-        }}
-        className={styles.section}
-      >
+      <div className={styles.headingContainer}>
+        <HeadingLevelThree>
+          <span>Apply Invitation</span>
+        </HeadingLevelThree>
+        <Button
+          label="Apply Invitation"
+          variant="contained"
+          color="primary"
+          disabled={!invCode}
+          onClick={onApplyInvitation}
+        />
+      </div>
+      <form className={styles.section}>
         <div className={styles.sectionItem}>
           <Input
             onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
@@ -55,14 +62,6 @@ const ApplyInvitation = ({
             value={invCode || ''}
             fullWidth={true}
             label="Invitation Code"
-          />
-        </div>
-        <div className={styles.sectionItem}>
-          <Button
-            label="Apply Invitation"
-            variant="contained"
-            color="primary"
-            btnType="submit"
           />
         </div>
       </form>

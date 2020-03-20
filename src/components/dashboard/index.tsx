@@ -13,11 +13,11 @@ import InfoCard from './info-card';
 import TournamentCard from './tournament-card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
-import { getEvents } from './logic/actions';
+import { getEvents, getCalendarEvents } from './logic/actions';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { Loader } from 'components/common';
-import { data, notificationData } from './mockData';
-import { ITeam, IField } from 'common/models';
+import { notificationData } from './mockData';
+import { ITeam, IField, BindingAction, ICalendarEvent } from 'common/models';
 
 interface IFieldWithEventId extends IField {
   event_id: string;
@@ -30,7 +30,10 @@ interface IDashboardProps {
   fields: IFieldWithEventId[];
   isLoading: boolean;
   isDetailLoading: boolean;
+  areCalendarEventsLoading: boolean;
   getEvents: () => void;
+  getCalendarEvents: BindingAction;
+  calendarEvents: ICalendarEvent[];
 }
 
 interface IDashboardState {
@@ -51,6 +54,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
 
   componentDidMount() {
     this.props.getEvents();
+    this.props.getCalendarEvents();
   }
 
   onCreateTournament = () => {
@@ -179,7 +183,11 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
           </div>
         </div>
         <div className={styles.tournamentsListContainer}>
-          {this.props.isLoading && <Loader />}
+          {this.props.isLoading && (
+            <div className={styles.loaderContainer}>
+              <Loader />
+            </div>
+          )}
           {filteredEvents?.length && !this.props.isLoading
             ? filteredEvents.map((event: EventDetailsDTO) => (
                 <TournamentCard
@@ -220,7 +228,10 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   renderTimeline = () => {
     return (
       <div className={styles.timelineContainer} key={3}>
-        <TimelineCard data={data} />
+        <TimelineCard
+          data={this.props.calendarEvents.filter(event => event.cal_event_id)}
+          areCalendarEventsLoading={this.props.areCalendarEventsLoading}
+        />
       </div>
     );
   };
@@ -301,8 +312,10 @@ interface IState {
     data: EventDetailsDTO[];
     teams: ITeam[];
     fields: IFieldWithEventId[];
+    calendarEvents: ICalendarEvent[];
     isLoading: boolean;
     isDetailLoading: boolean;
+    areCalendarEventsLoading: boolean;
   };
 }
 
@@ -310,12 +323,15 @@ const mapStateToProps = (state: IState) => ({
   events: state.events.data,
   teams: state.events.teams,
   fields: state.events.fields,
+  calendarEvents: state.events.calendarEvents,
   isLoading: state.events.isLoading,
   isDetailLoading: state.events.isDetailLoading,
+  areCalendarEventsLoading: state.events.areCalendarEventsLoading,
 });
 
 const mapDispatchToProps = {
   getEvents,
+  getCalendarEvents,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

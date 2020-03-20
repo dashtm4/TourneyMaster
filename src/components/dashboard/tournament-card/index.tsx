@@ -37,10 +37,11 @@ const TournamentCard = ({
           <div className={styles.cardImage}>
             <img
               alt="logo"
+              className={styles.logo}
               src={
-                !event.event_logo_path || event.event_logo_path === 'logopath'
+                !event.desktop_icon_URL
                   ? tournamentLogoExample
-                  : event.event_logo_path
+                  : `https://tourneymaster.s3.amazonaws.com/public/${event.desktop_icon_URL}`
               }
             />
           </div>
@@ -59,7 +60,6 @@ const TournamentCard = ({
               color="primary"
               onClick={onTournamentManage}
             />
-            {/* <Button label="Duplicate" variant="text" color="secondary" /> */}
           </div>
         </div>
         <div className={styles.tournamentContent}>

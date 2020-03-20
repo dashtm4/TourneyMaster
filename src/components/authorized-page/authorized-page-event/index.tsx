@@ -33,6 +33,7 @@ import { Loader } from 'components/common';
 import styles from '../styles.module.scss';
 import Footer from 'components/footer';
 import Schedules from 'components/schedules';
+import ScrollTopButton from 'components/common/scroll-top-button';
 
 interface MatchParams {
   eventId?: string;
@@ -124,6 +125,7 @@ const AuthorizedPageEvent = ({
 
             <Route path={Routes.DEFAULT} component={EventDetails} />
           </Switch>
+          <ScrollTopButton />
         </main>
       </div>
       <Footer />

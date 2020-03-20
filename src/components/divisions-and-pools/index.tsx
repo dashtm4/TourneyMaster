@@ -12,7 +12,6 @@ import { BindingCbWithOne } from 'common/models/callback';
 import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
-
 import Division from './division';
 
 interface IDivisionsAndPoolsProps {
@@ -108,7 +107,7 @@ class DivisionsAndPools extends React.Component<
   render() {
     const { divisions, pools, teams, isLoading } = this.props;
     return (
-      <section>
+      <section className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.mainMenu}>
             <div />
@@ -133,7 +132,7 @@ class DivisionsAndPools extends React.Component<
             ) : null}
           </div>
           {isLoading && this.Loading()}
-          {divisions.length && !isLoading ? (
+          {divisions.length && !isLoading && this.state.expanded.length ? (
             <>
               <ul className={styles.divisionsList}>
                 {divisions.map((division, index) => (

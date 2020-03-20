@@ -24,7 +24,6 @@ export const eventState = () => ({
   max_num_of_divisions: undefined,
   assoc_docs_URL: '',
   division_id: undefined,
-  event_logo_path: '',
   is_active_YN: 0,
 });
 

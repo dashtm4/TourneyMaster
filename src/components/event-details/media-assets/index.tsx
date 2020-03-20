@@ -18,10 +18,18 @@ interface IProps {
   expanded: boolean;
   onToggleOne: BindingCbWithOne<number>;
   index: number;
+  logo?: string;
 }
 
 const MediaAssetsSection: React.FC<IProps> = props => {
-  const { onFileUpload, onFileRemove, expanded, index, onToggleOne } = props;
+  const {
+    onFileUpload,
+    onFileRemove,
+    expanded,
+    index,
+    onToggleOne,
+    logo,
+  } = props;
 
   const populateFileObj = (
     files: File[],
@@ -71,6 +79,7 @@ const MediaAssetsSection: React.FC<IProps> = props => {
               ]}
               onUpload={onDesktopFileUpload}
               onFileRemove={onDesktopFileRemove}
+              logo={logo}
             />
           </div>
           <div className={styles.uploadBlock}>

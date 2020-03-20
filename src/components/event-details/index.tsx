@@ -7,6 +7,7 @@ import {
   saveEventDetails,
   createEvent,
   removeFiles,
+  deleteEvent,
 } from './logic/actions';
 import { EventDetailsDTO, IIconFile } from './logic/model';
 import { IEventState } from './logic/reducer';
@@ -16,11 +17,18 @@ import EventStructureSection from './event-structure';
 import MediaAssetsSection from './media-assets';
 import PlayoffsSection from './playoffs';
 
-import { Button, HeadingLevelTwo, Paper, Loader } from 'components/common';
-import { IUploadFile } from 'common/models';
+import {
+  Button,
+  HeadingLevelTwo,
+  Paper,
+  Loader,
+  PopupConfirm,
+} from 'components/common';
+import { IUploadFile, BindingCbWithOne } from 'common/models';
 import { uploadFile } from 'helpers';
 import styles from './styles.module.scss';
 import { eventState } from './state';
+import DeleteIcon from '@material-ui/icons/Delete';
 import history from '../../browserhistory';
 import { PopupExposure } from 'components/common';
 
@@ -35,6 +43,7 @@ interface Props extends IMapStateProps {
   createEvent: (event: Partial<EventDetailsDTO>) => void;
   uploadFiles: (files: IIconFile[]) => void;
   removeFiles: (files: IIconFile[]) => void;
+  deleteEvent: BindingCbWithOne<string>;
 }
 
 type State = {
@@ -44,6 +53,7 @@ type State = {
   expanded: boolean[];
   expandAll: boolean;
   isModalOpen: boolean;
+  isDeleteModalOpen: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
@@ -54,6 +64,7 @@ class EventDetails extends Component<Props, State> {
     expanded: [true, true, true, true],
     expandAll: false,
     isModalOpen: false,
+    isDeleteModalOpen: false,
   };
 
   componentDidMount() {
@@ -139,12 +150,20 @@ class EventDetails extends Component<Props, State> {
     });
   };
 
-  onModalClose = () => {
-    this.setState({ isModalOpen: false });
+  onDeleteClick = () => {
+    this.setState({ isDeleteModalOpen: true });
+  };
+
+  onDeleteModalClose = () => {
+    this.setState({ isDeleteModalOpen: false });
   };
 
   onCancelClick = () => {
     this.setState({ isModalOpen: true });
+  };
+
+  onModalClose = () => {
+    this.setState({ isModalOpen: false });
   };
 
   onCancel = () => {
@@ -180,12 +199,24 @@ class EventDetails extends Component<Props, State> {
         </Paper>
         <div className={styles.headingContainer}>
           <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
-          <Button
-            label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
-            variant="text"
-            color="secondary"
-            onClick={this.onToggleAll}
-          />
+          <div>
+            {this.props.match?.params.eventId && (
+              <Button
+                label="Delete Event"
+                variant="text"
+                color="secondary"
+                type="dangerLink"
+                icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
+                onClick={this.onDeleteClick}
+              />
+            )}
+            <Button
+              label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+              variant="text"
+              color="secondary"
+              onClick={this.onToggleAll}
+            />
+          </div>
         </div>
         <PrimaryInformationSection
           eventData={event}
@@ -215,6 +246,17 @@ class EventDetails extends Component<Props, State> {
           index={3}
           expanded={this.state.expanded[3]}
           onToggleOne={this.onToggleOne}
+          logo={event.desktop_icon_URL}
+        />
+        <PopupConfirm
+          message="Are you sure you want to delete this event? All data related to this event will be deleted too."
+          isOpen={this.state.isDeleteModalOpen}
+          onClose={this.onDeleteModalClose}
+          onCanceClick={this.onDeleteModalClose}
+          onYesClick={() => {
+            this.props.deleteEvent(event.event_id!);
+          }}
+          type="warning"
         />
         <PopupExposure
           isOpen={this.state.isModalOpen}
@@ -242,6 +284,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       saveEventDetails,
       createEvent,
       removeFiles,
+      deleteEvent,
     },
     dispatch
   );

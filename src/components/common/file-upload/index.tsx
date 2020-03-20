@@ -31,10 +31,18 @@ interface IProps {
   onUpload: (files: File[]) => void;
   acceptTypes: AcceptFileTypes[];
   onFileRemove?: (files: File[]) => void;
+  logo?: string;
 }
 
 const FileUpload: React.FC<IProps> = props => {
-  const { type, acceptTypes, incomingFiles, onUpload, onFileRemove } = props;
+  const {
+    type,
+    acceptTypes,
+    incomingFiles,
+    onUpload,
+    onFileRemove,
+    logo,
+  } = props;
   const [files, setFiles] = useState<File[] | null>(incomingFiles || null);
 
   const onDrop = useCallback((uploadedFiles: File[]) => {
@@ -80,6 +88,12 @@ const FileUpload: React.FC<IProps> = props => {
       renderWhileDragging()
     ) : (
       <>
+        {logo && (
+          <img
+            src={`https://tourneymaster.s3.amazonaws.com/public/${logo}`}
+            className={styles.logo}
+          />
+        )}
         <span>Drag & Drop files here</span>
         <span>or</span>
 
@@ -98,7 +112,9 @@ const FileUpload: React.FC<IProps> = props => {
         return (
           <div className={styles.wrapper}>
             <div {...getRootProps()} className={styles.container}>
-              {Boolean(!files?.length) && <FontAwesomeIcon icon={faUpload} />}
+              {Boolean(!files?.length) && !logo && (
+                <FontAwesomeIcon icon={faUpload} />
+              )}
 
               {Boolean(files?.length) && renderFiles()}
 
