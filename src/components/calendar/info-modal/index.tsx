@@ -193,7 +193,7 @@ const InfoModal = ({
             onChange={onEventDateTimeChange}
           />
         ) : (
-          `${format(clickedEvent.cal_event_startdate, 'MM-dd-yyyy, hh:mm a')}`
+          `${format(clickedEvent.cal_event_startdate, 'MM-dd-yyyy, h:mm a')}`
         );
     }
   };
