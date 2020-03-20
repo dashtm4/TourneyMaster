@@ -13,6 +13,7 @@ import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
 import { getTimeFromString, timeToString } from 'helpers';
 import { BindingCbWithOne } from 'common/models';
+import waiverHubLogo from 'assets/WaiverHubLogo.png';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -227,6 +228,15 @@ const EventStructureSection: React.FC<Props> = ({
             formLabel=""
             onChange={onEsDetailsChange}
           />
+          <div>
+            Connect to WaiverHub
+            <a href="https://www.waiverhub.com/">
+              <img
+                src={waiverHubLogo}
+                style={{ width: '150px', marginLeft: '15px' }}
+              />
+            </a>
+          </div>
         </div>
       </div>
     </SectionDropdown>

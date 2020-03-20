@@ -115,11 +115,11 @@ const InfoModal = ({
     return editable ? (
       <Input
         width="248px"
-        value={clickedEvent.cal_event_type || ''}
+        value={capitalize(clickedEvent.cal_event_type) || ''}
         disabled={true}
       />
     ) : (
-      clickedEvent.cal_event_type || '—'
+      capitalize(clickedEvent.cal_event_type) || '—'
     );
   };
 
