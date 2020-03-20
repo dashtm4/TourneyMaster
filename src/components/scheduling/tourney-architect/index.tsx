@@ -23,14 +23,12 @@ import {
 import { EventMenuTitles, Icons } from 'common/enums';
 import { IConfigurableSchedule } from 'common/models';
 import { BindingAction } from 'common/models';
-import { ArchitectFormFields } from '../types';
+import { ArchitectFormFields, gameStartOnOptions } from '../types';
 
 const STYLES_INFO_ICON = {
   marginLeft: '5px',
   fill: '#00A3EA',
 };
-
-const gameStartOptions = ['5', '10', '15'];
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -102,12 +100,12 @@ export default (props: IProps) => {
         </div>
         <div className={styles.taSecond}>
           <Select
-            options={gameStartOptions.map(option => ({
+            options={gameStartOnOptions.map(option => ({
               label: option,
               value: option,
             }))}
             onChange={localChange}
-            value={schedule.games_start_on || ''}
+            value={schedule.games_start_on}
             name={ArchitectFormFields.GAMES_START_ON}
             label="Games Start On"
             width="100px"
@@ -186,8 +184,9 @@ export default (props: IProps) => {
           {renderSectionCell(
             'Average Games per Team',
             `${Math.floor(
-              Number(schedule.max_num_games) +
-                Number(schedule.min_num_games) / 2
+              (Number(schedule.max_num_games) +
+                Number(schedule.min_num_games)) /
+                2
             )}`
           )}
           <Button

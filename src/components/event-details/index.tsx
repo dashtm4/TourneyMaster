@@ -29,6 +29,8 @@ import { uploadFile } from 'helpers';
 import styles from './styles.module.scss';
 import { eventState } from './state';
 import DeleteIcon from '@material-ui/icons/Delete';
+import history from '../../browserhistory';
+import { PopupExposure } from 'components/common';
 
 interface IMapStateProps {
   event: IEventState;
@@ -118,6 +120,9 @@ class EventDetails extends Component<Props, State> {
 
   onSave = () => {
     const { event, eventId } = this.state;
+
+    this.setState({ isModalOpen: false });
+
     if (!event) return;
 
     if (eventId) {
@@ -151,7 +156,13 @@ class EventDetails extends Component<Props, State> {
     this.setState({ isModalOpen: false });
   };
 
-  onDeleteEvent = () => {};
+  onCancelClick = () => {
+    this.setState({ isModalOpen: true });
+  };
+
+  onCancel = () => {
+    history.push('/');
+  };
 
   render() {
     const eventTypeOptions = ['Tournament', 'Showcase'];
@@ -166,6 +177,12 @@ class EventDetails extends Component<Props, State> {
       <div className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.paperWrapper}>
+            <Button
+              label="Cancel"
+              color="secondary"
+              variant="text"
+              onClick={this.onCancelClick}
+            />
             <Button
               label="Save"
               color="primary"
@@ -234,6 +251,12 @@ class EventDetails extends Component<Props, State> {
             this.props.deleteEvent(event.event_id!);
           }}
           type="warning"
+        />
+        <PopupExposure
+          isOpen={this.state.isModalOpen}
+          onClose={this.onModalClose}
+          onExitClick={this.onCancel}
+          onSaveClick={this.onSave}
         />
       </div>
     );

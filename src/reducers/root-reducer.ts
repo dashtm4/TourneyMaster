@@ -14,7 +14,7 @@ import teams from 'components/teams/logic/reducer';
 import recordScores from 'components/scoring/pages/record-scores/logic/reducer';
 import organizationsManagement from 'components/organizations-management/logic/reducer';
 import libraryManager from 'components/library-manager/logic/reducer';
-import utilities from 'components/utilities/logic/reducer';
+import utilities from 'components/utilities/components/user-profile/logic/reducer';
 import complexities from 'components/gameday-complexities/logic/reducer';
 import schedules from 'components/schedules/logic/reducer';
 

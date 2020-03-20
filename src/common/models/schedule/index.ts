@@ -12,7 +12,7 @@ export interface ISchedule {
   max_num_games: string | null;
   schedule_status: string;
   last_web_publish: string;
-  games_start_on: string | null;
+  games_start_on: string;
   period_duration: string | null;
   pre_game_warmup: string | null;
   time_btwn_periods: string | null;

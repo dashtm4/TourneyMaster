@@ -52,7 +52,7 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <PinIcon style={iconStyles} />;
     case Icons.CLOCK:
       return <WatchLaterIcon style={iconStyles} />;
-    case Icons.REPORT:
+    case Icons.DESCRIPTION:
       return <DescriptionIcon style={iconStyles} />;
     case Icons.LIST:
       return <FormatListBulletedIcon style={iconStyles} />;

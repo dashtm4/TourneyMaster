@@ -1,3 +1,5 @@
+import { TeamPositionEnum } from 'components/common/matrix-table/helper';
+
 export interface IFetchedTeam {
   team_id: string;
   event_id: string | null;
@@ -35,7 +37,7 @@ export interface ITeam {
 }
 
 export interface ITeamCard extends ITeam {
-  games?: number[];
+  games?: { id: number; teamPosition: TeamPositionEnum }[];
   fieldId?: string;
   timeSlotId?: number;
   teamPosition?: number;

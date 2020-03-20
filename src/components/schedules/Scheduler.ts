@@ -296,7 +296,13 @@ export default class Scheduler {
   updateGame = (foundGame: IGame, teamCard: ITeamCard) => {
     this.updatedGames = this.updatedGames.map(game =>
       game.id === foundGame.id
-        ? { ...game, [TeamPositionEnum[teamCard.teamPosition!]]: teamCard }
+        ? {
+            ...game,
+            [TeamPositionEnum[
+              teamCard.games?.find(teamGame => teamGame.id === game.id)
+                ?.teamPosition!
+            ]]: teamCard,
+          }
         : game
     );
   };
@@ -390,19 +396,19 @@ export default class Scheduler {
   };
 
   updateTeam = (teamCard: ITeamCard, game: IGame) => {
-    const games = teamCard.games || [];
-    games.push(game.id);
-
     const teamPosition = game.awayTeam
       ? TeamPositionEnum.homeTeam
       : TeamPositionEnum.awayTeam;
 
+    const games = teamCard.games || [];
+    games.push({
+      id: game.id,
+      teamPosition,
+    });
+
     return {
       ...teamCard,
       games,
-      teamPosition,
-      fieldId: game.fieldId,
-      timeSlotId: game.timeSlotId,
     };
   };
 

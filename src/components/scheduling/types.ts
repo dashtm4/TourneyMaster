@@ -9,4 +9,6 @@ enum ArchitectFormFields {
   SCHEDULT_TAG = 'schedule_tag',
 }
 
-export { ArchitectFormFields };
+const gameStartOnOptions = ['5', '10', '15'];
+
+export { ArchitectFormFields, gameStartOnOptions };

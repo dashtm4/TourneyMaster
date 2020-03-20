@@ -29,11 +29,12 @@ import {
   getTimeValuesFromEvent,
   calculateTimeSlots,
   setGameOptions,
-} from './helper';
+} from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import Diagnostics, { IDiagnosticsInput } from './diagnostics';
 import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
 import formatDivisionsDiagnostics from './diagnostics/divisionsDiagnostics';
+import { DiagnosticTypes } from './types';
 import styles from './styles.module.scss';
 
 type PartialTournamentData = Partial<ITournamentData>;
@@ -171,7 +172,7 @@ class Schedules extends Component<Props, State> {
     });
 
   render() {
-    const { divisions, teams, event, eventSummary } = this.props;
+    const { divisions, event, eventSummary } = this.props;
     const {
       fields,
       timeSlots,
@@ -183,15 +184,15 @@ class Schedules extends Component<Props, State> {
       divisionsDiagnosticsOpen,
     } = this.state;
 
-    const { updatedGames } = schedulerResult || {};
+    const { games, teamCards } = schedulerResult || {};
 
     const loadCondition = !!(
       fields?.length &&
-      updatedGames &&
+      games?.length &&
       timeSlots?.length &&
       divisions?.length &&
       facilities?.length &&
-      teams?.length &&
+      teamCards?.length &&
       event &&
       eventSummary?.length
     );
@@ -201,11 +202,11 @@ class Schedules extends Component<Props, State> {
         {loadCondition && (
           <TableSchedule
             fields={fields!}
-            games={updatedGames!}
+            games={games!}
             timeSlots={timeSlots!}
             divisions={divisions!}
             facilities={facilities!}
-            teams={teams!}
+            teamCards={teamCards!}
             eventSummary={eventSummary!}
           />
         )}
@@ -223,6 +224,7 @@ class Schedules extends Component<Props, State> {
                 isOpen={teamsDiagnosticsOpen}
                 tableData={teamsDiagnostics}
                 onClose={this.closeDiagnostics}
+                diagnosticType={DiagnosticTypes.TEAMS_DIAGNOSTICS}
               />
             </>
           )}
@@ -239,6 +241,7 @@ class Schedules extends Component<Props, State> {
                 isOpen={divisionsDiagnosticsOpen}
                 tableData={divisionsDiagnostics}
                 onClose={this.closeDiagnostics}
+                diagnosticType={DiagnosticTypes.DIVISIONS_DIAGNOSTICS}
               />
             </>
           )}

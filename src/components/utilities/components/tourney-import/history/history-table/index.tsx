@@ -14,6 +14,9 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
+import { Button } from 'components/common';
+import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
+import moment from 'moment';
 
 const useStyles1 = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,7 +28,7 @@ const useStyles1 = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  events: any[];
+  histories: any[];
 };
 
 interface TablePaginationActionsProps {
@@ -92,12 +95,12 @@ const useStyles2 = makeStyles({
   },
 });
 
-const ExtEventsTable = ({ events }: Props) => {
+const ExtEventsTable = ({ histories }: Props) => {
   const classes = useStyles2();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, events.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, histories.length - page * rowsPerPage);
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     if (event !== null)
@@ -117,29 +120,47 @@ const ExtEventsTable = ({ events }: Props) => {
       <Table className={classes.table} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
-            <TableCell align="left">Tournament ID</TableCell>
-            <TableCell align="left">Division ID</TableCell>
-            <TableCell align="left">Pool Description</TableCell>
-            <TableCell align="left">Team ID</TableCell>
+            <TableCell align="left">Import Date</TableCell>
+            <TableCell align="left">Tourney ID</TableCell>
+            <TableCell align="left">Status</TableCell>
+            <TableCell align="center">Re-Run</TableCell>
+            <TableCell align="center">Delete</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {(rowsPerPage > 0
-            ? events.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : events
+            ? histories.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : histories
           ).map((row, index) => (
-            <TableRow key={index}>
-              <TableCell component="th" scope="row">
-                {row.IDTournament}
-              </TableCell>
-              <TableCell align="left">{row.IDDivision}</TableCell>
-              <TableCell align="left">{row.pool_description}</TableCell>
-              <TableCell align="left">{row.IDTeam}</TableCell>
-            </TableRow>
+            row.IDTournament ? (
+              <TableRow key={index}>
+                <TableCell component="th" scope="row">
+                  {moment(row.created_datetime).format('MM.DD.YYYY')}
+                </TableCell>
+                <TableCell align="left">{row.IDTournament}</TableCell>
+                <TableCell align="left">{row.is_active_YN}</TableCell>
+                <TableCell align="center">
+                  <Button
+                    label="Re-Run"
+                    variant={ButtonVarian.OUTLINED}
+                    color={ButtonColors.DEFAULT}
+                    btnType={ButtonFormTypes.SUBMIT}
+                  />
+                </TableCell>
+                <TableCell align="center">
+                  <Button
+                    label="Delete"
+                    variant={ButtonVarian.OUTLINED}
+                    color={ButtonColors.SECONDARY}
+                    btnType={ButtonFormTypes.SUBMIT}
+                  />
+                </TableCell>
+              </TableRow>
+            ) : null
           ))}
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
+              <TableCell colSpan={5} />
             </TableRow>
           )}
         </TableBody>
@@ -147,8 +168,8 @@ const ExtEventsTable = ({ events }: Props) => {
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={4}
-              count={events.length}
+              colSpan={5}
+              count={histories.length}
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{
