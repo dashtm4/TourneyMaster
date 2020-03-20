@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { History } from 'history';
 import { bindActionCreators, Dispatch } from 'redux';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { ITeam } from 'common/models/schedule/teams';
@@ -13,7 +14,7 @@ import {
 import { fetchFields, fetchEventSummary } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
-import { TableSchedule, Button } from 'components/common';
+import { TableSchedule, Button, Paper, PopupExposure } from 'components/common';
 import {
   defineGames,
   IDefinedGames,
@@ -47,6 +48,7 @@ interface IMapDispatchToProps {
 
 interface ComponentProps {
   match: any;
+  history: History;
 }
 
 interface IRootState {
@@ -67,12 +69,14 @@ interface State {
   divisionsDiagnostics?: IDiagnosticsInput;
   teamsDiagnosticsOpen: boolean;
   divisionsDiagnosticsOpen: boolean;
+  cancelConfirmationOpen: boolean;
 }
 
 class Schedules extends Component<Props, State> {
   state: State = {
     teamsDiagnosticsOpen: false,
     divisionsDiagnosticsOpen: false,
+    cancelConfirmationOpen: false,
   };
 
   componentDidMount() {
@@ -170,6 +174,29 @@ class Schedules extends Component<Props, State> {
       divisionsDiagnosticsOpen: false,
     });
 
+  openCancelConfirmation = () =>
+    this.setState({ cancelConfirmationOpen: true });
+
+  closeCancelConfirmation = () =>
+    this.setState({ cancelConfirmationOpen: false });
+
+  onCancel = () => {
+    this.openCancelConfirmation();
+  };
+
+  onExit = () => {
+    this.props.history.goBack();
+  };
+
+  onSaveDraft = () => {
+    const { cancelConfirmationOpen } = this.state;
+
+    if (cancelConfirmationOpen) {
+      this.closeCancelConfirmation();
+      this.onExit();
+    }
+  };
+
   render() {
     const { divisions, event, eventSummary } = this.props;
     const {
@@ -181,6 +208,7 @@ class Schedules extends Component<Props, State> {
       divisionsDiagnostics,
       teamsDiagnosticsOpen,
       divisionsDiagnosticsOpen,
+      cancelConfirmationOpen,
     } = this.state;
 
     const { games, teamCards } = schedulerResult || {};
@@ -197,7 +225,26 @@ class Schedules extends Component<Props, State> {
     );
 
     return (
-      <div>
+      <div className={styles.container}>
+        <div className={styles.paperWrapper}>
+          <Paper>
+            <div className={styles.paperContainer}>
+              <Button
+                label="Cancel"
+                variant="text"
+                color="secondary"
+                onClick={this.onCancel}
+              />
+              <Button
+                label="Save Draft"
+                variant="contained"
+                color="primary"
+                onClick={this.onSaveDraft}
+              />
+            </div>
+          </Paper>
+        </div>
+
         {loadCondition && (
           <TableSchedule
             fields={fields!}
@@ -242,6 +289,14 @@ class Schedules extends Component<Props, State> {
               />
             </>
           )}
+
+          {/* CONFIRMATION */}
+          <PopupExposure
+            isOpen={cancelConfirmationOpen}
+            onClose={this.closeCancelConfirmation}
+            onExitClick={this.onExit}
+            onSaveClick={this.onSaveDraft}
+          />
         </div>
       </div>
     );

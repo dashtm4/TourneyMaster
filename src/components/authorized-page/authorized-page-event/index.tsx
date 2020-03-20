@@ -77,6 +77,8 @@ const AuthorizedPageEvent = ({
     return <Loader />;
   }
 
+  const hideOnList = [Routes.SCHEDULES];
+
   return (
     <div className={styles.container}>
       <Header />
@@ -84,6 +86,7 @@ const AuthorizedPageEvent = ({
         <Menu
           list={menuList}
           eventId={eventId}
+          hideOnList={hideOnList}
           isAllowEdit={Boolean(eventId)}
           tournamentStatus={event?.event_status}
           eventName={event?.event_name || ''}

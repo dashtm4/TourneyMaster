@@ -74,20 +74,22 @@ const ScoringFilter = (props: Props) => {
     <section>
       <h3 className="visually-hidden">Scoring filters</h3>
       <form className={styles.scoringForm}>
-        {Object.keys(DayTypes).map(day => (
-          <Button
-            onClick={() => onDaySelect(day)}
-            label={DayTypes[day]}
-            variant="contained"
-            color="primary"
-            type={
-              filterValues.selectedDay === DayTypes[day]
-                ? ButtonTypes.SQUARED
-                : ButtonTypes.SQUARED_OUTLINED
-            }
-            key={day}
-          />
-        ))}
+        <div className={styles.buttonsWrapper}>
+          {Object.keys(DayTypes).map(day => (
+            <Button
+              onClick={() => onDaySelect(day)}
+              label={DayTypes[day]}
+              variant="contained"
+              color="primary"
+              type={
+                filterValues.selectedDay === DayTypes[day]
+                  ? ButtonTypes.SQUARED
+                  : ButtonTypes.SQUARED_OUTLINED
+              }
+              key={day}
+            />
+          ))}
+        </div>
         <fieldset className={styles.selectWrapper}>
           <legend className={styles.selectTitle}>Division</legend>
           <MultipleSearchSelect
