@@ -125,7 +125,7 @@ class RegistrationView extends React.Component<
       );
     } else {
       return (
-        <section>
+        <section className={styles.container}>
           <Paper sticky={true}>
             <div className={styles.mainMenu}>
               <Button

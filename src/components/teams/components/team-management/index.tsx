@@ -41,7 +41,7 @@ const TeamManagement = ({
   ]);
   const [expandAll, setExpandAll] = useState(false);
 
-  const onToggleAll = (e: any) => {
+  const onToggleAll = (e: React.MouseEvent) => {
     e.stopPropagation();
 
     setExpanded(expanded.map(_e => expandAll));

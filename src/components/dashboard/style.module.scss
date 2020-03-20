@@ -48,7 +48,7 @@
   margin: 35px 0;
 }
 .tournamentsListContainer {
-  max-height: 600px;
+  height: 600px;
   overflow-y: auto;
   & > *:not(:last-child) {
     margin: 16px 0;
@@ -61,6 +61,15 @@
     background: #ffffff;
     border-radius: 5px;
   }
+  .loaderContainer {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.container {
+  min-height: 100px;
 }
 
 .tournamentsHeading {

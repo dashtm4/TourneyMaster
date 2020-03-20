@@ -1,8 +1,9 @@
 import React from 'react';
 import styles from '../styles.module.scss';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import { IRegistration } from 'common/models/registration';
+import { stringToLink } from 'helpers';
 
 interface IPrimaryInformationProps {
   data: Partial<IRegistration>;
@@ -21,15 +22,17 @@ const PrimaryInformation = ({
         <span className={styles.sectionTitle}>Division</span>
         <div>
           {divisions.map((division, index: number) => (
-            <Link
-              to={`/event/divisions-and-pools/${eventId}`}
+            <HashLink
               key={division.id}
               className={styles.link}
+              to={`/event/divisions-and-pools/${eventId}#${stringToLink(
+                division.name
+              )}`}
             >
               <span>{`${division.name}${
                 index === divisions.length - 1 ? '' : ', '
               }`}</span>
-            </Link>
+            </HashLink>
           ))}
         </div>
       </div>
