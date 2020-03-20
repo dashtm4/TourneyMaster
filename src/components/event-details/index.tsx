@@ -53,6 +53,7 @@ type State = {
   expanded: boolean[];
   expandAll: boolean;
   isModalOpen: boolean;
+  isDeleteModalOpen: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
@@ -63,6 +64,7 @@ class EventDetails extends Component<Props, State> {
     expanded: [true, true, true, true],
     expandAll: false,
     isModalOpen: false,
+    isDeleteModalOpen: false,
   };
 
   componentDidMount() {
@@ -149,15 +151,19 @@ class EventDetails extends Component<Props, State> {
   };
 
   onDeleteClick = () => {
+    this.setState({ isDeleteModalOpen: true });
+  };
+
+  onDeleteModalClose = () => {
+    this.setState({ isDeleteModalOpen: false });
+  };
+
+  onCancelClick = () => {
     this.setState({ isModalOpen: true });
   };
 
   onModalClose = () => {
     this.setState({ isModalOpen: false });
-  };
-
-  onCancelClick = () => {
-    this.setState({ isModalOpen: true });
   };
 
   onCancel = () => {
@@ -244,9 +250,9 @@ class EventDetails extends Component<Props, State> {
         />
         <PopupConfirm
           message="Are you sure you want to delete this event? All data related to this event will be deleted too."
-          isOpen={this.state.isModalOpen}
-          onClose={this.onModalClose}
-          onCanceClick={this.onModalClose}
+          isOpen={this.state.isDeleteModalOpen}
+          onClose={this.onDeleteModalClose}
+          onCanceClick={this.onDeleteModalClose}
           onYesClick={() => {
             this.props.deleteEvent(event.event_id!);
           }}
