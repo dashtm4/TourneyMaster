@@ -4,37 +4,27 @@ import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
 import { MatrixTable } from 'components/common';
-import { IDivision, ITeam, IEventSummary } from 'common/models';
-import { getUnassignedTeams } from './helpers';
+import { IDivision, IEventSummary } from 'common/models';
 import {
-  DayTypes,
-  DefaulSelectFalues,
-  IScheduleFilter,
-  OptimizeTypes,
-} from './types';
+  getUnassignedTeams,
+  mapGamesByFilter,
+  mapFilterValues,
+  applyFilters,
+  handleFilterData,
+  mapUnusedFields,
+} from './helpers';
+import { IScheduleFilter, OptimizeTypes } from './types';
 import styles from './styles.module.scss';
-import { IGame } from '../matrix-table/helper';
+import { IGame, settleTeamsPerGames } from '../matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
-
-import {
-  // mockedFields,
-  // mockedGames,
-  // mockedTimeSlots,
-  mockedTeamCards,
-} from './mocks';
+import { mockedTeamCards } from './mocks';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
-
-const SCHEDULE_FILTER_FALUES = {
-  selectedDay: DayTypes.DAY_ONE,
-  selectedDivision: DefaulSelectFalues.ALL,
-  selectedTeam: DefaulSelectFalues.ALL,
-  selectedField: DefaulSelectFalues.ALL,
-};
+import { ITeamCard } from 'common/models/schedule/teams';
 
 interface Props {
   divisions: IDivision[];
-  teams: ITeam[];
+  teamCards: ITeamCard[];
   games: IGame[];
   fields: IField[];
   timeSlots: ITimeSlot[];
@@ -45,7 +35,7 @@ interface Props {
 
 const TableSchedule = ({
   divisions,
-  teams,
+  teamCards: propsTeamCards,
   games,
   fields,
   facilities,
@@ -53,22 +43,36 @@ const TableSchedule = ({
   eventSummary,
   isEnterScores,
 }: Props) => {
-  const [filterValues, onFilterValueChange] = React.useState<IScheduleFilter>(
-    SCHEDULE_FILTER_FALUES
+  const [teamCards] = React.useState(propsTeamCards);
+
+  const [filterValues, changeFilterValues] = React.useState<IScheduleFilter>(
+    applyFilters(divisions, teamCards, eventSummary)
   );
+
   const [optimizeBy, onOptimizeClick] = React.useState<OptimizeTypes>(
     OptimizeTypes.MIN_RANK
   );
-  const [isHeatmap, onHeatmapChange] = React.useState<boolean>(false);
 
-  // teams state
+  const [isHeatmap, onHeatmapChange] = React.useState<boolean>(true);
 
-  // get unassigned
+  const filledGames = settleTeamsPerGames(games, teamCards);
+  const filteredGames = mapGamesByFilter([...filledGames], filterValues);
 
-  // get teams for games
+  const { filteredTeams } = mapFilterValues(teamCards, filterValues);
+  const updatedFields = mapUnusedFields(fields, filteredGames);
 
-  //! dell
   const unassignedTeams = getUnassignedTeams(mockedTeamCards);
+
+  const onFilterChange = (data: IScheduleFilter) => {
+    const filterData = handleFilterData(
+      filterValues,
+      data,
+      divisions,
+      teamCards,
+      eventSummary
+    );
+    changeFilterValues(filterData);
+  };
 
   return (
     <section className={styles.section}>
@@ -80,14 +84,14 @@ const TableSchedule = ({
         <div className={styles.tableWrapper}>
           <Filter
             divisions={divisions}
-            teams={teams}
+            teams={filteredTeams}
             eventSummary={eventSummary}
             filterValues={filterValues}
-            onChangeFilterValue={onFilterValueChange}
+            onChangeFilterValue={onFilterChange}
           />
           <MatrixTable
-            games={games}
-            fields={fields}
+            games={filteredGames}
+            fields={updatedFields}
             timeSlots={timeSlots}
             facilities={facilities}
             isHeatmap={isHeatmap}
