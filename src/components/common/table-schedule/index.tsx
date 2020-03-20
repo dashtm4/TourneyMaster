@@ -1,10 +1,13 @@
 import React from 'react';
+import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 import ListUnassigned from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
-import { MatrixTable } from 'components/common';
-import { IDivision, ITeam, IEventSummary } from 'common/models';
+import { MatrixTable, Button } from 'components/common';
+import { getIcon } from 'helpers';
+import { IDivision, ITeam, IEventSummary, IEventDetails } from 'common/models';
+import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
 import { getUnassignedTeams } from './helpers';
 import {
   DayTypes,
@@ -12,10 +15,12 @@ import {
   IScheduleFilter,
   OptimizeTypes,
 } from './types';
-import styles from './styles.module.scss';
 import { IGame } from '../matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
+import styles from './styles.module.scss';
+
+import PDFScheduleTable from 'pdg-layouts/schedule-table';
 
 import {
   // mockedFields,
@@ -33,6 +38,7 @@ const SCHEDULE_FILTER_FALUES = {
 };
 
 interface Props {
+  event: IEventDetails;
   divisions: IDivision[];
   teams: ITeam[];
   games: IGame[];
@@ -44,6 +50,7 @@ interface Props {
 }
 
 const TableSchedule = ({
+  event,
   divisions,
   teams,
   games,
@@ -109,6 +116,38 @@ const TableSchedule = ({
           onOptimizeClick={onOptimizeClick}
         />
       )}
+      <div className={styles.btnsWrapper}>
+        <PDFDownloadLink
+          document={
+            <PDFScheduleTable
+              event={event}
+              games={games}
+              fields={fields}
+              timeSlots={timeSlots}
+              facilities={facilities}
+            />
+          }
+          fileName="Schedule.pdf"
+        >
+          <Button
+            icon={getIcon(Icons.PRINT)}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            label="Print"
+          />
+        </PDFDownloadLink>
+      </div>
+      <p>
+        <PDFViewer width="500" height="400">
+          <PDFScheduleTable
+            event={event}
+            games={games}
+            fields={fields}
+            timeSlots={timeSlots}
+            facilities={facilities}
+          />
+        </PDFViewer>
+      </p>
     </section>
   );
 };

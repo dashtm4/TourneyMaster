@@ -19,27 +19,51 @@ const styles = StyleSheet.create({
   tableWrapper: {
     flexGrow: 1,
     marginBottom: 15,
+  },
+  facilityTitle: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  scheduleDate: {
+    marginRight: 20,
+  },
+  thead: {
+    flexDirection: 'row',
+    marginLeft: 100,
+  },
+  tbody: {},
+  fieldName: {
+    width: 160,
+    height: 30,
 
+    margin: '0 15 0 0',
+    padding: '0 15px',
+  },
+  timeSlotRow: {
     flexDirection: 'row',
   },
   timeSlot: {
-    width: 150,
-    height: 30,
-
-    marginBottom: 100,
-    backgroundColor: 'red',
+    marginRight: 40,
+    paddingTop: 10,
   },
-  fieldList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  fieldName: {
-    width: 150,
-    height: 30,
+  gameWrapper: {
+    flexDirection: 'column',
 
-    marginBottom: 100,
-    marginRight: 15,
+    width: 160,
+    height: 40,
+
+    margin: '0 15 15 0',
     padding: '0 15px',
+  },
+  gameTeamName: {
+    height: 20,
+    textOverflow: 'ellipsis',
+    maxLines: 1,
+  },
+  printDate: {
+    position: 'absolute',
+    left: 15,
+    bottom: 15,
   },
 });
 

@@ -91,7 +91,7 @@ export default (props: Props) => {
       {!teamCard.errors?.length && (
         <p className={styles.cardNameWrapper}>
           <span className={styles.cardTextWrapper}>
-            {teamCard.id}&nbsp;({teamCard.divisionShortName})
+            {teamCard.name}&nbsp;({teamCard.divisionShortName})
           </span>
         </p>
       )}
