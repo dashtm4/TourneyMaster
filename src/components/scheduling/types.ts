@@ -1,3 +1,10 @@
+import { ISchedule } from 'common/models';
+
+export interface ISchedulingSchedule extends ISchedule {
+  createdByName: string;
+  updatedByName: string | null;
+}
+
 enum ArchitectFormFields {
   MIN_NUM_GAMES = 'min_num_games',
   MAX_NUM_GAMES = 'max_num_games',
