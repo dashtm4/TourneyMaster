@@ -1,9 +1,9 @@
 import React from 'react';
 import TournamentPlayItem from '../tournament-play-item';
 import { SectionDropdown, HeadingLevelThree } from 'components/common';
-import { stringToLink } from 'helpers';
+import { sortByField } from 'helpers';
 import { BindingAction } from 'common/models';
-import { EventMenuTitles } from 'common/enums';
+import { EventMenuTitles, SortByFilesTypes } from 'common/enums';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
 
@@ -15,13 +15,17 @@ interface IProps {
 
 export default (props: IProps) => {
   const { schedules, onEditScheduleDetails, onManageTournamentPlay } = props;
+  const sortedScheduleByName = sortByField(
+    schedules,
+    SortByFilesTypes.SCHEDULES
+  );
 
   return (
     <SectionDropdown
       type="section"
       isDefaultExpanded={true}
       useBorder={true}
-      id={stringToLink(EventMenuTitles.TOURNAMENT_PLAY)}
+      id={EventMenuTitles.TOURNAMENT_PLAY}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>
@@ -29,7 +33,7 @@ export default (props: IProps) => {
         </span>
       </HeadingLevelThree>
       <ul className={styles.tournamentList}>
-        {schedules.map(it => (
+        {sortedScheduleByName.map(it => (
           <TournamentPlayItem
             schedule={it}
             onEditScheduleDetails={onEditScheduleDetails}
