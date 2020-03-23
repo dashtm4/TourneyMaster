@@ -284,7 +284,13 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
           />
           <InfoCard
             icon={<FormatListBulletedIcon fontSize="large" />}
-            info="2 Pending Tasks"
+            info={`${
+              this.props.calendarEvents.filter(
+                event =>
+                  event.cal_event_type === 'task' &&
+                  new Date(event.cal_event_datetime) > new Date()
+              ).length
+            } Pending Tasks`}
             order={3}
             changeOrder={this.onOrderChange}
           />
