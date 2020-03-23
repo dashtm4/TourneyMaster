@@ -1,10 +1,20 @@
 import React from 'react';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import ListUnassigned from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
-import { MatrixTable } from 'components/common';
-import { IDivision, IEventSummary } from 'common/models';
+import PDFScheduleTable from 'pdg-layouts/schedule-table';
+import { MatrixTable, Button } from 'components/common';
+import { getIcon } from 'helpers';
+import { IDivision, IEventSummary, IEventDetails } from 'common/models';
+import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
+import { IScheduleFilter, OptimizeTypes } from './types';
+import { IGame, settleTeamsPerGames } from '../matrix-table/helper';
+import { IField } from 'common/models/schedule/fields';
+import ITimeSlot from 'common/models/schedule/timeSlots';
+import styles from './styles.module.scss';
+
 import {
   getUnassignedTeams,
   mapGamesByFilter,
@@ -13,16 +23,13 @@ import {
   handleFilterData,
   mapUnusedFields,
 } from './helpers';
-import { IScheduleFilter, OptimizeTypes } from './types';
-import styles from './styles.module.scss';
-import { IGame, settleTeamsPerGames } from '../matrix-table/helper';
-import { IField } from 'common/models/schedule/fields';
-import ITimeSlot from 'common/models/schedule/timeSlots';
+
 import { mockedTeamCards } from './mocks';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 
 interface Props {
+  event: IEventDetails;
   divisions: IDivision[];
   teamCards: ITeamCard[];
   games: IGame[];
@@ -34,6 +41,7 @@ interface Props {
 }
 
 const TableSchedule = ({
+  event,
   divisions,
   teamCards,
   games,
@@ -113,6 +121,27 @@ const TableSchedule = ({
           onOptimizeClick={onOptimizeClick}
         />
       )}
+      <div className={styles.btnsWrapper}>
+        <PDFDownloadLink
+          document={
+            <PDFScheduleTable
+              event={event}
+              games={games}
+              fields={fields}
+              timeSlots={timeSlots}
+              facilities={facilities}
+            />
+          }
+          fileName="Schedule.pdf"
+        >
+          <Button
+            icon={getIcon(Icons.PRINT)}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            label="Print"
+          />
+        </PDFDownloadLink>
+      </div>
     </section>
   );
 };

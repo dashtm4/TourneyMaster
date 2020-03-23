@@ -1,119 +1,83 @@
 import React from 'react';
-import {
-  Page,
-  Text,
-  View,
-  Document,
-  Image,
-  PDFDownloadLink,
-  PDFViewer,
-} from '@react-pdf/renderer';
+import { Page, Text, View, Document } from '@react-pdf/renderer';
 import moment from 'moment';
-import Api from 'api/api';
-import { Loader } from 'components/common';
-import { IEventDetails, IFacility, IField } from 'common/models';
-import TMLogo from 'assets/logo.png';
+import Header from './components/header';
+import TableThead from './components/table-thead';
+import TableTbody from './components/table-tbody';
+import { IEventDetails } from 'common/models';
+import { IGame } from 'components/common/matrix-table/helper';
+import { IField } from 'common/models/schedule/fields';
+import ITimeSlot from 'common/models/schedule/timeSlots';
+import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { styles } from './styles';
 
 interface IPDFProps {
-  event: IEventDetails | null;
+  event: IEventDetails;
+  games: IGame[];
   fields: IField[];
-  facilities: IFacility[];
+  timeSlots: ITimeSlot[];
+  facilities: IScheduleFacility[];
 }
 
-const MyDocument = ({ event, fields, facilities }: IPDFProps) => {
-  if (!event) return null;
-
-  const takeFacilityByFieldId = (facilityId: string) =>
-    facilities.find(facility => facility.facilities_id === facilityId);
-
+const PDFScheduleTable = ({
+  event,
+  fields,
+  facilities,
+  games,
+  timeSlots,
+}: IPDFProps) => {
   return (
     <Document>
       <Page size="A4" orientation="landscape" style={styles.page}>
-        <View style={styles.header} fixed>
-          <View>
-            <Text>{event.event_name}</Text>
-            <Text>Event Schedule ({'<< Schedule Name>>'})</Text>
-          </View>
-          <View style={styles.logoWrapper}>
-            <Image src={event.event_logo_path || TMLogo} style={styles.logo} />
-          </View>
-        </View>
-        <View style={styles.tableWrapper}>
-          <View style={styles.timeSlots}>
-            {Array.from(new Array(5), (_, idx) => (
-              <View style={styles.timeSlot} key={idx} />
-            ))}
-          </View>
-          <View style={styles.fieldList}>
-            {fields.map(it => (
-              <Text key={it.field_id} style={styles.fieldName}>
-                {`${it.field_name} - ${
-                  takeFacilityByFieldId(it.facilities_id)?.facilities_abbr
-                }`}
-              </Text>
-            ))}
-          </View>
-        </View>
-        <View>
-          <Text fixed>Printed Date: {moment(new Date()).format('LLL')}</Text>
+        <Header event={event} />
+        {facilities.map(facility => {
+          const filtredFields = fields.filter(
+            field => field.facilityId === facility.id
+          );
+
+          return (
+            <View style={styles.tableWrapper} key={facility.id}>
+              <View style={styles.facilityTitle}>
+                <Text style={styles.scheduleDate}>
+                  {moment(new Date()).format('l')}
+                </Text>
+                <Text>{facility.name}</Text>
+              </View>
+              {filtredFields.reduce((acc, field, idx) => {
+                let splitIdx = 0;
+
+                if (idx % 4 === 0 || idx === 0) {
+                  if (idx > 0) splitIdx += idx;
+
+                  return [
+                    ...acc,
+                    <View key={field.id}>
+                      <TableThead
+                        facility={facility}
+                        fields={filtredFields}
+                        splitIdx={splitIdx}
+                      />
+                      <TableTbody
+                        facility={facility}
+                        timeSlots={timeSlots}
+                        games={games}
+                        splitIdx={splitIdx}
+                      />
+                    </View>,
+                  ];
+                } else {
+                  return acc;
+                }
+              }, [] as JSX.Element[])}
+            </View>
+          );
+        })}
+        <View style={styles.printDate} fixed>
+          <Text>Printed Date: {moment(new Date()).format('LLL')}</Text>
         </View>
       </Page>
     </Document>
   );
 };
 
-class PDF extends React.Component<any, IPDFProps> {
-  constructor(props: null) {
-    super(props);
-
-    this.state = {
-      event: null,
-      fields: [],
-      facilities: [],
-    };
-  }
-
-  async componentDidMount() {
-    const event = await Api.get('/events?event_id=ADLNT001');
-    const facilities = await Api.get(`/facilities?event_id=ADLNT001`);
-    const fields = (
-      await Promise.all(
-        facilities.map((it: IFacility) =>
-          Api.get(`/fields?facilities_id=${it.facilities_id}`)
-        )
-      )
-    ).flat();
-
-    this.setState({ event: event[0], fields, facilities });
-  }
-
-  render() {
-    const { event, fields, facilities } = this.state;
-
-    if (!event) {
-      return <Loader />;
-    }
-
-    const WrappedPDF = () => (
-      <MyDocument event={event} fields={fields} facilities={facilities} />
-    );
-
-    return (
-      <>
-        <p>
-          <PDFViewer width="500" height="400">
-            <WrappedPDF />
-          </PDFViewer>
-        </p>
-        <p>
-          <PDFDownloadLink document={<WrappedPDF />} fileName="somename.pdf">
-            {event.event_name}
-          </PDFDownloadLink>
-        </p>
-      </>
-    );
-  }
-}
-
-export default PDF;
+export default PDFScheduleTable;

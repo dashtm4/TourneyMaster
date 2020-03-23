@@ -15,8 +15,6 @@ import styles from './styles.module.scss';
 import GamedayComplexities from 'components/gameday-complexities';
 import ScrollTopButton from 'components/common/scroll-top-button';
 
-import ReactPDF from 'pdg-layouts/schedule-table';
-
 const AuthorizedPage = () => (
   <div className={styles.container}>
     <Header />
@@ -24,7 +22,6 @@ const AuthorizedPage = () => (
       <Menu list={MenuList} isAllowEdit={true} />
       <main className={styles.content}>
         <Switch>
-          <Route path={Routes.REACT_PDF} component={ReactPDF} />
           <Route path={Routes.DASHBOARD} component={Dashboard} />
           <Route path={Routes.LIBRARY_MANAGER} component={LibraryManager} />
           <Route path={Routes.EVENT_LINK} component={EmptyPage} />

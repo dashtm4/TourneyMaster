@@ -290,6 +290,7 @@ class Schedules extends Component<Props, State> {
 
         {loadCondition && (
           <TableSchedule
+            event={event!}
             fields={fields!}
             games={games!}
             timeSlots={timeSlots!}
