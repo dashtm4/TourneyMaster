@@ -10,6 +10,7 @@ import { getIcon } from 'helpers';
 import { IDivision, IEventSummary, IEventDetails } from 'common/models';
 import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
 import { IScheduleFilter, OptimizeTypes } from './types';
+import { mapGamesByField } from './helpers';
 import { IGame, settleTeamsPerGames } from '../matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
@@ -126,8 +127,8 @@ const TableSchedule = ({
           document={
             <PDFScheduleTable
               event={event}
-              games={games}
-              fields={fields}
+              games={mapGamesByField(filteredGames, updatedFields)}
+              fields={updatedFields}
               timeSlots={timeSlots}
               facilities={facilities}
             />
