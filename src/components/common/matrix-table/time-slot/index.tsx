@@ -3,7 +3,7 @@ import styles from '../styles.module.scss';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IGame } from '../helper';
 import RenderGameSlot from '../game-slot';
-import { DropParams } from '../dnd/drop';
+import { IDropParams } from '../dnd/drop';
 import { IField } from 'common/models/schedule/fields';
 import { formatTimeSlot } from 'helpers';
 
@@ -11,17 +11,13 @@ interface IProps {
   timeSlot: ITimeSlot;
   games: IGame[];
   fields: IField[];
-  isHeatmap: boolean;
+  showHeatmap?: boolean;
   isEnterScores?: boolean;
-  moveCard: (params: DropParams) => void;
+  moveCard: (params: IDropParams) => void;
 }
 
 const RenderTimeSlot = (props: IProps) => {
-  const { timeSlot, games, moveCard, fields, isHeatmap, isEnterScores } = props;
-
-  const findFielForGameSlot = (game: IGame) => {
-    return fields.find(field => field.id === game.fieldId);
-  };
+  const { timeSlot, games, moveCard, fields, showHeatmap } = props;
 
   return (
     <tr key={timeSlot.id} className={styles.timeSlotRow}>
@@ -34,10 +30,8 @@ const RenderTimeSlot = (props: IProps) => {
           <RenderGameSlot
             key={game.id}
             game={game}
-            isHeatmap={isHeatmap}
-            isEnterScores={isEnterScores}
-            field={findFielForGameSlot(game)}
-            moveCard={moveCard}
+            onDrop={moveCard}
+            showHeatmap={showHeatmap}
           />
         ))}
     </tr>

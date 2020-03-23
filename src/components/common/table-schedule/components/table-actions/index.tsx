@@ -9,19 +9,25 @@ import { BindingAction } from 'common/models';
 
 const CARD_MESSAGE_FOR_UNDO = 'Press multiple times to go back more than once.';
 
-interface Props {
+interface IProps {
+  zoomingDisabled: boolean;
   optimizeBy: OptimizeTypes;
   onUndoClick: BindingAction;
   onLockAllClick: BindingAction;
   onUnlockAllClick: BindingAction;
+  toggleZooming: () => void;
   onOptimizeClick: (optimizeBy: OptimizeTypes) => void;
 }
 
-const TableActions = ({
-  onUndoClick,
-  onLockAllClick,
-  onUnlockAllClick,
-}: Props) => {
+const TableActions = (props: IProps) => {
+  const {
+    zoomingDisabled,
+    onUndoClick,
+    onLockAllClick,
+    onUnlockAllClick,
+    toggleZooming,
+  } = props;
+
   return (
     <section>
       <h3 className="visually-hidden">More functions</h3>
@@ -39,6 +45,13 @@ const TableActions = ({
           </CardMessage>
         </div>
         <p className={styles.lockBtnsWrapper}>
+          <Button
+            label={zoomingDisabled ? 'Drag-n-Drop mode' : 'Zoom-n-Nav mode'}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            icon={getIcon(zoomingDisabled ? Icons.FLIP : Icons.ZOOM)}
+            onClick={toggleZooming}
+          />
           <Button
             onClick={onLockAllClick}
             icon={getIcon(Icons.LOCK)}

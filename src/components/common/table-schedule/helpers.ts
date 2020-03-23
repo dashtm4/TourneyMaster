@@ -7,8 +7,13 @@ import { IDivision, IEventSummary } from 'common/models';
 import { SortByFilesTypes } from 'common/enums';
 import { IField } from 'common/models/schedule/fields';
 
-const getUnassignedTeams = (teams: ITeamCard[]) =>
-  teams.filter(it => !it.fieldId && !it.timeSlotId);
+const getUnassignedTeams = (
+  teamCards: ITeamCard[],
+  minGamesNum: number | null
+) =>
+  teamCards.filter(
+    teamCard => (teamCard.games?.length || 0) < (minGamesNum || 3)
+  );
 
 const mapValues = (values: MultipleSelectionField[]) =>
   values.map(el => el.value);
