@@ -10,7 +10,6 @@ import {
   Paper,
 } from 'components/common';
 import styles from '../styles.module.scss';
-import { stringToLink } from 'helpers';
 import { EventMenuTitles } from 'common/enums';
 import { BindingAction } from 'common/models';
 
@@ -26,7 +25,7 @@ export default (props: IProps) => {
       type="section"
       isDefaultExpanded={true}
       useBorder={true}
-      id={stringToLink(EventMenuTitles.BRACKETS)}
+      id={EventMenuTitles.BRACKETS}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>{EventMenuTitles.BRACKETS}</span>

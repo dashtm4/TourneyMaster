@@ -14,7 +14,6 @@ import {
 } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import {
-  stringToLink,
   getIcon,
   getTimeFromString,
   timeToString,
@@ -71,7 +70,7 @@ export default (props: IProps) => {
       type="section"
       isDefaultExpanded={true}
       useBorder={true}
-      id={stringToLink(EventMenuTitles.TOURNEY_ARCHITECT)}
+      id={EventMenuTitles.TOURNEY_ARCHITECT}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>

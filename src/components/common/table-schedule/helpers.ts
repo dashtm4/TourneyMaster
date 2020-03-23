@@ -61,9 +61,12 @@ export const mapFilterValues = (
 
   const divisionIds = mapValues(selectedDivisions);
 
-  const filteredTeams = teamCards.filter(teamCard =>
-    divisionIds.includes(teamCard.divisionId!)
-  );
+  const filteredTeams = teamCards
+    .filter(teamCard => divisionIds.includes(teamCard.divisionId!))
+    .map(teamCard => ({
+      ...teamCard,
+      name: `${teamCard.name} (${teamCard.divisionShortName})`,
+    }));
 
   return { filteredTeams };
 };

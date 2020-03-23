@@ -22,13 +22,13 @@ import {
   getTimeValuesFromEvent,
   calculateTimeSlots,
 } from 'helpers';
-import { gameStartOnOptions } from '../types';
+import { gameStartOnOptions, ISchedulingSchedule } from '../types';
 
 const scheduleFetchInProgress = () => ({
   type: SCHEDULE_FETCH_IN_PROGRESS,
 });
 
-const scheduleFetchSuccess = (schedules: ISchedule[]) => ({
+const scheduleFetchSuccess = (schedules: ISchedulingSchedule) => ({
   type: SCHEDULE_FETCH_SUCCESS,
   payload: {
     schedules,
@@ -91,10 +91,27 @@ export const getScheduling = (eventId: string) => async (
 ) => {
   dispatch(scheduleFetchInProgress());
 
-  const response = await api.get(`/schedules?event_id=${eventId}`);
+  const members = await api.get(`/members`);
+  const schedules = await api.get(`/schedules?event_id=${eventId}`);
+  const mappedSchedules = schedules.map((schedule: ISchedule) => {
+    const createdBy = members.find((member: IMember) => {
+      return member.member_id === schedule.created_by;
+    });
+    const updatedBy = members.find((member: IMember) => {
+      return member.member_id === schedule.updated_by;
+    });
 
-  if (!response?.error) {
-    dispatch(scheduleFetchSuccess(response));
+    return {
+      ...schedule,
+      createdByName: `${createdBy.first_name} ${createdBy.last_name}`,
+      updatedByName: updatedBy
+        ? `${updatedBy.first_name} ${updatedBy.last_name}`
+        : null,
+    };
+  });
+
+  if (!schedules?.error) {
+    dispatch(scheduleFetchSuccess(mappedSchedules));
 
     return;
   }
