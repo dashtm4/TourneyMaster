@@ -10,8 +10,8 @@ interface Props {
 
 const HeaderSchedule = ({ event }: Props) => (
   <View style={styles.header} fixed>
-    <View>
-      <Text>{event.event_name}</Text>
+    <View style={styles.headerWrapper}>
+      <Text style={styles.eventName}>{event.event_name}</Text>
       <Text>Event Schedule ({'<< Schedule Name>>'})</Text>
     </View>
     <View style={styles.logoWrapper}>

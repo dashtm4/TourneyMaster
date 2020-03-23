@@ -15,12 +15,13 @@ interface Props {
 
 const TableTbody = ({ facility, timeSlots, games, splitIdx }: Props) => (
   <View>
-    {timeSlots.map((timeSlot: ITimeSlot) => (
+    {timeSlots.map((timeSlot: ITimeSlot, idx) => (
       <RowTimeSlot
         games={selectProperGamesPerTimeSlot(timeSlot, games)}
         facility={facility}
         timeSlot={timeSlot}
         splitIdx={splitIdx}
+        isEven={(idx + 1) % 2 === 0}
         key={timeSlot.id}
       />
     ))}

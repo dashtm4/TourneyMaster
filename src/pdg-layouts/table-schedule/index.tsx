@@ -27,52 +27,62 @@ const PDFScheduleTable = ({
   timeSlots,
 }: IPDFProps) => (
   <Document>
-    <Page size="A4" orientation="landscape" style={styles.page}>
-      <HeaderSchedule event={event} />
-      {facilities.map(facility => {
-        const filtredFields = fields.filter(
-          field => field.facilityId === facility.id
-        );
+    {facilities.map(facility => {
+      const filtredFields = fields.filter(
+        field => field.facilityId === facility.id
+      );
 
-        return (
-          <View style={styles.tableWrapper} key={facility.id}>
-            <View style={styles.facilityTitle}>
-              <Text style={styles.scheduleDate}>
-                {moment(new Date()).format('l')}
-              </Text>
-              <Text>{facility.name}</Text>
-            </View>
-            {filtredFields.reduce((acc, field, idx) => {
-              let splitIdx = 0;
+      return filtredFields.reduce((acc, field, idx) => {
+        let splitIdx = 0;
 
-              if (idx % 4 === 0 || idx === 0) {
-                if (idx > 0) splitIdx += idx;
+        if (idx % 8 === 0 || idx === 0) {
+          if (idx > 0) splitIdx += idx;
 
-                return [
-                  ...acc,
-                  <View key={field.id}>
-                    <TableThead
-                      facility={facility}
-                      fields={filtredFields}
-                      splitIdx={splitIdx}
-                    />
-                    <TableTbody
-                      facility={facility}
-                      timeSlots={timeSlots}
-                      games={games}
-                      splitIdx={splitIdx}
-                    />
-                  </View>,
-                ];
-              } else {
-                return acc;
-              }
-            }, [] as JSX.Element[])}
-          </View>
-        );
-      })}
-      <PrintedDate />
-    </Page>
+          return [
+            ...acc,
+            <Page
+              size="A4"
+              orientation="landscape"
+              style={styles.page}
+              key={field.id}
+            >
+              <HeaderSchedule event={event} />
+              <View style={styles.tableWrapper} key={facility.id}>
+                <View style={styles.facilityTitle}>
+                  <Text style={styles.scheduleDate}>
+                    {moment(new Date()).format('l')}
+                  </Text>
+                  <Text style={styles.scheduleFacility}>{facility.name}</Text>
+                </View>
+                <View key={field.id}>
+                  <TableThead
+                    facility={facility}
+                    fields={filtredFields}
+                    splitIdx={splitIdx}
+                  />
+                  <TableTbody
+                    facility={facility}
+                    timeSlots={timeSlots}
+                    games={games}
+                    splitIdx={splitIdx}
+                  />
+                </View>
+              </View>
+              <PrintedDate />
+              <Text
+                style={styles.pageNumber}
+                render={({ pageNumber, totalPages }) =>
+                  `${pageNumber} / ${totalPages}`
+                }
+                fixed
+              />
+            </Page>,
+          ];
+        } else {
+          return acc;
+        }
+      }, [] as JSX.Element[]);
+    })}
   </Document>
 );
 
