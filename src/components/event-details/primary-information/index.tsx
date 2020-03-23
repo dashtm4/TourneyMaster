@@ -90,8 +90,8 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const [sportId, onChangeSport] = useState(dropdownSportValue);
 
   const [currentLocation, setCurrentLocation] = useState({
-    lat: 40.73061,
-    lng: -73.935242,
+    lat: 39.299236,
+    lng: -76.609383,
   });
 
   useEffect(() => {
