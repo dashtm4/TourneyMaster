@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, CardMessage, Select } from 'components/common';
+import { Button, CardMessage } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { getIcon } from 'helpers';
 import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
@@ -18,16 +18,10 @@ interface Props {
 }
 
 const TableActions = ({
-  optimizeBy,
   onUndoClick,
   onLockAllClick,
   onUnlockAllClick,
-  onOptimizeClick,
 }: Props) => {
-  const [optimizeByValue, onOptimizeByChange] = React.useState<OptimizeTypes>(
-    optimizeBy
-  );
-
   return (
     <section>
       <h3 className="visually-hidden">More functions</h3>
@@ -60,23 +54,6 @@ const TableActions = ({
             color={ButtonColors.SECONDARY}
           />
         </p>
-        <Select
-          onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
-            onOptimizeByChange(evt.target.value as OptimizeTypes)
-          }
-          value={optimizeByValue}
-          label="Rebalance and Optimize By"
-          options={Object.keys(OptimizeTypes).map(it => ({
-            label: OptimizeTypes[it],
-            value: OptimizeTypes[it],
-          }))}
-        />
-        <Button
-          onClick={() => onOptimizeClick(optimizeByValue)}
-          label="Optimize"
-          variant={ButtonVarian.CONTAINED}
-          color={ButtonColors.PRIMATY}
-        />
       </form>
     </section>
   );

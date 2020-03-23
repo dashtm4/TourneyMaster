@@ -17,6 +17,7 @@ import libraryManager from 'components/library-manager/logic/reducer';
 import utilities from 'components/utilities/components/user-profile/logic/reducer';
 import complexities from 'components/gameday-complexities/logic/reducer';
 import schedules from 'components/schedules/logic/reducer';
+import schedulesTable from 'components/schedules/logic/schedules-table/schedulesTableReducer';
 
 const rootReducer = combineReducers({
   router: connectRouter(history),
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
   libraryManager,
   utilities,
   complexities,
+  schedulesTable,
 });
 
 export default rootReducer;
