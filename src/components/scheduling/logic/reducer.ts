@@ -6,11 +6,12 @@ import {
   ADD_NEW_SCHEDULE,
   CHANGE_SCHEDULE,
 } from './actionTypes';
-import { ISchedule, IConfigurableSchedule } from 'common/models/schedule';
+import { IConfigurableSchedule } from 'common/models/schedule';
+import { ISchedulingSchedule } from '../types';
 
 export interface ISchedulingState {
   schedule: IConfigurableSchedule | null;
-  schedules: ISchedule[];
+  schedules: ISchedulingSchedule[];
   isLoading: boolean;
   isLoaded: boolean;
   error: boolean;

@@ -20,10 +20,11 @@ import { ISchedule, IConfigurableSchedule } from 'common/models/schedule';
 import { IAppState } from 'reducers/root-reducer.types';
 import CreateNewModal from './create-new-modal';
 import { IMenuItem, BindingAction, BindingCbWithOne } from 'common/models';
+import { ISchedulingSchedule } from './types';
 
 interface IProps {
   schedule: IConfigurableSchedule | null;
-  schedules: ISchedule[];
+  schedules: ISchedulingSchedule[];
   incompleteMenuItems: IMenuItem[];
   match: any;
   history: History;
@@ -102,11 +103,11 @@ class Scheduling extends Component<IProps, IState> {
               {schedules.length > 0 && (
                 <>
                   <TournamentPlay
+                    schedules={schedules}
                     onEditScheduleDetails={() => {}}
                     onManageTournamentPlay={() => {}}
-                    onSaveScheduleCSV={() => {}}
                   />
-                  <Brackets onManageBrackets={() => {}} />
+                  {false && <Brackets onManageBrackets={() => {}} />}
                 </>
               )}
             </>

@@ -133,4 +133,21 @@
       padding: 2px 0;
     }
   }
+
+  .tournamentList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    margin: 0 0 0 -24;
+    padding: 0;
+
+    list-style: none;
+
+    .tournamentPlay {
+      width: 49%;
+
+      margin-bottom: 25px;
+    }
+  }
 }
