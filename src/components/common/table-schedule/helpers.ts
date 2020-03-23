@@ -198,4 +198,11 @@ export const handleFilterData = (
   return updateFilterData;
 };
 
-export { getUnassignedTeams };
+const mapGamesByField = (games: IGame[], fields: IField[]) =>
+  games.map(game => {
+    const currentField = fields.find(field => field.id === game.fieldId);
+
+    return { ...game, facilityId: currentField?.facilityId };
+  });
+
+export { getUnassignedTeams, mapGamesByField };

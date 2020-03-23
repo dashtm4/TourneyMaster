@@ -25,59 +25,57 @@ const PDFScheduleTable = ({
   facilities,
   games,
   timeSlots,
-}: IPDFProps) => {
-  return (
-    <Document>
-      <Page size="A4" orientation="landscape" style={styles.page}>
-        <Header event={event} />
-        {facilities.map(facility => {
-          const filtredFields = fields.filter(
-            field => field.facilityId === facility.id
-          );
+}: IPDFProps) => (
+  <Document>
+    <Page size="A4" orientation="landscape" style={styles.page}>
+      <Header event={event} />
+      {facilities.map(facility => {
+        const filtredFields = fields.filter(
+          field => field.facilityId === facility.id
+        );
 
-          return (
-            <View style={styles.tableWrapper} key={facility.id}>
-              <View style={styles.facilityTitle}>
-                <Text style={styles.scheduleDate}>
-                  {moment(new Date()).format('l')}
-                </Text>
-                <Text>{facility.name}</Text>
-              </View>
-              {filtredFields.reduce((acc, field, idx) => {
-                let splitIdx = 0;
-
-                if (idx % 4 === 0 || idx === 0) {
-                  if (idx > 0) splitIdx += idx;
-
-                  return [
-                    ...acc,
-                    <View key={field.id}>
-                      <TableThead
-                        facility={facility}
-                        fields={filtredFields}
-                        splitIdx={splitIdx}
-                      />
-                      <TableTbody
-                        facility={facility}
-                        timeSlots={timeSlots}
-                        games={games}
-                        splitIdx={splitIdx}
-                      />
-                    </View>,
-                  ];
-                } else {
-                  return acc;
-                }
-              }, [] as JSX.Element[])}
+        return (
+          <View style={styles.tableWrapper} key={facility.id}>
+            <View style={styles.facilityTitle}>
+              <Text style={styles.scheduleDate}>
+                {moment(new Date()).format('l')}
+              </Text>
+              <Text>{facility.name}</Text>
             </View>
-          );
-        })}
-        <View style={styles.printDate} fixed>
-          <Text>Printed Date: {moment(new Date()).format('LLL')}</Text>
-        </View>
-      </Page>
-    </Document>
-  );
-};
+            {filtredFields.reduce((acc, field, idx) => {
+              let splitIdx = 0;
+
+              if (idx % 4 === 0 || idx === 0) {
+                if (idx > 0) splitIdx += idx;
+
+                return [
+                  ...acc,
+                  <View key={field.id}>
+                    <TableThead
+                      facility={facility}
+                      fields={filtredFields}
+                      splitIdx={splitIdx}
+                    />
+                    <TableTbody
+                      facility={facility}
+                      timeSlots={timeSlots}
+                      games={games}
+                      splitIdx={splitIdx}
+                    />
+                  </View>,
+                ];
+              } else {
+                return acc;
+              }
+            }, [] as JSX.Element[])}
+          </View>
+        );
+      })}
+      <View style={styles.printDate} fixed>
+        <Text>Printed Date: {moment(new Date()).format('LLL')}</Text>
+      </View>
+    </Page>
+  </Document>
+);
 
 export default PDFScheduleTable;
