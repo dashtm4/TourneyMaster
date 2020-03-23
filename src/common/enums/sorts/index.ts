@@ -3,6 +3,7 @@ enum SortByFilesTypes {
   DIVISIONS = 'short_name',
   ORGANIZATIONS = 'org_name',
   TEAMS = 'short_name',
+  SCHEDULES = 'schedule_name',
   FACILITIES_INITIALS = 'facilities_initials',
 }
 
