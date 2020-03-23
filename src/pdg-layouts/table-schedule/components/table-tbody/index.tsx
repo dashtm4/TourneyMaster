@@ -21,6 +21,7 @@ const TableTbody = ({ facility, timeSlots, games, splitIdx }: Props) => (
         facility={facility}
         timeSlot={timeSlot}
         splitIdx={splitIdx}
+        key={timeSlot.id}
       />
     ))}
   </View>

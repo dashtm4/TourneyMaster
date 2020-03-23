@@ -8,7 +8,7 @@ interface Props {
   event: IEventDetails;
 }
 
-const Header = ({ event }: Props) => (
+const HeaderSchedule = ({ event }: Props) => (
   <View style={styles.header} fixed>
     <View>
       <Text>{event.event_name}</Text>
@@ -20,4 +20,4 @@ const Header = ({ event }: Props) => (
   </View>
 );
 
-export default Header;
+export default HeaderSchedule;

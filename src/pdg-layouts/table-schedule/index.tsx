@@ -1,9 +1,9 @@
 import React from 'react';
 import { Page, Text, View, Document } from '@react-pdf/renderer';
 import moment from 'moment';
-import Header from './components/header';
 import TableThead from './components/table-thead';
 import TableTbody from './components/table-tbody';
+import { HeaderSchedule, PrintedDate } from '../common';
 import { IEventDetails } from 'common/models';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
@@ -28,7 +28,7 @@ const PDFScheduleTable = ({
 }: IPDFProps) => (
   <Document>
     <Page size="A4" orientation="landscape" style={styles.page}>
-      <Header event={event} />
+      <HeaderSchedule event={event} />
       {facilities.map(facility => {
         const filtredFields = fields.filter(
           field => field.facilityId === facility.id
@@ -71,9 +71,7 @@ const PDFScheduleTable = ({
           </View>
         );
       })}
-      <View style={styles.printDate} fixed>
-        <Text>Printed Date: {moment(new Date()).format('LLL')}</Text>
-      </View>
+      <PrintedDate />
     </Page>
   </Document>
 );

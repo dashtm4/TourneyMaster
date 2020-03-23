@@ -4,7 +4,8 @@ import ListUnassigned from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
-import PDFScheduleTable from 'pdg-layouts/schedule-table';
+import PDFTableSchedule from 'pdg-layouts/table-schedule';
+// import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
 import { MatrixTable, Button } from 'components/common';
 import { getIcon } from 'helpers';
 import { IDivision, IEventSummary, IEventDetails } from 'common/models';
@@ -125,7 +126,7 @@ const TableSchedule = ({
       <div className={styles.btnsWrapper}>
         <PDFDownloadLink
           document={
-            <PDFScheduleTable
+            <PDFTableSchedule
               event={event}
               games={mapGamesByField(filteredGames, updatedFields)}
               fields={updatedFields}
@@ -139,9 +140,28 @@ const TableSchedule = ({
             icon={getIcon(Icons.PRINT)}
             variant={ButtonVarian.TEXT}
             color={ButtonColors.SECONDARY}
-            label="Print"
+            label="Print schedule"
           />
         </PDFDownloadLink>
+        {/* <PDFDownloadLink
+          document={
+            <PDFTableFieldsSchedule
+              event={event}
+              games={mapGamesByField(filteredGames, updatedFields)}
+              fields={updatedFields}
+              timeSlots={timeSlots}
+              facilities={facilities}
+            />
+          }
+          fileName="FieldsSchedule.pdf"
+        >
+          <Button
+            icon={getIcon(Icons.PRINT)}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            label="Print fields' schedule"
+          />
+        </PDFDownloadLink> */}
       </div>
     </section>
   );

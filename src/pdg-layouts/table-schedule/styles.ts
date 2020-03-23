@@ -15,11 +15,6 @@ const styles = StyleSheet.create({
   scheduleDate: {
     marginRight: 20,
   },
-  printDate: {
-    position: 'absolute',
-    left: 15,
-    bottom: 15,
-  },
 });
 
 export { styles };
