@@ -1,11 +1,14 @@
 import React from 'react';
-import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
+import {
+  PDFDownloadLink,
+  // PDFViewer
+} from '@react-pdf/renderer';
 import ListUnassigned from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
-// import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
+import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
 import { MatrixTable, Button } from 'components/common';
 import { getIcon } from 'helpers';
 import { IDivision, IEventSummary, IEventDetails } from 'common/models';
@@ -143,7 +146,7 @@ const TableSchedule = ({
             label="Print schedule"
           />
         </PDFDownloadLink>
-        {/* <PDFDownloadLink
+        <PDFDownloadLink
           document={
             <PDFTableFieldsSchedule
               event={event}
@@ -161,11 +164,11 @@ const TableSchedule = ({
             color={ButtonColors.SECONDARY}
             label="Print fields' schedule"
           />
-        </PDFDownloadLink> */}
+        </PDFDownloadLink>
       </div>
-      <p>
+      {/* <p>
         <PDFViewer width="500" height="1000">
-          <PDFTableSchedule
+          <PDFTableFieldsSchedule
             event={event}
             games={mapGamesByField(filteredGames, updatedFields)}
             fields={updatedFields}
@@ -173,7 +176,7 @@ const TableSchedule = ({
             facilities={facilities}
           />
         </PDFViewer>
-      </p>
+      </p> */}
     </section>
   );
 };

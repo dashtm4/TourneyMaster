@@ -32,31 +32,27 @@ Props) => (
         field => field.facilityId === facility.id
       );
 
-      return (
-        <>
-          {filtredFields.map(field => (
-            <Page
-              size="A4"
-              orientation="landscape"
-              style={styles.page}
-              key={facility.id}
-            >
-              <HeaderSchedule event={event} />
-              <PrintedDate />
-              <View style={styles.tableWrapper}>
-                <View style={styles.facilityTitle}>
-                  <Text style={styles.scheduleDate}>
-                    {moment(new Date()).format('l')}
-                  </Text>
-                  <Text>{facility.name}</Text>
-                </View>
-                <TableThead field={field} />
-                <TableTbody />
-              </View>
-            </Page>
-          ))}
-        </>
-      );
+      return filtredFields.map(field => (
+        <Page
+          size="A4"
+          orientation="portrait"
+          style={styles.page}
+          key={facility.id}
+        >
+          <HeaderSchedule event={event} />
+          <PrintedDate />
+          <View style={styles.tableWrapper}>
+            <View style={styles.facilityTitle}>
+              <Text style={styles.scheduleDate}>
+                {moment(new Date()).format('l')}
+              </Text>
+              <Text>{facility.name}</Text>
+            </View>
+            <TableThead field={field} />
+            <TableTbody />
+          </View>
+        </Page>
+      ));
     })}
   </Document>
 );

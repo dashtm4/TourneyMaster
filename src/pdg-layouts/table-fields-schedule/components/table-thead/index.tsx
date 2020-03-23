@@ -13,14 +13,20 @@ interface Props {
 
 const TableThead = ({ field }: Props) => (
   <>
-    <View style={styles.thead} debug>
-      <Text>{field.name}</Text>
-    </View>
-    <View style={styles.gameDetails}>
-      <Text>Game Details</Text>
-      <View style={styles.teamsWrapper}>
-        <Text>Away Team</Text>
-        <Text>Home Team</Text>
+    <View style={styles.thead}>
+      <Text style={styles.theadName}>{field.name}</Text>
+      <View style={styles.theadWrapper}>
+        <View style={styles.gameDetailsWrapper}>
+          <View style={styles.gameDetails}>
+            <Text>Game Details</Text>
+          </View>
+          <View style={styles.teamsWrapper}>
+            <Text style={styles.team}>Away Team</Text>
+            <Text style={styles.team}>Home Team</Text>
+          </View>
+        </View>
+        <Text style={styles.scores}>Final Scores</Text>
+        <Text style={styles.initials}>Initials</Text>
       </View>
     </View>
   </>
