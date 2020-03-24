@@ -177,7 +177,6 @@ const EventStructureSection: React.FC<Props> = ({
             />
           </div>
           <Input
-            // width="250px"
             fullWidth={true}
             type="number"
             label="Min # of Game Guarantee"
@@ -230,7 +229,7 @@ const EventStructureSection: React.FC<Props> = ({
             formLabel=""
             onChange={onEsDetailsChange}
           />
-          <div>
+          <div className={styles.waiverHubWrapper}>
             <Checkbox
               options={[
                 {
