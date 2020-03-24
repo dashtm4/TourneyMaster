@@ -72,14 +72,14 @@ const TourneyImportWizard = () => {
   //   return updatedStatus;
   // }
 
-  function distinctFilter(data: Array<any>) {
+  function distinctFilter(data: Array<any>, filterBy: string) {
     let flags: Array<any> = [];
     let output: Array<any> = [];
     const length: number = data.length;
     let i: number;
 
     for (i = 0; i < length; i++) {
-      if (flags[data[i].name]) continue;
+      if (flags[data[i][filterBy]]) continue;
       flags[data[i].name] = true;
       output.push(data[i]);
     }
@@ -90,7 +90,7 @@ const TourneyImportWizard = () => {
   function getTournamentData() {
     Api.get(`/ext_events?idtournament=${idTournament}`)
       .then(res => {
-        setEvents(distinctFilter(res));
+        setEvents(distinctFilter(res, 'name'));
       })
       .catch(err => {
         console.log(err);
@@ -98,7 +98,7 @@ const TourneyImportWizard = () => {
 
     Api.get(`/ext_games?idtournament=${idTournament}`)
       .then(res => {
-        setGames(distinctFilter(res));
+        setGames(distinctFilter(res, 'Name'));
       })
       .catch(err => {
         console.log(err);
@@ -106,7 +106,7 @@ const TourneyImportWizard = () => {
 
     Api.get(`/ext_locations?idtournament=${idTournament}`)
       .then(res => {
-        setLocations(distinctFilter(res));
+        setLocations(distinctFilter(res, 'tournament_name'));
       })
       .catch(err => {
         console.log(err);
