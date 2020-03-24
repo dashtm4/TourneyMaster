@@ -22,7 +22,7 @@ const RowTimeSlot = ({ timeSlot, games, isEven }: Props) => (
   >
     <Text style={styles.timeSlot}>{formatTimeSlot(timeSlot.time)}</Text>
     {games.map(game => (
-      <View style={styles.gamesWrapper}>
+      <View style={styles.gamesWrapper} key={game.id}>
         <Text style={styles.team}>
           {game.awayTeam?.name &&
             `${game.awayTeam?.name} (${game.awayTeam?.divisionShortName})`}

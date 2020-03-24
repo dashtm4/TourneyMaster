@@ -19,6 +19,11 @@ const styles = StyleSheet.create({
   facilityName: {
     fontSize: 14,
   },
+  pageNumber: {
+    position: 'absolute',
+    right: 15,
+    bottom: 15,
+  },
 });
 
 export { styles };
