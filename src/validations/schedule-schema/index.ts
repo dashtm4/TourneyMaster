@@ -20,4 +20,8 @@ const scheduleSchema = Yup.object({
   periods_per_game: Yup.string().required('Time division is required to fill!'),
 });
 
-export { scheduleSchema };
+const updatedScheduleSchema = Yup.object({
+  schedule_name: Yup.string().required('Schedule name is required to fill!'),
+});
+
+export { scheduleSchema, updatedScheduleSchema };

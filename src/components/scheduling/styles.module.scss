@@ -140,7 +140,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
 
-    margin: 0 0 0 -24;
+    margin: 0 0 0 -24px;
     padding: 0;
 
     list-style: none;
@@ -153,10 +153,23 @@
   }
 
   .textWrapper {
+    display: flex;
+
     margin: 0 0 10px;
 
     font-size: 16px;
     color: #6a6a6a;
+
+    b {
+      margin-right: 5px;
+    }
+  }
+
+  .textNameWrapper {
+    flex-grow: 1;
+
+    display: flex;
+    justify-content: space-between;
   }
 
   .btnsWrapper {

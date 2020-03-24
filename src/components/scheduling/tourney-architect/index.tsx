@@ -190,14 +190,15 @@ export default (props: IProps) => {
                 'minutes'
               )} Minutes`
           )}
-          {renderSectionCell('Total Game Slots', `${128}`)}
+          {renderSectionCell(
+            'Total Game Slots',
+            `${scheduleTimeSlots?.length! * schedule.num_fields!}`
+          )}
           {renderSectionCell(
             'AVG # Games/Team',
-            `${Math.floor(
-              (Number(schedule.max_num_games) +
-                Number(schedule.min_num_games)) /
-                2
-            )}/2`
+            `${(Number(schedule.max_num_games) +
+              Number(schedule.min_num_games)) /
+              2}`
           )}
           <Button
             label="View Matrix"

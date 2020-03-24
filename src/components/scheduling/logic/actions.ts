@@ -11,9 +11,11 @@ import {
   CREATE_NEW_SCHEDULE_FAILURE,
   ADD_NEW_SCHEDULE,
   CHANGE_SCHEDULE,
+  UPDATE_SCHEDULE_SUCCESS,
+  UPDATE_SCHEDULE_FAILURE,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
-import { scheduleSchema } from 'validations';
+import { scheduleSchema, updatedScheduleSchema } from 'validations';
 import { IAppState } from 'reducers/root-reducer.types';
 import History from 'browserhistory';
 import { IMember } from 'common/models';
@@ -135,6 +137,38 @@ export const createNewSchedule = (schedule: IConfigurableSchedule) => async (
 
     dispatch({
       type: CREATE_NEW_SCHEDULE_FAILURE,
+    });
+  }
+};
+
+export const updateSchedule = (schedule: ISchedulingSchedule) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    const copiedSchedule = { ...schedule };
+    delete copiedSchedule.createdByName;
+    delete copiedSchedule.updatedByName;
+
+    await updatedScheduleSchema.validate(copiedSchedule);
+
+    await api.put(
+      `/schedules?schedule_id=${copiedSchedule.schedule_id}`,
+      copiedSchedule
+    );
+
+    dispatch({
+      type: UPDATE_SCHEDULE_SUCCESS,
+      payload: {
+        schedule,
+      },
+    });
+
+    Toasts.successToast('Changes successfully saved.');
+  } catch (err) {
+    Toasts.errorToast(err.message);
+
+    dispatch({
+      type: UPDATE_SCHEDULE_FAILURE,
     });
   }
 };
