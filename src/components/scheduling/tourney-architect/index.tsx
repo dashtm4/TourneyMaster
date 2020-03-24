@@ -192,12 +192,12 @@ export default (props: IProps) => {
           )}
           {renderSectionCell('Total Game Slots', `${128}`)}
           {renderSectionCell(
-            'Average Games per Team',
+            'AVG # Games/Team',
             `${Math.floor(
               (Number(schedule.max_num_games) +
                 Number(schedule.min_num_games)) /
                 2
-            )}`
+            )}/2`
           )}
           <Button
             label="View Matrix"
