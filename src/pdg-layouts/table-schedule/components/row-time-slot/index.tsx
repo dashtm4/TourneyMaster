@@ -43,7 +43,7 @@ const RowTimeSlot = ({
                         {game.awayTeam?.name}
                       </Text>
                       <Text style={styles.divisionNameWrapper}>
-                        {`(${getDivisionCutName(
+                        {` (${getDivisionCutName(
                           game.awayTeam.divisionShortName!
                         )})`}
                       </Text>
@@ -57,7 +57,7 @@ const RowTimeSlot = ({
                         {game.homeTeam?.name}
                       </Text>
                       <Text style={styles.divisionNameWrapper}>
-                        {`(${getDivisionCutName(
+                        {` (${getDivisionCutName(
                           game.homeTeam.divisionShortName!
                         )})`}
                       </Text>

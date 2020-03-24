@@ -19,6 +19,7 @@ import {
   timeToString,
   formatTimeSlot,
   calculateTimeSlots,
+  getTimeValuesFromSchedule,
 } from 'helpers';
 
 import { EventMenuTitles, Icons } from 'common/enums';
@@ -42,14 +43,8 @@ interface IProps {
 export default (props: IProps) => {
   const { schedule, onChange, onViewEventMatrix } = props;
 
-  const scheduleTimeSlots = calculateTimeSlots({
-    firstGameTime: schedule.first_game_start,
-    lastGameEnd: schedule.last_game_end,
-    preGameWarmup: schedule.pre_game_warmup,
-    periodDuration: schedule.period_duration,
-    timeBtwnPeriods: schedule.time_btwn_periods,
-    periodsPerGame: schedule.periods_per_game,
-  });
+  const timeValues = getTimeValuesFromSchedule(schedule);
+  const scheduleTimeSlots = calculateTimeSlots(timeValues);
 
   const localChange = ({ target: { name, value } }: InputTargetValue) => {
     onChange(name, value);
@@ -75,6 +70,8 @@ export default (props: IProps) => {
       )}
     </div>
   );
+
+  const totalGameSlots = scheduleTimeSlots?.length! * schedule.num_fields;
 
   return (
     <SectionDropdown
@@ -190,14 +187,10 @@ export default (props: IProps) => {
                 'minutes'
               )} Minutes`
           )}
-          {renderSectionCell('Total Game Slots', `${128}`)}
+          {renderSectionCell('Total Game Slots', `${totalGameSlots}`)}
           {renderSectionCell(
             'AVG # Games/Team',
-            `${Math.floor(
-              (Number(schedule.max_num_games) +
-                Number(schedule.min_num_games)) /
-                2
-            )}/2`
+            `${((totalGameSlots * 2) / schedule.num_teams).toFixed(1)}`
           )}
           <Button
             label="View Matrix"

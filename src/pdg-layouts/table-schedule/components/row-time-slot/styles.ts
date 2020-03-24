@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
   },
   divisionNameWrapper: {
     width: 20,
+    paddingLeft: 1,
   },
 });
 

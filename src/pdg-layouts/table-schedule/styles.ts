@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   scheduleDate: {
-    marginRight: 27,
+    marginRight: 17,
   },
   scheduleFacility: {
     fontSize: 10,
