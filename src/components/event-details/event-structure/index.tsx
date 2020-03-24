@@ -240,7 +240,11 @@ const EventStructureSection: React.FC<Props> = ({
               formLabel=""
               onChange={onEsDetailsChange}
             />
-            <a href="https://www.waiverhub.com/">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://www.waiverhub.com/"
+            >
               <img
                 src={waiverHubLogo}
                 style={{ width: '150px', marginLeft: '15px' }}
