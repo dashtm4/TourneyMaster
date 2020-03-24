@@ -17,8 +17,8 @@ import {
   getIcon,
   getTimeFromString,
   timeToString,
-  formatTimeSlot,
   calculateTimeSlots,
+  timeToDate,
   getTimeValuesFromSchedule,
 } from 'helpers';
 
@@ -26,6 +26,7 @@ import { EventMenuTitles, Icons } from 'common/enums';
 import { IConfigurableSchedule } from 'common/models';
 import { BindingAction } from 'common/models';
 import { ArchitectFormFields, gameStartOnOptions } from '../types';
+import moment from 'moment';
 
 const STYLES_INFO_ICON = {
   marginLeft: '5px',
@@ -45,6 +46,8 @@ export default (props: IProps) => {
 
   const timeValues = getTimeValuesFromSchedule(schedule);
   const scheduleTimeSlots = calculateTimeSlots(timeValues);
+
+  const totalGameSlots = scheduleTimeSlots?.length! * schedule.num_fields;
 
   const localChange = ({ target: { name, value } }: InputTargetValue) => {
     onChange(name, value);
@@ -71,8 +74,6 @@ export default (props: IProps) => {
     </div>
   );
 
-  const totalGameSlots = scheduleTimeSlots?.length! * schedule.num_fields;
-
   return (
     <SectionDropdown
       type="section"
@@ -94,9 +95,9 @@ export default (props: IProps) => {
           )}
           {renderSectionCell(
             'Play Time Window',
-            `${formatTimeSlot(scheduleTimeSlots![0].time)} - ${formatTimeSlot(
-              scheduleTimeSlots![scheduleTimeSlots!.length - 1].time
-            )}`,
+            `${moment(timeToDate(schedule.first_game_start)).format(
+              'LT'
+            )} - ${moment(timeToDate(schedule.last_game_end)).format('LT')}`,
             true
           )}
           {renderSectionCell(
