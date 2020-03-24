@@ -23,7 +23,8 @@
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    padding-bottom: 8px;
+
+    margin: 0 0 12px;
   }
 
   .tourneyArchitect {
@@ -149,5 +150,17 @@
 
       margin-bottom: 25px;
     }
+  }
+
+  .textWrapper {
+    margin: 0 0 10px;
+
+    font-size: 16px;
+    color: #6a6a6a;
+  }
+
+  .btnsWrapper {
+    display: flex;
+    justify-content: space-between;
   }
 }

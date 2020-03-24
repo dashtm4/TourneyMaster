@@ -103,7 +103,9 @@ export const getScheduling = (eventId: string) => async (
 
     return {
       ...schedule,
-      createdByName: `${createdBy.first_name} ${createdBy.last_name}`,
+      createdByName: createdBy
+        ? `${createdBy.first_name} ${createdBy.last_name}`
+        : null,
       updatedByName: updatedBy
         ? `${updatedBy.first_name} ${updatedBy.last_name}`
         : null,

@@ -25,6 +25,24 @@ const TournamentPlayItem = ({
         <HeadingLevelFour>
           <span>{schedule.schedule_name}</span>
         </HeadingLevelFour>
+      </div>
+      {schedule.created_by && (
+        <p className={styles.textWrapper}>
+          <b>Created by: </b>
+          {`${schedule.createdByName}(${moment(
+            schedule.created_datetime
+          ).format('L')})`}
+        </p>
+      )}
+      {schedule.updated_by && (
+        <p className={styles.textWrapper}>
+          <b>Updated by: </b>
+          {`${schedule.updatedByName}(${moment(schedule.updated_by).format(
+            'L'
+          )})`}
+        </p>
+      )}
+      <div className={styles.btnsWrapper}>
         <Button
           icon={<FontAwesomeIcon icon={faEdit} />}
           label="Edit Schedule Details"
@@ -32,51 +50,27 @@ const TournamentPlayItem = ({
           variant="text"
           onClick={onEditScheduleDetails}
         />
+        <Button
+          icon={<FontAwesomeIcon icon={faCalendar} />}
+          label="Manage Tournament Play"
+          color="secondary"
+          variant="text"
+          onClick={onManageTournamentPlay}
+        />
       </div>
-      <div className={styles.tournamentName}>
-        <div className={styles.tnFirst}>
-          <div className={styles.sectionCellHor}>
-            <p>
-              <b>Created by: </b>
-              {`${schedule.createdByName}(${moment(
-                schedule.created_datetime
-              ).format('L')})`}
-            </p>
-          </div>
-          <Button
-            icon={<FontAwesomeIcon icon={faCalendar} />}
-            label="Manage Tournament Play"
-            color="secondary"
-            variant="text"
-            onClick={onManageTournamentPlay}
-          />
-        </div>
-        {schedule.updated_by && (
-          <div className={styles.tnSecond}>
-            <div className={styles.sectionCellHor}>
-              <p>
-                <b>Updated by: </b>
-                {`${schedule.updatedByName}(${moment(
-                  schedule.updated_by
-                ).format('L')})`}
-              </p>
+      {false && (
+        <div className={styles.tnThird}>
+          <Tooltip
+            type="warning"
+            title="TRUE Florida (2020, 2021) cannot play 10:00 AM - 12:00 PM"
+          >
+            <div className={styles.errorMessage}>
+              <FontAwesomeIcon icon={faExclamationCircle} />
+              <span>Schedule Requires Revisions</span>
             </div>
-          </div>
-        )}
-        {false && (
-          <div className={styles.tnThird}>
-            <Tooltip
-              type="warning"
-              title="TRUE Florida (2020, 2021) cannot play 10:00 AM - 12:00 PM"
-            >
-              <div className={styles.errorMessage}>
-                <FontAwesomeIcon icon={faExclamationCircle} />
-                <span>Schedule Requires Revisions</span>
-              </div>
-            </Tooltip>
-          </div>
-        )}
-      </div>
+          </Tooltip>
+        </div>
+      )}
     </Paper>
   </li>
 );
