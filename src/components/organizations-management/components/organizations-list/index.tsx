@@ -6,7 +6,7 @@ import {
   Button,
   Paper,
 } from 'components/common';
-import PopupDeleteOrganization from '../popup-delete-organization';
+import PopupDeleteConfirm from 'components/common/delete-popup-confirm';
 import { IOrganization, BindingCbWithOne } from 'common/models';
 import { Icons } from 'common/enums';
 import { getIcon } from 'helpers';
@@ -131,7 +131,8 @@ const OrganizationsList = ({
         </div>
       </SectionDropdown>
       {configOrg && (
-        <PopupDeleteOrganization
+        <PopupDeleteConfirm
+          type={'organization'}
           deleteTitle={configOrg.org_name}
           isOpen={Boolean(configOrg)}
           onClose={() => onDeletePopup(null)}
