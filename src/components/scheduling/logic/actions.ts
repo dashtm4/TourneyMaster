@@ -17,11 +17,7 @@ import { scheduleSchema } from 'validations';
 import { IAppState } from 'reducers/root-reducer.types';
 import History from 'browserhistory';
 import { IMember } from 'common/models';
-import {
-  getVarcharEight,
-  getTimeValuesFromEvent,
-  calculateTimeSlots,
-} from 'helpers';
+import { getVarcharEight } from 'helpers';
 import { gameStartOnOptions, ISchedulingSchedule } from '../types';
 
 const scheduleFetchInProgress = () => ({
@@ -65,10 +61,9 @@ export const addNewSchedule = () => async (
     pre_game_warmup: tournamentData.event?.pre_game_warmup,
     period_duration: tournamentData.event?.period_duration,
     time_btwn_periods: tournamentData.event?.time_btwn_periods,
+    first_game_start: tournamentData.event?.first_game_time,
+    last_game_end: tournamentData.event?.last_game_end,
     games_start_on: gameStartOnOptions[0],
-    time_slots: calculateTimeSlots(
-      getTimeValuesFromEvent(tournamentData.event!)
-    ),
   };
 
   dispatch({

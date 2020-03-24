@@ -18,7 +18,9 @@ import {
   getTimeFromString,
   timeToString,
   formatTimeSlot,
+  calculateTimeSlots,
 } from 'helpers';
+
 import { EventMenuTitles, Icons } from 'common/enums';
 import { IConfigurableSchedule } from 'common/models';
 import { BindingAction } from 'common/models';
@@ -39,6 +41,15 @@ interface IProps {
 
 export default (props: IProps) => {
   const { schedule, onChange, onViewEventMatrix } = props;
+
+  const scheduleTimeSlots = calculateTimeSlots({
+    firstGameTime: schedule.first_game_start,
+    lastGameEnd: schedule.last_game_end,
+    preGameWarmup: schedule.pre_game_warmup,
+    periodDuration: schedule.period_duration,
+    timeBtwnPeriods: schedule.time_btwn_periods,
+    periodsPerGame: schedule.periods_per_game,
+  });
 
   const localChange = ({ target: { name, value } }: InputTargetValue) => {
     onChange(name, value);
@@ -86,8 +97,8 @@ export default (props: IProps) => {
           )}
           {renderSectionCell(
             'Play Time Window',
-            `${formatTimeSlot(schedule.time_slots[0].time)} - ${formatTimeSlot(
-              schedule.time_slots[schedule.time_slots.length - 1].time
+            `${formatTimeSlot(scheduleTimeSlots![0].time)} - ${formatTimeSlot(
+              scheduleTimeSlots![scheduleTimeSlots!.length - 1].time
             )}`,
             true
           )}

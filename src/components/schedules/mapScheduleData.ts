@@ -12,8 +12,8 @@ export const mapScheduleData = (
   const data = { ...scheduleData };
   delete data?.num_fields;
   delete data?.periods_per_game;
-  delete data?.time_slots;
-  delete data?.total_game_slots;
+  delete data?.first_game_start;
+  delete data?.last_game_end;
   return data;
 };
 
