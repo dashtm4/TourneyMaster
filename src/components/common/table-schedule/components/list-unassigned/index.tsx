@@ -1,25 +1,47 @@
 import React from 'react';
-// import TeamDrop from 'components/common/matrix-table/dnd/drop';
 import { ITeamCard } from 'common/models/schedule/teams';
 import styles from './styles.module.scss';
+import TeamDragCard from 'components/common/matrix-table/dnd/drag';
+import { useDrop } from 'react-dnd';
+import { IDropParams } from 'components/common/matrix-table/dnd/drop';
 
-interface Props {
-  teams: ITeamCard[];
+interface IProps {
+  teamCards: ITeamCard[];
+  onDrop: (dropParams: IDropParams) => void;
 }
 
-const ListUnassigned = ({ teams }: Props) => (
-  <section className={styles.section}>
-    <h3 className={styles.title}>Needs Assignment</h3>
-    <ul className={styles.list}>
-      {teams.map(it => (
-        // <TeamDrop
-        //   team={it}
-        //   key={it.team_id}
-        // />
-        <li key={it.name}>{it.name}</li>
-      ))}
-    </ul>
-  </section>
-);
+const UnassignedList = (props: IProps) => {
+  const { teamCards, onDrop } = props;
+  const acceptType = 'teamdrop';
 
-export default ListUnassigned;
+  const [{ isOver }, drop] = useDrop({
+    accept: acceptType,
+    collect: monitor => ({
+      isOver: monitor.isOver(),
+    }),
+    drop: (item: any) => {
+      onDrop({
+        gameId: undefined,
+        position: undefined,
+        teamId: item.id,
+        originGameId: item.originGameId,
+      });
+    },
+  });
+
+  return (
+    <div
+      className={styles.container}
+      style={{ background: isOver ? '#fcfcfc' : '#ececec' }}
+    >
+      <h3 className={styles.title}>Needs Assignment</h3>
+      <div ref={drop} className={styles.dropArea}>
+        {teamCards.map((teamCard, ind) => (
+          <TeamDragCard key={ind} teamCard={teamCard} type={acceptType} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default UnassignedList;
