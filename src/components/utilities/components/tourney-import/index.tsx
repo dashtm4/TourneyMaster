@@ -12,8 +12,8 @@ const TourneyImportWizard = () => {
   const [idTournament, setIdTournament] = React.useState('');
   const [jobStatus, setJobStatus] = React.useState<any[]>([]);
   const [events, setEvents] = React.useState<any[]>([]);
-  const [games, setGames] = React.useState('');
-  const [locations, setLocations] = React.useState('');
+  const [games, setGames] = React.useState<any[]>([]);
+  const [locations, setLocations] = React.useState<any[]>([]);
   const [dataLoaded, setDataLoaded] = React.useState<Boolean>(false);
   const [completed, setCompleted] = React.useState(0);
 
@@ -72,11 +72,25 @@ const TourneyImportWizard = () => {
   //   return updatedStatus;
   // }
 
+  function distinctFilter(data: Array<any>) {
+    let flags: Array<any> = [];
+    let output: Array<any> = [];
+    const length: number = data.length;
+    let i: number;
+
+    for (i = 0; i < length; i++) {
+      if (flags[data[i].name]) continue;
+      flags[data[i].name] = true;
+      output.push(data[i]);
+    }
+
+    return output;
+  }
+
   function getTournamentData() {
     Api.get(`/ext_events?idtournament=${idTournament}`)
       .then(res => {
-        let eventsTemp: Array<any> = [...new Set(res)];
-        setEvents(eventsTemp);
+        setEvents(distinctFilter(res));
       })
       .catch(err => {
         console.log(err);
@@ -84,7 +98,7 @@ const TourneyImportWizard = () => {
 
     Api.get(`/ext_games?idtournament=${idTournament}`)
       .then(res => {
-        setGames(res);
+        setGames(distinctFilter(res));
       })
       .catch(err => {
         console.log(err);
@@ -92,7 +106,7 @@ const TourneyImportWizard = () => {
 
     Api.get(`/ext_locations?idtournament=${idTournament}`)
       .then(res => {
-        setLocations(res);
+        setLocations(distinctFilter(res));
       })
       .catch(err => {
         console.log(err);
