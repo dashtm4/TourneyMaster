@@ -23,7 +23,7 @@ const SchedulesTableReducer = (state = initialState, action: AnyAction) => {
     case SCHEDULES_TABLE_UNDO:
       return {
         ...state,
-        previous: state.previous.slice(0, state.previous.length - 2),
+        previous: state.previous.slice(0, state.previous.length - 1),
         current: state.previous[state.previous.length - 1],
       };
     default:
