@@ -29,7 +29,7 @@ const TournamentPlayItem = ({
       {schedule.created_by && (
         <p className={styles.textWrapper}>
           <b>Created by: </b>
-          {`${schedule.createdByName}(${moment(
+          {`${schedule.createdByName} (${moment(
             schedule.created_datetime
           ).format('L')})`}
         </p>
@@ -37,7 +37,7 @@ const TournamentPlayItem = ({
       {schedule.updated_by && (
         <p className={styles.textWrapper}>
           <b>Updated by: </b>
-          {`${schedule.updatedByName}(${moment(schedule.updated_by).format(
+          {`${schedule.updatedByName} (${moment(schedule.updated_by).format(
             'L'
           )})`}
         </p>
