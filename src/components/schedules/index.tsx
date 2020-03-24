@@ -101,6 +101,10 @@ class Schedules extends Component<Props, State> {
   };
 
   componentDidMount() {
+    this.timer = setTimeout(() => {
+      this.setState({ isLoading: false });
+    }, 5000);
+
     const { facilities, match } = this.props;
     const { eventId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
@@ -111,10 +115,6 @@ class Schedules extends Component<Props, State> {
 
     this.props.fetchEventSummary(eventId);
     this.calculateSchedules();
-
-    this.timer = setTimeout(() => {
-      this.setState({ isLoading: false });
-    }, 5000);
   }
 
   componentWillUnmount() {
