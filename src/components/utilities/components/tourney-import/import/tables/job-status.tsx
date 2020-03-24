@@ -33,7 +33,7 @@ const JobStatus = ({ statuses }: Props) => {
         </TableHead>
         <TableBody>
           {statuses.map((status, index) => (
-            <TableRow key={index}>
+            <TableRow key={index + 1}>
               <TableCell component="th" scope="row">
                 {index}
               </TableCell>
