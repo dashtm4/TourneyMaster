@@ -5,6 +5,7 @@ import {
   SCHEDULE_FETCH_IN_PROGRESS,
   ADD_NEW_SCHEDULE,
   CHANGE_SCHEDULE,
+  UPDATE_SCHEDULE_SUCCESS,
 } from './actionTypes';
 import { IConfigurableSchedule } from 'common/models/schedule';
 import { ISchedulingSchedule } from '../types';
@@ -67,6 +68,16 @@ export default (state = appState, action: ScheduleActionType) => {
           ...state.schedule,
           ...scheduleKey,
         },
+      };
+    }
+    case UPDATE_SCHEDULE_SUCCESS: {
+      const { schedule } = action.payload;
+
+      return {
+        ...state,
+        schedules: state.schedules.map(it =>
+          it.schedule_id === schedule.schedule_id ? schedule : it
+        ),
       };
     }
     default:

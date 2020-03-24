@@ -38,7 +38,10 @@ import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
 import formatDivisionsDiagnostics from './diagnostics/divisionsDiagnostics';
 import { DiagnosticTypes } from './types';
 import styles from './styles.module.scss';
-import { fillSchedulesTable } from './logic/schedules-table/actions';
+import {
+  fillSchedulesTable,
+  onScheduleUndo,
+} from './logic/schedules-table/actions';
 import { ISchedulesTableState } from './logic/schedules-table/schedulesTableReducer';
 import { mapSchedulesTeamCards, mapScheduleData } from './mapScheduleData';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
@@ -53,6 +56,7 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   schedulesTeamCards?: ITeamCard[];
   draftSaved?: boolean;
   scheduleData?: IConfigurableSchedule | null;
+  schedulesHistoryLength?: number;
 }
 
 interface IMapDispatchToProps {
@@ -60,6 +64,7 @@ interface IMapDispatchToProps {
   fetchFields: (facilitiesIds: string[]) => void;
   fetchEventSummary: (eventId: string) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
+  onScheduleUndo: () => void;
 }
 
 interface ComponentProps {
@@ -262,6 +267,8 @@ class Schedules extends Component<Props, State> {
       eventSummary,
       schedulesTeamCards,
       draftSaved,
+      onScheduleUndo,
+      schedulesHistoryLength,
     } = this.props;
     const {
       fields,
@@ -321,7 +328,9 @@ class Schedules extends Component<Props, State> {
             facilities={facilities!}
             teamCards={schedulesTeamCards!}
             eventSummary={eventSummary!}
+            historyLength={schedulesHistoryLength}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
+            onUndo={onScheduleUndo}
           />
         ) : (
           <div className={styles.loadingWrapper}>
@@ -391,6 +400,7 @@ const mapStateToProps = ({
   fields: pageEvent?.tournamentData.fields,
   eventSummary: schedules?.eventSummary,
   schedulesTeamCards: schedulesTable?.current,
+  schedulesHistoryLength: schedulesTable?.previous.length,
   draftSaved: schedules?.draftIsAlreadySaved,
   scheduleData: scheduling?.schedule,
 });
@@ -402,6 +412,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       fetchFields,
       fetchEventSummary,
       fillSchedulesTable,
+      onScheduleUndo,
     },
     dispatch
   );

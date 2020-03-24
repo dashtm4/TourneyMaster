@@ -1,4 +1,5 @@
 import { ISchedule } from 'common/models/schedule';
+import { ISchedulingSchedule } from '../types';
 
 export const SCHEDULE_FETCH_IN_PROGRESS = 'SCHEDULE_FETCH_IN_PROGRESS';
 export const SCHEDULE_FETCH_SUCCESS = 'SCHEDULE_FETCH_SUCCESS';
@@ -11,6 +12,9 @@ export const ADD_NEW_SCHEDULE = 'ADD_NEW_SCHEDULE';
 
 export const CHANGE_SCHEDULE = 'CHANGE_SCHEDULE';
 
+export const UPDATE_SCHEDULE_SUCCESS = 'UPDATE_SCHEDULE_SUCCESS';
+export const UPDATE_SCHEDULE_FAILURE = 'UPDATE_SCHEDULE_FAILURE';
+
 interface IScheduleFetchInProgress {
   type: 'SCHEDULE_FETCH_IN_PROGRESS';
 }
@@ -18,7 +22,7 @@ interface IScheduleFetchInProgress {
 interface IScheduleFetchSuccess {
   type: 'SCHEDULE_FETCH_SUCCESS';
   payload: {
-    schedules: ISchedule[];
+    schedules: ISchedulingSchedule[];
   };
 }
 
@@ -40,9 +44,17 @@ interface IScheduleChangeSchedule {
   };
 }
 
+interface ISIScheduleUpdateSchedule {
+  type: 'UPDATE_SCHEDULE_SUCCESS';
+  payload: {
+    schedule: ISchedulingSchedule;
+  };
+}
+
 export type ScheduleActionType =
   | IScheduleFetchInProgress
   | IScheduleFetchSuccess
   | IScheduleFetchFailure
   | IScheduleAddNewSchedule
-  | IScheduleChangeSchedule;
+  | IScheduleChangeSchedule
+  | ISIScheduleUpdateSchedule;

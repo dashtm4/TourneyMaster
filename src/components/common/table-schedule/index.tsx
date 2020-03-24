@@ -44,7 +44,9 @@ interface Props {
   facilities: IScheduleFacility[];
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
+  historyLength?: number;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
+  onUndo: () => void;
 }
 
 const TableSchedule = ({
@@ -58,6 +60,8 @@ const TableSchedule = ({
   eventSummary,
   isEnterScores,
   onTeamCardsUpdate,
+  onUndo,
+  historyLength,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -164,10 +168,11 @@ const TableSchedule = ({
         onHeatmapChange={onHeatmapChange}
       />
       <TableActions
+        historyLength={historyLength}
         zoomingDisabled={zoomingDisabled}
         toggleZooming={toggleZooming}
         optimizeBy={optimizeBy}
-        onUndoClick={() => {}}
+        onUndoClick={onUndo}
         onLockAllClick={() => {}}
         onUnlockAllClick={() => {}}
         onOptimizeClick={onOptimizeClick}

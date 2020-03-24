@@ -35,9 +35,7 @@ const UnassignedList = (props: IProps) => {
       className={styles.container}
       style={{ background: isOver ? '#fcfcfc' : '#ececec' }}
     >
-      <h3 className={styles.title}>
-        Needs Assignment {showHeatmap ? 'true' : 'false'}
-      </h3>
+      <h3 className={styles.title}>Needs Assignment</h3>
       <div ref={drop} className={styles.dropArea}>
         <table className={styles.table}>
           <thead>
