@@ -326,7 +326,7 @@ class Schedules extends Component<Props, State> {
         )}
 
         <div className={styles.diagnosticsContainer}>
-          {loadCondition && teamsDiagnostics && !this.state.isLoading && (
+          {loadCondition && !this.state.isLoading && teamsDiagnostics && (
             <>
               <Button
                 label="Teams Diagnostics"
@@ -343,7 +343,7 @@ class Schedules extends Component<Props, State> {
             </>
           )}
 
-          {loadCondition && divisionsDiagnostics && !this.state.isLoading && (
+          {loadCondition && !this.state.isLoading && divisionsDiagnostics && (
             <>
               <Button
                 label="Divisions Diagnostics"
