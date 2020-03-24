@@ -17,6 +17,7 @@ import { mapGamesByField } from './helpers';
 import { IGame, settleTeamsPerGames } from '../matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
+import PopupConfirm from 'components/common/popup-confirm';
 import styles from './styles.module.scss';
 
 import {
@@ -70,7 +71,14 @@ const TableSchedule = ({
 
   const [zoomingDisabled, changeZoomingAction] = useState(false);
 
-  const [showHeatmap, onHeatmapChange] = useState<boolean>(true);
+  const [showHeatmap, onHeatmapChange] = useState(true);
+
+  const [replacementTeamCards, replacementTeamCardsChange] = useState<
+    ITeamCard[] | undefined
+  >();
+  const [replacementWarning, onReplacementWarningChange] = useState<
+    string | undefined
+  >();
 
   const filledGames = settleTeamsPerGames(games, teamCards);
   const filteredGames = mapGamesByFilter([...filledGames], filterValues);
@@ -93,8 +101,31 @@ const TableSchedule = ({
 
   const toggleZooming = () => changeZoomingAction(!zoomingDisabled);
 
-  const moveCard = (dropParams: IDropParams) =>
-    onTeamCardsUpdate(moveTeamCard(teamCards, dropParams));
+  const moveCard = (dropParams: IDropParams) => {
+    const result = moveTeamCard(teamCards, dropParams);
+    if (result.divisionUnmatch) {
+      onReplacementWarningChange(
+        'The divisions of the teams do not match. Are you sure you want to continue?'
+      );
+      replacementTeamCardsChange(result.teamCards);
+    } else if (result.poolUnmatch) {
+      onReplacementWarningChange(
+        'The pools of the teams do not match. Are you sure you want to continue?'
+      );
+      replacementTeamCardsChange(result.teamCards);
+    } else {
+      onTeamCardsUpdate(result.teamCards);
+    }
+  };
+
+  const toggleReplacementWarning = () => onReplacementWarningChange(undefined);
+
+  const confirmReplacement = () => {
+    if (replacementTeamCards) {
+      onTeamCardsUpdate(replacementTeamCards);
+      toggleReplacementWarning();
+    }
+  };
 
   return (
     <section className={styles.section}>
@@ -181,6 +212,13 @@ const TableSchedule = ({
           />
         </PDFDownloadLink>
       </div>
+      <PopupConfirm
+        isOpen={!!replacementWarning}
+        message={replacementWarning || ''}
+        onClose={toggleReplacementWarning}
+        onCanceClick={toggleReplacementWarning}
+        onYesClick={confirmReplacement}
+      />
       {/* <p>
         <PDFViewer width="500" height="1000">
           <PDFTableFieldsSchedule
