@@ -114,7 +114,7 @@ class Schedules extends Component<Props, State> {
 
     this.timer = setTimeout(() => {
       this.setState({ isLoading: false });
-    }, 3000);
+    }, 5000);
   }
 
   componentWillUnmount() {
@@ -281,8 +281,7 @@ class Schedules extends Component<Props, State> {
       teamCards?.length &&
       event &&
       eventSummary?.length &&
-      schedulesTeamCards?.length &&
-      !this.state.isLoading
+      schedulesTeamCards?.length
     );
 
     return (
@@ -307,7 +306,7 @@ class Schedules extends Component<Props, State> {
           </Paper>
         </div>
 
-        {loadCondition ? (
+        {loadCondition && !this.state.isLoading ? (
           <TableSchedule
             event={event!}
             fields={fields!}
@@ -327,7 +326,7 @@ class Schedules extends Component<Props, State> {
         )}
 
         <div className={styles.diagnosticsContainer}>
-          {loadCondition && teamsDiagnostics && (
+          {loadCondition && teamsDiagnostics && !this.state.isLoading && (
             <>
               <Button
                 label="Teams Diagnostics"
@@ -344,7 +343,7 @@ class Schedules extends Component<Props, State> {
             </>
           )}
 
-          {loadCondition && divisionsDiagnostics && (
+          {loadCondition && divisionsDiagnostics && !this.state.isLoading && (
             <>
               <Button
                 label="Divisions Diagnostics"
