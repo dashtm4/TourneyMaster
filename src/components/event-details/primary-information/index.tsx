@@ -89,29 +89,10 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const [genderId, onChangeGender] = useState(dropdownGenderValue);
   const [sportId, onChangeSport] = useState(dropdownSportValue);
 
-  const [currentLocation, setCurrentLocation] = useState({
-    lat: 39.299236,
-    lng: -76.609383,
-  });
-
   useEffect(() => {
     const calculatedSportId = getIdByGenderAndSport(genderId, sportId);
     onChange('sport_id', calculatedSportId);
-
-    setLocation();
   }, [genderId, sportId]);
-
-  const setLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        ({ coords: { latitude, longitude } }) =>
-          setCurrentLocation({
-            lat: latitude,
-            lng: longitude,
-          })
-      );
-    }
-  };
 
   const onNameChange = (e: InputTargetValue) =>
     onChange('event_name', e.target.value);
@@ -278,8 +259,8 @@ const PrimaryInformationSection: React.FC<Props> = ({
           <div className={styles.mapContainer}>
             <Map
               position={{
-                lat: lat || currentLocation.lat,
-                lng: lng || currentLocation.lng,
+                lat: lat || 39.521305,
+                lng: lng || -76.6451518,
               }}
             />
           </div>

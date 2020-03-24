@@ -22,7 +22,7 @@ interface IProps {
 }
 
 enum TypeOptions {
-  'Use scheduler' = 1,
+  'Use Scheduler' = 1,
   'Create Manually' = 2,
 }
 
@@ -36,7 +36,7 @@ const CreateNewModal = (props: IProps) => {
   const [step, setStep] = useState(1);
   const [type, setType] = useState(1);
 
-  const typeOptions = ['Use scheduler', 'Create Manually'];
+  const typeOptions = ['Use Scheduler', 'Create Manually'];
 
   const onTypeChange = (e: InputTargetValue) =>
     setType(TypeOptions[e.target.value]);
