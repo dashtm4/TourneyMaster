@@ -1,4 +1,4 @@
 import HeaderSchedule from './header-schedule';
-import PrintedDate from './printed-date';
+import PrintedDate from './aside-print-info';
 
 export { HeaderSchedule, PrintedDate };
