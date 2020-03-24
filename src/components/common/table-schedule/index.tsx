@@ -101,7 +101,11 @@ const TableSchedule = ({
       <h2 className="visually-hidden">Schedule table</h2>
       <div className={styles.scheduleTableWrapper}>
         <DndProvider backend={HTML5Backend}>
-          <ListUnassigned teamCards={unassignedTeams} onDrop={moveCard} />
+          <ListUnassigned
+            teamCards={unassignedTeams}
+            showHeatmap={showHeatmap}
+            onDrop={moveCard}
+          />
           <div className={styles.tableWrapper}>
             <Filter
               divisions={divisions}
