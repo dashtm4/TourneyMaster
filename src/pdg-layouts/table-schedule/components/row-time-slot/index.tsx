@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { formatTimeSlot } from 'helpers';
+import { formatTimeSlot, getDivisionCutName } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IGame } from 'components/common/matrix-table/helper';
@@ -36,14 +36,34 @@ const RowTimeSlot = ({
           ? [
               ...acc,
               <View style={styles.gameWrapper} key={game.id}>
-                <Text style={styles.gameTeamName}>
-                  {game.awayTeam?.name &&
-                    `${game.awayTeam?.name} (${game.awayTeam?.divisionShortName})`}
-                </Text>
-                <Text style={styles.gameTeamName}>
-                  {game.homeTeam?.name &&
-                    `${game.homeTeam?.name} (${game.homeTeam?.divisionShortName})`}
-                </Text>
+                <View style={styles.gameTeamName}>
+                  {game.awayTeam && (
+                    <>
+                      <Text style={styles.teamNameWrapper}>
+                        {game.awayTeam?.name}
+                      </Text>
+                      <Text style={styles.divisionNameWrapper}>
+                        {` (${getDivisionCutName(
+                          game.awayTeam.divisionShortName!
+                        )})`}
+                      </Text>
+                    </>
+                  )}
+                </View>
+                <View style={styles.gameTeamName}>
+                  {game.homeTeam && (
+                    <>
+                      <Text style={styles.teamNameWrapper}>
+                        {game.homeTeam?.name}
+                      </Text>
+                      <Text style={styles.divisionNameWrapper}>
+                        {` (${getDivisionCutName(
+                          game.homeTeam.divisionShortName!
+                        )})`}
+                      </Text>
+                    </>
+                  )}
+                </View>
               </View>,
             ]
           : acc;

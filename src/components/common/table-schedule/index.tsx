@@ -188,7 +188,11 @@ const TableSchedule = ({
               facilities={facilities}
             />
           }
-          fileName="Schedule.pdf"
+          fileName={`${
+            event.event_name
+              ? `${event.event_name} Master Schedule`
+              : 'Schedule'
+          }.pdf`}
         >
           <Button
             icon={getIcon(Icons.PRINT)}
@@ -207,7 +211,11 @@ const TableSchedule = ({
               facilities={facilities}
             />
           }
-          fileName="FieldsSchedule.pdf"
+          fileName={`${
+            event.event_name
+              ? `${event.event_name} Master Fields Schedule`
+              : 'Schedule'
+          }.pdf`}
         >
           <Button
             icon={getIcon(Icons.PRINT)}
@@ -224,17 +232,6 @@ const TableSchedule = ({
         onCanceClick={toggleReplacementWarning}
         onYesClick={confirmReplacement}
       />
-      {/* <p>
-        <PDFViewer width="500" height="1000">
-          <PDFTableFieldsSchedule
-            event={event}
-            games={mapGamesByField(filteredGames, updatedFields)}
-            fields={updatedFields}
-            timeSlots={timeSlots}
-            facilities={facilities}
-          />
-        </PDFViewer>
-      </p> */}
     </section>
   );
 };

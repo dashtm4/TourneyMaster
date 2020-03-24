@@ -16,14 +16,20 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
 
     width: 95,
-    height: 40,
+    minHeight: 30,
 
-    padding: '5px 15px',
+    padding: '5px 4px',
   },
   gameTeamName: {
-    height: 20,
-    textOverflow: 'ellipsis',
+    flexDirection: 'row',
+  },
+  teamNameWrapper: {
+    maxWidth: 65,
     maxLines: 1,
+  },
+  divisionNameWrapper: {
+    width: 20,
+    paddingLeft: 1,
   },
 });
 

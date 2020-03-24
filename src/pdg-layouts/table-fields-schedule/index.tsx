@@ -53,6 +53,14 @@ const PDFScheduleTable = ({
               games={getGamesByFieldId(games, field)}
             />
           </View>
+          <PrintedDate />
+          <Text
+            style={styles.pageNumber}
+            render={({ pageNumber, totalPages }) =>
+              `${pageNumber} / ${totalPages}`
+            }
+            fixed
+          />
         </Page>
       ));
     })}
