@@ -91,10 +91,36 @@ const TourneyImport: React.FC<Props> = ({
               <LinearProgress variant="determinate" value={completed} />
               <br />
               <div className={styles.tabHeader}>
-                <JobStatus statuses={jobStatus} />
+                <SectionDropdown
+                  id="Status"
+                  type="section"
+                  panelDetailsType="flat"
+                  isDefaultExpanded={true}
+                >
+                  <h5>Status</h5>
+                  <JobStatus statuses={jobStatus} />
+                </SectionDropdown>
               </div>
               {
-                showData ? <FullWidthTabs events={events} locations={locations} games={games} /> : null
+                showData ? (
+                  <>
+                    <div className={styles.buttonGroup2}>
+                      <Button
+                        label="Cancel"
+                        variant='text'
+                        color={ButtonColors.SECONDARY}
+                        btnType={ButtonFormTypes.SUBMIT}
+                      />
+                      <Button
+                        label="Commit"
+                        variant={ButtonVarian.CONTAINED}
+                        color={ButtonColors.PRIMATY}
+                        btnType={ButtonFormTypes.SUBMIT}
+                      />
+                    </div>
+                    <FullWidthTabs events={events} locations={locations} games={games} />
+                  </>
+                ) : null
               }
             </div>
           ) : null
