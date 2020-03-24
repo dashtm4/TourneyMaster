@@ -16,14 +16,18 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
 
     width: 95,
-    height: 40,
+    minHeight: 30,
 
     padding: '5px 15px',
   },
   gameTeamName: {
-    height: 20,
-    textOverflow: 'ellipsis',
+    flexDirection: 'row',
     maxLines: 1,
+  },
+  teamNameWrapper: {
+    width: 20,
+    textOverflow: 'hidden',
+    color: 'red',
   },
 });
 

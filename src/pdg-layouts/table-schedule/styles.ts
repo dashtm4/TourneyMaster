@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   facilityTitle: {
     flexDirection: 'row',
 
-    marginBottom: 10,
+    marginBottom: 5,
     paddingLeft: 10,
   },
   scheduleDate: {

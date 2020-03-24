@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { formatTimeSlot } from 'helpers';
+import { formatTimeSlot, getDivisionCutName } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IGame } from 'components/common/matrix-table/helper';
@@ -36,13 +36,25 @@ const RowTimeSlot = ({
           ? [
               ...acc,
               <View style={styles.gameWrapper} key={game.id}>
-                <Text style={styles.gameTeamName}>
-                  {game.awayTeam?.name &&
-                    `${game.awayTeam?.name} (${game.awayTeam?.divisionShortName})`}
-                </Text>
+                <View style={styles.gameTeamName}>
+                  {game.awayTeam?.name && (
+                    <>
+                      <View style={styles.teamNameWrapper}>
+                        {game.awayTeam?.name}
+                      </View>
+                      <Text>
+                        {`(${getDivisionCutName(
+                          game.awayTeam.divisionShortName!
+                        )})`}
+                      </Text>
+                    </>
+                  )}
+                </View>
                 <Text style={styles.gameTeamName}>
                   {game.homeTeam?.name &&
-                    `${game.homeTeam?.name} (${game.homeTeam?.divisionShortName})`}
+                    `${game.homeTeam?.name} (${getDivisionCutName(
+                      game.homeTeam.divisionShortName!
+                    )})`}
                 </Text>
               </View>,
             ]
