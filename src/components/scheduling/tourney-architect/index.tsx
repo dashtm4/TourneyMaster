@@ -76,6 +76,8 @@ export default (props: IProps) => {
     </div>
   );
 
+  const totalGameSlots = scheduleTimeSlots?.length! * schedule.num_fields;
+
   return (
     <SectionDropdown
       type="section"
@@ -190,14 +192,10 @@ export default (props: IProps) => {
                 'minutes'
               )} Minutes`
           )}
-          {renderSectionCell('Total Game Slots', `${128}`)}
+          {renderSectionCell('Total Game Slots', `${totalGameSlots}`)}
           {renderSectionCell(
             'AVG # Games/Team',
-            `${Math.floor(
-              (Number(schedule.max_num_games) +
-                Number(schedule.min_num_games)) /
-                2
-            )}/2`
+            `${((totalGameSlots * 2) / schedule.num_teams).toFixed(1)}`
           )}
           <Button
             label="View Matrix"
