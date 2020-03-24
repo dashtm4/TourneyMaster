@@ -17,7 +17,7 @@ const SchedulesTableReducer = (state = initialState, action: AnyAction) => {
     case SCHEDULES_TABLE_FILL:
       return {
         ...state,
-        previous: [...state.previous, action.payload],
+        previous: [...(state.previous || []), state.current],
         current: action.payload,
       };
     case SCHEDULES_TABLE_UNDO:

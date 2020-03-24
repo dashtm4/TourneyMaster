@@ -11,14 +11,14 @@ interface Props {
 }
 
 const TableThead = ({ facility, fields, splitIdx }: Props) => (
-  <View style={styles.thead}>
+  <View style={styles.thead} fixed>
     {fields
       .map(field => (
         <Text key={field.id} style={styles.fieldName}>
           {`${field.name} ${facility.abbr}`}
         </Text>
       ))
-      .slice(splitIdx, splitIdx + 4)}
+      .slice(splitIdx, splitIdx + 8)}
   </View>
 );
 

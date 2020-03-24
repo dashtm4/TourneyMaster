@@ -20,6 +20,7 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 enum esDetailsEnum {
   'Back to Back Game Warning' = 'back_to_back_warning',
   'Require Waivers' = 'waivers_required',
+  'Connect to WaiverHub' = 'waiverhub_utilized',
 }
 
 enum timeDivisionEnum {
@@ -65,6 +66,7 @@ const EventStructureSection: React.FC<Props> = ({
     event_type,
     min_num_of_games,
     waivers_required,
+    waiverhub_utilized,
   } = eventData;
 
   useEffect(() => {
@@ -222,14 +224,23 @@ const EventStructureSection: React.FC<Props> = ({
             &nbsp; Minutes Total Runtime
           </span>
         </div>
-        <div>
+        <div className={styles.esDetailsThird}>
           <Checkbox
             options={esDetailsOptions}
             formLabel=""
             onChange={onEsDetailsChange}
           />
           <div>
-            Connect to WaiverHub
+            <Checkbox
+              options={[
+                {
+                  label: 'Connect to WaiverHub',
+                  checked: Boolean(waiverhub_utilized),
+                },
+              ]}
+              formLabel=""
+              onChange={onEsDetailsChange}
+            />
             <a href="https://www.waiverhub.com/">
               <img
                 src={waiverHubLogo}

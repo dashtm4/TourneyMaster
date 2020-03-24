@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
   page: {
     padding: 15,
   },
-  tableWrapper: {
+  tableContainer: {
     flexGrow: 1,
     marginBottom: 15,
   },
@@ -14,11 +14,6 @@ const styles = StyleSheet.create({
   },
   scheduleDate: {
     marginRight: 20,
-  },
-  printDate: {
-    position: 'absolute',
-    left: 15,
-    bottom: 15,
   },
 });
 

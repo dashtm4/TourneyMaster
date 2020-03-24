@@ -28,6 +28,9 @@ import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InfoIcon from '@material-ui/icons/Info';
 import PrintIcon from '@material-ui/icons/Print';
+import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
+import PanToolIcon from '@material-ui/icons/PanTool';
+import FlipToBackIcon from '@material-ui/icons/FlipToBack';
 import { PinIcon } from './own-icons';
 import { Icons } from '../../common/enums/icons';
 
@@ -91,8 +94,13 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <InfoIcon style={iconStyles} />;
     case Icons.PRINT:
       return <PrintIcon style={iconStyles} />;
+    case Icons.ZOOM:
+      return <ZoomOutMapIcon style={iconStyles} />;
+    case Icons.MOVE:
+      return <PanToolIcon style={iconStyles} />;
+    case Icons.FLIP:
+      return <FlipToBackIcon style={iconStyles} />;
   }
-
   return <ClearIcon />;
 };
 

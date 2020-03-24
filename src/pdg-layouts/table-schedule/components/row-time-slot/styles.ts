@@ -5,17 +5,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   timeSlot: {
-    marginRight: 40,
-    paddingTop: 10,
+    padding: '18px 15px 0 10px',
+
+    fontSize: 10,
   },
   gameWrapper: {
     flexDirection: 'column',
 
-    width: 160,
+    width: 95,
     height: 40,
 
-    margin: '0 15 15 0',
-    padding: '0 15px',
+    padding: '5px 15px',
   },
   gameTeamName: {
     height: 20,

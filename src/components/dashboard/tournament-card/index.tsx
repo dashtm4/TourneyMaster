@@ -3,7 +3,7 @@ import { History } from 'history';
 import Paper from '../../common/paper';
 import styles from './style.module.scss';
 import Button from '../../common/buttons/button';
-import tournamentLogoExample from '../../../assets/tournamentLogoExample.svg';
+import logo from '../../../assets/logo.png';
 import { getTournamentStatusColor } from '../../../helpers/getTournamentStatusColor';
 import moment from 'moment';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
@@ -40,7 +40,7 @@ const TournamentCard = ({
               className={styles.logo}
               src={
                 !event.desktop_icon_URL
-                  ? tournamentLogoExample
+                  ? logo
                   : `https://tourneymaster.s3.amazonaws.com/public/${event.desktop_icon_URL}`
               }
             />

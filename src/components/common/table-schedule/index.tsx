@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ListUnassigned from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
-import PDFScheduleTable from 'pdg-layouts/schedule-table';
+import PDFTableSchedule from 'pdg-layouts/table-schedule';
+import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
 import { MatrixTable, Button } from 'components/common';
 import { getIcon } from 'helpers';
 import { IDivision, IEventSummary, IEventDetails } from 'common/models';
@@ -25,9 +28,10 @@ import {
   mapUnusedFields,
 } from './helpers';
 
-import { mockedTeamCards } from './mocks';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
+import { IDropParams } from '../matrix-table/dnd/drop';
+import moveTeamCard from './moveTeamCard';
 
 interface Props {
   event: IEventDetails;
@@ -39,6 +43,7 @@ interface Props {
   facilities: IScheduleFacility[];
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
+  onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
 }
 
 const TableSchedule = ({
@@ -51,18 +56,21 @@ const TableSchedule = ({
   timeSlots,
   eventSummary,
   isEnterScores,
+  onTeamCardsUpdate,
 }: Props) => {
-  // const [teamCards] = React.useState(propsTeamCards);
+  const minGamesNum = event.min_num_of_games;
 
-  const [filterValues, changeFilterValues] = React.useState<IScheduleFilter>(
+  const [filterValues, changeFilterValues] = useState<IScheduleFilter>(
     applyFilters(divisions, teamCards, eventSummary)
   );
 
-  const [optimizeBy, onOptimizeClick] = React.useState<OptimizeTypes>(
+  const [optimizeBy, onOptimizeClick] = useState<OptimizeTypes>(
     OptimizeTypes.MIN_RANK
   );
 
-  const [isHeatmap, onHeatmapChange] = React.useState<boolean>(true);
+  const [zoomingDisabled, changeZoomingAction] = useState(false);
+
+  const [showHeatmap, onHeatmapChange] = useState<boolean>(true);
 
   const filledGames = settleTeamsPerGames(games, teamCards);
   const filteredGames = mapGamesByFilter([...filledGames], filterValues);
@@ -70,7 +78,7 @@ const TableSchedule = ({
   const { filteredTeams } = mapFilterValues(teamCards, filterValues);
   const updatedFields = mapUnusedFields(fields, filteredGames);
 
-  const unassignedTeams = getUnassignedTeams(mockedTeamCards);
+  const unassignedTeams = getUnassignedTeams(teamCards, minGamesNum);
 
   const onFilterChange = (data: IScheduleFilter) => {
     const filterData = handleFilterData(
@@ -83,49 +91,56 @@ const TableSchedule = ({
     changeFilterValues(filterData);
   };
 
+  const toggleZooming = () => changeZoomingAction(!zoomingDisabled);
+
+  const moveCard = (dropParams: IDropParams) =>
+    onTeamCardsUpdate(moveTeamCard(teamCards, dropParams));
+
   return (
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
       <div className={styles.scheduleTableWrapper}>
-        {unassignedTeams.length > 0 && (
-          <ListUnassigned teams={unassignedTeams} />
-        )}
-        <div className={styles.tableWrapper}>
-          <Filter
-            divisions={divisions}
-            teams={filteredTeams}
-            eventSummary={eventSummary}
-            filterValues={filterValues}
-            onChangeFilterValue={onFilterChange}
-          />
-          <MatrixTable
-            games={filteredGames}
-            fields={updatedFields}
-            timeSlots={timeSlots}
-            facilities={facilities}
-            isHeatmap={isHeatmap}
-            isEnterScores={isEnterScores}
-          />
-        </div>
+        <DndProvider backend={HTML5Backend}>
+          <ListUnassigned teamCards={unassignedTeams} onDrop={moveCard} />
+          <div className={styles.tableWrapper}>
+            <Filter
+              divisions={divisions}
+              teams={filteredTeams}
+              eventSummary={eventSummary}
+              filterValues={filterValues}
+              onChangeFilterValue={onFilterChange}
+            />
+            <MatrixTable
+              games={filteredGames}
+              fields={updatedFields}
+              timeSlots={timeSlots}
+              facilities={facilities}
+              showHeatmap={showHeatmap}
+              isEnterScores={isEnterScores}
+              moveCard={moveCard}
+              disableZooming={zoomingDisabled}
+            />
+          </div>
+        </DndProvider>
       </div>
       <DivisionHeatmap
         divisions={divisions}
-        isHeatmap={isHeatmap}
+        showHeatmap={showHeatmap}
         onHeatmapChange={onHeatmapChange}
       />
-      {unassignedTeams.length > 0 && (
-        <TableActions
-          optimizeBy={optimizeBy}
-          onUndoClick={() => {}}
-          onLockAllClick={() => {}}
-          onUnlockAllClick={() => {}}
-          onOptimizeClick={onOptimizeClick}
-        />
-      )}
+      <TableActions
+        zoomingDisabled={zoomingDisabled}
+        toggleZooming={toggleZooming}
+        optimizeBy={optimizeBy}
+        onUndoClick={() => {}}
+        onLockAllClick={() => {}}
+        onUnlockAllClick={() => {}}
+        onOptimizeClick={onOptimizeClick}
+      />
       <div className={styles.btnsWrapper}>
         <PDFDownloadLink
           document={
-            <PDFScheduleTable
+            <PDFTableSchedule
               event={event}
               games={mapGamesByField(filteredGames, updatedFields)}
               fields={updatedFields}
@@ -139,10 +154,40 @@ const TableSchedule = ({
             icon={getIcon(Icons.PRINT)}
             variant={ButtonVarian.TEXT}
             color={ButtonColors.SECONDARY}
-            label="Print"
+            label="Print schedule"
+          />
+        </PDFDownloadLink>
+        <PDFDownloadLink
+          document={
+            <PDFTableFieldsSchedule
+              event={event}
+              games={mapGamesByField(filteredGames, updatedFields)}
+              fields={updatedFields}
+              timeSlots={timeSlots}
+              facilities={facilities}
+            />
+          }
+          fileName="FieldsSchedule.pdf"
+        >
+          <Button
+            icon={getIcon(Icons.PRINT)}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            label="Print fields' schedule"
           />
         </PDFDownloadLink>
       </div>
+      {/* <p>
+        <PDFViewer width="500" height="1000">
+          <PDFTableFieldsSchedule
+            event={event}
+            games={mapGamesByField(filteredGames, updatedFields)}
+            fields={updatedFields}
+            timeSlots={timeSlots}
+            facilities={facilities}
+          />
+        </PDFViewer>
+      </p> */}
     </section>
   );
 };

@@ -246,6 +246,10 @@ class Schedules extends Component<Props, State> {
     }
   };
 
+  onScheduleCardsUpdate = (teamCards: ITeamCard[]) => {
+    this.props.fillSchedulesTable(teamCards);
+  };
+
   render() {
     const {
       divisions,
@@ -313,6 +317,7 @@ class Schedules extends Component<Props, State> {
             facilities={facilities!}
             teamCards={schedulesTeamCards!}
             eventSummary={eventSummary!}
+            onTeamCardsUpdate={this.onScheduleCardsUpdate}
           />
         ) : (
           <div className={styles.loadingWrapper}>
