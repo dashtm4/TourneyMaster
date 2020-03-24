@@ -18,16 +18,17 @@ const styles = StyleSheet.create({
     width: 95,
     minHeight: 30,
 
-    padding: '5px 15px',
+    padding: '5px 4px',
   },
   gameTeamName: {
     flexDirection: 'row',
-    maxLines: 1,
   },
   teamNameWrapper: {
+    maxWidth: 65,
+    maxLines: 1,
+  },
+  divisionNameWrapper: {
     width: 20,
-    textOverflow: 'hidden',
-    color: 'red',
   },
 });
 

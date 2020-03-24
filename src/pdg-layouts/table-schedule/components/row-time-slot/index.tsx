@@ -37,12 +37,12 @@ const RowTimeSlot = ({
               ...acc,
               <View style={styles.gameWrapper} key={game.id}>
                 <View style={styles.gameTeamName}>
-                  {game.awayTeam?.name && (
+                  {game.awayTeam && (
                     <>
-                      <View style={styles.teamNameWrapper}>
+                      <Text style={styles.teamNameWrapper}>
                         {game.awayTeam?.name}
-                      </View>
-                      <Text>
+                      </Text>
+                      <Text style={styles.divisionNameWrapper}>
                         {`(${getDivisionCutName(
                           game.awayTeam.divisionShortName!
                         )})`}
@@ -50,12 +50,20 @@ const RowTimeSlot = ({
                     </>
                   )}
                 </View>
-                <Text style={styles.gameTeamName}>
-                  {game.homeTeam?.name &&
-                    `${game.homeTeam?.name} (${getDivisionCutName(
-                      game.homeTeam.divisionShortName!
-                    )})`}
-                </Text>
+                <View style={styles.gameTeamName}>
+                  {game.homeTeam && (
+                    <>
+                      <Text style={styles.teamNameWrapper}>
+                        {game.homeTeam?.name}
+                      </Text>
+                      <Text style={styles.divisionNameWrapper}>
+                        {`(${getDivisionCutName(
+                          game.homeTeam.divisionShortName!
+                        )})`}
+                      </Text>
+                    </>
+                  )}
+                </View>
               </View>,
             ]
           : acc;
