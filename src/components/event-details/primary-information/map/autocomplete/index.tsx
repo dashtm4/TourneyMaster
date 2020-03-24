@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
@@ -6,6 +6,7 @@ import PlacesAutocomplete, {
 import { Input } from 'components/common';
 import styles from './styles.module.scss';
 import { BindingCbWithOne } from 'common/models';
+import useOnclickOutside from 'react-cool-onclickoutside';
 
 export interface IPosition {
   lat: number;
@@ -26,6 +27,8 @@ const PlacesAutocompleteInput = ({
   disabled,
   label,
 }: IPlaceAutocomplete) => {
+  const ref = useRef<HTMLDivElement>(null);
+
   const handleSelect = async (value: string) => {
     const results = await geocodeByAddress(value);
     const latLng = await getLatLng(results[0]);
@@ -33,15 +36,29 @@ const PlacesAutocompleteInput = ({
     onSelect(latLng);
   };
 
+  const [isVisible, setVisibility] = useState(true);
+
+  useOnclickOutside(ref, () => {
+    setVisibility(false);
+  });
+
+  const onChangeInput = (value: string) => {
+    if (!isVisible) {
+      setVisibility(true);
+    }
+    onChange(value);
+  };
+
   return (
     <div>
       <PlacesAutocomplete
         value={address}
-        onChange={onChange}
+        onChange={onChangeInput}
         onSelect={handleSelect}
+        debounce={600}
       >
         {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-          <div>
+          <div ref={ref}>
             <Input
               {...getInputProps({
                 placeholder: 'Search Google Maps',
@@ -49,7 +66,7 @@ const PlacesAutocompleteInput = ({
                 disabled,
               })}
             />
-            {suggestions.length > 0 && (
+            {isVisible && suggestions.length > 0 && (
               <div className={styles.suggestionsContainer}>
                 {suggestions.map(suggestion => {
                   const style = {

@@ -1,46 +1,53 @@
 import React from 'react';
-import { IField } from 'common/models/schedule/fields';
-import TeamDrop, { DropParams } from '../dnd/drop';
+import DropContainer, { IDropParams } from '../dnd/drop';
+import TeamDragCard from '../dnd/drag';
 import styles from '../styles.module.scss';
 import { IGame } from '../helper';
 
-interface IProps {
+interface Props {
   game: IGame;
-  field?: IField;
-  isHeatmap: boolean;
-  isEnterScores?: boolean;
-  moveCard: (params: DropParams) => void;
+  showHeatmap?: boolean;
+  onDrop: (dropParams: IDropParams) => void;
 }
 
-const RenderGameSlot = (props: IProps) => {
-  const { game, moveCard, field, isHeatmap, isEnterScores } = props;
+const RenderGameSlot = (props: Props) => {
+  const { game, onDrop, showHeatmap } = props;
+  const { awayTeam, homeTeam } = game;
+  const acceptType = 'teamdrop';
 
   return (
-    <td
-      key={game.id}
-      style={{ background: field?.isUnused ? '#e2e2e2' : 'transparent' }}
-    >
+    <td className={styles.gameSlotContainer}>
       <div className={styles.gameSlot}>
-        <TeamDrop
-          accept="teamdrop"
-          team={game.awayTeam!}
-          fieldId={game.fieldId}
-          teamPosition={1}
-          timeSlotId={game.timeSlotId}
-          onDrop={moveCard}
-          isHeatmap={isHeatmap}
-          isEnterScores={isEnterScores}
-        />
-        <TeamDrop
-          accept="teamdrop"
-          team={game.homeTeam!}
-          fieldId={game.fieldId}
-          teamPosition={2}
-          timeSlotId={game.timeSlotId}
-          onDrop={moveCard}
-          isHeatmap={isHeatmap}
-          isEnterScores={isEnterScores}
-        />
+        <DropContainer
+          acceptType={acceptType}
+          gameId={game.id}
+          position={1}
+          onDrop={onDrop}
+        >
+          {awayTeam && (
+            <TeamDragCard
+              type={acceptType}
+              originGameId={game.id}
+              showHeatmap={showHeatmap}
+              teamCard={awayTeam}
+            />
+          )}
+        </DropContainer>
+        <DropContainer
+          acceptType={acceptType}
+          gameId={game.id}
+          position={2}
+          onDrop={onDrop}
+        >
+          {homeTeam && (
+            <TeamDragCard
+              type={acceptType}
+              originGameId={game.id}
+              showHeatmap={showHeatmap}
+              teamCard={homeTeam}
+            />
+          )}
+        </DropContainer>
       </div>
     </td>
   );

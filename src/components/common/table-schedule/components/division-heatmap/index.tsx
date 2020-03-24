@@ -7,19 +7,23 @@ const DEFAUL_DIVISION_COLOR = '#ffffff';
 
 interface Props {
   divisions: IDivision[];
-  isHeatmap: boolean;
-  onHeatmapChange: (isHeatmap: boolean) => void;
+  showHeatmap: boolean;
+  onHeatmapChange: (showHeatmap: boolean) => void;
 }
 
-const DivisionHeatmap = ({ divisions, isHeatmap, onHeatmapChange }: Props) => {
-  const CHECKBOX_OPTION = { label: 'Division Heatmap', checked: isHeatmap };
+const DivisionHeatmap = ({
+  divisions,
+  showHeatmap,
+  onHeatmapChange,
+}: Props) => {
+  const CHECKBOX_OPTION = { label: 'Division Heatmap', checked: showHeatmap };
 
   return (
     <form className={styles.form}>
       <div className={styles.checkboxWrapper}>
         <Checkbox
           options={[CHECKBOX_OPTION]}
-          onChange={() => onHeatmapChange(!isHeatmap)}
+          onChange={() => onHeatmapChange(!showHeatmap)}
         />
       </div>
       <ul className={styles.divisionsList}>

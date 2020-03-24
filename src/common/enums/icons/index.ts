@@ -29,6 +29,9 @@ enum Icons {
   INFO = 'info',
   DESCRIPTION = 'description',
   PRINT = 'print',
+  ZOOM = 'zoom',
+  MOVE = 'move',
+  FLIP = 'flip',
 }
 
 export { Icons };
