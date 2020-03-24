@@ -1,5 +1,3 @@
-import ITimeSlot from 'common/models/schedule/timeSlots';
-
 export interface ISchedule {
   schedule_id: string;
   event_id: string;
@@ -13,9 +11,9 @@ export interface ISchedule {
   schedule_status: string;
   last_web_publish: string;
   games_start_on: string;
-  period_duration: string | null;
+  period_duration: string;
   pre_game_warmup: string | null;
-  time_btwn_periods: string | null;
+  time_btwn_periods: string;
   is_active_YN: number;
   is_library_YN: number;
   // ! from server
@@ -28,6 +26,6 @@ export interface ISchedule {
 export interface IConfigurableSchedule extends ISchedule {
   num_fields: number | null;
   periods_per_game: number;
-  time_slots: ITimeSlot[];
-  total_game_slots: string | null;
+  first_game_start: string;
+  last_game_end: string;
 }
