@@ -82,8 +82,8 @@ class FacilityDetails extends React.Component<Props, State> {
       isRestRoomDetails: Boolean(props.facility.restroom_details),
       isParkingDetails: Boolean(props.facility.parking_details),
       currentLocation: {
-        lat: 40.73061,
-        lng: -73.935242,
+        lat: 39.299236,
+        lng: -76.609383,
       },
     };
   }

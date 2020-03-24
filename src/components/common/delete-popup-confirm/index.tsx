@@ -2,8 +2,10 @@ import React from 'react';
 import { Button, Modal, Input } from 'components/common';
 import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
+import { capitalize } from 'lodash';
 
 interface Props {
+  type: string;
   deleteTitle: string;
   isOpen: boolean;
   onClose: BindingAction;
@@ -11,7 +13,8 @@ interface Props {
   onDeleteClick: BindingAction;
 }
 
-const PopupDeleteOrganization = ({
+const PopupDeleteConfirm = ({
+  type,
   deleteTitle,
   isOpen,
   onClose,
@@ -20,22 +23,25 @@ const PopupDeleteOrganization = ({
 }: Props) => {
   const [inputValue, onChange] = React.useState('');
 
+  const orgMessage =
+    'You are about to delete this organization and this cannot be undone. Please, enter the name of the organization you want to delete to continue.';
+  const eventMessage =
+    'You are about to delete this event and this cannot be undone. All related data to this event will be deleted too. Please, enter the name of the event you want to delete to continue.';
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.popupWrapper}>
-        <h2 className={styles.title}>Delete “{deleteTitle}” organization?</h2>
+        <h2 className={styles.title}>{`Delete '${deleteTitle}' ${type}?`}</h2>
         <div className={styles.confirmWrapper}>
           <p className={styles.confirmDesc}>
-            You are about to delete this organization and this cannot be done.
-            Please enter the name of the organization you wish to delete to
-            continue.
+            {type === 'event' ? eventMessage : orgMessage}
           </p>
           <Input
             onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
               onChange(evt.target.value)
             }
             value={inputValue}
-            placeholder="Team name"
+            placeholder={`${capitalize(type)} name`}
           />
         </div>
         <p className={styles.btnsWrapper}>
@@ -61,4 +67,4 @@ const PopupDeleteOrganization = ({
   );
 };
 
-export default PopupDeleteOrganization;
+export default PopupDeleteConfirm;
