@@ -7,11 +7,12 @@ import { IDropParams } from 'components/common/matrix-table/dnd/drop';
 
 interface IProps {
   teamCards: ITeamCard[];
+  showHeatmap?: boolean;
   onDrop: (dropParams: IDropParams) => void;
 }
 
 const UnassignedList = (props: IProps) => {
-  const { teamCards, onDrop } = props;
+  const { teamCards, onDrop, showHeatmap } = props;
   const acceptType = 'teamdrop';
 
   const [{ isOver }, drop] = useDrop({
@@ -36,9 +37,29 @@ const UnassignedList = (props: IProps) => {
     >
       <h3 className={styles.title}>Needs Assignment</h3>
       <div ref={drop} className={styles.dropArea}>
-        {teamCards.map((teamCard, ind) => (
-          <TeamDragCard key={ind} teamCard={teamCard} type={acceptType} />
-        ))}
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Games</th>
+              <th>Team Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {teamCards.map((teamCard, ind) => (
+              <tr key={`tr-${ind}`}>
+                <td className={styles.gamesNum}>{teamCard.games?.length}</td>
+                <td>
+                  <TeamDragCard
+                    showHeatmap={showHeatmap}
+                    key={ind}
+                    teamCard={teamCard}
+                    type={acceptType}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

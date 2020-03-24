@@ -9,6 +9,7 @@ import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
+import { getFieldsByFacilityId, getGamesByFieldId } from '../helpers';
 import { styles } from './styles';
 
 interface Props {
@@ -23,34 +24,43 @@ const PDFScheduleTable = ({
   event,
   facilities,
   fields,
-}: // games,
-// timeSlots,
-Props) => (
+  timeSlots,
+  games,
+}: Props) => (
   <Document>
     {facilities.map(facility => {
-      const filtredFields = fields.filter(
-        field => field.facilityId === facility.id
-      );
+      const fieldsByFacility = getFieldsByFacilityId(fields, facility);
 
-      return filtredFields.map(field => (
+      return fieldsByFacility.map(field => (
         <Page
           size="A4"
           orientation="portrait"
           style={styles.page}
-          key={facility.id}
+          key={field.id}
         >
           <HeaderSchedule event={event} />
           <PrintedDate />
           <View style={styles.tableWrapper}>
-            <View style={styles.facilityTitle}>
+            <View style={styles.facilityWrapper}>
               <Text style={styles.scheduleDate}>
                 {moment(new Date()).format('l')}
               </Text>
-              <Text>{facility.name}</Text>
+              <Text style={styles.facilityName}>{facility.name}</Text>
             </View>
             <TableThead field={field} />
-            <TableTbody />
+            <TableTbody
+              timeSlots={timeSlots}
+              games={getGamesByFieldId(games, field)}
+            />
           </View>
+          <PrintedDate />
+          <Text
+            style={styles.pageNumber}
+            render={({ pageNumber, totalPages }) =>
+              `${pageNumber} / ${totalPages}`
+            }
+            fixed
+          />
         </Page>
       ));
     })}

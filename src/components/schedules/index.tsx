@@ -28,9 +28,9 @@ import {
   mapDivisionsData,
 } from './mapTournamentData';
 import {
-  getTimeValuesFromEvent,
   calculateTimeSlots,
   setGameOptions,
+  getTimeValuesFromSchedule,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import Diagnostics, { IDiagnosticsInput } from './diagnostics';
@@ -38,13 +38,17 @@ import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
 import formatDivisionsDiagnostics from './diagnostics/divisionsDiagnostics';
 import { DiagnosticTypes } from './types';
 import styles from './styles.module.scss';
-import { fillSchedulesTable } from './logic/schedules-table/actions';
+import {
+  fillSchedulesTable,
+  onScheduleUndo,
+} from './logic/schedules-table/actions';
 import { ISchedulesTableState } from './logic/schedules-table/schedulesTableReducer';
 import { mapSchedulesTeamCards, mapScheduleData } from './mapScheduleData';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { IConfigurableSchedule, ISchedule } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
+import { Loader } from 'components/common';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -52,6 +56,7 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   schedulesTeamCards?: ITeamCard[];
   draftSaved?: boolean;
   scheduleData?: IConfigurableSchedule | null;
+  schedulesHistoryLength?: number;
 }
 
 interface IMapDispatchToProps {
@@ -59,6 +64,7 @@ interface IMapDispatchToProps {
   fetchFields: (facilitiesIds: string[]) => void;
   fetchEventSummary: (eventId: string) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
+  onScheduleUndo: () => void;
 }
 
 interface ComponentProps {
@@ -87,16 +93,20 @@ interface State {
   teamsDiagnosticsOpen: boolean;
   divisionsDiagnosticsOpen: boolean;
   cancelConfirmationOpen: boolean;
+  isLoading: boolean;
 }
 
 class Schedules extends Component<Props, State> {
+  timer: any;
   state: State = {
     teamsDiagnosticsOpen: false,
     divisionsDiagnosticsOpen: false,
     cancelConfirmationOpen: false,
+    isLoading: true,
   };
 
   componentDidMount() {
+    this.timer = setTimeout(() => this.setState({ isLoading: false }), 5000);
     const { facilities, match } = this.props;
     const { eventId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
@@ -109,19 +119,33 @@ class Schedules extends Component<Props, State> {
     this.calculateSchedules();
   }
 
+  componentWillUnmount() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+  }
+
   calculateSchedules = () => {
-    const { fields, event, teams, divisions, facilities } = this.props;
+    const {
+      fields,
+      event,
+      teams,
+      divisions,
+      facilities,
+      scheduleData,
+    } = this.props;
 
     if (
       !fields?.length ||
       !teams?.length ||
       !facilities?.length ||
       !divisions?.length ||
+      !scheduleData ||
       !event
     )
       return;
 
-    const timeValues = getTimeValuesFromEvent(event);
+    const timeValues = getTimeValuesFromSchedule(scheduleData);
     const timeSlots = calculateTimeSlots(timeValues);
 
     const mappedFields = mapFieldsData(fields);
@@ -243,6 +267,8 @@ class Schedules extends Component<Props, State> {
       eventSummary,
       schedulesTeamCards,
       draftSaved,
+      onScheduleUndo,
+      schedulesHistoryLength,
     } = this.props;
     const {
       fields,
@@ -292,7 +318,7 @@ class Schedules extends Component<Props, State> {
           </Paper>
         </div>
 
-        {loadCondition && (
+        {loadCondition && !this.state.isLoading ? (
           <TableSchedule
             event={event!}
             fields={fields!}
@@ -302,12 +328,19 @@ class Schedules extends Component<Props, State> {
             facilities={facilities!}
             teamCards={schedulesTeamCards!}
             eventSummary={eventSummary!}
+            historyLength={schedulesHistoryLength}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
+            onUndo={onScheduleUndo}
           />
+        ) : (
+          <div className={styles.loadingWrapper}>
+            <Loader />
+            <div>Calculating...</div>
+          </div>
         )}
 
         <div className={styles.diagnosticsContainer}>
-          {loadCondition && teamsDiagnostics && (
+          {loadCondition && !this.state.isLoading && teamsDiagnostics && (
             <>
               <Button
                 label="Teams Diagnostics"
@@ -324,7 +357,7 @@ class Schedules extends Component<Props, State> {
             </>
           )}
 
-          {loadCondition && divisionsDiagnostics && (
+          {loadCondition && !this.state.isLoading && divisionsDiagnostics && (
             <>
               <Button
                 label="Divisions Diagnostics"
@@ -367,6 +400,7 @@ const mapStateToProps = ({
   fields: pageEvent?.tournamentData.fields,
   eventSummary: schedules?.eventSummary,
   schedulesTeamCards: schedulesTable?.current,
+  schedulesHistoryLength: schedulesTable?.previous.length,
   draftSaved: schedules?.draftIsAlreadySaved,
   scheduleData: scheduling?.schedule,
 });
@@ -378,6 +412,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       fetchFields,
       fetchEventSummary,
       fillSchedulesTable,
+      onScheduleUndo,
     },
     dispatch
   );
