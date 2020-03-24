@@ -33,9 +33,9 @@ const JobStatus = ({ statuses }: Props) => {
         </TableHead>
         <TableBody>
           {statuses.map((status, index) => (
-            <TableRow key={index + 1}>
+            <TableRow key={index}>
               <TableCell component="th" scope="row">
-                {index}
+                {index + 1}
               </TableCell>
               <TableCell align="left">{status.step_description}</TableCell>
               <TableCell align="left">{status.step_comments}</TableCell>
