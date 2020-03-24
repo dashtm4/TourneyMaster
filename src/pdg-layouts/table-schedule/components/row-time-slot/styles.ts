@@ -3,9 +3,12 @@ import { StyleSheet } from '@react-pdf/renderer';
 const styles = StyleSheet.create({
   timeSlotRow: {
     flexDirection: 'row',
+    alignItems: 'center',
+
+    padding: '0 10px',
   },
   timeSlot: {
-    padding: '18px 15px 0 10px',
+    marginRight: 10,
 
     fontSize: 10,
   },

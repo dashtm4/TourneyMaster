@@ -9,6 +9,8 @@ import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
+import { getFieldsByFacilityId } from '../helpers';
+import { DEFAUL_COLUMNS_COUNT } from './common';
 import { styles } from './styles';
 
 interface IPDFProps {
@@ -28,14 +30,12 @@ const PDFScheduleTable = ({
 }: IPDFProps) => (
   <Document>
     {facilities.map(facility => {
-      const filtredFields = fields.filter(
-        field => field.facilityId === facility.id
-      );
+      const fieldsByFacility = getFieldsByFacilityId(fields, facility);
 
-      return filtredFields.reduce((acc, field, idx) => {
+      return fieldsByFacility.reduce((acc, field, idx) => {
         let splitIdx = 0;
 
-        if (idx % 8 === 0 || idx === 0) {
+        if (idx % DEFAUL_COLUMNS_COUNT === 0 || idx === 0) {
           if (idx > 0) splitIdx += idx;
 
           return [
@@ -57,7 +57,7 @@ const PDFScheduleTable = ({
                 <View key={field.id}>
                   <TableThead
                     facility={facility}
-                    fields={filtredFields}
+                    fields={fieldsByFacility}
                     splitIdx={splitIdx}
                   />
                   <TableTbody
