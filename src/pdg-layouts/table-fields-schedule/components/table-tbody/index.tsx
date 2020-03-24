@@ -17,6 +17,7 @@ const TableTbody = ({ timeSlots, games }: Props) => {
           timeSlot={timeSlot}
           games={selectProperGamesPerTimeSlot(timeSlot, games)}
           isEven={idx % 2 === 0}
+          key={timeSlot.id}
         />
       ))}
     </View>
