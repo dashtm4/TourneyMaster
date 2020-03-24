@@ -45,6 +45,7 @@ import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { IConfigurableSchedule, ISchedule } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
+import { Loader } from 'components/common';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -87,13 +88,16 @@ interface State {
   teamsDiagnosticsOpen: boolean;
   divisionsDiagnosticsOpen: boolean;
   cancelConfirmationOpen: boolean;
+  isLoading: boolean;
 }
 
 class Schedules extends Component<Props, State> {
+  timer: any;
   state: State = {
     teamsDiagnosticsOpen: false,
     divisionsDiagnosticsOpen: false,
     cancelConfirmationOpen: false,
+    isLoading: true,
   };
 
   componentDidMount() {
@@ -107,6 +111,16 @@ class Schedules extends Component<Props, State> {
 
     this.props.fetchEventSummary(eventId);
     this.calculateSchedules();
+
+    this.timer = setTimeout(() => {
+      this.setState({ isLoading: false });
+    }, 3000);
+  }
+
+  componentWillUnmount() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
   }
 
   calculateSchedules = () => {
@@ -263,7 +277,8 @@ class Schedules extends Component<Props, State> {
       teamCards?.length &&
       event &&
       eventSummary?.length &&
-      schedulesTeamCards?.length
+      schedulesTeamCards?.length &&
+      !this.state.isLoading
     );
 
     return (
@@ -288,7 +303,7 @@ class Schedules extends Component<Props, State> {
           </Paper>
         </div>
 
-        {loadCondition && (
+        {loadCondition ? (
           <TableSchedule
             event={event!}
             fields={fields!}
@@ -299,6 +314,11 @@ class Schedules extends Component<Props, State> {
             teamCards={schedulesTeamCards!}
             eventSummary={eventSummary!}
           />
+        ) : (
+          <div className={styles.loadingWrapper}>
+            <Loader />
+            <div>Calculating...</div>
+          </div>
         )}
 
         <div className={styles.diagnosticsContainer}>
