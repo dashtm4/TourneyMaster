@@ -390,9 +390,9 @@ class FacilityDetails extends React.Component<Props, State> {
                 }
                 value={facility.parking_proximity || ''}
                 disabled={!isEdit}
-                placeholder="Meters"
+                endAdornment="(walk in minutes)"
                 width="100%"
-                label="Main Parking - Distance to Fields (approx)"
+                label="Main Parking; Distance to Fields (approx)"
               />
             </fieldset>
             <fieldset className={`${styles.filedset} ${styles.filedsetGolf}`}>
