@@ -1,14 +1,10 @@
 import React from 'react';
 import { View, Text } from '@react-pdf/renderer';
-// import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
-// import ITimeSlot from 'common/models/schedule/timeSlots';
 import { styles } from './styles';
 
 interface Props {
   field: IField;
-  // games: IGame[];
-  // timeSlots: ITimeSlot[];
 }
 
 const TableThead = ({ field }: Props) => (
@@ -25,7 +21,15 @@ const TableThead = ({ field }: Props) => (
             <Text style={styles.team}>Home Team</Text>
           </View>
         </View>
-        <Text style={styles.scores}>Final Scores</Text>
+        <View style={styles.scoresWrapper}>
+          <View style={styles.scores}>
+            <Text>Final Scores</Text>
+          </View>
+          <View style={styles.scoresTeamsWrapper}>
+            <Text style={styles.scoresTeam}>Away</Text>
+            <Text style={styles.scoresTeam}>Home</Text>
+          </View>
+        </View>
         <Text style={styles.initials}>Initials</Text>
       </View>
     </View>

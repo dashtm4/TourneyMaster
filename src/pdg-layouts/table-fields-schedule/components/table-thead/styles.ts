@@ -3,13 +3,14 @@ import { StyleSheet } from '@react-pdf/renderer';
 const styles = StyleSheet.create({
   thead: {
     flexDirection: 'column',
-    marginLeft: 80,
+    margin: '0 0 5px 80px',
   },
   theadWrapper: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
   },
   theadName: {
-    marginBottom: 10,
+    marginBottom: 5,
     padding: 5,
 
     textAlign: 'center',
@@ -19,31 +20,55 @@ const styles = StyleSheet.create({
 
   gameDetailsWrapper: {
     flexDirection: 'column',
+
+    width: '280px',
+    marginRight: 10,
   },
   gameDetails: {
-    marginBottom: 10,
-    padding: 5,
+    marginBottom: 5,
+    padding: '3px 3px 3px 110px',
 
     color: '#ffffff',
     backgroundColor: '#DCDCDC',
   },
   teamsWrapper: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   team: {
-    padding: 5,
+    width: '135px',
+    padding: '3px 3px 3px 40px',
 
     color: '#ffffff',
     backgroundColor: '#696969',
   },
+  scoresWrapper: {
+    width: '115px',
+    flexDirection: 'column',
+
+    marginRight: 10,
+  },
   scores: {
-    padding: 5,
+    padding: '3px 3px 3px 30px',
+    marginBottom: 5,
 
     color: '#ffffff',
     backgroundColor: '#DCDCDC',
   },
+  scoresTeamsWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  scoresTeam: {
+    width: '55px',
+    padding: '3px 3px 3px 15px',
+
+    color: '#ffffff',
+    backgroundColor: '#696969',
+  },
   initials: {
-    padding: 5,
+    width: '70px',
+    padding: '3px 3px 3px 20px',
 
     color: '#ffffff',
     backgroundColor: '#DCDCDC',
