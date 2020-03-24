@@ -45,6 +45,7 @@ import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { IConfigurableSchedule, ISchedule } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
+import { Loader } from 'components/common';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -87,16 +88,23 @@ interface State {
   teamsDiagnosticsOpen: boolean;
   divisionsDiagnosticsOpen: boolean;
   cancelConfirmationOpen: boolean;
+  isLoading: boolean;
 }
 
 class Schedules extends Component<Props, State> {
+  timer: any;
   state: State = {
     teamsDiagnosticsOpen: false,
     divisionsDiagnosticsOpen: false,
     cancelConfirmationOpen: false,
+    isLoading: true,
   };
 
   componentDidMount() {
+    this.timer = setTimeout(() => {
+      this.setState({ isLoading: false });
+    }, 5000);
+
     const { facilities, match } = this.props;
     const { eventId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
@@ -107,6 +115,12 @@ class Schedules extends Component<Props, State> {
 
     this.props.fetchEventSummary(eventId);
     this.calculateSchedules();
+  }
+
+  componentWillUnmount() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
   }
 
   calculateSchedules = () => {
@@ -292,7 +306,7 @@ class Schedules extends Component<Props, State> {
           </Paper>
         </div>
 
-        {loadCondition && (
+        {loadCondition && !this.state.isLoading ? (
           <TableSchedule
             event={event!}
             fields={fields!}
@@ -304,10 +318,15 @@ class Schedules extends Component<Props, State> {
             eventSummary={eventSummary!}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
           />
+        ) : (
+          <div className={styles.loadingWrapper}>
+            <Loader />
+            <div>Calculating...</div>
+          </div>
         )}
 
         <div className={styles.diagnosticsContainer}>
-          {loadCondition && teamsDiagnostics && (
+          {loadCondition && !this.state.isLoading && teamsDiagnostics && (
             <>
               <Button
                 label="Teams Diagnostics"
@@ -324,7 +343,7 @@ class Schedules extends Component<Props, State> {
             </>
           )}
 
-          {loadCondition && divisionsDiagnostics && (
+          {loadCondition && !this.state.isLoading && divisionsDiagnostics && (
             <>
               <Button
                 label="Divisions Diagnostics"

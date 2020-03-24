@@ -1,4 +1,5 @@
 .container {
+  height: 100%;
   .paperWrapper {
     margin-bottom: 20px;
     .paperContainer {
@@ -9,6 +10,12 @@
         margin-left: 20px;
       }
     }
+  }
+  .loadingWrapper {
+    padding-top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }
 

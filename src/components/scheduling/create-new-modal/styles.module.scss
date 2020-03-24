@@ -41,3 +41,16 @@
     }
   }
 }
+.radioBtnsWrapper {
+  padding: 20px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.btnWrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+.message {
+  padding-top: 15px;
+}
