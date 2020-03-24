@@ -177,17 +177,6 @@ const TableSchedule = ({
           />
         </PDFDownloadLink>
       </div>
-      {/* <p>
-        <PDFViewer width="500" height="1000">
-          <PDFTableFieldsSchedule
-            event={event}
-            games={mapGamesByField(filteredGames, updatedFields)}
-            fields={updatedFields}
-            timeSlots={timeSlots}
-            facilities={facilities}
-          />
-        </PDFViewer>
-      </p> */}
     </section>
   );
 };

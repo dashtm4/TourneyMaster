@@ -4,6 +4,7 @@ import { formatTimeSlot } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IGame } from 'components/common/matrix-table/helper';
+import { DEFAUL_COLUMNS_COUNT } from '../../common';
 import { styles } from './styles';
 
 const EVEN_COLOR = '#DCDCDC';
@@ -23,24 +24,18 @@ const RowTimeSlot = ({
   isEven,
   splitIdx,
 }: Props) => (
-  <View style={styles.timeSlotRow} wrap={false} key={timeSlot.id}>
-    <Text
-      style={{ ...styles.timeSlot, backgroundColor: isEven ? EVEN_COLOR : '' }}
-    >
-      {formatTimeSlot(timeSlot.time)}
-    </Text>
+  <View
+    style={{ ...styles.timeSlotRow, backgroundColor: isEven ? EVEN_COLOR : '' }}
+    wrap={false}
+    key={timeSlot.id}
+  >
+    <Text style={styles.timeSlot}>{formatTimeSlot(timeSlot.time)}</Text>
     {games
       .reduce((acc, game) => {
         return game.facilityId === facility.id
           ? [
               ...acc,
-              <View
-                style={{
-                  ...styles.gameWrapper,
-                  backgroundColor: isEven ? EVEN_COLOR : '',
-                }}
-                key={game.id}
-              >
+              <View style={styles.gameWrapper} key={game.id}>
                 <Text style={styles.gameTeamName}>
                   {game.awayTeam?.name &&
                     `${game.awayTeam?.name} (${game.awayTeam?.divisionShortName})`}
@@ -53,7 +48,7 @@ const RowTimeSlot = ({
             ]
           : acc;
       }, [] as JSX.Element[])
-      .slice(splitIdx, splitIdx + 8)}
+      .slice(splitIdx, splitIdx + DEFAUL_COLUMNS_COUNT)}
   </View>
 );
 
