@@ -1,5 +1,5 @@
 import { getTimeFromString, timeToString } from 'helpers';
-import { IEventDetails } from 'common/models';
+import { IEventDetails, IConfigurableSchedule } from 'common/models';
 import moment from 'moment';
 
 interface ITimeValues {
@@ -9,6 +9,7 @@ interface ITimeValues {
   periodDuration: string;
   timeBtwnPeriods: string;
   periodsPerGame: number;
+  gamesStartOn: string;
 }
 
 const setGameOptions = (event: IEventDetails) => {
@@ -45,13 +46,16 @@ const calculateTotalGameTime = (
   );
 };
 
-const getTimeValuesFromEvent = (event: IEventDetails): ITimeValues => ({
-  firstGameTime: event.first_game_time,
-  lastGameEnd: event.last_game_end,
-  preGameWarmup: event.pre_game_warmup,
-  periodDuration: event.period_duration,
-  timeBtwnPeriods: event.time_btwn_periods,
-  periodsPerGame: event.periods_per_game,
+const getTimeValuesFromSchedule = (
+  schedule: IConfigurableSchedule
+): ITimeValues => ({
+  firstGameTime: schedule.first_game_start,
+  lastGameEnd: schedule.last_game_end,
+  preGameWarmup: schedule.pre_game_warmup,
+  periodDuration: schedule.period_duration,
+  timeBtwnPeriods: schedule.time_btwn_periods,
+  periodsPerGame: schedule.periods_per_game,
+  gamesStartOn: schedule.games_start_on,
 });
 
 const calculateTimeSlots = (timeValues: ITimeValues) => {
@@ -64,6 +68,7 @@ const calculateTimeSlots = (timeValues: ITimeValues) => {
     periodDuration,
     timeBtwnPeriods,
     periodsPerGame,
+    gamesStartOn,
   } = timeValues;
 
   const firstGameTimeMin = getTimeFromString(firstGameTime, 'minutes');
@@ -74,6 +79,8 @@ const calculateTimeSlots = (timeValues: ITimeValues) => {
     timeBtwnPeriods,
     periodsPerGame
   );
+
+  const gamesStartOnNum = Number(gamesStartOn);
   const timeSlots = [];
 
   const timeSlotsNum = Math.floor(
@@ -81,9 +88,18 @@ const calculateTimeSlots = (timeValues: ITimeValues) => {
   );
 
   for (let i = 0; i < timeSlotsNum; i++) {
-    const timeInMin = firstGameTimeMin + totalGameTime * i;
+    let timeInMin;
 
-    const validMinutes = 5 * Math.ceil(timeInMin / 5);
+    if (i === 0) {
+      timeInMin = firstGameTimeMin;
+    } else {
+      timeInMin =
+        getTimeFromString(timeSlots[timeSlots.length - 1].time, 'minutes') +
+        totalGameTime;
+    }
+
+    const validMinutes =
+      gamesStartOnNum * Math.ceil(timeInMin / gamesStartOnNum);
     const timeInStringFormat = timeToString(validMinutes);
 
     timeSlots.push({
@@ -104,7 +120,7 @@ const formatTimeSlot = (time: string) => {
 export {
   setGameOptions,
   calculateTotalGameTime,
-  getTimeValuesFromEvent,
+  getTimeValuesFromSchedule,
   calculateTimeSlots,
   formatTimeSlot,
 };

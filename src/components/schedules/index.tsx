@@ -28,9 +28,9 @@ import {
   mapDivisionsData,
 } from './mapTournamentData';
 import {
-  getTimeValuesFromEvent,
   calculateTimeSlots,
   setGameOptions,
+  getTimeValuesFromSchedule,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import Diagnostics, { IDiagnosticsInput } from './diagnostics';
@@ -106,10 +106,7 @@ class Schedules extends Component<Props, State> {
   };
 
   componentDidMount() {
-    this.timer = setTimeout(() => {
-      this.setState({ isLoading: false });
-    }, 5000);
-
+    this.timer = setTimeout(() => this.setState({ isLoading: false }), 5000);
     const { facilities, match } = this.props;
     const { eventId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
@@ -129,18 +126,26 @@ class Schedules extends Component<Props, State> {
   }
 
   calculateSchedules = () => {
-    const { fields, event, teams, divisions, facilities } = this.props;
+    const {
+      fields,
+      event,
+      teams,
+      divisions,
+      facilities,
+      scheduleData,
+    } = this.props;
 
     if (
       !fields?.length ||
       !teams?.length ||
       !facilities?.length ||
       !divisions?.length ||
+      !scheduleData ||
       !event
     )
       return;
 
-    const timeValues = getTimeValuesFromEvent(event);
+    const timeValues = getTimeValuesFromSchedule(scheduleData);
     const timeSlots = calculateTimeSlots(timeValues);
 
     const mappedFields = mapFieldsData(fields);
