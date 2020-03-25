@@ -15,6 +15,7 @@ interface IProps {
   onUndoClick: BindingAction;
   onLockAllClick: BindingAction;
   onUnlockAllClick: BindingAction;
+  historyLength?: number;
   toggleZooming: () => void;
   onOptimizeClick: (optimizeBy: OptimizeTypes) => void;
 }
@@ -26,6 +27,7 @@ const TableActions = (props: IProps) => {
     onLockAllClick,
     onUnlockAllClick,
     toggleZooming,
+    historyLength,
   } = props;
 
   return (
@@ -38,6 +40,7 @@ const TableActions = (props: IProps) => {
             icon={getIcon(Icons.SETTINGS_BACKUP_RESTORE)}
             label="Undo"
             variant={ButtonVarian.TEXT}
+            disabled={!!(historyLength && historyLength < 2)}
             color={ButtonColors.SECONDARY}
           />
           <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>

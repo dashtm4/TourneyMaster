@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
 
-    padding: '5px 10px',
+    padding: '0 10px',
   },
   timeSlot: {
     marginRight: 30,

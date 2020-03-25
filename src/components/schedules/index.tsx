@@ -28,9 +28,9 @@ import {
   mapDivisionsData,
 } from './mapTournamentData';
 import {
-  getTimeValuesFromEvent,
   calculateTimeSlots,
   setGameOptions,
+  getTimeValuesFromSchedule,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import Diagnostics, { IDiagnosticsInput } from './diagnostics';
@@ -41,6 +41,7 @@ import styles from './styles.module.scss';
 import {
   fillSchedulesTable,
   updateSchedulesTable,
+  onScheduleUndo,
 } from './logic/schedules-table/actions';
 import { ISchedulesTableState } from './logic/schedules-table/schedulesTableReducer';
 import { mapSchedulesTeamCards, mapScheduleData } from './mapScheduleData';
@@ -56,6 +57,7 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   schedulesTeamCards?: ITeamCard[];
   draftSaved?: boolean;
   scheduleData?: IConfigurableSchedule | null;
+  schedulesHistoryLength?: number;
 }
 
 interface IMapDispatchToProps {
@@ -64,6 +66,7 @@ interface IMapDispatchToProps {
   fetchEventSummary: (eventId: string) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
   updateSchedulesTable: (teamCard: ITeamCard) => void;
+  onScheduleUndo: () => void;
 }
 
 interface ComponentProps {
@@ -105,10 +108,7 @@ class Schedules extends Component<Props, State> {
   };
 
   componentDidMount() {
-    this.timer = setTimeout(() => {
-      this.setState({ isLoading: false });
-    }, 5000);
-
+    this.timer = setTimeout(() => this.setState({ isLoading: false }), 5000);
     const { facilities, match } = this.props;
     const { eventId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
@@ -128,18 +128,26 @@ class Schedules extends Component<Props, State> {
   }
 
   calculateSchedules = () => {
-    const { fields, event, teams, divisions, facilities } = this.props;
+    const {
+      fields,
+      event,
+      teams,
+      divisions,
+      facilities,
+      scheduleData,
+    } = this.props;
 
     if (
       !fields?.length ||
       !teams?.length ||
       !facilities?.length ||
       !divisions?.length ||
+      !scheduleData ||
       !event
     )
       return;
 
-    const timeValues = getTimeValuesFromEvent(event);
+    const timeValues = getTimeValuesFromSchedule(scheduleData);
     const timeSlots = calculateTimeSlots(timeValues);
 
     const mappedFields = mapFieldsData(fields);
@@ -265,6 +273,8 @@ class Schedules extends Component<Props, State> {
       eventSummary,
       schedulesTeamCards,
       draftSaved,
+      onScheduleUndo,
+      schedulesHistoryLength,
     } = this.props;
     const {
       fields,
@@ -324,8 +334,10 @@ class Schedules extends Component<Props, State> {
             facilities={facilities!}
             teamCards={schedulesTeamCards!}
             eventSummary={eventSummary!}
+            historyLength={schedulesHistoryLength}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
             onTeamCardUpdate={this.onScheduleCardUpdate}
+            onUndo={onScheduleUndo}
           />
         ) : (
           <div className={styles.loadingWrapper}>
@@ -395,6 +407,7 @@ const mapStateToProps = ({
   fields: pageEvent?.tournamentData.fields,
   eventSummary: schedules?.eventSummary,
   schedulesTeamCards: schedulesTable?.current,
+  schedulesHistoryLength: schedulesTable?.previous.length,
   draftSaved: schedules?.draftIsAlreadySaved,
   scheduleData: scheduling?.schedule,
 });
@@ -407,6 +420,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       fetchEventSummary,
       fillSchedulesTable,
       updateSchedulesTable,
+      onScheduleUndo,
     },
     dispatch
   );

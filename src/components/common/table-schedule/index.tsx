@@ -44,8 +44,10 @@ interface Props {
   facilities: IScheduleFacility[];
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
+  historyLength?: number;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
+  onUndo: () => void;
 }
 
 const TableSchedule = ({
@@ -60,6 +62,8 @@ const TableSchedule = ({
   isEnterScores,
   onTeamCardsUpdate,
   onTeamCardUpdate,
+  onUndo,
+  historyLength,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -183,10 +187,11 @@ const TableSchedule = ({
         onHeatmapChange={onHeatmapChange}
       />
       <TableActions
+        historyLength={historyLength}
         zoomingDisabled={zoomingDisabled}
         toggleZooming={toggleZooming}
         optimizeBy={optimizeBy}
-        onUndoClick={() => {}}
+        onUndoClick={onUndo}
         onLockAllClick={onLockAll}
         onUnlockAllClick={onUnlockAll}
         onOptimizeClick={onOptimizeClick}
@@ -202,7 +207,11 @@ const TableSchedule = ({
               facilities={facilities}
             />
           }
-          fileName="Schedule.pdf"
+          fileName={`${
+            event.event_name
+              ? `${event.event_name} Master Schedule`
+              : 'Schedule'
+          }.pdf`}
         >
           <Button
             icon={getIcon(Icons.PRINT)}
@@ -221,7 +230,11 @@ const TableSchedule = ({
               facilities={facilities}
             />
           }
-          fileName="FieldsSchedule.pdf"
+          fileName={`${
+            event.event_name
+              ? `${event.event_name} Master Fields Schedule`
+              : 'Schedule'
+          }.pdf`}
         >
           <Button
             icon={getIcon(Icons.PRINT)}
@@ -238,17 +251,6 @@ const TableSchedule = ({
         onCanceClick={toggleReplacementWarning}
         onYesClick={confirmReplacement}
       />
-      {/* <p>
-        <PDFViewer width="500" height="1000">
-          <PDFTableFieldsSchedule
-            event={event}
-            games={mapGamesByField(filteredGames, updatedFields)}
-            fields={updatedFields}
-            timeSlots={timeSlots}
-            facilities={facilities}
-          />
-        </PDFViewer>
-      </p> */}
     </section>
   );
 };

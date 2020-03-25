@@ -1,10 +1,10 @@
 import { StyleSheet } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
-  printDate: {
+  wrapper: {
     position: 'absolute',
-    left: 15,
     bottom: 15,
+    left: 15,
   },
 });
 

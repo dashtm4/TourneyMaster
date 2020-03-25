@@ -1,7 +1,7 @@
 import { ISchedule } from 'common/models';
 
 export interface ISchedulingSchedule extends ISchedule {
-  createdByName: string;
+  createdByName: string | null;
   updatedByName: string | null;
 }
 

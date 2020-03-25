@@ -17,14 +17,16 @@ import {
   getIcon,
   getTimeFromString,
   timeToString,
-  formatTimeSlot,
   calculateTimeSlots,
+  timeToDate,
+  getTimeValuesFromSchedule,
 } from 'helpers';
 
 import { EventMenuTitles, Icons } from 'common/enums';
 import { IConfigurableSchedule } from 'common/models';
 import { BindingAction } from 'common/models';
 import { ArchitectFormFields, gameStartOnOptions } from '../types';
+import moment from 'moment';
 
 const STYLES_INFO_ICON = {
   marginLeft: '5px',
@@ -42,14 +44,10 @@ interface IProps {
 export default (props: IProps) => {
   const { schedule, onChange, onViewEventMatrix } = props;
 
-  const scheduleTimeSlots = calculateTimeSlots({
-    firstGameTime: schedule.first_game_start,
-    lastGameEnd: schedule.last_game_end,
-    preGameWarmup: schedule.pre_game_warmup,
-    periodDuration: schedule.period_duration,
-    timeBtwnPeriods: schedule.time_btwn_periods,
-    periodsPerGame: schedule.periods_per_game,
-  });
+  const timeValues = getTimeValuesFromSchedule(schedule);
+  const scheduleTimeSlots = calculateTimeSlots(timeValues);
+
+  const totalGameSlots = scheduleTimeSlots?.length! * schedule.num_fields;
 
   const localChange = ({ target: { name, value } }: InputTargetValue) => {
     onChange(name, value);
@@ -97,9 +95,9 @@ export default (props: IProps) => {
           )}
           {renderSectionCell(
             'Play Time Window',
-            `${formatTimeSlot(scheduleTimeSlots![0].time)} - ${formatTimeSlot(
-              scheduleTimeSlots![scheduleTimeSlots!.length - 1].time
-            )}`,
+            `${moment(timeToDate(schedule.first_game_start)).format(
+              'LT'
+            )} - ${moment(timeToDate(schedule.last_game_end)).format('LT')}`,
             true
           )}
           {renderSectionCell(
@@ -190,14 +188,10 @@ export default (props: IProps) => {
                 'minutes'
               )} Minutes`
           )}
-          {renderSectionCell('Total Game Slots', `${128}`)}
+          {renderSectionCell('Total Game Slots', `${totalGameSlots}`)}
           {renderSectionCell(
             'AVG # Games/Team',
-            `${Math.floor(
-              (Number(schedule.max_num_games) +
-                Number(schedule.min_num_games)) /
-                2
-            )}/2`
+            `${((totalGameSlots * 2) / schedule.num_teams).toFixed(1)}`
           )}
           <Button
             label="View Matrix"

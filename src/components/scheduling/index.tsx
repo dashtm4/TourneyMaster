@@ -8,6 +8,8 @@ import {
   createNewSchedule,
   addNewSchedule,
   changeSchedule,
+  updateSchedule,
+  deleteSchedule,
 } from './logic/actions';
 import { HeadingLevelTwo, Loader } from 'components/common';
 import Navigation from './navigation';
@@ -19,6 +21,7 @@ import Brackets from './brackets';
 import { ISchedule, IConfigurableSchedule } from 'common/models/schedule';
 import { IAppState } from 'reducers/root-reducer.types';
 import CreateNewModal from './create-new-modal';
+import PopupEditSchedule from './popup-edit-schedule';
 import { IMenuItem, BindingAction, BindingCbWithOne } from 'common/models';
 import { ISchedulingSchedule } from './types';
 
@@ -34,14 +37,18 @@ interface IProps {
   createNewSchedule: (schedule: IConfigurableSchedule) => void;
   addNewSchedule: BindingAction;
   changeSchedule: BindingCbWithOne<Partial<ISchedule>>;
+  updateSchedule: BindingCbWithOne<ISchedulingSchedule>;
+  deleteSchedule: BindingCbWithOne<ISchedulingSchedule>;
 }
 
 interface IState {
+  editedSchedule: ISchedulingSchedule | null;
   createModalOpen: boolean;
 }
 
 class Scheduling extends Component<IProps, IState> {
   state = {
+    editedSchedule: null,
     createModalOpen: false,
   };
 
@@ -69,6 +76,11 @@ class Scheduling extends Component<IProps, IState> {
     this.setState({ createModalOpen: false });
   };
 
+  onEditSchedule = (schedule: ISchedulingSchedule) =>
+    this.setState({ editedSchedule: schedule });
+
+  onCloseEditSchedule = () => this.setState({ editedSchedule: null });
+
   render() {
     const {
       schedule,
@@ -76,8 +88,10 @@ class Scheduling extends Component<IProps, IState> {
       incompleteMenuItems,
       isLoading,
       createNewSchedule,
+      updateSchedule,
+      deleteSchedule,
     } = this.props;
-    const { createModalOpen } = this.state;
+    const { createModalOpen, editedSchedule } = this.state;
     const { eventId } = this.props.match?.params;
     const isAllowCreate = incompleteMenuItems.length === 0;
 
@@ -104,7 +118,7 @@ class Scheduling extends Component<IProps, IState> {
                 <>
                   <TournamentPlay
                     schedules={schedules}
-                    onEditScheduleDetails={() => {}}
+                    onEditSchedule={this.onEditSchedule}
                     onManageTournamentPlay={() => {}}
                   />
                   {false && <Brackets onManageBrackets={() => {}} />}
@@ -125,6 +139,14 @@ class Scheduling extends Component<IProps, IState> {
           onClose={this.onCreateClosed}
           onChange={this.onChange}
         />
+        {editedSchedule && (
+          <PopupEditSchedule
+            schedule={editedSchedule}
+            onClose={this.onCloseEditSchedule}
+            onSubmit={updateSchedule}
+            onDelete={deleteSchedule}
+          />
+        )}
       </>
     );
   }
@@ -139,7 +161,14 @@ const mapStateToProps = ({ scheduling }: IAppState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
-    { getScheduling, createNewSchedule, addNewSchedule, changeSchedule },
+    {
+      getScheduling,
+      createNewSchedule,
+      addNewSchedule,
+      changeSchedule,
+      updateSchedule,
+      deleteSchedule,
+    },
     dispatch
   );
 
