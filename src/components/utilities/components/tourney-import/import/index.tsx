@@ -4,6 +4,7 @@ import { MenuTitles } from 'common/enums';
 import { HeadingLevelThree, SectionDropdown, Input } from 'components/common';
 import { BindingAction, BindingCbWithOne } from 'common/models';
 import FullWidthTabs from './tab';
+import JobStatus from './tables/job-status';
 import { Button } from 'components/common';
 import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
 import history from '../../../../../browserhistory';
@@ -90,14 +91,36 @@ const TourneyImport: React.FC<Props> = ({
               <LinearProgress variant="determinate" value={completed} />
               <br />
               <div className={styles.tabHeader}>
-                {
-                  jobStatus.map((status, index) => {
-                    return (status !== '') ? <h3 className={styles.status} key={index}>{(index + 1)}. {status}</h3> : null
-                  })
-                }
+                <SectionDropdown
+                  id="Status"
+                  type="section"
+                  panelDetailsType="flat"
+                  isDefaultExpanded={true}
+                >
+                  <h5>Status</h5>
+                  <JobStatus statuses={jobStatus} />
+                </SectionDropdown>
               </div>
               {
-                showData ? <FullWidthTabs events={events} locations={locations} games={games} /> : null
+                showData ? (
+                  <>
+                    <div className={styles.buttonGroup2}>
+                      <Button
+                        label="Cancel"
+                        variant='text'
+                        color={ButtonColors.SECONDARY}
+                        btnType={ButtonFormTypes.SUBMIT}
+                      />
+                      <Button
+                        label="Commit"
+                        variant={ButtonVarian.CONTAINED}
+                        color={ButtonColors.PRIMATY}
+                        btnType={ButtonFormTypes.SUBMIT}
+                      />
+                    </div>
+                    <FullWidthTabs events={events} locations={locations} games={games} />
+                  </>
+                ) : null
               }
             </div>
           ) : null

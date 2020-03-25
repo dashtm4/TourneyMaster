@@ -15,6 +15,9 @@ export const CHANGE_SCHEDULE = 'CHANGE_SCHEDULE';
 export const UPDATE_SCHEDULE_SUCCESS = 'UPDATE_SCHEDULE_SUCCESS';
 export const UPDATE_SCHEDULE_FAILURE = 'UPDATE_SCHEDULE_FAILURE';
 
+export const DELETE_SCHEDULE_SUCCESS = 'DELETE_SCHEDULE_SUCCESS';
+export const DELETE_SCHEDULE_FAILURE = 'DELETE_SCHEDULE_FAILURE';
+
 interface IScheduleFetchInProgress {
   type: 'SCHEDULE_FETCH_IN_PROGRESS';
 }
@@ -51,10 +54,18 @@ interface ISIScheduleUpdateSchedule {
   };
 }
 
+interface ISIScheduleDeleteSchedule {
+  type: 'DELETE_SCHEDULE_SUCCESS';
+  payload: {
+    schedule: ISchedulingSchedule;
+  };
+}
+
 export type ScheduleActionType =
   | IScheduleFetchInProgress
   | IScheduleFetchSuccess
   | IScheduleFetchFailure
   | IScheduleAddNewSchedule
   | IScheduleChangeSchedule
-  | ISIScheduleUpdateSchedule;
+  | ISIScheduleUpdateSchedule
+  | ISIScheduleDeleteSchedule;

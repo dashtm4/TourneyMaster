@@ -105,12 +105,16 @@ const addEmptyFacility = (eventId: string) => async (
   });
 };
 
-const addEmptyField = (facilityId: string): FacilitiesAction => ({
+const addEmptyField = (
+  facilityId: string,
+  fieldsLength: number
+): FacilitiesAction => ({
   type: ADD_EMPTY_FIELD,
   payload: {
     field: {
       ...EMPTY_FIELD,
       field_id: getVarcharEight(),
+      field_name: `Field ${fieldsLength + 1}`,
       isNew: true,
       facilities_id: facilityId,
     },
@@ -140,6 +144,26 @@ const saveFacilities: ActionCreator<ThunkAction<
   dispatch: Dispatch
 ) => {
   try {
+    const mappedFacilityFields = Object.values(
+      fields.reduce((acc, it: IField) => {
+        const facilityId = it.facilities_id;
+
+        acc[facilityId] = [...(acc[facilityId] || []), it];
+
+        return acc;
+      }, {})
+    );
+
+    for await (let mappedFields of mappedFacilityFields) {
+      await Yup.array()
+        .of(fieldSchema)
+        .unique(
+          team => team.field_name,
+          'Oops. It looks like you already have fields with the same name. The field must have a unique name.'
+        )
+        .validate(mappedFields);
+    }
+
     await Yup.array()
       .of(facilitySchema)
       .unique(
@@ -147,14 +171,6 @@ const saveFacilities: ActionCreator<ThunkAction<
         'Oops. It looks like you already have facilities with the same name. The facility must have a unique name.'
       )
       .validate(facilities);
-
-    await Yup.array()
-      .of(fieldSchema)
-      .unique(
-        field => field.field_name,
-        'Oops. It looks like you already have fields with the same name. The field must have a unique name.'
-      )
-      .validate(fields);
 
     for await (let facility of facilities) {
       const copiedFacility = { ...facility };

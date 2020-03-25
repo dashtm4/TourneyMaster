@@ -1,26 +1,24 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { HeadingLevelFour, Tooltip, Button, Paper } from 'components/common';
-import { BindingAction, BindingCbWithOne } from 'common/models';
+import { BindingCbWithOne } from 'common/models';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
+import { Routes } from 'common/enums';
 
 const DEFAULT_UPDATED_VALUE = 'Not updated yet.';
 
 interface IProps {
   schedule: ISchedulingSchedule;
+  eventId: string;
   onEditSchedule: BindingCbWithOne<ISchedulingSchedule>;
-  onManageTournamentPlay: BindingAction;
 }
 
-const TournamentPlayItem = ({
-  schedule,
-  onEditSchedule,
-  onManageTournamentPlay,
-}: IProps) => {
+const TournamentPlayItem = ({ schedule, eventId, onEditSchedule }: IProps) => {
   const localOnEditSchedule = () => onEditSchedule(schedule);
 
   return (
@@ -59,13 +57,14 @@ const TournamentPlayItem = ({
             variant="text"
             onClick={localOnEditSchedule}
           />
-          <Button
-            icon={<FontAwesomeIcon icon={faCalendar} />}
-            label="Manage Tournament Play"
-            color="secondary"
-            variant="text"
-            onClick={onManageTournamentPlay}
-          />
+          <Link to={`${Routes.SCHEDULES}/${eventId}/${schedule.schedule_id}`}>
+            <Button
+              icon={<FontAwesomeIcon icon={faCalendar} />}
+              label="Manage Tournament Play"
+              color="secondary"
+              variant="text"
+            />
+          </Link>
         </div>
         {false && (
           <div className={styles.tnThird}>

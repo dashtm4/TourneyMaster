@@ -4,7 +4,7 @@ import moment from 'moment';
 import TableThead from './components/table-thead';
 import TableTbody from './components/table-tbody';
 import { HeaderSchedule, PrintedDate } from '../common';
-import { IEventDetails } from 'common/models';
+import { IEventDetails, IConfigurableSchedule } from 'common/models';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
@@ -18,6 +18,7 @@ interface Props {
   fields: IField[];
   timeSlots: ITimeSlot[];
   facilities: IScheduleFacility[];
+  schedule: IConfigurableSchedule;
 }
 
 const PDFScheduleTable = ({
@@ -26,6 +27,7 @@ const PDFScheduleTable = ({
   fields,
   timeSlots,
   games,
+  schedule,
 }: Props) => (
   <Document>
     {facilities.map(facility => {
@@ -38,7 +40,7 @@ const PDFScheduleTable = ({
           style={styles.page}
           key={field.id}
         >
-          <HeaderSchedule event={event} />
+          <HeaderSchedule event={event} schedule={schedule} />
           <PrintedDate />
           <View style={styles.tableWrapper}>
             <View style={styles.facilityWrapper}>
@@ -53,6 +55,14 @@ const PDFScheduleTable = ({
               games={getGamesByFieldId(games, field)}
             />
           </View>
+          <PrintedDate />
+          <Text
+            style={styles.pageNumber}
+            render={({ pageNumber, totalPages }) =>
+              `${pageNumber} / ${totalPages}`
+            }
+            fixed
+          />
         </Page>
       ));
     })}

@@ -19,9 +19,15 @@ const styles = StyleSheet.create({
   },
   team: {
     width: '135px',
+  },
+  teamName: {
+    marginBottom: 3,
 
     textOverflow: 'ellipsis',
     maxLines: 1,
+  },
+  teamNum: {
+    fontSize: 8,
   },
   scoresWrapper: {
     flexDirection: 'row',

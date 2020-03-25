@@ -1,9 +1,10 @@
 import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { formatTimeSlot } from 'helpers';
+import { formatTimeSlot, getDivisionCutName } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IGame } from 'components/common/matrix-table/helper';
+import { ITeamCard } from 'common/models/schedule/teams';
 import { DEFAUL_COLUMNS_COUNT } from '../../common';
 import { styles } from './styles';
 
@@ -15,6 +16,7 @@ interface Props {
   games: IGame[];
   isEven: boolean;
   splitIdx: number;
+  isHeatMap?: boolean;
 }
 
 const RowTimeSlot = ({
@@ -23,33 +25,56 @@ const RowTimeSlot = ({
   games,
   isEven,
   splitIdx,
-}: Props) => (
-  <View
-    style={{ ...styles.timeSlotRow, backgroundColor: isEven ? EVEN_COLOR : '' }}
-    wrap={false}
-    key={timeSlot.id}
-  >
-    <Text style={styles.timeSlot}>{formatTimeSlot(timeSlot.time)}</Text>
-    {games
-      .reduce((acc, game) => {
-        return game.facilityId === facility.id
-          ? [
-              ...acc,
-              <View style={styles.gameWrapper} key={game.id}>
-                <Text style={styles.gameTeamName}>
-                  {game.awayTeam?.name &&
-                    `${game.awayTeam?.name} (${game.awayTeam?.divisionShortName})`}
-                </Text>
-                <Text style={styles.gameTeamName}>
-                  {game.homeTeam?.name &&
-                    `${game.homeTeam?.name} (${game.homeTeam?.divisionShortName})`}
-                </Text>
-              </View>,
-            ]
-          : acc;
-      }, [] as JSX.Element[])
-      .slice(splitIdx, splitIdx + DEFAUL_COLUMNS_COUNT)}
-  </View>
-);
+  isHeatMap,
+}: Props) => {
+  const getTeamColorStyles = (team: ITeamCard) => ({
+    backgroundColor: isHeatMap ? team.divisionHex : '',
+    color: isHeatMap ? '#ffffff' : '#000000',
+  });
+
+  const getTeam = (team: ITeamCard) => (
+    <View
+      style={{
+        ...styles.gameTeamName,
+        ...getTeamColorStyles(team),
+      }}
+    >
+      <Text style={styles.teamNameWrapper}>{team.name}</Text>
+      <Text style={styles.divisionNameWrapper}>
+        {` (${getDivisionCutName(team.divisionShortName!)})`}
+      </Text>
+    </View>
+  );
+
+  return (
+    <View
+      style={{
+        ...styles.timeSlotRow,
+        backgroundColor: !isHeatMap && isEven ? EVEN_COLOR : '',
+      }}
+      wrap={false}
+      key={timeSlot.id}
+    >
+      <Text style={styles.timeSlot}>{formatTimeSlot(timeSlot.time)}</Text>
+      {games
+        .reduce((acc, game) => {
+          return game.facilityId === facility.id
+            ? [
+                ...acc,
+                <View style={styles.gameWrapper} key={game.id}>
+                  {game.awayTeam && game.homeTeam && (
+                    <>
+                      {getTeam(game.awayTeam)}
+                      {getTeam(game.homeTeam)}
+                    </>
+                  )}
+                </View>,
+              ]
+            : acc;
+        }, [] as JSX.Element[])
+        .slice(splitIdx, splitIdx + DEFAUL_COLUMNS_COUNT)}
+    </View>
+  );
+};
 
 export default RowTimeSlot;

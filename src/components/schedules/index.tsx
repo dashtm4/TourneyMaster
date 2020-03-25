@@ -324,6 +324,7 @@ class Schedules extends Component<Props, State> {
       onScheduleUndo,
       schedulesHistoryLength,
       savingInProgress,
+      scheduleData,
     } = this.props;
 
     const {
@@ -381,6 +382,7 @@ class Schedules extends Component<Props, State> {
             facilities={facilities!}
             teamCards={schedulesTeamCards!}
             eventSummary={eventSummary!}
+            scheduleData={scheduleData!}
             historyLength={schedulesHistoryLength}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
             onUndo={onScheduleUndo}

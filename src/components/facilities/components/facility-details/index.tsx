@@ -63,7 +63,7 @@ interface Props {
   fields: IField[];
   facilitiyNumber: number;
   loadFields: (facilityId: string) => void;
-  addEmptyField: (facilityId: string) => void;
+  addEmptyField: (facilityId: string, fieldsLength: number) => void;
   updateField: BindingCbWithOne<IField>;
   updateFacilities: BindingCbWithOne<IFacility>;
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
@@ -232,14 +232,12 @@ class FacilityDetails extends React.Component<Props, State> {
               >
                 <Select
                   onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-                    const inputValue = evt.target.value;
+                    const inputValue = Number(evt.target.value);
 
-                    console.log(inputValue > fields.length.toString());
+                    if (inputValue > fields.length) {
+                      this.onChangeFacility(FormFields.NUM_FIELDS, inputValue);
 
-                    if (inputValue > fields.length.toString()) {
-                      this.onChangeFacility(FormFields.NUM_FIELDS, +inputValue);
-
-                      addEmptyField(facility.facilities_id);
+                      addEmptyField(facility.facilities_id, fields.length);
                     }
                   }}
                   value={`${fields.length || ''}`}
@@ -278,16 +276,26 @@ class FacilityDetails extends React.Component<Props, State> {
             {facility.isFieldsLoading ? (
               <Loader />
             ) : (
-              fields.map((it, idx) => (
-                <li key={it.field_id}>
-                  <Field
-                    field={it}
-                    fieldNumber={idx + 1}
-                    isEdit={isEdit}
-                    onChange={this.onChangeField}
-                  />
-                </li>
-              ))
+              fields
+                .sort((a, b) => {
+                  if (a.isChange || b.isChange) {
+                    return 0;
+                  }
+
+                  return a.field_name.localeCompare(b.field_name, undefined, {
+                    numeric: true,
+                  });
+                })
+                .map((it, idx) => (
+                  <li key={it.field_id}>
+                    <Field
+                      field={it}
+                      fieldNumber={idx + 1}
+                      isEdit={isEdit}
+                      onChange={this.onChangeField}
+                    />
+                  </li>
+                ))
             )}
           </ul>
           <div className={styles.restroomWrapper}>

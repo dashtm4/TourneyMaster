@@ -1,18 +1,19 @@
 import React from 'react';
 import { Text, View, Image } from '@react-pdf/renderer';
 import TMLogo from 'assets/logo.png';
-import { IEventDetails } from 'common/models';
+import { IEventDetails, IConfigurableSchedule } from 'common/models';
 import { styles } from './styles';
 
 interface Props {
   event: IEventDetails;
+  schedule: IConfigurableSchedule;
 }
 
-const HeaderSchedule = ({ event }: Props) => (
+const HeaderSchedule = ({ event, schedule }: Props) => (
   <View style={styles.header} fixed>
     <View style={styles.headerWrapper}>
       <Text style={styles.eventName}>{event.event_name}</Text>
-      <Text>Event Schedule ({'<< Schedule Name>>'})</Text>
+      <Text>Event Schedule ({`${schedule.schedule_name}`})</Text>
     </View>
     <View style={styles.logoWrapper}>
       <Image src={event.event_logo_path || TMLogo} style={styles.logo} />
