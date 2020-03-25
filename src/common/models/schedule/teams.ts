@@ -33,6 +33,8 @@ export interface ITeam {
   divisionId: string;
   isPremier: boolean;
   teamPhoneNum?: string | null;
+  contactFirstName?: string | null;
+  contactLastName?: string | null;
   divisionShortName?: string;
   divisionHex?: string;
 }

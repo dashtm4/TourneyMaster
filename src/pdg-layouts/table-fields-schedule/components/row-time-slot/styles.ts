@@ -28,6 +28,9 @@ const styles = StyleSheet.create({
   },
   teamNum: {
     fontSize: 8,
+
+    textOverflow: 'ellipsis',
+    maxLines: 1,
   },
   scoresWrapper: {
     flexDirection: 'row',

@@ -42,6 +42,8 @@ export const mapTeamsData = (teams: IFetchedTeam[], divisions: IDivision[]) => {
     startTime: '08:00:00',
     poolId: team.pool_id,
     teamPhoneNum: team.phone_num,
+    contactFirstName: team.contact_first_name,
+    contactLastName: team.contact_last_name,
     divisionId: team.division_id!,
     divisionShortName: getDivisionValueByTeamId(
       divisions,
