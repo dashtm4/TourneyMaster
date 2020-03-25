@@ -13,7 +13,12 @@ import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
 import Division from './division';
+import { getIcon } from 'helpers';
+import { Icons } from 'common/enums';
 
+const ICON_STYLES = {
+  marginRight: '5px',
+};
 interface IDivisionsAndPoolsProps {
   divisions: IDivision[];
   pools: IPool[];
@@ -33,6 +38,7 @@ interface IDivisionAndPoolsState {
   selected: Partial<IDivision>;
   expanded: boolean[];
   expandAll: boolean;
+  isArrange: boolean;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -45,11 +51,15 @@ class DivisionsAndPools extends React.Component<
     selected: this.props.divisions[0],
     expanded: [],
     expandAll: false,
+    isArrange: false,
   };
 
   componentDidMount() {
     this.props.getDivisions(this.eventId);
   }
+
+  onArrangeClick = () =>
+    this.setState(({ isArrange }) => ({ isArrange: !isArrange }));
 
   componentDidUpdate(prevProps: any, prevState: any) {
     if (
@@ -106,17 +116,43 @@ class DivisionsAndPools extends React.Component<
 
   render() {
     const { divisions, pools, teams, isLoading } = this.props;
+    const { isArrange } = this.state;
+
     return (
       <section className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.mainMenu}>
-            <div />
-            <Button
-              label="+ Add Division"
-              variant="contained"
-              color="primary"
-              onClick={this.onAddDivision}
-            />
+            {isArrange ? (
+              <p>
+                <Button
+                  onClick={this.onArrangeClick}
+                  label="Cancel"
+                  variant="text"
+                  color="secondary"
+                />
+                <span className={styles.btnWrapper}>
+                  <Button label="Save" variant="contained" color="primary" />
+                </span>
+              </p>
+            ) : (
+              <p>
+                <Button
+                  onClick={this.onArrangeClick}
+                  icon={getIcon(Icons.EDIT, ICON_STYLES)}
+                  label="Arrange Teams"
+                  variant="text"
+                  color="secondary"
+                />
+                <span className={styles.btnWrapper}>
+                  <Button
+                    label="+ Add Division"
+                    variant="contained"
+                    color="primary"
+                    onClick={this.onAddDivision}
+                  />
+                </span>
+              </p>
+            )}
           </div>
         </Paper>
         <div className={styles.sectionContainer}>
