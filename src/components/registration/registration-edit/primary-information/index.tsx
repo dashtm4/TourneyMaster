@@ -1,12 +1,12 @@
 import React from 'react';
 import styles from '../styles.module.scss';
-import { Input, DatePicker } from 'components/common';
+import { Input, DatePicker, Checkbox } from 'components/common';
 import { IRegistration } from 'common/models/registration';
 import { BindingCbWithTwo } from 'common/models';
 
 interface IPrimaryInformationProps {
   data?: IRegistration;
-  onChange: BindingCbWithTwo<string, string>;
+  onChange: BindingCbWithTwo<string, string | number>;
 }
 
 const PrimaryInformation = ({ data, onChange }: IPrimaryInformationProps) => {
@@ -30,6 +30,10 @@ const PrimaryInformation = ({ data, onChange }: IPrimaryInformationProps) => {
   const onDiscountEndDateChange = (e: Date | string) =>
     !isNaN(Number(e)) &&
     onChange('discount_enddate', new Date(e).toISOString());
+
+  const onUpchargeProcessingFeesChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => onChange('upcharge_fees_on_registrations', Number(e.target.checked));
 
   return (
     <div className={styles.section}>
@@ -95,6 +99,19 @@ const PrimaryInformation = ({ data, onChange }: IPrimaryInformationProps) => {
             onChange={onDiscountEndDateChange}
           />
         </div>
+      </div>
+      <div className={styles.sectionThirdRow}>
+        <Checkbox
+          onChange={onUpchargeProcessingFeesChange}
+          options={[
+            {
+              label: 'Upcharge Processing Fees',
+              checked: Boolean(
+                data ? data.upcharge_fees_on_registrations : false
+              ),
+            },
+          ]}
+        />
       </div>
     </div>
   );
