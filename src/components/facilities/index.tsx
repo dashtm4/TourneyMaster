@@ -39,7 +39,7 @@ interface Props {
   loadFacilities: (eventId: string) => void;
   loadFields: (facilityId: string) => void;
   addEmptyFacility: (eventId: string) => void;
-  addEmptyField: (facilityId: string) => void;
+  addEmptyField: (facilityId: string, fieldsLength: number) => void;
   updateFacilities: BindingCbWithOne<IFacility>;
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;

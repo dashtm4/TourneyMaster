@@ -105,12 +105,16 @@ const addEmptyFacility = (eventId: string) => async (
   });
 };
 
-const addEmptyField = (facilityId: string): FacilitiesAction => ({
+const addEmptyField = (
+  facilityId: string,
+  fieldsLength: number
+): FacilitiesAction => ({
   type: ADD_EMPTY_FIELD,
   payload: {
     field: {
       ...EMPTY_FIELD,
       field_id: getVarcharEight(),
+      field_name: `Field ${fieldsLength + 1}`,
       isNew: true,
       facilities_id: facilityId,
     },
@@ -185,6 +189,8 @@ const saveFacilities: ActionCreator<ThunkAction<
       if (copiedFacility.isNew) {
         delete copiedFacility.isChange;
         delete copiedFacility.isNew;
+
+        console.log(copiedFacility);
 
         Api.post('/facilities', copiedFacility);
       }
