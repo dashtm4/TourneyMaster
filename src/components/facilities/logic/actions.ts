@@ -105,12 +105,16 @@ const addEmptyFacility = (eventId: string) => async (
   });
 };
 
-const addEmptyField = (facilityId: string): FacilitiesAction => ({
+const addEmptyField = (
+  facilityId: string,
+  fieldsLength: number
+): FacilitiesAction => ({
   type: ADD_EMPTY_FIELD,
   payload: {
     field: {
       ...EMPTY_FIELD,
       field_id: getVarcharEight(),
+      field_name: `Field ${fieldsLength + 1}`,
       isNew: true,
       facilities_id: facilityId,
     },

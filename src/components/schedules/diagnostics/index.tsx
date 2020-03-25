@@ -12,7 +12,7 @@ import {
   TableSortLabel,
 } from '@material-ui/core';
 import { orderBy } from 'lodash-es';
-import { getIcon, onExelSave } from 'helpers';
+import { getIcon, onXLSXSave } from 'helpers';
 import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
 import { DiagnosticTypes } from '../types';
 
@@ -99,7 +99,7 @@ class Diagnostics extends Component<Props, State> {
     const { tableData } = this.state;
     const { header, body } = tableData;
 
-    const onSave = () => onExelSave(header, body, diagnosticType);
+    const onSave = () => onXLSXSave(header, body, diagnosticType);
 
     return (
       <Modal isOpen={isOpen} onClose={onClose}>

@@ -18,6 +18,7 @@ interface IProps {
   historyLength?: number;
   toggleZooming: () => void;
   onOptimizeClick: (optimizeBy: OptimizeTypes) => void;
+  togglePopupSaveReport: BindingAction;
 }
 
 const TableActions = (props: IProps) => {
@@ -28,6 +29,7 @@ const TableActions = (props: IProps) => {
     onUnlockAllClick,
     toggleZooming,
     historyLength,
+    togglePopupSaveReport,
   } = props;
 
   return (
@@ -68,6 +70,13 @@ const TableActions = (props: IProps) => {
             label="Unlock All"
             variant={ButtonVarian.TEXT}
             color={ButtonColors.SECONDARY}
+          />
+          <Button
+            onClick={togglePopupSaveReport}
+            icon={getIcon(Icons.PRINT)}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            label="Print"
           />
         </p>
       </form>

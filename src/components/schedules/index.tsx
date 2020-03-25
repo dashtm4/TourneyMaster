@@ -275,6 +275,7 @@ class Schedules extends Component<Props, State> {
       draftSaved,
       onScheduleUndo,
       schedulesHistoryLength,
+      scheduleData,
     } = this.props;
     const {
       fields,
@@ -334,6 +335,7 @@ class Schedules extends Component<Props, State> {
             facilities={facilities!}
             teamCards={schedulesTeamCards!}
             eventSummary={eventSummary!}
+            scheduleData={scheduleData!}
             historyLength={schedulesHistoryLength}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
             onTeamCardUpdate={this.onScheduleCardUpdate}

@@ -117,6 +117,10 @@ const AuthorizedPageEvent = ({
               )}
             />
             <Route path={Routes.SCHEDULES_ID} component={Schedules} />
+            <Route
+              path={Routes.SCHEDULES_EVENT_SCHEDULE}
+              component={Schedules}
+            />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
             <Route path={Routes.REPORTING_ID} component={EmptyPage} />

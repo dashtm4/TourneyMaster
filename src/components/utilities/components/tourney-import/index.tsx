@@ -98,7 +98,7 @@ const TourneyImportWizard = () => {
 
     Api.get(`/ext_games?idtournament=${idTournament}`)
       .then(res => {
-        setGames(distinctFilter(res, 'Name'));
+        setGames(res);
       })
       .catch(err => {
         console.log(err);
@@ -106,7 +106,7 @@ const TourneyImportWizard = () => {
 
     Api.get(`/ext_locations?idtournament=${idTournament}`)
       .then(res => {
-        setLocations(distinctFilter(res, 'tournament_name'));
+        setLocations(res);
       })
       .catch(err => {
         console.log(err);
