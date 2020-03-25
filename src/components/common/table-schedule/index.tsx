@@ -45,6 +45,7 @@ interface Props {
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
+  onTeamCardUpdate: (teamCard: ITeamCard) => void;
 }
 
 const TableSchedule = ({
@@ -58,6 +59,7 @@ const TableSchedule = ({
   eventSummary,
   isEnterScores,
   onTeamCardsUpdate,
+  onTeamCardUpdate,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -127,6 +129,22 @@ const TableSchedule = ({
     }
   };
 
+  const onLockAll = () => {
+    const lockedTeams = teamCards.map(team => ({
+      ...team,
+      games: team!.games?.map(game => ({ ...game, isTeamLocked: true })),
+    }));
+    onTeamCardsUpdate(lockedTeams);
+  };
+
+  const onUnlockAll = () => {
+    const unLockedTeams = teamCards.map(team => ({
+      ...team,
+      games: team!.games?.map(game => ({ ...game, isTeamLocked: false })),
+    }));
+    onTeamCardsUpdate(unLockedTeams);
+  };
+
   return (
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
@@ -154,6 +172,7 @@ const TableSchedule = ({
               isEnterScores={isEnterScores}
               moveCard={moveCard}
               disableZooming={zoomingDisabled}
+              onTeamCardUpdate={onTeamCardUpdate}
             />
           </div>
         </DndProvider>
@@ -168,8 +187,8 @@ const TableSchedule = ({
         toggleZooming={toggleZooming}
         optimizeBy={optimizeBy}
         onUndoClick={() => {}}
-        onLockAllClick={() => {}}
-        onUnlockAllClick={() => {}}
+        onLockAllClick={onLockAll}
+        onUnlockAllClick={onUnlockAll}
         onOptimizeClick={onOptimizeClick}
       />
       <div className={styles.btnsWrapper}>

@@ -9,6 +9,7 @@ import styles from './styles.module.scss';
 import './styles.scss';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IDropParams } from './dnd/drop';
+import { ITeamCard } from 'common/models/schedule/teams';
 
 const TRANSFORM_WRAPPER_OPTIONS = {
   minScale: 0.1,
@@ -24,6 +25,7 @@ interface IProps {
   moveCard: (dropParams: IDropParams) => void;
   showHeatmap: boolean;
   isEnterScores?: boolean;
+  onTeamCardUpdate: (teamCard: ITeamCard) => void;
 }
 
 const SchedulesMatrix = (props: IProps) => {
@@ -36,6 +38,7 @@ const SchedulesMatrix = (props: IProps) => {
     isEnterScores,
     moveCard,
     disableZooming,
+    onTeamCardUpdate,
   } = props;
 
   const takeFacilityByFieldId = (facilityId: string) =>
@@ -75,6 +78,7 @@ const SchedulesMatrix = (props: IProps) => {
                     moveCard={moveCard}
                     showHeatmap={showHeatmap}
                     isEnterScores={isEnterScores}
+                    onTeamCardUpdate={onTeamCardUpdate}
                   />
                 ))}
               </tbody>

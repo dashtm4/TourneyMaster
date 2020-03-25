@@ -37,7 +37,11 @@ export interface ITeam {
 }
 
 export interface ITeamCard extends ITeam {
-  games?: { id: number; teamPosition: TeamPositionEnum }[];
+  games?: {
+    id: number;
+    teamPosition: TeamPositionEnum;
+    isTeamLocked?: boolean;
+  }[];
   fieldId?: string;
   timeSlotId?: number;
   teamPosition?: number;

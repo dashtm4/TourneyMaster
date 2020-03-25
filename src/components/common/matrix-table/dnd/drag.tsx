@@ -13,6 +13,7 @@ interface Props {
   originGameId?: number;
   isEnterScores?: boolean;
   showHeatmap?: boolean;
+  onTeamCardUpdate?: (teamCard: ITeamCard) => void;
 }
 
 const ERROR_ICON_STYLES = {
@@ -22,7 +23,14 @@ const ERROR_ICON_STYLES = {
 };
 
 export default (props: Props) => {
-  const { type, originGameId, showHeatmap, teamCard, isEnterScores } = props;
+  const {
+    type,
+    originGameId,
+    showHeatmap,
+    teamCard,
+    isEnterScores,
+    onTeamCardUpdate,
+  } = props;
 
   const [{ isDragging }, drag] = useDrag({
     item: { id: teamCard.id, type, originGameId },
@@ -30,6 +38,17 @@ export default (props: Props) => {
       isDragging: !!monitor.isDragging(),
     }),
   });
+
+  const onLockClick = () => {
+    onTeamCardUpdate!({
+      ...teamCard,
+      games: teamCard.games?.map(game =>
+        game.id === originGameId
+          ? { ...game, isTeamLocked: !game.isTeamLocked }
+          : game
+      ),
+    });
+  };
 
   const renderTeamCardErrors = (teamCard: ITeamCard) => (
     <Tooltip
@@ -67,10 +86,16 @@ export default (props: Props) => {
           </label>
         )}
         {!isEnterScores && (
-          <button className={styles.lockBtn}>
-            {getIcon(teamCard.isLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
-              fill: showHeatmap ? '#ffffff' : '#00A3EA',
-            })}
+          <button className={styles.lockBtn} onClick={onLockClick}>
+            {getIcon(
+              teamCard.games?.filter(game => game.id === originGameId)[0]
+                ?.isTeamLocked
+                ? Icons.LOCK
+                : Icons.LOCK_OPEN,
+              {
+                fill: showHeatmap ? '#ffffff' : '#00A3EA',
+              }
+            )}
             <span className="visually-hidden">Unlock/Lock team</span>
           </button>
         )}

@@ -38,7 +38,10 @@ import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
 import formatDivisionsDiagnostics from './diagnostics/divisionsDiagnostics';
 import { DiagnosticTypes } from './types';
 import styles from './styles.module.scss';
-import { fillSchedulesTable } from './logic/schedules-table/actions';
+import {
+  fillSchedulesTable,
+  updateSchedulesTable,
+} from './logic/schedules-table/actions';
 import { ISchedulesTableState } from './logic/schedules-table/schedulesTableReducer';
 import { mapSchedulesTeamCards, mapScheduleData } from './mapScheduleData';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
@@ -60,6 +63,7 @@ interface IMapDispatchToProps {
   fetchFields: (facilitiesIds: string[]) => void;
   fetchEventSummary: (eventId: string) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
+  updateSchedulesTable: (teamCard: ITeamCard) => void;
 }
 
 interface ComponentProps {
@@ -250,6 +254,10 @@ class Schedules extends Component<Props, State> {
     this.props.fillSchedulesTable(teamCards);
   };
 
+  onScheduleCardUpdate = (teamCard: ITeamCard) => {
+    this.props.updateSchedulesTable(teamCard);
+  };
+
   render() {
     const {
       divisions,
@@ -317,6 +325,7 @@ class Schedules extends Component<Props, State> {
             teamCards={schedulesTeamCards!}
             eventSummary={eventSummary!}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
+            onTeamCardUpdate={this.onScheduleCardUpdate}
           />
         ) : (
           <div className={styles.loadingWrapper}>
@@ -397,6 +406,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       fetchFields,
       fetchEventSummary,
       fillSchedulesTable,
+      updateSchedulesTable,
     },
     dispatch
   );
