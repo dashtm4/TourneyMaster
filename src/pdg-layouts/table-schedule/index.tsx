@@ -4,7 +4,7 @@ import moment from 'moment';
 import TableThead from './components/table-thead';
 import TableTbody from './components/table-tbody';
 import { HeaderSchedule, PrintedDate } from '../common';
-import { IEventDetails } from 'common/models';
+import { IEventDetails, IConfigurableSchedule } from 'common/models';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
@@ -19,6 +19,7 @@ interface IPDFProps {
   fields: IField[];
   timeSlots: ITimeSlot[];
   facilities: IScheduleFacility[];
+  schedule: IConfigurableSchedule;
 }
 
 const PDFScheduleTable = ({
@@ -27,6 +28,7 @@ const PDFScheduleTable = ({
   facilities,
   games,
   timeSlots,
+  schedule,
 }: IPDFProps) => (
   <Document>
     {facilities.map(facility => {
@@ -46,7 +48,7 @@ const PDFScheduleTable = ({
               style={styles.page}
               key={field.id}
             >
-              <HeaderSchedule event={event} />
+              <HeaderSchedule event={event} schedule={schedule} />
               <View style={styles.tableWrapper} key={facility.id}>
                 <View style={styles.facilityTitle}>
                   <Text style={styles.scheduleDate}>

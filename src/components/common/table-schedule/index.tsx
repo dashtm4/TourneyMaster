@@ -10,7 +10,12 @@ import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
 import { MatrixTable, Button } from 'components/common';
 import { getIcon } from 'helpers';
-import { IDivision, IEventSummary, IEventDetails } from 'common/models';
+import {
+  IDivision,
+  IEventSummary,
+  IEventDetails,
+  IConfigurableSchedule,
+} from 'common/models';
 import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
 import { IScheduleFilter, OptimizeTypes } from './types';
 import { mapGamesByField } from './helpers';
@@ -42,6 +47,7 @@ interface Props {
   fields: IField[];
   timeSlots: ITimeSlot[];
   facilities: IScheduleFacility[];
+  scheduleData: IConfigurableSchedule;
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
   historyLength?: number;
@@ -56,6 +62,7 @@ const TableSchedule = ({
   games,
   fields,
   facilities,
+  scheduleData,
   timeSlots,
   eventSummary,
   isEnterScores,
@@ -186,6 +193,7 @@ const TableSchedule = ({
               fields={updatedFields}
               timeSlots={timeSlots}
               facilities={facilities}
+              schedule={scheduleData}
             />
           }
           fileName={`${
@@ -209,6 +217,7 @@ const TableSchedule = ({
               fields={updatedFields}
               timeSlots={timeSlots}
               facilities={facilities}
+              schedule={scheduleData}
             />
           }
           fileName={`${
