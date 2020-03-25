@@ -11,7 +11,11 @@ import Paper from '@material-ui/core/Paper';
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
+    maxHeight: 500,
   },
+  tableContainer: {
+    height: 400
+  }
 });
 
 interface Props {
@@ -22,8 +26,8 @@ const JobStatus = ({ statuses }: Props) => {
   const classes = useStyles();
 
   return (
-    <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
+    <TableContainer component={Paper} className={classes.tableContainer}>
+      <Table className={classes.table} stickyHeader aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>No</TableCell>
