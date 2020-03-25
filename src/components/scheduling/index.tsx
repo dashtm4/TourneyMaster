@@ -9,6 +9,7 @@ import {
   addNewSchedule,
   changeSchedule,
   updateSchedule,
+  deleteSchedule,
 } from './logic/actions';
 import { HeadingLevelTwo, Loader } from 'components/common';
 import Navigation from './navigation';
@@ -37,6 +38,7 @@ interface IProps {
   addNewSchedule: BindingAction;
   changeSchedule: BindingCbWithOne<Partial<ISchedule>>;
   updateSchedule: BindingCbWithOne<ISchedulingSchedule>;
+  deleteSchedule: BindingCbWithOne<ISchedulingSchedule>;
 }
 
 interface IState {
@@ -87,6 +89,7 @@ class Scheduling extends Component<IProps, IState> {
       isLoading,
       createNewSchedule,
       updateSchedule,
+      deleteSchedule,
     } = this.props;
     const { createModalOpen, editedSchedule } = this.state;
     const { eventId } = this.props.match?.params;
@@ -141,6 +144,7 @@ class Scheduling extends Component<IProps, IState> {
             schedule={editedSchedule}
             onClose={this.onCloseEditSchedule}
             onSubmit={updateSchedule}
+            onDelete={deleteSchedule}
           />
         )}
       </>
@@ -163,6 +167,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       addNewSchedule,
       changeSchedule,
       updateSchedule,
+      deleteSchedule,
     },
     dispatch
   );

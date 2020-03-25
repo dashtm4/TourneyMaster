@@ -13,6 +13,8 @@ import {
   CHANGE_SCHEDULE,
   UPDATE_SCHEDULE_SUCCESS,
   UPDATE_SCHEDULE_FAILURE,
+  DELETE_SCHEDULE_SUCCESS,
+  DELETE_SCHEDULE_FAILURE,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
 import { scheduleSchema, updatedScheduleSchema } from 'validations';
@@ -169,6 +171,29 @@ export const updateSchedule = (schedule: ISchedulingSchedule) => async (
 
     dispatch({
       type: UPDATE_SCHEDULE_FAILURE,
+    });
+  }
+};
+
+export const deleteSchedule = (schedule: ISchedulingSchedule) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    await api.delete(`/schedules?schedule_id=${schedule.schedule_id}`);
+
+    dispatch({
+      type: DELETE_SCHEDULE_SUCCESS,
+      payload: {
+        schedule,
+      },
+    });
+
+    Toasts.successToast(
+      `"${schedule.schedule_name}" schedule has been deleted.`
+    );
+  } catch {
+    dispatch({
+      type: DELETE_SCHEDULE_FAILURE,
     });
   }
 };
