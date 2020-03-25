@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { PDFDownloadLink } from '@react-pdf/renderer';
 import ListUnassigned from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
-import PDFTableSchedule from 'pdg-layouts/table-schedule';
-import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
-import { MatrixTable, Button } from 'components/common';
-import { getIcon } from 'helpers';
+import PopupSaveReporting from './components/popup-save-reporting';
+import { MatrixTable } from 'components/common';
 import {
   IDivision,
   IEventSummary,
   IEventDetails,
   IConfigurableSchedule,
 } from 'common/models';
-import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
 import { IScheduleFilter, OptimizeTypes } from './types';
 import { mapGamesByField } from './helpers';
 import { IGame, settleTeamsPerGames } from '../matrix-table/helper';
@@ -138,6 +134,10 @@ const TableSchedule = ({
     }
   };
 
+  const [isPopupSaveReportOpen, onPopupSaveReport] = useState<boolean>(false);
+
+  const togglePopupSaveReport = () => onPopupSaveReport(!isPopupSaveReportOpen);
+
   return (
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
@@ -183,63 +183,24 @@ const TableSchedule = ({
         onLockAllClick={() => {}}
         onUnlockAllClick={() => {}}
         onOptimizeClick={onOptimizeClick}
+        togglePopupSaveReport={togglePopupSaveReport}
       />
-      <div className={styles.btnsWrapper}>
-        <PDFDownloadLink
-          document={
-            <PDFTableSchedule
-              event={event}
-              games={mapGamesByField(filteredGames, updatedFields)}
-              fields={updatedFields}
-              timeSlots={timeSlots}
-              facilities={facilities}
-              schedule={scheduleData}
-            />
-          }
-          fileName={`${
-            event.event_name
-              ? `${event.event_name} Master Schedule`
-              : 'Schedule'
-          }.pdf`}
-        >
-          <Button
-            icon={getIcon(Icons.PRINT)}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Print schedule"
-          />
-        </PDFDownloadLink>
-        <PDFDownloadLink
-          document={
-            <PDFTableFieldsSchedule
-              event={event}
-              games={mapGamesByField(filteredGames, updatedFields)}
-              fields={updatedFields}
-              timeSlots={timeSlots}
-              facilities={facilities}
-              schedule={scheduleData}
-            />
-          }
-          fileName={`${
-            event.event_name
-              ? `${event.event_name} Master Fields Schedule`
-              : 'Schedule'
-          }.pdf`}
-        >
-          <Button
-            icon={getIcon(Icons.PRINT)}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Print fields' schedule"
-          />
-        </PDFDownloadLink>
-      </div>
       <PopupConfirm
         isOpen={!!replacementWarning}
         message={replacementWarning || ''}
         onClose={toggleReplacementWarning}
         onCanceClick={toggleReplacementWarning}
         onYesClick={confirmReplacement}
+      />
+      <PopupSaveReporting
+        event={event}
+        games={mapGamesByField(filteredGames, updatedFields)}
+        fields={updatedFields}
+        timeSlots={timeSlots}
+        facilities={facilities}
+        schedule={scheduleData}
+        isOpen={isPopupSaveReportOpen}
+        onClose={togglePopupSaveReport}
       />
     </section>
   );
