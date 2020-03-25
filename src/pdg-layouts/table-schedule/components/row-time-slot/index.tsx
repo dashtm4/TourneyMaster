@@ -32,6 +32,20 @@ const RowTimeSlot = ({
     color: isHeatMap ? '#ffffff' : '#000000',
   });
 
+  const getTeam = (team: ITeamCard) => (
+    <View
+      style={{
+        ...styles.gameTeamName,
+        ...getTeamColorStyles(team),
+      }}
+    >
+      <Text style={styles.teamNameWrapper}>{team.name}</Text>
+      <Text style={styles.divisionNameWrapper}>
+        {` (${getDivisionCutName(team.divisionShortName!)})`}
+      </Text>
+    </View>
+  );
+
   return (
     <View
       style={{
@@ -50,36 +64,8 @@ const RowTimeSlot = ({
                 <View style={styles.gameWrapper} key={game.id}>
                   {game.awayTeam && game.homeTeam && (
                     <>
-                      <View
-                        style={{
-                          ...styles.gameTeamName,
-                          ...getTeamColorStyles(game.awayTeam),
-                        }}
-                      >
-                        <Text style={styles.teamNameWrapper}>
-                          {game.awayTeam?.name}
-                        </Text>
-                        <Text style={styles.divisionNameWrapper}>
-                          {` (${getDivisionCutName(
-                            game.awayTeam.divisionShortName!
-                          )})`}
-                        </Text>
-                      </View>
-                      <View
-                        style={{
-                          ...styles.gameTeamName,
-                          ...getTeamColorStyles(game.homeTeam),
-                        }}
-                      >
-                        <Text style={styles.teamNameWrapper}>
-                          {game.homeTeam?.name}
-                        </Text>
-                        <Text style={styles.divisionNameWrapper}>
-                          {` (${getDivisionCutName(
-                            game.homeTeam.divisionShortName!
-                          )})`}
-                        </Text>
-                      </View>
+                      {getTeam(game.awayTeam)}
+                      {getTeam(game.homeTeam)}
                     </>
                   )}
                 </View>,
