@@ -3,7 +3,9 @@ import { StyleSheet } from '@react-pdf/renderer';
 const styles = StyleSheet.create({
   thead: {
     flexDirection: 'row',
-    marginLeft: 65,
+
+    width: '100%',
+    marginLeft: 62,
 
     borderTop: 1,
     borderBottom: 1,
