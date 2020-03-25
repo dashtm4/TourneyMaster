@@ -32,6 +32,7 @@ export interface ITeam {
   poolId: string | null;
   divisionId: string;
   isPremier: boolean;
+  teamPhoneNum?: string | null;
   divisionShortName?: string;
   divisionHex?: string;
 }

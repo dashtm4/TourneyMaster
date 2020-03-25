@@ -1,4 +1,5 @@
 import XLSX from 'xlsx';
+import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 
 const stringToArrayBuffer = (str: string) => {
@@ -12,7 +13,7 @@ const stringToArrayBuffer = (str: string) => {
   return buffer;
 };
 
-const onExelSave = <T, Y>(headers: T[], body: Y[][], title: string) => {
+const onXLSXSave = <T, Y>(headers: T[], body: Y[][], title: string) => {
   const wsData = [headers, ...body];
   const wb = XLSX.utils.book_new();
   wb.Props = { CreatedDate: new Date(2017, 12, 19) };
@@ -35,4 +36,10 @@ const onExelSave = <T, Y>(headers: T[], body: Y[][], title: string) => {
   );
 };
 
-export { onExelSave };
+const onPDFSave = async (PDFComponent: JSX.Element, title: string) => {
+  const blob = await pdf(PDFComponent).toBlob();
+
+  saveAs(blob, `${title}.pdf`);
+};
+
+export { onXLSXSave, onPDFSave };
