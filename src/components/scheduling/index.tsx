@@ -119,7 +119,7 @@ class Scheduling extends Component<IProps, IState> {
                   <TournamentPlay
                     schedules={schedules}
                     onEditSchedule={this.onEditSchedule}
-                    onManageTournamentPlay={() => {}}
+                    eventId={eventId}
                   />
                   {false && <Brackets onManageBrackets={() => {}} />}
                 </>
