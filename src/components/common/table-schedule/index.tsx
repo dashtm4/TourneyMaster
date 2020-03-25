@@ -148,7 +148,6 @@ const TableSchedule = ({
     }));
     onTeamCardsUpdate(unLockedTeams);
   };
-
   return (
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
@@ -177,6 +176,8 @@ const TableSchedule = ({
               moveCard={moveCard}
               disableZooming={zoomingDisabled}
               onTeamCardUpdate={onTeamCardUpdate}
+              onTeamCardsUpdate={onTeamCardsUpdate}
+              teamCards={teamCards}
             />
           </div>
         </DndProvider>

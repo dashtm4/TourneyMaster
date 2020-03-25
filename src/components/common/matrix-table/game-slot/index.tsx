@@ -10,10 +10,11 @@ interface Props {
   showHeatmap?: boolean;
   onDrop: (dropParams: IDropParams) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
+  isDndMode: boolean;
 }
 
 const RenderGameSlot = (props: Props) => {
-  const { game, onDrop, showHeatmap, onTeamCardUpdate } = props;
+  const { game, onDrop, showHeatmap, onTeamCardUpdate, isDndMode } = props;
   const { awayTeam, homeTeam } = game;
   const acceptType = 'teamdrop';
 
@@ -33,6 +34,7 @@ const RenderGameSlot = (props: Props) => {
               showHeatmap={showHeatmap}
               teamCard={awayTeam}
               onTeamCardUpdate={onTeamCardUpdate}
+              isDndMode={isDndMode}
             />
           )}
         </DropContainer>
@@ -49,6 +51,7 @@ const RenderGameSlot = (props: Props) => {
               showHeatmap={showHeatmap}
               teamCard={homeTeam}
               onTeamCardUpdate={onTeamCardUpdate}
+              isDndMode={isDndMode}
             />
           )}
         </DropContainer>

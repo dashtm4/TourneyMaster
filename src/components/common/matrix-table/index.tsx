@@ -26,6 +26,8 @@ interface IProps {
   showHeatmap: boolean;
   isEnterScores?: boolean;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
+  onTeamCardsUpdate: (teamCards: ITeamCard[]) => void;
+  teamCards: ITeamCard[];
 }
 
 const SchedulesMatrix = (props: IProps) => {
@@ -39,6 +41,8 @@ const SchedulesMatrix = (props: IProps) => {
     moveCard,
     disableZooming,
     onTeamCardUpdate,
+    onTeamCardsUpdate,
+    teamCards,
   } = props;
 
   const takeFacilityByFieldId = (facilityId: string) =>
@@ -66,6 +70,9 @@ const SchedulesMatrix = (props: IProps) => {
                         key={field.id}
                         field={field}
                         facility={takeFacilityByFieldId(field.facilityId)}
+                        onTeamCardsUpdate={onTeamCardsUpdate}
+                        games={games}
+                        teamCards={teamCards}
                       />
                     ))}
                 </tr>
@@ -79,6 +86,9 @@ const SchedulesMatrix = (props: IProps) => {
                     showHeatmap={showHeatmap}
                     isEnterScores={isEnterScores}
                     onTeamCardUpdate={onTeamCardUpdate}
+                    teamCards={teamCards}
+                    onTeamCardsUpdate={onTeamCardsUpdate}
+                    isDndMode={disableZooming}
                   />
                 ))}
               </tbody>

@@ -7,6 +7,8 @@ import { IDropParams } from '../dnd/drop';
 import { IField } from 'common/models/schedule/fields';
 import { formatTimeSlot } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
+import { Icons } from 'common/enums';
+import { getIcon } from 'helpers';
 
 interface IProps {
   timeSlot: ITimeSlot;
@@ -16,6 +18,9 @@ interface IProps {
   isEnterScores?: boolean;
   moveCard: (params: IDropParams) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
+  teamCards: ITeamCard[];
+  onTeamCardsUpdate: (teamCards: ITeamCard[]) => void;
+  isDndMode: boolean;
 }
 
 const RenderTimeSlot = (props: IProps) => {
@@ -26,11 +31,51 @@ const RenderTimeSlot = (props: IProps) => {
     fields,
     showHeatmap,
     onTeamCardUpdate,
+    teamCards,
+    onTeamCardsUpdate,
+    isDndMode,
   } = props;
+
+  const idsGamesForTimeSlot = games
+    .filter(game => game.timeSlotId === timeSlot.id)
+    .map(game => game.id);
+
+  const isEveryTeamInTimeSlotLocked = teamCards.every(team =>
+    team.games
+      ?.filter(game => idsGamesForTimeSlot.includes(game.id))
+      .every(game => game.isTeamLocked)
+  );
+
+  const onLockClick = () => {
+    const updTeamCards = teamCards.map(team => {
+      return {
+        ...team,
+        games: team.games?.map(g =>
+          idsGamesForTimeSlot.includes(g.id)
+            ? { ...g, isTeamLocked: !isEveryTeamInTimeSlotLocked }
+            : g
+        ),
+      };
+    });
+    onTeamCardsUpdate(updTeamCards);
+  };
 
   return (
     <tr key={timeSlot.id} className={styles.timeSlotRow}>
-      <th>{formatTimeSlot(timeSlot.time)}</th>
+      <th>
+        <div className={styles.fieldNameContainer}>
+          <div>{formatTimeSlot(timeSlot.time)}</div>
+          <button className={styles.lockBtn} onClick={onLockClick}>
+            {getIcon(
+              isEveryTeamInTimeSlotLocked ? Icons.LOCK : Icons.LOCK_OPEN,
+              {
+                fill: '#00A3EA',
+              }
+            )}
+            <span className="visually-hidden">Unlock/Lock teams</span>
+          </button>
+        </div>
+      </th>
       {games
         .filter(
           game => !fields.find(field => field.id === game.fieldId)?.isUnused
@@ -42,6 +87,7 @@ const RenderTimeSlot = (props: IProps) => {
             onDrop={moveCard}
             showHeatmap={showHeatmap}
             onTeamCardUpdate={onTeamCardUpdate}
+            isDndMode={isDndMode}
           />
         ))}
     </tr>

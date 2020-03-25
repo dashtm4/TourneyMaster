@@ -14,6 +14,7 @@ interface Props {
   isEnterScores?: boolean;
   showHeatmap?: boolean;
   onTeamCardUpdate?: (teamCard: ITeamCard) => void;
+  isDndMode?: boolean;
 }
 
 const ERROR_ICON_STYLES = {
@@ -30,10 +31,14 @@ export default (props: Props) => {
     teamCard,
     isEnterScores,
     onTeamCardUpdate,
+    isDndMode,
   } = props;
+
+  const team = teamCard.games?.filter(game => game.id === originGameId)[0];
 
   const [{ isDragging }, drag] = useDrag({
     item: { id: teamCard.id, type, originGameId },
+    canDrag: !team?.isTeamLocked,
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -85,17 +90,11 @@ export default (props: Props) => {
             <input type="number" value="0" />
           </label>
         )}
-        {!isEnterScores && (
+        {!isEnterScores && originGameId && (
           <button className={styles.lockBtn} onClick={onLockClick}>
-            {getIcon(
-              teamCard.games?.filter(game => game.id === originGameId)[0]
-                ?.isTeamLocked
-                ? Icons.LOCK
-                : Icons.LOCK_OPEN,
-              {
-                fill: showHeatmap ? '#ffffff' : '#00A3EA',
-              }
-            )}
+            {getIcon(team?.isTeamLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+              fill: showHeatmap ? '#ffffff' : '#00A3EA',
+            })}
             <span className="visually-hidden">Unlock/Lock team</span>
           </button>
         )}
@@ -106,7 +105,9 @@ export default (props: Props) => {
   return (
     <div
       ref={drag}
-      className={styles.cardContainer}
+      className={`${styles.cardContainer} ${isDndMode &&
+        team?.isTeamLocked &&
+        styles.isLocked}`}
       style={{
         opacity: isDragging ? 0.8 : 1,
         backgroundColor: showHeatmap ? teamCard.divisionHex : '#fff',
