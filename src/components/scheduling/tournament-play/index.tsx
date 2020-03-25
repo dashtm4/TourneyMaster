@@ -2,7 +2,7 @@ import React from 'react';
 import TournamentPlayItem from '../tournament-play-item';
 import { SectionDropdown, HeadingLevelThree } from 'components/common';
 import { sortByField } from 'helpers';
-import { BindingAction, BindingCbWithOne } from 'common/models';
+import { BindingCbWithOne } from 'common/models';
 import { EventMenuTitles, SortByFilesTypes } from 'common/enums';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
@@ -10,11 +10,11 @@ import styles from '../styles.module.scss';
 interface IProps {
   schedules: ISchedulingSchedule[];
   onEditSchedule: BindingCbWithOne<ISchedulingSchedule>;
-  onManageTournamentPlay: BindingAction;
+  eventId: string;
 }
 
 export default (props: IProps) => {
-  const { schedules, onEditSchedule, onManageTournamentPlay } = props;
+  const { schedules, eventId, onEditSchedule } = props;
   const sortedScheduleByName = sortByField(
     schedules,
     SortByFilesTypes.SCHEDULES
@@ -36,8 +36,8 @@ export default (props: IProps) => {
         {sortedScheduleByName.map(it => (
           <TournamentPlayItem
             schedule={it}
+            eventId={eventId}
             onEditSchedule={onEditSchedule}
-            onManageTournamentPlay={onManageTournamentPlay}
             key={it.schedule_id}
           />
         ))}
