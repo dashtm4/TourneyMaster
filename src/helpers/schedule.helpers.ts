@@ -1,5 +1,5 @@
 import { getTimeFromString, timeToString } from 'helpers';
-import { IEventDetails, IConfigurableSchedule } from 'common/models';
+import { IEventDetails, IConfigurableSchedule, ISchedule } from 'common/models';
 import moment from 'moment';
 
 interface ITimeValues {
@@ -45,6 +45,19 @@ const calculateTotalGameTime = (
     preGameWarmupMin + periodDurationMin * periodsPerGame + timeBtwnPeriodsMin
   );
 };
+
+const getTimeValuesFromEventSchedule = (
+  event: IEventDetails,
+  schedule: ISchedule
+) => ({
+  firstGameTime: event.first_game_time,
+  lastGameEnd: event.last_game_end,
+  preGameWarmup: schedule.pre_game_warmup,
+  periodDuration: schedule.period_duration,
+  timeBtwnPeriods: schedule.time_btwn_periods,
+  periodsPerGame: event.periods_per_game,
+  gamesStartOn: schedule.games_start_on,
+});
 
 const getTimeValuesFromSchedule = (
   schedule: IConfigurableSchedule
@@ -120,6 +133,7 @@ const formatTimeSlot = (time: string) => {
 export {
   setGameOptions,
   calculateTotalGameTime,
+  getTimeValuesFromEventSchedule,
   getTimeValuesFromSchedule,
   calculateTimeSlots,
   formatTimeSlot,
