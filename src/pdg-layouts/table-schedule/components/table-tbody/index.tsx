@@ -11,9 +11,16 @@ interface Props {
   timeSlots: ITimeSlot[];
   games: IGame[];
   splitIdx: number;
+  isHeatMap?: boolean;
 }
 
-const TableTbody = ({ facility, timeSlots, games, splitIdx }: Props) => (
+const TableTbody = ({
+  facility,
+  timeSlots,
+  games,
+  splitIdx,
+  isHeatMap,
+}: Props) => (
   <View>
     {timeSlots.map((timeSlot: ITimeSlot, idx) => (
       <RowTimeSlot
@@ -22,6 +29,7 @@ const TableTbody = ({ facility, timeSlots, games, splitIdx }: Props) => (
         timeSlot={timeSlot}
         splitIdx={splitIdx}
         isEven={(idx + 1) % 2 === 0}
+        isHeatMap={isHeatMap}
         key={timeSlot.id}
       />
     ))}

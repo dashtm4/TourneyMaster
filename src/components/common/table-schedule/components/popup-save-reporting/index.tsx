@@ -46,6 +46,22 @@ const PopupSaveReporting = ({
       event.event_name ? `${event.event_name} Master Schedule` : 'Schedule'
     );
 
+  const onHeatmapScheduleTableSave = async () =>
+    onPDFSave(
+      <PDFTableSchedule
+        event={event}
+        games={games}
+        fields={fields}
+        timeSlots={timeSlots}
+        facilities={facilities}
+        schedule={schedule}
+        isHeatMap={true}
+      />,
+      event.event_name
+        ? `${event.event_name} Master Schedule(HeatMap)`
+        : 'Schedule'
+    );
+
   const onScheduleFieldsSave = async () =>
     onPDFSave(
       <PDFTableFieldsSchedule
@@ -80,6 +96,15 @@ const PopupSaveReporting = ({
                   label="Download"
                 />
               </li>
+              <li className={styles.dowloadLinkWrapper}>
+                <b>Schedule table(with Heatmap)</b>
+                <Button
+                  onClick={onHeatmapScheduleTableSave}
+                  variant={ButtonVarian.TEXT}
+                  color={ButtonColors.SECONDARY}
+                  label="Download"
+                />
+              </li>
             </ul>
           </li>
           <li className={styles.link}>
@@ -97,6 +122,14 @@ const PopupSaveReporting = ({
             </ul>
           </li>
         </ul>
+        <div className={styles.btnWrapper}>
+          <Button
+            onClick={onClose}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            label="Cancel"
+          />
+        </div>
       </section>
     </Modal>
   );

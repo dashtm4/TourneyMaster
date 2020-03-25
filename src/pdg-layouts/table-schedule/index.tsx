@@ -20,6 +20,7 @@ interface IPDFProps {
   timeSlots: ITimeSlot[];
   facilities: IScheduleFacility[];
   schedule: IConfigurableSchedule;
+  isHeatMap?: boolean;
 }
 
 const PDFScheduleTable = ({
@@ -29,6 +30,7 @@ const PDFScheduleTable = ({
   games,
   timeSlots,
   schedule,
+  isHeatMap,
 }: IPDFProps) => (
   <Document>
     {facilities.map(facility => {
@@ -67,6 +69,7 @@ const PDFScheduleTable = ({
                     timeSlots={timeSlots}
                     games={games}
                     splitIdx={splitIdx}
+                    isHeatMap={isHeatMap}
                   />
                 </View>
               </View>
