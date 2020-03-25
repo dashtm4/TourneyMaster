@@ -190,8 +190,6 @@ const saveFacilities: ActionCreator<ThunkAction<
         delete copiedFacility.isChange;
         delete copiedFacility.isNew;
 
-        console.log(copiedFacility);
-
         Api.post('/facilities', copiedFacility);
       }
     }
