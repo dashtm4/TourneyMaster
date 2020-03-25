@@ -20,9 +20,15 @@ interface Props {
   schedule: ISchedulingSchedule | null;
   onClose: BindingAction;
   onSubmit: BindingCbWithOne<ISchedulingSchedule>;
+  onDelete: BindingCbWithOne<ISchedulingSchedule>;
 }
 
-const PopupEditSchedule = ({ schedule, onClose, onSubmit }: Props) => {
+const PopupEditSchedule = ({
+  schedule,
+  onClose,
+  onSubmit,
+  onDelete,
+}: Props) => {
   const [editedSchedule, onChange] = React.useState<ISchedulingSchedule>(
     schedule!
   );
@@ -40,6 +46,11 @@ const PopupEditSchedule = ({ schedule, onClose, onSubmit }: Props) => {
     if (editedSchedule.schedule_name) {
       onClose();
     }
+  };
+
+  const localDelete = () => {
+    onDelete(editedSchedule);
+    onClose();
   };
 
   return (
@@ -93,6 +104,7 @@ const PopupEditSchedule = ({ schedule, onClose, onSubmit }: Props) => {
           <div className={styles.btnsWrapper}>
             <p className={styles.dellBtnWrapper}>
               <Button
+                onClick={localDelete}
                 icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
                 variant={ButtonVarian.TEXT}
                 color={ButtonColors.INHERIT}
