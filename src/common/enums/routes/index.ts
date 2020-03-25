@@ -28,6 +28,7 @@ enum Routes {
   SCORING_ID = '/event/scoring/:eventId?',
   SCHEDULES = '/schedules',
   SCHEDULES_ID = '/schedules/:eventId?',
+  SCHEDULES_EVENT_SCHEDULE = '/schedules/:eventId?/:scheduleId?',
   REPORTING = '/event/reporting',
   REPORTING_ID = '/event/reporting/:eventId?',
   RECORD_SCORES = '/event/record-scores/',

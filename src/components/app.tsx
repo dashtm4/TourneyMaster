@@ -45,6 +45,7 @@ const App: React.FC = () => {
             Routes.REPORTING_ID,
             Routes.RECORD_SCORES_ID,
             Routes.SCHEDULES_ID,
+            Routes.SCHEDULES_EVENT_SCHEDULE,
           ]}
           component={AuthorizedPageEventWrapped}
         />
