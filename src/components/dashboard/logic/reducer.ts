@@ -89,7 +89,7 @@ export default (
         ...state,
         calendarEvents: action.payload.sort(
           (a: ICalendarEvent, b: ICalendarEvent) =>
-            +new Date(b.cal_event_datetime) - +new Date(a.cal_event_datetime)
+            +new Date(a.cal_event_datetime) - +new Date(b.cal_event_datetime)
         ),
         areCalendarEventsLoading: false,
       };

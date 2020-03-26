@@ -37,6 +37,9 @@
 .teamEdit {
   @extend .team;
   cursor: grab;
+  :active {
+    cursor: grabbing;
+  }
 }
 
 .teamBtnsWrapper {

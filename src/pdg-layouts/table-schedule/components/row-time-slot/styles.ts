@@ -18,13 +18,16 @@ const styles = StyleSheet.create({
     width: 95,
     minHeight: 30,
 
-    padding: '5px 4px',
+    padding: '5px 1px',
   },
   gameTeamName: {
     flexDirection: 'row',
   },
   teamNameWrapper: {
     maxWidth: 65,
+
+    paddingLeft: 2,
+
     maxLines: 1,
   },
   divisionNameWrapper: {

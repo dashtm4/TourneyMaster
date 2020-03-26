@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './styles.module.scss';
-import { SectionDropdown, Button, PopupConfirm } from 'components/common';
+import { SectionDropdown, Button } from 'components/common';
 import CreateIcon from '@material-ui/icons/Create';
 import { BindingCbWithOne, IFacility, IField } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
@@ -8,6 +8,7 @@ import { EventDetailsDTO } from 'components/event-details/logic/model';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Modal from 'components/common/modal';
 import EditBackupForm from '../edit-backup-form';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 interface Props {
   events: EventDetailsDTO[];
@@ -105,6 +106,9 @@ class BackupPlan extends React.Component<Props, State> {
         facilities_id,
       }));
 
+    const deleteMessage = `You are about to delete this backup plan and this cannot be undone.
+      Please, enter the name of the backup plan to continue.`;
+
     return (
       <div className={styles.container}>
         <SectionDropdown
@@ -165,13 +169,13 @@ class BackupPlan extends React.Component<Props, State> {
             onEditClose={this.onEditClose}
           />
         </Modal>
-        <PopupConfirm
-          message="Are you sure you want to delete this backup plan?"
+        <DeletePopupConfrim
+          type={'backup plan'}
+          message={deleteMessage}
+          deleteTitle={backup_name}
           isOpen={this.state.isDeleteOpen}
           onClose={this.onDeleteClose}
-          onCanceClick={this.onDeleteClose}
-          onYesClick={this.onDelete}
-          type="warning"
+          onDeleteClick={this.onDelete}
         />
       </div>
     );
