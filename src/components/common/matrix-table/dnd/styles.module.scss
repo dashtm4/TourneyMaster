@@ -121,3 +121,9 @@
   background-color: #ffffff;
   // overflow: hidden;
 }
+.isLocked {
+  cursor: not-allowed;
+  :active {
+    cursor: not-allowed;
+  }
+}

@@ -3,15 +3,18 @@ import DropContainer, { IDropParams } from '../dnd/drop';
 import TeamDragCard from '../dnd/drag';
 import styles from '../styles.module.scss';
 import { IGame } from '../helper';
+import { ITeamCard } from 'common/models/schedule/teams';
 
 interface Props {
   game: IGame;
   showHeatmap?: boolean;
   onDrop: (dropParams: IDropParams) => void;
+  onTeamCardUpdate: (teamCard: ITeamCard) => void;
+  isDndMode: boolean;
 }
 
 const RenderGameSlot = (props: Props) => {
-  const { game, onDrop, showHeatmap } = props;
+  const { game, onDrop, showHeatmap, onTeamCardUpdate, isDndMode } = props;
   const { awayTeam, homeTeam } = game;
   const acceptType = 'teamdrop';
 
@@ -30,6 +33,8 @@ const RenderGameSlot = (props: Props) => {
               originGameId={game.id}
               showHeatmap={showHeatmap}
               teamCard={awayTeam}
+              onTeamCardUpdate={onTeamCardUpdate}
+              isDndMode={isDndMode}
             />
           )}
         </DropContainer>
@@ -45,6 +50,8 @@ const RenderGameSlot = (props: Props) => {
               originGameId={game.id}
               showHeatmap={showHeatmap}
               teamCard={homeTeam}
+              onTeamCardUpdate={onTeamCardUpdate}
+              isDndMode={isDndMode}
             />
           )}
         </DropContainer>
