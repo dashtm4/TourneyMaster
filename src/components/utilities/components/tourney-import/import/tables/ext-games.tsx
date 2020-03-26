@@ -168,7 +168,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const ExtLocationsTable = ({ games }: Props) => {
   const classes = useStyles();
   const [order, setOrder] = React.useState<Order>('desc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('tournament_division_name');
+  const [orderBy, setOrderBy] = React.useState<keyof Data>('tournament_name');
   const [selected, setSelected] = React.useState<any[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
