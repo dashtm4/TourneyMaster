@@ -1,6 +1,6 @@
 import React from 'react';
-import Button from '../../../common/buttons/button';
-import { BindingAction, ITeam } from '../../../../common/models';
+import Button from 'components/common/buttons/button';
+import { BindingAction, ITeam } from 'common/models';
 import styles from './styles.module.scss';
 
 interface Props {

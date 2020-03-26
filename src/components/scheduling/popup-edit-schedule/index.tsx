@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, HeadingLevelTwo, Input, Button } from 'components/common';
 import { BindingAction, BindingCbWithOne } from 'common/models';
 import { getIcon } from 'helpers';
@@ -10,6 +10,7 @@ import {
 } from 'common/enums';
 import { ISchedulingSchedule, ArchitectFormFields } from '../types';
 import styles from './styles.module.scss';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 const DELETE_ICON_STYLES = {
   marginRight: '5px',
@@ -33,6 +34,16 @@ const PopupEditSchedule = ({
     schedule!
   );
 
+  const [isDeleteModalOpen, onDeleteModal] = useState(false);
+
+  const onModalClose = () => {
+    onDeleteModal(false);
+  };
+
+  const onDeleteClick = () => {
+    onDeleteModal(true);
+  };
+
   const localChange = ({
     target: { name, value },
   }: React.ChangeEvent<HTMLInputElement>) =>
@@ -52,6 +63,9 @@ const PopupEditSchedule = ({
     onDelete(editedSchedule);
     onClose();
   };
+
+  const deleteMessage = `You are about to delete this schedule and this cannot be undone.
+  Please, enter the name of the schedule to continue.`;
 
   return (
     <Modal isOpen={Boolean(schedule)} onClose={onClose}>
@@ -104,7 +118,7 @@ const PopupEditSchedule = ({
           <div className={styles.btnsWrapper}>
             <p className={styles.dellBtnWrapper}>
               <Button
-                onClick={localDelete}
+                onClick={onDeleteClick}
                 icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
                 variant={ButtonVarian.TEXT}
                 color={ButtonColors.INHERIT}
@@ -131,6 +145,14 @@ const PopupEditSchedule = ({
             </div>
           </div>
         </form>
+        <DeletePopupConfrim
+          type={'schedule'}
+          message={deleteMessage}
+          deleteTitle={schedule?.schedule_name!}
+          isOpen={isDeleteModalOpen}
+          onClose={onModalClose}
+          onDeleteClick={localDelete}
+        />
       </section>
     </Modal>
   );

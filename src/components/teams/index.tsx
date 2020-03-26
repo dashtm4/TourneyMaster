@@ -5,7 +5,6 @@ import { RouteComponentProps } from 'react-router-dom';
 import { loadDivisionsTeams, loadPools, saveTeams } from './logic/actions';
 import Navigation from './components/navigation';
 import TeamManagement from './components/team-management';
-import PopupDeleteTeam from './components/popup-delete-team';
 import {
   HeadingLevelTwo,
   Modal,
@@ -16,6 +15,7 @@ import {
 import { AppState } from './logic/reducer';
 import { IDivision, IPool, ITeam } from '../../common/models';
 import styles from './styles.module.scss';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 interface MatchParams {
   eventId?: string;
@@ -149,7 +149,7 @@ class Teams extends React.Component<
       },
     }));
 
-  onSaveTeam = async () => {
+  onSaveTeam = () => {
     const { configurableTeam } = this.state;
 
     if (configurableTeam) {
@@ -165,10 +165,10 @@ class Teams extends React.Component<
 
   onCloseModal = () =>
     this.setState({
+      isDeletePopupOpen: false,
+      isEditPopupOpen: false,
       configurableTeam: null,
       currentDivision: null,
-      isEditPopupOpen: false,
-      isDeletePopupOpen: false,
     });
 
   onConfirmModalClose = () => {
@@ -192,6 +192,9 @@ class Teams extends React.Component<
       isDeletePopupOpen,
     } = this.state;
 
+    const deleteMessage = `You are about to delete this team and this cannot be undone.
+    Please, enter the name of the team to continue.`;
+
     if (isLoading) {
       return <Loader />;
     }
@@ -210,50 +213,59 @@ class Teams extends React.Component<
           <div className={styles.headingWrapper}>
             <HeadingLevelTwo>Teams</HeadingLevelTwo>
           </div>
-          <ul className={styles.teamsList}>
-            <TeamManagement
-              divisions={divisions}
-              pools={pools}
-              teams={teams.filter(it => !it.isDelete)}
-              isEdit={isEdit}
-              changePool={this.changePool}
-              loadPools={loadPools}
-              onDeletePopupOpen={this.onDeletePopupOpen}
-              onEditPopupOpen={this.onEditPopupOpen}
-            />
-          </ul>
+          {false && (
+            <ul className={styles.teamsList}>
+              <TeamManagement
+                divisions={divisions}
+                pools={pools}
+                teams={teams.filter(it => !it.isDelete)}
+                isEdit={isEdit}
+                changePool={this.changePool}
+                loadPools={loadPools}
+                onDeletePopupOpen={this.onDeletePopupOpen}
+                onEditPopupOpen={this.onEditPopupOpen}
+              />
+            </ul>
+          )}
         </section>
-        <Modal
-          isOpen={isDeletePopupOpen || isEditPopupOpen}
-          onClose={this.onCloseModal}
-        >
-          <>
-            {isEditPopupOpen && (
-              <PopupTeamEdit
-                team={configurableTeam}
-                division={currentDivision}
-                pool={currentPool}
-                onChangeTeam={this.onChangeTeam}
-                onSaveTeamClick={this.onSaveTeam}
-                onDeleteTeamClick={this.onDeleteTeam}
-                onCloseModal={this.onCloseModal}
-              />
-            )}
-            {isDeletePopupOpen && (
-              <PopupDeleteTeam
-                team={configurableTeam}
-                onCloseModal={this.onCloseModal}
-                onDeleteClick={this.onDeleteTeam}
-              />
-            )}
-          </>
-        </Modal>
-        <PopupExposure
-          isOpen={this.state.isConfirmModalOpen}
-          onClose={this.onConfirmModalClose}
-          onExitClick={this.onCancelClick}
-          onSaveClick={this.onSaveClick}
-        />
+        {false && (
+          <Modal
+            isOpen={isDeletePopupOpen || isEditPopupOpen}
+            onClose={this.onCloseModal}
+          >
+            <>
+              {isEditPopupOpen && (
+                <PopupTeamEdit
+                  team={configurableTeam}
+                  division={currentDivision}
+                  pool={currentPool}
+                  onChangeTeam={this.onChangeTeam}
+                  onSaveTeamClick={this.onSaveTeam}
+                  onDeleteTeamClick={this.onDeleteTeam}
+                  onCloseModal={this.onCloseModal}
+                />
+              )}
+              {isDeletePopupOpen && (
+                <DeletePopupConfrim
+                  type={'team'}
+                  message={deleteMessage}
+                  deleteTitle={configurableTeam?.long_name!}
+                  isOpen={isDeletePopupOpen}
+                  onClose={this.onCloseModal}
+                  onDeleteClick={() => this.onDeleteTeam(configurableTeam!)}
+                />
+              )}
+            </>
+          </Modal>
+        )}
+        {false && (
+          <PopupExposure
+            isOpen={this.state.isConfirmModalOpen}
+            onClose={this.onConfirmModalClose}
+            onExitClick={this.onCancelClick}
+            onSaveClick={this.onSaveClick}
+          />
+        )}
       </>
     );
   }

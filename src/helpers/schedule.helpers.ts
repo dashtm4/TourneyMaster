@@ -1,5 +1,5 @@
 import { getTimeFromString, timeToString } from 'helpers';
-import { IEventDetails, IConfigurableSchedule } from 'common/models';
+import { IEventDetails, IConfigurableSchedule, ISchedule } from 'common/models';
 import moment from 'moment';
 
 interface ITimeValues {
@@ -46,6 +46,19 @@ const calculateTotalGameTime = (
   );
 };
 
+const getTimeValuesFromEventSchedule = (
+  event: IEventDetails,
+  schedule: ISchedule
+) => ({
+  firstGameTime: event.first_game_time,
+  lastGameEnd: event.last_game_end,
+  preGameWarmup: schedule.pre_game_warmup,
+  periodDuration: schedule.period_duration,
+  timeBtwnPeriods: schedule.time_btwn_periods,
+  periodsPerGame: event.periods_per_game,
+  gamesStartOn: schedule.games_start_on,
+});
+
 const getTimeValuesFromSchedule = (
   schedule: IConfigurableSchedule
 ): ITimeValues => ({
@@ -88,19 +101,19 @@ const calculateTimeSlots = (timeValues: ITimeValues) => {
   );
 
   for (let i = 0; i < timeSlotsNum; i++) {
-    let timeInMin;
-
-    if (i === 0) {
-      timeInMin = firstGameTimeMin;
-    } else {
-      timeInMin =
-        getTimeFromString(timeSlots[timeSlots.length - 1].time, 'minutes') +
-        totalGameTime;
-    }
+    const timeInMin =
+      i === 0
+        ? firstGameTimeMin
+        : getTimeFromString(timeSlots[timeSlots.length - 1].time, 'minutes') +
+          totalGameTime;
 
     const validMinutes =
       gamesStartOnNum * Math.ceil(timeInMin / gamesStartOnNum);
     const timeInStringFormat = timeToString(validMinutes);
+
+    if (validMinutes + totalGameTime >= lastGameEndMin) {
+      break;
+    }
 
     timeSlots.push({
       id: i,
@@ -120,6 +133,7 @@ const formatTimeSlot = (time: string) => {
 export {
   setGameOptions,
   calculateTotalGameTime,
+  getTimeValuesFromEventSchedule,
   getTimeValuesFromSchedule,
   calculateTimeSlots,
   formatTimeSlot,

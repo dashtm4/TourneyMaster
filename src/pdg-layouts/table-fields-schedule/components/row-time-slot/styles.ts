@@ -28,6 +28,9 @@ const styles = StyleSheet.create({
   },
   teamNum: {
     fontSize: 8,
+
+    textOverflow: 'ellipsis',
+    maxLines: 1,
   },
   scoresWrapper: {
     flexDirection: 'row',
@@ -37,6 +40,9 @@ const styles = StyleSheet.create({
     width: '115px',
     margin: '5px 10px 0 0',
     paddingBottom: 5,
+  },
+  scoresColon: {
+    paddingBottom: 3,
   },
   scores: {
     width: '55px',

@@ -33,12 +33,18 @@ export interface ITeam {
   divisionId: string;
   isPremier: boolean;
   teamPhoneNum?: string | null;
+  contactFirstName?: string | null;
+  contactLastName?: string | null;
   divisionShortName?: string;
   divisionHex?: string;
 }
 
 export interface ITeamCard extends ITeam {
-  games?: { id: number; teamPosition: TeamPositionEnum }[];
+  games?: {
+    id: number;
+    teamPosition: TeamPositionEnum;
+    isTeamLocked?: boolean;
+  }[];
   fieldId?: string;
   timeSlotId?: number;
   teamPosition?: number;

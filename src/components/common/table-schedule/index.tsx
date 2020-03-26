@@ -34,6 +34,7 @@ import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IDropParams } from '../matrix-table/dnd/drop';
 import moveTeamCard from './moveTeamCard';
+import { Button } from 'components/common';
 
 interface Props {
   event: IEventDetails;
@@ -48,6 +49,7 @@ interface Props {
   isEnterScores?: boolean;
   historyLength?: number;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
+  onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
 }
 
@@ -63,6 +65,7 @@ const TableSchedule = ({
   eventSummary,
   isEnterScores,
   onTeamCardsUpdate,
+  onTeamCardUpdate,
   onUndo,
   historyLength,
 }: Props) => {
@@ -134,6 +137,21 @@ const TableSchedule = ({
     }
   };
 
+  const onLockAll = () => {
+    const lockedTeams = teamCards.map(team => ({
+      ...team,
+      games: team!.games?.map(game => ({ ...game, isTeamLocked: true })),
+    }));
+    onTeamCardsUpdate(lockedTeams);
+  };
+
+  const onUnlockAll = () => {
+    const unLockedTeams = teamCards.map(team => ({
+      ...team,
+      games: team!.games?.map(game => ({ ...game, isTeamLocked: false })),
+    }));
+    onTeamCardsUpdate(unLockedTeams);
+  };
   const [isPopupSaveReportOpen, onPopupSaveReport] = useState<boolean>(false);
 
   const togglePopupSaveReport = () => onPopupSaveReport(!isPopupSaveReportOpen);
@@ -142,6 +160,22 @@ const TableSchedule = ({
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
       <div className={styles.scheduleTableWrapper}>
+        <div className={styles.topBtnsWrapper}>
+          <Button
+            label="Zoom-n-Nav"
+            variant="contained"
+            color="primary"
+            type={zoomingDisabled ? 'squaredOutlined' : 'squared'}
+            onClick={toggleZooming}
+          />
+          <Button
+            label="Drag-n-Drop"
+            variant="contained"
+            color="primary"
+            type={zoomingDisabled ? 'squared' : 'squaredOutlined'}
+            onClick={toggleZooming}
+          />
+        </div>
         <DndProvider backend={HTML5Backend}>
           <ListUnassigned
             teamCards={unassignedTeams}
@@ -165,6 +199,9 @@ const TableSchedule = ({
               isEnterScores={isEnterScores}
               moveCard={moveCard}
               disableZooming={zoomingDisabled}
+              onTeamCardUpdate={onTeamCardUpdate}
+              onTeamCardsUpdate={onTeamCardsUpdate}
+              teamCards={teamCards}
             />
           </div>
         </DndProvider>
@@ -180,8 +217,8 @@ const TableSchedule = ({
         toggleZooming={toggleZooming}
         optimizeBy={optimizeBy}
         onUndoClick={onUndo}
-        onLockAllClick={() => {}}
-        onUnlockAllClick={() => {}}
+        onLockAllClick={onLockAll}
+        onUnlockAllClick={onUnlockAll}
         onOptimizeClick={onOptimizeClick}
         togglePopupSaveReport={togglePopupSaveReport}
       />

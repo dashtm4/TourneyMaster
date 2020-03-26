@@ -5,7 +5,7 @@
   justify-content: space-between;
   align-items: center;
 
-  width: 160px;
+  width: 350px;
   min-height: 42px;
   margin-bottom: 4px;
   padding: 3px 2px 3px 32px;
@@ -37,9 +37,6 @@
 .teamEdit {
   @extend .team;
   cursor: grab;
-  :active {
-    cursor: grabbing;
-  }
 }
 
 .teamBtnsWrapper {

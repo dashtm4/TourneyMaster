@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   SectionDropdown,
@@ -6,6 +6,7 @@ import {
   Input,
   Radio,
   Checkbox,
+  Select,
 } from 'components/common';
 import { EventMenuTitles } from 'common/enums';
 
@@ -14,6 +15,7 @@ import { EventDetailsDTO } from '../logic/model';
 import { getTimeFromString, timeToString } from 'helpers';
 import { BindingCbWithOne } from 'common/models';
 import waiverHubLogo from 'assets/WaiverHubLogo.png';
+import { getDays, getDay } from 'helpers/getDays';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -34,6 +36,16 @@ enum ResultsDisplayEnum {
   'Show Goals Allowed' = 'show_goals_allowed',
   'Show Goals Differential' = 'show_goals_diff',
   'Allow Ties' = 'tie_breaker_format_id',
+}
+
+enum DayOptions {
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
 }
 
 interface Props {
@@ -73,10 +85,22 @@ const EventStructureSection: React.FC<Props> = ({
     if (!event_type) onChange('event_type', eventTypeOptions[0]);
 
     if (!periods_per_game) onChange('periods_per_game', 2);
+
+    if (eventData.league_dates)
+      onChangeDay(DayOptions[getDay(eventData.league_dates)]);
   });
 
-  const onEventTypeChange = (e: InputTargetValue) =>
+  const [day, onChangeDay] = useState(DayOptions[5]);
+
+  const onEventTypeChange = (e: InputTargetValue) => {
+    if (e.target.value === 'League') {
+      const dayDates = getDays(5, new Date(eventData.event_startdate!));
+      onChange('league_dates', JSON.stringify(dayDates));
+    } else {
+      onChange('league_dates', null);
+    }
     onChange('event_type', e.target.value);
+  };
 
   const onGameNumChange = (e: InputTargetValue) =>
     onChange('min_num_of_games', Number(e.target.value));
@@ -138,6 +162,25 @@ const EventStructureSection: React.FC<Props> = ({
     },
   ];
 
+  const dayOptions = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ].map((d, indx) => ({ label: d, value: indx }));
+
+  const onLeagueDayChange = (e: InputTargetValue) => {
+    onChangeDay(DayOptions[e.target.value]);
+    const dayDates = getDays(
+      Number(e.target.value),
+      new Date(eventData.event_startdate!)
+    );
+    return onChange('league_dates', JSON.stringify(dayDates));
+  };
+
   return (
     <SectionDropdown
       id={EventMenuTitles.EVENT_STRUCTURE}
@@ -176,13 +219,25 @@ const EventStructureSection: React.FC<Props> = ({
               onChange={onResultsChange}
             />
           </div>
-          <Input
-            fullWidth={true}
-            type="number"
-            label="Min # of Game Guarantee"
-            value={min_num_of_games || ''}
-            onChange={onGameNumChange}
-          />
+          <div className={styles.column}>
+            <Input
+              fullWidth={true}
+              type="number"
+              label="Min # of Game Guarantee"
+              value={min_num_of_games || ''}
+              onChange={onGameNumChange}
+            />
+            {eventData.event_type === 'League' && (
+              <div className={styles.leagueDayContainer}>
+                <Select
+                  options={dayOptions}
+                  label="Game day for League"
+                  value={DayOptions[day]}
+                  onChange={onLeagueDayChange}
+                />
+              </div>
+            )}
+          </div>
         </div>
         <div className={styles.esDetailsSecond}>
           <Input
@@ -245,10 +300,7 @@ const EventStructureSection: React.FC<Props> = ({
               rel="noopener noreferrer"
               href="https://www.waiverhub.com/"
             >
-              <img
-                src={waiverHubLogo}
-                style={{ width: '150px', marginLeft: '15px' }}
-              />
+              <img src={waiverHubLogo} style={{ width: '150px' }} />
             </a>
           </div>
         </div>
