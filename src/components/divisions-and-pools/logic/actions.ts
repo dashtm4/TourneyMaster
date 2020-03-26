@@ -2,6 +2,7 @@ import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import * as Yup from 'yup';
 import {
+  DIVISIONS_TEAMS_FETCH_START,
   DIVISIONS_TEAMS_FETCH_SUCCESS,
   DIVISIONS_TEAMS_FETCH_FAILURE,
   POOLS_FETCH_SUCCESS,
@@ -22,6 +23,10 @@ import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
 import { IPool, ITeam, IDivision } from 'common/models';
 import { IAppState } from 'reducers/root-reducer.types';
+
+export const divisionsTeamsFetchStart = (): { type: string } => ({
+  type: DIVISIONS_TEAMS_FETCH_START,
+});
 
 export const fetchDetailsStart = (): { type: string } => ({
   type: FETCH_DETAILS_START,
@@ -90,6 +95,8 @@ export const getDivisionsTeams: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (eventId: string) => async (dispatch: Dispatch) => {
+  dispatch(divisionsTeamsFetchStart());
+
   const divisions = await api.get(`/divisions?event_id=${eventId}`);
   const teams = await api.get(`/teams?event_id=${eventId}`);
 

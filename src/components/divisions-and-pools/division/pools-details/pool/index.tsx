@@ -8,7 +8,7 @@ import { sortByField } from 'helpers';
 import { SortByFilesTypes } from 'common/enums';
 
 interface IPoolProps {
-  division?: IDivision;
+  division: IDivision | null;
   pool?: Partial<IPool>;
   teams: ITeam[];
   isArrange: boolean;

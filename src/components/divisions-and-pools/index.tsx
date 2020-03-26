@@ -88,9 +88,9 @@ class DivisionsAndPools extends React.Component<
     prevProps: IDivisionsAndPoolsProps,
     prevState: IDivisionAndPoolsState
   ) {
-    const { teams } = this.props;
+    const { isLoading, teams } = this.props;
 
-    if (this.state.teams.length === 0) {
+    if (prevProps.isLoading !== isLoading) {
       this.setState({ teams });
     }
 

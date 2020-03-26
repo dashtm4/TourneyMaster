@@ -81,23 +81,26 @@ class PoolsDetails extends React.Component<IPoolsDetailsProps> {
           <div className={styles.poolsContainer}>
             <DndProvider backend={HTML5Backend}>
               <Pool
+                division={division || null}
                 teams={unassignedTeams}
                 isArrange={isArrange}
                 changePool={changePool}
                 onDeletePopupOpen={onDeletePopupOpen}
                 onEditPopupOpen={onEditPopupOpen}
               />
-              {pools.map(pool => (
-                <Pool
-                  key={pool.pool_id}
-                  pool={pool}
-                  teams={teams.filter(team => team.pool_id === pool.pool_id)}
-                  isArrange={isArrange}
-                  changePool={changePool}
-                  onDeletePopupOpen={onDeletePopupOpen}
-                  onEditPopupOpen={onEditPopupOpen}
-                />
-              ))}
+              {division &&
+                pools.map(pool => (
+                  <Pool
+                    division={division}
+                    pool={pool}
+                    teams={teams.filter(team => team.pool_id === pool.pool_id)}
+                    key={pool.pool_id}
+                    isArrange={isArrange}
+                    changePool={changePool}
+                    onDeletePopupOpen={onDeletePopupOpen}
+                    onEditPopupOpen={onEditPopupOpen}
+                  />
+                ))}
             </DndProvider>
           </div>
         )}
