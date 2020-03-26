@@ -1,7 +1,8 @@
-import { IDivision } from 'common/models';
+import { IDivision, ITeam } from 'common/models';
 
-export const DIVISIONS_FETCH_SUCCESS = 'DIVISIONS_FETCH_SUCCESS';
-export const DIVISIONS_FETCH_FAILURE = 'DIVISIONS_FETCH_FAILURE';
+export const DIVISIONS_TEAMS_FETCH_START = 'DIVISIONS_TEAMS_FETCH_START';
+export const DIVISIONS_TEAMS_FETCH_SUCCESS = 'DIVISIONS_TEAMS_FETCH_SUCCESS';
+export const DIVISIONS_TEAMS_FETCH_FAILURE = 'DIVISIONS_TEAMS_FETCH_FAILURE';
 export const POOLS_FETCH_SUCCESS = 'POOLS_FETCH_SUCCESS';
 export const TEAMS_FETCH_SUCCESS = 'TEAMS_FETCH_SUCCESS';
 export const FETCH_DETAILS_START = 'FETCH_DETAILS_START';
@@ -13,9 +14,12 @@ export const REGISTRATION_FETCH_SUCCESS =
   'DIVISIONS_REGISTRATION_FETCH_SUCCESS';
 export const DIVISION_SAVE_SUCCESS = 'DIVISION_SAVE_SUCCESS';
 
-export interface loadDivisionsSuccess {
-  type: 'DIVISIONS_FETCH_SUCCESS';
-  payload: IDivision[];
+export interface loadDivisionsTeamsSuccess {
+  type: 'DIVISIONS_TEAMS_FETCH_SUCCESS';
+  payload: {
+    divisions: IDivision[];
+    teams: ITeam[];
+  };
 }
 
 export interface saveDivisionsSuccess {
@@ -23,4 +27,6 @@ export interface saveDivisionsSuccess {
   payload: IDivision[];
 }
 
-export type DivisionsPoolsAction = loadDivisionsSuccess | saveDivisionsSuccess;
+export type DivisionsPoolsAction =
+  | loadDivisionsTeamsSuccess
+  | saveDivisionsSuccess;

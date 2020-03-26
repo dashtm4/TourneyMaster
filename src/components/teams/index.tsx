@@ -149,7 +149,7 @@ class Teams extends React.Component<
       },
     }));
 
-  onSaveTeam = async () => {
+  onSaveTeam = () => {
     const { configurableTeam } = this.state;
 
     if (configurableTeam) {

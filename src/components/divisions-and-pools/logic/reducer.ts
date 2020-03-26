@@ -1,8 +1,8 @@
 import {
-  DIVISIONS_FETCH_SUCCESS,
-  DIVISIONS_FETCH_FAILURE,
+  DIVISIONS_TEAMS_FETCH_START,
+  DIVISIONS_TEAMS_FETCH_SUCCESS,
+  DIVISIONS_TEAMS_FETCH_FAILURE,
   POOLS_FETCH_SUCCESS,
-  TEAMS_FETCH_SUCCESS,
   FETCH_DETAILS_START,
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
@@ -40,18 +40,24 @@ export default (
   action: { type: string; payload?: any }
 ) => {
   switch (action.type) {
-    case FETCH_DETAILS_START: {
-      return { ...state, pools: [], teams: [], areDetailsLoading: true };
+    case DIVISIONS_TEAMS_FETCH_START: {
+      return { ...defaultState };
     }
-    case DIVISIONS_FETCH_SUCCESS: {
+    case FETCH_DETAILS_START: {
+      return { ...state, pools: [], areDetailsLoading: true };
+    }
+    case DIVISIONS_TEAMS_FETCH_SUCCESS: {
+      const { divisions, teams } = action.payload;
+
       return {
         ...state,
-        data: sortByField(action.payload, SortByFilesTypes.DIVISIONS),
+        data: sortByField(divisions, SortByFilesTypes.DIVISIONS),
         isLoading: false,
         error: false,
+        teams,
       };
     }
-    case DIVISIONS_FETCH_FAILURE: {
+    case DIVISIONS_TEAMS_FETCH_FAILURE: {
       return {
         ...state,
         isLoading: false,
@@ -105,14 +111,7 @@ export default (
         ...state,
         pools: [...state.pools, ...action.payload],
         error: false,
-      };
-    }
-    case TEAMS_FETCH_SUCCESS: {
-      return {
-        ...state,
-        teams: [...state.teams, ...action.payload],
         areDetailsLoading: false,
-        error: false,
       };
     }
     case REGISTRATION_FETCH_SUCCESS: {

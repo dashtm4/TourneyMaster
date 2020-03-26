@@ -2,10 +2,9 @@ import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import * as Yup from 'yup';
 import {
-  DIVISIONS_FETCH_SUCCESS,
-  DIVISIONS_FETCH_FAILURE,
+  DIVISIONS_TEAMS_FETCH_SUCCESS,
+  DIVISIONS_TEAMS_FETCH_FAILURE,
   POOLS_FETCH_SUCCESS,
-  TEAMS_FETCH_SUCCESS,
   FETCH_DETAILS_START,
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
@@ -25,15 +24,19 @@ export const fetchDetailsStart = (): { type: string } => ({
   type: FETCH_DETAILS_START,
 });
 
-export const divisionsFetchSuccess = (
-  payload: IDivision
-): { type: string; payload: IDivision } => ({
-  type: DIVISIONS_FETCH_SUCCESS,
-  payload,
+export const divisionsTeamsFetchSuccess = (
+  divisions: IDivision[],
+  teams: ITeam[]
+): { type: string; payload: { divisions: IDivision[]; teams: ITeam[] } } => ({
+  type: DIVISIONS_TEAMS_FETCH_SUCCESS,
+  payload: {
+    divisions,
+    teams,
+  },
 });
 
 export const divisionsFetchFailure = (): { type: string } => ({
-  type: DIVISIONS_FETCH_FAILURE,
+  type: DIVISIONS_TEAMS_FETCH_FAILURE,
 });
 
 export const addDivisionSuccess = (
@@ -71,13 +74,6 @@ export const poolsFetchSuccess = (
   payload,
 });
 
-export const teamsFetchSuccess = (
-  payload: ITeam[]
-): { type: string; payload: ITeam[] } => ({
-  type: TEAMS_FETCH_SUCCESS,
-  payload,
-});
-
 export const registrationFetchSuccess = (
   payload: any
 ): { type: string; payload: any } => ({
@@ -85,14 +81,16 @@ export const registrationFetchSuccess = (
   payload,
 });
 
-export const getDivisions: ActionCreator<ThunkAction<
+export const getDivisionsTeams: ActionCreator<ThunkAction<
   void,
   {},
   null,
   { type: string }
 >> = (eventId: string) => async (dispatch: Dispatch) => {
-  const data = await api.get(`/divisions?event_id=${eventId}`);
-  dispatch(divisionsFetchSuccess(data));
+  const divisions = await api.get(`/divisions?event_id=${eventId}`);
+  const teams = await api.get(`/teams?event_id=${eventId}`);
+
+  dispatch(divisionsTeamsFetchSuccess(divisions, teams));
 };
 
 export const getPools: ActionCreator<ThunkAction<
@@ -104,17 +102,8 @@ export const getPools: ActionCreator<ThunkAction<
   dispatch(fetchDetailsStart());
 
   const data = await api.get(`/pools?division_id=${divisionId}`);
-  dispatch(poolsFetchSuccess(data));
-};
 
-export const getTeams: ActionCreator<ThunkAction<
-  void,
-  {},
-  null,
-  { type: string }
->> = (divisionId: string) => async (dispatch: Dispatch) => {
-  const data = await api.get(`/teams?division_id=${divisionId}`);
-  dispatch(teamsFetchSuccess(data));
+  dispatch(poolsFetchSuccess(data));
 };
 
 export const updateDivision: ActionCreator<ThunkAction<

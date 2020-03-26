@@ -5,7 +5,7 @@ import styles from './styles.module.scss';
 import Paper from '../common/paper';
 import Button from '../common/buttons/button';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
-import { getDivisions, getPools, getTeams, savePool } from './logic/actions';
+import { getDivisionsTeams, getPools, savePool } from './logic/actions';
 import Modal from '../common/modal';
 import AddPool from './division/add-pool';
 import { BindingCbWithOne } from 'common/models/callback';
@@ -13,6 +13,8 @@ import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
 import Division from './division';
+import { PopupTeamEdit } from 'components/common';
+import PopupDeleteTeam from './popup-delete-team';
 import { getIcon } from 'helpers';
 import { Icons } from 'common/enums';
 
@@ -27,18 +29,23 @@ interface IDivisionsAndPoolsProps {
   areDetailsLoading: boolean;
   history: History;
   match: any;
-  getDivisions: BindingCbWithOne<string>;
+  getDivisionsTeams: BindingCbWithOne<string>;
   getPools: BindingCbWithOne<string>;
-  getTeams: BindingCbWithOne<string>;
   savePool: BindingCbWithOne<Partial<IPool>>;
 }
 
 interface IDivisionAndPoolsState {
   isModalOpen: boolean;
-  selected: Partial<IDivision>;
+  selected: IDivision;
   expanded: boolean[];
   expandAll: boolean;
   isArrange: boolean;
+  teams: ITeam[];
+  configurableTeam: ITeam | null;
+  currentDivision: string | null;
+  currentPool: string | null;
+  isDeletePopupOpen: boolean;
+  isEditPopupOpen: boolean;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -46,22 +53,39 @@ class DivisionsAndPools extends React.Component<
   IDivisionAndPoolsState
 > {
   eventId = this.props.match.params.eventId;
-  state = {
-    isModalOpen: false,
-    selected: this.props.divisions[0],
-    expanded: [],
-    expandAll: false,
-    isArrange: false,
-  };
 
-  componentDidMount() {
-    this.props.getDivisions(this.eventId);
+  constructor(props: IDivisionsAndPoolsProps) {
+    super(props);
+
+    this.state = {
+      isModalOpen: false,
+      selected: this.props.divisions[0],
+      expanded: [],
+      expandAll: false,
+      isArrange: false,
+      teams: [],
+      configurableTeam: null,
+      currentDivision: null,
+      currentPool: null,
+      isDeletePopupOpen: false,
+      isEditPopupOpen: false,
+    };
   }
 
-  onArrangeClick = () =>
-    this.setState(({ isArrange }) => ({ isArrange: !isArrange }));
+  componentDidMount() {
+    this.props.getDivisionsTeams(this.eventId);
+  }
 
-  componentDidUpdate(prevProps: any, prevState: any) {
+  componentDidUpdate(
+    prevProps: IDivisionsAndPoolsProps,
+    prevState: IDivisionAndPoolsState
+  ) {
+    const { teams } = this.props;
+
+    if (this.state.teams.length === 0) {
+      this.setState({ teams });
+    }
+
     if (
       prevProps.divisions !== this.props.divisions &&
       !prevState.expanded.length
@@ -114,9 +138,101 @@ class DivisionsAndPools extends React.Component<
     </div>
   );
 
+  onArrangeClick = () =>
+    this.setState(({ isArrange }) => ({ isArrange: !isArrange }));
+
+  onCancelClick = () => {
+    const { teams } = this.props;
+
+    this.setState({ isArrange: false, teams });
+  };
+
+  changePool = (
+    team: ITeam,
+    divisionId: string | null,
+    poolId: string | null
+  ) => {
+    const changedTeam = {
+      ...team,
+      division_id: divisionId,
+      pool_id: poolId,
+      isChange: true,
+    };
+
+    this.setState(({ teams }) => ({
+      teams: teams.map(it =>
+        it.team_id === changedTeam.team_id ? changedTeam : it
+      ),
+    }));
+  };
+
+  onEditPopupOpen = (team: ITeam, divisionName: string, poolName: string) =>
+    this.setState({
+      isEditPopupOpen: true,
+      configurableTeam: team,
+      currentDivision: divisionName,
+      currentPool: poolName,
+    });
+
+  onChangeTeam = ({
+    target: { name, value },
+  }: React.ChangeEvent<HTMLInputElement>) =>
+    this.setState(({ configurableTeam }) => ({
+      configurableTeam: {
+        ...(configurableTeam as ITeam),
+        [name]: value,
+        isChange: true,
+      },
+    }));
+
+  onSaveTeam = () => {
+    const { configurableTeam } = this.state;
+
+    if (configurableTeam) {
+      this.setState(({ teams }) => ({
+        teams: teams.map(it =>
+          it.team_id === configurableTeam.team_id ? configurableTeam : it
+        ),
+      }));
+    }
+
+    this.onCloseModal();
+  };
+
+  onDeleteTeam = (team: ITeam) => {
+    this.setState(({ teams }) => ({
+      teams: teams.map(it =>
+        it.team_id === team.team_id ? { ...it, isDelete: true } : it
+      ),
+    }));
+
+    this.onCloseModal();
+  };
+
+  onDeletePopupOpen = (team: ITeam) =>
+    this.setState({ configurableTeam: team, isDeletePopupOpen: true });
+
+  onCloseModal = () =>
+    this.setState({
+      configurableTeam: null,
+      currentDivision: null,
+      isEditPopupOpen: false,
+      isDeletePopupOpen: false,
+    });
+
   render() {
-    const { divisions, pools, teams, isLoading } = this.props;
-    const { isArrange } = this.state;
+    const { divisions, pools, isLoading } = this.props;
+    const {
+      teams,
+      configurableTeam,
+      currentDivision,
+      currentPool,
+      isArrange,
+      isEditPopupOpen,
+      isDeletePopupOpen,
+    } = this.state;
+
+    const notDeletedTeams = teams.filter((it: ITeam) => !it.isDelete);
 
     return (
       <section className={styles.container}>
@@ -125,7 +241,7 @@ class DivisionsAndPools extends React.Component<
             {isArrange ? (
               <p>
                 <Button
-                  onClick={this.onArrangeClick}
+                  onClick={this.onCancelClick}
                   label="Cancel"
                   variant="text"
                   color="secondary"
@@ -179,20 +295,39 @@ class DivisionsAndPools extends React.Component<
                       pools={pools.filter(
                         pool => pool.division_id === division.division_id
                       )}
-                      teams={teams.filter(
-                        team => team.division_id === division.division_id
-                      )}
+                      teams={notDeletedTeams}
                       onAddPool={this.onAddPool}
                       getPools={this.props.getPools}
-                      getTeams={this.props.getTeams}
                       areDetailsLoading={this.props.areDetailsLoading}
                       divisions={this.props.divisions}
                       expanded={this.state.expanded[index]}
                       index={index}
                       onToggleOne={this.onToggleOne}
+                      isArrange={isArrange}
+                      isUnassigned={false}
+                      changePool={this.changePool}
+                      onDeletePopupOpen={this.onDeletePopupOpen}
+                      onEditPopupOpen={this.onEditPopupOpen}
                     />
                   </li>
                 ))}
+                <Division
+                  eventId={this.eventId}
+                  pools={[]}
+                  teams={notDeletedTeams}
+                  onAddPool={this.onAddPool}
+                  getPools={this.props.getPools}
+                  areDetailsLoading={this.props.areDetailsLoading}
+                  divisions={this.props.divisions}
+                  expanded={this.state.expanded[this.state.expanded.length - 1]}
+                  index={this.state.expanded.length - 1}
+                  onToggleOne={this.onToggleOne}
+                  isArrange={isArrange}
+                  isUnassigned={true}
+                  changePool={this.changePool}
+                  onDeletePopupOpen={this.onDeletePopupOpen}
+                  onEditPopupOpen={this.onEditPopupOpen}
+                />
                 {this.state.selected && (
                   <Modal
                     isOpen={this.state.isModalOpen}
@@ -204,7 +339,7 @@ class DivisionsAndPools extends React.Component<
                       savePool={this.props.savePool}
                       numOfTeams={
                         teams.filter(
-                          team =>
+                          (team: ITeam) =>
                             team.division_id === this.state.selected.division_id
                         ).length
                       }
@@ -221,6 +356,31 @@ class DivisionsAndPools extends React.Component<
             )
           )}
         </div>
+        <Modal
+          isOpen={isDeletePopupOpen || isEditPopupOpen}
+          onClose={this.onCloseModal}
+        >
+          <>
+            {isEditPopupOpen && (
+              <PopupTeamEdit
+                team={configurableTeam}
+                division={currentDivision}
+                pool={currentPool}
+                onChangeTeam={this.onChangeTeam}
+                onSaveTeamClick={this.onSaveTeam}
+                onDeleteTeamClick={this.onDeleteTeam}
+                onCloseModal={this.onCloseModal}
+              />
+            )}
+            {isDeletePopupOpen && (
+              <PopupDeleteTeam
+                team={configurableTeam}
+                onCloseModal={this.onCloseModal}
+                onDeleteClick={this.onDeleteTeam}
+              />
+            )}
+          </>
+        </Modal>
       </section>
     );
   }
@@ -245,9 +405,8 @@ const mapStateToProps = (state: IState) => ({
 });
 
 const mapDispatchToProps = {
-  getDivisions,
+  getDivisionsTeams,
   getPools,
-  getTeams,
   savePool,
 };
 

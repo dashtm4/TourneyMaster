@@ -19,7 +19,7 @@ import {
   FacilitiesAction,
 } from 'components/facilities/logic/action-types';
 import {
-  DIVISIONS_FETCH_SUCCESS,
+  DIVISIONS_TEAMS_FETCH_SUCCESS,
   DivisionsPoolsAction,
 } from 'components/divisions-and-pools/logic/actionTypes';
 import {
@@ -199,8 +199,8 @@ const pageEventReducer = (
         },
       };
     }
-    case DIVISIONS_FETCH_SUCCESS: {
-      const divisions = action.payload;
+    case DIVISIONS_TEAMS_FETCH_SUCCESS: {
+      const { divisions } = action.payload;
 
       return {
         ...state,
