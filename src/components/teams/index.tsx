@@ -5,7 +5,6 @@ import { RouteComponentProps } from 'react-router-dom';
 import { loadDivisionsTeams, loadPools, saveTeams } from './logic/actions';
 import Navigation from './components/navigation';
 import TeamManagement from './components/team-management';
-import PopupDeleteTeam from './components/popup-delete-team';
 import {
   HeadingLevelTwo,
   Modal,
@@ -16,6 +15,7 @@ import {
 import { AppState } from './logic/reducer';
 import { IDivision, IPool, ITeam } from '../../common/models';
 import styles from './styles.module.scss';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 interface MatchParams {
   eventId?: string;
@@ -165,10 +165,10 @@ class Teams extends React.Component<
 
   onCloseModal = () =>
     this.setState({
+      isDeletePopupOpen: false,
+      isEditPopupOpen: false,
       configurableTeam: null,
       currentDivision: null,
-      isEditPopupOpen: false,
-      isDeletePopupOpen: false,
     });
 
   onConfirmModalClose = () => {
@@ -191,6 +191,9 @@ class Teams extends React.Component<
       isEditPopupOpen,
       isDeletePopupOpen,
     } = this.state;
+
+    const deleteMessage = `You are about to delete this team and this cannot be undone.
+    Please, enter the name of the team to continue.`;
 
     if (isLoading) {
       return <Loader />;
@@ -223,10 +226,7 @@ class Teams extends React.Component<
             />
           </ul>
         </section>
-        <Modal
-          isOpen={isDeletePopupOpen || isEditPopupOpen}
-          onClose={this.onCloseModal}
-        >
+        <Modal isOpen={isEditPopupOpen} onClose={this.onCloseModal}>
           <>
             {isEditPopupOpen && (
               <PopupTeamEdit
@@ -237,17 +237,21 @@ class Teams extends React.Component<
                 onSaveTeamClick={this.onSaveTeam}
                 onDeleteTeamClick={this.onDeleteTeam}
                 onCloseModal={this.onCloseModal}
-              />
-            )}
-            {isDeletePopupOpen && (
-              <PopupDeleteTeam
-                team={configurableTeam}
-                onCloseModal={this.onCloseModal}
-                onDeleteClick={this.onDeleteTeam}
+                deleteMessage={deleteMessage}
               />
             )}
           </>
         </Modal>
+        {isDeletePopupOpen && (
+          <DeletePopupConfrim
+            type={'team'}
+            message={deleteMessage}
+            deleteTitle={configurableTeam?.long_name!}
+            isOpen={isDeletePopupOpen}
+            onClose={this.onCloseModal}
+            onDeleteClick={() => this.onDeleteTeam(configurableTeam!)}
+          />
+        )}
         <PopupExposure
           isOpen={this.state.isConfirmModalOpen}
           onClose={this.onConfirmModalClose}

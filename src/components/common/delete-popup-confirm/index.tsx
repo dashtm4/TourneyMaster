@@ -9,8 +9,8 @@ interface Props {
   deleteTitle: string;
   isOpen: boolean;
   onClose: BindingAction;
-  onCancelClick: BindingAction;
   onDeleteClick: BindingAction;
+  message?: string;
 }
 
 const PopupDeleteConfirm = ({
@@ -18,24 +18,21 @@ const PopupDeleteConfirm = ({
   deleteTitle,
   isOpen,
   onClose,
-  onCancelClick,
   onDeleteClick,
+  message,
 }: Props) => {
   const [inputValue, onChange] = React.useState('');
-
-  const orgMessage =
-    'You are about to delete this organization and this cannot be undone. Please, enter the name of the organization you want to delete to continue.';
-  const eventMessage =
-    'You are about to delete this event and this cannot be undone. All related data to this event will be deleted too. Please, enter the name of the event you want to delete to continue.';
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.popupWrapper}>
-        <h2 className={styles.title}>{`Delete '${deleteTitle}' ${type}?`}</h2>
+        <h2 className={styles.title}>
+          {!type
+            ? `Delete ${deleteTitle}?`
+            : `Delete '${deleteTitle}' ${type}?`}
+        </h2>
         <div className={styles.confirmWrapper}>
-          <p className={styles.confirmDesc}>
-            {type === 'event' ? eventMessage : orgMessage}
-          </p>
+          <p className={styles.confirmDesc}>{message}</p>
           <Input
             onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
               onChange(evt.target.value)
@@ -47,7 +44,7 @@ const PopupDeleteConfirm = ({
         <p className={styles.btnsWrapper}>
           <span className={styles.cancelBtnWrapper}>
             <Button
-              onClick={onCancelClick}
+              onClick={onClose}
               label="Cancel"
               variant="text"
               color="secondary"
