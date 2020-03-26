@@ -11,12 +11,14 @@
 .scheduleTableWrapper {
   display: flex;
   position: relative;
+  padding-top: 5px;
 
   .topBtnsWrapper {
     position: absolute;
-    width: 200px;
-    height: 40px;
+    width: 260px;
     top: -15px;
+    display: flex;
+    justify-content: space-between;
   }
 }
 

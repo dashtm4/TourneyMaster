@@ -35,8 +35,6 @@ import { ITeamCard } from 'common/models/schedule/teams';
 import { IDropParams } from '../matrix-table/dnd/drop';
 import moveTeamCard from './moveTeamCard';
 import { Button } from 'components/common';
-import { getIcon } from 'helpers';
-import { Icons } from 'common/enums';
 
 interface Props {
   event: IEventDetails;
@@ -164,10 +162,17 @@ const TableSchedule = ({
       <div className={styles.scheduleTableWrapper}>
         <div className={styles.topBtnsWrapper}>
           <Button
-            label={`Mode: ${zoomingDisabled ? 'Drag-n-Drop' : 'Zoom-n-Nav'}`}
-            variant="text"
-            color="secondary"
-            icon={getIcon(zoomingDisabled ? Icons.FLIP : Icons.ZOOM)}
+            label="Zoom-n-Nav"
+            variant="contained"
+            color="primary"
+            type={zoomingDisabled ? 'squaredOutlined' : 'squared'}
+            onClick={toggleZooming}
+          />
+          <Button
+            label="Drag-n-Drop"
+            variant="contained"
+            color="primary"
+            type={zoomingDisabled ? 'squared' : 'squaredOutlined'}
             onClick={toggleZooming}
           />
         </div>
