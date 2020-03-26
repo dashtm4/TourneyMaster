@@ -101,19 +101,19 @@ const calculateTimeSlots = (timeValues: ITimeValues) => {
   );
 
   for (let i = 0; i < timeSlotsNum; i++) {
-    let timeInMin;
-
-    if (i === 0) {
-      timeInMin = firstGameTimeMin;
-    } else {
-      timeInMin =
-        getTimeFromString(timeSlots[timeSlots.length - 1].time, 'minutes') +
-        totalGameTime;
-    }
+    const timeInMin =
+      i === 0
+        ? firstGameTimeMin
+        : getTimeFromString(timeSlots[timeSlots.length - 1].time, 'minutes') +
+          totalGameTime;
 
     const validMinutes =
       gamesStartOnNum * Math.ceil(timeInMin / gamesStartOnNum);
     const timeInStringFormat = timeToString(validMinutes);
+
+    if (validMinutes + totalGameTime >= lastGameEndMin) {
+      break;
+    }
 
     timeSlots.push({
       id: i,

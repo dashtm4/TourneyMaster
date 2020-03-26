@@ -7,7 +7,7 @@ import { ITeam, ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
 import Scheduler from './Scheduler';
 import { ISchedulesState } from './logic/reducer';
-import { IFetchedDivision } from 'common/models/schedule/divisions';
+import { IScheduleDivision } from 'common/models/schedule/divisions';
 import {
   fetchFields,
   fetchEventSummary,
@@ -34,11 +34,16 @@ import {
   calculateTimeSlots,
   setGameOptions,
   getTimeValuesFromEventSchedule,
+  calculateTotalGameTime,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import Diagnostics, { IDiagnosticsInput } from './diagnostics';
-import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
-import formatDivisionsDiagnostics from './diagnostics/divisionsDiagnostics';
+import formatTeamsDiagnostics, {
+  ITeamsDiagnosticsProps,
+} from './diagnostics/teamsDiagnostics';
+import formatDivisionsDiagnostics, {
+  IDivisionsDiagnosticsProps,
+} from './diagnostics/divisionsDiagnostics';
 import { DiagnosticTypes } from './types';
 import styles from './styles.module.scss';
 import {
@@ -109,7 +114,7 @@ interface State {
   fields?: IField[];
   facilities?: IScheduleFacility[];
   schedulerResult?: Scheduler;
-  divisions?: IFetchedDivision[];
+  divisions?: IScheduleDivision[];
   teamsDiagnostics?: IDiagnosticsInput;
   divisionsDiagnostics?: IDiagnosticsInput;
   teamsDiagnosticsOpen: boolean;
@@ -165,6 +170,7 @@ class Schedules extends Component<Props, State> {
       schedule
     ) {
       const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
+      this.calculateDiagnostics();
       this.props.fillSchedulesTable(mappedTeams);
     }
   }
@@ -195,8 +201,9 @@ class Schedules extends Component<Props, State> {
       !teams ||
       !divisions ||
       !facilities
-    )
-      return console.log('calculateNeccessaryData: fail');
+    ) {
+      return;
+    }
 
     const timeValues = getTimeValuesFromEventSchedule(event, localSchedule);
     const timeSlots = calculateTimeSlots(timeValues);
@@ -209,9 +216,12 @@ class Schedules extends Component<Props, State> {
     const mappedTeams = mapTeamsData(teams, divisions);
     const mappedFacilities = mapFacilitiesData(facilities);
 
+    const mappedDivisions = mapDivisionsData(divisions);
+
     return this.setState({
       games,
       timeSlots,
+      divisions: mappedDivisions,
       fields: sortedFields,
       teams: mappedTeams,
       facilities: mappedFacilities,
@@ -253,11 +263,48 @@ class Schedules extends Component<Props, State> {
   };
 
   calculateDiagnostics = () => {
-    const { schedulerResult } = this.state;
-    if (!schedulerResult) return;
+    const { fields, games, divisions, facilities } = this.state;
+    const { schedulesTeamCards, scheduleData, schedule, event } = this.props;
 
-    const teamsDiagnostics = formatTeamsDiagnostics(schedulerResult);
-    const divisionsDiagnostics = formatDivisionsDiagnostics(schedulerResult);
+    const localSchedule = scheduleData || schedule;
+
+    if (
+      !schedulesTeamCards ||
+      !fields ||
+      !games ||
+      !divisions ||
+      !facilities ||
+      !event ||
+      !localSchedule
+    ) {
+      return;
+    }
+
+    const timeValues = getTimeValuesFromEventSchedule(event, localSchedule);
+    const totalGameTime = calculateTotalGameTime(
+      timeValues.preGameWarmup,
+      timeValues.periodDuration,
+      timeValues.timeBtwnPeriods,
+      timeValues.periodsPerGame
+    );
+
+    const diagnosticsProps: ITeamsDiagnosticsProps = {
+      teamCards: schedulesTeamCards,
+      fields,
+      games,
+      divisions,
+      totalGameTime,
+    };
+
+    const divisionsDiagnosticsProps: IDivisionsDiagnosticsProps = {
+      ...diagnosticsProps,
+      facilities,
+    };
+
+    const teamsDiagnostics = formatTeamsDiagnostics(diagnosticsProps);
+    const divisionsDiagnostics = formatDivisionsDiagnostics(
+      divisionsDiagnosticsProps
+    );
 
     this.setState({
       teamsDiagnostics,
@@ -454,8 +501,6 @@ class Schedules extends Component<Props, State> {
               />
             </>
           )}
-
-          {/* CONFIRMATION */}
           <PopupExposure
             isOpen={cancelConfirmationOpen}
             onClose={this.closeCancelConfirmation}

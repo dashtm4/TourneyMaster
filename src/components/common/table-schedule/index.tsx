@@ -34,6 +34,7 @@ import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IDropParams } from '../matrix-table/dnd/drop';
 import moveTeamCard from './moveTeamCard';
+import { Button } from 'components/common';
 
 interface Props {
   event: IEventDetails;
@@ -159,6 +160,22 @@ const TableSchedule = ({
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
       <div className={styles.scheduleTableWrapper}>
+        <div className={styles.topBtnsWrapper}>
+          <Button
+            label="Zoom-n-Nav"
+            variant="contained"
+            color="primary"
+            type={zoomingDisabled ? 'squaredOutlined' : 'squared'}
+            onClick={toggleZooming}
+          />
+          <Button
+            label="Drag-n-Drop"
+            variant="contained"
+            color="primary"
+            type={zoomingDisabled ? 'squared' : 'squaredOutlined'}
+            onClick={toggleZooming}
+          />
+        </div>
         <DndProvider backend={HTML5Backend}>
           <ListUnassigned
             teamCards={unassignedTeams}
