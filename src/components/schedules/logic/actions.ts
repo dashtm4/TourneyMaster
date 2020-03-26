@@ -90,12 +90,8 @@ export const fetchEventSummary = (
 export const saveDraft = (
   scheduleData: ISchedule,
   scheduleDetails: ISchedulesDetails[]
-): ThunkActionType<void> => async (
-  dispatch: Dispatch,
-  getState: () => IAppState
-) => {
-  const { draftIsAlreadySaved } = getState().schedules;
-  const scheduleCondition = scheduleData && !draftIsAlreadySaved;
+): ThunkActionType<void> => async (dispatch: Dispatch) => {
+  const scheduleCondition = scheduleData;
   dispatch(schedulesSavingInProgress());
 
   try {
@@ -117,6 +113,33 @@ export const saveDraft = (
     dispatch(draftSavedFailure());
     errorToast('Something happened during the saving process');
   }
+};
+
+export const updateDraft = (
+  _scheduleData: ISchedule,
+  scheduleDetails: ISchedulesDetails[]
+): ThunkActionType<void> => async (dispatch: Dispatch) => {
+  dispatch(schedulesSavingInProgress());
+
+  const scheduleDetailsChunk = chunk(scheduleDetails, 50);
+
+  await Promise.all(
+    scheduleDetailsChunk.map(async arr => {
+      const url = `/schedules_details`;
+      await api.put(url, arr);
+    })
+  ).then((responses: any[]) => {
+    responses.some(response => {
+      if (!response) {
+        dispatch(draftSavedFailure());
+        errorToast('Something happened during the saving process');
+        return true;
+      }
+
+      dispatch(draftSavedSuccess());
+      successToast('Schedules data successfully saved');
+    });
+  });
 };
 
 export const fetchSchedulesDetails = (scheduleId: string) => async (

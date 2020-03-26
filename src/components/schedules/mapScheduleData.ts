@@ -18,10 +18,23 @@ export const mapScheduleData = (
   return data;
 };
 
+const getVersionId = (
+  gameId: number,
+  schedulesDetails?: ISchedulesDetails[]
+) => {
+  if (schedulesDetails) {
+    return schedulesDetails.find(
+      item => Number(item.game_id) === Number(gameId)
+    )?.schedule_version_id;
+  }
+  return false;
+};
+
 export const mapSchedulesTeamCards = async (
   scheduleData: ISchedule,
   games: IGame[],
-  isDraft: boolean
+  isDraft: boolean,
+  schedulesDetails?: ISchedulesDetails[]
 ) => {
   const currentSession = await Auth.currentSession();
   const userEmail = currentSession.getIdToken().payload.email;
@@ -36,7 +49,8 @@ export const mapSchedulesTeamCards = async (
   const eventId = scheduleData.event_id;
 
   const scheduleDetails: ISchedulesDetails[] = games.map(game => ({
-    schedule_version_id: game.scheduleVersionId || getVarcharEight(),
+    schedule_version_id:
+      getVersionId(game.id, schedulesDetails) || getVarcharEight(),
     schedule_version_desc: null,
     schedule_id: scheduleId,
     schedule_desc: null,

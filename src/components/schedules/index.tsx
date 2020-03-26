@@ -12,6 +12,7 @@ import {
   fetchFields,
   fetchEventSummary,
   saveDraft,
+  updateDraft,
   fetchSchedulesDetails,
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
@@ -69,7 +70,14 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
 }
 
 interface IMapDispatchToProps {
-  saveDraft: (scheduleData: ISchedule, scheduleDetails: any[]) => void;
+  saveDraft: (
+    scheduleData: ISchedule,
+    scheduleDetails: ISchedulesDetails[]
+  ) => void;
+  updateDraft: (
+    scheduleData: ISchedule,
+    scheduleDetails: ISchedulesDetails[]
+  ) => void;
   fetchFields: (facilitiesIds: string[]) => void;
   fetchEventSummary: (eventId: string) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
@@ -186,7 +194,7 @@ class Schedules extends Component<Props, State> {
       !divisions ||
       !facilities
     )
-      return;
+      return console.log('calculateNeccessaryData: fail');
 
     const timeValues = getTimeValuesFromEventSchedule(event, localSchedule);
     const timeSlots = calculateTimeSlots(timeValues);
@@ -286,23 +294,34 @@ class Schedules extends Component<Props, State> {
   };
 
   onSaveDraft = async () => {
-    const { cancelConfirmationOpen, schedulerResult } = this.state;
-    const { games } = schedulerResult || {};
-    const { schedulesTeamCards, scheduleData } = this.props;
+    const { cancelConfirmationOpen, games, scheduleId } = this.state;
+    const {
+      schedulesTeamCards,
+      scheduleData,
+      draftSaved,
+      schedulesDetails,
+    } = this.props;
 
-    if (!games || !schedulesTeamCards || !scheduleData)
+    const schedule = scheduleData
+      ? mapScheduleData(scheduleData)
+      : this.props.schedule;
+
+    if (!games || !schedulesTeamCards || !schedule)
       return errorToast("Couldn't save the data");
 
     const schedulesTableGames = settleTeamsPerGames(games, schedulesTeamCards);
-
-    const schedule = mapScheduleData(scheduleData);
     const scheduleDetails: ISchedulesDetails[] = await mapSchedulesTeamCards(
       schedule,
       schedulesTableGames,
-      true
+      true,
+      schedulesDetails
     );
 
-    this.props.saveDraft(schedule, scheduleDetails);
+    if (!scheduleId && !draftSaved) {
+      this.props.saveDraft(schedule, scheduleDetails);
+    } else {
+      this.props.updateDraft(schedule, scheduleDetails);
+    }
 
     if (cancelConfirmationOpen) {
       this.closeCancelConfirmation();
@@ -467,6 +486,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     {
       saveDraft,
+      updateDraft,
       fetchFields,
       fetchEventSummary,
       fillSchedulesTable,
