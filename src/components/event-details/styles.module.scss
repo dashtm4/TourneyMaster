@@ -126,6 +126,9 @@ $sectionBodyPadding: 20px 0;
       flex-direction: row;
       justify-content: space-between;
       align-items: flex-start;
+      .leagueDayContainer {
+        margin-top: 20px;
+      }
     }
 
     .esDetailsSecond {

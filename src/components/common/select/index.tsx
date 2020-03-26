@@ -4,7 +4,7 @@ import styles from './style.module.scss';
 
 export interface ISelectOption {
   label: string;
-  value: string;
+  value: string | number;
 }
 
 interface ISelectProps {
