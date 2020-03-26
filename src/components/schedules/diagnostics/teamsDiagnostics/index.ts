@@ -1,8 +1,17 @@
 import { find, orderBy, union, findIndex } from 'lodash-es';
-import Scheduler from 'components/schedules/Scheduler';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { getTimeFromString, timeToString } from 'helpers';
 import { IGame } from 'components/common/matrix-table/helper';
+import { IField } from 'common/models/schedule/fields';
+import { IScheduleDivision } from 'common/models/schedule/divisions';
+
+export interface ITeamsDiagnosticsProps {
+  teamCards: ITeamCard[];
+  fields: IField[];
+  games: IGame[];
+  divisions: IScheduleDivision[];
+  totalGameTime: number;
+}
 
 export const calculateTeamTournamentTime = (
   teamCard: ITeamCard,
@@ -49,25 +58,25 @@ const calculateBackToBacks = (teamCard: ITeamCard, games: IGame[]) => {
 
 const calculateTeamDiagnostics = (
   teamCard: ITeamCard,
-  schedulerResult: Scheduler
+  diagnosticsProps: ITeamsDiagnosticsProps
 ) => {
-  const { fields, updatedGames, divisions, totalGameTime } = schedulerResult;
+  const { fields, games, divisions, totalGameTime } = diagnosticsProps;
 
   const id = teamCard.id;
   const name = teamCard.name;
   const divisionName = find(divisions, ['id', teamCard.divisionId])?.name;
   const numOfGames = teamCard.games?.length || 0;
-  const teamGames = updatedGames.filter(
+  const teamGames = games.filter(
     game => findIndex(teamCard.games, { id: game.id }) >= 0
   );
 
   const tournamentTime = calculateTeamTournamentTime(
     teamCard,
-    updatedGames,
+    games,
     totalGameTime
   );
 
-  const numOfBackToBacks = calculateBackToBacks(teamCard, updatedGames);
+  const numOfBackToBacks = calculateBackToBacks(teamCard, games);
   const fieldIds = teamGames.map(game => game.fieldId);
   const fieldNames = fields
     .filter(field => fieldIds.includes(field.id))
@@ -86,10 +95,10 @@ const calculateTeamDiagnostics = (
   ];
 };
 
-const formatTeamsDiagnostics = (schedulerResult: Scheduler) => {
-  const { teamCards } = schedulerResult;
+const formatTeamsDiagnostics = (diagnosticsProps: ITeamsDiagnosticsProps) => {
+  const { teamCards } = diagnosticsProps;
   const teamsArr = teamCards.map(teamCard =>
-    calculateTeamDiagnostics(teamCard, schedulerResult)
+    calculateTeamDiagnostics(teamCard, diagnosticsProps)
   );
   const header = [
     'Team ID',

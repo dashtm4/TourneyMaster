@@ -43,12 +43,18 @@ export const defineGames = (
   const games: IGame[] = [];
   for (let i = 1; i <= gamesNumber; i++) {
     const timeSlotId = Math.ceil(i / fieldsNumber) - 1;
-    const fieldId = fields[i - Math.ceil(timeSlotId * fieldsNumber) - 1].id;
+    const startTime = timeSlots.find(timeSlot => timeSlot.id === timeSlotId)
+      ?.time;
+    const field = fields[i - Math.ceil(timeSlotId * fieldsNumber) - 1];
+    const fieldId = field.id;
+    const facilityId = field.facilityId;
 
     games.push({
       id: i,
+      startTime,
       timeSlotId,
       fieldId,
+      facilityId,
     });
   }
 
