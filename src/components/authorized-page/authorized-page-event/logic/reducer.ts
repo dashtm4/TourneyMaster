@@ -19,12 +19,12 @@ import {
   FacilitiesAction,
 } from 'components/facilities/logic/action-types';
 import {
+  SAVE_TEAMS_SUCCESS,
   DIVISIONS_TEAMS_FETCH_SUCCESS,
   DivisionsPoolsAction,
 } from 'components/divisions-and-pools/logic/actionTypes';
 import {
   LOAD_DIVISIONS_TEAMS_SUCCESS,
-  SAVE_TEAMS_SUCCESS,
   TeamsAction,
 } from 'components/teams/logic/action-types';
 import {

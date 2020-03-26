@@ -30,6 +30,14 @@ export interface saveDivisionsSuccess {
   payload: IDivision[];
 }
 
+export interface ISaveTeamSuccess {
+  type: 'DIVISION_AND_POOLS:SAVE_TEAMS_SUCCESS';
+  payload: {
+    teams: ITeam[];
+  };
+}
+
 export type DivisionsPoolsAction =
   | loadDivisionsTeamsSuccess
-  | saveDivisionsSuccess;
+  | saveDivisionsSuccess
+  | ISaveTeamSuccess;

@@ -18,7 +18,7 @@ import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
 import Division from './division';
-import { PopupTeamEdit } from 'components/common';
+import { PopupTeamEdit, PopupExposure } from 'components/common';
 import PopupDeleteTeam from './popup-delete-team';
 import { getIcon } from 'helpers';
 import { Icons } from 'common/enums';
@@ -52,6 +52,7 @@ interface IDivisionAndPoolsState {
   currentPool: string | null;
   isDeletePopupOpen: boolean;
   isEditPopupOpen: boolean;
+  isConfirmModalOpen: boolean;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -75,6 +76,7 @@ class DivisionsAndPools extends React.Component<
       currentPool: null,
       isDeletePopupOpen: false,
       isEditPopupOpen: false,
+      isConfirmModalOpen: false,
     };
   }
 
@@ -150,7 +152,7 @@ class DivisionsAndPools extends React.Component<
   onCancelClick = () => {
     const { teams } = this.props;
 
-    this.setState({ isArrange: false, teams });
+    this.setState({ isArrange: false, isConfirmModalOpen: false, teams });
   };
 
   onSaveClick = () => {
@@ -161,7 +163,7 @@ class DivisionsAndPools extends React.Component<
     if (eventId) {
       saveTeams(teams);
     }
-    this.setState({ isArrange: false });
+    this.setState({ isArrange: false, isConfirmModalOpen: false });
   };
 
   changePool = (
@@ -237,6 +239,14 @@ class DivisionsAndPools extends React.Component<
       isDeletePopupOpen: false,
     });
 
+  onConfirmModalClose = () => {
+    this.setState({ isConfirmModalOpen: false });
+  };
+
+  onCancel = () => {
+    this.setState({ isConfirmModalOpen: true });
+  };
+
   render() {
     const { divisions, pools, isLoading } = this.props;
     const {
@@ -247,6 +257,7 @@ class DivisionsAndPools extends React.Component<
       isArrange,
       isEditPopupOpen,
       isDeletePopupOpen,
+      isConfirmModalOpen,
     } = this.state;
 
     const notDeletedTeams = teams.filter((it: ITeam) => !it.isDelete);
@@ -258,7 +269,7 @@ class DivisionsAndPools extends React.Component<
             {isArrange ? (
               <p>
                 <Button
-                  onClick={this.onCancelClick}
+                  onClick={this.onCancel}
                   label="Cancel"
                   variant="text"
                   color="secondary"
@@ -403,6 +414,12 @@ class DivisionsAndPools extends React.Component<
             )}
           </>
         </Modal>
+        <PopupExposure
+          isOpen={isConfirmModalOpen}
+          onClose={this.onConfirmModalClose}
+          onExitClick={this.onCancelClick}
+          onSaveClick={this.onSaveClick}
+        />
       </section>
     );
   }
