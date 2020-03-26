@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     width: '135px',
     padding: '3px 3px 3px 40px',
 
+    color: '#ffffff',
     backgroundColor: '#696969',
   },
   scoresWrapper: {
@@ -50,7 +51,6 @@ const styles = StyleSheet.create({
     padding: '3px 3px 3px 30px',
     marginBottom: 5,
 
-    color: '#ffffff',
     backgroundColor: '#DCDCDC',
   },
   scoresTeamsWrapper: {

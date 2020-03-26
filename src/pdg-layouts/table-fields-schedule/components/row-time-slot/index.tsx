@@ -51,6 +51,7 @@ const RowTimeSlot = ({ timeSlot, games, isEven }: Props) => {
       ))}
       <View style={styles.scoresWrapper}>
         <View style={styles.scores} />
+        <Text style={styles.scoresColon}>:</Text>
         <View style={styles.scores} />
       </View>
       <View style={styles.initials} />
