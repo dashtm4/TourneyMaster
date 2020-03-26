@@ -166,9 +166,12 @@ class EventDetails extends Component<Props, State> {
   };
 
   render() {
-    const eventTypeOptions = ['Tournament', 'Showcase'];
+    const eventTypeOptions = ['Tournament', 'Showcase', 'League'];
     const { event } = this.state;
     const { isEventLoading } = this.props.event;
+
+    const deleteMessage = `You are about to delete this event and this cannot be undone. All related data to this event will be deleted too.
+      Please, enter the name of the event to continue.`;
 
     if (!event || isEventLoading) {
       return <Loader />;
@@ -246,9 +249,9 @@ class EventDetails extends Component<Props, State> {
         <DeletePopupConfrim
           type={'event'}
           deleteTitle={event.event_name!}
+          message={deleteMessage}
           isOpen={this.state.isDeleteModalOpen}
           onClose={this.onDeleteModalClose}
-          onCancelClick={this.onDeleteModalClose}
           onDeleteClick={() => {
             this.props.deleteEvent(event.event_id!);
           }}

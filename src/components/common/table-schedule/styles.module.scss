@@ -10,6 +10,16 @@
 
 .scheduleTableWrapper {
   display: flex;
+  position: relative;
+  padding-top: 12px;
+
+  .topBtnsWrapper {
+    position: absolute;
+    width: 260px;
+    top: -15px;
+    display: flex;
+    justify-content: space-between;
+  }
 }
 
 .tableWrapper {

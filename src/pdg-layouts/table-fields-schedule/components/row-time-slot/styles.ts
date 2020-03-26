@@ -41,6 +41,9 @@ const styles = StyleSheet.create({
     margin: '5px 10px 0 0',
     paddingBottom: 5,
   },
+  scoresColon: {
+    paddingBottom: 3,
+  },
   scores: {
     width: '55px',
     height: 15,

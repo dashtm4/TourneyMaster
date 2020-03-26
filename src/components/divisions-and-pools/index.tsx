@@ -18,8 +18,11 @@ import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
 import Division from './division';
-import { PopupTeamEdit, PopupExposure } from 'components/common';
-import PopupDeleteTeam from './popup-delete-team';
+import {
+  PopupTeamEdit,
+  PopupExposure,
+  DeletePopupConfrim,
+} from 'components/common';
 import { getIcon } from 'helpers';
 import { Icons } from 'common/enums';
 
@@ -262,6 +265,9 @@ class DivisionsAndPools extends React.Component<
 
     const notDeletedTeams = teams.filter((it: ITeam) => !it.isDelete);
 
+    const deleteMessage = `You are about to delete this team and this cannot be undone.
+    Please, enter the name of the team to continue.`;
+
     return (
       <section className={styles.container}>
         <Paper sticky={true}>
@@ -406,10 +412,13 @@ class DivisionsAndPools extends React.Component<
               />
             )}
             {isDeletePopupOpen && (
-              <PopupDeleteTeam
-                team={configurableTeam}
-                onCloseModal={this.onCloseModal}
-                onDeleteClick={this.onDeleteTeam}
+              <DeletePopupConfrim
+                type={'team'}
+                message={deleteMessage}
+                deleteTitle={configurableTeam?.long_name!}
+                isOpen={isDeletePopupOpen}
+                onClose={this.onCloseModal}
+                onDeleteClick={() => this.onDeleteTeam(configurableTeam!)}
               />
             )}
           </>

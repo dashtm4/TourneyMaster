@@ -15,6 +15,7 @@ import {
 } from '../helper';
 import { IBackupPlan } from 'common/models/backup_plan';
 import { IMultipleSelectOption } from '../create-backup-form';
+import { PopupExposure } from 'components/common';
 
 const options = [{ value: '05:00 PM', label: '05:00 PM' }];
 const optionsTimeslots = [
@@ -35,10 +36,11 @@ interface Props {
 
 interface State {
   backupPlan: any;
+  isModalConfirmOpen: boolean;
 }
 
 class CreateBackupForm extends React.Component<Props, State> {
-  state = { backupPlan: {} };
+  state = { backupPlan: {}, isModalConfirmOpen: false };
 
   componentDidMount() {
     this.setState({
@@ -108,7 +110,23 @@ class CreateBackupForm extends React.Component<Props, State> {
     this.onChange('change_value', e.target.value);
 
   onSave = () => {
+    if (this.state.isModalConfirmOpen) {
+      this.setState({ isModalConfirmOpen: false });
+    }
     this.props.updateBackupPlan(this.state.backupPlan);
+    this.props.onEditClose();
+  };
+
+  onCancelClick = () => {
+    this.setState({ isModalConfirmOpen: true });
+  };
+
+  onModalConfirmClose = () => {
+    this.setState({ isModalConfirmOpen: false });
+  };
+
+  onExit = () => {
+    this.setState({ isModalConfirmOpen: false });
     this.props.onEditClose();
   };
 
@@ -283,7 +301,7 @@ class CreateBackupForm extends React.Component<Props, State> {
             label="Cancel"
             variant="text"
             color="secondary"
-            onClick={this.props.onEditClose}
+            onClick={this.onCancelClick}
           />
           <Button
             label="Save"
@@ -292,6 +310,12 @@ class CreateBackupForm extends React.Component<Props, State> {
             onClick={this.onSave}
           />
         </div>
+        <PopupExposure
+          isOpen={this.state.isModalConfirmOpen}
+          onClose={this.onModalConfirmClose}
+          onExitClick={this.onExit}
+          onSaveClick={this.onSave}
+        />
       </div>
     );
   }

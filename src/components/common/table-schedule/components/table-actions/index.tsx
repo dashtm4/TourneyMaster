@@ -23,11 +23,9 @@ interface IProps {
 
 const TableActions = (props: IProps) => {
   const {
-    zoomingDisabled,
     onUndoClick,
     onLockAllClick,
     onUnlockAllClick,
-    toggleZooming,
     historyLength,
     togglePopupSaveReport,
   } = props;
@@ -50,13 +48,6 @@ const TableActions = (props: IProps) => {
           </CardMessage>
         </div>
         <p className={styles.lockBtnsWrapper}>
-          <Button
-            label={zoomingDisabled ? 'Drag-n-Drop mode' : 'Zoom-n-Nav mode'}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            icon={getIcon(zoomingDisabled ? Icons.FLIP : Icons.ZOOM)}
-            onClick={toggleZooming}
-          />
           <Button
             onClick={onLockAllClick}
             icon={getIcon(Icons.LOCK)}

@@ -7,19 +7,22 @@ import { ITeam, ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
 import Scheduler from './Scheduler';
 import { ISchedulesState } from './logic/reducer';
+import { IScheduleDivision } from 'common/models/schedule/divisions';
 import {
-  IFetchedDivision,
-  IScheduleDivision,
-} from 'common/models/schedule/divisions';
-import { fetchFields, fetchEventSummary, saveDraft } from './logic/actions';
+  fetchFields,
+  fetchEventSummary,
+  saveDraft,
+  updateDraft,
+  fetchSchedulesDetails,
+} from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
 import { TableSchedule, Button, Paper, PopupExposure } from 'components/common';
 import {
   defineGames,
-  IDefinedGames,
   sortFieldsByPremier,
   settleTeamsPerGames,
+  IGame,
 } from 'components/common/matrix-table/helper';
 import {
   mapFieldsData,
@@ -30,20 +33,30 @@ import {
 import {
   calculateTimeSlots,
   setGameOptions,
-  getTimeValuesFromSchedule,
+  getTimeValuesFromEventSchedule,
+  calculateTotalGameTime,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import Diagnostics, { IDiagnosticsInput } from './diagnostics';
-import formatTeamsDiagnostics from './diagnostics/teamsDiagnostics';
-import formatDivisionsDiagnostics from './diagnostics/divisionsDiagnostics';
+import formatTeamsDiagnostics, {
+  ITeamsDiagnosticsProps,
+} from './diagnostics/teamsDiagnostics';
+import formatDivisionsDiagnostics, {
+  IDivisionsDiagnosticsProps,
+} from './diagnostics/divisionsDiagnostics';
 import { DiagnosticTypes } from './types';
 import styles from './styles.module.scss';
 import {
   fillSchedulesTable,
+  updateSchedulesTable,
   onScheduleUndo,
 } from './logic/schedules-table/actions';
 import { ISchedulesTableState } from './logic/schedules-table/schedulesTableReducer';
-import { mapSchedulesTeamCards, mapScheduleData } from './mapScheduleData';
+import {
+  mapSchedulesTeamCards,
+  mapScheduleData,
+  mapTeamsFromSchedulesDetails,
+} from './mapScheduleData';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { IConfigurableSchedule, ISchedule } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
@@ -55,16 +68,28 @@ type PartialSchedules = Partial<ISchedulesState>;
 interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   schedulesTeamCards?: ITeamCard[];
   draftSaved?: boolean;
+  savingInProgress?: boolean;
   scheduleData?: IConfigurableSchedule | null;
   schedulesHistoryLength?: number;
+  schedule?: ISchedule;
+  schedulesDetails?: ISchedulesDetails[];
 }
 
 interface IMapDispatchToProps {
-  saveDraft: (scheduleData: ISchedule, scheduleDetails: any[]) => void;
+  saveDraft: (
+    scheduleData: ISchedule,
+    scheduleDetails: ISchedulesDetails[]
+  ) => void;
+  updateDraft: (
+    scheduleData: ISchedule,
+    scheduleDetails: ISchedulesDetails[]
+  ) => void;
   fetchFields: (facilitiesIds: string[]) => void;
   fetchEventSummary: (eventId: string) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
+  updateSchedulesTable: (teamCard: ITeamCard) => void;
   onScheduleUndo: () => void;
+  fetchSchedulesDetails: (scheduleId: string) => void;
 }
 
 interface ComponentProps {
@@ -82,12 +107,14 @@ interface IRootState {
 type Props = IMapStateToProps & IMapDispatchToProps & ComponentProps;
 
 interface State {
+  games?: IGame[];
+  scheduleId?: string;
   timeSlots?: ITimeSlot[];
   teams?: ITeam[];
   fields?: IField[];
   facilities?: IScheduleFacility[];
   schedulerResult?: Scheduler;
-  divisions?: IFetchedDivision[];
+  divisions?: IScheduleDivision[];
   teamsDiagnostics?: IDiagnosticsInput;
   divisionsDiagnostics?: IDiagnosticsInput;
   teamsDiagnosticsOpen: boolean;
@@ -102,13 +129,13 @@ class Schedules extends Component<Props, State> {
     teamsDiagnosticsOpen: false,
     divisionsDiagnosticsOpen: false,
     cancelConfirmationOpen: false,
-    isLoading: true,
+    isLoading: false,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this.timer = setTimeout(() => this.setState({ isLoading: false }), 5000);
     const { facilities, match } = this.props;
-    const { eventId } = match?.params;
+    const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
 
     if (facilitiesIds?.length) {
@@ -116,7 +143,36 @@ class Schedules extends Component<Props, State> {
     }
 
     this.props.fetchEventSummary(eventId);
-    this.calculateSchedules();
+
+    if (scheduleId) {
+      this.setState({ scheduleId });
+      this.props.fetchSchedulesDetails(scheduleId);
+    } else {
+      await this.calculateNeccessaryData();
+      this.calculateSchedules();
+    }
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    const { schedule, schedulesDetails } = this.props;
+    const { scheduleId, teams } = this.state;
+
+    if (!prevProps.schedule && this.props.schedule) {
+      this.calculateNeccessaryData();
+      return;
+    }
+
+    if (
+      !prevProps.schedulesTeamCards &&
+      schedulesDetails?.length &&
+      teams?.length &&
+      scheduleId &&
+      schedule
+    ) {
+      const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
+      this.calculateDiagnostics();
+      this.props.fillSchedulesTable(mappedTeams);
+    }
   }
 
   componentWillUnmount() {
@@ -125,62 +181,80 @@ class Schedules extends Component<Props, State> {
     }
   }
 
-  calculateSchedules = () => {
+  calculateNeccessaryData = () => {
     const {
-      fields,
+      scheduleData,
       event,
+      schedule,
+      fields,
       teams,
       divisions,
       facilities,
-      scheduleData,
     } = this.props;
 
-    if (
-      !fields?.length ||
-      !teams?.length ||
-      !facilities?.length ||
-      !divisions?.length ||
-      !scheduleData ||
-      !event
-    )
-      return;
+    const localSchedule = scheduleData || schedule;
 
-    const timeValues = getTimeValuesFromSchedule(scheduleData);
+    if (
+      !localSchedule ||
+      !event ||
+      !fields ||
+      !teams ||
+      !divisions ||
+      !facilities
+    ) {
+      return;
+    }
+
+    const timeValues = getTimeValuesFromEventSchedule(event, localSchedule);
     const timeSlots = calculateTimeSlots(timeValues);
 
     const mappedFields = mapFieldsData(fields);
     const sortedFields = sortFieldsByPremier(mappedFields);
 
-    const definedGames: IDefinedGames = defineGames(sortedFields, timeSlots!);
-    const { games } = definedGames;
+    const { games } = defineGames(sortedFields, timeSlots!);
 
-    const mappedTeams: ITeam[] = mapTeamsData(teams, divisions);
+    const mappedTeams = mapTeamsData(teams, divisions);
+    const mappedFacilities = mapFacilitiesData(facilities);
 
+    const mappedDivisions = mapDivisionsData(divisions);
+
+    return this.setState({
+      games,
+      timeSlots,
+      divisions: mappedDivisions,
+      fields: sortedFields,
+      teams: mappedTeams,
+      facilities: mappedFacilities,
+    });
+  };
+
+  calculateSchedules = () => {
+    const { fields, teams, games, timeSlots, facilities } = this.state;
+    const { divisions, event } = this.props;
+
+    if (!event || !fields || !teams || !games || !timeSlots || !facilities)
+      return;
+
+    const mappedDivisions = mapDivisionsData(divisions!);
     const gameOptions = setGameOptions(event);
 
-    const mappedFacilities: IScheduleFacility[] = mapFacilitiesData(facilities);
-    const mappedDivisions: IScheduleDivision[] = mapDivisionsData(divisions);
-
     const tournamentBaseInfo = {
-      facilities: mappedFacilities,
-      divisions: mappedDivisions,
+      facilities,
       gameOptions,
+      divisions: mappedDivisions,
     };
 
-    const schedulerResult: Scheduler = new Scheduler(
-      sortedFields,
-      mappedTeams,
+    const schedulerResult = new Scheduler(
+      fields,
+      teams,
       games,
-      timeSlots!,
+      timeSlots,
       tournamentBaseInfo
     );
 
     this.setState(
       {
         schedulerResult,
-        fields: sortedFields,
-        facilities: mappedFacilities,
-        timeSlots,
       },
       this.calculateDiagnostics
     );
@@ -189,11 +263,48 @@ class Schedules extends Component<Props, State> {
   };
 
   calculateDiagnostics = () => {
-    const { schedulerResult } = this.state;
-    if (!schedulerResult) return;
+    const { fields, games, divisions, facilities } = this.state;
+    const { schedulesTeamCards, scheduleData, schedule, event } = this.props;
 
-    const teamsDiagnostics = formatTeamsDiagnostics(schedulerResult);
-    const divisionsDiagnostics = formatDivisionsDiagnostics(schedulerResult);
+    const localSchedule = scheduleData || schedule;
+
+    if (
+      !schedulesTeamCards ||
+      !fields ||
+      !games ||
+      !divisions ||
+      !facilities ||
+      !event ||
+      !localSchedule
+    ) {
+      return;
+    }
+
+    const timeValues = getTimeValuesFromEventSchedule(event, localSchedule);
+    const totalGameTime = calculateTotalGameTime(
+      timeValues.preGameWarmup,
+      timeValues.periodDuration,
+      timeValues.timeBtwnPeriods,
+      timeValues.periodsPerGame
+    );
+
+    const diagnosticsProps: ITeamsDiagnosticsProps = {
+      teamCards: schedulesTeamCards,
+      fields,
+      games,
+      divisions,
+      totalGameTime,
+    };
+
+    const divisionsDiagnosticsProps: IDivisionsDiagnosticsProps = {
+      ...diagnosticsProps,
+      facilities,
+    };
+
+    const teamsDiagnostics = formatTeamsDiagnostics(diagnosticsProps);
+    const divisionsDiagnostics = formatDivisionsDiagnostics(
+      divisionsDiagnosticsProps
+    );
 
     this.setState({
       teamsDiagnostics,
@@ -232,23 +343,34 @@ class Schedules extends Component<Props, State> {
   };
 
   onSaveDraft = async () => {
-    const { cancelConfirmationOpen, schedulerResult } = this.state;
-    const { games } = schedulerResult || {};
-    const { schedulesTeamCards, scheduleData } = this.props;
+    const { cancelConfirmationOpen, games, scheduleId } = this.state;
+    const {
+      schedulesTeamCards,
+      scheduleData,
+      draftSaved,
+      schedulesDetails,
+    } = this.props;
 
-    if (!games || !schedulesTeamCards || !scheduleData)
+    const schedule = scheduleData
+      ? mapScheduleData(scheduleData)
+      : this.props.schedule;
+
+    if (!games || !schedulesTeamCards || !schedule)
       return errorToast("Couldn't save the data");
 
     const schedulesTableGames = settleTeamsPerGames(games, schedulesTeamCards);
-
-    const schedule = mapScheduleData(scheduleData);
     const scheduleDetails: ISchedulesDetails[] = await mapSchedulesTeamCards(
       schedule,
       schedulesTableGames,
-      true
+      true,
+      schedulesDetails
     );
 
-    this.props.saveDraft(schedule, scheduleDetails);
+    if (!scheduleId && !draftSaved) {
+      this.props.saveDraft(schedule, scheduleDetails);
+    } else {
+      this.props.updateDraft(schedule, scheduleDetails);
+    }
 
     if (cancelConfirmationOpen) {
       this.closeCancelConfirmation();
@@ -260,6 +382,10 @@ class Schedules extends Component<Props, State> {
     this.props.fillSchedulesTable(teamCards);
   };
 
+  onScheduleCardUpdate = (teamCard: ITeamCard) => {
+    this.props.updateSchedulesTable(teamCard);
+  };
+
   render() {
     const {
       divisions,
@@ -269,12 +395,14 @@ class Schedules extends Component<Props, State> {
       draftSaved,
       onScheduleUndo,
       schedulesHistoryLength,
+      savingInProgress,
       scheduleData,
     } = this.props;
+
     const {
       fields,
       timeSlots,
-      schedulerResult,
+      games,
       facilities,
       teamsDiagnostics,
       divisionsDiagnostics,
@@ -283,15 +411,12 @@ class Schedules extends Component<Props, State> {
       cancelConfirmationOpen,
     } = this.state;
 
-    const { games, teamCards } = schedulerResult || {};
-
     const loadCondition = !!(
       fields?.length &&
       games?.length &&
       timeSlots?.length &&
       divisions?.length &&
       facilities?.length &&
-      teamCards?.length &&
       event &&
       eventSummary?.length &&
       schedulesTeamCards?.length
@@ -312,7 +437,7 @@ class Schedules extends Component<Props, State> {
                 label="Save Draft"
                 variant="contained"
                 color="primary"
-                disabled={draftSaved}
+                disabled={draftSaved || savingInProgress}
                 onClick={this.onSaveDraft}
               />
             </div>
@@ -332,6 +457,7 @@ class Schedules extends Component<Props, State> {
             scheduleData={scheduleData!}
             historyLength={schedulesHistoryLength}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
+            onTeamCardUpdate={this.onScheduleCardUpdate}
             onUndo={onScheduleUndo}
           />
         ) : (
@@ -375,8 +501,6 @@ class Schedules extends Component<Props, State> {
               />
             </>
           )}
-
-          {/* CONFIRMATION */}
           <PopupExposure
             isOpen={cancelConfirmationOpen}
             onClose={this.closeCancelConfirmation}
@@ -404,17 +528,23 @@ const mapStateToProps = ({
   schedulesTeamCards: schedulesTable?.current,
   schedulesHistoryLength: schedulesTable?.previous.length,
   draftSaved: schedules?.draftIsAlreadySaved,
+  savingInProgress: schedules?.savingInProgress,
   scheduleData: scheduling?.schedule,
+  schedule: schedules?.schedule,
+  schedulesDetails: schedules?.schedulesDetails,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     {
       saveDraft,
+      updateDraft,
       fetchFields,
       fetchEventSummary,
       fillSchedulesTable,
+      updateSchedulesTable,
       onScheduleUndo,
+      fetchSchedulesDetails,
     },
     dispatch
   );

@@ -1,12 +1,16 @@
 import { Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import { chunk } from 'lodash-es';
 import api from 'api/api';
 import {
   FETCH_FIELDS_SUCCESS,
   FETCH_FIELDS_FAILURE,
   FETCH_EVENT_SUMMARY_SUCCESS,
   SCHEDULES_DRAFT_SAVED_SUCCESS,
-  // SCHEDULES_DRAFT_SAVED_FAILURE,
+  SCHEDULES_SAVING_IN_PROGRESS,
+  SCHEDULES_DRAFT_SAVED_FAILURE,
+  FETCH_SCHEDULES_DETAILS_SUCCESS,
+  FETCH_SCHEDULES_DETAILS_FAILURE,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
@@ -34,9 +38,25 @@ const draftSavedSuccess = () => ({
   type: SCHEDULES_DRAFT_SAVED_SUCCESS,
 });
 
-// const draftSavedFailure = () => ({
-//   type: SCHEDULES_DRAFT_SAVED_FAILURE,
-// });
+const schedulesSavingInProgress = () => ({
+  type: SCHEDULES_SAVING_IN_PROGRESS,
+});
+
+const draftSavedFailure = () => ({
+  type: SCHEDULES_DRAFT_SAVED_FAILURE,
+});
+
+const fetchSchedulesDetailsSuccess = (payload: {
+  schedule: ISchedule;
+  schedulesDetails: ISchedulesDetails[];
+}) => ({
+  type: FETCH_SCHEDULES_DETAILS_SUCCESS,
+  payload,
+});
+
+const fetchSchedulesDetailsFailure = () => ({
+  type: FETCH_SCHEDULES_DETAILS_FAILURE,
+});
 
 export const fetchFields = (
   facilitiesIds: string[]
@@ -70,25 +90,81 @@ export const fetchEventSummary = (
 export const saveDraft = (
   scheduleData: ISchedule,
   scheduleDetails: ISchedulesDetails[]
-): ThunkActionType<void> => async (
-  dispatch: Dispatch,
-  getState: () => IAppState
-) => {
-  const { draftIsAlreadySaved } = getState().schedules;
+): ThunkActionType<void> => async (dispatch: Dispatch) => {
+  const scheduleCondition = scheduleData;
+  dispatch(schedulesSavingInProgress());
 
-  let scheduleResponse;
-  const scheduleCondition = scheduleData && !draftIsAlreadySaved;
+  try {
+    if (scheduleCondition) {
+      await api.post('/schedules', scheduleData);
+    }
 
-  if (scheduleCondition) {
-    scheduleResponse = await api.post('/schedules', scheduleData);
-  }
+    const scheduleDetailsChunk = chunk(scheduleDetails, 50);
 
-  const response = await api.post('/schedules_details', scheduleDetails);
+    await Promise.all(
+      scheduleDetailsChunk.map(async arr => {
+        await api.post('/schedules_details', arr);
+      })
+    );
 
-  if (response && !!(!scheduleCondition || scheduleResponse)) {
     dispatch(draftSavedSuccess());
-    successToast('Schedules data successfully saved!');
+    successToast('Schedules data successfully saved');
+  } catch {
+    dispatch(draftSavedFailure());
+    errorToast('Something happened during the saving process');
+  }
+};
+
+export const updateDraft = (
+  _scheduleData: ISchedule,
+  scheduleDetails: ISchedulesDetails[]
+): ThunkActionType<void> => async (dispatch: Dispatch) => {
+  dispatch(schedulesSavingInProgress());
+
+  const scheduleDetailsChunk = chunk(scheduleDetails, 50);
+
+  await Promise.all(
+    scheduleDetailsChunk.map(async arr => {
+      const url = `/schedules_details`;
+      await api.put(url, arr);
+    })
+  ).then((responses: any[]) => {
+    responses.some(response => {
+      if (!response) {
+        dispatch(draftSavedFailure());
+        errorToast('Something happened during the saving process');
+        return true;
+      }
+
+      dispatch(draftSavedSuccess());
+      successToast('Schedules data successfully saved');
+    });
+  });
+};
+
+export const fetchSchedulesDetails = (scheduleId: string) => async (
+  dispatch: Dispatch
+) => {
+  const schedules: ISchedule = await api.get('schedules', {
+    schedule_id: scheduleId,
+  });
+  const schedulesDetails: ISchedulesDetails[] = await api.get(
+    'schedules_details',
+    {
+      schedule_id: scheduleId,
+    }
+  );
+
+  const schedule = schedules && schedules[0];
+
+  if (schedule && schedulesDetails) {
+    dispatch(
+      fetchSchedulesDetailsSuccess({
+        schedule,
+        schedulesDetails,
+      })
+    );
   } else {
-    errorToast('Something happend during the saving process.');
+    dispatch(fetchSchedulesDetailsFailure());
   }
 };

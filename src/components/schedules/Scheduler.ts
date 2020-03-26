@@ -404,6 +404,7 @@ export default class Scheduler {
     games.push({
       id: game.id,
       teamPosition,
+      isTeamLocked: false,
     });
 
     return {

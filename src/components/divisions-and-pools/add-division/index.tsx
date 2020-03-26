@@ -18,11 +18,10 @@ import {
   BindingCbWithThree,
 } from 'common/models/callback';
 import DeleteIcon from '@material-ui/icons/Delete';
-import DeleteDivision from '../add-division/delete-division';
-import Modal from 'components/common/modal';
 import { IDivision, ITeam, IPool } from 'common/models';
 import { IRegistration } from 'common/models/registration';
 import { PopupExposure } from 'components/common';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 interface ILocationState {
   divisionId: string;
@@ -97,7 +96,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     });
   };
 
-  onDeleteDivision = () => {
+  onDeleteDivisionClick = () => {
     this.setState({ isModalOpen: true });
   };
 
@@ -110,6 +109,14 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
 
   onExit = () => {
     this.props.history.goBack();
+  };
+
+  onDeleteDivision = () => {
+    this.props.deleteDivision(
+      this.divisionId,
+      this.props.location.state?.pools,
+      this.props.location.state?.teams
+    );
   };
 
   renderHeading = () => {
@@ -125,7 +132,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
         color="secondary"
         type="dangerLink"
         icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
-        onClick={this.onDeleteDivision}
+        onClick={this.onDeleteDivisionClick}
       />
     ) : (
       <Button
@@ -143,7 +150,6 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
       !prevState.divisions[0]?.division_id &&
       prevProps.registration !== this.props.registration
     ) {
-      console.log('upd');
       this.setState({
         defaultDivision: {
           entry_fee: this.props.registration.entry_fee,
@@ -160,6 +166,12 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   }
 
   render() {
+    const { short_name }: Partial<IDivision> = this.state.divisions[0] || '';
+    const deleteMessage = `You are about to delete this division and this cannot be undone.
+    Deleting a division will also delete all pools (${this.props.location.state?.pools.length}) inside the division.
+    Teams (${this.props.location.state?.teams.length}) inside the division will be moved to unassigned.
+    Please, enter the name of the division to continue.`;
+
     return (
       <section className={styles.container}>
         <Paper sticky={true}>
@@ -191,28 +203,20 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
           />
         ))}
         {this.renderButton()}
-        <Modal isOpen={this.state.isModalOpen} onClose={this.onModalClose}>
-          <DeleteDivision
-            division={this.state.divisions[0]}
-            divisionId={this.divisionId}
-            onClose={this.onModalClose}
-            deleteDivision={this.props.deleteDivision}
-            pools={this.props.location.state?.pools}
-            teams={this.props.location.state?.teams}
-          />
-        </Modal>
+        <DeletePopupConfrim
+          type={'division'}
+          message={deleteMessage}
+          deleteTitle={short_name || ''}
+          isOpen={this.state.isModalOpen}
+          onClose={this.onModalClose}
+          onDeleteClick={this.onDeleteDivision}
+        />
         <PopupExposure
           isOpen={this.state.isModalConfirmOpen}
           onClose={this.onModalConfirmClose}
           onExitClick={this.onExit}
           onSaveClick={this.onSave}
         />
-        {/* <Modal
-          isOpen={this.state.isModalConfirmOpen}
-          onClose={this.onModalConfirmClose}
-        >
-          <CancelPopup onSave={this.onSave} />
-        </Modal> */}
       </section>
     );
   }

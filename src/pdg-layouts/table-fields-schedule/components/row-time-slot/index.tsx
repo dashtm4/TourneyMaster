@@ -21,8 +21,11 @@ const RowTimeSlot = ({ timeSlot, games, isEven }: Props) => {
         {`${team.name} (${team.divisionShortName})`}
       </Text>
       <Text style={styles.teamNum}>
+        {team.contactFirstName
+          ? `${team.contactFirstName} ${team.contactLastName || ''}`
+          : ''}
         {team.teamPhoneNum
-          ? `${team.teamPhoneNum} (${team.contactFirstName} ${team.contactLastName})`
+          ? ` - ${team.teamPhoneNum}`
           : 'Team phone number is missing.'}
       </Text>
     </View>
@@ -48,6 +51,7 @@ const RowTimeSlot = ({ timeSlot, games, isEven }: Props) => {
       ))}
       <View style={styles.scoresWrapper}>
         <View style={styles.scores} />
+        <Text style={styles.scoresColon}>:</Text>
         <View style={styles.scores} />
       </View>
       <View style={styles.initials} />
