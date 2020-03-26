@@ -51,7 +51,7 @@ const TableActions = (props: IProps) => {
         </div>
         <p className={styles.lockBtnsWrapper}>
           <Button
-            label={zoomingDisabled ? 'Drag-n-Drop mode' : 'Zoom-n-Nav mode'}
+            label={zoomingDisabled ? 'Drag-n-Drop Mode' : 'Zoom-n-Nav Mode'}
             variant={ButtonVarian.TEXT}
             color={ButtonColors.SECONDARY}
             icon={getIcon(zoomingDisabled ? Icons.FLIP : Icons.ZOOM)}

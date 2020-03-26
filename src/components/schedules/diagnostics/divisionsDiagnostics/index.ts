@@ -7,14 +7,12 @@ const calculateDivisionFieldsNumber = (
   divisionId: string,
   schedulerResult: Scheduler
 ) => {
-  const { teamCards } = schedulerResult;
-
-  const divisionTeamsFields = teamCards
-    .filter(teamCard => teamCard.divisionId === divisionId)
-    .map(teamCard => teamCard.fieldId)
-    .filter(fieldId => fieldId);
-
-  const fieldsNum = union(divisionTeamsFields).length;
+  const { updatedGames } = schedulerResult;
+  const divisionGames = updatedGames.filter(
+    game => (game.awayTeam || game.homeTeam)?.divisionId === divisionId
+  );
+  const divisionFields = divisionGames.map(game => game.fieldId);
+  const fieldsNum = union(divisionFields).length;
   return fieldsNum;
 };
 

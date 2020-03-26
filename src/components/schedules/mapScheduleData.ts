@@ -5,6 +5,7 @@ import api from 'api/api';
 import { IMember } from 'common/models';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { getVarcharEight } from 'helpers';
+import { ITeam } from 'common/models/schedule/teams';
 
 export const mapScheduleData = (
   scheduleData: IConfigurableSchedule
@@ -17,10 +18,23 @@ export const mapScheduleData = (
   return data;
 };
 
+const getVersionId = (
+  gameId: number,
+  schedulesDetails?: ISchedulesDetails[]
+) => {
+  if (schedulesDetails) {
+    return schedulesDetails.find(
+      item => Number(item.game_id) === Number(gameId)
+    )?.schedule_version_id;
+  }
+  return false;
+};
+
 export const mapSchedulesTeamCards = async (
   scheduleData: ISchedule,
   games: IGame[],
-  isDraft: boolean
+  isDraft: boolean,
+  schedulesDetails?: ISchedulesDetails[]
 ) => {
   const currentSession = await Auth.currentSession();
   const userEmail = currentSession.getIdToken().payload.email;
@@ -34,10 +48,9 @@ export const mapSchedulesTeamCards = async (
   const scheduleId = scheduleData.schedule_id;
   const eventId = scheduleData.event_id;
 
-  const generatedId = getVarcharEight();
-
   const scheduleDetails: ISchedulesDetails[] = games.map(game => ({
-    schedule_version_id: game.scheduleVersionId || generatedId,
+    schedule_version_id:
+      getVersionId(game.id, schedulesDetails) || getVarcharEight(),
     schedule_version_desc: null,
     schedule_id: scheduleId,
     schedule_desc: null,
@@ -68,4 +81,32 @@ export const mapSchedulesTeamCards = async (
   }));
 
   return scheduleDetails;
+};
+
+export const mapTeamsFromSchedulesDetails = (
+  schedulesDetails: ISchedulesDetails[],
+  teams: ITeam[]
+) => {
+  const sd = schedulesDetails.map(item => ({
+    gameId: item.game_id,
+    awayTeamId: item.away_team_id,
+    homeTeamId: item.home_team_id,
+  }));
+
+  const teamCards = teams.map(team => ({
+    ...team,
+    games: [
+      ...sd
+        .filter(
+          ({ awayTeamId, homeTeamId }) =>
+            awayTeamId === team.id || homeTeamId === team.id
+        )
+        .map(({ gameId, awayTeamId }) => ({
+          id: Number(gameId),
+          teamPosition: awayTeamId === team.id ? 1 : 2,
+        })),
+    ],
+  }));
+
+  return teamCards;
 };
