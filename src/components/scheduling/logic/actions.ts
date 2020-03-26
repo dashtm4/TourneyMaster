@@ -50,6 +50,8 @@ export const addNewSchedule = () => async (
   const member: IMember = members.find(
     (it: IMember) => it.email_address === userEmail
   );
+  const DEFAULT_INCREMENT_MAX_NUM_GAMES = 2;
+  const DEFAULT_PERIODS_PER_GAME = 2;
 
   const newSchedule = {
     ...EMPTY_SCHEDULE,
@@ -60,8 +62,11 @@ export const addNewSchedule = () => async (
     num_teams: tournamentData.teams.length,
     num_fields: tournamentData.fields.length,
     min_num_games: tournamentData.event?.min_num_of_games,
-    max_num_games: Number(tournamentData.event?.min_num_of_games) + 1,
-    periods_per_game: tournamentData.event?.periods_per_game || 2,
+    max_num_games:
+      Number(tournamentData.event?.min_num_of_games) +
+      DEFAULT_INCREMENT_MAX_NUM_GAMES,
+    periods_per_game:
+      tournamentData.event?.periods_per_game || DEFAULT_PERIODS_PER_GAME,
     pre_game_warmup: tournamentData.event?.pre_game_warmup,
     period_duration: tournamentData.event?.period_duration,
     time_btwn_periods: tournamentData.event?.time_btwn_periods,
