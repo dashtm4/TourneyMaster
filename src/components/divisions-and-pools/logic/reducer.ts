@@ -9,6 +9,7 @@ import {
   DELETE_DIVISION_SUCCESS,
   ADD_POOL_SUCCESS,
   REGISTRATION_FETCH_SUCCESS,
+  ALL_POOLS_FETCH_SUCCESS,
 } from './actionTypes';
 import { IPool, ITeam, IDivision } from 'common/models';
 import { sortByField } from 'helpers';
@@ -107,6 +108,12 @@ export default (
         error: false,
       };
     }
+    case ALL_POOLS_FETCH_SUCCESS:
+      return {
+        ...state,
+        pools: action.payload,
+        error: false,
+      };
     case TEAMS_FETCH_SUCCESS: {
       return {
         ...state,

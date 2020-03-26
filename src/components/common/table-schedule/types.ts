@@ -1,6 +1,6 @@
 import { MultipleSelectionField } from '../multiple-search-select';
 
-export enum DefaulSelectFalues {
+export enum DefaultSelectValues {
   ALL = 'all',
 }
 
@@ -18,6 +18,7 @@ export enum OptimizeTypes {
 export interface IScheduleFilter {
   selectedDay: DayTypes;
   selectedDivisions: MultipleSelectionField[];
+  selectedPools: MultipleSelectionField[];
   selectedTeams: MultipleSelectionField[];
   selectedFields: MultipleSelectionField[];
 }

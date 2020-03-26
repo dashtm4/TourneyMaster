@@ -58,10 +58,12 @@ import {
   mapTeamsFromSchedulesDetails,
 } from './mapScheduleData';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
-import { IConfigurableSchedule, ISchedule } from 'common/models';
+import { IConfigurableSchedule, ISchedule, IPool } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { Loader } from 'components/common';
+import { getAllPools } from 'components/divisions-and-pools/logic/actions';
+import { IState as IDivisionsState } from 'components/divisions-and-pools/logic/reducer';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -73,6 +75,7 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   schedulesHistoryLength?: number;
   schedule?: ISchedule;
   schedulesDetails?: ISchedulesDetails[];
+  pools?: IPool[];
 }
 
 interface IMapDispatchToProps {
@@ -84,6 +87,7 @@ interface IMapDispatchToProps {
     scheduleData: ISchedule,
     scheduleDetails: ISchedulesDetails[]
   ) => void;
+  getAllPools: (divisionIds: string[]) => void;
   fetchFields: (facilitiesIds: string[]) => void;
   fetchEventSummary: (eventId: string) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
@@ -102,6 +106,7 @@ interface IRootState {
   schedules?: ISchedulesState;
   schedulesTable?: ISchedulesTableState;
   scheduling?: ISchedulingState;
+  divisions?: IDivisionsState;
 }
 
 type Props = IMapStateToProps & IMapDispatchToProps & ComponentProps;
@@ -204,6 +209,9 @@ class Schedules extends Component<Props, State> {
     ) {
       return;
     }
+
+    const divisionIds = divisions.map(item => item.division_id);
+    this.props.getAllPools(divisionIds);
 
     const timeValues = getTimeValuesFromEventSchedule(event, localSchedule);
     const timeSlots = calculateTimeSlots(timeValues);
@@ -397,6 +405,7 @@ class Schedules extends Component<Props, State> {
       schedulesHistoryLength,
       savingInProgress,
       scheduleData,
+      pools,
     } = this.props;
 
     const {
@@ -417,6 +426,7 @@ class Schedules extends Component<Props, State> {
       timeSlots?.length &&
       divisions?.length &&
       facilities?.length &&
+      pools?.length &&
       event &&
       eventSummary?.length &&
       schedulesTeamCards?.length
@@ -448,6 +458,7 @@ class Schedules extends Component<Props, State> {
           <TableSchedule
             event={event!}
             fields={fields!}
+            pools={pools!}
             games={games!}
             timeSlots={timeSlots!}
             divisions={divisions!}
@@ -518,6 +529,7 @@ const mapStateToProps = ({
   schedules,
   scheduling,
   schedulesTable,
+  divisions,
 }: IRootState) => ({
   event: pageEvent?.tournamentData.event,
   facilities: pageEvent?.tournamentData.facilities,
@@ -532,6 +544,7 @@ const mapStateToProps = ({
   scheduleData: scheduling?.schedule,
   schedule: schedules?.schedule,
   schedulesDetails: schedules?.schedulesDetails,
+  pools: divisions?.pools,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
@@ -545,6 +558,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       updateSchedulesTable,
       onScheduleUndo,
       fetchSchedulesDetails,
+      getAllPools,
     },
     dispatch
   );

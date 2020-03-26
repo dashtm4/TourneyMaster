@@ -1,9 +1,9 @@
-import { orderBy, findIndex } from 'lodash-es';
+import { orderBy, findIndex, xor } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from '../matrix-table/helper';
-import { IScheduleFilter, DayTypes, DefaulSelectFalues } from './types';
+import { IScheduleFilter, DayTypes, DefaultSelectValues } from './types';
 import { MultipleSelectionField } from '../multiple-search-select';
-import { IDivision, IEventSummary } from 'common/models';
+import { IDivision, IEventSummary, IPool } from 'common/models';
 import { SortByFilesTypes } from 'common/enums';
 import { IField } from 'common/models/schedule/fields';
 
@@ -23,6 +23,11 @@ const checkDivisions = (game: IGame, divisionIds: string[]) => {
   return divisionIds.includes(awayTeam?.divisionId! || homeTeam?.divisionId!);
 };
 
+const checkPools = (game: IGame, poolIds: string[]) => {
+  const { awayTeam, homeTeam } = game;
+  return poolIds.includes(awayTeam?.poolId! || homeTeam?.poolId!);
+};
+
 const checkTeams = (game: IGame, teamIds: string[]) => {
   const { awayTeam, homeTeam } = game;
   return teamIds.includes(awayTeam?.id!) || teamIds.includes(homeTeam?.id!);
@@ -33,18 +38,25 @@ const checkFields = (game: IGame, fieldIds: string[]) => {
 };
 
 export const mapGamesByFilter = (games: IGame[], filter: IScheduleFilter) => {
-  const { selectedDivisions, selectedTeams, selectedFields } = filter;
+  const {
+    selectedDivisions,
+    selectedPools,
+    selectedTeams,
+    selectedFields,
+  } = filter;
 
   const divisionIds = mapValues(selectedDivisions);
+  const poolIds = mapValues(selectedPools);
   const teamIds = mapValues(selectedTeams);
   const fieldIds = mapValues(selectedFields);
 
   const filteredGamesIds = games
     .filter(
       game =>
-        (!divisionIds.length || checkDivisions(game, divisionIds)) &&
-        (!teamIds.length || checkTeams(game, teamIds)) &&
-        (!fieldIds.length || checkFields(game, fieldIds))
+        checkDivisions(game, divisionIds) &&
+        checkPools(game, poolIds) &&
+        checkTeams(game, teamIds) &&
+        checkFields(game, fieldIds)
     )
     .map(game => game.id);
 
@@ -91,15 +103,23 @@ export const mapUnusedFields = (fields: IField[], games: IGame[]) => {
 };
 
 export const selectDivisionsFilter = (divisions: IDivision[]) => [
-  { label: 'All', value: DefaulSelectFalues.ALL },
+  { label: 'All', value: DefaultSelectValues.ALL },
   ...orderBy(divisions, SortByFilesTypes.DIVISIONS).map(division => ({
     label: division[SortByFilesTypes.DIVISIONS],
     value: division.division_id,
   })),
 ];
 
+export const selectPoolsFilter = (pools: IPool[]) => [
+  { label: 'All', value: DefaultSelectValues.ALL },
+  ...orderBy(pools, 'name').map(pool => ({
+    label: pool.pool_id,
+    value: pool.pool_id,
+  })),
+];
+
 export const selectTeamsFilter = (teamCards: ITeamCard[]) => [
-  { label: 'All', value: DefaulSelectFalues.ALL },
+  { label: 'All', value: DefaultSelectValues.ALL },
   ...orderBy(teamCards, 'divisionShortName').map(team => ({
     label: team.name,
     value: team.id,
@@ -107,7 +127,7 @@ export const selectTeamsFilter = (teamCards: ITeamCard[]) => [
 ];
 
 export const selectFieldsFilter = (eventSummary: IEventSummary[]) => [
-  { label: 'All', value: DefaulSelectFalues.ALL },
+  { label: 'All', value: DefaultSelectValues.ALL },
   ...orderBy(eventSummary, SortByFilesTypes.FACILITIES_INITIALS).map(es => ({
     label: `${es[SortByFilesTypes.FACILITIES_INITIALS]} - ${es.field_name}`,
     value: es.field_id,
@@ -116,10 +136,13 @@ export const selectFieldsFilter = (eventSummary: IEventSummary[]) => [
 
 export const applyFilters = (
   divisions: IDivision[],
+  pools: IPool[],
   teamCards: ITeamCard[],
   eventSummary: IEventSummary[]
 ) => {
   const selectedDivisions = selectDivisionsFilter(divisions);
+
+  const selectedPools = selectPoolsFilter(pools);
 
   const selectedTeams = selectTeamsFilter(teamCards);
 
@@ -128,6 +151,7 @@ export const applyFilters = (
   return {
     selectedDay: DayTypes.DAY_ONE,
     selectedDivisions,
+    selectedPools,
     selectedTeams,
     selectedFields,
   };
@@ -137,66 +161,63 @@ export const handleFilterData = (
   filter: IScheduleFilter,
   newFilter: IScheduleFilter,
   divisions: IDivision[],
+  pools: IPool[],
   teamCards: ITeamCard[],
   eventSummary: IEventSummary[]
 ) => {
   const divisionIds = mapValues(filter.selectedDivisions);
+  const poolIds = mapValues(filter.selectedPools);
   const teamIds = mapValues(filter.selectedTeams);
   const fieldIds = mapValues(filter.selectedFields);
 
   const newDivisionIds = mapValues(newFilter.selectedDivisions);
+  const newPoolIds = mapValues(newFilter.selectedPools);
   const newTeamIds = mapValues(newFilter.selectedTeams);
   const newFieldIds = mapValues(newFilter.selectedFields);
 
   const updateFilterData: IScheduleFilter = newFilter;
 
-  const all = DefaulSelectFalues.ALL;
+  const all = DefaultSelectValues.ALL;
 
   /* DIVISION ALL CHECKING */
-
-  if (divisionIds.includes(all) && !newDivisionIds.includes(all)) {
+  const divisionsXor = xor(divisionIds, newDivisionIds);
+  if (divisionsXor?.length === 1 && divisionsXor[0] === all) {
     return {
       ...updateFilterData,
-      selectedDivisions: [],
+      selectedDivisions: newDivisionIds.includes(all)
+        ? selectDivisionsFilter(divisions)
+        : [],
     };
   }
 
-  if (!divisionIds.includes(all) && newDivisionIds.includes(all)) {
+  /* POOLS ALL CHECKING */
+  const poolsXor = xor(poolIds, newPoolIds);
+  if (poolsXor?.length === 1 && poolsXor[0] === all) {
     return {
       ...updateFilterData,
-      selectedDivisions: selectDivisionsFilter(divisions),
+      selectedPools: newPoolIds.includes(all) ? selectPoolsFilter(pools) : [],
     };
   }
 
   /* TEAMS ALL CHECKING */
-
-  if (teamIds.includes(all) && !newTeamIds.includes(all)) {
+  const teamsXor = xor(teamIds, newTeamIds);
+  if (teamsXor?.length === 1 && teamsXor[0] === all) {
     return {
       ...updateFilterData,
-      selectedTeams: [],
-    };
-  }
-
-  if (!teamIds.includes(all) && newTeamIds.includes(all)) {
-    return {
-      ...updateFilterData,
-      selectedTeams: selectTeamsFilter(teamCards),
+      selectedTeams: newTeamIds.includes(all)
+        ? selectTeamsFilter(teamCards)
+        : [],
     };
   }
 
   /* FIELDS ALL CHECKING */
-
-  if (fieldIds.includes(all) && !newFieldIds.includes(all)) {
+  const fieldsXor = xor(fieldIds, newFieldIds);
+  if (fieldsXor?.length === 1 && fieldsXor[0] === all) {
     return {
       ...updateFilterData,
-      selectedFields: [],
-    };
-  }
-
-  if (!fieldIds.includes(all) && newFieldIds.includes(all)) {
-    return {
-      ...updateFilterData,
-      selectedFields: selectFieldsFilter(eventSummary),
+      selectedFields: newFieldIds.includes(all)
+        ? selectFieldsFilter(eventSummary)
+        : [],
     };
   }
 

@@ -12,6 +12,7 @@ import {
   IEventSummary,
   IEventDetails,
   IConfigurableSchedule,
+  IPool,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes } from './types';
 import { mapGamesByField } from './helpers';
@@ -39,6 +40,7 @@ import { Button } from 'components/common';
 interface Props {
   event: IEventDetails;
   divisions: IDivision[];
+  pools: IPool[];
   teamCards: ITeamCard[];
   games: IGame[];
   fields: IField[];
@@ -56,6 +58,7 @@ interface Props {
 const TableSchedule = ({
   event,
   divisions,
+  pools,
   teamCards,
   games,
   fields,
@@ -72,7 +75,7 @@ const TableSchedule = ({
   const minGamesNum = event.min_num_of_games;
 
   const [filterValues, changeFilterValues] = useState<IScheduleFilter>(
-    applyFilters(divisions, teamCards, eventSummary)
+    applyFilters(divisions, pools, teamCards, eventSummary)
   );
 
   const [optimizeBy, onOptimizeClick] = useState<OptimizeTypes>(
@@ -103,6 +106,7 @@ const TableSchedule = ({
       filterValues,
       data,
       divisions,
+      pools,
       teamCards,
       eventSummary
     );
@@ -161,6 +165,7 @@ const TableSchedule = ({
       <h2 className="visually-hidden">Schedule table</h2>
       <div className={styles.scheduleTableWrapper}>
         <div className={styles.topBtnsWrapper}>
+          <h3>Mode:</h3>
           <Button
             label="Zoom-n-Nav"
             variant="contained"
@@ -184,6 +189,7 @@ const TableSchedule = ({
           />
           <div className={styles.tableWrapper}>
             <Filter
+              pools={pools}
               divisions={divisions}
               teams={filteredTeams}
               eventSummary={eventSummary}
