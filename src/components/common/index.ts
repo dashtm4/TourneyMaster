@@ -24,6 +24,7 @@ import PopupConfirm from './popup-confirm';
 import SortTable from './sort-table';
 import MatrixTable from './matrix-table';
 import TableSchedule from './table-schedule';
+import DeletePopupConfrim from './delete-popup-confirm';
 import * as Toasts from './toastr/showToasts';
 
 export {
@@ -54,4 +55,5 @@ export {
   ProgressBar,
   MatrixTable,
   TableSchedule,
+  DeletePopupConfrim,
 };
