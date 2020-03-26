@@ -9,13 +9,14 @@ import {
   DELETE_DIVISION_SUCCESS,
   ADD_POOL_SUCCESS,
   REGISTRATION_FETCH_SUCCESS,
+  SAVE_TEAMS_SUCCESS,
 } from './actionTypes';
 import { IPool, ITeam, IDivision } from 'common/models';
 import { sortByField } from 'helpers';
 import { SortByFilesTypes } from 'common/enums';
 import { IRegistration } from 'common/models/registration';
 
-export interface IState {
+export interface IDivisionAndPoolsState {
   data?: Partial<IDivision>[];
   pools: IPool[];
   teams: ITeam[];
@@ -25,7 +26,7 @@ export interface IState {
   error: boolean;
 }
 
-const defaultState: IState = {
+const defaultState: IDivisionAndPoolsState = {
   data: [],
   pools: [],
   teams: [],
@@ -120,6 +121,14 @@ export default (
         registration: action.payload[0],
         isLoading: false,
         error: false,
+      };
+    }
+    case SAVE_TEAMS_SUCCESS: {
+      const { teams } = action.payload;
+
+      return {
+        ...state,
+        teams,
       };
     }
     default:

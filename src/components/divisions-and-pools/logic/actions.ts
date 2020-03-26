@@ -12,13 +12,16 @@ import {
   ADD_POOL_SUCCESS,
   REGISTRATION_FETCH_SUCCESS,
   DIVISION_SAVE_SUCCESS,
+  SAVE_TEAMS_SUCCESS,
+  SAVE_TEAMS_FAILURE,
 } from './actionTypes';
 import api from 'api/api';
 import history from '../../../browserhistory';
-import { divisionSchema, poolSchema } from 'validations';
+import { divisionSchema, poolSchema, teamSchema } from 'validations';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
 import { IPool, ITeam, IDivision } from 'common/models';
+import { IAppState } from 'reducers/root-reducer.types';
 
 export const fetchDetailsStart = (): { type: string } => ({
   type: FETCH_DETAILS_START,
@@ -279,4 +282,56 @@ export const getRegistration: ActionCreator<ThunkAction<
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   const data = await api.get(`/registrations?event_id=${eventId}`);
   dispatch(registrationFetchSuccess(data));
+};
+
+export const saveTeams = (teams: ITeam[]) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
+  try {
+    const { data } = getState().divisions;
+
+    for await (let division of data!) {
+      await Yup.array()
+        .of(teamSchema)
+        .unique(
+          team => team.long_name,
+          'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
+        )
+        .unique(
+          team => team.short_name,
+          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+        )
+        .validate(
+          teams.filter(team => team.division_id === division.division_id)
+        );
+    }
+
+    for await (let team of teams) {
+      if (team.isDelete) {
+        await api.delete(`/teams?team_id=${team.team_id}`);
+      }
+
+      if (team.isChange && !team.isDelete) {
+        delete team.isChange;
+
+        await api.put(`/teams?team_id=${team.team_id}`, team);
+      }
+    }
+
+    dispatch({
+      type: SAVE_TEAMS_SUCCESS,
+      payload: {
+        teams,
+      },
+    });
+
+    Toasts.successToast('Teams saved successfully');
+  } catch (err) {
+    dispatch({
+      type: SAVE_TEAMS_FAILURE,
+    });
+
+    Toasts.errorToast(err.message);
+  }
 };

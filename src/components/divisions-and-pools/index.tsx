@@ -5,7 +5,12 @@ import styles from './styles.module.scss';
 import Paper from '../common/paper';
 import Button from '../common/buttons/button';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
-import { getDivisionsTeams, getPools, savePool } from './logic/actions';
+import {
+  getDivisionsTeams,
+  getPools,
+  savePool,
+  saveTeams,
+} from './logic/actions';
 import Modal from '../common/modal';
 import AddPool from './division/add-pool';
 import { BindingCbWithOne } from 'common/models/callback';
@@ -32,6 +37,7 @@ interface IDivisionsAndPoolsProps {
   getDivisionsTeams: BindingCbWithOne<string>;
   getPools: BindingCbWithOne<string>;
   savePool: BindingCbWithOne<Partial<IPool>>;
+  saveTeams: BindingCbWithOne<ITeam[]>;
 }
 
 interface IDivisionAndPoolsState {
@@ -147,6 +153,17 @@ class DivisionsAndPools extends React.Component<
     this.setState({ isArrange: false, teams });
   };
 
+  onSaveClick = () => {
+    const eventId = this.props.match.params.eventId;
+    const { saveTeams } = this.props;
+    const { teams } = this.state;
+
+    if (eventId) {
+      saveTeams(teams);
+    }
+    this.setState({ isArrange: false });
+  };
+
   changePool = (
     team: ITeam,
     divisionId: string | null,
@@ -247,7 +264,12 @@ class DivisionsAndPools extends React.Component<
                   color="secondary"
                 />
                 <span className={styles.btnWrapper}>
-                  <Button label="Save" variant="contained" color="primary" />
+                  <Button
+                    onClick={this.onSaveClick}
+                    label="Save"
+                    variant="contained"
+                    color="primary"
+                  />
                 </span>
               </p>
             ) : (
@@ -408,6 +430,7 @@ const mapDispatchToProps = {
   getDivisionsTeams,
   getPools,
   savePool,
+  saveTeams,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DivisionsAndPools);

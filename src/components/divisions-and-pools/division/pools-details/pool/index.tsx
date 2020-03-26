@@ -45,7 +45,7 @@ const Pool = ({
   return (
     <div className={styles.pool}>
       <p className={styles.poolTitle}>{pool ? pool.pool_name : 'Unassigned'}</p>
-      <ul ref={isArrange ? drop : null}>
+      <ul className={styles.teamList} ref={isArrange ? drop : null}>
         {sortByField(teams, SortByFilesTypes.TEAMS).map(it => (
           <ItemTeam
             team={it}
