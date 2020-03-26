@@ -1,9 +1,9 @@
 import React from 'react';
 import TournamentPlayItem from '../tournament-play-item';
 import { SectionDropdown, HeadingLevelThree } from 'components/common';
-import { sortByField } from 'helpers';
+import { compareTime } from 'helpers';
 import { BindingCbWithOne } from 'common/models';
-import { EventMenuTitles, SortByFilesTypes } from 'common/enums';
+import { EventMenuTitles } from 'common/enums';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
 
@@ -15,9 +15,11 @@ interface IProps {
 
 export default (props: IProps) => {
   const { schedules, eventId, onEditSchedule } = props;
-  const sortedScheduleByName = sortByField(
-    schedules,
-    SortByFilesTypes.SCHEDULES
+
+  const sortedScheduleByName = schedules.sort(
+    (a, b) =>
+      compareTime(a.updated_datetime, b.updated_datetime) ||
+      compareTime(a.created_datetime, b.created_datetime)
   );
 
   return (

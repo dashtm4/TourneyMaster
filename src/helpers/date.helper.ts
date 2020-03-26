@@ -50,4 +50,6 @@ const timeToString = (time: number): string => {
     .join(':');
 };
 
-export { timeToDate, dateToTime, getTimeFromString, timeToString };
+const compareTime = (a: string, b: string) => +new Date(b) - +new Date(a);
+
+export { timeToDate, dateToTime, getTimeFromString, timeToString, compareTime };
