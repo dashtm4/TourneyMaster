@@ -43,6 +43,7 @@ import { DiagnosticTypes } from './types';
 import styles from './styles.module.scss';
 import {
   fillSchedulesTable,
+  updateSchedulesTable,
   onScheduleUndo,
 } from './logic/schedules-table/actions';
 import { ISchedulesTableState } from './logic/schedules-table/schedulesTableReducer';
@@ -81,6 +82,7 @@ interface IMapDispatchToProps {
   fetchFields: (facilitiesIds: string[]) => void;
   fetchEventSummary: (eventId: string) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
+  updateSchedulesTable: (teamCard: ITeamCard) => void;
   onScheduleUndo: () => void;
   fetchSchedulesDetails: (scheduleId: string) => void;
 }
@@ -333,6 +335,10 @@ class Schedules extends Component<Props, State> {
     this.props.fillSchedulesTable(teamCards);
   };
 
+  onScheduleCardUpdate = (teamCard: ITeamCard) => {
+    this.props.updateSchedulesTable(teamCard);
+  };
+
   render() {
     const {
       divisions,
@@ -404,6 +410,7 @@ class Schedules extends Component<Props, State> {
             scheduleData={scheduleData!}
             historyLength={schedulesHistoryLength}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
+            onTeamCardUpdate={this.onScheduleCardUpdate}
             onUndo={onScheduleUndo}
           />
         ) : (
@@ -490,6 +497,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       fetchFields,
       fetchEventSummary,
       fillSchedulesTable,
+      updateSchedulesTable,
       onScheduleUndo,
       fetchSchedulesDetails,
     },

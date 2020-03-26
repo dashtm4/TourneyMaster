@@ -64,8 +64,14 @@ export const mapSchedulesTeamCards = async (
     away_team_id: game.awayTeam?.id || null,
     home_team_id: game.homeTeam?.id || null,
     game_locked_YN: null,
-    away_team_locked: null,
-    home_team_locked: null,
+    away_team_locked: game.awayTeam?.games?.filter(g => g.id === game.id)[0]
+      .isTeamLocked
+      ? 1
+      : 0,
+    home_team_locked: game.homeTeam?.games?.filter(g => g.id === game.id)[0]
+      .isTeamLocked
+      ? 1
+      : 0,
     is_draft_YN: isDraft ? 1 : 0,
     is_published_YN: isDraft ? 0 : 1,
     created_by: memberId,

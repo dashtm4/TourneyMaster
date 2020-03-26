@@ -48,6 +48,7 @@ interface Props {
   isEnterScores?: boolean;
   historyLength?: number;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
+  onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
 }
 
@@ -63,6 +64,7 @@ const TableSchedule = ({
   eventSummary,
   isEnterScores,
   onTeamCardsUpdate,
+  onTeamCardUpdate,
   onUndo,
   historyLength,
 }: Props) => {
@@ -134,6 +136,21 @@ const TableSchedule = ({
     }
   };
 
+  const onLockAll = () => {
+    const lockedTeams = teamCards.map(team => ({
+      ...team,
+      games: team!.games?.map(game => ({ ...game, isTeamLocked: true })),
+    }));
+    onTeamCardsUpdate(lockedTeams);
+  };
+
+  const onUnlockAll = () => {
+    const unLockedTeams = teamCards.map(team => ({
+      ...team,
+      games: team!.games?.map(game => ({ ...game, isTeamLocked: false })),
+    }));
+    onTeamCardsUpdate(unLockedTeams);
+  };
   const [isPopupSaveReportOpen, onPopupSaveReport] = useState<boolean>(false);
 
   const togglePopupSaveReport = () => onPopupSaveReport(!isPopupSaveReportOpen);
@@ -165,6 +182,9 @@ const TableSchedule = ({
               isEnterScores={isEnterScores}
               moveCard={moveCard}
               disableZooming={zoomingDisabled}
+              onTeamCardUpdate={onTeamCardUpdate}
+              onTeamCardsUpdate={onTeamCardsUpdate}
+              teamCards={teamCards}
             />
           </div>
         </DndProvider>
@@ -180,8 +200,8 @@ const TableSchedule = ({
         toggleZooming={toggleZooming}
         optimizeBy={optimizeBy}
         onUndoClick={onUndo}
-        onLockAllClick={() => {}}
-        onUnlockAllClick={() => {}}
+        onLockAllClick={onLockAll}
+        onUnlockAllClick={onUnlockAll}
         onOptimizeClick={onOptimizeClick}
         togglePopupSaveReport={togglePopupSaveReport}
       />
