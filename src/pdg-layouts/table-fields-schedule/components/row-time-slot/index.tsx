@@ -21,8 +21,11 @@ const RowTimeSlot = ({ timeSlot, games, isEven }: Props) => {
         {`${team.name} (${team.divisionShortName})`}
       </Text>
       <Text style={styles.teamNum}>
+        {team.contactFirstName
+          ? `${team.contactFirstName} ${team.contactLastName || ''}`
+          : ''}
         {team.teamPhoneNum
-          ? `${team.teamPhoneNum} (${team.contactFirstName} ${team.contactLastName})`
+          ? ` - ${team.teamPhoneNum}`
           : 'Team phone number is missing.'}
       </Text>
     </View>
