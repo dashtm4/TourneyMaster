@@ -13,6 +13,8 @@ interface Props {
   originGameId?: number;
   isEnterScores?: boolean;
   showHeatmap?: boolean;
+  onTeamCardUpdate?: (teamCard: ITeamCard) => void;
+  isDndMode?: boolean;
 }
 
 const ERROR_ICON_STYLES = {
@@ -22,14 +24,36 @@ const ERROR_ICON_STYLES = {
 };
 
 export default (props: Props) => {
-  const { type, originGameId, showHeatmap, teamCard, isEnterScores } = props;
+  const {
+    type,
+    originGameId,
+    showHeatmap,
+    teamCard,
+    isEnterScores,
+    onTeamCardUpdate,
+    isDndMode,
+  } = props;
+
+  const team = teamCard.games?.filter(game => game.id === originGameId)[0];
 
   const [{ isDragging }, drag] = useDrag({
     item: { id: teamCard.id, type, originGameId },
+    canDrag: !team?.isTeamLocked,
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
   });
+
+  const onLockClick = () => {
+    onTeamCardUpdate!({
+      ...teamCard,
+      games: teamCard.games?.map(game =>
+        game.id === originGameId
+          ? { ...game, isTeamLocked: !game.isTeamLocked }
+          : game
+      ),
+    });
+  };
 
   const renderTeamCardErrors = (teamCard: ITeamCard) => (
     <Tooltip
@@ -66,9 +90,9 @@ export default (props: Props) => {
             <input type="number" value="0" />
           </label>
         )}
-        {!isEnterScores && (
-          <button className={styles.lockBtn}>
-            {getIcon(teamCard.isLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+        {!isEnterScores && originGameId && (
+          <button className={styles.lockBtn} onClick={onLockClick}>
+            {getIcon(team?.isTeamLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
               fill: showHeatmap ? '#ffffff' : '#00A3EA',
             })}
             <span className="visually-hidden">Unlock/Lock team</span>
@@ -81,7 +105,9 @@ export default (props: Props) => {
   return (
     <div
       ref={drag}
-      className={styles.cardContainer}
+      className={`${styles.cardContainer} ${isDndMode &&
+        team?.isTeamLocked &&
+        styles.isLocked}`}
       style={{
         opacity: isDragging ? 0.8 : 1,
         backgroundColor: showHeatmap ? teamCard.divisionHex : '#fff',
