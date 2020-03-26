@@ -49,6 +49,9 @@ const OrganizationsList = ({
     onToggleOne(index);
   };
 
+  const deleteMessage = `You are about to delete this organization and this cannot be undone.
+  Please, enter the name of the organization to continue.`;
+
   return (
     <>
       <SectionDropdown
@@ -134,9 +137,9 @@ const OrganizationsList = ({
         <PopupDeleteConfirm
           type={'organization'}
           deleteTitle={configOrg.org_name}
+          message={deleteMessage}
           isOpen={Boolean(configOrg)}
           onClose={() => onDeletePopup(null)}
-          onCancelClick={() => onDeletePopup(null)}
           onDeleteClick={() => {
             deleteOrganization(configOrg);
             onDeletePopup(null);
