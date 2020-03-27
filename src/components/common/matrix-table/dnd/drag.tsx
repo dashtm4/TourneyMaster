@@ -36,11 +36,11 @@ export default (props: Props) => {
     isDndMode,
   } = props;
 
-  // const [scoreValue, onChange] = useState<string>('');
+  const [scoreValue, onChange] = React.useState<string>('0');
 
-  // const onChangeScoreValue = ({
-  //   target: { value },
-  // }: React.ChangeEvent<HTMLInputElement>) => onChange(value);
+  const onChangeScoreValue = ({
+    target: { value },
+  }: React.ChangeEvent<HTMLInputElement>) => onChange(value);
 
   const team = teamCard.games?.filter(game => game.id === originGameId)[0];
 
@@ -93,13 +93,21 @@ export default (props: Props) => {
         </p>
       )}
       <p className={styles.cardOptionsWrapper}>
-        {tableType === TableScheduleTypes.SCORES && isEnterScores && (
+        {tableType === TableScheduleTypes.SCORES && (
           <label className={styles.scoresInputWrapper}>
             <input
-              // onChange={onChangeScoreValue}
-              // value={scoreValue}
+              onChange={onChangeScoreValue}
+              value={scoreValue}
               type="number"
-              style={{ color: showHeatmap ? '#f8f8f8' : 'gray' }}
+              style={{
+                color: isEnterScores
+                  ? '#000000'
+                  : showHeatmap
+                  ? '#f8f8f8'
+                  : 'gray',
+                backgroundColor: isEnterScores ? '#ffffff' : '',
+              }}
+              readOnly={!isEnterScores}
             />
           </label>
         )}
