@@ -19,12 +19,12 @@ import {
   FacilitiesAction,
 } from 'components/facilities/logic/action-types';
 import {
-  DIVISIONS_FETCH_SUCCESS,
+  SAVE_TEAMS_SUCCESS,
+  DIVISIONS_TEAMS_FETCH_SUCCESS,
   DivisionsPoolsAction,
 } from 'components/divisions-and-pools/logic/actionTypes';
 import {
   LOAD_DIVISIONS_TEAMS_SUCCESS,
-  SAVE_TEAMS_SUCCESS,
   TeamsAction,
 } from 'components/teams/logic/action-types';
 import {
@@ -199,8 +199,8 @@ const pageEventReducer = (
         },
       };
     }
-    case DIVISIONS_FETCH_SUCCESS: {
-      const divisions = action.payload;
+    case DIVISIONS_TEAMS_FETCH_SUCCESS: {
+      const { divisions } = action.payload;
 
       return {
         ...state,

@@ -4,7 +4,7 @@
 .mainMenu {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .sectionContainer {
@@ -54,4 +54,12 @@
 .buttonContainer {
   display: flex;
   justify-content: flex-end;
+}
+
+.btnWrapper {
+  display: inline-block;
+
+  margin-left: 15px;
+
+  vertical-align: middle;
 }

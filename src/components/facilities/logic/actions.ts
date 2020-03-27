@@ -26,23 +26,27 @@ import { facilitySchema, fieldSchema } from 'validations';
 import { getVarcharEight, uploadFile } from 'helpers';
 import { IFacility, IField, IUploadFile } from 'common/models';
 
-const loadFacilities: ActionCreator<ThunkAction<
-  void,
-  {},
-  null,
-  FacilitiesAction
->> = (eventId: string) => async (dispatch: Dispatch) => {
+const loadFacilities = (eventId: string) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
   try {
     dispatch({
       type: LOAD_FACILITIES_START,
     });
 
+    const { event } = getState().pageEvent.tournamentData;
     const facilities = await Api.get(`/facilities?event_id=${eventId}`);
+    const mappedFacilitiesByEvent = facilities.map((it: IFacility) => ({
+      ...it,
+      first_game_time: it.first_game_time || event?.first_game_time,
+      last_game_end: it.last_game_end || event?.last_game_end,
+    }));
 
     dispatch({
       type: LOAD_FACILITIES_SUCCESS,
       payload: {
-        facilities,
+        facilities: mappedFacilitiesByEvent,
       },
     });
   } catch {

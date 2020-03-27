@@ -50,6 +50,11 @@ enum ParkingAvailableOptions {
   VERY_RESTRICTED = 'Very Restricted',
 }
 
+enum RestroomOptions {
+  IN_FACILITY = 'In Facility',
+  PORTABLE = 'Portable',
+}
+
 const FACILITY_FIELD_MAP_KEY = 'field_map_URL';
 
 interface State {
@@ -308,7 +313,7 @@ class FacilityDetails extends React.Component<Props, State> {
                 }
                 value={facility.restrooms || ''}
                 name="restrooms"
-                options={['In Facility', 'Portable'].map(type => ({
+                options={Object.values(RestroomOptions).map(type => ({
                   label: type,
                   value: type,
                 }))}

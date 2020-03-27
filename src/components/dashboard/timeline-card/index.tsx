@@ -71,6 +71,17 @@ class TimelineCard extends React.Component<
     history.push('/calendar');
   };
 
+  renderCalendarEventColor = (type: string) => {
+    switch (type) {
+      case 'event':
+        return '#1c315f';
+      case 'reminder':
+        return '#6a6a6a';
+      case 'task':
+        return '#00a3ea';
+    }
+  };
+
   render() {
     return (
       <div className={styles.cardContainer}>
@@ -112,7 +123,14 @@ class TimelineCard extends React.Component<
                     <li key={index} className={styles.tmNotification}>
                       <div className={styles.tmNotificationItem}>
                         <div className={styles.horizontalLine} />
-                        <div className={styles.circle} />
+                        <div
+                          className={styles.circle}
+                          style={{
+                            borderColor: this.renderCalendarEventColor(
+                              event.cal_event_type
+                            ),
+                          }}
+                        />
                         <div className={styles.tmNotificationMessage}>
                           <div>
                             {event.cal_event_title}

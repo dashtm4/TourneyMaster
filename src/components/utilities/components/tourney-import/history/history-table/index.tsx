@@ -16,6 +16,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import moment from 'moment';
 import { Button } from 'components/common';
 import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
+import styles from './styles.module.scss';
 
 interface Data {
   created_datetime: string | number;
@@ -160,33 +161,31 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   const { numSelected } = props;
 
   return (
-    numSelected > 0 ? (
-      <Toolbar
-        className={clsx(classes.root, {
-          [classes.highlight]: numSelected > 0,
-        })}
-      >
-        <Typography className={classes.title} color="inherit" variant="subtitle1">
-          {numSelected} selected
+    <Toolbar
+      className={clsx(classes.root, {
+        [classes.highlight]: numSelected > 0,
+      })}
+    >
+      <Typography className={classes.title} color="inherit" variant="subtitle1">
+        {numSelected} selected
         </Typography>
-        <div className={classes.rerunBtn} title="Delete">
-          <Button
-            label="Re-Run"
-            variant={ButtonVarian.OUTLINED}
-            color={ButtonColors.DEFAULT}
-            btnType={ButtonFormTypes.SUBMIT}
-          />
-        </div>
-        <div className={classes.delBtn} title="Delete">
-          <Button
-            label="Delete"
-            variant={ButtonVarian.OUTLINED}
-            color={ButtonColors.SECONDARY}
-            btnType={ButtonFormTypes.SUBMIT}
-          />
-        </div>
-      </Toolbar>
-    ) : null
+      <div className={clsx(classes.rerunBtn, { [styles.btnDisabled]: numSelected <= 0 })} title="Delete">
+        <Button
+          label="Re-Run"
+          variant={ButtonVarian.OUTLINED}
+          color={ButtonColors.SECONDARY}
+          btnType={ButtonFormTypes.SUBMIT}
+        />
+      </div>
+      <div className={clsx(classes.delBtn, { [styles.btnDisabled]: numSelected <= 0 })} title="Delete">
+        <Button
+          label="Delete"
+          variant={ButtonVarian.OUTLINED}
+          color={ButtonColors.SECONDARY}
+          btnType={ButtonFormTypes.SUBMIT}
+        />
+      </div>
+    </Toolbar>
   );
 };
 

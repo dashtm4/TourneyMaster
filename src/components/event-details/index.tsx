@@ -166,7 +166,7 @@ class EventDetails extends Component<Props, State> {
   };
 
   render() {
-    const eventTypeOptions = ['Tournament', 'Showcase'];
+    const eventTypeOptions = ['Tournament', 'Showcase', 'League'];
     const { event } = this.state;
     const { isEventLoading } = this.props.event;
 

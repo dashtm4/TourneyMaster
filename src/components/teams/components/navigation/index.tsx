@@ -70,13 +70,15 @@ const Navigation = ({
         </p>
       ) : (
         <p>
-          <Button
-            onClick={onEditClick}
-            icon={getIcon(Icons.EDIT, ICON_STYLES)}
-            label="Arrange Teams"
-            variant="text"
-            color="secondary"
-          />
+          {false && (
+            <Button
+              onClick={onEditClick}
+              icon={getIcon(Icons.EDIT, ICON_STYLES)}
+              label="Arrange Teams"
+              variant="text"
+              color="secondary"
+            />
+          )}
           <span className={styles.btnWrapper}>
             <Button
               label="Create Team"
