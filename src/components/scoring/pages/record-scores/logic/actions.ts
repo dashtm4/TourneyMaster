@@ -20,7 +20,7 @@ const loadScoresData: ActionCreator<ThunkAction<
       type: LOAD_SCORES_DATA_START,
     });
 
-    const MOCKED_SCHEDULE_ID = 'VT1ASCPK';
+    const MOCKED_SCHEDULE_ID = 'R6WH5SB0';
 
     const events = await Api.get(`/events?event_id=${eventId}`);
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
