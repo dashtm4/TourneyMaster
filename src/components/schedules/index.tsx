@@ -17,7 +17,13 @@ import {
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
-import { TableSchedule, Button, Paper, PopupExposure } from 'components/common';
+import {
+  TableSchedule,
+  Button,
+  Paper,
+  PopupExposure,
+  HeadingLevelThree,
+} from 'components/common';
 import {
   defineGames,
   sortFieldsByPremier,
@@ -394,6 +400,29 @@ class Schedules extends Component<Props, State> {
     this.props.updateSchedulesTable(teamCard);
   };
 
+  renderPublishBtn = (status: string) => {
+    switch (status) {
+      case 'Published':
+        return (
+          <Button
+            label="Unpublish"
+            variant="contained"
+            color="primary"
+            onClick={() => {}}
+          />
+        );
+      case 'Draft':
+        return (
+          <Button
+            label="Save and Publish"
+            variant="contained"
+            color="primary"
+            onClick={() => {}}
+          />
+        );
+    }
+  };
+
   render() {
     const {
       divisions,
@@ -437,19 +466,33 @@ class Schedules extends Component<Props, State> {
         <div className={styles.paperWrapper}>
           <Paper>
             <div className={styles.paperContainer}>
-              <Button
-                label="Cancel"
-                variant="text"
-                color="secondary"
-                onClick={this.onCancel}
-              />
-              <Button
-                label="Save Draft"
-                variant="contained"
-                color="primary"
-                disabled={draftSaved || savingInProgress}
-                onClick={this.onSaveDraft}
-              />
+              <div>
+                {loadCondition && !this.state.isLoading && (
+                  <HeadingLevelThree>
+                    <span>{scheduleData?.schedule_name}</span>
+                  </HeadingLevelThree>
+                )}
+              </div>
+              <div className={styles.btnsGroup}>
+                <Button
+                  label="Close"
+                  variant="text"
+                  color="secondary"
+                  onClick={this.onCancel}
+                />
+                <Button
+                  label="Save"
+                  variant="contained"
+                  color="primary"
+                  disabled={draftSaved || savingInProgress}
+                  onClick={this.onSaveDraft}
+                />
+                {loadCondition &&
+                  !this.state.isLoading &&
+                  this.renderPublishBtn(
+                    scheduleData?.schedule_status || 'Draft'
+                  )}
+              </div>
             </div>
           </Paper>
         </div>
