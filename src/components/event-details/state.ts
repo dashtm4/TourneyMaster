@@ -13,8 +13,8 @@ export const eventState = () => ({
   event_level: 'Other',
   event_status: 'Draft',
   event_format_id: 0,
-  first_game_time: '',
-  last_game_end: '',
+  first_game_time: '00:00:00',
+  last_game_end: '00:00:00',
   primary_location_desc: '',
   period_duration: '',
   periods_per_game: 2,
@@ -24,7 +24,6 @@ export const eventState = () => ({
   max_num_of_divisions: undefined,
   assoc_docs_URL: '',
   division_id: undefined,
-  event_logo_path: '',
   is_active_YN: 0,
 });
 

@@ -19,14 +19,19 @@ import {
   FacilitiesAction,
 } from 'components/facilities/logic/action-types';
 import {
-  DIVISIONS_FETCH_SUCCESS,
+  SAVE_TEAMS_SUCCESS,
+  DIVISIONS_TEAMS_FETCH_SUCCESS,
   DivisionsPoolsAction,
 } from 'components/divisions-and-pools/logic/actionTypes';
 import {
   LOAD_DIVISIONS_TEAMS_SUCCESS,
-  SAVE_TEAMS_SUCCESS,
   TeamsAction,
 } from 'components/teams/logic/action-types';
+import {
+  FETCH_FIELDS_SUCCESS,
+  FETCH_FIELDS_FAILURE,
+  FieldsAction,
+} from 'components/schedules/logic/actionTypes';
 import { sortTitleByField } from 'helpers';
 import { IMenuItem, ITournamentData } from 'common/models';
 import {
@@ -34,6 +39,13 @@ import {
   EventMenuRegistrationTitles,
   SortByFilesTypes,
 } from 'common/enums';
+
+export interface IPageEventState {
+  isLoading: boolean;
+  isLoaded: boolean;
+  menuList: IMenuItem[];
+  tournamentData: ITournamentData;
+}
 
 const initialState = {
   isLoading: false,
@@ -45,18 +57,12 @@ const initialState = {
     facilities: [],
     divisions: [],
     teams: [],
+    fields: [],
   },
 };
 
-export interface AppState {
-  isLoading: boolean;
-  isLoaded: boolean;
-  menuList: IMenuItem[];
-  tournamentData: ITournamentData;
-}
-
 const pageEventReducer = (
-  state: AppState = initialState,
+  state: IPageEventState = initialState,
   action:
     | AuthPageAction
     | EventDetailsAction
@@ -64,6 +70,7 @@ const pageEventReducer = (
     | DivisionsPoolsAction
     | RegistrationAction
     | TeamsAction
+    | FieldsAction
 ) => {
   switch (action.type) {
     case LOAD_AUTH_PAGE_DATA_START: {
@@ -128,7 +135,9 @@ const pageEventReducer = (
               return {
                 ...item,
                 isCompleted:
-                  teams.filter(it => it.division_id && it.pool_id).length > 0,
+                  teams.length > 0 &&
+                  teams.filter(it => !it.division_id || !it.pool_id).length ===
+                    0,
               };
             }
             default:
@@ -167,7 +176,7 @@ const pageEventReducer = (
       };
     }
     case SAVE_FACILITIES_SUCCESS: {
-      const { facilities } = action.payload;
+      const { facilities, fields } = action.payload;
 
       return {
         ...state,
@@ -183,10 +192,15 @@ const pageEventReducer = (
               }
             : item
         ),
+        tournamentData: {
+          ...state.tournamentData,
+          facilities,
+          fields,
+        },
       };
     }
-    case DIVISIONS_FETCH_SUCCESS: {
-      const divisions = action.payload;
+    case DIVISIONS_TEAMS_FETCH_SUCCESS: {
+      const { divisions } = action.payload;
 
       return {
         ...state,
@@ -215,7 +229,10 @@ const pageEventReducer = (
             ? {
                 ...item,
                 isCompleted:
-                  teams.filter(it => it.division_id && it.pool_id).length > 0,
+                  teams.length > 0 &&
+                  teams.filter(
+                    it => !it.division_id || !it.pool_id || it.isDelete
+                  ).length === 0,
               }
             : item
         ),
@@ -235,6 +252,22 @@ const pageEventReducer = (
     case CLEAR_AUTH_PAGE_DATA: {
       return { ...initialState };
     }
+    case FETCH_FIELDS_SUCCESS:
+      return {
+        ...state,
+        tournamentData: {
+          ...state.tournamentData,
+          fields: action.payload,
+        },
+      };
+    case FETCH_FIELDS_FAILURE:
+      return {
+        ...state,
+        tournamentData: {
+          ...state.tournamentData,
+          fields: undefined,
+        },
+      };
     default:
       return state;
   }

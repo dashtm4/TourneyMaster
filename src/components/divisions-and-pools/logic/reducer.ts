@@ -1,21 +1,23 @@
 import {
-  DIVISIONS_FETCH_SUCCESS,
-  DIVISIONS_FETCH_FAILURE,
+  DIVISIONS_TEAMS_FETCH_START,
+  DIVISIONS_TEAMS_FETCH_SUCCESS,
+  DIVISIONS_TEAMS_FETCH_FAILURE,
   POOLS_FETCH_SUCCESS,
-  TEAMS_FETCH_SUCCESS,
   FETCH_DETAILS_START,
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
   ADD_POOL_SUCCESS,
   REGISTRATION_FETCH_SUCCESS,
+  ALL_POOLS_FETCH_SUCCESS,
+  SAVE_TEAMS_SUCCESS,
 } from './actionTypes';
 import { IPool, ITeam, IDivision } from 'common/models';
 import { sortByField } from 'helpers';
 import { SortByFilesTypes } from 'common/enums';
 import { IRegistration } from 'common/models/registration';
 
-export interface IState {
+export interface IDivisionAndPoolsState {
   data?: Partial<IDivision>[];
   pools: IPool[];
   teams: ITeam[];
@@ -25,7 +27,7 @@ export interface IState {
   error: boolean;
 }
 
-const defaultState: IState = {
+const defaultState: IDivisionAndPoolsState = {
   data: [],
   pools: [],
   teams: [],
@@ -40,18 +42,24 @@ export default (
   action: { type: string; payload?: any }
 ) => {
   switch (action.type) {
-    case FETCH_DETAILS_START: {
-      return { ...state, pools: [], teams: [], areDetailsLoading: true };
+    case DIVISIONS_TEAMS_FETCH_START: {
+      return { ...defaultState };
     }
-    case DIVISIONS_FETCH_SUCCESS: {
+    case FETCH_DETAILS_START: {
+      return { ...state, pools: [], areDetailsLoading: true };
+    }
+    case DIVISIONS_TEAMS_FETCH_SUCCESS: {
+      const { divisions, teams } = action.payload;
+
       return {
         ...state,
-        data: sortByField(action.payload, SortByFilesTypes.DIVISIONS),
+        data: sortByField(divisions, SortByFilesTypes.DIVISIONS),
         isLoading: false,
         error: false,
+        teams,
       };
     }
-    case DIVISIONS_FETCH_FAILURE: {
+    case DIVISIONS_TEAMS_FETCH_FAILURE: {
       return {
         ...state,
         isLoading: false,
@@ -107,20 +115,26 @@ export default (
         error: false,
       };
     }
-    case TEAMS_FETCH_SUCCESS: {
+    case ALL_POOLS_FETCH_SUCCESS:
       return {
         ...state,
-        teams: [...state.teams, ...action.payload],
-        areDetailsLoading: false,
+        pools: action.payload,
         error: false,
       };
-    }
     case REGISTRATION_FETCH_SUCCESS: {
       return {
         ...state,
         registration: action.payload[0],
         isLoading: false,
         error: false,
+      };
+    }
+    case SAVE_TEAMS_SUCCESS: {
+      const { teams } = action.payload;
+
+      return {
+        ...state,
+        teams,
       };
     }
     default:

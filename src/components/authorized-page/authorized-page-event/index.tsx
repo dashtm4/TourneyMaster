@@ -8,7 +8,7 @@ import {
   clearAuthPageData,
   changeTournamentStatus,
 } from './logic/actions';
-import { AppState } from './logic/reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
 import Menu from 'components/common/menu';
 import Facilities from 'components/facilities';
@@ -32,6 +32,9 @@ import {
 import { Loader } from 'components/common';
 import styles from '../styles.module.scss';
 import Footer from 'components/footer';
+import Schedules from 'components/schedules';
+import ScrollTopButton from 'components/common/scroll-top-button';
+import Reporting from 'components/reporting';
 
 interface MatchParams {
   eventId?: string;
@@ -48,7 +51,7 @@ interface Props {
 }
 
 export const EmptyPage: React.FC = () => {
-  return <span> Not implemented yet</span>;
+  return <span> Coming soon...</span>;
 };
 
 const AuthorizedPageEvent = ({
@@ -76,6 +79,8 @@ const AuthorizedPageEvent = ({
     return <Loader />;
   }
 
+  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES];
+
   return (
     <div className={styles.container}>
       <Header />
@@ -83,6 +88,7 @@ const AuthorizedPageEvent = ({
         <Menu
           list={menuList}
           eventId={eventId}
+          hideOnList={hideOnList}
           isAllowEdit={Boolean(eventId)}
           tournamentStatus={event?.event_status}
           eventName={event?.event_name || ''}
@@ -111,9 +117,10 @@ const AuthorizedPageEvent = ({
                 />
               )}
             />
+            <Route path={Routes.SCHEDULES_ID} component={Schedules} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
-            <Route path={Routes.REPORTING_ID} component={EmptyPage} />
+            <Route path={Routes.REPORTING_ID} component={Reporting} />
 
             <Route path={Routes.RECORD_SCORES_ID} component={RecordScores} />
             <Route path={Routes.ADD_DIVISION} component={AddDivision} />
@@ -122,6 +129,7 @@ const AuthorizedPageEvent = ({
 
             <Route path={Routes.DEFAULT} component={EventDetails} />
           </Switch>
+          <ScrollTopButton />
         </main>
       </div>
       <Footer />
@@ -129,12 +137,8 @@ const AuthorizedPageEvent = ({
   );
 };
 
-interface IRootState {
-  pageEvent: AppState;
-}
-
 export default connect(
-  ({ pageEvent }: IRootState) => ({
+  ({ pageEvent }: IAppState) => ({
     tournamentData: pageEvent.tournamentData,
     isLoading: pageEvent.isLoading,
     isLoaded: pageEvent.isLoaded,

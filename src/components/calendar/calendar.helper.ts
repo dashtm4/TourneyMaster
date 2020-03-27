@@ -1,5 +1,4 @@
 import { ICalendarEvent, IEvent } from 'common/models/calendar';
-// import { format } from 'date-fns';
 
 export type ViewType = 'day' | 'week' | 'month';
 type ButtonVariantType = 'squared' | 'squaredOutlined' | undefined;
@@ -47,6 +46,7 @@ export const appropriateEvents = (
     tag: event.cal_event_tag,
     type: event.cal_event_type!,
     hasReminder: event.has_reminder_YN,
+    allDay: event.cal_event_type === 'event' ? true : false,
   });
 
   return events.map(eventTypeToCalendar);

@@ -2,6 +2,7 @@ export interface IFacility {
   facilities_id: string;
   event_id: string;
   facilities_description: string;
+  facilities_abbr: string | null;
   num_fields: number | null;
   facilities_tag: string | null;
   address1: string | null;
@@ -13,6 +14,8 @@ export interface IFacility {
   facility_lat: number | null;
   facility_long: number | null;
   facility_sort: string | null;
+  first_game_time: string | null;
+  last_game_end: string | null;
   public_access_YN: string | null;
   restrooms: string | null;
   num_toilets: string | null;

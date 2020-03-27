@@ -1,0 +1,43 @@
+.section {
+  padding: 24px 15px;
+  margin: 0 0 50px;
+
+  background-color: #f4f4f4;
+
+  border-radius: 5px;
+
+  box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+.scheduleTableWrapper {
+  display: flex;
+  position: relative;
+  padding-top: 12px;
+
+  .topBtnsWrapper {
+    position: absolute;
+    width: 320px;
+    top: -15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h3 {
+      font-size: 16px;
+      color: #6a6a76;
+    }
+  }
+}
+
+.tableWrapper {
+  flex-grow: 1;
+
+  @media screen and (max-width: 1366px) {
+    max-width: 1060px;
+  }
+}
+
+.btnsWrapper {
+  display: flex;
+  justify-content: flex-end;
+}

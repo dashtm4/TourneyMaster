@@ -4,17 +4,22 @@ import {
   DASHBOARD_TEAMS_FETCH_SUCCESS,
   FIELDS_FETCH_SUCCESS,
   DASHBOARD_FETCH_START,
+  CALENDAR_EVENTS_FETCH_START,
+  CALENDAR_EVENTS_FETCH_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { Toasts } from 'components/common';
-import { IFacility, ITeam } from 'common/models';
-import { IField } from 'components/schedules';
+import { IFacility, ITeam, IField, ICalendarEvent } from 'common/models';
 
 export const fetchStart = (): { type: string } => ({
   type: DASHBOARD_FETCH_START,
+});
+
+export const fetchCalendarEventsStart = (): { type: string } => ({
+  type: CALENDAR_EVENTS_FETCH_START,
 });
 
 export const eventsFetchSuccess = (
@@ -39,6 +44,13 @@ export const fieldsFetchSuccess = (
   payload: IField[]
 ): { type: string; payload: IField[] } => ({
   type: FIELDS_FETCH_SUCCESS,
+  payload,
+});
+
+export const calendarEventsFetchSuccess = (
+  payload: ICalendarEvent[]
+): { type: string; payload: ICalendarEvent[] } => ({
+  type: CALENDAR_EVENTS_FETCH_SUCCESS,
   payload,
 });
 
@@ -78,4 +90,13 @@ export const getEvents: ActionCreator<ThunkAction<
   }
   dispatch(fieldsFetchSuccess(fields));
   dispatch(dashboardTeamsFetchSuccess(teams));
+};
+
+export const getCalendarEvents = () => async (dispatch: Dispatch) => {
+  dispatch(fetchCalendarEventsStart());
+  const response = await api.get('/calendar_events');
+
+  if (response && !response.error) {
+    return dispatch(calendarEventsFetchSuccess(response));
+  }
 };

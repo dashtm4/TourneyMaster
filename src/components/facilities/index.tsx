@@ -2,7 +2,7 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
-import { AppState } from './logic/reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import {
   loadFacilities,
   loadFields,
@@ -23,6 +23,8 @@ import {
 } from '../../common/models/callback';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
+import { PopupExposure } from 'components/common';
+import history from '../../browserhistory';
 
 const MOCKED_EVENT_ID = 'ABC123';
 
@@ -37,19 +39,20 @@ interface Props {
   loadFacilities: (eventId: string) => void;
   loadFields: (facilityId: string) => void;
   addEmptyFacility: (eventId: string) => void;
-  addEmptyField: (facilityId: string) => void;
+  addEmptyField: (facilityId: string, fieldsLength: number) => void;
   updateFacilities: BindingCbWithOne<IFacility>;
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
   expanded: boolean[];
   expandAll: boolean;
+  isModalOpen: boolean;
 }
 
 class Facilities extends React.Component<
   Props & RouteComponentProps<MatchParams>
 > {
-  state = { expanded: [], expandAll: false };
+  state = { expanded: [], expandAll: false, isModalOpen: false };
 
   componentDidMount() {
     const { loadFacilities } = this.props;
@@ -73,11 +76,18 @@ class Facilities extends React.Component<
     const { facilities, fields, saveFacilities } = this.props;
 
     saveFacilities(facilities, fields);
+
+    this.setState({ isModalOpen: false });
   };
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    if (prevProps.facilities.length && !prevState.expanded.length) {
-      this.setState({ expanded: this.props.facilities.map(_facility => true) });
+    if (
+      (prevProps.facilities.length && !prevState.expanded.length) ||
+      prevProps.facilities !== this.props.facilities
+    ) {
+      this.setState({
+        expanded: this.props.facilities.map(_facility => true),
+      });
     }
   }
 
@@ -94,6 +104,18 @@ class Facilities extends React.Component<
         index === indexPanel ? !e : e
       ),
     });
+  };
+
+  onModalClose = () => {
+    this.setState({ isModalOpen: false });
+  };
+
+  onCancelClick = () => {
+    this.setState({ isModalOpen: true });
+  };
+
+  onCancel = () => {
+    history.push('/');
   };
 
   render() {
@@ -114,36 +136,39 @@ class Facilities extends React.Component<
 
     return (
       <section>
-        <Navigation onClick={this.savingFacilities} />
+        <Navigation
+          onClick={this.savingFacilities}
+          onCancelClick={this.onCancelClick}
+        />
         <div className={styles.sectionWrapper}>
           <div className={styles.headingWrapper}>
             <HeadingLevelTwo>Facilities</HeadingLevelTwo>
           </div>
           <div className={styles.numberWrapper}>
-            <span className={styles.numberTitleWrapper}>
-              Number of Facilities
-            </span>
-            <Select
-              onChange={this.onChangeFacilitiesCount}
-              value={`${facilities.length || ''}`}
-              options={Array.from(
-                new Array(facilities.length + 1),
-                (_, idx) => ({ label: `${idx + 1}`, value: `${idx + 1}` })
-              )}
-              width="160px"
-            />
-          </div>
-          <ul className={styles.facilitiesList}>
-            {facilities.length ? (
-              <div className={styles.buttonContainer}>
+            <div className={styles.numberTitleWrapper}>
+              <div>Number of Facilities</div>
+            </div>
+            <div className={styles.numberContainer}>
+              <Select
+                onChange={this.onChangeFacilitiesCount}
+                value={`${facilities.length || ''}`}
+                options={Array.from(
+                  new Array(facilities.length + 1),
+                  (_, idx) => ({ label: `${idx + 1}`, value: `${idx + 1}` })
+                )}
+                width="160px"
+              />
+              {facilities?.length ? (
                 <Button
                   label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
                   variant="text"
                   color="secondary"
                   onClick={this.onToggleAll}
                 />
-              </div>
-            ) : null}
+              ) : null}
+            </div>
+          </div>
+          <ul className={styles.facilitiesList}>
             {facilities
               .sort((a, b) => {
                 if (a.isChange || b.isChange) {
@@ -163,9 +188,15 @@ class Facilities extends React.Component<
                 >
                   <FacilityDetails
                     facility={facilitiy}
-                    fields={fields.filter(
-                      it => it.facilities_id === facilitiy.facilities_id
-                    )}
+                    fields={fields
+                      .filter(
+                        it => it.facilities_id === facilitiy.facilities_id
+                      )
+                      .sort((a, b) => {
+                        return (
+                          Number(b.is_premier_YN) - Number(a.is_premier_YN)
+                        );
+                      })}
                     facilitiyNumber={idx + 1}
                     loadFields={loadFields}
                     addEmptyField={addEmptyField}
@@ -180,17 +211,19 @@ class Facilities extends React.Component<
               ))}
           </ul>
         </div>
+        <PopupExposure
+          isOpen={this.state.isModalOpen}
+          onClose={this.onModalClose}
+          onExitClick={this.onCancel}
+          onSaveClick={this.savingFacilities}
+        />
       </section>
     );
   }
 }
 
-interface IRootState {
-  facilities: AppState;
-}
-
 export default connect(
-  (state: IRootState) => ({
+  (state: IAppState) => ({
     isLoading: state.facilities.isLoading,
     facilities: state.facilities.facilities,
     fields: state.facilities.fields,

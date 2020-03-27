@@ -23,6 +23,17 @@ enum Icons {
   FILE_COPY = 'fileCopy',
   CHECK_CIRCLE = 'checkCircle',
   DONE = 'done',
+  SETTINGS_BACKUP_RESTORE = 'settingsBackupRestore',
+  LOCK = 'lock',
+  LOCK_OPEN = 'lockOpen',
+  INFO = 'info',
+  DESCRIPTION = 'description',
+  PRINT = 'print',
+  ZOOM = 'zoom',
+  MOVE = 'move',
+  FLIP = 'flip',
+  DROPDOWN = 'DROPDOWN',
+  DROPUP = 'DROPUP',
 }
 
 export { Icons };

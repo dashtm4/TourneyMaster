@@ -1,0 +1,73 @@
+.container {
+  height: inherit;
+  padding: 8px 5px 5px;
+  margin: 26px 8px 0 0;
+  background-color: #ececec;
+  border-radius: 2px;
+  transition: background-color 0.25s ease-in-out;
+
+  .title {
+    margin: 0 0 8px;
+    text-align: center;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 700;
+    color: #6a6a6a;
+  }
+
+  .dropArea {
+    height: inherit;
+    min-height: calc(100% - 62px);
+    min-width: 180px;
+    max-height: 344px;
+
+    .table {
+      border-collapse: collapse;
+      min-width: inherit;
+
+      thead {
+        th {
+          font-size: 12px;
+          width: 63px;
+          font-weight: 300;
+          color: #777777;
+          padding: 3px 0;
+          border-radius: 3px 0 0 3px;
+          background: #fefefe;
+
+          &:nth-child(2) {
+            width: 100%;
+            margin-left: 1px;
+            border-radius: 0 3px 3px 0;
+          }
+        }
+
+        tr {
+          display: flex;
+          align-items: center;
+          justify-content: start;
+        }
+      }
+
+      tbody {
+        display: block;
+        height: 330px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+
+        .gamesNum {
+          color: #999999;
+          padding-top: 2px;
+          font-size: 13px;
+          background-color: #fefefe;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 50px;
+          margin-top: 1px;
+          border-radius: 3px 0 0 3px;
+        }
+      }
+    }
+  }
+}

@@ -2,10 +2,10 @@ import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import * as Yup from 'yup';
 import {
-  DIVISIONS_FETCH_SUCCESS,
-  DIVISIONS_FETCH_FAILURE,
+  DIVISIONS_TEAMS_FETCH_START,
+  DIVISIONS_TEAMS_FETCH_SUCCESS,
+  DIVISIONS_TEAMS_FETCH_FAILURE,
   POOLS_FETCH_SUCCESS,
-  TEAMS_FETCH_SUCCESS,
   FETCH_DETAILS_START,
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
@@ -13,27 +13,39 @@ import {
   ADD_POOL_SUCCESS,
   REGISTRATION_FETCH_SUCCESS,
   DIVISION_SAVE_SUCCESS,
+  ALL_POOLS_FETCH_SUCCESS,
+  SAVE_TEAMS_SUCCESS,
+  SAVE_TEAMS_FAILURE,
 } from './actionTypes';
 import api from 'api/api';
 import history from '../../../browserhistory';
-import { divisionSchema, poolSchema } from 'validations';
+import { divisionSchema, poolSchema, teamSchema } from 'validations';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
 import { IPool, ITeam, IDivision } from 'common/models';
+import { IAppState } from 'reducers/root-reducer.types';
+
+export const divisionsTeamsFetchStart = (): { type: string } => ({
+  type: DIVISIONS_TEAMS_FETCH_START,
+});
 
 export const fetchDetailsStart = (): { type: string } => ({
   type: FETCH_DETAILS_START,
 });
 
-export const divisionsFetchSuccess = (
-  payload: IDivision
-): { type: string; payload: IDivision } => ({
-  type: DIVISIONS_FETCH_SUCCESS,
-  payload,
+export const divisionsTeamsFetchSuccess = (
+  divisions: IDivision[],
+  teams: ITeam[]
+): { type: string; payload: { divisions: IDivision[]; teams: ITeam[] } } => ({
+  type: DIVISIONS_TEAMS_FETCH_SUCCESS,
+  payload: {
+    divisions,
+    teams,
+  },
 });
 
 export const divisionsFetchFailure = (): { type: string } => ({
-  type: DIVISIONS_FETCH_FAILURE,
+  type: DIVISIONS_TEAMS_FETCH_FAILURE,
 });
 
 export const addDivisionSuccess = (
@@ -71,10 +83,10 @@ export const poolsFetchSuccess = (
   payload,
 });
 
-export const teamsFetchSuccess = (
-  payload: ITeam[]
-): { type: string; payload: ITeam[] } => ({
-  type: TEAMS_FETCH_SUCCESS,
+export const allPoolsFetchSuccess = (
+  payload: IPool[]
+): { type: string; payload: IPool[] } => ({
+  type: ALL_POOLS_FETCH_SUCCESS,
   payload,
 });
 
@@ -85,14 +97,18 @@ export const registrationFetchSuccess = (
   payload,
 });
 
-export const getDivisions: ActionCreator<ThunkAction<
+export const getDivisionsTeams: ActionCreator<ThunkAction<
   void,
   {},
   null,
   { type: string }
 >> = (eventId: string) => async (dispatch: Dispatch) => {
-  const data = await api.get(`/divisions?event_id=${eventId}`);
-  dispatch(divisionsFetchSuccess(data));
+  dispatch(divisionsTeamsFetchStart());
+
+  const divisions = await api.get(`/divisions?event_id=${eventId}`);
+  const teams = await api.get(`/teams?event_id=${eventId}`);
+
+  dispatch(divisionsTeamsFetchSuccess(divisions, teams));
 };
 
 export const getPools: ActionCreator<ThunkAction<
@@ -107,14 +123,21 @@ export const getPools: ActionCreator<ThunkAction<
   dispatch(poolsFetchSuccess(data));
 };
 
-export const getTeams: ActionCreator<ThunkAction<
+export const getAllPools: ActionCreator<ThunkAction<
   void,
   {},
   null,
   { type: string }
->> = (divisionId: string) => async (dispatch: Dispatch) => {
-  const data = await api.get(`/teams?division_id=${divisionId}`);
-  dispatch(teamsFetchSuccess(data));
+>> = (divisionIds: string[]) => async (dispatch: Dispatch) => {
+  dispatch(fetchDetailsStart());
+  const pools: any[] = [];
+  await Promise.all(
+    divisionIds.map(async item => {
+      const response = await api.get(`/pools?division_id=${item}`);
+      pools.push(response);
+    })
+  );
+  dispatch(allPoolsFetchSuccess(pools.flat()));
 };
 
 export const updateDivision: ActionCreator<ThunkAction<
@@ -290,4 +313,56 @@ export const getRegistration: ActionCreator<ThunkAction<
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   const data = await api.get(`/registrations?event_id=${eventId}`);
   dispatch(registrationFetchSuccess(data));
+};
+
+export const saveTeams = (teams: ITeam[]) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
+  try {
+    const { data } = getState().divisions;
+
+    for await (let division of data!) {
+      await Yup.array()
+        .of(teamSchema)
+        .unique(
+          team => team.long_name,
+          'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
+        )
+        .unique(
+          team => team.short_name,
+          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+        )
+        .validate(
+          teams.filter(team => team.division_id === division.division_id)
+        );
+    }
+
+    for await (let team of teams) {
+      if (team.isDelete) {
+        await api.delete(`/teams?team_id=${team.team_id}`);
+      }
+
+      if (team.isChange && !team.isDelete) {
+        delete team.isChange;
+
+        await api.put(`/teams?team_id=${team.team_id}`, team);
+      }
+    }
+
+    dispatch({
+      type: SAVE_TEAMS_SUCCESS,
+      payload: {
+        teams,
+      },
+    });
+
+    Toasts.successToast('Teams saved successfully');
+  } catch (err) {
+    dispatch({
+      type: SAVE_TEAMS_FAILURE,
+    });
+
+    Toasts.errorToast(err.message);
+  }
 };

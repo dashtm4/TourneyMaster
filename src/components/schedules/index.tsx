@@ -1,199 +1,624 @@
 import React, { Component } from 'react';
-import SchedulesMatrix from './matrix';
+import { connect } from 'react-redux';
+import { History } from 'history';
+import { bindActionCreators, Dispatch } from 'redux';
+import ITimeSlot from 'common/models/schedule/timeSlots';
+import { ITeam, ITeamCard } from 'common/models/schedule/teams';
+import { IField } from 'common/models/schedule/fields';
+import Scheduler from './Scheduler';
+import { ISchedulesState } from './logic/reducer';
+import { IScheduleDivision } from 'common/models/schedule/divisions';
+import {
+  fetchFields,
+  fetchEventSummary,
+  saveDraft,
+  updateDraft,
+  fetchSchedulesDetails,
+} from './logic/actions';
+import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
+import { ITournamentData } from 'common/models/tournament';
+import {
+  TableSchedule,
+  Button,
+  Paper,
+  PopupExposure,
+  HeadingLevelThree,
+} from 'components/common';
+import {
+  defineGames,
+  sortFieldsByPremier,
+  settleTeamsPerGames,
+  IGame,
+} from 'components/common/matrix-table/helper';
+import {
+  mapFieldsData,
+  mapTeamsData,
+  mapFacilitiesData,
+  mapDivisionsData,
+} from './mapTournamentData';
+import {
+  calculateTimeSlots,
+  setGameOptions,
+  getTimeValuesFromEventSchedule,
+  calculateTotalGameTime,
+} from 'helpers';
+import { IScheduleFacility } from 'common/models/schedule/facilities';
+import Diagnostics, { IDiagnosticsInput } from './diagnostics';
+import formatTeamsDiagnostics, {
+  ITeamsDiagnosticsProps,
+} from './diagnostics/teamsDiagnostics';
+import formatDivisionsDiagnostics, {
+  IDivisionsDiagnosticsProps,
+} from './diagnostics/divisionsDiagnostics';
+import { DiagnosticTypes } from './types';
+import styles from './styles.module.scss';
+import {
+  fillSchedulesTable,
+  updateSchedulesTable,
+  onScheduleUndo,
+} from './logic/schedules-table/actions';
+import { ISchedulesTableState } from './logic/schedules-table/schedulesTableReducer';
+import {
+  mapSchedulesTeamCards,
+  mapScheduleData,
+  mapTeamsFromSchedulesDetails,
+} from './mapScheduleData';
+import { ISchedulingState } from 'components/scheduling/logic/reducer';
+import { IConfigurableSchedule, ISchedule, IPool } from 'common/models';
+import { errorToast } from 'components/common/toastr/showToasts';
+import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
+import { TableScheduleTypes } from 'common/enums';
+import { getAllPools } from 'components/divisions-and-pools/logic/actions';
+import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
+import SchedulesLoader from './loader';
 
-export interface IField {
-  id: number;
-  facilityId: number;
-  name: string;
-  isPremier: boolean;
+type PartialTournamentData = Partial<ITournamentData>;
+type PartialSchedules = Partial<ISchedulesState>;
+interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
+  schedulesTeamCards?: ITeamCard[];
+  draftSaved?: boolean;
+  savingInProgress?: boolean;
+  scheduleData?: IConfigurableSchedule | null;
+  schedulesHistoryLength?: number;
+  schedule?: ISchedule;
+  schedulesDetails?: ISchedulesDetails[];
+  pools?: IPool[];
 }
 
-export interface ITeam {
-  id: number;
-  name: string;
-  startTime: string;
-  divisionId: number;
-  isPremier: boolean;
+interface IMapDispatchToProps {
+  saveDraft: (
+    scheduleData: ISchedule,
+    scheduleDetails: ISchedulesDetails[]
+  ) => void;
+  updateDraft: (
+    scheduleData: ISchedule,
+    scheduleDetails: ISchedulesDetails[]
+  ) => void;
+  getAllPools: (divisionIds: string[]) => void;
+  fetchFields: (facilitiesIds: string[]) => void;
+  fetchEventSummary: (eventId: string) => void;
+  fillSchedulesTable: (teamCards: ITeamCard[]) => void;
+  updateSchedulesTable: (teamCard: ITeamCard) => void;
+  onScheduleUndo: () => void;
+  fetchSchedulesDetails: (scheduleId: string) => void;
 }
 
-export interface ITimeSlot {
-  id: number;
-  time: string;
+interface ComponentProps {
+  match: any;
+  history: History;
 }
 
-const fields: IField[] = [
-  {
-    id: 0,
-    facilityId: 0,
-    name: 'Field 0',
-    isPremier: false,
-  },
-  {
-    id: 1,
-    facilityId: 0,
-    name: 'Field 1',
-    isPremier: false,
-  },
-  {
-    id: 2,
-    facilityId: 0,
-    name: 'Field 2',
-    isPremier: false,
-  },
-  {
-    id: 3,
-    facilityId: 0,
-    name: 'Field 3',
-    isPremier: false,
-  },
-  {
-    id: 4,
-    facilityId: 0,
-    name: 'Field 4',
-    isPremier: false,
-  },
-  {
-    id: 5,
-    facilityId: 0,
-    name: 'Field 5',
-    isPremier: false,
-  },
-  {
-    id: 6,
-    facilityId: 0,
-    name: 'Field 6',
-    isPremier: false,
-  },
-  {
-    id: 7,
-    facilityId: 1,
-    name: 'Field 7',
-    isPremier: false,
-  },
-  {
-    id: 8,
-    facilityId: 1,
-    name: 'Field 8',
-    isPremier: false,
-  },
-];
+interface IRootState {
+  pageEvent?: IPageEventState;
+  schedules?: ISchedulesState;
+  schedulesTable?: ISchedulesTableState;
+  scheduling?: ISchedulingState;
+  divisions?: IDivisionAndPoolsState;
+}
 
-const teams: ITeam[] = [
-  {
-    id: 0,
-    name: 'Team # 1',
-    startTime: '02/02/2020 08:00:00',
-    divisionId: 0,
-    isPremier: false,
-  },
-  {
-    id: 1,
-    name: 'Team # 2',
-    startTime: '02/02/2020 08:00:00',
-    divisionId: 0,
-    isPremier: false,
-  },
-  {
-    id: 2,
-    name: 'Team # 3',
-    startTime: '02/02/2020 08:00:00',
-    divisionId: 0,
-    isPremier: false,
-  },
-  {
-    id: 3,
-    name: 'Team # 4',
-    startTime: '02/02/2020 08:00:00',
-    divisionId: 0,
-    isPremier: false,
-  },
-  {
-    id: 4,
-    name: 'Team # 5',
-    startTime: '02/02/2020 08:00:00',
-    divisionId: 0,
-    isPremier: false,
-  },
-  {
-    id: 5,
-    name: 'Team # 6',
-    startTime: '02/02/2020 08:00:00',
-    divisionId: 1,
-    isPremier: false,
-  },
-  {
-    id: 6,
-    name: 'Team # 7',
-    startTime: '02/02/2020 08:00:00',
-    divisionId: 1,
-    isPremier: false,
-  },
-  {
-    id: 7,
-    name: 'Team # 8',
-    startTime: '02/02/2020 08:00:00',
-    divisionId: 1,
-    isPremier: false,
-  },
-  {
-    id: 8,
-    name: 'Team # 9',
-    startTime: '02/02/2020 08:00:00',
-    divisionId: 1,
-    isPremier: false,
-  },
-  {
-    id: 9,
-    name: 'Team # 10',
-    startTime: '02/02/2020 08:00:00',
-    divisionId: 1,
-    isPremier: false,
-  },
-];
+type Props = IMapStateToProps & IMapDispatchToProps & ComponentProps;
 
-const timeSlots: ITimeSlot[] = [
-  {
-    id: 0,
-    time: '08:00',
-  },
-  {
-    id: 1,
-    time: '09:00',
-  },
-  {
-    id: 2,
-    time: '10:00',
-  },
-  {
-    id: 3,
-    time: '11:00',
-  },
-  {
-    id: 4,
-    time: '12:00',
-  },
-  {
-    id: 5,
-    time: '13:00',
-  },
-  {
-    id: 6,
-    time: '14:00',
-  },
-  {
-    id: 7,
-    time: '15:00',
-  },
-];
+interface State {
+  games?: IGame[];
+  scheduleId?: string;
+  timeSlots?: ITimeSlot[];
+  teams?: ITeam[];
+  fields?: IField[];
+  facilities?: IScheduleFacility[];
+  schedulerResult?: Scheduler;
+  divisions?: IScheduleDivision[];
+  teamsDiagnostics?: IDiagnosticsInput;
+  divisionsDiagnostics?: IDiagnosticsInput;
+  teamsDiagnosticsOpen: boolean;
+  divisionsDiagnosticsOpen: boolean;
+  cancelConfirmationOpen: boolean;
+  isLoading: boolean;
+}
 
-class Schedules extends Component {
+class Schedules extends Component<Props, State> {
+  timer: any;
+  state: State = {
+    teamsDiagnosticsOpen: false,
+    divisionsDiagnosticsOpen: false,
+    cancelConfirmationOpen: false,
+    isLoading: true,
+  };
+
+  async componentDidMount() {
+    this.timer = setTimeout(() => this.setState({ isLoading: false }), 5000);
+    const { facilities, match } = this.props;
+    const { eventId, scheduleId } = match?.params;
+    const facilitiesIds = facilities?.map(f => f.facilities_id);
+
+    if (facilitiesIds?.length) {
+      this.props.fetchFields(facilitiesIds);
+    }
+
+    this.props.fetchEventSummary(eventId);
+
+    if (scheduleId) {
+      this.setState({ scheduleId });
+      this.props.fetchSchedulesDetails(scheduleId);
+    } else {
+      await this.calculateNeccessaryData();
+      this.calculateSchedules();
+    }
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    const { schedule, schedulesDetails } = this.props;
+    const { scheduleId, teams } = this.state;
+
+    if (!prevProps.schedule && this.props.schedule) {
+      this.calculateNeccessaryData();
+      return;
+    }
+
+    if (
+      !prevProps.schedulesTeamCards &&
+      schedulesDetails?.length &&
+      teams?.length &&
+      scheduleId &&
+      schedule
+    ) {
+      const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
+      this.calculateDiagnostics();
+      this.props.fillSchedulesTable(mappedTeams);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+  }
+
+  calculateNeccessaryData = () => {
+    const {
+      scheduleData,
+      event,
+      schedule,
+      fields,
+      teams,
+      divisions,
+      facilities,
+    } = this.props;
+
+    const localSchedule = scheduleData || schedule;
+
+    if (
+      !localSchedule ||
+      !event ||
+      !fields ||
+      !teams ||
+      !divisions ||
+      !facilities
+    ) {
+      return;
+    }
+
+    const divisionIds = divisions.map(item => item.division_id);
+    this.props.getAllPools(divisionIds);
+
+    const timeValues = getTimeValuesFromEventSchedule(event, localSchedule);
+    const timeSlots = calculateTimeSlots(timeValues);
+
+    const mappedFields = mapFieldsData(fields);
+    const sortedFields = sortFieldsByPremier(mappedFields);
+
+    const { games } = defineGames(sortedFields, timeSlots!);
+
+    const mappedTeams = mapTeamsData(teams, divisions);
+    const mappedFacilities = mapFacilitiesData(facilities);
+
+    const mappedDivisions = mapDivisionsData(divisions);
+
+    return this.setState({
+      games,
+      timeSlots,
+      divisions: mappedDivisions,
+      fields: sortedFields,
+      teams: mappedTeams,
+      facilities: mappedFacilities,
+    });
+  };
+
+  calculateSchedules = () => {
+    const { fields, teams, games, timeSlots, facilities } = this.state;
+    const { divisions, event } = this.props;
+
+    if (!event || !fields || !teams || !games || !timeSlots || !facilities)
+      return;
+
+    const mappedDivisions = mapDivisionsData(divisions!);
+    const gameOptions = setGameOptions(event);
+
+    const tournamentBaseInfo = {
+      facilities,
+      gameOptions,
+      divisions: mappedDivisions,
+    };
+
+    const schedulerResult = new Scheduler(
+      fields,
+      teams,
+      games,
+      timeSlots,
+      tournamentBaseInfo
+    );
+
+    this.setState(
+      {
+        schedulerResult,
+      },
+      this.calculateDiagnostics
+    );
+
+    this.props.fillSchedulesTable(schedulerResult.teamCards);
+  };
+
+  calculateDiagnostics = () => {
+    const { fields, games, divisions, facilities } = this.state;
+    const { schedulesTeamCards, scheduleData, schedule, event } = this.props;
+
+    const localSchedule = scheduleData || schedule;
+
+    if (
+      !schedulesTeamCards ||
+      !fields ||
+      !games ||
+      !divisions ||
+      !facilities ||
+      !event ||
+      !localSchedule
+    ) {
+      return;
+    }
+
+    const timeValues = getTimeValuesFromEventSchedule(event, localSchedule);
+    const totalGameTime = calculateTotalGameTime(
+      timeValues.preGameWarmup,
+      timeValues.periodDuration,
+      timeValues.timeBtwnPeriods,
+      timeValues.periodsPerGame
+    );
+
+    const diagnosticsProps: ITeamsDiagnosticsProps = {
+      teamCards: schedulesTeamCards,
+      fields,
+      games,
+      divisions,
+      totalGameTime,
+    };
+
+    const divisionsDiagnosticsProps: IDivisionsDiagnosticsProps = {
+      ...diagnosticsProps,
+      facilities,
+    };
+
+    const teamsDiagnostics = formatTeamsDiagnostics(diagnosticsProps);
+    const divisionsDiagnostics = formatDivisionsDiagnostics(
+      divisionsDiagnosticsProps
+    );
+
+    this.setState({
+      teamsDiagnostics,
+      divisionsDiagnostics,
+    });
+  };
+
+  openTeamsDiagnostics = () =>
+    this.setState({
+      teamsDiagnosticsOpen: true,
+    });
+
+  openDivisionsDiagnostics = () =>
+    this.setState({
+      divisionsDiagnosticsOpen: true,
+    });
+
+  closeDiagnostics = () =>
+    this.setState({
+      teamsDiagnosticsOpen: false,
+      divisionsDiagnosticsOpen: false,
+    });
+
+  openCancelConfirmation = () =>
+    this.setState({ cancelConfirmationOpen: true });
+
+  closeCancelConfirmation = () =>
+    this.setState({ cancelConfirmationOpen: false });
+
+  onCancel = () => {
+    this.openCancelConfirmation();
+  };
+
+  onExit = () => {
+    this.props.history.goBack();
+  };
+
+  onSaveDraft = async () => {
+    const { cancelConfirmationOpen, games, scheduleId } = this.state;
+    const {
+      schedulesTeamCards,
+      scheduleData,
+      draftSaved,
+      schedulesDetails,
+    } = this.props;
+
+    const schedule = scheduleData
+      ? mapScheduleData(scheduleData)
+      : this.props.schedule;
+
+    if (!games || !schedulesTeamCards || !schedule)
+      return errorToast("Couldn't save the data");
+
+    const schedulesTableGames = settleTeamsPerGames(games, schedulesTeamCards);
+    const scheduleDetails: ISchedulesDetails[] = await mapSchedulesTeamCards(
+      schedule,
+      schedulesTableGames,
+      true,
+      schedulesDetails
+    );
+
+    if (!scheduleId && !draftSaved) {
+      this.props.saveDraft(schedule, scheduleDetails);
+    } else {
+      this.props.updateDraft(schedule, scheduleDetails);
+    }
+
+    if (cancelConfirmationOpen) {
+      this.closeCancelConfirmation();
+      this.onExit();
+    }
+  };
+
+  onScheduleCardsUpdate = (teamCards: ITeamCard[]) => {
+    this.props.fillSchedulesTable(teamCards);
+  };
+
+  onScheduleCardUpdate = (teamCard: ITeamCard) => {
+    this.props.updateSchedulesTable(teamCard);
+  };
+
+  renderPublishBtn = (status: string) => {
+    switch (status) {
+      case 'Published':
+        return (
+          <Button
+            label="Unpublish"
+            variant="contained"
+            color="primary"
+            onClick={() => {}}
+          />
+        );
+      case 'Draft':
+        return (
+          <Button
+            label="Save and Publish"
+            variant="contained"
+            color="primary"
+            onClick={() => {}}
+          />
+        );
+    }
+  };
+
   render() {
+    const {
+      divisions,
+      event,
+      eventSummary,
+      schedulesTeamCards,
+      draftSaved,
+      onScheduleUndo,
+      schedulesHistoryLength,
+      savingInProgress,
+      scheduleData,
+      pools,
+    } = this.props;
+
+    const {
+      fields,
+      timeSlots,
+      games,
+      facilities,
+      teamsDiagnostics,
+      divisionsDiagnostics,
+      teamsDiagnosticsOpen,
+      divisionsDiagnosticsOpen,
+      cancelConfirmationOpen,
+    } = this.state;
+
+    const loadCondition = !!(
+      fields?.length &&
+      games?.length &&
+      timeSlots?.length &&
+      divisions?.length &&
+      facilities?.length &&
+      pools?.length &&
+      event &&
+      eventSummary?.length &&
+      schedulesTeamCards?.length
+    );
+
+    console.log(
+      fields?.length,
+      games?.length,
+      timeSlots?.length,
+      facilities?.length,
+      event,
+      divisions?.length,
+      eventSummary?.length,
+      schedulesTeamCards?.length
+    );
+
     return (
-      <div>
-        <SchedulesMatrix timeSlots={timeSlots} fields={fields} teams={teams} />
+      <div className={styles.container}>
+        <div className={styles.paperWrapper}>
+          <Paper>
+            <div className={styles.paperContainer}>
+              <div>
+                {loadCondition && !this.state.isLoading && (
+                  <HeadingLevelThree>
+                    <span>{scheduleData?.schedule_name}</span>
+                  </HeadingLevelThree>
+                )}
+              </div>
+              <div className={styles.btnsGroup}>
+                <Button
+                  label="Close"
+                  variant="text"
+                  color="secondary"
+                  onClick={this.onCancel}
+                />
+                <Button
+                  label="Save"
+                  variant="contained"
+                  color="primary"
+                  disabled={draftSaved || savingInProgress}
+                  onClick={this.onSaveDraft}
+                />
+                {loadCondition &&
+                  !this.state.isLoading &&
+                  this.renderPublishBtn(
+                    scheduleData?.schedule_status || 'Draft'
+                  )}
+              </div>
+            </div>
+          </Paper>
+        </div>
+
+        {loadCondition && !this.state.isLoading ? (
+          <TableSchedule
+            tableType={TableScheduleTypes.SCHEDULES}
+            event={event!}
+            fields={fields!}
+            pools={pools!}
+            games={games!}
+            timeSlots={timeSlots!}
+            divisions={divisions!}
+            facilities={facilities!}
+            teamCards={schedulesTeamCards!}
+            eventSummary={eventSummary!}
+            scheduleData={scheduleData!}
+            historyLength={schedulesHistoryLength}
+            onTeamCardsUpdate={this.onScheduleCardsUpdate}
+            onTeamCardUpdate={this.onScheduleCardUpdate}
+            onUndo={onScheduleUndo}
+          />
+        ) : (
+          <div className={styles.loadingWrapper}>
+            <SchedulesLoader time={5000} />
+          </div>
+        )}
+
+        <div className={styles.diagnosticsContainer}>
+          {loadCondition && !this.state.isLoading && teamsDiagnostics && (
+            <>
+              <Button
+                label="Teams Diagnostics"
+                variant="contained"
+                color="primary"
+                onClick={this.openTeamsDiagnostics}
+              />
+              <Diagnostics
+                isOpen={teamsDiagnosticsOpen}
+                tableData={teamsDiagnostics}
+                onClose={this.closeDiagnostics}
+                diagnosticType={DiagnosticTypes.TEAMS_DIAGNOSTICS}
+              />
+            </>
+          )}
+
+          {loadCondition && !this.state.isLoading && divisionsDiagnostics && (
+            <>
+              <Button
+                label="Divisions Diagnostics"
+                variant="contained"
+                color="primary"
+                onClick={this.openDivisionsDiagnostics}
+              />
+              <Diagnostics
+                isOpen={divisionsDiagnosticsOpen}
+                tableData={divisionsDiagnostics}
+                onClose={this.closeDiagnostics}
+                diagnosticType={DiagnosticTypes.DIVISIONS_DIAGNOSTICS}
+              />
+            </>
+          )}
+          <PopupExposure
+            isOpen={cancelConfirmationOpen}
+            onClose={this.closeCancelConfirmation}
+            onExitClick={this.onExit}
+            onSaveClick={this.onSaveDraft}
+          />
+        </div>
       </div>
     );
   }
 }
 
-export default Schedules;
+const mapStateToProps = ({
+  pageEvent,
+  schedules,
+  scheduling,
+  schedulesTable,
+  divisions,
+}: IRootState) => ({
+  event: pageEvent?.tournamentData.event,
+  facilities: pageEvent?.tournamentData.facilities,
+  divisions: pageEvent?.tournamentData.divisions,
+  teams: pageEvent?.tournamentData.teams,
+  fields: pageEvent?.tournamentData.fields,
+  eventSummary: schedules?.eventSummary,
+  schedulesTeamCards: schedulesTable?.current,
+  schedulesHistoryLength: schedulesTable?.previous.length,
+  draftSaved: schedules?.draftIsAlreadySaved,
+  savingInProgress: schedules?.savingInProgress,
+  scheduleData: scheduling?.schedule,
+  schedule: schedules?.schedule,
+  schedulesDetails: schedules?.schedulesDetails,
+  pools: divisions?.pools,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators(
+    {
+      saveDraft,
+      updateDraft,
+      fetchFields,
+      fetchEventSummary,
+      fillSchedulesTable,
+      updateSchedulesTable,
+      onScheduleUndo,
+      fetchSchedulesDetails,
+      getAllPools,
+    },
+    dispatch
+  );
+
+export default connect<IMapStateToProps, IMapDispatchToProps>(
+  mapStateToProps,
+  mapDispatchToProps
+)(Schedules);

@@ -20,28 +20,33 @@ import {
   UPLOAD_FILE_MAP_SUCCESS,
   UPLOAD_FILE_MAP_FAILURE,
 } from './action-types';
+import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { facilitySchema, fieldSchema } from 'validations';
 import { getVarcharEight, uploadFile } from 'helpers';
 import { IFacility, IField, IUploadFile } from 'common/models';
 
-const loadFacilities: ActionCreator<ThunkAction<
-  void,
-  {},
-  null,
-  FacilitiesAction
->> = (eventId: string) => async (dispatch: Dispatch) => {
+const loadFacilities = (eventId: string) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
   try {
     dispatch({
       type: LOAD_FACILITIES_START,
     });
 
+    const { event } = getState().pageEvent.tournamentData;
     const facilities = await Api.get(`/facilities?event_id=${eventId}`);
+    const mappedFacilitiesByEvent = facilities.map((it: IFacility) => ({
+      ...it,
+      first_game_time: it.first_game_time || event?.first_game_time,
+      last_game_end: it.last_game_end || event?.last_game_end,
+    }));
 
     dispatch({
       type: LOAD_FACILITIES_SUCCESS,
       payload: {
-        facilities,
+        facilities: mappedFacilitiesByEvent,
       },
     });
   } catch {
@@ -81,24 +86,39 @@ const loadFields: ActionCreator<ThunkAction<
   }
 };
 
-const addEmptyFacility = (eventId: string): FacilitiesAction => ({
-  type: ADD_EMPTY_FACILITY,
-  payload: {
-    facility: {
-      ...EMPTY_FACILITY,
-      facilities_id: getVarcharEight(),
-      isNew: true,
-      event_id: eventId,
-    },
-  },
-});
+const addEmptyFacility = (eventId: string) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
+  const { tournamentData } = getState().pageEvent;
 
-const addEmptyField = (facilityId: string): FacilitiesAction => ({
+  const emptyFacility = {
+    ...EMPTY_FACILITY,
+    event_id: eventId,
+    facilities_id: getVarcharEight(),
+    first_game_time: tournamentData.event?.first_game_time,
+    last_game_end: tournamentData.event?.last_game_end,
+    isNew: true,
+  };
+
+  dispatch({
+    type: ADD_EMPTY_FACILITY,
+    payload: {
+      facility: emptyFacility,
+    },
+  });
+};
+
+const addEmptyField = (
+  facilityId: string,
+  fieldsLength: number
+): FacilitiesAction => ({
   type: ADD_EMPTY_FIELD,
   payload: {
     field: {
       ...EMPTY_FIELD,
       field_id: getVarcharEight(),
+      field_name: `Field ${fieldsLength + 1}`,
       isNew: true,
       facilities_id: facilityId,
     },
@@ -128,6 +148,26 @@ const saveFacilities: ActionCreator<ThunkAction<
   dispatch: Dispatch
 ) => {
   try {
+    const mappedFacilityFields = Object.values(
+      fields.reduce((acc, it: IField) => {
+        const facilityId = it.facilities_id;
+
+        acc[facilityId] = [...(acc[facilityId] || []), it];
+
+        return acc;
+      }, {})
+    );
+
+    for await (let mappedFields of mappedFacilityFields) {
+      await Yup.array()
+        .of(fieldSchema)
+        .unique(
+          team => team.field_name,
+          'Oops. It looks like you already have fields with the same name. The field must have a unique name.'
+        )
+        .validate(mappedFields);
+    }
+
     await Yup.array()
       .of(facilitySchema)
       .unique(
@@ -135,14 +175,6 @@ const saveFacilities: ActionCreator<ThunkAction<
         'Oops. It looks like you already have facilities with the same name. The facility must have a unique name.'
       )
       .validate(facilities);
-
-    await Yup.array()
-      .of(fieldSchema)
-      .unique(
-        field => field.field_name,
-        'Oops. It looks like you already have fields with the same name. The field must have a unique name.'
-      )
-      .validate(fields);
 
     for await (let facility of facilities) {
       const copiedFacility = { ...facility };
@@ -187,6 +219,7 @@ const saveFacilities: ActionCreator<ThunkAction<
       type: SAVE_FACILITIES_SUCCESS,
       payload: {
         facilities,
+        fields,
       },
     });
 

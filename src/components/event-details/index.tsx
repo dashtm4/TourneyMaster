@@ -7,9 +7,10 @@ import {
   saveEventDetails,
   createEvent,
   removeFiles,
+  deleteEvent,
 } from './logic/actions';
 import { EventDetailsDTO, IIconFile } from './logic/model';
-import { IAppState } from './logic/reducer';
+import { IEventState } from './logic/reducer';
 
 import PrimaryInformationSection from './primary-information';
 import EventStructureSection from './event-structure';
@@ -17,13 +18,17 @@ import MediaAssetsSection from './media-assets';
 import PlayoffsSection from './playoffs';
 
 import { Button, HeadingLevelTwo, Paper, Loader } from 'components/common';
-import { IUploadFile } from 'common/models';
+import { IUploadFile, BindingCbWithOne } from 'common/models';
 import { uploadFile } from 'helpers';
 import styles from './styles.module.scss';
 import { eventState } from './state';
+import DeleteIcon from '@material-ui/icons/Delete';
+import history from '../../browserhistory';
+import { PopupExposure } from 'components/common';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 interface IMapStateProps {
-  event: IAppState;
+  event: IEventState;
 }
 
 interface Props extends IMapStateProps {
@@ -33,6 +38,7 @@ interface Props extends IMapStateProps {
   createEvent: (event: Partial<EventDetailsDTO>) => void;
   uploadFiles: (files: IIconFile[]) => void;
   removeFiles: (files: IIconFile[]) => void;
+  deleteEvent: BindingCbWithOne<string>;
 }
 
 type State = {
@@ -41,6 +47,8 @@ type State = {
   error: boolean;
   expanded: boolean[];
   expandAll: boolean;
+  isModalOpen: boolean;
+  isDeleteModalOpen: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
@@ -50,6 +58,8 @@ class EventDetails extends Component<Props, State> {
     error: false,
     expanded: [true, true, true, true],
     expandAll: false,
+    isModalOpen: false,
+    isDeleteModalOpen: false,
   };
 
   componentDidMount() {
@@ -107,6 +117,9 @@ class EventDetails extends Component<Props, State> {
 
   onSave = () => {
     const { event, eventId } = this.state;
+
+    this.setState({ isModalOpen: false });
+
     if (!event) return;
 
     if (eventId) {
@@ -132,17 +145,48 @@ class EventDetails extends Component<Props, State> {
     });
   };
 
-  render() {
-    const eventTypeOptions = ['Tournament', 'Showcase'];
+  onDeleteClick = () => {
+    this.setState({ isDeleteModalOpen: true });
+  };
 
+  onDeleteModalClose = () => {
+    this.setState({ isDeleteModalOpen: false });
+  };
+
+  onCancelClick = () => {
+    this.setState({ isModalOpen: true });
+  };
+
+  onModalClose = () => {
+    this.setState({ isModalOpen: false });
+  };
+
+  onCancel = () => {
+    history.push('/');
+  };
+
+  render() {
+    const eventTypeOptions = ['Tournament', 'Showcase', 'League'];
     const { event } = this.state;
     const { isEventLoading } = this.props.event;
-    return !event || isEventLoading ? (
-      <Loader />
-    ) : (
+
+    const deleteMessage = `You are about to delete this event and this cannot be undone. All related data to this event will be deleted too.
+      Please, enter the name of the event to continue.`;
+
+    if (!event || isEventLoading) {
+      return <Loader />;
+    }
+
+    return (
       <div className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.paperWrapper}>
+            <Button
+              label="Cancel"
+              color="secondary"
+              variant="text"
+              onClick={this.onCancelClick}
+            />
             <Button
               label="Save"
               color="primary"
@@ -151,14 +195,26 @@ class EventDetails extends Component<Props, State> {
             />
           </div>
         </Paper>
-        <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
-        <div className={styles.buttonContainer}>
-          <Button
-            label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
-            variant="text"
-            color="secondary"
-            onClick={this.onToggleAll}
-          />
+        <div className={styles.headingContainer}>
+          <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
+          <div>
+            {this.props.match?.params.eventId && (
+              <Button
+                label="Delete Event"
+                variant="text"
+                color="secondary"
+                type="dangerLink"
+                icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
+                onClick={this.onDeleteClick}
+              />
+            )}
+            <Button
+              label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+              variant="text"
+              color="secondary"
+              onClick={this.onToggleAll}
+            />
+          </div>
         </div>
         <PrimaryInformationSection
           eventData={event}
@@ -188,6 +244,23 @@ class EventDetails extends Component<Props, State> {
           index={3}
           expanded={this.state.expanded[3]}
           onToggleOne={this.onToggleOne}
+          logo={event.desktop_icon_URL}
+        />
+        <DeletePopupConfrim
+          type={'event'}
+          deleteTitle={event.event_name!}
+          message={deleteMessage}
+          isOpen={this.state.isDeleteModalOpen}
+          onClose={this.onDeleteModalClose}
+          onDeleteClick={() => {
+            this.props.deleteEvent(event.event_id!);
+          }}
+        />
+        <PopupExposure
+          isOpen={this.state.isModalOpen}
+          onClose={this.onModalClose}
+          onExitClick={this.onCancel}
+          onSaveClick={this.onSave}
         />
       </div>
     );
@@ -195,7 +268,7 @@ class EventDetails extends Component<Props, State> {
 }
 
 interface IRootState {
-  event: IAppState;
+  event: IEventState;
 }
 
 const mapStateToProps = (state: IRootState): IMapStateProps => ({
@@ -209,6 +282,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       saveEventDetails,
       createEvent,
       removeFiles,
+      deleteEvent,
     },
     dispatch
   );

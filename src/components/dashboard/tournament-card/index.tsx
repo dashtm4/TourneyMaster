@@ -3,7 +3,7 @@ import { History } from 'history';
 import Paper from '../../common/paper';
 import styles from './style.module.scss';
 import Button from '../../common/buttons/button';
-import tournamentLogoExample from '../../../assets/tournamentLogoExample.svg';
+import logo from '../../../assets/logo.png';
 import { getTournamentStatusColor } from '../../../helpers/getTournamentStatusColor';
 import moment from 'moment';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
@@ -37,10 +37,11 @@ const TournamentCard = ({
           <div className={styles.cardImage}>
             <img
               alt="logo"
+              className={styles.logo}
               src={
-                !event.event_logo_path || event.event_logo_path === 'logopath'
-                  ? tournamentLogoExample
-                  : event.event_logo_path
+                !event.desktop_icon_URL
+                  ? logo
+                  : `https://tourneymaster.s3.amazonaws.com/public/${event.desktop_icon_URL}`
               }
             />
           </div>
@@ -59,7 +60,6 @@ const TournamentCard = ({
               color="primary"
               onClick={onTournamentManage}
             />
-            {/* <Button label="Duplicate" variant="text" color="secondary" /> */}
           </div>
         </div>
         <div className={styles.tournamentContent}>

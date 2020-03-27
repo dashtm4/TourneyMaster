@@ -11,6 +11,7 @@ export interface IEvent {
   tag?: string;
   type: string;
   hasReminder?: number;
+  allDay: boolean;
 }
 
 export interface ICalendarEvent {

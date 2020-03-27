@@ -6,6 +6,7 @@ import { BindingAction } from '../../../common/models/callback';
 import { ITeam } from '../../../common/models/teams';
 import { Icons } from '../../../common/enums/icons';
 import styles from './styles.module.scss';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 const EDIT_ICON_STYLES = {
   marginRight: '5px',
@@ -36,6 +37,7 @@ interface Props {
   onDeleteTeamClick: (team: ITeam) => void;
   onChangeTeam: (evt: React.ChangeEvent<HTMLInputElement>) => void;
   onCloseModal: BindingAction;
+  deleteMessage?: string;
 }
 
 const TeamDetailsPopup = ({
@@ -46,9 +48,15 @@ const TeamDetailsPopup = ({
   onDeleteTeamClick,
   onChangeTeam,
   onCloseModal,
+  deleteMessage,
 }: Props) => {
   const [isEdit, onEditClick] = useState(false);
   const [teamTitle] = useState(team?.long_name);
+  const [isDeletePopupOpen, onDeletePopup] = useState(false);
+
+  const onDeletePopupClose = () => {
+    onDeletePopup(false);
+  };
 
   if (!team) {
     return null;
@@ -232,7 +240,7 @@ const TeamDetailsPopup = ({
         <div className={styles.btnsWrapper}>
           <span className={styles.BtnDeleteWrapper}>
             <Button
-              onClick={() => onDeleteTeamClick(team)}
+              onClick={() => onDeletePopup(true)}
               icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
               label="Delete Team"
               variant="text"
@@ -255,6 +263,14 @@ const TeamDetailsPopup = ({
           </p>
         </div>
       </form>
+      <DeletePopupConfrim
+        type={'team'}
+        message={deleteMessage}
+        deleteTitle={team.long_name!}
+        isOpen={isDeletePopupOpen}
+        onClose={onDeletePopupClose}
+        onDeleteClick={() => onDeleteTeamClick(team)}
+      />
     </div>
   );
 };

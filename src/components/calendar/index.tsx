@@ -60,20 +60,27 @@ class Calendar extends Component<any, IState> {
   }
 
   componentDidUpdate(prevProps: IProps) {
-    const { calendarEventCreated: prevEventCreated } = prevProps;
-    const { calendarEventCreated } = this.props;
+    // const { calendarEventCreated: prevEventCreated } = prevProps;
+    // const { calendarEventCreated } = this.props;
+    // if (
+    //   prevEventCreated !== calendarEventCreated &&
+    //   calendarEventCreated === true
+    // ) {
+    //   this.props.getCalendarEvents();
+    // }
     if (
-      prevEventCreated !== calendarEventCreated &&
-      calendarEventCreated === true
+      (this.props.eventsList?.length && !this.state.eventsList) ||
+      prevProps.eventsList !== this.props.eventsList
     ) {
-      this.props.getCalendarEvents();
-    }
-
-    if (!prevProps.eventsList?.length && !this.state.eventsList) {
       this.setState({
         eventsList: this.props.eventsList,
       });
     }
+    // if (!prevProps.eventsList?.length && !this.state.eventsList) {
+    //   this.setState({
+    //     eventsList: this.props.eventsList,
+    //   });
+    // }
   }
 
   componentWillUnmount() {

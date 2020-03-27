@@ -4,13 +4,44 @@ import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import History from 'browserhistory';
 import { loadScoresData } from './logic/actions';
-import { AppState } from './logic/reducer';
 import Navigation from './components/navigation';
-import Scoring from './components/scoring';
-import { Loader, PopupExposure } from 'components/common';
-import { IDivision, ITeam, IEventSummary } from 'common/models';
-import { Routes } from 'common/enums';
-import { DefaulSelectFalues, ViewTypes, DayTypes } from './types';
+import { Loader, PopupExposure, TableSchedule } from 'components/common';
+import {
+  IDivision,
+  ITeam,
+  IEventSummary,
+  ISchedulesDetails,
+  IFacility,
+  IEventDetails,
+  IField,
+  ISchedule,
+  IPool,
+} from 'common/models';
+import { Routes, TableScheduleTypes } from 'common/enums';
+import styles from './styles.module.scss';
+import {
+  mapFacilitiesData,
+  mapFieldsData,
+  mapTeamsData,
+  mapDivisionsData,
+} from 'components/schedules/mapTournamentData';
+import { getTimeValuesFromEventSchedule, calculateTimeSlots } from 'helpers';
+import {
+  sortFieldsByPremier,
+  defineGames,
+  IGame,
+} from 'components/common/matrix-table/helper';
+import { IAppState } from 'reducers/root-reducer.types';
+import {
+  ITeam as IScheduleTeam,
+  ITeamCard,
+} from 'common/models/schedule/teams';
+import { mapTeamsFromSchedulesDetails } from 'components/schedules/mapScheduleData';
+import { fillSchedulesTable } from 'components/schedules/logic/schedules-table/actions';
+import ITimeSlot from 'common/models/schedule/timeSlots';
+import { IScheduleFacility } from 'common/models/schedule/facilities';
+import { IScheduleDivision } from 'common/models/schedule/divisions';
+import { IField as IScheduleField } from 'common/models/schedule/fields';
 
 interface MatchParams {
   eventId?: string;
@@ -19,19 +50,29 @@ interface MatchParams {
 interface Props {
   isLoading: boolean;
   isLoaded: boolean;
+  event: IEventDetails | null;
+  facilities: IFacility[];
+  fields: IField[];
   divisions: IDivision[];
+  pools: IPool[];
   teams: ITeam[];
-  fields: IEventSummary[];
+  schedule: ISchedule | null;
+  eventSummary: IEventSummary[];
+  schedulesDetails: ISchedulesDetails[];
+  schedulesTeamCards?: ITeamCard[];
   loadScoresData: (eventId: string) => void;
+  fillSchedulesTable: (teamCards: ITeamCard[]) => void;
 }
 
 interface State {
+  games?: IGame[];
+  timeSlots?: ITimeSlot[];
+  teams?: IScheduleTeam[];
+  fields?: IScheduleField[];
+  facilities?: IScheduleFacility[];
+  divisions?: IScheduleDivision[];
   isExposurePopupOpen: boolean;
-  view: ViewTypes;
-  selectedDay: DayTypes;
-  selectedDivision: string;
-  selectedTeam: string;
-  selectedField: string;
+  isEnterScores: boolean;
 }
 
 class RecordScores extends React.Component<
@@ -42,12 +83,8 @@ class RecordScores extends React.Component<
     super(props);
 
     this.state = {
-      view: ViewTypes.VIEW_ONLY,
-      selectedDay: DayTypes.DAY_ONE,
-      selectedDivision: DefaulSelectFalues.ALL,
-      selectedTeam: DefaulSelectFalues.ALL,
-      selectedField: DefaulSelectFalues.ALL,
       isExposurePopupOpen: false,
+      isEnterScores: false,
     };
   }
 
@@ -60,14 +97,75 @@ class RecordScores extends React.Component<
     }
   }
 
-  onChangeSelect = ({
-    target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) =>
-    this.setState({ [name]: value } as Pick<any, keyof State>);
+  componentDidUpdate(prevProps: Props) {
+    const { schedule, schedulesDetails } = this.props;
+    const { teams } = this.state;
 
-  onChangeView = (type: ViewTypes) => this.setState({ view: type });
+    if (!prevProps.schedule && this.props.schedule) {
+      this.calculateNeccessaryData();
+      return;
+    }
 
-  onChangeDay = (day: DayTypes) => this.setState({ selectedDay: day });
+    if (
+      !prevProps.schedulesTeamCards &&
+      schedulesDetails &&
+      Boolean(schedulesDetails.length) &&
+      teams?.length &&
+      Boolean(teams?.length) &&
+      schedule
+    ) {
+      const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
+
+      this.props.fillSchedulesTable(mappedTeams);
+    }
+  }
+
+  calculateNeccessaryData = () => {
+    const {
+      event,
+      schedule,
+      fields,
+      teams,
+      divisions,
+      facilities,
+    } = this.props;
+
+    if (
+      !schedule ||
+      !event ||
+      !Boolean(fields.length) ||
+      !Boolean(teams.length) ||
+      !Boolean(divisions.length) ||
+      !Boolean(facilities.length)
+    ) {
+      return;
+    }
+
+    const timeValues = getTimeValuesFromEventSchedule(event, schedule);
+
+    const timeSlots = calculateTimeSlots(timeValues);
+
+    const mappedFields = mapFieldsData(fields);
+    const sortedFields = sortFieldsByPremier(mappedFields);
+
+    const { games } = defineGames(sortedFields, timeSlots!);
+
+    const mappedTeams = mapTeamsData(teams, divisions);
+    const mappedFacilities = mapFacilitiesData(facilities);
+
+    const mappedDivisions = mapDivisionsData(divisions);
+
+    return this.setState({
+      games,
+      timeSlots,
+      divisions: mappedDivisions,
+      fields: sortedFields,
+      teams: mappedTeams,
+      facilities: mappedFacilities,
+    });
+  };
+
+  onChangeView = (flag: boolean) => this.setState({ isEnterScores: flag });
 
   leavePage = () => {
     const eventId = this.props.match.params.eventId;
@@ -89,39 +187,67 @@ class RecordScores extends React.Component<
 
   render() {
     const {
-      view,
-      selectedDay,
-      selectedDivision,
-      selectedTeam,
-      selectedField,
+      isLoading,
+      divisions,
+      event,
+      eventSummary,
+      pools,
+      schedule,
+      schedulesTeamCards,
+    } = this.props;
+
+    const {
+      fields,
+      timeSlots,
+      games,
+      facilities,
+      isEnterScores,
       isExposurePopupOpen,
     } = this.state;
 
-    const { isLoading, divisions, teams, fields } = this.props;
-
-    if (isLoading) {
-      return <Loader />;
-    }
+    const loadCondition = !!(
+      fields?.length &&
+      games?.length &&
+      timeSlots?.length &&
+      facilities?.length &&
+      event &&
+      Boolean(divisions.length) &&
+      Boolean(pools.length) &&
+      Boolean(eventSummary.length) &&
+      schedulesTeamCards?.length
+    );
 
     return (
       <>
         <Navigation
-          view={view}
+          isEnterScores={isEnterScores}
           onLeavePage={this.onLeavePage}
           onChangeView={this.onChangeView}
         />
-        <Scoring
-          divisions={divisions}
-          teams={teams}
-          fields={fields}
-          view={view}
-          selectedDay={selectedDay}
-          selectedDivision={selectedDivision}
-          selectedTeam={selectedTeam}
-          selectedField={selectedField}
-          onChangeSelect={this.onChangeSelect}
-          onChangeDay={this.onChangeDay}
-        />
+        <section className={styles.scoringWrapper}>
+          <h2 className="visually-hidden">Scoring</h2>
+          {loadCondition && !isLoading ? (
+            <TableSchedule
+              tableType={TableScheduleTypes.SCORES}
+              event={event!}
+              fields={fields!}
+              games={games!}
+              timeSlots={timeSlots!}
+              pools={pools}
+              divisions={divisions!}
+              facilities={facilities!}
+              teamCards={schedulesTeamCards!}
+              eventSummary={eventSummary!}
+              scheduleData={schedule!}
+              isEnterScores={isEnterScores}
+              onTeamCardsUpdate={() => {}}
+              onTeamCardUpdate={() => {}}
+              onUndo={() => {}}
+            />
+          ) : (
+            <Loader />
+          )}
+        </section>
         <PopupExposure
           isOpen={isExposurePopupOpen}
           onClose={this.onClosePopup}
@@ -133,17 +259,21 @@ class RecordScores extends React.Component<
   }
 }
 
-interface IRootState {
-  recordScores: AppState;
-}
-
 export default connect(
-  ({ recordScores }: IRootState) => ({
+  ({ recordScores, schedulesTable }: IAppState) => ({
     isLoading: recordScores.isLoading,
     isLoaded: recordScores.isLoaded,
+    event: recordScores.event,
+    facilities: recordScores.facilities,
+    fields: recordScores.fields,
     divisions: recordScores.divisions,
+    pools: recordScores.pools,
     teams: recordScores.teams,
-    fields: recordScores.eventSummary,
+    schedule: recordScores.schedule,
+    eventSummary: recordScores.eventSummary,
+    schedulesTeamCards: schedulesTable?.current,
+    schedulesDetails: recordScores.schedulesDetails,
   }),
-  (dispatch: Dispatch) => bindActionCreators({ loadScoresData }, dispatch)
+  (dispatch: Dispatch) =>
+    bindActionCreators({ loadScoresData, fillSchedulesTable }, dispatch)
 )(RecordScores);

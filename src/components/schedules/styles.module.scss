@@ -1,0 +1,32 @@
+.container {
+  height: 100%;
+  .paperWrapper {
+    margin-bottom: 20px;
+    .paperContainer {
+      display: flex;
+      justify-content: space-between;
+      .btnsGroup {
+        > button {
+          margin-left: 15px;
+        }
+      }
+    }
+  }
+  .loadingWrapper {
+    padding-top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.diagnosticsContainer {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: 'flex';
+  justify-content: 'space-between';
+
+  > button {
+    margin-right: 10px;
+  }
+}

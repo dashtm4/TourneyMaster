@@ -8,6 +8,8 @@ import Button from 'components/common/buttons/button';
 import Input from 'components/common/input';
 import { ICalendarEvent } from 'common/models';
 import { DatePicker } from 'components/common';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import { PopupExposure } from 'components/common';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -25,9 +27,42 @@ const InfoModal = ({
   onUpdateCalendarEventDetails,
   setClickedEvent,
 }: IConfirmModalProps) => {
-  console.log(clickedEvent);
-
   const [editable, setEditable] = useState(false);
+  const [isDeleteModalOpen, onDeleteModalChange] = useState(false);
+  const [isModalConfirmOpen, onModalConfirmChange] = useState(false);
+
+  const onDeleteModalClose = () => {
+    onDeleteModalChange(false);
+  };
+
+  const onDeleteClick = () => {
+    onDeleteModalChange(true);
+  };
+
+  const onCancelClick = () => {
+    onModalConfirmChange(true);
+  };
+
+  const onModalConfirmClose = () => {
+    onModalConfirmChange(false);
+  };
+
+  const onDelete = () => {
+    onDeleteCalendarEvent(clickedEvent.cal_event_id);
+    onDeleteModalChange(false);
+    onClose();
+  };
+
+  const onSave = () => {
+    onUpdateCalendarEventDetails(clickedEvent);
+    onModalConfirmClose();
+    onClose();
+  };
+
+  const onExit = () => {
+    onModalConfirmClose();
+    onClose();
+  };
 
   const updateEvent = (name: string, value: any) =>
     setClickedEvent({ ...clickedEvent, [name]: value });
@@ -65,10 +100,7 @@ const InfoModal = ({
           color="secondary"
           type="dangerLink"
           icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
-          onClick={() => {
-            onDeleteCalendarEvent(clickedEvent.cal_event_id);
-            onClose();
-          }}
+          onClick={onDeleteClick}
         />
         <Button
           label="Edit"
@@ -84,16 +116,13 @@ const InfoModal = ({
           label="Cancel"
           variant="text"
           color="secondary"
-          onClick={() => onClose()}
+          onClick={onCancelClick}
         />
         <Button
           label="Save"
           variant="contained"
           color="primary"
-          onClick={() => {
-            onUpdateCalendarEventDetails(clickedEvent);
-            onClose();
-          }}
+          onClick={onSave}
         />
       </div>
     );
@@ -115,11 +144,11 @@ const InfoModal = ({
     return editable ? (
       <Input
         width="248px"
-        value={clickedEvent.cal_event_type || ''}
+        value={capitalize(clickedEvent.cal_event_type) || ''}
         disabled={true}
       />
     ) : (
-      clickedEvent.cal_event_type || '—'
+      capitalize(clickedEvent.cal_event_type) || '—'
     );
   };
 
@@ -193,10 +222,13 @@ const InfoModal = ({
             onChange={onEventDateTimeChange}
           />
         ) : (
-          `${format(clickedEvent.cal_event_startdate, 'MM-dd-yyyy, hh:mm a')}`
+          `${format(clickedEvent.cal_event_startdate, 'MM-dd-yyyy, h:mm a')}`
         );
     }
   };
+
+  const deleteMessage = `You are about to delete this ${clickedEvent.cal_event_type} and this cannot be undone.
+  Please, enter the word "${clickedEvent.cal_event_type}" to continue.`;
 
   return (
     <div className={styles.container}>
@@ -236,6 +268,20 @@ const InfoModal = ({
         </div>
       </div>
       <div className={styles.buttonsGroup}>{renderButtons()}</div>
+      <DeletePopupConfrim
+        type={''}
+        message={deleteMessage}
+        deleteTitle={clickedEvent.cal_event_type}
+        isOpen={isDeleteModalOpen}
+        onClose={onDeleteModalClose}
+        onDeleteClick={onDelete}
+      />
+      <PopupExposure
+        isOpen={isModalConfirmOpen}
+        onClose={onModalConfirmClose}
+        onExitClick={onExit}
+        onSaveClick={onSave}
+      />
     </div>
   );
 };

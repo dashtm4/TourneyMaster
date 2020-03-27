@@ -1,8 +1,10 @@
 import React from 'react';
+import { Checkbox } from 'components/common';
 import styles from '../styles.module.scss';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import { IRegistration } from 'common/models/registration';
+import { stringToLink } from 'helpers';
 
 interface IPrimaryInformationProps {
   data: Partial<IRegistration>;
@@ -21,15 +23,17 @@ const PrimaryInformation = ({
         <span className={styles.sectionTitle}>Division</span>
         <div>
           {divisions.map((division, index: number) => (
-            <Link
-              to={`/event/divisions-and-pools/${eventId}`}
+            <HashLink
               key={division.id}
               className={styles.link}
+              to={`/event/divisions-and-pools/${eventId}#${stringToLink(
+                division.name
+              )}`}
             >
               <span>{`${division.name}${
                 index === divisions.length - 1 ? '' : ', '
               }`}</span>
-            </Link>
+            </HashLink>
           ))}
         </div>
       </div>
@@ -70,6 +74,21 @@ const PrimaryInformation = ({
             moment(data.discount_enddate).format('MM-DD-YYYY')) ||
             '—'}
         </p>
+      </div>
+    </div>
+    <div className={styles.piSectionThirddRow}>
+      <div className={styles.sectionItem}>
+        <Checkbox
+          options={[
+            {
+              label: 'Upcharge Processing Fees',
+              checked: Boolean(
+                data ? data.upcharge_fees_on_registrations : false
+              ),
+              disabled: true,
+            },
+          ]}
+        />
       </div>
     </div>
   </div>

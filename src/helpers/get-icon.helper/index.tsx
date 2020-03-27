@@ -23,6 +23,16 @@ import WarningIcon from '@material-ui/icons/Warning';
 import FileCopy from '@material-ui/icons/FileCopy';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import DoneIcon from '@material-ui/icons/Done';
+import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
+import LockIcon from '@material-ui/icons/Lock';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import InfoIcon from '@material-ui/icons/Info';
+import PrintIcon from '@material-ui/icons/Print';
+import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
+import PanToolIcon from '@material-ui/icons/PanTool';
+import FlipToBackIcon from '@material-ui/icons/FlipToBack';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { PinIcon } from './own-icons';
 import { Icons } from '../../common/enums/icons';
 
@@ -48,7 +58,7 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <PinIcon style={iconStyles} />;
     case Icons.CLOCK:
       return <WatchLaterIcon style={iconStyles} />;
-    case Icons.REPORT:
+    case Icons.DESCRIPTION:
       return <DescriptionIcon style={iconStyles} />;
     case Icons.LIST:
       return <FormatListBulletedIcon style={iconStyles} />;
@@ -76,8 +86,27 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <CheckCircleIcon style={iconStyles} />;
     case Icons.DONE:
       return <DoneIcon style={iconStyles} />;
+    case Icons.SETTINGS_BACKUP_RESTORE:
+      return <SettingsBackupRestoreIcon style={iconStyles} />;
+    case Icons.LOCK:
+      return <LockIcon style={iconStyles} />;
+    case Icons.LOCK_OPEN:
+      return <LockOpenIcon style={iconStyles} />;
+    case Icons.INFO:
+      return <InfoIcon style={iconStyles} />;
+    case Icons.PRINT:
+      return <PrintIcon style={iconStyles} />;
+    case Icons.ZOOM:
+      return <ZoomOutMapIcon style={iconStyles} />;
+    case Icons.MOVE:
+      return <PanToolIcon style={iconStyles} />;
+    case Icons.FLIP:
+      return <FlipToBackIcon style={iconStyles} />;
+    case Icons.DROPDOWN:
+      return <ArrowDropDownIcon style={iconStyles} />;
+    case Icons.DROPUP:
+      return <ArrowDropUpIcon style={iconStyles} />;
   }
-
   return <ClearIcon />;
 };
 

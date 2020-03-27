@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import TournamentStatus from './components/tournament-status';
 import MenuItem from './components/menu-item';
 import { getIcon, countCompletedPercent } from 'helpers';
 import { Icons } from 'common/enums/icons';
-import { RequiredMenuKeys, EventStatuses } from 'common/enums';
+import { RequiredMenuKeys, EventStatuses, Routes } from 'common/enums';
 import { IMenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
+import { useLocation } from 'react-router-dom';
 
 enum MenuCollapsedTypes {
   PIN = 'Pin',
@@ -19,6 +20,7 @@ interface Props {
   tournamentStatus?: EventStatuses;
   changeTournamentStatus?: (status: EventStatuses) => void;
   eventName?: string;
+  hideOnList?: Routes[];
 }
 
 const Menu = ({
@@ -28,7 +30,10 @@ const Menu = ({
   isAllowEdit,
   tournamentStatus,
   changeTournamentStatus,
+  hideOnList,
 }: Props) => {
+  const location = useLocation();
+  const [hideDashboard, hideDashboardChange] = React.useState(false);
   const [isCollapsed, onCollapse] = React.useState(false);
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(list[0].title);
@@ -37,11 +42,17 @@ const Menu = ({
     RequiredMenuKeys.IS_COMPLETED
   );
 
+  useEffect(() => {
+    const value = !!hideOnList?.filter(el => location?.pathname.includes(el))
+      ?.length;
+    hideDashboardChange(value);
+  }, [location]);
+
   return (
     <aside
       className={`${styles.dashboardMenu} ${
-        isCollapsed ? styles.dashboardMenuCollapsed : ''
-      } `}
+        hideDashboard ? styles.dashboardHidden : ''
+      } ${isCollapsed ? styles.dashboardMenuCollapsed : ''} `}
       onMouseEnter={() => isCollapsible && onCollapse(false)}
       onMouseLeave={() => isCollapsible && onCollapse(true)}
     >

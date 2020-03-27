@@ -51,6 +51,8 @@ export interface EventDetailsDTO {
   updated_datetime: string;
   primary_location_lat?: number;
   primary_location_long?: number;
+  waiverhub_utilized?: number;
+  league_dates: string;
 }
 
 export interface IIconFile {

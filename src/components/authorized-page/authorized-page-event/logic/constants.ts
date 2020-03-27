@@ -54,7 +54,9 @@ export const EventMenu = [
     icon: Icons.CLOCK,
     link: Routes.SCHEDULING,
     children: [
-      // EventMenuTitles.TOURNAMENT_PLAY, EventMenuTitles.BRACKETS
+      EventMenuTitles.TOURNEY_ARCHITECT,
+      EventMenuTitles.TOURNAMENT_PLAY,
+      EventMenuTitles.BRACKETS,
     ],
     isAllowEdit: false,
     isCompleted: false,
@@ -69,7 +71,7 @@ export const EventMenu = [
   {
     title: EventMenuTitles.REPORTING,
     link: Routes.REPORTING,
-    icon: Icons.REPORT,
+    icon: Icons.DESCRIPTION,
     children: [],
     isAllowEdit: false,
   },

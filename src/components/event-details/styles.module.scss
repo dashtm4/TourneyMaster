@@ -5,9 +5,18 @@ $sectionBodyPadding: 20px 0;
   height: 100%;
   min-width: 792px;
 
+  .headingContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .paperWrapper {
     display: flex;
     justify-content: flex-end;
+    & > :first-child {
+      margin-right: 15px;
+    }
   }
 
   .blockHeading {
@@ -56,6 +65,17 @@ $sectionBodyPadding: 20px 0;
 
       justify-content: space-between;
       padding-bottom: 20px;
+      & > * {
+        width: 48%;
+      }
+    }
+
+    .gameTimesWrapper {
+      display: flex;
+      justify-content: space-between;
+
+      margin-bottom: 20px;
+
       & > * {
         width: 30%;
       }
@@ -106,12 +126,26 @@ $sectionBodyPadding: 20px 0;
       flex-direction: row;
       justify-content: space-between;
       align-items: flex-start;
+      .leagueDayContainer {
+        margin-top: 20px;
+      }
     }
 
     .esDetailsSecond {
       display: flex;
       justify-content: space-between;
       height: 120px;
+    }
+    .esDetailsThird {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      .waiverHubWrapper {
+        display: flex;
+        & > div {
+          display: block;
+        }
+      }
     }
   }
 
@@ -188,13 +222,13 @@ $sectionBodyPadding: 20px 0;
     .uploadWrapper {
       display: flex;
       justify-content: space-between;
-      width: 760px;
+      width: 100%;
       min-width: 228px;
 
       .uploadBlock {
         display: flex;
         flex-direction: column;
-        padding-right: 50px;
+        width: 45%;
 
         .uploadBlockTitle {
           font-size: 16px;

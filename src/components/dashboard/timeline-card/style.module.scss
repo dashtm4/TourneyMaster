@@ -19,6 +19,7 @@
   display: flex;
   flex-direction: row;
   margin: 0;
+  flex-grow: 1;
 }
 .notificationsContainer {
   margin: 0;
@@ -70,21 +71,6 @@
   background-color: #f4f4f4;
   z-index: 0;
 }
-.notification:nth-of-type(3n) {
-  .circle {
-    border-color: #ffcb00;
-  }
-}
-.notification:nth-of-type(3n + 1) {
-  .circle {
-    border-color: #00cc47;
-  }
-}
-.notification:nth-of-type(3n + 2) {
-  .circle {
-    border-color: red;
-  }
-}
 .tmNotificationsContainer {
   display: flex;
   padding: 50px 0 40px 0;
@@ -107,6 +93,7 @@
     .tmNotificationMessage {
       @extend .notificationMessage;
       font-size: 13px;
+      align-self: center;
     }
   }
 }

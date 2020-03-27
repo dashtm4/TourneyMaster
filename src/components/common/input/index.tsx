@@ -14,10 +14,12 @@ interface ITextFieldProps {
   rows?: string;
   value?: string | number;
   width?: string;
+  minWidth?: string;
   placeholder?: string;
   onChange?: any;
   name?: string;
   disabled?: boolean;
+  align?: string;
   type?: 'text' | 'number';
   isRequired?: boolean;
 }
@@ -32,18 +34,20 @@ const TextField: React.FC<ITextFieldProps> = ({
   value,
   onChange,
   width,
+  minWidth,
   placeholder,
   name,
   disabled,
   type,
+  align,
   isRequired,
 }) => (
-  <div className={styles.container}>
+  <div className={styles.container} style={{ alignItems: align || '' }}>
     <span className={styles.label}>{label}</span>
     <MuiTextField
       name={name}
       type={type || 'text'}
-      style={{ width }}
+      style={{ width, minWidth }}
       placeholder={placeholder}
       fullWidth={fullWidth}
       variant="outlined"

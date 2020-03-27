@@ -51,7 +51,11 @@ class AddDivisionForm extends React.Component<
     this.props.onChange('division_message', e.target.value, this.props.index);
 
   onColorChange = (value: string) =>
-    this.props.onChange('division_hex', value, this.props.index);
+    this.props.onChange(
+      'division_hex',
+      value.replace(/#/, () => ''),
+      this.props.index
+    );
 
   onHasMessageChange = () => {
     this.setState({

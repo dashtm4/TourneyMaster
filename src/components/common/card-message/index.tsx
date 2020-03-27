@@ -1,10 +1,11 @@
 import React from 'react';
 import { getIcon } from 'helpers/get-icon.helper';
+import { CardMessageTypes } from './types'
 import styles from './styles.module.scss';
 
 interface Props {
   children: string;
-  type: string;
+  type: CardMessageTypes;
   style?: object;
   iconStyle?: object;
 }

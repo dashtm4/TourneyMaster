@@ -5,16 +5,17 @@ import { RouteComponentProps } from 'react-router-dom';
 import { loadDivisionsTeams, loadPools, saveTeams } from './logic/actions';
 import Navigation from './components/navigation';
 import TeamManagement from './components/team-management';
-import PopupDeleteTeam from './components/popup-delete-team';
 import {
   HeadingLevelTwo,
   Modal,
   PopupTeamEdit,
   Loader,
+  PopupExposure,
 } from 'components/common';
 import { AppState } from './logic/reducer';
 import { IDivision, IPool, ITeam } from '../../common/models';
 import styles from './styles.module.scss';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 interface MatchParams {
   eventId?: string;
@@ -39,6 +40,7 @@ interface State {
   isEdit: boolean;
   isEditPopupOpen: boolean;
   isDeletePopupOpen: boolean;
+  isConfirmModalOpen: boolean;
 }
 
 class Teams extends React.Component<
@@ -56,6 +58,7 @@ class Teams extends React.Component<
       isEdit: false,
       isEditPopupOpen: false,
       isDeletePopupOpen: false,
+      isConfirmModalOpen: false,
     };
   }
 
@@ -105,12 +108,13 @@ class Teams extends React.Component<
     if (eventId) {
       saveTeams(teams);
     }
+    this.setState({ isConfirmModalOpen: false, isEdit: false });
   };
 
   onCancelClick = () => {
     const { teams } = this.props;
 
-    this.setState({ isEdit: false, teams });
+    this.setState({ isEdit: false, teams, isConfirmModalOpen: false });
   };
 
   onDeletePopupOpen = (team: ITeam) =>
@@ -145,7 +149,7 @@ class Teams extends React.Component<
       },
     }));
 
-  onSaveTeam = async () => {
+  onSaveTeam = () => {
     const { configurableTeam } = this.state;
 
     if (configurableTeam) {
@@ -161,11 +165,19 @@ class Teams extends React.Component<
 
   onCloseModal = () =>
     this.setState({
+      isDeletePopupOpen: false,
+      isEditPopupOpen: false,
       configurableTeam: null,
       currentDivision: null,
-      isEditPopupOpen: false,
-      isDeletePopupOpen: false,
     });
+
+  onConfirmModalClose = () => {
+    this.setState({ isConfirmModalOpen: false });
+  };
+
+  onCancel = () => {
+    this.setState({ isConfirmModalOpen: true });
+  };
 
   render() {
     const { isLoading, divisions, pools, loadPools } = this.props;
@@ -180,6 +192,9 @@ class Teams extends React.Component<
       isDeletePopupOpen,
     } = this.state;
 
+    const deleteMessage = `You are about to delete this team and this cannot be undone.
+    Please, enter the name of the team to continue.`;
+
     if (isLoading) {
       return <Loader />;
     }
@@ -191,51 +206,66 @@ class Teams extends React.Component<
             isEdit={isEdit}
             onEditClick={this.onEditClick}
             onSaveClick={this.onSaveClick}
-            onCancelClick={this.onCancelClick}
+            onCancelClick={this.onCancel}
             history={this.props.history}
             eventId={this.props.match.params.eventId}
           />
           <div className={styles.headingWrapper}>
             <HeadingLevelTwo>Teams</HeadingLevelTwo>
           </div>
-          <ul className={styles.teamsList}>
-            <TeamManagement
-              divisions={divisions}
-              pools={pools}
-              teams={teams.filter(it => !it.isDelete)}
-              isEdit={isEdit}
-              changePool={this.changePool}
-              loadPools={loadPools}
-              onDeletePopupOpen={this.onDeletePopupOpen}
-              onEditPopupOpen={this.onEditPopupOpen}
-            />
-          </ul>
+          {false && (
+            <ul className={styles.teamsList}>
+              <TeamManagement
+                divisions={divisions}
+                pools={pools}
+                teams={teams.filter(it => !it.isDelete)}
+                isEdit={isEdit}
+                changePool={this.changePool}
+                loadPools={loadPools}
+                onDeletePopupOpen={this.onDeletePopupOpen}
+                onEditPopupOpen={this.onEditPopupOpen}
+              />
+            </ul>
+          )}
         </section>
-        <Modal
-          isOpen={isDeletePopupOpen || isEditPopupOpen}
-          onClose={this.onCloseModal}
-        >
-          <>
-            {isEditPopupOpen && (
-              <PopupTeamEdit
-                team={configurableTeam}
-                division={currentDivision}
-                pool={currentPool}
-                onChangeTeam={this.onChangeTeam}
-                onSaveTeamClick={this.onSaveTeam}
-                onDeleteTeamClick={this.onDeleteTeam}
-                onCloseModal={this.onCloseModal}
-              />
-            )}
-            {isDeletePopupOpen && (
-              <PopupDeleteTeam
-                team={configurableTeam}
-                onCloseModal={this.onCloseModal}
-                onDeleteClick={this.onDeleteTeam}
-              />
-            )}
-          </>
-        </Modal>
+        {false && (
+          <Modal
+            isOpen={isDeletePopupOpen || isEditPopupOpen}
+            onClose={this.onCloseModal}
+          >
+            <>
+              {isEditPopupOpen && (
+                <PopupTeamEdit
+                  team={configurableTeam}
+                  division={currentDivision}
+                  pool={currentPool}
+                  onChangeTeam={this.onChangeTeam}
+                  onSaveTeamClick={this.onSaveTeam}
+                  onDeleteTeamClick={this.onDeleteTeam}
+                  onCloseModal={this.onCloseModal}
+                />
+              )}
+              {isDeletePopupOpen && (
+                <DeletePopupConfrim
+                  type={'team'}
+                  message={deleteMessage}
+                  deleteTitle={configurableTeam?.long_name!}
+                  isOpen={isDeletePopupOpen}
+                  onClose={this.onCloseModal}
+                  onDeleteClick={() => this.onDeleteTeam(configurableTeam!)}
+                />
+              )}
+            </>
+          </Modal>
+        )}
+        {false && (
+          <PopupExposure
+            isOpen={this.state.isConfirmModalOpen}
+            onClose={this.onConfirmModalClose}
+            onExitClick={this.onCancelClick}
+            onSaveClick={this.onSaveClick}
+          />
+        )}
       </>
     );
   }

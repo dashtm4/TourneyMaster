@@ -6,7 +6,7 @@ import {
   Button,
   Paper,
 } from 'components/common';
-import PopupDeleteOrganization from '../popup-delete-organization';
+import PopupDeleteConfirm from 'components/common/delete-popup-confirm';
 import { IOrganization, BindingCbWithOne } from 'common/models';
 import { Icons } from 'common/enums';
 import { getIcon } from 'helpers';
@@ -48,6 +48,9 @@ const OrganizationsList = ({
   const onSectionToggle = () => {
     onToggleOne(index);
   };
+
+  const deleteMessage = `You are about to delete this organization and this cannot be undone.
+  Please, enter the name of the organization to continue.`;
 
   return (
     <>
@@ -131,11 +134,12 @@ const OrganizationsList = ({
         </div>
       </SectionDropdown>
       {configOrg && (
-        <PopupDeleteOrganization
+        <PopupDeleteConfirm
+          type={'organization'}
           deleteTitle={configOrg.org_name}
+          message={deleteMessage}
           isOpen={Boolean(configOrg)}
           onClose={() => onDeletePopup(null)}
-          onCancelClick={() => onDeletePopup(null)}
           onDeleteClick={() => {
             deleteOrganization(configOrg);
             onDeletePopup(null);

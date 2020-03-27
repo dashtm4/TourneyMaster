@@ -21,6 +21,8 @@ import Map from './map';
 import PlacesAutocompleteInput from './map/autocomplete';
 import { BindingCbWithTwo, BindingCbWithOne } from 'common/models';
 import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
+import { timeToDate, dateToTime } from 'helpers';
+import { getDays, getDay } from 'helpers/getDays';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -75,6 +77,8 @@ const PrimaryInformationSection: React.FC<Props> = ({
     time_zone_utc,
     event_startdate,
     event_enddate,
+    first_game_time,
+    last_game_end,
     event_level,
   } = eventData;
 
@@ -113,11 +117,21 @@ const PrimaryInformationSection: React.FC<Props> = ({
       if (event_enddate && new Date(e).toISOString() > event_enddate) {
         onEndDate(e);
       }
+      if (eventData.event_type === 'League' && eventData.league_dates) {
+        const dayDates = getDays(getDay(eventData.league_dates), new Date(e));
+        onChange('league_dates', JSON.stringify(dayDates));
+      }
     }
   };
 
   const onEndDate = (e: Date | string) =>
     !isNaN(Number(e)) && onChange('event_enddate', new Date(e).toISOString());
+
+  const onFirstGameTime = (e: Date | string) =>
+    !isNaN(Number(e)) && onChange('first_game_time', dateToTime(e));
+
+  const onLastGameTime = (e: Date | string) =>
+    !isNaN(Number(e)) && onChange('last_game_end', dateToTime(e));
 
   const onTimeZone = (e: InputTargetValue) =>
     onChange('time_zone_utc', timeZoneEnum[e.target.value]);
@@ -175,7 +189,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
           <Select
             options={levelOptions.map(type => ({ label: type, value: type }))}
             label="Level"
-            value={event_level || ''}
+            value={event_level || levelOptions[3]}
             onChange={onLevelChange}
           />
           <Select
@@ -189,18 +203,34 @@ const PrimaryInformationSection: React.FC<Props> = ({
           <div className={styles.piSection}>
             <div className={styles.piDetailsSecond}>
               <DatePicker
-                minWidth="170px"
+                minWidth="100%"
                 label="Start Date"
                 type="date"
                 value={event_startdate}
                 onChange={onStartDate}
               />
               <DatePicker
-                minWidth="170px"
+                minWidth="100%"
                 label="End Date"
                 type="date"
                 value={event_enddate}
                 onChange={onEndDate}
+              />
+            </div>
+            <div className={styles.gameTimesWrapper}>
+              <DatePicker
+                minWidth="100%"
+                label="First Game Start"
+                type="time"
+                value={timeToDate(first_game_time!)}
+                onChange={onFirstGameTime}
+              />
+              <DatePicker
+                minWidth="100%"
+                label="Last Game End"
+                type="time"
+                value={timeToDate(last_game_end!)}
+                onChange={onLastGameTime}
               />
               <Select
                 options={timeZoneOptions.map(type => ({
@@ -232,14 +262,12 @@ const PrimaryInformationSection: React.FC<Props> = ({
             </div>
           </div>
           <div className={styles.mapContainer}>
-            {lat && lng && (
-              <Map
-                position={{
-                  lat,
-                  lng,
-                }}
-              />
-            )}
+            <Map
+              position={{
+                lat: lat || 39.521305,
+                lng: lng || -76.6451518,
+              }}
+            />
           </div>
         </div>
         <Button
