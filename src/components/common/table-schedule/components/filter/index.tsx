@@ -2,39 +2,30 @@ import React from 'react';
 import { Button, CardMessage } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { ButtonTypes } from 'common/enums';
-import { IDivision, IEventSummary } from 'common/models';
 import { DayTypes, IScheduleFilter } from '../../types';
-import { ITeamCard } from 'common/models/schedule/teams';
 import styles from './styles.module.scss';
-import MultipleSearchSelect from 'components/common/multiple-search-select';
-import {
-  selectDivisionsFilter,
-  selectTeamsFilter,
-  selectFieldsFilter,
-} from '../../helpers';
+import MultiSelect, {
+  IMultiSelectOption,
+} from 'components/common/multi-select';
 
 const CARD_MESSAGE_STYLES = {
-  maxWidth: '215px',
+  maxWidth: '250px',
 };
 
-interface Props {
-  divisions: IDivision[];
-  teams: ITeamCard[];
-  eventSummary: IEventSummary[];
+interface IProps {
   filterValues: IScheduleFilter;
   onChangeFilterValue: (values: IScheduleFilter) => void;
 }
 
-type inputType = React.ChangeEvent<HTMLInputElement>;
+const ScoringFilter = (props: IProps) => {
+  const { filterValues, onChangeFilterValue } = props;
 
-const ScoringFilter = (props: Props) => {
   const {
-    divisions,
-    teams,
-    eventSummary,
-    filterValues,
-    onChangeFilterValue,
-  } = props;
+    divisionsOptions,
+    poolsOptions,
+    teamsOptions,
+    fieldsOptions,
+  } = filterValues;
 
   const onDaySelect = (day: string) => {
     onChangeFilterValue({
@@ -43,39 +34,19 @@ const ScoringFilter = (props: Props) => {
     });
   };
 
-  const onDivisionSelect = (_event: any, value: any) => {
+  const onSelectUpdate = (name: string, options: IMultiSelectOption[]) => {
     onChangeFilterValue({
       ...filterValues,
-      selectedDivisions: [...value],
+      [name]: options,
     });
   };
-
-  const onTeamsSelect = (_event: any, value: any) => {
-    onChangeFilterValue({
-      ...filterValues,
-      selectedTeams: [...value],
-    });
-  };
-
-  const onFieldsSelect = (_event: inputType, value: any) => {
-    onChangeFilterValue({
-      ...filterValues,
-      selectedFields: [...value],
-    });
-  };
-
-  const divisionOptions = selectDivisionsFilter(divisions);
-
-  const teamsOptions = selectTeamsFilter(teams);
-
-  const fieldsOptions = selectFieldsFilter(eventSummary);
 
   return (
     <section>
       <h3 className="visually-hidden">Scoring filters</h3>
       <form className={styles.scoringForm}>
         <div className={styles.buttonsWrapper}>
-          {Object.keys(DayTypes).map(day => (
+          {Object.keys([]).map(day => (
             <Button
               onClick={() => onDaySelect(day)}
               label={DayTypes[day]}
@@ -90,36 +61,40 @@ const ScoringFilter = (props: Props) => {
             />
           ))}
         </div>
-        <fieldset className={styles.selectWrapper}>
-          <legend className={styles.selectTitle}>Division</legend>
-          <MultipleSearchSelect
-            width="170px"
-            placeholder="Select"
-            options={divisionOptions}
-            onChange={onDivisionSelect}
-            value={filterValues.selectedDivisions}
-          />
-        </fieldset>
-        <fieldset className={styles.selectWrapper}>
-          <legend className={styles.selectTitle}>Teams</legend>
-          <MultipleSearchSelect
-            width="170px"
-            placeholder="Select"
-            options={teamsOptions}
-            onChange={onTeamsSelect}
-            value={filterValues.selectedTeams}
-          />
-        </fieldset>
-        <fieldset className={styles.selectWrapper}>
-          <legend className={styles.selectTitle}>Fields</legend>
-          <MultipleSearchSelect
-            width="170px"
-            placeholder="Select"
-            options={fieldsOptions}
-            onChange={onFieldsSelect}
-            value={filterValues.selectedFields}
-          />
-        </fieldset>
+        <div className={styles.selectsContainer}>
+          <fieldset className={styles.selectWrapper}>
+            <legend className={styles.selectTitle}>Divisions</legend>
+            <MultiSelect
+              name="divisionsOptions"
+              selectOptions={divisionsOptions}
+              onChange={onSelectUpdate}
+            />
+          </fieldset>
+          <fieldset className={styles.selectWrapper}>
+            <legend className={styles.selectTitle}>Pools</legend>
+            <MultiSelect
+              name="poolsOptions"
+              selectOptions={poolsOptions}
+              onChange={onSelectUpdate}
+            />
+          </fieldset>
+          <fieldset className={styles.selectWrapper}>
+            <legend className={styles.selectTitle}>Teams</legend>
+            <MultiSelect
+              name="teamsOptions"
+              selectOptions={teamsOptions}
+              onChange={onSelectUpdate}
+            />
+          </fieldset>
+          <fieldset className={styles.selectWrapper}>
+            <legend className={styles.selectTitle}>Fields</legend>
+            <MultiSelect
+              name="fieldsOptions"
+              selectOptions={fieldsOptions}
+              onChange={onSelectUpdate}
+            />
+          </fieldset>
+        </div>
         <CardMessage
           type={CardMessageTypes.EMODJI_OBJECTS}
           style={CARD_MESSAGE_STYLES}

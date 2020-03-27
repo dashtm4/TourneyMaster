@@ -15,6 +15,8 @@ interface IProps {
   width?: string;
   label?: string;
   onChange: any;
+  onKeyDown?: (event: any) => void;
+  onInputChange?: any;
   value: MultipleSelectionField[];
 }
 
@@ -28,15 +30,19 @@ const MultipleSearchSelect = ({
   label,
   onChange,
   value,
+  onKeyDown,
+  onInputChange,
 }: IProps) => {
   return (
     <Autocomplete
+      onKeyDown={onKeyDown}
       multiple={true}
       size="small"
       options={options}
       disableCloseOnSelect={true}
       getOptionSelected={(option, _value) => option.value === _value.value}
       getOptionLabel={(option: any) => option.label}
+      onInputChange={onInputChange}
       onChange={onChange}
       value={value || []}
       renderOption={(option, { selected }) => {

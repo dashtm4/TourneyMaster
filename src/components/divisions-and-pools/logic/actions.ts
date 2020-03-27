@@ -13,6 +13,7 @@ import {
   ADD_POOL_SUCCESS,
   REGISTRATION_FETCH_SUCCESS,
   DIVISION_SAVE_SUCCESS,
+  ALL_POOLS_FETCH_SUCCESS,
   SAVE_TEAMS_SUCCESS,
   SAVE_TEAMS_FAILURE,
 } from './actionTypes';
@@ -82,6 +83,13 @@ export const poolsFetchSuccess = (
   payload,
 });
 
+export const allPoolsFetchSuccess = (
+  payload: IPool[]
+): { type: string; payload: IPool[] } => ({
+  type: ALL_POOLS_FETCH_SUCCESS,
+  payload,
+});
+
 export const registrationFetchSuccess = (
   payload: any
 ): { type: string; payload: any } => ({
@@ -112,8 +120,24 @@ export const getPools: ActionCreator<ThunkAction<
   dispatch(fetchDetailsStart());
 
   const data = await api.get(`/pools?division_id=${divisionId}`);
-
   dispatch(poolsFetchSuccess(data));
+};
+
+export const getAllPools: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (divisionIds: string[]) => async (dispatch: Dispatch) => {
+  dispatch(fetchDetailsStart());
+  const pools: any[] = [];
+  await Promise.all(
+    divisionIds.map(async item => {
+      const response = await api.get(`/pools?division_id=${item}`);
+      pools.push(response);
+    })
+  );
+  dispatch(allPoolsFetchSuccess(pools.flat()));
 };
 
 export const updateDivision: ActionCreator<ThunkAction<
