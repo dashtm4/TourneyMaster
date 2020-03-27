@@ -8,7 +8,7 @@ const EMPTY_SCHEDULE = {
   num_teams: null,
   min_num_games: '',
   max_num_games: '',
-  schedule_status: null,
+  schedule_status: 'Draft',
   last_web_publish: null,
   games_start_on: '',
   pre_game_warmup: '',

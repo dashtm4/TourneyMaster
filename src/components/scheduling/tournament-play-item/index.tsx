@@ -9,6 +9,7 @@ import { BindingCbWithOne } from 'common/models';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
 import { Routes } from 'common/enums';
+import { getTournamentStatusColor } from 'helpers/getTournamentStatusColor';
 
 const DEFAULT_UPDATED_VALUE = 'Not updated yet.';
 
@@ -29,6 +30,15 @@ const TournamentPlayItem = ({ schedule, eventId, onEditSchedule }: IProps) => {
             <span>{schedule.schedule_name}</span>
           </HeadingLevelFour>
         </div>
+        <p className={styles.textWrapper}>
+          <b>Status:</b> <span>{schedule.schedule_status || '—'}</span>{' '}
+          <span
+            className={styles.scheduleStatus}
+            style={{
+              ...getTournamentStatusColor(schedule.schedule_status),
+            }}
+          />
+        </p>
         <p className={styles.textWrapper}>
           <b>Created by:</b>
           <span className={styles.textNameWrapper}>

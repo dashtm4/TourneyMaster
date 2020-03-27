@@ -34,6 +34,7 @@ import styles from '../styles.module.scss';
 import Footer from 'components/footer';
 import Schedules from 'components/schedules';
 import ScrollTopButton from 'components/common/scroll-top-button';
+import Reporting from 'components/reporting';
 
 interface MatchParams {
   eventId?: string;
@@ -50,7 +51,7 @@ interface Props {
 }
 
 export const EmptyPage: React.FC = () => {
-  return <span> Not implemented yet</span>;
+  return <span> Coming soon...</span>;
 };
 
 const AuthorizedPageEvent = ({
@@ -119,7 +120,7 @@ const AuthorizedPageEvent = ({
             <Route path={Routes.SCHEDULES_ID} component={Schedules} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
-            <Route path={Routes.REPORTING_ID} component={EmptyPage} />
+            <Route path={Routes.REPORTING_ID} component={Reporting} />
 
             <Route path={Routes.RECORD_SCORES_ID} component={RecordScores} />
             <Route path={Routes.ADD_DIVISION} component={AddDivision} />
