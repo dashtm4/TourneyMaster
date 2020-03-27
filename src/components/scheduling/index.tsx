@@ -11,7 +11,7 @@ import {
   updateSchedule,
   deleteSchedule,
 } from './logic/actions';
-import { HeadingLevelTwo, Loader } from 'components/common';
+import { HeadingLevelTwo, Loader, Modal } from 'components/common';
 import Navigation from './navigation';
 import TourneyArchitect from './tourney-architect';
 import TournamentPlay from './tournament-play';
@@ -24,6 +24,9 @@ import CreateNewModal from './create-new-modal';
 import PopupEditSchedule from './popup-edit-schedule';
 import { IMenuItem, BindingAction, BindingCbWithOne } from 'common/models';
 import { ISchedulingSchedule } from './types';
+import ViewMatrix from './view-matrix';
+import { getTimeValuesFromSchedule, calculateTimeSlots } from 'helpers';
+import { IField } from 'common/models';
 
 interface IProps {
   schedule: IConfigurableSchedule | null;
@@ -33,6 +36,7 @@ interface IProps {
   history: History;
   isLoading: boolean;
   isLoaded: boolean;
+  fields?: IField[];
   getScheduling: (eventId: string) => void;
   createNewSchedule: (schedule: IConfigurableSchedule) => void;
   addNewSchedule: BindingAction;
@@ -44,12 +48,14 @@ interface IProps {
 interface IState {
   editedSchedule: ISchedulingSchedule | null;
   createModalOpen: boolean;
+  viewMatrixOpen: boolean;
 }
 
 class Scheduling extends Component<IProps, IState> {
   state = {
     editedSchedule: null,
     createModalOpen: false,
+    viewMatrixOpen: false,
   };
 
   componentDidMount() {
@@ -81,6 +87,9 @@ class Scheduling extends Component<IProps, IState> {
 
   onCloseEditSchedule = () => this.setState({ editedSchedule: null });
 
+  openViewMatrix = () => this.setState({ viewMatrixOpen: true });
+  closeViewMatrix = () => this.setState({ viewMatrixOpen: false });
+
   render() {
     const {
       schedule,
@@ -90,14 +99,18 @@ class Scheduling extends Component<IProps, IState> {
       createNewSchedule,
       updateSchedule,
       deleteSchedule,
+      fields,
     } = this.props;
-    const { createModalOpen, editedSchedule } = this.state;
+    const { createModalOpen, editedSchedule, viewMatrixOpen } = this.state;
     const { eventId } = this.props.match?.params;
     const isAllowCreate = incompleteMenuItems.length === 0;
 
     if (isLoading || !schedule) {
       return <Loader />;
     }
+
+    const timeValues = getTimeValuesFromSchedule(schedule);
+    const timeSlots = calculateTimeSlots(timeValues);
 
     return (
       <>
@@ -112,7 +125,7 @@ class Scheduling extends Component<IProps, IState> {
               <TourneyArchitect
                 schedule={schedule}
                 onChange={this.onChange}
-                onViewEventMatrix={() => {}}
+                onViewEventMatrix={this.openViewMatrix}
               />
               {schedules.length > 0 && (
                 <>
@@ -139,6 +152,13 @@ class Scheduling extends Component<IProps, IState> {
           onClose={this.onCreateClosed}
           onChange={this.onChange}
         />
+        <Modal isOpen={viewMatrixOpen} onClose={this.closeViewMatrix}>
+          <ViewMatrix
+            timeSlots={timeSlots!}
+            fields={fields!}
+            onClose={this.closeViewMatrix}
+          />
+        </Modal>
         {editedSchedule && (
           <PopupEditSchedule
             schedule={editedSchedule}
@@ -152,11 +172,12 @@ class Scheduling extends Component<IProps, IState> {
   }
 }
 
-const mapStateToProps = ({ scheduling }: IAppState) => ({
+const mapStateToProps = ({ scheduling, pageEvent }: IAppState) => ({
   schedule: scheduling.schedule,
   schedules: scheduling.schedules,
   isLoading: scheduling.isLoading,
   isLoaded: scheduling.isLoaded,
+  fields: pageEvent?.tournamentData?.fields,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
