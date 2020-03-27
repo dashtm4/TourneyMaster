@@ -63,7 +63,7 @@ import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { Loader } from 'components/common';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
-import { IState as IDivisionsState } from 'components/divisions-and-pools/logic/reducer';
+import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -106,7 +106,7 @@ interface IRootState {
   schedules?: ISchedulesState;
   schedulesTable?: ISchedulesTableState;
   scheduling?: ISchedulingState;
-  divisions?: IDivisionsState;
+  divisions?: IDivisionAndPoolsState;
 }
 
 type Props = IMapStateToProps & IMapDispatchToProps & ComponentProps;
