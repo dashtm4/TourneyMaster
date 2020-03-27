@@ -102,13 +102,9 @@ const TableSchedule = ({
 
   const unassignedTeams = getUnassignedTeams(teamCards, minGamesNum);
 
-  const updatedFilterValues = mapFilterValues(
-    { teamCards, pools },
-    filterValues
-  );
-
   const onFilterChange = (data: IScheduleFilter) => {
-    changeFilterValues(data);
+    const newData = mapFilterValues({ teamCards, pools }, data);
+    changeFilterValues({ ...newData });
   };
 
   const toggleZooming = () => changeZoomingAction(!zoomingDisabled);
@@ -192,7 +188,7 @@ const TableSchedule = ({
           )}
           <div className={styles.tableWrapper}>
             <Filter
-              filterValues={updatedFilterValues}
+              filterValues={filterValues}
               onChangeFilterValue={onFilterChange}
             />
             <MatrixTable

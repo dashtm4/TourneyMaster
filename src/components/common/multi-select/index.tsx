@@ -113,6 +113,19 @@ const MultiSelect = (props: IProps) => {
     onButtonClick(e);
   };
 
+  const onClear = (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const newOptions = options.map(item => ({
+      ...item,
+      checked: false,
+    }));
+
+    setOptions(newOptions);
+    setFilteredOptions(newOptions);
+  };
+
   const renderAllOption = ({ key, style }: ListRowProps) => (
     <div key={key} style={style}>
       <Checkbox
@@ -154,6 +167,15 @@ const MultiSelect = (props: IProps) => {
 
   const rowCount = (inputValue ? filteredOptions?.length : options?.length) + 1;
 
+  const inputPlaceholder = options.every(item => item.checked)
+    ? 'All'
+    : options.some(item => item.checked)
+    ? options
+        .filter(item => item.checked)
+        .map(item => item.label)
+        .join(', ')
+    : placeholder;
+
   return (
     <div
       ref={ref}
@@ -165,11 +187,14 @@ const MultiSelect = (props: IProps) => {
         <Input
           label={label}
           value={inputValue}
-          placeholder={placeholder}
+          placeholder={inputPlaceholder}
           width="170px"
           onChange={updateInputValue}
         />
         <div className={styles.iconWrapper}>
+          <div className={styles.cancelButton} onClick={onClear}>
+            {getIcon(Icons.CLEAR)}
+          </div>
           {getIcon(listOpen ? Icons.DROPUP : Icons.DROPDOWN)}
         </div>
       </div>

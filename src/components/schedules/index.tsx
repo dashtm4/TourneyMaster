@@ -434,17 +434,6 @@ class Schedules extends Component<Props, State> {
       schedulesTeamCards?.length
     );
 
-    console.log(
-      fields?.length,
-      games?.length,
-      timeSlots?.length,
-      facilities?.length,
-      event,
-      divisions?.length,
-      eventSummary?.length,
-      schedulesTeamCards?.length
-    );
-
     return (
       <div className={styles.container}>
         <div className={styles.paperWrapper}>

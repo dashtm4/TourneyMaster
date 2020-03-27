@@ -34,6 +34,7 @@ enum Icons {
   FLIP = 'flip',
   DROPDOWN = 'DROPDOWN',
   DROPUP = 'DROPUP',
+  CLEAR = 'CLEAR',
 }
 
 export { Icons };
