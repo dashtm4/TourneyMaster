@@ -10,6 +10,7 @@ import './styles.scss';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IDropParams } from './dnd/drop';
 import { ITeamCard } from 'common/models/schedule/teams';
+import { TableScheduleTypes } from 'common/enums';
 
 const TRANSFORM_WRAPPER_OPTIONS = {
   minScale: 0.1,
@@ -17,6 +18,7 @@ const TRANSFORM_WRAPPER_OPTIONS = {
 };
 
 interface IProps {
+  tableType: TableScheduleTypes;
   games: IGame[];
   fields: IField[];
   timeSlots: ITimeSlot[];
@@ -32,6 +34,7 @@ interface IProps {
 
 const SchedulesMatrix = (props: IProps) => {
   const {
+    tableType,
     fields,
     timeSlots,
     games,
@@ -67,6 +70,7 @@ const SchedulesMatrix = (props: IProps) => {
                     .filter(field => !field.isUnused)
                     .map((field: IField) => (
                       <RenderFieldHeader
+                        tableType={tableType}
                         key={field.id}
                         field={field}
                         facility={takeFacilityByFieldId(field.facilityId)}
@@ -78,6 +82,7 @@ const SchedulesMatrix = (props: IProps) => {
                 </tr>
                 {timeSlots.map((timeSlot: ITimeSlot) => (
                   <RenderTimeSlot
+                    tableType={tableType}
                     key={timeSlot.id}
                     timeSlot={timeSlot}
                     fields={fields}

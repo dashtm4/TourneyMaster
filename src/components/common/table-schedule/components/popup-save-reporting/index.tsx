@@ -5,7 +5,7 @@ import { Modal, HeadingLevelTwo, Button } from 'components/common';
 import { onPDFSave } from 'helpers';
 import { BindingAction } from 'common/models';
 import { ButtonColors, ButtonVarian } from 'common/enums';
-import { IEventDetails, IConfigurableSchedule } from 'common/models';
+import { IEventDetails, ISchedule } from 'common/models';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
@@ -18,7 +18,7 @@ interface Props {
   facilities: IScheduleFacility[];
   games: IGame[];
   fields: IField[];
-  schedule: IConfigurableSchedule;
+  schedule: ISchedule;
   isOpen: boolean;
   onClose: BindingAction;
 }

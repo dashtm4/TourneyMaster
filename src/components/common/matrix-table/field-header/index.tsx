@@ -3,11 +3,12 @@ import styles from '../styles.module.scss';
 import { IField } from 'common/models/schedule/fields';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { getIcon } from 'helpers';
-import { Icons } from 'common/enums';
+import { Icons, TableScheduleTypes } from 'common/enums';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from '../helper';
 
 interface IProps {
+  tableType: TableScheduleTypes;
   field: IField;
   facility?: IScheduleFacility;
   onTeamCardsUpdate: (teamCards: ITeamCard[]) => void;
@@ -16,7 +17,14 @@ interface IProps {
 }
 
 const RenderFieldHeader = (props: IProps) => {
-  const { field, facility, games, teamCards, onTeamCardsUpdate } = props;
+  const {
+    tableType,
+    field,
+    facility,
+    games,
+    teamCards,
+    onTeamCardsUpdate,
+  } = props;
 
   const idsGamesForField = games
     .filter(game => game.fieldId === field.id)
@@ -52,12 +60,14 @@ const RenderFieldHeader = (props: IProps) => {
         <div>
           {field.isPremier ? '*' : ''} {field.name} ({facility?.abbr})
         </div>
-        <button className={styles.lockBtn} onClick={onLockClick}>
-          {getIcon(isEveryTeamInFieldLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
-            fill: '#00A3EA',
-          })}
-          <span className="visually-hidden">Unlock/Lock teams</span>
-        </button>
+        {tableType === TableScheduleTypes.SCHEDULES && (
+          <button className={styles.lockBtn} onClick={onLockClick}>
+            {getIcon(isEveryTeamInFieldLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+              fill: '#00A3EA',
+            })}
+            <span className="visually-hidden">Unlock/Lock teams</span>
+          </button>
+        )}
       </div>
     </th>
   );

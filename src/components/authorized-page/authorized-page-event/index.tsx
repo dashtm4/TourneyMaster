@@ -78,7 +78,7 @@ const AuthorizedPageEvent = ({
     return <Loader />;
   }
 
-  const hideOnList = [Routes.SCHEDULES];
+  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES];
 
   return (
     <div className={styles.container}>

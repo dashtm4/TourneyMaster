@@ -4,17 +4,28 @@ import TeamDragCard from '../dnd/drag';
 import styles from '../styles.module.scss';
 import { IGame } from '../helper';
 import { ITeamCard } from 'common/models/schedule/teams';
+import { TableScheduleTypes } from 'common/enums';
 
 interface Props {
+  tableType: TableScheduleTypes;
   game: IGame;
   showHeatmap?: boolean;
   onDrop: (dropParams: IDropParams) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   isDndMode: boolean;
+  isEnterScores?: boolean;
 }
 
 const RenderGameSlot = (props: Props) => {
-  const { game, onDrop, showHeatmap, onTeamCardUpdate, isDndMode } = props;
+  const {
+    tableType,
+    game,
+    onDrop,
+    showHeatmap,
+    onTeamCardUpdate,
+    isDndMode,
+    isEnterScores,
+  } = props;
   const { awayTeam, homeTeam } = game;
   const acceptType = 'teamdrop';
 
@@ -29,12 +40,14 @@ const RenderGameSlot = (props: Props) => {
         >
           {awayTeam && (
             <TeamDragCard
+              tableType={tableType}
               type={acceptType}
               originGameId={game.id}
               showHeatmap={showHeatmap}
               teamCard={awayTeam}
               onTeamCardUpdate={onTeamCardUpdate}
               isDndMode={isDndMode}
+              isEnterScores={isEnterScores}
             />
           )}
         </DropContainer>
@@ -46,12 +59,14 @@ const RenderGameSlot = (props: Props) => {
         >
           {homeTeam && (
             <TeamDragCard
+              tableType={tableType}
               type={acceptType}
               originGameId={game.id}
               showHeatmap={showHeatmap}
               teamCard={homeTeam}
               onTeamCardUpdate={onTeamCardUpdate}
               isDndMode={isDndMode}
+              isEnterScores={isEnterScores}
             />
           )}
         </DropContainer>

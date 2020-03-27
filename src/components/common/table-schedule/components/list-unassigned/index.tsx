@@ -4,15 +4,17 @@ import styles from './styles.module.scss';
 import TeamDragCard from 'components/common/matrix-table/dnd/drag';
 import { useDrop } from 'react-dnd';
 import { IDropParams } from 'components/common/matrix-table/dnd/drop';
+import { TableScheduleTypes } from 'common/enums';
 
 interface IProps {
+  tableType: TableScheduleTypes;
   teamCards: ITeamCard[];
   showHeatmap?: boolean;
   onDrop: (dropParams: IDropParams) => void;
 }
 
 const UnassignedList = (props: IProps) => {
-  const { teamCards, onDrop, showHeatmap } = props;
+  const { teamCards, onDrop, showHeatmap, tableType } = props;
   const acceptType = 'teamdrop';
 
   const [{ isOver }, drop] = useDrop({
@@ -50,6 +52,7 @@ const UnassignedList = (props: IProps) => {
                 <td className={styles.gamesNum}>{teamCard.games?.length}</td>
                 <td>
                   <TeamDragCard
+                    tableType={tableType}
                     showHeatmap={showHeatmap}
                     key={ind}
                     teamCard={teamCard}

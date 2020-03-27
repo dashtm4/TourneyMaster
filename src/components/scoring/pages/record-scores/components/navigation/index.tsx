@@ -17,9 +17,7 @@ const Navigation = ({ isEnterScores, onChangeView, onLeavePage }: Props) => (
         <Button
           onClick={() => onChangeView(false)}
           type={
-            isEnterScores
-              ? ButtonTypes.SQUARED
-              : ButtonTypes.SQUARED_OUTLINED
+            isEnterScores ? ButtonTypes.SQUARED : ButtonTypes.SQUARED_OUTLINED
           }
           label="View Only"
           variant="contained"
@@ -29,9 +27,7 @@ const Navigation = ({ isEnterScores, onChangeView, onLeavePage }: Props) => (
       <Button
         onClick={() => onChangeView(true)}
         type={
-          isEnterScores
-            ? ButtonTypes.SQUARED_OUTLINED
-            : ButtonTypes.SQUARED
+          isEnterScores ? ButtonTypes.SQUARED_OUTLINED : ButtonTypes.SQUARED
         }
         label="Enter Scores"
         variant="contained"
@@ -48,9 +44,19 @@ const Navigation = ({ isEnterScores, onChangeView, onLeavePage }: Props) => (
         />
       </span>
       <span className={styles.btnWrapper}>
-        <Button label="Save Draft" variant="contained" color="primary" />
+        <Button
+          label="Save Draft"
+          variant="contained"
+          color="primary"
+          disabled={true}
+        />
       </span>
-      <Button label="Save & Publish" variant="contained" color="primary" />
+      <Button
+        label="Save & Publish"
+        variant="contained"
+        color="primary"
+        disabled={true}
+      />
     </p>
   </div>
 );

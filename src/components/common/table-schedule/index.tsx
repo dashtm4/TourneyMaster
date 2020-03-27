@@ -11,7 +11,7 @@ import {
   IDivision,
   IEventSummary,
   IEventDetails,
-  IConfigurableSchedule,
+  ISchedule,
   IPool,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes } from './types';
@@ -35,8 +35,10 @@ import { ITeamCard } from 'common/models/schedule/teams';
 import { IDropParams } from '../matrix-table/dnd/drop';
 import moveTeamCard from './moveTeamCard';
 import { Button } from 'components/common';
+import { TableScheduleTypes } from 'common/enums';
 
 interface Props {
+  tableType: TableScheduleTypes;
   event: IEventDetails;
   divisions: IDivision[];
   pools: IPool[];
@@ -45,7 +47,7 @@ interface Props {
   fields: IField[];
   timeSlots: ITimeSlot[];
   facilities: IScheduleFacility[];
-  scheduleData: IConfigurableSchedule;
+  scheduleData: ISchedule;
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
   historyLength?: number;
@@ -55,6 +57,7 @@ interface Props {
 }
 
 const TableSchedule = ({
+  tableType,
   event,
   divisions,
   pools,
@@ -159,35 +162,41 @@ const TableSchedule = ({
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
       <div className={styles.scheduleTableWrapper}>
-        <div className={styles.topBtnsWrapper}>
-          <h3>Mode:</h3>
-          <Button
-            label="Zoom-n-Nav"
-            variant="contained"
-            color="primary"
-            type={zoomingDisabled ? 'squaredOutlined' : 'squared'}
-            onClick={toggleZooming}
-          />
-          <Button
-            label="Drag-n-Drop"
-            variant="contained"
-            color="primary"
-            type={zoomingDisabled ? 'squared' : 'squaredOutlined'}
-            onClick={toggleZooming}
-          />
-        </div>
+        {tableType === TableScheduleTypes.SCHEDULES && (
+          <div className={styles.topBtnsWrapper}>
+            <h3>Mode:</h3>
+            <Button
+              label="Zoom-n-Nav"
+              variant="contained"
+              color="primary"
+              type={zoomingDisabled ? 'squaredOutlined' : 'squared'}
+              onClick={toggleZooming}
+            />
+            <Button
+              label="Drag-n-Drop"
+              variant="contained"
+              color="primary"
+              type={zoomingDisabled ? 'squared' : 'squaredOutlined'}
+              onClick={toggleZooming}
+            />
+          </div>
+        )}
         <DndProvider backend={HTML5Backend}>
-          <ListUnassigned
-            teamCards={unassignedTeams}
-            showHeatmap={showHeatmap}
-            onDrop={moveCard}
-          />
+          {tableType === TableScheduleTypes.SCHEDULES && (
+            <ListUnassigned
+              tableType={tableType}
+              teamCards={unassignedTeams}
+              showHeatmap={showHeatmap}
+              onDrop={moveCard}
+            />
+          )}
           <div className={styles.tableWrapper}>
             <Filter
               filterValues={updatedFilterValues}
               onChangeFilterValue={onFilterChange}
             />
             <MatrixTable
+              tableType={tableType}
               games={filteredGames}
               fields={updatedFields}
               timeSlots={timeSlots}
@@ -208,34 +217,40 @@ const TableSchedule = ({
         showHeatmap={showHeatmap}
         onHeatmapChange={onHeatmapChange}
       />
-      <TableActions
-        historyLength={historyLength}
-        zoomingDisabled={zoomingDisabled}
-        toggleZooming={toggleZooming}
-        optimizeBy={optimizeBy}
-        onUndoClick={onUndo}
-        onLockAllClick={onLockAll}
-        onUnlockAllClick={onUnlockAll}
-        onOptimizeClick={onOptimizeClick}
-        togglePopupSaveReport={togglePopupSaveReport}
-      />
-      <PopupConfirm
-        isOpen={!!replacementWarning}
-        message={replacementWarning || ''}
-        onClose={toggleReplacementWarning}
-        onCanceClick={toggleReplacementWarning}
-        onYesClick={confirmReplacement}
-      />
-      <PopupSaveReporting
-        event={event}
-        games={mapGamesByField(filteredGames, updatedFields)}
-        fields={updatedFields}
-        timeSlots={timeSlots}
-        facilities={facilities}
-        schedule={scheduleData}
-        isOpen={isPopupSaveReportOpen}
-        onClose={togglePopupSaveReport}
-      />
+      <>
+        {tableType === TableScheduleTypes.SCHEDULES && (
+          <>
+            <TableActions
+              historyLength={historyLength}
+              zoomingDisabled={zoomingDisabled}
+              toggleZooming={toggleZooming}
+              optimizeBy={optimizeBy}
+              onUndoClick={onUndo}
+              onLockAllClick={onLockAll}
+              onUnlockAllClick={onUnlockAll}
+              onOptimizeClick={onOptimizeClick}
+              togglePopupSaveReport={togglePopupSaveReport}
+            />
+            <PopupSaveReporting
+              event={event}
+              games={mapGamesByField(filteredGames, updatedFields)}
+              fields={updatedFields}
+              timeSlots={timeSlots}
+              facilities={facilities}
+              schedule={scheduleData}
+              isOpen={isPopupSaveReportOpen}
+              onClose={togglePopupSaveReport}
+            />
+          </>
+        )}
+        <PopupConfirm
+          isOpen={!!replacementWarning}
+          message={replacementWarning || ''}
+          onClose={toggleReplacementWarning}
+          onCanceClick={toggleReplacementWarning}
+          onYesClick={confirmReplacement}
+        />
+      </>
     </section>
   );
 };

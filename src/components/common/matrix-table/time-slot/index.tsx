@@ -7,10 +7,11 @@ import { IDropParams } from '../dnd/drop';
 import { IField } from 'common/models/schedule/fields';
 import { formatTimeSlot } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
-import { Icons } from 'common/enums';
+import { Icons, TableScheduleTypes } from 'common/enums';
 import { getIcon } from 'helpers';
 
 interface IProps {
+  tableType: TableScheduleTypes;
   timeSlot: ITimeSlot;
   games: IGame[];
   fields: IField[];
@@ -25,6 +26,7 @@ interface IProps {
 
 const RenderTimeSlot = (props: IProps) => {
   const {
+    tableType,
     timeSlot,
     games,
     moveCard,
@@ -34,6 +36,7 @@ const RenderTimeSlot = (props: IProps) => {
     teamCards,
     onTeamCardsUpdate,
     isDndMode,
+    isEnterScores,
   } = props;
 
   const idsGamesForTimeSlot = games
@@ -65,15 +68,17 @@ const RenderTimeSlot = (props: IProps) => {
       <th>
         <div className={styles.fieldNameContainer}>
           <div>{formatTimeSlot(timeSlot.time)}</div>
-          <button className={styles.lockBtn} onClick={onLockClick}>
-            {getIcon(
-              isEveryTeamInTimeSlotLocked ? Icons.LOCK : Icons.LOCK_OPEN,
-              {
-                fill: '#00A3EA',
-              }
-            )}
-            <span className="visually-hidden">Unlock/Lock teams</span>
-          </button>
+          {tableType === TableScheduleTypes.SCHEDULES && (
+            <button className={styles.lockBtn} onClick={onLockClick}>
+              {getIcon(
+                isEveryTeamInTimeSlotLocked ? Icons.LOCK : Icons.LOCK_OPEN,
+                {
+                  fill: '#00A3EA',
+                }
+              )}
+              <span className="visually-hidden">Unlock/Lock teams</span>
+            </button>
+          )}
         </div>
       </th>
       {games
@@ -82,12 +87,14 @@ const RenderTimeSlot = (props: IProps) => {
         )
         .map((game: IGame) => (
           <RenderGameSlot
+            tableType={tableType}
             key={game.id}
             game={game}
             onDrop={moveCard}
             showHeatmap={showHeatmap}
             onTeamCardUpdate={onTeamCardUpdate}
             isDndMode={isDndMode}
+            isEnterScores={isEnterScores}
           />
         ))}
     </tr>
