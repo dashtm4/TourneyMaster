@@ -18,6 +18,8 @@
   .selectList {
     width: 169px;
     height: 260px;
+    z-index: 100;
+    white-space: nowrap;
     //
     position: absolute;
     background: #ffffff;

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { List, ListRowProps } from 'react-virtualized';
 import useOnclickOutside from 'react-cool-onclickoutside';
+import { isEqual } from 'lodash-es';
 import styles from './styles.module.scss';
 import { Input, Checkbox, Button } from 'components/common';
 import { getIcon } from 'helpers';
@@ -14,13 +15,21 @@ export interface IMultiSelectOption {
 
 interface IProps {
   label?: string;
+  name: string;
   inputValue?: string;
   placeholder?: string;
   selectOptions: IMultiSelectOption[];
+  onChange: (name: string, options: IMultiSelectOption[]) => void;
 }
 
 const MultiSelect = (props: IProps) => {
-  const { label, placeholder = 'Select', selectOptions } = props;
+  const {
+    label,
+    placeholder = 'Select',
+    selectOptions,
+    name,
+    onChange,
+  } = props;
 
   const ref = useRef(null);
   const [listOpen, setListOpen] = useState(false);
@@ -30,11 +39,28 @@ const MultiSelect = (props: IProps) => {
   const [all, setAll] = useState(false);
 
   useEffect(() => {
+    setOptions(selectOptions);
+  }, [selectOptions]);
+
+  useEffect(() => {
     const newOptions = options.filter(item =>
       item.label.toLowerCase().includes(inputValue)
     );
     setFilteredOptions(newOptions);
   }, [inputValue, options]);
+
+  useEffect(() => {
+    if (!isEqual(selectOptions, options)) {
+      onChange(name, options);
+    }
+  }, [options]);
+
+  useEffect(() => {
+    const myOptions = inputValue ? filteredOptions : options;
+    setAll(
+      !!myOptions.length && myOptions.every(optionItem => optionItem.checked)
+    );
+  }, [options, filteredOptions]);
 
   useOnclickOutside(ref, () => {
     setListOpen(false);
@@ -60,7 +86,6 @@ const MultiSelect = (props: IProps) => {
       checked: item.label.toLowerCase().includes(inputValue) && !all,
     }));
 
-    setAll(!all);
     setOptions(newOptions);
     setFilteredOptions(newOptions);
   };
@@ -73,10 +98,6 @@ const MultiSelect = (props: IProps) => {
       ...item,
       checked: item.label.toLowerCase().includes(inputValue),
     }));
-
-    if (!inputValue) {
-      setAll(true);
-    }
 
     if (filteredOptions.length) {
       setOptions(newOptions);
@@ -160,7 +181,7 @@ const MultiSelect = (props: IProps) => {
           width={159}
           height={260}
           rowCount={rowCount || 0}
-          rowHeight={40}
+          rowHeight={50}
           rowRenderer={rowRenderer}
           style={{ outline: 'none' }}
         />

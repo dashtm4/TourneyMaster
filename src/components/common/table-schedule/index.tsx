@@ -27,7 +27,6 @@ import {
   mapGamesByFilter,
   mapFilterValues,
   applyFilters,
-  handleFilterData,
   mapUnusedFields,
 } from './helpers';
 
@@ -75,7 +74,7 @@ const TableSchedule = ({
   const minGamesNum = event.min_num_of_games;
 
   const [filterValues, changeFilterValues] = useState<IScheduleFilter>(
-    applyFilters(divisions, pools, teamCards, eventSummary)
+    applyFilters({ divisions, pools, teamCards, eventSummary })
   );
 
   const [optimizeBy, onOptimizeClick] = useState<OptimizeTypes>(
@@ -96,21 +95,17 @@ const TableSchedule = ({
   const filledGames = settleTeamsPerGames(games, teamCards);
   const filteredGames = mapGamesByFilter([...filledGames], filterValues);
 
-  const { filteredTeams } = mapFilterValues(teamCards, filterValues);
   const updatedFields = mapUnusedFields(fields, filteredGames);
 
   const unassignedTeams = getUnassignedTeams(teamCards, minGamesNum);
 
+  const updatedFilterValues = mapFilterValues(
+    { teamCards, pools },
+    filterValues
+  );
+
   const onFilterChange = (data: IScheduleFilter) => {
-    const filterData = handleFilterData(
-      filterValues,
-      data,
-      divisions,
-      pools,
-      teamCards,
-      eventSummary
-    );
-    changeFilterValues(filterData);
+    changeFilterValues(data);
   };
 
   const toggleZooming = () => changeZoomingAction(!zoomingDisabled);
@@ -189,11 +184,7 @@ const TableSchedule = ({
           />
           <div className={styles.tableWrapper}>
             <Filter
-              pools={pools}
-              divisions={divisions}
-              teams={filteredTeams}
-              eventSummary={eventSummary}
-              filterValues={filterValues}
+              filterValues={updatedFilterValues}
               onChangeFilterValue={onFilterChange}
             />
             <MatrixTable

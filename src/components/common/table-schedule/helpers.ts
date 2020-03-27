@@ -1,11 +1,23 @@
-import { orderBy, findIndex, xor } from 'lodash-es';
+import { findIndex } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from '../matrix-table/helper';
-import { IScheduleFilter, DayTypes, DefaultSelectValues } from './types';
-import { MultipleSelectionField } from '../multiple-search-select';
 import { IDivision, IEventSummary, IPool } from 'common/models';
-import { SortByFilesTypes } from 'common/enums';
 import { IField } from 'common/models/schedule/fields';
+import { IMultiSelectOption } from '../multi-select';
+
+interface IApplyFilterParams {
+  divisions: IDivision[];
+  pools: IPool[];
+  teamCards: ITeamCard[];
+  eventSummary: IEventSummary[];
+}
+
+interface IFilterValues {
+  divisionsOptions: IMultiSelectOption[];
+  poolsOptions: IMultiSelectOption[];
+  teamsOptions: IMultiSelectOption[];
+  fieldsOptions: IMultiSelectOption[];
+}
 
 const getUnassignedTeams = (
   teamCards: ITeamCard[],
@@ -15,40 +27,72 @@ const getUnassignedTeams = (
     teamCard => (teamCard.games?.length || 0) < (minGamesNum || 3)
   );
 
-const mapValues = (values: MultipleSelectionField[]) =>
-  values.map(el => el.value);
+const mapCheckedValues = (values: IMultiSelectOption[]) =>
+  values.filter(item => item.checked).map(item => item.value);
 
-const checkDivisions = (game: IGame, divisionIds: string[]) => {
-  const { awayTeam, homeTeam } = game;
-  return divisionIds.includes(awayTeam?.divisionId! || homeTeam?.divisionId!);
+const mapDivisionsToOptions = (values: IDivision[], checked = true) =>
+  values.map(item => ({
+    label: item.short_name,
+    value: item.division_id,
+    checked,
+  }));
+
+const mapPoolsToOptions = (values: IPool[], checked = true) =>
+  values.map(item => ({
+    label: item.pool_name,
+    value: item.pool_id,
+    checked,
+  }));
+
+const mapTeamCardsToOptions = (values: ITeamCard[], checked = true) =>
+  values.map(item => ({
+    label: item.name,
+    value: item.id,
+    checked,
+  }));
+
+const mapEventSummaryToOptions = (values: IEventSummary[], checked = true) =>
+  values.map(item => ({
+    label: `${item.facilities_initials} - ${item.field_name}`,
+    value: item.field_id,
+    checked,
+  }));
+
+export const applyFilters = (params: IApplyFilterParams) => {
+  const { divisions, pools, teamCards, eventSummary } = params;
+
+  const divisionsOptions: IMultiSelectOption[] = mapDivisionsToOptions(
+    divisions
+  );
+  const poolsOptions: IMultiSelectOption[] = mapPoolsToOptions(pools);
+  const teamsOptions: IMultiSelectOption[] = mapTeamCardsToOptions(teamCards);
+  const fieldsOptions: IMultiSelectOption[] = mapEventSummaryToOptions(
+    eventSummary
+  );
+
+  return {
+    divisionsOptions,
+    poolsOptions,
+    teamsOptions,
+    fieldsOptions,
+  };
 };
 
-const checkPools = (game: IGame, poolIds: string[]) => {
-  const { awayTeam, homeTeam } = game;
-  return poolIds.includes(awayTeam?.poolId! || homeTeam?.poolId!);
-};
-
-const checkTeams = (game: IGame, teamIds: string[]) => {
-  const { awayTeam, homeTeam } = game;
-  return teamIds.includes(awayTeam?.id!) || teamIds.includes(homeTeam?.id!);
-};
-
-const checkFields = (game: IGame, fieldIds: string[]) => {
-  return fieldIds.includes(game.fieldId);
-};
-
-export const mapGamesByFilter = (games: IGame[], filter: IScheduleFilter) => {
+export const mapGamesByFilter = (
+  games: IGame[],
+  filterValues: IFilterValues
+) => {
   const {
-    selectedDivisions,
-    selectedPools,
-    selectedTeams,
-    selectedFields,
-  } = filter;
+    divisionsOptions,
+    poolsOptions,
+    teamsOptions,
+    fieldsOptions,
+  } = filterValues;
 
-  const divisionIds = mapValues(selectedDivisions);
-  const poolIds = mapValues(selectedPools);
-  const teamIds = mapValues(selectedTeams);
-  const fieldIds = mapValues(selectedFields);
+  const divisionIds = mapCheckedValues(divisionsOptions);
+  const poolIds = mapCheckedValues(poolsOptions);
+  const teamIds = mapCheckedValues(teamsOptions);
+  const fieldIds = mapCheckedValues(fieldsOptions);
 
   const filteredGamesIds = games
     .filter(
@@ -70,22 +114,71 @@ export const mapGamesByFilter = (games: IGame[], filter: IScheduleFilter) => {
   });
 };
 
+const checkDivisions = (game: IGame, divisionIds: string[]) => {
+  const { awayTeam, homeTeam } = game;
+  return divisionIds.includes(awayTeam?.divisionId! || homeTeam?.divisionId!);
+};
+
+const checkPools = (game: IGame, poolIds: string[]) => {
+  const { awayTeam, homeTeam } = game;
+  return poolIds.includes(awayTeam?.poolId! || homeTeam?.poolId!);
+};
+
+const checkTeams = (game: IGame, teamIds: string[]) => {
+  const { awayTeam, homeTeam } = game;
+  return teamIds.includes(awayTeam?.id!) || teamIds.includes(homeTeam?.id!);
+};
+
+const checkFields = (game: IGame, fieldIds: string[]) => {
+  return fieldIds.includes(game.fieldId);
+};
+
 export const mapFilterValues = (
-  teamCards: ITeamCard[],
-  filter: IScheduleFilter
+  params: {
+    teamCards: ITeamCard[];
+    pools: IPool[];
+  },
+  filterValues: IFilterValues
 ) => {
-  const { selectedDivisions } = filter;
+  const { teamCards, pools } = params;
+  const { divisionsOptions, poolsOptions, teamsOptions } = filterValues;
+  const divisionIds = mapCheckedValues(divisionsOptions);
 
-  const divisionIds = mapValues(selectedDivisions);
+  const allPoolsOptions: IMultiSelectOption[] = mapPoolsToOptions(pools);
+  const allTeamsOptions: IMultiSelectOption[] = mapTeamCardsToOptions(
+    teamCards
+  );
 
-  const filteredTeams = teamCards
-    .filter(teamCard => divisionIds.includes(teamCard.divisionId!))
-    .map(teamCard => ({
-      ...teamCard,
-      name: `${teamCard.name} (${teamCard.divisionShortName})`,
+  const poolIds = mapCheckedValues(poolsOptions);
+
+  const divisionPools = pools.filter(item =>
+    divisionIds.includes(item.division_id)
+  );
+
+  const divisionPoolTeams = teamCards.filter(
+    item =>
+      poolIds.includes(item.poolId!) && divisionIds.includes(item.divisionId)
+  );
+
+  const filteredPoolsOptions = allPoolsOptions
+    .filter(item => findIndex(divisionPools, { pool_id: item.value }) >= 0)
+    .map(item => ({
+      ...item,
+      checked: !!poolsOptions.find(el => el.value === item.value)?.checked,
     }));
 
-  return { filteredTeams };
+  const filteredTeamsOptions = allTeamsOptions
+    .filter(item => findIndex(divisionPoolTeams, { id: item.value }) >= 0)
+    .map(item => ({
+      ...item,
+      checked: !!teamsOptions.find(el => el.value === item.value)?.checked,
+    }));
+
+  return {
+    ...filterValues,
+    poolsOptions: filteredPoolsOptions,
+    teamsOptions: filteredTeamsOptions,
+  };
 };
 
 export const mapUnusedFields = (fields: IField[], games: IGame[]) => {
@@ -100,128 +193,6 @@ export const mapUnusedFields = (fields: IField[], games: IGame[]) => {
     ...field,
     isUnused: !usedFieldIds.includes(field.id),
   }));
-};
-
-export const selectDivisionsFilter = (divisions: IDivision[]) => [
-  { label: 'All', value: DefaultSelectValues.ALL },
-  ...orderBy(divisions, SortByFilesTypes.DIVISIONS).map(division => ({
-    label: division[SortByFilesTypes.DIVISIONS],
-    value: division.division_id,
-  })),
-];
-
-export const selectPoolsFilter = (pools: IPool[]) => [
-  { label: 'All', value: DefaultSelectValues.ALL },
-  ...orderBy(pools, 'name').map(pool => ({
-    label: pool.pool_id,
-    value: pool.pool_id,
-  })),
-];
-
-export const selectTeamsFilter = (teamCards: ITeamCard[]) => [
-  { label: 'All', value: DefaultSelectValues.ALL },
-  ...orderBy(teamCards, 'divisionShortName').map(team => ({
-    label: team.name,
-    value: team.id,
-  })),
-];
-
-export const selectFieldsFilter = (eventSummary: IEventSummary[]) => [
-  { label: 'All', value: DefaultSelectValues.ALL },
-  ...orderBy(eventSummary, SortByFilesTypes.FACILITIES_INITIALS).map(es => ({
-    label: `${es[SortByFilesTypes.FACILITIES_INITIALS]} - ${es.field_name}`,
-    value: es.field_id,
-  })),
-];
-
-export const applyFilters = (
-  divisions: IDivision[],
-  pools: IPool[],
-  teamCards: ITeamCard[],
-  eventSummary: IEventSummary[]
-) => {
-  const selectedDivisions = selectDivisionsFilter(divisions);
-
-  const selectedPools = selectPoolsFilter(pools);
-
-  const selectedTeams = selectTeamsFilter(teamCards);
-
-  const selectedFields = selectFieldsFilter(eventSummary);
-
-  return {
-    selectedDay: DayTypes.DAY_ONE,
-    selectedDivisions,
-    selectedPools,
-    selectedTeams,
-    selectedFields,
-  };
-};
-
-export const handleFilterData = (
-  filter: IScheduleFilter,
-  newFilter: IScheduleFilter,
-  divisions: IDivision[],
-  pools: IPool[],
-  teamCards: ITeamCard[],
-  eventSummary: IEventSummary[]
-) => {
-  const divisionIds = mapValues(filter.selectedDivisions);
-  const poolIds = mapValues(filter.selectedPools);
-  const teamIds = mapValues(filter.selectedTeams);
-  const fieldIds = mapValues(filter.selectedFields);
-
-  const newDivisionIds = mapValues(newFilter.selectedDivisions);
-  const newPoolIds = mapValues(newFilter.selectedPools);
-  const newTeamIds = mapValues(newFilter.selectedTeams);
-  const newFieldIds = mapValues(newFilter.selectedFields);
-
-  const updateFilterData: IScheduleFilter = newFilter;
-
-  const all = DefaultSelectValues.ALL;
-
-  /* DIVISION ALL CHECKING */
-  const divisionsXor = xor(divisionIds, newDivisionIds);
-  if (divisionsXor?.length === 1 && divisionsXor[0] === all) {
-    return {
-      ...updateFilterData,
-      selectedDivisions: newDivisionIds.includes(all)
-        ? selectDivisionsFilter(divisions)
-        : [],
-    };
-  }
-
-  /* POOLS ALL CHECKING */
-  const poolsXor = xor(poolIds, newPoolIds);
-  if (poolsXor?.length === 1 && poolsXor[0] === all) {
-    return {
-      ...updateFilterData,
-      selectedPools: newPoolIds.includes(all) ? selectPoolsFilter(pools) : [],
-    };
-  }
-
-  /* TEAMS ALL CHECKING */
-  const teamsXor = xor(teamIds, newTeamIds);
-  if (teamsXor?.length === 1 && teamsXor[0] === all) {
-    return {
-      ...updateFilterData,
-      selectedTeams: newTeamIds.includes(all)
-        ? selectTeamsFilter(teamCards)
-        : [],
-    };
-  }
-
-  /* FIELDS ALL CHECKING */
-  const fieldsXor = xor(fieldIds, newFieldIds);
-  if (fieldsXor?.length === 1 && fieldsXor[0] === all) {
-    return {
-      ...updateFilterData,
-      selectedFields: newFieldIds.includes(all)
-        ? selectFieldsFilter(eventSummary)
-        : [],
-    };
-  }
-
-  return updateFilterData;
 };
 
 const mapGamesByField = (games: IGame[], fields: IField[]) =>
