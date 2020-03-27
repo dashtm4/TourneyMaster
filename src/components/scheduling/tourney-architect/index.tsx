@@ -162,7 +162,7 @@ export default (props: IProps) => {
             width="100px"
             type="number"
             align="center"
-            label={`Division Duration(${schedule.periods_per_game})`}
+            label={`Time Division Duration(${schedule.periods_per_game})`}
           />
           <Input
             onChange={onTimeChage}
