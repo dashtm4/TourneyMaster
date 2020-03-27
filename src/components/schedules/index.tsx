@@ -61,7 +61,6 @@ import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { IConfigurableSchedule, ISchedule, IPool } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
-import { Loader } from 'components/common';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import SchedulesLoader from './loader';
@@ -474,8 +473,6 @@ class Schedules extends Component<Props, State> {
           />
         ) : (
           <div className={styles.loadingWrapper}>
-            <Loader />
-            <div>Calculating...</div>
             <SchedulesLoader time={5000} />
           </div>
         )}
