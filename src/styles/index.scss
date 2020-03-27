@@ -85,3 +85,16 @@ a {
 #historical-imports {
   margin-bottom: 2.75rem;
 }
+#alert-dialog-box {
+  .MuiPaper-root {
+    padding: 1.5rem;
+  }
+}
+#alert-dialog-title {
+  h2 {
+    color: #1c315f;
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    line-height: 43px !important;
+  }
+}

@@ -12,7 +12,8 @@ import Paper from '@material-ui/core/Paper';
 import moment from 'moment';
 import { Button } from 'components/common';
 import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
-
+import { BindingCbWithOne, BindingCbWithTwo } from 'common/models';
+import { DeleteComformBox, RerunComfirmBox } from '../confirm-box';
 interface Data {
   job_id: string | number;
   created_datetime: string | number;
@@ -27,6 +28,8 @@ interface Data {
 
 interface Props {
   histories: any[];
+  onDelete: BindingCbWithOne<string | number>;
+  onRerun: BindingCbWithTwo<string | number, string | number>;
 };
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -146,12 +149,16 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const EnhancedTable = ({ histories }: Props) => {
+const EnhancedTable = ({ histories, onDelete, onRerun }: Props) => {
   const classes = useStyles();
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('created_datetime');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [deleteBoxOpened, setDeleteBoxOpened] = React.useState(false);
+  const [rerunBoxOpened, setRerunBoxOpened] = React.useState(false);
+  const [jobId, setJobId] = React.useState<string | number>('');
+  const [idTournament, setIdTournament] = React.useState<string | number>('');
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     event.preventDefault();
@@ -170,12 +177,31 @@ const EnhancedTable = ({ histories }: Props) => {
     setPage(0);
   };
 
-  const handleRerunJobs = (jobId: string | number) => {
-    console.log('[onRun]', jobId);
+  const deleteHandler = (job_id: string | number) => {
+    setJobId(job_id);
+    setDeleteBoxOpened(true);
   }
 
-  const handleDeleteJobs = (jobId: string | number) => {
-    console.log('[onDel]', jobId);
+  const noDeleteHandler = () => {
+    setDeleteBoxOpened(false);
+  }
+
+  const rerunHandler = (job_id: string | number, idtournament: string | number) => {
+    setJobId(job_id);
+    setIdTournament(idtournament);
+    setRerunBoxOpened(true);
+  }
+
+  const noRerunHandler = () => {
+    setRerunBoxOpened(false);
+  }
+
+  const yesDeleteHandler = () => {
+    onDelete(jobId);
+  }
+
+  const yesRerunHandler = () => {
+    onRerun(jobId, idTournament);
   }
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, histories.length - page * rowsPerPage);
@@ -183,6 +209,8 @@ const EnhancedTable = ({ histories }: Props) => {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
+        <DeleteComformBox opened={deleteBoxOpened} onNo={noDeleteHandler} onYes={yesDeleteHandler} />
+        <RerunComfirmBox opened={rerunBoxOpened} onNo={noRerunHandler} onYes={yesRerunHandler} />
         <TableContainer>
           <Table
             className={classes.table}
@@ -225,7 +253,7 @@ const EnhancedTable = ({ histories }: Props) => {
                           label="Re-Run"
                           variant={ButtonVarian.OUTLINED}
                           color={ButtonColors.SECONDARY}
-                          onClick={() => handleRerunJobs(history.job_id)}
+                          onClick={() => rerunHandler(history.job_id, history.IDTournament)}
                           btnType={ButtonFormTypes.SUBMIT}
                         />
                       </TableCell>
@@ -234,7 +262,7 @@ const EnhancedTable = ({ histories }: Props) => {
                           label="Delete"
                           variant={ButtonVarian.OUTLINED}
                           color={ButtonColors.SECONDARY}
-                          onClick={() => handleDeleteJobs(history.job_id)}
+                          onClick={() => deleteHandler(history.job_id)}
                           btnType={ButtonFormTypes.SUBMIT}
                         />
                       </TableCell>
