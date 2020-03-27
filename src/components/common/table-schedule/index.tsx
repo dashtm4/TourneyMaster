@@ -11,7 +11,7 @@ import {
   IDivision,
   IEventSummary,
   IEventDetails,
-  IConfigurableSchedule,
+  ISchedule,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes } from './types';
 import { mapGamesByField } from './helpers';
@@ -44,7 +44,7 @@ interface Props {
   fields: IField[];
   timeSlots: ITimeSlot[];
   facilities: IScheduleFacility[];
-  scheduleData: IConfigurableSchedule;
+  scheduleData: ISchedule;
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
   historyLength?: number;
@@ -211,34 +211,36 @@ const TableSchedule = ({
         showHeatmap={showHeatmap}
         onHeatmapChange={onHeatmapChange}
       />
-      <TableActions
-        historyLength={historyLength}
-        zoomingDisabled={zoomingDisabled}
-        toggleZooming={toggleZooming}
-        optimizeBy={optimizeBy}
-        onUndoClick={onUndo}
-        onLockAllClick={onLockAll}
-        onUnlockAllClick={onUnlockAll}
-        onOptimizeClick={onOptimizeClick}
-        togglePopupSaveReport={togglePopupSaveReport}
-      />
-      <PopupConfirm
-        isOpen={!!replacementWarning}
-        message={replacementWarning || ''}
-        onClose={toggleReplacementWarning}
-        onCanceClick={toggleReplacementWarning}
-        onYesClick={confirmReplacement}
-      />
-      <PopupSaveReporting
-        event={event}
-        games={mapGamesByField(filteredGames, updatedFields)}
-        fields={updatedFields}
-        timeSlots={timeSlots}
-        facilities={facilities}
-        schedule={scheduleData}
-        isOpen={isPopupSaveReportOpen}
-        onClose={togglePopupSaveReport}
-      />
+      <>
+        <TableActions
+          historyLength={historyLength}
+          zoomingDisabled={zoomingDisabled}
+          toggleZooming={toggleZooming}
+          optimizeBy={optimizeBy}
+          onUndoClick={onUndo}
+          onLockAllClick={onLockAll}
+          onUnlockAllClick={onUnlockAll}
+          onOptimizeClick={onOptimizeClick}
+          togglePopupSaveReport={togglePopupSaveReport}
+        />
+        <PopupConfirm
+          isOpen={!!replacementWarning}
+          message={replacementWarning || ''}
+          onClose={toggleReplacementWarning}
+          onCanceClick={toggleReplacementWarning}
+          onYesClick={confirmReplacement}
+        />
+        <PopupSaveReporting
+          event={event}
+          games={mapGamesByField(filteredGames, updatedFields)}
+          fields={updatedFields}
+          timeSlots={timeSlots}
+          facilities={facilities}
+          schedule={scheduleData}
+          isOpen={isPopupSaveReportOpen}
+          onClose={togglePopupSaveReport}
+        />
+      </>
     </section>
   );
 };

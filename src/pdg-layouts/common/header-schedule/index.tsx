@@ -1,12 +1,12 @@
 import React from 'react';
 import { Text, View, Image } from '@react-pdf/renderer';
 import TMLogo from 'assets/logo.png';
-import { IEventDetails, IConfigurableSchedule } from 'common/models';
+import { IEventDetails, ISchedule } from 'common/models';
 import { styles } from './styles';
 
 interface Props {
   event: IEventDetails;
-  schedule: IConfigurableSchedule;
+  schedule: ISchedule;
 }
 
 const HeaderSchedule = ({ event, schedule }: Props) => (

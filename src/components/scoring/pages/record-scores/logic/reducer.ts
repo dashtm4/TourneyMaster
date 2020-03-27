@@ -3,26 +3,45 @@ import {
   LOAD_SCORES_DATA_SUCCESS,
   RecordScoresAction,
 } from './action-types';
-import { IDivision, ITeam, IEventSummary } from 'common/models';
+import {
+  IDivision,
+  ITeam,
+  IEventSummary,
+  ISchedulesDetails,
+  IFacility,
+  IEventDetails,
+  IField,
+  ISchedule,
+} from 'common/models';
 
-const initialState = {
-  divisions: [],
-  teams: [],
-  eventSummary: [],
-  isLoading: false,
-  isLoaded: false,
-};
-
-export interface AppState {
+export interface IRecordScoresState {
+  event: IEventDetails | null;
+  facilities: IFacility[];
+  fields: IField[];
   divisions: IDivision[];
   teams: ITeam[];
+  schedule: ISchedule | null;
   eventSummary: IEventSummary[];
+  schedulesDetails: ISchedulesDetails[];
   isLoading: boolean;
   isLoaded: boolean;
 }
 
+const initialState = {
+  event: null,
+  facilities: [],
+  fields: [],
+  divisions: [],
+  teams: [],
+  schedule: null,
+  eventSummary: [],
+  schedulesDetails: [],
+  isLoading: false,
+  isLoaded: false,
+};
+
 const recordScoresReducer = (
-  state: AppState = initialState,
+  state: IRecordScoresState = initialState,
   action: RecordScoresAction
 ) => {
   switch (action.type) {
@@ -30,15 +49,31 @@ const recordScoresReducer = (
       return { ...initialState, isLoading: true };
     }
     case LOAD_SCORES_DATA_SUCCESS: {
-      const { divisions, teams, eventSummary } = action.payload;
-
-      return {
-        ...state,
+      const {
+        event,
+        facilities,
+        fields,
+        schedule,
         divisions,
         teams,
         eventSummary,
+        schedulesDetails,
+      } = action.payload;
+
+      console.log(schedulesDetails);
+
+      return {
+        ...state,
         isLoading: false,
         isLoaded: true,
+        event,
+        facilities,
+        fields,
+        schedule,
+        divisions,
+        teams,
+        eventSummary,
+        schedulesDetails,
       };
     }
 
