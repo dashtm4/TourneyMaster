@@ -134,7 +134,7 @@ class Schedules extends Component<Props, State> {
     teamsDiagnosticsOpen: false,
     divisionsDiagnosticsOpen: false,
     cancelConfirmationOpen: false,
-    isLoading: false,
+    isLoading: true,
   };
 
   async componentDidMount() {
