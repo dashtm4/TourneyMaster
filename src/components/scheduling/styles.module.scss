@@ -133,6 +133,14 @@
       justify-content: space-between;
       padding: 2px 0;
     }
+
+    .scheduleStatus {
+      height: 12px;
+      width: 12px;
+      border-radius: 50%;
+      align-self: center;
+      margin-left: 4px;
+    }
   }
 
   .tournamentList {
