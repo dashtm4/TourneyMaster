@@ -13,7 +13,7 @@ const History = () => {
   }, []);
 
   function getHistory() {
-    Api.get('/ext_events')
+    Api.get('/ext_load_summary')
       .then(res => {
         setHistories(res);
       })

@@ -67,6 +67,7 @@ import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { IConfigurableSchedule, ISchedule, IPool } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
+import { TableScheduleTypes } from 'common/enums';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import SchedulesLoader from './loader';
@@ -461,6 +462,17 @@ class Schedules extends Component<Props, State> {
       schedulesTeamCards?.length
     );
 
+    console.log(
+      fields?.length,
+      games?.length,
+      timeSlots?.length,
+      facilities?.length,
+      event,
+      divisions?.length,
+      eventSummary?.length,
+      schedulesTeamCards?.length
+    );
+
     return (
       <div className={styles.container}>
         <div className={styles.paperWrapper}>
@@ -499,6 +511,7 @@ class Schedules extends Component<Props, State> {
 
         {loadCondition && !this.state.isLoading ? (
           <TableSchedule
+            tableType={TableScheduleTypes.SCHEDULES}
             event={event!}
             fields={fields!}
             pools={pools!}

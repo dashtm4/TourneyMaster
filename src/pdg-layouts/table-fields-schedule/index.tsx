@@ -4,7 +4,7 @@ import moment from 'moment';
 import TableThead from './components/table-thead';
 import TableTbody from './components/table-tbody';
 import { HeaderSchedule, PrintedDate } from '../common';
-import { IEventDetails, IConfigurableSchedule } from 'common/models';
+import { IEventDetails, ISchedule } from 'common/models';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
@@ -18,7 +18,7 @@ interface Props {
   fields: IField[];
   timeSlots: ITimeSlot[];
   facilities: IScheduleFacility[];
-  schedule: IConfigurableSchedule;
+  schedule: ISchedule;
 }
 
 const PDFScheduleTable = ({

@@ -5,9 +5,10 @@ import { ITeamCard } from 'common/models/schedule/teams';
 import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 import { Tooltip } from 'components/common';
 import { getIcon } from 'helpers';
-import { Icons } from 'common/enums';
+import { Icons, TableScheduleTypes } from 'common/enums';
 
 interface Props {
+  tableType: TableScheduleTypes;
   type: string;
   teamCard: ITeamCard;
   originGameId?: number;
@@ -25,6 +26,7 @@ const ERROR_ICON_STYLES = {
 
 export default (props: Props) => {
   const {
+    tableType,
     type,
     originGameId,
     showHeatmap,
@@ -33,6 +35,12 @@ export default (props: Props) => {
     onTeamCardUpdate,
     isDndMode,
   } = props;
+
+  // const [scoreValue, onChange] = useState<string>('');
+
+  // const onChangeScoreValue = ({
+  //   target: { value },
+  // }: React.ChangeEvent<HTMLInputElement>) => onChange(value);
 
   const team = teamCard.games?.filter(game => game.id === originGameId)[0];
 
@@ -85,12 +93,17 @@ export default (props: Props) => {
         </p>
       )}
       <p className={styles.cardOptionsWrapper}>
-        {isEnterScores && (
+        {tableType === TableScheduleTypes.SCORES && isEnterScores && (
           <label className={styles.scoresInputWrapper}>
-            <input type="number" value="0" />
+            <input
+              // onChange={onChangeScoreValue}
+              // value={scoreValue}
+              type="number"
+              style={{ color: showHeatmap ? '#f8f8f8' : 'gray' }}
+            />
           </label>
         )}
-        {!isEnterScores && originGameId && (
+        {tableType === TableScheduleTypes.SCHEDULES && originGameId && (
           <button className={styles.lockBtn} onClick={onLockClick}>
             {getIcon(team?.isTeamLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
               fill: showHeatmap ? '#ffffff' : '#00A3EA',

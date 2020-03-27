@@ -52,10 +52,16 @@ const TourneyImportWizard = () => {
       .then(res => {
         SetTournamentLoaded(true);
         dataLoadedHandler(true);
-        setJobStatus(res);
+        let filteredArr: Array<any> = [];
+        res.forEach(function (value: any) {
+          if (value.step_description && value.step_comments)
+            filteredArr.push(value);
+        })
+        setJobStatus(filteredArr);
+
         if (res[0].is_complete_YN === 1) {
           setCompleted(100);
-          getTournamentData();
+          getTournamentData(localJobId);
         }
         else {
           setTimeout(() => getStatus(localJobId), 5000);
@@ -63,40 +69,16 @@ const TourneyImportWizard = () => {
       })
   }
 
-  // function statusFilter(status: String) {
-  //   let splitedStatus = status.split(" ").reverse();
-  //   let fixedSecond = parseFloat(splitedStatus[1]).toFixed(2);
-  //   splitedStatus[1] = fixedSecond;
-  //   let updatedStatus = splitedStatus.reverse().join(" ");
-
-  //   return updatedStatus;
-  // }
-
-  function distinctFilter(data: Array<any>, filterBy: string) {
-    let flags: Array<any> = [];
-    let output: Array<any> = [];
-    const length: number = data.length;
-    let i: number;
-
-    for (i = 0; i < length; i++) {
-      if (flags[data[i][filterBy]]) continue;
-      flags[data[i].name] = true;
-      output.push(data[i]);
-    }
-
-    return output;
-  }
-
-  function getTournamentData() {
-    Api.get(`/ext_events?idtournament=${idTournament}`)
+  function getTournamentData(jobId: string) {
+    Api.get(`/ext_events?job_id=${jobId}`)
       .then(res => {
-        setEvents(distinctFilter(res, 'name'));
+        setEvents(res);
       })
       .catch(err => {
         console.log(err);
       })
 
-    Api.get(`/ext_games?idtournament=${idTournament}`)
+    Api.get(`/ext_games?job_id=${jobId}`)
       .then(res => {
         setGames(res);
       })
@@ -104,7 +86,7 @@ const TourneyImportWizard = () => {
         console.log(err);
       })
 
-    Api.get(`/ext_locations?idtournament=${idTournament}`)
+    Api.get(`/ext_locations?job_id=${jobId}`)
       .then(res => {
         setLocations(res);
       })
