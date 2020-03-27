@@ -10,7 +10,7 @@
   align-items: center;
   width: 180px;
   height: 24px;
-  padding: 0 0 0 5px;
+  padding: 0 3px 0 5px;
   margin: 0 0 4px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -52,6 +52,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    max-width: 121px;
     padding-right: 5px;
   }
 

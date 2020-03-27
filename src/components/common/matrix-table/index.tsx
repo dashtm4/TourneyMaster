@@ -4,6 +4,7 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { selectProperGamesPerTimeSlot, IGame } from './helper';
 import RenderFieldHeader from './field-header';
 import RenderTimeSlot from './time-slot';
+import NavControls from './nav-controls';
 import { IField } from 'common/models/schedule/fields';
 import styles from './styles.module.scss';
 import './styles.scss';
@@ -11,6 +12,7 @@ import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IDropParams } from './dnd/drop';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { TableScheduleTypes } from 'common/enums';
+import { BindingAction } from 'common/models';
 
 const TRANSFORM_WRAPPER_OPTIONS = {
   minScale: 0.1,
@@ -30,6 +32,11 @@ interface IProps {
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onTeamCardsUpdate: (teamCards: ITeamCard[]) => void;
   teamCards: ITeamCard[];
+}
+
+interface IPinchProps {
+  zoomIn: BindingAction;
+  zoomOut: BindingAction;
 }
 
 const SchedulesMatrix = (props: IProps) => {
@@ -61,44 +68,49 @@ const SchedulesMatrix = (props: IProps) => {
           defaultScale={0.3}
           options={{ ...TRANSFORM_WRAPPER_OPTIONS, disabled: disableZooming }}
         >
-          <TransformComponent>
-            <table className={styles.table}>
-              <tbody>
-                <tr>
-                  <td />
-                  {fields
-                    .filter(field => !field.isUnused)
-                    .map((field: IField) => (
-                      <RenderFieldHeader
+          {({ zoomIn, zoomOut }: IPinchProps) => (
+            <>
+              <NavControls zoomIn={zoomIn} zoomOut={zoomOut} />
+              <TransformComponent>
+                <table className={styles.table}>
+                  <tbody>
+                    <tr>
+                      <td />
+                      {fields
+                        .filter(field => !field.isUnused)
+                        .map((field: IField) => (
+                          <RenderFieldHeader
+                            tableType={tableType}
+                            key={field.id}
+                            field={field}
+                            facility={takeFacilityByFieldId(field.facilityId)}
+                            onTeamCardsUpdate={onTeamCardsUpdate}
+                            games={games}
+                            teamCards={teamCards}
+                          />
+                        ))}
+                    </tr>
+                    {timeSlots.map((timeSlot: ITimeSlot) => (
+                      <RenderTimeSlot
                         tableType={tableType}
-                        key={field.id}
-                        field={field}
-                        facility={takeFacilityByFieldId(field.facilityId)}
-                        onTeamCardsUpdate={onTeamCardsUpdate}
-                        games={games}
+                        key={timeSlot.id}
+                        timeSlot={timeSlot}
+                        fields={fields}
+                        games={selectProperGamesPerTimeSlot(timeSlot, games)}
+                        moveCard={moveCard}
+                        showHeatmap={showHeatmap}
+                        isEnterScores={isEnterScores}
+                        onTeamCardUpdate={onTeamCardUpdate}
                         teamCards={teamCards}
+                        onTeamCardsUpdate={onTeamCardsUpdate}
+                        isDndMode={disableZooming}
                       />
                     ))}
-                </tr>
-                {timeSlots.map((timeSlot: ITimeSlot) => (
-                  <RenderTimeSlot
-                    tableType={tableType}
-                    key={timeSlot.id}
-                    timeSlot={timeSlot}
-                    fields={fields}
-                    games={selectProperGamesPerTimeSlot(timeSlot, games)}
-                    moveCard={moveCard}
-                    showHeatmap={showHeatmap}
-                    isEnterScores={isEnterScores}
-                    onTeamCardUpdate={onTeamCardUpdate}
-                    teamCards={teamCards}
-                    onTeamCardsUpdate={onTeamCardsUpdate}
-                    isDndMode={disableZooming}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </TransformComponent>
+                  </tbody>
+                </table>
+              </TransformComponent>
+            </>
+          )}
         </TransformWrapper>
       </div>
     </section>

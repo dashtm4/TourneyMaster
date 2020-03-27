@@ -23,6 +23,7 @@ import {
   IUploadFile,
   BindingCbWithOne,
 } from 'common/models';
+import { sortFields } from '../../helpers';
 import styles from './styles.module.scss';
 
 const STYLES_FACILITIES_DESCRIPTION_CARD_MESSAGE = {
@@ -149,7 +150,10 @@ class FacilityDetails extends React.Component<Props, State> {
     ) {
       loadFields(facility.facilities_id);
     }
+
     const { facility_lat: lat, facility_long: lng } = this.props.facility;
+
+    const sortedFields = sortFields(fields);
 
     return (
       <SectionDropdown
@@ -281,26 +285,16 @@ class FacilityDetails extends React.Component<Props, State> {
             {facility.isFieldsLoading ? (
               <Loader />
             ) : (
-              fields
-                .sort((a, b) => {
-                  if (a.isChange || b.isChange) {
-                    return 0;
-                  }
-
-                  return a.field_name.localeCompare(b.field_name, undefined, {
-                    numeric: true,
-                  });
-                })
-                .map((it, idx) => (
-                  <li key={it.field_id}>
-                    <Field
-                      field={it}
-                      fieldNumber={idx + 1}
-                      isEdit={isEdit}
-                      onChange={this.onChangeField}
-                    />
-                  </li>
-                ))
+              sortedFields.map((it, idx) => (
+                <li key={it.field_id}>
+                  <Field
+                    field={it}
+                    fieldNumber={idx + 1}
+                    isEdit={isEdit}
+                    onChange={this.onChangeField}
+                  />
+                </li>
+              ))
             )}
           </ul>
           <div className={styles.restroomWrapper}>

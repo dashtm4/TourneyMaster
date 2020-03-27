@@ -4,10 +4,11 @@
     margin-bottom: 20px;
     .paperContainer {
       display: flex;
-      justify-content: flex-end;
-
-      > button {
-        margin-left: 20px;
+      justify-content: space-between;
+      .btnsGroup {
+        > button {
+          margin-left: 15px;
+        }
       }
     }
   }

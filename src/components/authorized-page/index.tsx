@@ -8,12 +8,12 @@ import LibraryManager from '../library-manager';
 import OrganizationsManagement from '../organizations-management';
 import Calendar from 'components/calendar';
 import Utilities from 'components/utilities';
-import { EmptyPage } from './authorized-page-event/index';
 import Footer from 'components/footer';
 import { Routes } from 'common/enums';
 import styles from './styles.module.scss';
 import GamedayComplexities from 'components/gameday-complexities';
 import ScrollTopButton from 'components/common/scroll-top-button';
+import EventLink from 'components/event-link';
 
 const AuthorizedPage = () => (
   <div className={styles.container}>
@@ -24,7 +24,7 @@ const AuthorizedPage = () => (
         <Switch>
           <Route path={Routes.DASHBOARD} component={Dashboard} />
           <Route path={Routes.LIBRARY_MANAGER} component={LibraryManager} />
-          <Route path={Routes.EVENT_LINK} component={EmptyPage} />
+          <Route path={Routes.EVENT_LINK} component={EventLink} />
           <Route
             path={Routes.COLLABORATION}
             component={OrganizationsManagement}

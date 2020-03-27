@@ -1,4 +1,5 @@
 import React from 'react';
+import { Checkbox } from 'components/common';
 import styles from '../styles.module.scss';
 import moment from 'moment';
 import { HashLink } from 'react-router-hash-link';
@@ -73,6 +74,21 @@ const PrimaryInformation = ({
             moment(data.discount_enddate).format('MM-DD-YYYY')) ||
             '—'}
         </p>
+      </div>
+    </div>
+    <div className={styles.piSectionThirddRow}>
+      <div className={styles.sectionItem}>
+        <Checkbox
+          options={[
+            {
+              label: 'Upcharge Processing Fees',
+              checked: Boolean(
+                data ? data.upcharge_fees_on_registrations : false
+              ),
+              disabled: true,
+            },
+          ]}
+        />
       </div>
     </div>
   </div>
