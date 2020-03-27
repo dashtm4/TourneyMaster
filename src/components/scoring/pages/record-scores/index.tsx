@@ -16,7 +16,7 @@ import {
   IField,
   ISchedule,
 } from 'common/models';
-import { Routes } from 'common/enums';
+import { Routes, TableScheduleTypes } from 'common/enums';
 import styles from './styles.module.scss';
 import {
   mapFacilitiesData,
@@ -224,6 +224,7 @@ class RecordScores extends React.Component<
           <h2 className="visually-hidden">Scoring</h2>
           {loadCondition && !isLoading ? (
             <TableSchedule
+              tableType={TableScheduleTypes.SCORES}
               event={event!}
               fields={fields!}
               games={games!}

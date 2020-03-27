@@ -60,8 +60,6 @@ const recordScoresReducer = (
         schedulesDetails,
       } = action.payload;
 
-      console.log(schedulesDetails);
-
       return {
         ...state,
         isLoading: false,

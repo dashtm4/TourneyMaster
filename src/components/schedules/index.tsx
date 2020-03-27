@@ -62,6 +62,7 @@ import { IConfigurableSchedule, ISchedule } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { Loader } from 'components/common';
+import { TableScheduleTypes } from 'common/enums';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -457,6 +458,7 @@ class Schedules extends Component<Props, State> {
 
         {loadCondition && !this.state.isLoading ? (
           <TableSchedule
+            tableType={TableScheduleTypes.SCHEDULES}
             event={event!}
             fields={fields!}
             games={games!}
