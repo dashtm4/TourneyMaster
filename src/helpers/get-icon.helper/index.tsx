@@ -31,6 +31,8 @@ import PrintIcon from '@material-ui/icons/Print';
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import PanToolIcon from '@material-ui/icons/PanTool';
 import FlipToBackIcon from '@material-ui/icons/FlipToBack';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { PinIcon } from './own-icons';
 import { Icons } from '../../common/enums/icons';
 
@@ -100,6 +102,10 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <PanToolIcon style={iconStyles} />;
     case Icons.FLIP:
       return <FlipToBackIcon style={iconStyles} />;
+    case Icons.DROPDOWN:
+      return <ArrowDropDownIcon style={iconStyles} />;
+    case Icons.DROPUP:
+      return <ArrowDropUpIcon style={iconStyles} />;
   }
   return <ClearIcon />;
 };
