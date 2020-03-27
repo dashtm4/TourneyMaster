@@ -1,6 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
-import { createStyles, lighten, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,20 +8,21 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import Checkbox from '@material-ui/core/Checkbox';
 import moment from 'moment';
 import { Button } from 'components/common';
 import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
-import styles from './styles.module.scss';
 
 interface Data {
+  job_id: string | number;
   created_datetime: string | number;
   IDTournament: string | number;
   name: string | number;
+  num_games: string | number;
+  num_locations: string | number;
   is_active_YN: string | number;
+  reRun?: any;
+  delete?: any;
 }
 
 interface Props {
@@ -62,28 +62,31 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
 
 interface HeadCell {
   id: keyof Data;
+  numeric: boolean;
+  width: number;
   label: string;
 }
 
 const headCells: HeadCell[] = [
-  { id: 'created_datetime', label: 'Import Date' },
-  { id: 'IDTournament', label: 'Tourney ID' },
-  { id: 'name', label: 'Name' },
-  { id: 'is_active_YN', label: 'Status' }
+  { id: 'created_datetime', numeric: false, width: 10, label: 'Import Date - Time' },
+  { id: 'IDTournament', numeric: false, width: 10, label: 'Tourney ID' },
+  { id: 'name', numeric: false, width: 10, label: 'Name' },
+  { id: 'num_games', numeric: true, width: 10, label: 'Games Imported' },
+  { id: 'num_locations', numeric: true, width: 10, label: 'Fields Imported' },
+  { id: 'is_active_YN', numeric: false, width: 10, label: 'Status' },
+  { id: 'reRun', numeric: false, width: 10, label: 'Re-Run' },
+  { id: 'delete', numeric: false, width: 10, label: 'Delete' }
 ];
 
 interface EnhancedTableProps {
   classes: ReturnType<typeof useStyles>;
-  numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
   order: Order;
   orderBy: string;
-  rowCount: number;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { classes, order, orderBy, onRequestSort } = props;
   const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
@@ -91,19 +94,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all desserts' }}
-          />
-        </TableCell>
         {headCells.map(headCell => (
           <TableCell
             key={headCell.id}
-            align="left"
+            align={headCell.numeric ? 'right' : 'left'}
             sortDirection={orderBy === headCell.id ? order : false}
+            style={{ width: headCell.width + '%' }}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -123,71 +119,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     </TableHead>
   );
 }
-
-const useToolbarStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-    },
-    highlight:
-      theme.palette.type === 'light'
-        ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
-        : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
-    title: {
-      flex: '1 1 50%',
-    },
-    rerunBtn: {
-      marginRight: 5
-    },
-    delBtn: {
-      marginLeft: 5
-    }
-  }),
-);
-
-interface EnhancedTableToolbarProps {
-  numSelected: number;
-}
-
-const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const classes = useToolbarStyles();
-  const { numSelected } = props;
-
-  return (
-    <Toolbar
-      className={clsx(classes.root, {
-        [classes.highlight]: numSelected > 0,
-      })}
-    >
-      <Typography className={classes.title} color="inherit" variant="subtitle1">
-        {numSelected} selected
-        </Typography>
-      <div className={clsx(classes.rerunBtn, { [styles.btnDisabled]: numSelected <= 0 })} title="Delete">
-        <Button
-          label="Re-Run"
-          variant={ButtonVarian.OUTLINED}
-          color={ButtonColors.SECONDARY}
-          btnType={ButtonFormTypes.SUBMIT}
-        />
-      </div>
-      <div className={clsx(classes.delBtn, { [styles.btnDisabled]: numSelected <= 0 })} title="Delete">
-        <Button
-          label="Delete"
-          variant={ButtonVarian.OUTLINED}
-          color={ButtonColors.SECONDARY}
-          btnType={ButtonFormTypes.SUBMIT}
-        />
-      </div>
-    </Toolbar>
-  );
-};
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -217,9 +148,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const EnhancedTable = ({ histories }: Props) => {
   const classes = useStyles();
-  const [order, setOrder] = React.useState<Order>('desc');
+  const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('created_datetime');
-  const [selected, setSelected] = React.useState<any[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -228,39 +158,6 @@ const EnhancedTable = ({ histories }: Props) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
-  };
-
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelecteds = histories.map((n, index) => {
-        console.log(n);
-        return index;
-      });
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event: React.MouseEvent<unknown>, name: string | number) => {
-    event.preventDefault();
-    const selectedIndex = selected.indexOf(name);
-    let newSelected: any[] = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
-    }
-
-    setSelected(newSelected);
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -273,14 +170,19 @@ const EnhancedTable = ({ histories }: Props) => {
     setPage(0);
   };
 
-  const isSelected = (name: string | number) => selected.indexOf(name) !== -1;
+  const handleRerunJobs = (jobId: string | number) => {
+    console.log('[onRun]', jobId);
+  }
+
+  const handleDeleteJobs = (jobId: string | number) => {
+    console.log('[onDel]', jobId);
+  }
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, histories.length - page * rowsPerPage);
 
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
             className={classes.table}
@@ -289,18 +191,14 @@ const EnhancedTable = ({ histories }: Props) => {
           >
             <EnhancedTableHead
               classes={classes}
-              numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={histories.length}
             />
             <TableBody>
               {stableSort(histories, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((history, index) => {
-                  const isItemSelected = isSelected(index);
                   const labelId = `enhanced-table-checkbox-${index}`;
                   let status: string;
                   if (history.is_active_YN === 1)
@@ -311,25 +209,35 @@ const EnhancedTable = ({ histories }: Props) => {
                   return (
                     <TableRow
                       hover
-                      onClick={event => handleClick(event, index)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={index}
-                      selected={isItemSelected}
                     >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </TableCell>
-                      <TableCell align="left">{moment(history.created_datetime).format('MM.DD.YYYY')}</TableCell>
+                      <TableCell align="left">{moment(history.created_datetime).format('MM.DD.YYYY hh:mm A')}</TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none">
                         {history.IDTournament}
                       </TableCell>
                       <TableCell align="left">{history.name}</TableCell>
+                      <TableCell align="right">{history.num_games}</TableCell>
+                      <TableCell align="right">{history.num_locations}</TableCell>
                       <TableCell align="left">{status}</TableCell>
+                      <TableCell align="left">
+                        <Button
+                          label="Re-Run"
+                          variant={ButtonVarian.OUTLINED}
+                          color={ButtonColors.SECONDARY}
+                          onClick={() => handleRerunJobs(history.job_id)}
+                          btnType={ButtonFormTypes.SUBMIT}
+                        />
+                      </TableCell>
+                      <TableCell align="left">
+                        <Button
+                          label="Delete"
+                          variant={ButtonVarian.OUTLINED}
+                          color={ButtonColors.SECONDARY}
+                          onClick={() => handleDeleteJobs(history.job_id)}
+                          btnType={ButtonFormTypes.SUBMIT}
+                        />
+                      </TableCell>
                     </TableRow>
                   );
                 })}
