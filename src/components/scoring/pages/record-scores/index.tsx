@@ -15,6 +15,7 @@ import {
   IEventDetails,
   IField,
   ISchedule,
+  IPool,
 } from 'common/models';
 import { Routes, TableScheduleTypes } from 'common/enums';
 import styles from './styles.module.scss';
@@ -53,6 +54,7 @@ interface Props {
   facilities: IFacility[];
   fields: IField[];
   divisions: IDivision[];
+  pools: IPool[];
   teams: ITeam[];
   schedule: ISchedule | null;
   eventSummary: IEventSummary[];
@@ -189,6 +191,7 @@ class RecordScores extends React.Component<
       divisions,
       event,
       eventSummary,
+      pools,
       schedule,
       schedulesTeamCards,
     } = this.props;
@@ -209,6 +212,7 @@ class RecordScores extends React.Component<
       facilities?.length &&
       event &&
       Boolean(divisions.length) &&
+      Boolean(pools.length) &&
       Boolean(eventSummary.length) &&
       schedulesTeamCards?.length
     );
@@ -229,6 +233,7 @@ class RecordScores extends React.Component<
               fields={fields!}
               games={games!}
               timeSlots={timeSlots!}
+              pools={pools}
               divisions={divisions!}
               facilities={facilities!}
               teamCards={schedulesTeamCards!}
@@ -262,6 +267,7 @@ export default connect(
     facilities: recordScores.facilities,
     fields: recordScores.fields,
     divisions: recordScores.divisions,
+    pools: recordScores.pools,
     teams: recordScores.teams,
     schedule: recordScores.schedule,
     eventSummary: recordScores.eventSummary,

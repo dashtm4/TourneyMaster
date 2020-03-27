@@ -7,7 +7,7 @@ import {
   LOAD_SCORES_DATA_FAILURE,
 } from './action-types';
 import Api from 'api/api';
-import { IFacility, IEventDetails, ISchedule } from 'common/models';
+import { IFacility, IEventDetails, ISchedule, IDivision } from 'common/models';
 
 const loadScoresData: ActionCreator<ThunkAction<
   void,
@@ -41,6 +41,14 @@ const loadScoresData: ActionCreator<ThunkAction<
       )
     ).flat();
 
+    const pools = (
+      await Promise.all(
+        divisions.map((it: IDivision) =>
+          Api.get(`/pools?division_id=${it.division_id}`)
+        )
+      )
+    ).flat();
+
     const currentEvent = events.find(
       (it: IEventDetails) => it.event_id === eventId
     );
@@ -60,6 +68,7 @@ const loadScoresData: ActionCreator<ThunkAction<
         teams,
         eventSummary,
         schedulesDetails,
+        pools,
       },
     });
   } catch {

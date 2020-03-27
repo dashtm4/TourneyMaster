@@ -57,8 +57,8 @@ const SchedulesMatrix = (props: IProps) => {
       <div className={`matrix-table__table-wrapper ${styles.tableWrapper}`}>
         <TransformWrapper
           defaultPositionX={0.01}
-          defaultPositionY={0.01}
-          defaultScale={1}
+          defaultPositionY={20}
+          defaultScale={0.3}
           options={{ ...TRANSFORM_WRAPPER_OPTIONS, disabled: disableZooming }}
         >
           <TransformComponent>

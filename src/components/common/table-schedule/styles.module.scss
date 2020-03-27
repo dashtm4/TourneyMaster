@@ -16,15 +16,25 @@
 
   .topBtnsWrapper {
     position: absolute;
-    width: 260px;
+    width: 320px;
     top: -15px;
     display: flex;
+    align-items: center;
     justify-content: space-between;
+
+    h3 {
+      font-size: 16px;
+      color: #6a6a76;
+    }
   }
 }
 
 .tableWrapper {
   flex-grow: 1;
+
+  @media screen and (max-width: 1366px) {
+    max-width: 1060px;
+  }
 }
 
 .btnsWrapper {

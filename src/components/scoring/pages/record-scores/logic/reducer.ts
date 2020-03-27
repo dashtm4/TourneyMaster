@@ -12,6 +12,7 @@ import {
   IEventDetails,
   IField,
   ISchedule,
+  IPool,
 } from 'common/models';
 
 export interface IRecordScoresState {
@@ -19,6 +20,7 @@ export interface IRecordScoresState {
   facilities: IFacility[];
   fields: IField[];
   divisions: IDivision[];
+  pools: IPool[];
   teams: ITeam[];
   schedule: ISchedule | null;
   eventSummary: IEventSummary[];
@@ -32,6 +34,7 @@ const initialState = {
   facilities: [],
   fields: [],
   divisions: [],
+  pools: [],
   teams: [],
   schedule: null,
   eventSummary: [],
@@ -57,6 +60,7 @@ const recordScoresReducer = (
         divisions,
         teams,
         eventSummary,
+        pools,
         schedulesDetails,
       } = action.payload;
 
@@ -71,6 +75,7 @@ const recordScoresReducer = (
         divisions,
         teams,
         eventSummary,
+        pools,
         schedulesDetails,
       };
     }

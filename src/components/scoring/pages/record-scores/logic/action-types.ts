@@ -6,7 +6,8 @@ import {
   IFacility,
   IEventDetails,
   IField,
-  ISchedule
+  ISchedule,
+  IPool
 } from 'common/models';
 
 export const LOAD_SCORES_DATA_START = 'RECORD_SCORES:LOAD_SCORES_DATA_START';
@@ -31,6 +32,7 @@ export interface loadScoresDataSuccess {
     teams: ITeam[];
     schedule: ISchedule;
     eventSummary: IEventSummary[];
+    pools: IPool[];
     schedulesDetails: ISchedulesDetails[];
   };
 }

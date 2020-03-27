@@ -14,3 +14,8 @@ export interface IPool {
   isTeamsLoading?: boolean;
   isTeamsLoaded?: boolean;
 }
+
+export interface ISelectPool {
+  id: string;
+  name: string;
+}

@@ -32,6 +32,8 @@ enum Icons {
   ZOOM = 'zoom',
   MOVE = 'move',
   FLIP = 'flip',
+  DROPDOWN = 'DROPDOWN',
+  DROPUP = 'DROPUP',
 }
 
 export { Icons };
