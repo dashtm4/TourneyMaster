@@ -35,7 +35,7 @@ const EMPTY_FIELD = {
   is_active_YN: null,
   is_library_YN: null,
   is_illuminated_YN: null,
-  is_premier_YN: null,
+  is_premier_YN: 0,
   created_by: null,
   created_datetime: null,
   updated_by: null,

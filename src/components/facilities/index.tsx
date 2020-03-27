@@ -188,9 +188,15 @@ class Facilities extends React.Component<
                 >
                   <FacilityDetails
                     facility={facilitiy}
-                    fields={fields.filter(
-                      it => it.facilities_id === facilitiy.facilities_id
-                    )}
+                    fields={fields
+                      .filter(
+                        it => it.facilities_id === facilitiy.facilities_id
+                      )
+                      .sort((a, b) => {
+                        return (
+                          Number(b.is_premier_YN) - Number(a.is_premier_YN)
+                        );
+                      })}
                     facilitiyNumber={idx + 1}
                     loadFields={loadFields}
                     addEmptyField={addEmptyField}
