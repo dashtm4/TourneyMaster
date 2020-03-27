@@ -5,6 +5,13 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { Button } from 'components/common';
 import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
 import { BindingAction } from 'common/models';
+import Slide from '@material-ui/core/Slide';
+import { TransitionProps } from '@material-ui/core/transitions';
+
+const Transition = React.forwardRef<unknown, TransitionProps>(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 
 interface DeleteProps {
   opened: boolean;
@@ -24,8 +31,10 @@ export const DeleteComformBox = ({ opened, onNo, onYes }: DeleteProps) => {
     <div>
       <Dialog
         open={opened}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={onNo}
+        aria-labelledby="alert-dialog-slide-title"
         id="alert-dialog-box"
       >
         <DialogTitle id="alert-dialog-title">{"Do you want to delete this item?"}</DialogTitle>
@@ -57,8 +66,10 @@ export const RerunComfirmBox = ({ opened, onNo, onYes }: RerunProps) => {
     <div>
       <Dialog
         open={opened}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={onNo}
+        aria-labelledby="alert-dialog-slide-title"
         id="alert-dialog-box"
       >
         <DialogTitle id="alert-dialog-title">{"Do you want to re-run this item?"}</DialogTitle>
