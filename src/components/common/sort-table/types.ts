@@ -1,5 +1,4 @@
 export enum TableColNames {
-  TITLE = 'title',
   VERSION = 'version',
   LAST_MODIFIED = 'lastModified',
 }

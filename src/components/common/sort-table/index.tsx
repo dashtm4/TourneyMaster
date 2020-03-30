@@ -6,14 +6,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import { getComparator, stableSort } from './helpers';
-import { OrderTypes, TableColNames, Data, HeadCell } from './types';
+import { OrderTypes } from './types';
 import styles from './styles.module.scss';
-
-const headCells: HeadCell[] = [
-  { id: TableColNames.TITLE, label: 'Title' },
-  { id: TableColNames.VERSION, label: 'Version' },
-  { id: TableColNames.LAST_MODIFIED, label: 'Last Modified' },
-];
 
 interface Props {
   rows: any[];
@@ -22,32 +16,36 @@ interface Props {
 
 const SortTable = ({ rows, titleField }: Props) => {
   const [order, setOrder] = React.useState<OrderTypes>(OrderTypes.ASC);
-  const [orderBy, setOrderBy] = React.useState<keyof Data>(TableColNames.TITLE);
+  const [orderBy, setOrderBy] = React.useState<string>(titleField);
 
-  const handleRequestSort = (property: keyof Data) => {
+  const handleRequestSort = (property: string) => {
     const isAsc = orderBy === property && order === OrderTypes.ASC;
+
     setOrder(isAsc ? OrderTypes.DESC : OrderTypes.ASC);
+
     setOrderBy(property);
   };
+
+  const sorteRows = stableSort(rows, getComparator(order, orderBy));
 
   return (
     <div className={styles.tableWrapper}>
       <TableContainer>
         <Table>
           <TableHeader
-            headCells={headCells}
             order={order}
             orderBy={orderBy}
             onRequestSort={handleRequestSort}
             rowCount={rows.length}
+            titleField={titleField}
           />
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map(row => (
-              <TableRow key={row.title} hover>
+            {sorteRows.map(row => (
+              <TableRow key={row[titleField]} hover>
                 <TableCell>{row[titleField]}</TableCell>
-                <TableCell>{row.version}</TableCell>
+                <TableCell>{row.title}</TableCell>
                 <TableCell>{row.lastModified}</TableCell>
-                <TableCell>action</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
             ))}
           </TableBody>

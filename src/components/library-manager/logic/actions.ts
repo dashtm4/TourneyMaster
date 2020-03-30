@@ -7,6 +7,7 @@ import {
   LIBRARY_MANAGER_LOAD_DATA_FAILURE,
 } from './action-types';
 import Api from 'api/api';
+import { mapArrWithEventName } from 'helpers';
 
 const loadLibraryManagerData: ActionCreator<ThunkAction<
   void,
@@ -19,12 +20,18 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
       type: LIBRARY_MANAGER_LOAD_DATA_START,
     });
 
+    const events = await Api.get('/events');
     const registrations = await Api.get('/registrations');
+
+    const mappedRegistrationWithEvent = mapArrWithEventName(
+      registrations,
+      events
+    );
 
     dispatch({
       type: LIBRARY_MANAGER_LOAD_DATA_SUCCESS,
       payload: {
-        registrations,
+        registrations: mappedRegistrationWithEvent,
       },
     });
   } catch {
