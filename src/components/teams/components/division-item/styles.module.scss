@@ -1,15 +1,14 @@
+.divisionItem {
+  margin-left: -24px;
+}
+
 .poolList {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
 
-  margin: 0;
+  width: 100%;
+  margin: 0 0 5px;
   padding: 0;
 
   list-style: none;
-
-  li {
-    width: 265px;
-
-    margin-right: 12px;
-  }
 }

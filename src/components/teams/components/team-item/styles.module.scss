@@ -1,28 +1,20 @@
 .team {
-  position: relative;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  width: 160px;
-  min-height: 42px;
-  margin-bottom: 4px;
-  padding: 3px 2px 3px 32px;
+  padding: 3px 2px 7px;
 
   font-size: 17px;
   line-height: 24px;
   color: #00a3ea;
+}
 
-  background-color: #ffffff;
+.teamName {
+  position: relative;
 
-  border-radius: 6px;
+  padding-left: 32px;
 
   &::before {
     position: absolute;
-    top: 50%;
+    top: 11px;
     left: 5px;
-    transform: translateY(-50%);
 
     content: '';
     width: 22px;
@@ -32,29 +24,4 @@
 
     border-radius: 50%;
   }
-}
-
-.teamEdit {
-  @extend .team;
-  cursor: grab;
-  :active {
-    cursor: grabbing;
-  }
-}
-
-.teamBtnsWrapper {
-  margin: 0;
-}
-
-.delBtnWrapper {
-  color: #ff0f19;
-}
-
-.btnsWrapper {
-  display: flex;
-}
-
-.iconWrapper {
-  padding: 6px 8px;
-  display: flex;
 }

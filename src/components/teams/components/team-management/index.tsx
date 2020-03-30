@@ -10,14 +10,7 @@ interface Props {
   divisions: IDivision[];
   pools: IPool[];
   teams: ITeam[];
-  isEdit: boolean;
-  changePool: (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => void;
   loadPools: (divisionId: string) => void;
-  onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
     divisionName: string,
@@ -29,10 +22,7 @@ const TeamManagement = ({
   divisions,
   teams,
   pools,
-  isEdit,
-  changePool,
   loadPools,
-  onDeletePopupOpen,
   onEditPopupOpen,
 }: Props) => {
   const [expanded, setExpanded] = useState([
@@ -84,11 +74,7 @@ const TeamManagement = ({
                 pool => pool.division_id === division.division_id
               )}
               teams={teams}
-              isEdit={isEdit}
-              isUnassigned={false}
-              changePool={changePool}
               loadPools={loadPools}
-              onDeletePopupOpen={onDeletePopupOpen}
               onEditPopupOpen={onEditPopupOpen}
               key={division.division_id}
               expanded={expanded[index]}
@@ -96,19 +82,6 @@ const TeamManagement = ({
               onToggleOne={onToggleOne}
             />
           ))}
-          <DivisionItem
-            teams={teams}
-            pools={[]}
-            isEdit={isEdit}
-            isUnassigned={true}
-            changePool={changePool}
-            loadPools={loadPools}
-            onDeletePopupOpen={onDeletePopupOpen}
-            onEditPopupOpen={onEditPopupOpen}
-            expanded={expanded[expanded.length - 1]}
-            index={expanded.length - 1}
-            onToggleOne={onToggleOne}
-          />
         </ul>
       </SectionDropdown>
     </li>
