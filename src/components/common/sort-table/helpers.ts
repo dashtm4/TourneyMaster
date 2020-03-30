@@ -1,6 +1,6 @@
-import { OrderTypes } from './types';
+import { ITableSortRow, OrderTypes, TableSortRowTypes } from './common';
 
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+const descendingComparator = <T>(a: T, b: T, orderBy: TableSortRowTypes) => {
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -8,21 +8,17 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     return 1;
   }
   return 0;
-}
+};
 
-function getComparator<Key extends keyof any>(
-  order: OrderTypes,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number {
+const getComparator = (order: OrderTypes, orderBy: TableSortRowTypes) => {
   return order === OrderTypes.DESC
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
+    ? (a: ITableSortRow, b: ITableSortRow) =>
+        descendingComparator(a, b, orderBy)
+    : (a: ITableSortRow, b: ITableSortRow) =>
+        -descendingComparator(a, b, orderBy);
+};
 
-function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
+const stableSort = <T>(array: T[], comparator: (a: T, b: T) => number): T[] => {
   const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
 
   stabilizedThis.sort((a, b) => {
@@ -34,6 +30,6 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
   });
 
   return stabilizedThis.map(el => el[0]);
-}
+};
 
 export { getComparator, stableSort };

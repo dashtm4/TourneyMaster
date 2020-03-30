@@ -7,13 +7,14 @@ import { AppState } from './logic/reducer';
 import Navigation from './components/navigation';
 import Registration from './components/registration';
 import { HeadingLevelTwo, Loader } from 'components/common';
-import { IRegistration, BindingAction } from 'common/models';
+import { BindingAction } from 'common/models';
+import { ILibraryManagerRegistration } from './common';
 import styles from './styles.module.scss';
 
 interface Props {
   isLoading: boolean;
   isLoaded: boolean;
-  registrations: IRegistration[];
+  registrations: ILibraryManagerRegistration[];
   loadLibraryManagerData: BindingAction;
 }
 
