@@ -23,7 +23,6 @@ import PopupConfirm from 'components/common/popup-confirm';
 import styles from './styles.module.scss';
 
 import {
-  getUnassignedTeams,
   mapGamesByFilter,
   mapFilterValues,
   applyFilters,
@@ -99,8 +98,6 @@ const TableSchedule = ({
   const filteredGames = mapGamesByFilter([...filledGames], filterValues);
 
   const updatedFields = mapUnusedFields(fields, filteredGames);
-
-  const unassignedTeams = getUnassignedTeams(teamCards, minGamesNum);
 
   const onFilterChange = (data: IScheduleFilter) => {
     const newData = mapFilterValues({ teamCards, pools }, data);
@@ -181,7 +178,8 @@ const TableSchedule = ({
           {tableType === TableScheduleTypes.SCHEDULES && (
             <ListUnassigned
               tableType={tableType}
-              teamCards={unassignedTeams}
+              teamCards={teamCards}
+              minGamesNum={minGamesNum}
               showHeatmap={showHeatmap}
               onDrop={moveCard}
             />

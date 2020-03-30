@@ -57,6 +57,7 @@ const calculateBackToBacks = (teamCard: ITeamCard, games: IGame[]) => {
 };
 
 export const calculateNumOfTimeSlots = (
+  gap: number,
   teamCard: ITeamCard,
   games: IGame[]
 ) => {
@@ -68,10 +69,9 @@ export const calculateNumOfTimeSlots = (
 
   const numOfTimeSlots = timeSlotIds
     .map((v, i, a) => a[i + 1] - v - 1 || 0)
-    .filter(item => item)
-    .reduce((a, b) => a + b, 0);
+    .filter(item => item);
 
-  return numOfTimeSlots;
+  return numOfTimeSlots.filter(item => item === gap).length;
 };
 
 const calculateTeamDiagnostics = (
@@ -99,7 +99,11 @@ const calculateTeamDiagnostics = (
     .filter(field => fieldIds.includes(field.id))
     .map(field => field.name);
 
-  const numOfTimeSlots = calculateNumOfTimeSlots(teamCard, games);
+  const numOfTimeSlots0 = calculateNumOfTimeSlots(0, teamCard, games);
+  const numOfTimeSlots1 = calculateNumOfTimeSlots(1, teamCard, games);
+  const numOfTimeSlots2 = calculateNumOfTimeSlots(2, teamCard, games);
+  const numOfTimeSlots3 = calculateNumOfTimeSlots(3, teamCard, games);
+  const numOfTimeSlots4 = calculateNumOfTimeSlots(4, teamCard, games);
 
   const numOfFields: string = fieldNames?.length ? fieldNames.join(', ') : '-';
 
@@ -109,7 +113,11 @@ const calculateTeamDiagnostics = (
     numOfGames,
     tournamentTime,
     numOfBackToBacks,
-    numOfTimeSlots,
+    numOfTimeSlots0,
+    numOfTimeSlots1,
+    numOfTimeSlots2,
+    numOfTimeSlots3,
+    numOfTimeSlots4,
     numOfFields,
   ];
 };
@@ -119,13 +127,18 @@ const formatTeamsDiagnostics = (diagnosticsProps: ITeamsDiagnosticsProps) => {
   const teamsArr = teamCards.map(teamCard =>
     calculateTeamDiagnostics(teamCard, diagnosticsProps)
   );
+
   const header = [
     'Team Name',
     'Division Name',
     '# of Games',
     'Tournament Time',
     '# of Back-to-Back games',
-    '# of time slots between games',
+    '0 Time Slots between games',
+    '1 Time Slots between games',
+    '2 Time Slots between games',
+    '3 Time Slots between games',
+    '4 Time Slots between games',
     'Field Name(s)',
   ];
 

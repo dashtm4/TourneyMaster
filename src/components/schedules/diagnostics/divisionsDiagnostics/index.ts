@@ -19,6 +19,14 @@ export interface IDivisionsDiagnosticsProps {
   totalGameTime: number;
 }
 
+interface ITimeSlotsBtwnGames {
+  timeSlotsIn0: number;
+  timeSlotsIn1: number;
+  timeSlotsIn2: number;
+  timeSlotsIn3: number;
+  timeSlotsIn4: number;
+}
+
 const calculateDivisionFieldsNumber = (
   divisionId: string,
   diagnosticsProps: IDivisionsDiagnosticsProps
@@ -77,23 +85,15 @@ const calculateTimeSlotsBetweenGames = (
   teamCards: ITeamCard[],
   games: IGame[]
 ) => {
-  const timeSlotsNum = teamCards.map(item =>
-    calculateNumOfTimeSlots(item, games)
-  );
+  const resultObject: Partial<ITimeSlotsBtwnGames> = {};
 
-  const timeSlotsIn0 = timeSlotsNum.filter(v => v === 0).length;
-  const timeSlotsIn1 = timeSlotsNum.filter(v => v === 1).length;
-  const timeSlotsIn2 = timeSlotsNum.filter(v => v === 2).length;
-  const timeSlotsIn3 = timeSlotsNum.filter(v => v === 3).length;
-  const timeSlotsIn4 = timeSlotsNum.filter(v => v === 4).length;
+  [...Array(5)].map((_, index) => {
+    resultObject[`timeSlotsIn${index}`] = teamCards
+      .map(item => calculateNumOfTimeSlots(index, item, games))
+      .filter(v => v).length;
+  });
 
-  return {
-    timeSlotsIn0,
-    timeSlotsIn1,
-    timeSlotsIn2,
-    timeSlotsIn3,
-    timeSlotsIn4,
-  };
+  return resultObject;
 };
 
 const calculateDivisionDiagnostics = (
@@ -195,11 +195,11 @@ const formatDivisionsDiagnostics = (
     'Avg. Time / Team',
     'Min. Time / Team',
     'Max. Time / Team',
-    '0 time slots between games',
-    '1 time slots between games',
-    '2 time slots between games',
-    '3 time slots between games',
-    '4 time slots between games',
+    '0 Time Slots between games',
+    '1 Time Slots between games',
+    '2 Time Slots between games',
+    '3 Time Slots between games',
+    '4 Time Slots between games',
     'Facility Name',
   ];
 
