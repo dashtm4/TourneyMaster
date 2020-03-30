@@ -29,11 +29,7 @@ interface Props {
   divisionName: string;
   poolName?: string;
   isArrange: boolean;
-  changePool: (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => void;
+  changePool: (team: ITeam, divisionId: string, poolId: string | null) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,

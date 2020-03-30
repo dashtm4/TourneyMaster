@@ -79,11 +79,7 @@ class Teams extends React.Component<
     }
   }
 
-  changePool = (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => {
+  changePool = (team: ITeam, divisionId: string, poolId: string | null) => {
     const changedTeam = {
       ...team,
       division_id: divisionId,

@@ -169,11 +169,7 @@ class DivisionsAndPools extends React.Component<
     this.setState({ isArrange: false, isConfirmModalOpen: false });
   };
 
-  changePool = (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => {
+  changePool = (team: ITeam, divisionId: string, poolId: string | null) => {
     const changedTeam = {
       ...team,
       division_id: divisionId,
