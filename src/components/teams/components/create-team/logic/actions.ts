@@ -24,11 +24,7 @@ export const saveTeams: ActionCreator<ThunkAction<
       [...allTeams, ...teams].reduce((acc, it: ITeam) => {
         const divisionId = it.division_id;
 
-        if (divisionId) {
-          acc[divisionId] = [...(acc[divisionId] || []), it];
-        } else {
-          acc['unassigned'] = [...(acc['unassigned'] || []), it];
-        }
+        acc[divisionId] = [...(acc[divisionId] || []), it];
 
         return acc;
       }, {})

@@ -113,6 +113,7 @@ export default (
         ...state,
         pools: [...state.pools, ...action.payload],
         error: false,
+        areDetailsLoading: false,
       };
     }
     case ALL_POOLS_FETCH_SUCCESS:

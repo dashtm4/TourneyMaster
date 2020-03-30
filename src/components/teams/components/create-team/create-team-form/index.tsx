@@ -146,7 +146,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Select
                 label="Division"
-                options={[...divisionsOptions]}
+                options={divisionsOptions}
                 value={division_id || ''}
                 onChange={this.onDivisionChange}
               />
