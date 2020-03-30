@@ -194,7 +194,7 @@ export default (props: IProps) => {
             `${((totalGameSlots * 2) / schedule.num_teams).toFixed(1)}`
           )}
           <Button
-            label="View Matrix"
+            label="View Time Slots"
             icon={<FontAwesomeIcon icon={faEye} />}
             color="secondary"
             variant="text"

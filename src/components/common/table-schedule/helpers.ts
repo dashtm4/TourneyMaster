@@ -1,4 +1,4 @@
-import { findIndex } from 'lodash-es';
+import { findIndex, find } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from '../matrix-table/helper';
 import { IDivision, IEventSummary, IPool } from 'common/models';
@@ -133,6 +133,47 @@ const checkFields = (game: IGame, fieldIds: string[]) => {
   return fieldIds.includes(game.fieldId);
 };
 
+const filterPoolsByDivisionIds = (pools: IPool[], divisionIds: string[]) =>
+  pools.filter(pool => divisionIds.includes(pool.division_id));
+
+const filterPoolsOptionsByPools = (
+  poolOptions: IMultiSelectOption[],
+  options: IMultiSelectOption[],
+  pools: IPool[]
+) =>
+  poolOptions
+    .filter(item => findIndex(pools, { pool_id: item.value }) >= 0)
+    .map(item => ({
+      ...item,
+      checked: find(options, { value: item.value })
+        ? !!find(options, { value: item.value })?.checked
+        : true,
+    }));
+
+const filterTeamsByDivisionsAndPools = (
+  teams: ITeamCard[],
+  divisionIds: string[],
+  poolIds: string[]
+) =>
+  teams.filter(
+    item =>
+      divisionIds.includes(item.divisionId) && poolIds.includes(item.poolId!)
+  );
+
+const filterTeamsOptionsByTeams = (
+  teamsOptions: IMultiSelectOption[],
+  options: IMultiSelectOption[],
+  teams: ITeamCard[]
+) =>
+  teamsOptions
+    .filter(item => findIndex(teams, { id: item.value }) >= 0)
+    .map(item => ({
+      ...item,
+      checked: find(options, { value: item.value })
+        ? !!find(options, { value: item.value })?.checked
+        : true,
+    }));
+
 export const mapFilterValues = (
   params: {
     teamCards: ITeamCard[];
@@ -141,7 +182,7 @@ export const mapFilterValues = (
   filterValues: IFilterValues
 ) => {
   const { teamCards, pools } = params;
-  const { divisionsOptions, poolsOptions, teamsOptions } = filterValues;
+  const { divisionsOptions, teamsOptions, poolsOptions } = filterValues;
   const divisionIds = mapCheckedValues(divisionsOptions);
 
   const allPoolsOptions: IMultiSelectOption[] = mapPoolsToOptions(pools);
@@ -149,30 +190,33 @@ export const mapFilterValues = (
     teamCards
   );
 
-  const poolIds = mapCheckedValues(poolsOptions);
-
-  const divisionPools = pools.filter(item =>
-    divisionIds.includes(item.division_id)
+  // Pools rely on:
+  // Checked divisions
+  // - Get all pools and filter them by checked division ids
+  // - Get all pools options and filter them by filtered pools and checked pools options
+  const filteredPools = filterPoolsByDivisionIds(pools, divisionIds);
+  const filteredPoolsOptions = filterPoolsOptionsByPools(
+    allPoolsOptions,
+    poolsOptions,
+    filteredPools
   );
 
-  const divisionPoolTeams = teamCards.filter(
-    item =>
-      poolIds.includes(item.poolId!) && divisionIds.includes(item.divisionId)
+  // Teams realy on:
+  // Checked divisions
+  // Checked pools
+  // - Get all teams and filter them by checked division ids and checked pool ids
+  // - Get all teams options and filter them by filtered teams and checked teams options
+  const poolIds = mapCheckedValues(filteredPoolsOptions);
+  const filteredTeams = filterTeamsByDivisionsAndPools(
+    teamCards,
+    divisionIds,
+    poolIds
   );
-
-  const filteredPoolsOptions = allPoolsOptions
-    .filter(item => findIndex(divisionPools, { pool_id: item.value }) >= 0)
-    .map(item => ({
-      ...item,
-      checked: !!poolsOptions.find(el => el.value === item.value)?.checked,
-    }));
-
-  const filteredTeamsOptions = allTeamsOptions
-    .filter(item => findIndex(divisionPoolTeams, { id: item.value }) >= 0)
-    .map(item => ({
-      ...item,
-      checked: !!teamsOptions.find(el => el.value === item.value)?.checked,
-    }));
+  const filteredTeamsOptions = filterTeamsOptionsByTeams(
+    allTeamsOptions,
+    teamsOptions,
+    filteredTeams
+  );
 
   return {
     ...filterValues,

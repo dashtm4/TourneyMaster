@@ -106,6 +106,8 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <ArrowDropDownIcon style={iconStyles} />;
     case Icons.DROPUP:
       return <ArrowDropUpIcon style={iconStyles} />;
+    case Icons.CLEAR:
+      return <ClearIcon style={iconStyles} />;
   }
   return <ClearIcon />;
 };
