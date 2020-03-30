@@ -68,6 +68,7 @@ class AddPool extends React.Component<IAddPoolProps, IAddPoolState> {
             width="221px"
             label="Name"
             value={pool_name || ''}
+            autofocus={true}
             onChange={this.onNameChange}
           />
           <Input

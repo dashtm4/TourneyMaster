@@ -134,6 +134,7 @@ const InfoModal = ({
         width="248px"
         value={clickedEvent.cal_event_title || ''}
         onChange={onTitleChange}
+        autofocus={true}
       />
     ) : (
       clickedEvent.cal_event_title || '—'

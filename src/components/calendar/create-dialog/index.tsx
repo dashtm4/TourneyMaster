@@ -165,6 +165,7 @@ export default (props: IProps) => {
               onChange={onChange}
               value={calendarEvent.cal_event_title}
               placeholder="Title"
+              autofocus={true}
             />
             <div className={styles.withIconWrapper}>
               <FontAwesomeIcon icon={faCalendar} />

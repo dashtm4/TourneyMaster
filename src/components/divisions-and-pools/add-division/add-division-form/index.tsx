@@ -90,6 +90,7 @@ class AddDivisionForm extends React.Component<
               <Input
                 fullWidth={true}
                 label="Long Name"
+                autofocus={true}
                 value={long_name || ''}
                 onChange={this.onLongNameChange}
               />
