@@ -22,7 +22,7 @@ const Registration = ({ registrations }: Props) => {
       panelDetailsType="flat"
       isDefaultExpanded={true}
     >
-      <span>Registration</span>
+      <span>{MenuTitles.REGISTRATION}}</span>
       <SortTable
         rows={onlyTrulyRegistrations}
         titleField={ILibraryManagerRegistrationFields.EVENT_NAME}

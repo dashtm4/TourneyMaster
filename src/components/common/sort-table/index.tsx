@@ -1,4 +1,5 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import TableHeader from './components/table-header';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,12 +10,26 @@ import { getComparator, stableSort } from './helpers';
 import { OrderTypes } from './types';
 import styles from './styles.module.scss';
 
+const useStyles = makeStyles({
+  tableRowEven: {
+    backgroundColor: '#F7F7F7',
+  },
+  tableRowOdd: {
+    backgroundColor: '#ffffff',
+  },
+  tableTitle: {
+    color: '#00A3EA;',
+  },
+});
+
 interface Props {
   rows: any[];
   titleField: string;
 }
 
 const SortTable = ({ rows, titleField }: Props) => {
+  const classes = useStyles();
+
   const [order, setOrder] = React.useState<OrderTypes>(OrderTypes.ASC);
   const [orderBy, setOrderBy] = React.useState<string>(titleField);
 
@@ -40,10 +55,18 @@ const SortTable = ({ rows, titleField }: Props) => {
             titleField={titleField}
           />
           <TableBody>
-            {sorteRows.map(row => (
-              <TableRow key={row[titleField]} hover>
-                <TableCell>{row[titleField]}</TableCell>
-                <TableCell>{row.title}</TableCell>
+            {sorteRows.map((row, idx) => (
+              <TableRow
+                key={row[titleField]}
+                className={
+                  idx % 2 === 0 ? classes.tableRowEven : classes.tableRowOdd
+                }
+                hover
+              >
+                <TableCell className={classes.tableTitle}>
+                  {row[titleField]}
+                </TableCell>
+                <TableCell>1</TableCell>
                 <TableCell>{row.lastModified}</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
