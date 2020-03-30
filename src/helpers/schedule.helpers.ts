@@ -12,22 +12,24 @@ interface ITimeValues {
   gamesStartOn: string;
 }
 
-const setGameOptions = (event: IEventDetails) => {
+const setGameOptions = (schedule: IConfigurableSchedule) => {
   const {
-    min_num_of_games,
+    min_num_games,
+    max_num_games,
     pre_game_warmup,
     period_duration,
     time_btwn_periods,
     periods_per_game,
-  } = event;
+  } = schedule;
+
   return {
-    minGameNum: min_num_of_games || undefined,
-    maxGameNum: min_num_of_games || undefined,
+    minGameNum: Number(min_num_games) || undefined,
+    maxGameNum: Number(max_num_games) || undefined,
     totalGameTime: calculateTotalGameTime(
       pre_game_warmup,
-      period_duration!,
-      time_btwn_periods!,
-      periods_per_game!
+      period_duration,
+      time_btwn_periods,
+      periods_per_game
     ),
   };
 };

@@ -56,13 +56,30 @@ const calculateBackToBacks = (teamCard: ITeamCard, games: IGame[]) => {
   return backToBackUnique.length;
 };
 
+export const calculateNumOfTimeSlots = (
+  teamCard: ITeamCard,
+  games: IGame[]
+) => {
+  if (!teamCard.games?.length) return -1;
+
+  const timeSlotIds = games
+    .filter(item => findIndex(teamCard.games, { id: item.id }) >= 0)
+    .map(item => item.timeSlotId);
+
+  const numOfTimeSlots = timeSlotIds
+    .map((v, i, a) => a[i + 1] - v - 1 || 0)
+    .filter(item => item)
+    .reduce((a, b) => a + b, 0);
+
+  return numOfTimeSlots;
+};
+
 const calculateTeamDiagnostics = (
   teamCard: ITeamCard,
   diagnosticsProps: ITeamsDiagnosticsProps
 ) => {
   const { fields, games, divisions, totalGameTime } = diagnosticsProps;
 
-  const id = teamCard.id;
   const name = teamCard.name;
   const divisionName = find(divisions, ['id', teamCard.divisionId])?.name;
   const numOfGames = teamCard.games?.length || 0;
@@ -82,15 +99,17 @@ const calculateTeamDiagnostics = (
     .filter(field => fieldIds.includes(field.id))
     .map(field => field.name);
 
+  const numOfTimeSlots = calculateNumOfTimeSlots(teamCard, games);
+
   const numOfFields: string = fieldNames?.length ? fieldNames.join(', ') : '-';
 
   return [
-    id,
     name,
     divisionName,
     numOfGames,
     tournamentTime,
     numOfBackToBacks,
+    numOfTimeSlots,
     numOfFields,
   ];
 };
@@ -101,12 +120,12 @@ const formatTeamsDiagnostics = (diagnosticsProps: ITeamsDiagnosticsProps) => {
     calculateTeamDiagnostics(teamCard, diagnosticsProps)
   );
   const header = [
-    'Team ID',
     'Team Name',
     'Division Name',
     '# of Games',
     'Tournament Time',
     '# of Back-to-Back games',
+    '# of time slots between games',
     'Field Name(s)',
   ];
 
