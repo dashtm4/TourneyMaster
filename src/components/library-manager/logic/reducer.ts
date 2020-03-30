@@ -3,7 +3,7 @@ import {
   LIBRARY_MANAGER_LOAD_DATA_START,
   LIBRARY_MANAGER_LOAD_DATA_SUCCESS,
 } from './action-types';
-import { IRegistration } from 'common/models/registration';
+import { ILibraryManagerRegistration } from '../common';
 
 const initialState = {
   isLoading: false,
@@ -14,7 +14,7 @@ const initialState = {
 export interface AppState {
   isLoading: boolean;
   isLoaded: boolean;
-  registrations: IRegistration[];
+  registrations: ILibraryManagerRegistration[];
 }
 
 const libraryManagerReducer = (

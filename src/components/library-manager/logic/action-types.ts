@@ -1,4 +1,4 @@
-import { IRegistration } from 'common/models';
+import { ILibraryManagerRegistration } from '../common';
 
 const LIBRARY_MANAGER_LOAD_DATA_START = 'LIBRARY_MANAGER_LOAD_DATA_START';
 const LIBRARY_MANAGER_LOAD_DATA_SUCCESS = 'LIBRARY_MANAGER_LOAD_DATA_SUCCESS';
@@ -11,7 +11,7 @@ interface LibraryManagerLoadDataStart {
 interface LibraryManagerLoadDataSuccess {
   type: 'LIBRARY_MANAGER_LOAD_DATA_SUCCESS';
   payload: {
-    registrations: IRegistration[];
+    registrations: ILibraryManagerRegistration[];
   };
 }
 

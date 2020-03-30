@@ -1,4 +1,5 @@
-export enum TableColNames {
+export enum TableSortRowTypes {
+  ID = 'id',
   TITLE = 'title',
   VERSION = 'version',
   LAST_MODIFIED = 'lastModified',
@@ -9,13 +10,14 @@ export enum OrderTypes {
   DESC = 'desc',
 }
 
-export interface Data {
+export interface ITableSortRow {
+  id: string;
   title: string;
   version: string;
   lastModified: string;
 }
 
 export interface HeadCell {
-  id: keyof Data;
+  id: TableSortRowTypes;
   label: string;
 }
