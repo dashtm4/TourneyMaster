@@ -317,6 +317,7 @@ class Schedules extends Component<Props, State> {
     };
 
     const teamsDiagnostics = formatTeamsDiagnostics(diagnosticsProps);
+
     const divisionsDiagnostics = formatDivisionsDiagnostics(
       divisionsDiagnosticsProps
     );
