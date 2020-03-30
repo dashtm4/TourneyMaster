@@ -39,6 +39,7 @@ const defaultCalendarEvent = (): Partial<ICalendarEvent> => ({
   cal_event_type: 'event',
   cal_event_desc: '',
   has_reminder_YN: 0,
+  status_id: 1,
 });
 
 export default (props: IProps) => {

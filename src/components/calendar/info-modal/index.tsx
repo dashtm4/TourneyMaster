@@ -20,6 +20,12 @@ interface IConfirmModalProps {
   setClickedEvent: any;
   onUpdateCalendarEventDetails: (event: Partial<ICalendarEvent>) => void;
 }
+
+enum TaskStatus {
+  'Open' = 1,
+  'Close' = 2,
+}
+
 const InfoModal = ({
   clickedEvent,
   onDeleteCalendarEvent,
@@ -89,6 +95,35 @@ const InfoModal = ({
       cal_event_startdate: new Date(value).toISOString(),
       cal_event_enddate: new Date(value).toISOString(),
     });
+  };
+
+  const onTaskComplete = () => {
+    updateEvent('status_id', 2);
+    const updEvent = { ...clickedEvent, status_id: 2 };
+    onUpdateCalendarEventDetails(updEvent);
+  };
+
+  const renderCompleteBtn = (status: number) => {
+    switch (status) {
+      case TaskStatus.Open || null:
+        return (
+          <Button
+            label="Complete"
+            variant="text"
+            color="secondary"
+            onClick={onTaskComplete}
+          />
+        );
+      case TaskStatus.Close:
+        return (
+          <Button
+            label="Completed"
+            variant="text"
+            color="secondary"
+            disabled={true}
+          />
+        );
+    }
   };
 
   const renderButtons = () => {
@@ -233,9 +268,11 @@ const InfoModal = ({
 
   return (
     <div className={styles.container}>
-      <div className={styles.sectionTitle}>{`${capitalize(
-        clickedEvent.cal_event_type
-      )} Details`}</div>
+      <div className={styles.sectionTitle}>
+        <div>{`${capitalize(clickedEvent.cal_event_type)} Details`}</div>{' '}
+        {clickedEvent.cal_event_type === 'task' &&
+          renderCompleteBtn(clickedEvent.status_id)}
+      </div>
       <div>
         <div
           className={!editable ? styles.sectionItem : styles.sectionItemEdit}

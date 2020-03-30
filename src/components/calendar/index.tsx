@@ -50,7 +50,7 @@ class Calendar extends Component<any, IState> {
   state = {
     dialogOpen: false,
     blankNewEvent: undefined,
-    eventsList: this.props.eventsList,
+    eventsList: [],
     dateSelect: {
       left: 0,
       top: 0,
@@ -64,27 +64,11 @@ class Calendar extends Component<any, IState> {
   }
 
   componentDidUpdate(prevProps: IProps) {
-    // const { calendarEventCreated: prevEventCreated } = prevProps;
-    // const { calendarEventCreated } = this.props;
-    // if (
-    //   prevEventCreated !== calendarEventCreated &&
-    //   calendarEventCreated === true
-    // ) {
-    //   this.props.getCalendarEvents();
-    // }
-    if (
-      (this.props.eventsList?.length && !this.state.eventsList) ||
-      prevProps.eventsList !== this.props.eventsList
-    ) {
+    if (prevProps.eventsList !== this.props.eventsList) {
       this.setState({
         eventsList: this.props.eventsList,
       });
     }
-    // if (!prevProps.eventsList?.length && !this.state.eventsList) {
-    //   this.setState({
-    //     eventsList: this.props.eventsList,
-    //   });
-    // }
   }
 
   componentWillUnmount() {
@@ -196,6 +180,7 @@ class Calendar extends Component<any, IState> {
               cal_event_title: data.cal_event_title,
               cal_event_desc: data.cal_event_desc,
               cal_event_tag: data.cal_event_tag,
+              status_id: data.status_id,
             }
           : event
       ),

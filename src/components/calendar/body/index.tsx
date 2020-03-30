@@ -112,6 +112,7 @@ export default (props: IProps) => {
       type,
       hasReminder,
       datetime,
+      status_id,
     } = eventClickInfo.event.extendedProps;
     setClickedEvent({
       cal_event_id: id,
@@ -123,6 +124,7 @@ export default (props: IProps) => {
       cal_event_tag: tag,
       cal_event_type: type,
       has_reminder_YN: hasReminder,
+      status_id,
     });
     toggleModal(true);
   };

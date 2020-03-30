@@ -11,6 +11,7 @@ export interface IEvent {
   tag?: string;
   type: string;
   hasReminder?: number;
+  status_id: number | null;
   allDay: boolean;
 }
 
@@ -26,6 +27,7 @@ export interface ICalendarEvent {
   cal_event_tag: string;
   has_reminder_YN: number;
   reminder_datetime: string;
+  status_id: number | null;
   is_active_YN: number;
   created_by: string;
   created_datetime: string;
