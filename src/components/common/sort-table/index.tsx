@@ -21,14 +21,17 @@ const useStyles = makeStyles({
   tableTitle: {
     color: '#00A3EA;',
   },
+  tableCell: {
+    border: 0,
+  },
 });
 interface Props {
   rows: ITableSortRow[];
+  onEdit: (id: string) => void;
 }
 
-const SortTable = ({ rows }: Props) => {
+const SortTable = ({ rows, onEdit }: Props) => {
   const classes = useStyles();
-
   const [order, setOrder] = React.useState<OrderTypes>(OrderTypes.ASC);
   const [orderBy, setOrderBy] = React.useState<TableSortRowTypes>(
     TableSortRowTypes.TITLE
@@ -57,18 +60,31 @@ const SortTable = ({ rows }: Props) => {
           <TableBody>
             {sorteRows.map((row: ITableSortRow, idx: number) => (
               <TableRow
-                key={row.id}
                 className={
                   idx % 2 === 0 ? classes.tableRowEven : classes.tableRowOdd
                 }
+                key={row.id}
                 hover
               >
-                <TableCell className={classes.tableTitle}>
+                <TableCell
+                  className={`${classes.tableTitle} ${classes.tableCell}`}
+                >
                   {row.title}
                 </TableCell>
-                <TableCell>{row.version}</TableCell>
-                <TableCell>{moment(row.lastModified).format('lll')}</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell className={classes.tableCell}>
+                  {row.version}
+                </TableCell>
+                <TableCell className={classes.tableCell}>
+                  {moment(row.lastModified).format('lll')}
+                </TableCell>
+                <TableCell className={classes.tableCell}>
+                  <button
+                    className={styles.actionBtn}
+                    onClick={() => onEdit(row.id)}
+                  >
+                    Edit
+                  </button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

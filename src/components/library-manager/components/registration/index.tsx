@@ -8,6 +8,20 @@ interface Props {
 }
 
 const Registration = ({ registrations }: Props) => {
+  const [
+    confRegistration,
+    onConfRegistration,
+  ] = React.useState<ILibraryManagerRegistration | null>(null);
+
+  const onEditRegistr = (id: string) => {
+    const editedRegistration = registrations.find(
+      it => it.registration_id === id
+    );
+
+    onConfRegistration(editedRegistration!);
+  };
+
+  // ! in future it can not be null(now database has it field like null)
   const onlyTrulyRegistrations = registrations.filter(it =>
     Boolean(it.eventName)
   );
@@ -20,15 +34,18 @@ const Registration = ({ registrations }: Props) => {
   }));
 
   return (
-    <SectionDropdown
-      id={MenuTitles.REGISTRATION}
-      type="section"
-      panelDetailsType="flat"
-      isDefaultExpanded={true}
-    >
-      <span>{MenuTitles.REGISTRATION}</span>
-      <SortTable rows={rowForTable} />
-    </SectionDropdown>
+    <>
+      <SectionDropdown
+        id={MenuTitles.REGISTRATION}
+        type="section"
+        panelDetailsType="flat"
+        isDefaultExpanded={true}
+      >
+        <span>{MenuTitles.REGISTRATION}</span>
+        <SortTable rows={rowForTable} onEdit={onEditRegistr} />
+      </SectionDropdown>
+      {confRegistration && confRegistration.eventName}
+    </>
   );
 };
 

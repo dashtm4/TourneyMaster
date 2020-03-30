@@ -14,6 +14,9 @@ const useStyles = makeStyles({
     fontWeight: 700,
     color: '#6a6a6a',
   },
+  tableCell: {
+    border: 0,
+  },
 });
 
 const defaultHeadCells: HeadCell[] = [
@@ -36,7 +39,7 @@ const TableHeader = ({ order, orderBy, onRequestSort }: Props) => {
     <TableHead>
       <TableRow className={classes.tableHeadRow}>
         {defaultHeadCells.map(headCell => (
-          <TableCell key={headCell.id}>
+          <TableCell className={classes.tableCell} key={headCell.id}>
             <TableSortLabel
               className={classes.tableHeader}
               active={orderBy === headCell.id}
@@ -47,7 +50,7 @@ const TableHeader = ({ order, orderBy, onRequestSort }: Props) => {
             </TableSortLabel>
           </TableCell>
         ))}
-        <TableCell>Actions</TableCell>
+        <TableCell className={classes.tableCell}>Actions</TableCell>
       </TableRow>
     </TableHead>
   );
