@@ -14,6 +14,7 @@ import {
   saveCalendarEvent,
   updateCalendarEvent,
   deleteCalendarEvent,
+  getTags,
 } from './logic/actions';
 import {
   appropriateEvents,
@@ -21,10 +22,12 @@ import {
   setBlankNewEvent,
 } from './calendar.helper';
 import { IDateSelect } from './calendar.model';
+import ITag from 'common/models/calendar/tag';
 
 interface IMapStateToProps {
   eventsList?: Partial<ICalendarEvent>[];
   calendarEventCreated: boolean;
+  tags: ITag[];
 }
 
 interface IProps extends IMapStateToProps {
@@ -33,6 +36,7 @@ interface IProps extends IMapStateToProps {
   saveCalendarEvent: (event: Partial<ICalendarEvent>) => void;
   updateCalendarEvent: (event: Partial<ICalendarEvent>) => void;
   deleteCalendarEvent: (id: string) => void;
+  getTags: (value: string) => void;
 }
 
 interface IState {
@@ -200,33 +204,21 @@ class Calendar extends Component<any, IState> {
 
   render() {
     const { dialogOpen, dateSelect, blankNewEvent, eventsList } = this.state;
-
     const events = blankNewEvent
       ? eventsList?.concat(blankNewEvent!)
       : eventsList;
 
     return (
       <div className={styles.container}>
-        {/* <Paper>
-          <div className={styles.paperWrapper}>
-            <Button
-              label="Save"
-              color="primary"
-              variant="contained"
-              onClick={this.onSave}
-            />
-          </div>
-        </Paper> */}
-
         <HeadingLevelTwo margin="24px 0">Calendar</HeadingLevelTwo>
-
         <CreateDialog
           dialogOpen={dialogOpen}
           dateSelect={dateSelect}
           onDialogClose={this.onDialogClose}
           onSave={this.onCalendarEvent}
+          getTags={this.props.getTags}
+          tags={this.props.tags}
         />
-
         <CalendarBody
           eventsList={appropriateEvents(events || [])}
           onDatePressed={this.onDatePressed}
@@ -245,12 +237,14 @@ interface IRootState {
   calendar: {
     events?: Partial<ICalendarEvent>[];
     eventJustCreated: boolean;
+    tags: ITag[];
   };
 }
 
 const mapStateToProps = (state: IRootState): IMapStateToProps => ({
   eventsList: state.calendar.events,
   calendarEventCreated: state.calendar.eventJustCreated,
+  tags: state.calendar.tags,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
@@ -261,6 +255,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       saveCalendarEvent,
       updateCalendarEvent,
       deleteCalendarEvent,
+      getTags,
     },
     dispatch
   );

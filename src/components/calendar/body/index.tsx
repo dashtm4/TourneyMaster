@@ -187,7 +187,7 @@ export default (props: IProps) => {
       <span>{label}</span>
     </div>
   );
-  console.log(eventsList);
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
