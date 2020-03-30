@@ -25,6 +25,13 @@
       border-collapse: collapse;
       min-width: inherit;
 
+      .emptyRow {
+        background: #e3e3e3;
+        margin: 4px 0;
+        height: 15px;
+        display: block;
+      }
+
       thead {
         th {
           font-size: 12px;

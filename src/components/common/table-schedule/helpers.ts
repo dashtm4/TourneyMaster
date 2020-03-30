@@ -19,12 +19,20 @@ interface IFilterValues {
   fieldsOptions: IMultiSelectOption[];
 }
 
-const getUnassignedTeams = (
+const getUnsatisfiedTeams = (
   teamCards: ITeamCard[],
   minGamesNum: number | null
 ) =>
   teamCards.filter(
     teamCard => (teamCard.games?.length || 0) < (minGamesNum || 3)
+  );
+
+const getSatisfiedTeams = (
+  teamCards: ITeamCard[],
+  minGamesNum: number | null
+) =>
+  teamCards.filter(
+    teamCard => (teamCard.games?.length || 0) >= (minGamesNum || 3)
   );
 
 const mapCheckedValues = (values: IMultiSelectOption[]) =>
@@ -246,4 +254,4 @@ const mapGamesByField = (games: IGame[], fields: IField[]) =>
     return { ...game, facilityId: currentField?.facilityId };
   });
 
-export { getUnassignedTeams, mapGamesByField };
+export { getUnsatisfiedTeams, getSatisfiedTeams, mapGamesByField };
