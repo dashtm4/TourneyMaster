@@ -9,7 +9,7 @@ import styles from '../styles.module.scss';
 import history from '../../../browserhistory';
 
 interface IDivisionProps {
-  division?: IDivision;
+  division: IDivision;
   pools: IPool[];
   teams: ITeam[];
   getPools: BindingCbWithOne<string>;
@@ -21,7 +21,6 @@ interface IDivisionProps {
   onToggleOne: BindingCbWithOne<number>;
   index: number;
   isArrange: boolean;
-  isUnassigned: boolean;
   changePool: (
     team: ITeam,
     divisionId: string | null,
@@ -39,9 +38,7 @@ class Division extends React.PureComponent<IDivisionProps> {
   componentDidMount() {
     const { division } = this.props;
 
-    if (division) {
-      this.props.getPools(division.division_id);
-    }
+    this.props.getPools(division.division_id);
   }
 
   onEditDivisionDetails = (divisionId: string) => (e: React.MouseEvent) => {
@@ -64,7 +61,6 @@ class Division extends React.PureComponent<IDivisionProps> {
       division,
       pools,
       teams,
-      isUnassigned,
       isArrange,
       changePool,
       onDeletePopupOpen,
@@ -80,29 +76,23 @@ class Division extends React.PureComponent<IDivisionProps> {
         onToggle={this.onSectionToggle}
       >
         <div className={styles.sectionTitle}>
+          <div>Division: {division.short_name}</div>
           <div>
-            {isUnassigned ? 'Unassigned' : `Division: ${division!.short_name}`}
-          </div>
-          <div>
-            {division && (
-              <Button
-                label="Edit Division Details"
-                variant="text"
-                color="secondary"
-                icon={<CreateIcon />}
-                onClick={this.onEditDivisionDetails(division.division_id)}
-              />
-            )}
+            <Button
+              label="Edit Division Details"
+              variant="text"
+              color="secondary"
+              icon={<CreateIcon />}
+              onClick={this.onEditDivisionDetails(division.division_id)}
+            />
           </div>
         </div>
         <div className={styles.sectionContent}>
-          {division && (
-            <DivisionDetails
-              data={division}
-              numOfPools={pools.length}
-              numOfTeams={teams.length}
-            />
-          )}
+          <DivisionDetails
+            data={division}
+            numOfPools={pools.length}
+            numOfTeams={teams.length}
+          />
           <PoolsDetails
             onAddPool={this.props.onAddPool}
             division={division}

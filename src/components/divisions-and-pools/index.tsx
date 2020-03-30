@@ -343,30 +343,12 @@ class DivisionsAndPools extends React.Component<
                       index={index}
                       onToggleOne={this.onToggleOne}
                       isArrange={isArrange}
-                      isUnassigned={false}
                       changePool={this.changePool}
                       onDeletePopupOpen={this.onDeletePopupOpen}
                       onEditPopupOpen={this.onEditPopupOpen}
                     />
                   </li>
                 ))}
-                <Division
-                  eventId={this.eventId}
-                  pools={[]}
-                  teams={notDeletedTeams}
-                  onAddPool={this.onAddPool}
-                  getPools={this.props.getPools}
-                  areDetailsLoading={this.props.areDetailsLoading}
-                  divisions={this.props.divisions}
-                  expanded={this.state.expanded[this.state.expanded.length - 1]}
-                  index={this.state.expanded.length - 1}
-                  onToggleOne={this.onToggleOne}
-                  isArrange={isArrange}
-                  isUnassigned={true}
-                  changePool={this.changePool}
-                  onDeletePopupOpen={this.onDeletePopupOpen}
-                  onEditPopupOpen={this.onEditPopupOpen}
-                />
                 {this.state.selected && (
                   <Modal
                     isOpen={this.state.isModalOpen}
