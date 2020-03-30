@@ -133,6 +133,7 @@ interface State {
   divisionsDiagnosticsOpen: boolean;
   cancelConfirmationOpen: boolean;
   isLoading: boolean;
+  neccessaryDataCalculated: boolean;
 }
 
 class Schedules extends Component<Props, State> {
@@ -142,6 +143,7 @@ class Schedules extends Component<Props, State> {
     divisionsDiagnosticsOpen: false,
     cancelConfirmationOpen: false,
     isLoading: true,
+    neccessaryDataCalculated: false,
   };
 
   async componentDidMount() {
@@ -167,9 +169,9 @@ class Schedules extends Component<Props, State> {
 
   componentDidUpdate(prevProps: Props) {
     const { schedule, schedulesDetails } = this.props;
-    const { scheduleId, teams } = this.state;
+    const { scheduleId, teams, neccessaryDataCalculated } = this.state;
 
-    if (!prevProps.schedule && this.props.schedule) {
+    if (!neccessaryDataCalculated && this.props.schedule) {
       this.calculateNeccessaryData();
       return;
     }
@@ -240,6 +242,7 @@ class Schedules extends Component<Props, State> {
       fields: sortedFields,
       teams: mappedTeams,
       facilities: mappedFacilities,
+      neccessaryDataCalculated: true,
     });
   };
 

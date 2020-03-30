@@ -99,7 +99,7 @@ const MultiSelect = (props: IProps) => {
       checked: item.label.toLowerCase().includes(inputValue),
     }));
 
-    if (filteredOptions.length) {
+    if (filteredOptions.length && false) {
       setOptions(newOptions);
       setFilteredOptions(newOptions);
     }
@@ -119,7 +119,7 @@ const MultiSelect = (props: IProps) => {
 
     const newOptions = options.map(item => ({
       ...item,
-      checked: false,
+      checked: true,
     }));
 
     setOptions(newOptions);
