@@ -66,7 +66,7 @@ const OrganizationsManagement = ({
   return (
     <section className={styles.container}>
       <div className={styles.heading}>
-        <HeadingLevelTwo>Organizations Management</HeadingLevelTwo>
+        <HeadingLevelTwo>Collaboration</HeadingLevelTwo>
         <Button
           label={expandAll ? 'Expand All' : 'Collapse All'}
           variant="text"
