@@ -223,6 +223,7 @@ class CreateBackupForm extends React.Component<Props, State> {
                 label="Name"
                 onChange={this.onNameChange}
                 value={backup_name || ''}
+                autofocus={true}
               />
             </div>
             <div className={styles.item}>

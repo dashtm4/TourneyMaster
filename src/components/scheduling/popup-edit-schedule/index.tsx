@@ -80,6 +80,7 @@ const PopupEditSchedule = ({
               value={editedSchedule.schedule_name || ''}
               name={ArchitectFormFields.SCHEDULE_NAME}
               label="Name"
+              autofocus={true}
               width="220px"
             />
             <Input

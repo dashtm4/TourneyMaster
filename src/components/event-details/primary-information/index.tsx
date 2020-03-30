@@ -173,6 +173,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             label="Event Name"
             value={eventData.event_name || ''}
             onChange={onNameChange}
+            autofocus={eventData.event_name ? false : true}
           />
           <Input
             fullWidth={true}

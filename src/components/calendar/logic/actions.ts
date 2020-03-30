@@ -5,6 +5,7 @@ import { Toasts } from 'components/common';
 import {
   CALENDAR_EVENT_FETCH_MULT,
   CALENDAR_EVENT_CREATE_SUCC,
+  GET_TAGS_SUCCESS,
 } from './actionTypes';
 import { isCalendarEventValid } from './helper';
 import api from 'api/api';
@@ -26,6 +27,11 @@ const fetchCalendarEvents = (payload: ICalendarEvent[]) => ({
 
 const calendarEventCreateSucc = () => ({
   type: CALENDAR_EVENT_CREATE_SUCC,
+});
+
+const getTagsSuccess = (payload: any[]) => ({
+  type: GET_TAGS_SUCCESS,
+  payload,
 });
 
 export const getCalendarEvents = () => async (dispatch: Dispatch) => {
@@ -63,7 +69,6 @@ export const saveCalendarEvent: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (event: ICalendarEvent) => async (_dispatch: Dispatch) => {
-  console.log(event);
   const response = await api.post('/calendar_events', event);
 
   if (response?.errorType === 'Error') {
@@ -79,8 +84,6 @@ export const updateCalendarEvent: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (event: ICalendarEvent) => async (_dispatch: Dispatch) => {
-  console.log(event);
-
   const response = await api.put(
     `/calendar_events?cal_event_id=${event.cal_event_id}`,
     event
@@ -106,4 +109,14 @@ export const deleteCalendarEvent: ActionCreator<ThunkAction<
   }
 
   Toasts.successToast('Successfully deleted');
+};
+
+export const getTags = (value: string) => async (dispatch: Dispatch) => {
+  if (value) {
+    const response = await api.get(`/tag_search?search_term=${value}%25`);
+
+    if (response && !response.error) {
+      return dispatch(getTagsSuccess(response));
+    }
+  }
 };

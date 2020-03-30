@@ -46,6 +46,7 @@ export const appropriateEvents = (
     tag: event.cal_event_tag,
     type: event.cal_event_type!,
     hasReminder: event.has_reminder_YN,
+    status_id: event.status_id! || 1,
     allDay: event.cal_event_type === 'event' ? true : false,
   });
 
