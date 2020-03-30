@@ -98,6 +98,7 @@ const CreateNewModal = (props: IProps) => {
             onChange={localChange}
             value={schedule.schedule_name || ''}
             label="Name"
+            autofocus={true}
             name={ArchitectFormFields.SCHEDULE_NAME}
           />
           <Input

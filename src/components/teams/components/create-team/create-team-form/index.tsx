@@ -104,6 +104,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
                 fullWidth={true}
                 label="Long Name"
                 value={long_name || ''}
+                autofocus={true}
                 onChange={this.onLongNameChange}
               />
             </div>

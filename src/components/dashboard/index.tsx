@@ -287,10 +287,9 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
             info={`${
               this.props.calendarEvents.filter(
                 event =>
-                  event.cal_event_type === 'task' &&
-                  new Date(event.cal_event_datetime) > new Date()
+                  event.cal_event_type === 'task' && event.status_id === 1
               ).length
-            } Pending Tasks`}
+            } Pending/Open Tasks`}
             order={3}
             changeOrder={this.onOrderChange}
           />

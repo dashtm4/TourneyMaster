@@ -66,6 +66,7 @@ const PrimaryInformation = ({ data, onChange }: IPrimaryInformationProps) => {
             label="Entry Fee"
             startAdornment="$"
             type="number"
+            autofocus={true}
             value={data ? data.entry_fee : ''}
             onChange={onEntryFeeChange}
           />

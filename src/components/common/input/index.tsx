@@ -22,6 +22,7 @@ interface ITextFieldProps {
   align?: string;
   type?: 'text' | 'number';
   isRequired?: boolean;
+  autofocus?: boolean;
 }
 
 const TextField: React.FC<ITextFieldProps> = ({
@@ -41,6 +42,7 @@ const TextField: React.FC<ITextFieldProps> = ({
   type,
   align,
   isRequired,
+  autofocus,
 }) => (
   <div className={styles.container} style={{ alignItems: align || '' }}>
     <span className={styles.label}>{label}</span>
@@ -58,6 +60,7 @@ const TextField: React.FC<ITextFieldProps> = ({
       value={value}
       onChange={onChange}
       required={isRequired}
+      autoFocus={autofocus}
       InputProps={{
         endAdornment: endAdornment && (
           <InputAdornment position="start">
