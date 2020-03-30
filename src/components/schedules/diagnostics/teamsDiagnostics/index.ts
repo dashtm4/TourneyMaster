@@ -69,7 +69,7 @@ export const calculateNumOfTimeSlots = (
   const numOfTimeSlots = timeSlotIds
     .map((v, i, a) => a[i + 1] - v - 1 || 0)
     .filter(item => item)
-    .reduce((a, b) => a + b);
+    .reduce((a, b) => a + b, 0);
 
   return numOfTimeSlots;
 };
