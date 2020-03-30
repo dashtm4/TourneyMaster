@@ -1,6 +1,7 @@
 enum ButtonTypes {
   SQUARED = 'squared',
   SQUARED_OUTLINED = 'squaredOutlined',
+  ICON = 'icon',
 }
 
 enum ButtonColors {
