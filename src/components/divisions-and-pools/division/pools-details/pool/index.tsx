@@ -8,15 +8,11 @@ import { sortByField } from 'helpers';
 import { SortByFilesTypes } from 'common/enums';
 
 interface IPoolProps {
-  division: IDivision | null;
+  division: IDivision;
   pool?: Partial<IPool>;
   teams: ITeam[];
   isArrange: boolean;
-  changePool: (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => void;
+  changePool: (team: ITeam, divisionId: string, poolId: string | null) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
@@ -37,7 +33,7 @@ const Pool = ({
   const [, drop] = useDrop({
     accept: DndItems.TEAM,
     drop: () => ({
-      divisionId: division ? division.division_id : null,
+      divisionId: division.division_id,
       poolId: pool ? pool.pool_id : null,
     }),
   });

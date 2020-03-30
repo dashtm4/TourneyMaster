@@ -9,16 +9,12 @@ import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 interface IPoolsDetailsProps {
   onAddPool: BindingCbWithOne<IDivision>;
-  division?: IDivision;
+  division: IDivision;
   pools: IPool[];
   teams: ITeam[];
   areDetailsLoading: boolean;
   isArrange: boolean;
-  changePool: (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => void;
+  changePool: (team: ITeam, divisionId: string, poolId: string | null) => void;
   onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
@@ -31,9 +27,7 @@ class PoolsDetails extends React.Component<IPoolsDetailsProps> {
   onAdd = () => {
     const { division } = this.props;
 
-    if (division) {
-      this.props.onAddPool(division);
-    }
+    this.props.onAddPool(division);
   };
 
   render() {
@@ -47,33 +41,27 @@ class PoolsDetails extends React.Component<IPoolsDetailsProps> {
       onEditPopupOpen,
     } = this.props;
 
-    const unassignedTeams = teams.filter(
-      it =>
-        (!division && it.division_id === null) ||
-        (division && !it.pool_id && it.division_id === division.division_id)
-    );
+    const unassignedTeams = teams.filter(it => !it.pool_id);
 
     return (
       <div>
         <div className={styles.headingContainer}>
           <span className={styles.title}>Pools</span>
-          {division && (
-            <div>
-              <Button
-                label="+ Add Pool"
-                variant="text"
-                color="secondary"
-                onClick={this.onAdd}
-              />
-              <Button
-                label="Edit Pool Details"
-                variant="text"
-                color="secondary"
-                disabled={true}
-                icon={<CreateIcon />}
-              />
-            </div>
-          )}
+          <div>
+            <Button
+              label="+ Add Pool"
+              variant="text"
+              color="secondary"
+              onClick={this.onAdd}
+            />
+            <Button
+              label="Edit Pool Details"
+              variant="text"
+              color="secondary"
+              disabled={true}
+              icon={<CreateIcon />}
+            />
+          </div>
         </div>
         {this.props.areDetailsLoading ? (
           <Loader />
@@ -88,19 +76,18 @@ class PoolsDetails extends React.Component<IPoolsDetailsProps> {
                 onDeletePopupOpen={onDeletePopupOpen}
                 onEditPopupOpen={onEditPopupOpen}
               />
-              {division &&
-                pools.map(pool => (
-                  <Pool
-                    division={division}
-                    pool={pool}
-                    teams={teams.filter(team => team.pool_id === pool.pool_id)}
-                    key={pool.pool_id}
-                    isArrange={isArrange}
-                    changePool={changePool}
-                    onDeletePopupOpen={onDeletePopupOpen}
-                    onEditPopupOpen={onEditPopupOpen}
-                  />
-                ))}
+              {pools.map(pool => (
+                <Pool
+                  division={division}
+                  pool={pool}
+                  teams={teams.filter(team => team.pool_id === pool.pool_id)}
+                  key={pool.pool_id}
+                  isArrange={isArrange}
+                  changePool={changePool}
+                  onDeletePopupOpen={onDeletePopupOpen}
+                  onEditPopupOpen={onEditPopupOpen}
+                />
+              ))}
             </DndProvider>
           </div>
         )}

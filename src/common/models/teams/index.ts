@@ -19,7 +19,7 @@ export interface ITeam {
   created_datetime: string | null;
   updated_by: string | null;
   updated_datetime: string | null;
-  division_id: string | null;
+  division_id: string;
   pool_id: string | null;
   //Optional
   isChange: boolean;
