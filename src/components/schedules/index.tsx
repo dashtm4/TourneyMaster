@@ -245,13 +245,20 @@ class Schedules extends Component<Props, State> {
 
   calculateSchedules = () => {
     const { fields, teams, games, timeSlots, facilities } = this.state;
-    const { divisions, event } = this.props;
+    const { divisions, scheduleData } = this.props;
 
-    if (!event || !fields || !teams || !games || !timeSlots || !facilities)
+    if (
+      !scheduleData ||
+      !fields ||
+      !teams ||
+      !games ||
+      !timeSlots ||
+      !facilities
+    )
       return;
 
     const mappedDivisions = mapDivisionsData(divisions!);
-    const gameOptions = setGameOptions(event);
+    const gameOptions = setGameOptions(scheduleData);
 
     const tournamentBaseInfo = {
       facilities,
@@ -317,6 +324,7 @@ class Schedules extends Component<Props, State> {
     };
 
     const teamsDiagnostics = formatTeamsDiagnostics(diagnosticsProps);
+
     const divisionsDiagnostics = formatDivisionsDiagnostics(
       divisionsDiagnosticsProps
     );

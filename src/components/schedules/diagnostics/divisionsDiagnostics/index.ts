@@ -1,5 +1,8 @@
 import { union, filter, find, orderBy, findIndex, flatten } from 'lodash-es';
-import { calculateTeamTournamentTime } from '../teamsDiagnostics';
+import {
+  calculateTeamTournamentTime,
+  calculateNumOfTimeSlots,
+} from '../teamsDiagnostics';
 import { getTimeFromString, timeToString } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
@@ -70,14 +73,38 @@ const getTournamentTimeBy = (
   }
 };
 
+const calculateTimeSlotsBetweenGames = (
+  teamCards: ITeamCard[],
+  games: IGame[]
+) => {
+  const timeSlotsNum = teamCards.map(item =>
+    calculateNumOfTimeSlots(item, games)
+  );
+
+  const timeSlotsIn0 = timeSlotsNum.filter(v => v === 0).length;
+  const timeSlotsIn1 = timeSlotsNum.filter(v => v === 1).length;
+  const timeSlotsIn2 = timeSlotsNum.filter(v => v === 2).length;
+  const timeSlotsIn3 = timeSlotsNum.filter(v => v === 3).length;
+  const timeSlotsIn4 = timeSlotsNum.filter(v => v === 4).length;
+
+  return {
+    timeSlotsIn0,
+    timeSlotsIn1,
+    timeSlotsIn2,
+    timeSlotsIn3,
+    timeSlotsIn4,
+  };
+};
+
 const calculateDivisionDiagnostics = (
   divisionId: string,
   diagnosticsProps: IDivisionsDiagnosticsProps
 ) => {
   const { divisions, facilities, games, teamCards } = diagnosticsProps;
 
-  const divisionName = find(divisions, ['id', divisionId])?.name;
-  const numOfTeams = filter(teamCards, ['divisionId', divisionId])?.length;
+  const divisionName = find(divisions, { id: divisionId })?.name;
+  const divisionTeams = filter(teamCards, { divisionId });
+  const numOfTeams = divisionTeams?.length;
   const allDivisionGames = teamCards
     .filter(
       teamCard => teamCard.divisionId === divisionId && teamCard.games?.length
@@ -114,11 +141,24 @@ const calculateDivisionDiagnostics = (
   const divisionGame = games.find(
     game => findIndex(divisionGames, { id: game.id }) >= 0
   );
+
+  const timeSlotsBetweenGames = calculateTimeSlotsBetweenGames(
+    divisionTeams,
+    games
+  );
+
+  const {
+    timeSlotsIn0,
+    timeSlotsIn1,
+    timeSlotsIn2,
+    timeSlotsIn3,
+    timeSlotsIn4,
+  } = timeSlotsBetweenGames;
+
   const facilityId = divisionGame?.facilityId;
   const facility = find(facilities, ['id', facilityId])?.name;
 
   return [
-    divisionId,
     divisionName,
     numOfTeams,
     numOfGames,
@@ -126,6 +166,11 @@ const calculateDivisionDiagnostics = (
     tournamentTime,
     minTournamentTime,
     maxTournamentTime,
+    timeSlotsIn0,
+    timeSlotsIn1,
+    timeSlotsIn2,
+    timeSlotsIn3,
+    timeSlotsIn4,
     facility,
   ];
 };
@@ -143,7 +188,6 @@ const formatDivisionsDiagnostics = (
   );
 
   const header = [
-    'Division ID',
     'Division Name',
     '# of Teams',
     '# of Games',
@@ -151,6 +195,11 @@ const formatDivisionsDiagnostics = (
     'Avg. Time / Team',
     'Min. Time / Team',
     'Max. Time / Team',
+    '0 time slots between games',
+    '1 time slots between games',
+    '2 time slots between games',
+    '3 time slots between games',
+    '4 time slots between games',
     'Facility Name',
   ];
 

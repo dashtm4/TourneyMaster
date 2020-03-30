@@ -11,8 +11,6 @@ const ICON_STYLES = {
 };
 
 interface Props {
-  isEdit: boolean;
-  onEditClick: BindingAction;
   onSaveClick: BindingAction;
   onCancelClick: BindingAction;
   eventId: string | undefined;
@@ -20,8 +18,6 @@ interface Props {
 }
 
 const Navigation = ({
-  isEdit,
-  onEditClick,
   onSaveClick,
   onCancelClick,
   eventId,
@@ -51,44 +47,30 @@ const Navigation = ({
           color="secondary"
         />
       </p>
-      {isEdit ? (
-        <p>
+      <p>
+        <Button
+          onClick={onCancelClick}
+          label="Cancel"
+          variant="text"
+          color="secondary"
+        />
+        <span className={styles.btnWrapper}>
           <Button
-            onClick={onCancelClick}
-            label="Cancel"
-            variant="text"
-            color="secondary"
+            onClick={onSaveClick}
+            label="Save"
+            variant="contained"
+            color="primary"
           />
-          <span className={styles.btnWrapper}>
-            <Button
-              onClick={onSaveClick}
-              label="Save"
-              variant="contained"
-              color="primary"
-            />
-          </span>
-        </p>
-      ) : (
-        <p>
-          {false && (
-            <Button
-              onClick={onEditClick}
-              icon={getIcon(Icons.EDIT, ICON_STYLES)}
-              label="Arrange Teams"
-              variant="text"
-              color="secondary"
-            />
-          )}
-          <span className={styles.btnWrapper}>
-            <Button
-              label="Create Team"
-              variant="contained"
-              color="primary"
-              onClick={onCreateTeam}
-            />
-          </span>
-        </p>
-      )}
+        </span>
+        <span className={styles.btnWrapper}>
+          <Button
+            label="Create Team"
+            variant="contained"
+            color="primary"
+            onClick={onCreateTeam}
+          />
+        </span>
+      </p>
     </div>
   );
 };
