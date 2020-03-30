@@ -134,6 +134,7 @@ interface State {
   cancelConfirmationOpen: boolean;
   isLoading: boolean;
   neccessaryDataCalculated: boolean;
+  teamCardsAlreadyUpdated: boolean;
 }
 
 class Schedules extends Component<Props, State> {
@@ -144,6 +145,7 @@ class Schedules extends Component<Props, State> {
     cancelConfirmationOpen: false,
     isLoading: true,
     neccessaryDataCalculated: false,
+    teamCardsAlreadyUpdated: false,
   };
 
   async componentDidMount() {
@@ -167,25 +169,33 @@ class Schedules extends Component<Props, State> {
     }
   }
 
-  componentDidUpdate(prevProps: Props) {
-    const { schedule, schedulesDetails } = this.props;
-    const { scheduleId, teams, neccessaryDataCalculated } = this.state;
+  componentDidUpdate() {
+    const { schedule, schedulesDetails, schedulesTeamCards } = this.props;
+    const {
+      scheduleId,
+      teams,
+      neccessaryDataCalculated,
+      teamCardsAlreadyUpdated,
+    } = this.state;
 
     if (!neccessaryDataCalculated && this.props.schedule) {
       this.calculateNeccessaryData();
       return;
     }
 
-    if (
-      !prevProps.schedulesTeamCards &&
-      schedulesDetails?.length &&
-      teams?.length &&
-      scheduleId &&
-      schedule
-    ) {
+    if (!schedulesTeamCards && schedulesDetails && teams) {
       const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
-      this.calculateDiagnostics();
       this.onScheduleCardsUpdate(mappedTeams);
+    }
+
+    if (
+      schedulesTeamCards &&
+      scheduleId &&
+      schedule &&
+      !teamCardsAlreadyUpdated
+    ) {
+      this.calculateDiagnostics();
+      this.setState({ teamCardsAlreadyUpdated: true });
     }
   }
 

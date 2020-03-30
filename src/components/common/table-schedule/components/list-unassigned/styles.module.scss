@@ -26,10 +26,17 @@
       min-width: inherit;
 
       .emptyRow {
-        background: #e3e3e3;
-        margin: 4px 0;
-        height: 15px;
-        display: block;
+        background: #ffffff;
+        margin: 4px 0 7px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        td {
+          font-size: 12px;
+          color: #8b8b8c;
+        }
       }
 
       thead {
@@ -59,6 +66,7 @@
       tbody {
         display: block;
         height: 330px;
+        width: 232px;
         overflow-x: hidden;
         overflow-y: scroll;
 
