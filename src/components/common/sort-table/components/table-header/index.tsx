@@ -4,7 +4,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import { OrderTypes, HeadCell, TableColNames } from '../../types';
+import { OrderTypes, HeadCell, TableSortRowTypes } from '../../common';
 
 const useStyles = makeStyles({
   tableHeadRow: {
@@ -17,33 +17,25 @@ const useStyles = makeStyles({
 });
 
 const defaultHeadCells: HeadCell[] = [
-  { id: TableColNames.VERSION, label: 'Version' },
-  { id: TableColNames.LAST_MODIFIED, label: 'Last Modified' },
+  { id: TableSortRowTypes.TITLE, label: 'Title' },
+  { id: TableSortRowTypes.VERSION, label: 'Version' },
+  { id: TableSortRowTypes.LAST_MODIFIED, label: 'Last Modified' },
 ];
 
 interface Props {
-  titleField: string;
   order: OrderTypes;
   orderBy: string;
   rowCount: number;
-  onRequestSort: (property: string) => void;
+  onRequestSort: (property: TableSortRowTypes) => void;
 }
 
-const TableHeader = ({ titleField, order, orderBy, onRequestSort }: Props) => {
+const TableHeader = ({ order, orderBy, onRequestSort }: Props) => {
   const classes = useStyles();
-
-  const headCells = [
-    {
-      id: titleField,
-      label: 'Title',
-    },
-    ...defaultHeadCells,
-  ];
 
   return (
     <TableHead>
       <TableRow className={classes.tableHeadRow}>
-        {headCells.map(headCell => (
+        {defaultHeadCells.map(headCell => (
           <TableCell key={headCell.id}>
             <TableSortLabel
               className={classes.tableHeader}

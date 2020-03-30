@@ -1,10 +1,7 @@
 import React from 'react';
 import { SectionDropdown, SortTable } from 'components/common';
 import { MenuTitles } from 'common/enums';
-import {
-  ILibraryManagerRegistration,
-  ILibraryManagerRegistrationFields,
-} from '../../common';
+import { ILibraryManagerRegistration } from '../../common';
 
 interface Props {
   registrations: ILibraryManagerRegistration[];
@@ -15,6 +12,13 @@ const Registration = ({ registrations }: Props) => {
     Boolean(it.eventName)
   );
 
+  const rowForTable = onlyTrulyRegistrations.map(it => ({
+    id: it.registration_id,
+    title: it.eventName as string,
+    version: '1',
+    lastModified: it.updated_datetime || it.created_datetime,
+  }));
+
   return (
     <SectionDropdown
       id={MenuTitles.REGISTRATION}
@@ -22,11 +26,8 @@ const Registration = ({ registrations }: Props) => {
       panelDetailsType="flat"
       isDefaultExpanded={true}
     >
-      <span>{MenuTitles.REGISTRATION}}</span>
-      <SortTable
-        rows={onlyTrulyRegistrations}
-        titleField={ILibraryManagerRegistrationFields.EVENT_NAME}
-      />
+      <span>{MenuTitles.REGISTRATION}</span>
+      <SortTable rows={rowForTable} />
     </SectionDropdown>
   );
 };

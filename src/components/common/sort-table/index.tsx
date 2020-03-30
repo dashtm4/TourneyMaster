@@ -6,8 +6,9 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
+import moment from 'moment';
 import { getComparator, stableSort } from './helpers';
-import { OrderTypes } from './types';
+import { ITableSortRow, OrderTypes, TableSortRowTypes } from './common';
 import styles from './styles.module.scss';
 
 const useStyles = makeStyles({
@@ -21,19 +22,19 @@ const useStyles = makeStyles({
     color: '#00A3EA;',
   },
 });
-
 interface Props {
-  rows: any[];
-  titleField: string;
+  rows: ITableSortRow[];
 }
 
-const SortTable = ({ rows, titleField }: Props) => {
+const SortTable = ({ rows }: Props) => {
   const classes = useStyles();
 
   const [order, setOrder] = React.useState<OrderTypes>(OrderTypes.ASC);
-  const [orderBy, setOrderBy] = React.useState<string>(titleField);
+  const [orderBy, setOrderBy] = React.useState<TableSortRowTypes>(
+    TableSortRowTypes.TITLE
+  );
 
-  const handleRequestSort = (property: string) => {
+  const handleRequestSort = (property: TableSortRowTypes) => {
     const isAsc = orderBy === property && order === OrderTypes.ASC;
 
     setOrder(isAsc ? OrderTypes.DESC : OrderTypes.ASC);
@@ -52,22 +53,21 @@ const SortTable = ({ rows, titleField }: Props) => {
             orderBy={orderBy}
             onRequestSort={handleRequestSort}
             rowCount={rows.length}
-            titleField={titleField}
           />
           <TableBody>
-            {sorteRows.map((row, idx) => (
+            {sorteRows.map((row: ITableSortRow, idx: number) => (
               <TableRow
-                key={row[titleField]}
+                key={row.id}
                 className={
                   idx % 2 === 0 ? classes.tableRowEven : classes.tableRowOdd
                 }
                 hover
               >
                 <TableCell className={classes.tableTitle}>
-                  {row[titleField]}
+                  {row.title}
                 </TableCell>
-                <TableCell>1</TableCell>
-                <TableCell>{row.lastModified}</TableCell>
+                <TableCell>{row.version}</TableCell>
+                <TableCell>{moment(row.lastModified).format('lll')}</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             ))}
