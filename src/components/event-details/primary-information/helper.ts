@@ -1,33 +1,33 @@
 export const getGenderAndSportById = (
-  _sportId: number | undefined
+  sportId: number | undefined
 ): { genderId: number; sportId: number } => {
-  // switch (sportId) {
-  //   case 1:
-  //     return { genderId: 1, sportId: 1 };
-  //   case 2:
-  //     return { genderId: 2, sportId: 1 };
-  //   case 3:
-  //     return { genderId: 1, sportId: 2 };
-  //   case 4:
-  //     return { genderId: 2, sportId: 2 };
-  //   default:
-  return { genderId: 1, sportId: 1 };
-  // }
+  switch (sportId) {
+    case 1:
+      return { genderId: 1, sportId: 1 };
+    case 2:
+      return { genderId: 2, sportId: 1 };
+    case 3:
+      return { genderId: 1, sportId: 2 };
+    case 4:
+      return { genderId: 2, sportId: 2 };
+    default:
+      return { genderId: 1, sportId: 1 };
+  }
 };
 
 export const getIdByGenderAndSport = (
-  _genderId: number,
-  _sportId: number | undefined
+  genderId: number,
+  sportId: number | undefined
 ): number => {
-  // if (genderId === 1 && sportId === 1) {
-  //   return 1;
-  // } else if (genderId === 2 && sportId === 1) {
-  //   return 2;
-  // } else if (genderId === 1 && sportId === 2) {
-  //   return 3;
-  // } else if (genderId === 2 && sportId === 2) {
-  //   return 4;
-  // } else {
-  return 1;
-  // }
+  if (genderId === 1 && sportId === 1) {
+    return 1;
+  } else if (genderId === 2 && sportId === 1) {
+    return 2;
+  } else if (genderId === 1 && sportId === 2) {
+    return 3;
+  } else if (genderId === 2 && sportId === 2) {
+    return 4;
+  } else {
+    return 1;
+  }
 };
