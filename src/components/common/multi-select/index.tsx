@@ -44,7 +44,7 @@ const MultiSelect = (props: IProps) => {
 
   useEffect(() => {
     const newOptions = options.filter(item =>
-      item.label.toLowerCase().includes(inputValue)
+      searchIncludes(item.label, inputValue)
     );
     setFilteredOptions(newOptions);
   }, [inputValue, options]);
@@ -71,6 +71,9 @@ const MultiSelect = (props: IProps) => {
 
   const updateInputValue = (e: any) => setInputValue(e.target.value);
 
+  const searchIncludes = (label: string, search: string) =>
+    label?.toLowerCase().includes(search?.toLowerCase());
+
   const onSelect = (event: any, checked: boolean) => {
     const name = event.target.name;
     const newOptions = options.map(item =>
@@ -83,7 +86,7 @@ const MultiSelect = (props: IProps) => {
   const onSetAll = () => {
     const newOptions = options.map(item => ({
       ...item,
-      checked: item.label.toLowerCase().includes(inputValue) && !all,
+      checked: searchIncludes(item.label, inputValue) && !all,
     }));
 
     setOptions(newOptions);
@@ -96,10 +99,10 @@ const MultiSelect = (props: IProps) => {
 
     const newOptions = options.map(item => ({
       ...item,
-      checked: item.label.toLowerCase().includes(inputValue),
+      checked: Boolean(searchIncludes(item.label, inputValue) && item.checked),
     }));
 
-    if (filteredOptions.length && false) {
+    if (filteredOptions.length) {
       setOptions(newOptions);
       setFilteredOptions(newOptions);
     }

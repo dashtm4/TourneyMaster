@@ -185,7 +185,7 @@ class Schedules extends Component<Props, State> {
     ) {
       const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
       this.calculateDiagnostics();
-      this.props.fillSchedulesTable(mappedTeams);
+      this.onScheduleCardsUpdate(mappedTeams);
     }
   }
 
@@ -284,7 +284,7 @@ class Schedules extends Component<Props, State> {
       this.calculateDiagnostics
     );
 
-    this.props.fillSchedulesTable(schedulerResult.teamCards);
+    this.onScheduleCardsUpdate(schedulerResult.teamCards);
   };
 
   calculateDiagnostics = () => {
