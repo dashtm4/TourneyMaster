@@ -13,10 +13,11 @@ const ICON_STYLES = {
 interface Props {
   isArrange: boolean;
   onAdd: BindingAction;
-  onArrangeClick: BindingAction;
+  onArrange: BindingAction;
+  onCancel: BindingAction;
 }
 
-const PoolsDetailsNav = ({ isArrange, onAdd, onArrangeClick }: Props) => (
+const PoolsDetailsNav = ({ isArrange, onAdd, onArrange, onCancel }: Props) => (
   <div className={styles.wrapper}>
     <div className={styles.poolsBtns}>
       <Button
@@ -37,6 +38,7 @@ const PoolsDetailsNav = ({ isArrange, onAdd, onArrangeClick }: Props) => (
       {isArrange ? (
         <p>
           <Button
+            onClick={onCancel}
             variant={ButtonVarian.TEXT}
             color={ButtonColors.SECONDARY}
             label="Cancel"
@@ -51,7 +53,7 @@ const PoolsDetailsNav = ({ isArrange, onAdd, onArrangeClick }: Props) => (
         </p>
       ) : (
         <Button
-          onClick={onArrangeClick}
+          onClick={onArrange}
           icon={getIcon(Icons.EDIT, ICON_STYLES)}
           variant={ButtonVarian.TEXT}
           color={ButtonColors.SECONDARY}

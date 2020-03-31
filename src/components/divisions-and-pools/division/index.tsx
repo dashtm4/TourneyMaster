@@ -20,14 +20,6 @@ interface IDivisionProps {
   expanded: boolean;
   onToggleOne: BindingCbWithOne<number>;
   index: number;
-  isArrange: boolean;
-  changePool: (team: ITeam, divisionId: string, poolId: string | null) => void;
-  onDeletePopupOpen: (team: ITeam) => void;
-  onEditPopupOpen: (
-    team: ITeam,
-    divisionName: string,
-    poolName: string
-  ) => void;
 }
 
 class Division extends React.PureComponent<IDivisionProps> {
@@ -53,14 +45,7 @@ class Division extends React.PureComponent<IDivisionProps> {
   };
 
   render() {
-    const {
-      division,
-      pools,
-      teams,
-      changePool,
-      onDeletePopupOpen,
-      onEditPopupOpen,
-    } = this.props;
+    const { division, pools, teams } = this.props;
 
     return (
       <SectionDropdown
@@ -94,9 +79,6 @@ class Division extends React.PureComponent<IDivisionProps> {
             pools={pools}
             teams={teams}
             areDetailsLoading={this.props.areDetailsLoading}
-            changePool={changePool}
-            onDeletePopupOpen={onDeletePopupOpen}
-            onEditPopupOpen={onEditPopupOpen}
           />
         </div>
       </SectionDropdown>

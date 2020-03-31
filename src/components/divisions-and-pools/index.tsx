@@ -1,10 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { History } from 'history';
-import styles from './styles.module.scss';
-import Paper from '../common/paper';
-import Button from '../common/buttons/button';
-import HeadingLevelTwo from '../common/headings/heading-level-two';
+import { Loader, Paper, Button, HeadingLevelTwo } from 'components/common';
 import {
   getDivisionsTeams,
   getPools,
@@ -16,19 +13,9 @@ import AddPool from './division/add-pool';
 import { BindingCbWithOne } from 'common/models/callback';
 import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
-import { CircularProgress } from '@material-ui/core';
 import Division from './division';
-import {
-  PopupTeamEdit,
-  PopupExposure,
-  DeletePopupConfrim,
-} from 'components/common';
-import { getIcon } from 'helpers';
-import { Icons } from 'common/enums';
+import styles from './styles.module.scss';
 
-const ICON_STYLES = {
-  marginRight: '5px',
-};
 interface IDivisionsAndPoolsProps {
   divisions: IDivision[];
   pools: IPool[];
@@ -48,14 +35,6 @@ interface IDivisionAndPoolsState {
   selected: IDivision;
   expanded: boolean[];
   expandAll: boolean;
-  isArrange: boolean;
-  teams: ITeam[];
-  configurableTeam: ITeam | null;
-  currentDivision: string | null;
-  currentPool: string | null;
-  isDeletePopupOpen: boolean;
-  isEditPopupOpen: boolean;
-  isConfirmModalOpen: boolean;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -72,14 +51,6 @@ class DivisionsAndPools extends React.Component<
       selected: this.props.divisions[0],
       expanded: [],
       expandAll: false,
-      isArrange: false,
-      teams: [],
-      configurableTeam: null,
-      currentDivision: null,
-      currentPool: null,
-      isDeletePopupOpen: false,
-      isEditPopupOpen: false,
-      isConfirmModalOpen: false,
     };
   }
 
@@ -91,12 +62,6 @@ class DivisionsAndPools extends React.Component<
     prevProps: IDivisionsAndPoolsProps,
     prevState: IDivisionAndPoolsState
   ) {
-    const { isLoading, teams } = this.props;
-
-    if (prevProps.isLoading !== isLoading) {
-      this.setState({ teams });
-    }
-
     if (
       prevProps.divisions !== this.props.divisions &&
       !prevState.expanded.length
@@ -135,175 +100,19 @@ class DivisionsAndPools extends React.Component<
     this.setState({ isModalOpen: false });
   };
 
-  Loading = () => (
-    <div
-      style={{
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <CircularProgress />
-    </div>
-  );
-
-  onArrangeClick = () =>
-    this.setState(({ isArrange }) => ({ isArrange: !isArrange }));
-
-  onCancelClick = () => {
-    const { teams } = this.props;
-
-    this.setState({ isArrange: false, isConfirmModalOpen: false, teams });
-  };
-
-  onSaveClick = () => {
-    const eventId = this.props.match.params.eventId;
-    const { saveTeams } = this.props;
-    const { teams } = this.state;
-
-    if (eventId) {
-      saveTeams(teams);
-    }
-    this.setState({ isArrange: false, isConfirmModalOpen: false });
-  };
-
-  changePool = (team: ITeam, divisionId: string, poolId: string | null) => {
-    const changedTeam = {
-      ...team,
-      division_id: divisionId,
-      pool_id: poolId,
-      isChange: true,
-    };
-
-    this.setState(({ teams }) => ({
-      teams: teams.map(it =>
-        it.team_id === changedTeam.team_id ? changedTeam : it
-      ),
-    }));
-  };
-
-  onEditPopupOpen = (team: ITeam, divisionName: string, poolName: string) =>
-    this.setState({
-      isEditPopupOpen: true,
-      configurableTeam: team,
-      currentDivision: divisionName,
-      currentPool: poolName,
-    });
-
-  onChangeTeam = ({
-    target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) =>
-    this.setState(({ configurableTeam }) => ({
-      configurableTeam: {
-        ...(configurableTeam as ITeam),
-        [name]: value,
-        isChange: true,
-      },
-    }));
-
-  onSaveTeam = () => {
-    const { configurableTeam } = this.state;
-
-    if (configurableTeam) {
-      this.setState(({ teams }) => ({
-        teams: teams.map(it =>
-          it.team_id === configurableTeam.team_id ? configurableTeam : it
-        ),
-      }));
-    }
-
-    this.onCloseModal();
-  };
-
-  onDeleteTeam = (team: ITeam) => {
-    this.setState(({ teams }) => ({
-      teams: teams.map(it =>
-        it.team_id === team.team_id ? { ...it, isDelete: true } : it
-      ),
-    }));
-
-    this.onCloseModal();
-  };
-
-  onDeletePopupOpen = (team: ITeam) =>
-    this.setState({ configurableTeam: team, isDeletePopupOpen: true });
-
-  onCloseModal = () =>
-    this.setState({
-      configurableTeam: null,
-      currentDivision: null,
-      isEditPopupOpen: false,
-      isDeletePopupOpen: false,
-    });
-
-  onConfirmModalClose = () => {
-    this.setState({ isConfirmModalOpen: false });
-  };
-
-  onCancel = () => {
-    this.setState({ isConfirmModalOpen: true });
-  };
-
   render() {
-    const { divisions, pools, isLoading } = this.props;
-    const {
-      teams,
-      configurableTeam,
-      currentDivision,
-      currentPool,
-      isArrange,
-      isEditPopupOpen,
-      isDeletePopupOpen,
-      isConfirmModalOpen,
-    } = this.state;
-
-    const notDeletedTeams = teams.filter((it: ITeam) => !it.isDelete);
-
-    const deleteMessage = `You are about to delete this team and this cannot be undone.
-    Please, enter the name of the team to continue.`;
+    const { divisions, pools, teams, isLoading } = this.props;
 
     return (
       <section className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.mainMenu}>
-            {isArrange ? (
-              <p>
-                <Button
-                  onClick={this.onCancel}
-                  label="Cancel"
-                  variant="text"
-                  color="secondary"
-                />
-                <span className={styles.btnWrapper}>
-                  <Button
-                    onClick={this.onSaveClick}
-                    label="Save"
-                    variant="contained"
-                    color="primary"
-                  />
-                </span>
-              </p>
-            ) : (
-              <p>
-                <Button
-                  onClick={this.onArrangeClick}
-                  icon={getIcon(Icons.EDIT, ICON_STYLES)}
-                  label="Arrange Teams"
-                  variant="text"
-                  color="secondary"
-                />
-                <span className={styles.btnWrapper}>
-                  <Button
-                    label="+ Add Division"
-                    variant="contained"
-                    color="primary"
-                    onClick={this.onAddDivision}
-                  />
-                </span>
-              </p>
-            )}
+            <Button
+              label="+ Add Division"
+              variant="contained"
+              color="primary"
+              onClick={this.onAddDivision}
+            />
           </div>
         </Paper>
         <div className={styles.sectionContainer}>
@@ -318,7 +127,7 @@ class DivisionsAndPools extends React.Component<
               />
             ) : null}
           </div>
-          {isLoading && this.Loading()}
+          {isLoading && <Loader />}
           {divisions.length && !isLoading && this.state.expanded.length ? (
             <>
               <ul className={styles.divisionsList}>
@@ -330,7 +139,7 @@ class DivisionsAndPools extends React.Component<
                       pools={pools.filter(
                         pool => pool.division_id === division.division_id
                       )}
-                      teams={notDeletedTeams}
+                      teams={teams}
                       onAddPool={this.onAddPool}
                       getPools={this.props.getPools}
                       areDetailsLoading={this.props.areDetailsLoading}
@@ -338,10 +147,6 @@ class DivisionsAndPools extends React.Component<
                       expanded={this.state.expanded[index]}
                       index={index}
                       onToggleOne={this.onToggleOne}
-                      isArrange={isArrange}
-                      changePool={this.changePool}
-                      onDeletePopupOpen={this.onDeletePopupOpen}
-                      onEditPopupOpen={this.onEditPopupOpen}
                     />
                   </li>
                 ))}
@@ -373,40 +178,6 @@ class DivisionsAndPools extends React.Component<
             )
           )}
         </div>
-        <Modal
-          isOpen={isDeletePopupOpen || isEditPopupOpen}
-          onClose={this.onCloseModal}
-        >
-          <>
-            {isEditPopupOpen && (
-              <PopupTeamEdit
-                team={configurableTeam}
-                division={currentDivision}
-                pool={currentPool}
-                onChangeTeam={this.onChangeTeam}
-                onSaveTeamClick={this.onSaveTeam}
-                onDeleteTeamClick={this.onDeleteTeam}
-                onCloseModal={this.onCloseModal}
-              />
-            )}
-            {isDeletePopupOpen && (
-              <DeletePopupConfrim
-                type={'team'}
-                message={deleteMessage}
-                deleteTitle={configurableTeam?.long_name!}
-                isOpen={isDeletePopupOpen}
-                onClose={this.onCloseModal}
-                onDeleteClick={() => this.onDeleteTeam(configurableTeam!)}
-              />
-            )}
-          </>
-        </Modal>
-        <PopupExposure
-          isOpen={isConfirmModalOpen}
-          onClose={this.onConfirmModalClose}
-          onExitClick={this.onCancelClick}
-          onSaveClick={this.onSaveClick}
-        />
       </section>
     );
   }
