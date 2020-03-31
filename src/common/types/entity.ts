@@ -1,3 +1,16 @@
-import { IRegistration } from 'common/models';
+import {
+  IRegistration,
+  IEventDetails,
+  IFacility,
+  IDivision,
+  IPool,
+  ITeam,
+} from 'common/models';
 
-export type IEntity = IRegistration
+export type IEntity =
+  | IEventDetails
+  | IRegistration
+  | IFacility
+  | IDivision
+  | IPool
+  | ITeam;
