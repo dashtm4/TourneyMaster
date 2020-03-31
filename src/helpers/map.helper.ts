@@ -1,4 +1,7 @@
-import { IEventDetails, IRegistration } from 'common/models';
+import { removeObjectFields } from 'helpers';
+import { IEventDetails } from 'common/models';
+import { EntryPoints, IRegistrationFields } from 'common/enums';
+import { IEntity } from 'common/types';
 
 const arrToMap = <T>(arr: T[], field: string): Object => {
   return arr.reduce((acc, item) => {
@@ -12,7 +15,7 @@ const mapToArr = <T>(obj: Object, field: string): Array<T> => {
   return Object.keys(obj).map(obj => obj[field]);
 };
 
-const mapArrWithEventName = <T extends IRegistration>(
+const mapArrWithEventName = <T extends IEntity>(
   arr: T[],
   events: IEventDetails[]
 ): T[] =>
@@ -22,4 +25,12 @@ const mapArrWithEventName = <T extends IRegistration>(
     return { ...it, eventName: currentEvent?.event_name };
   });
 
-export { arrToMap, mapToArr, mapArrWithEventName };
+const removeAuxiliaryFields = (entity: IEntity, entryPoint: EntryPoints) => {
+  switch (entryPoint) {
+    case EntryPoints.REGISTRATIONS: {
+      return removeObjectFields(entity, Object.values(IRegistrationFields));
+    }
+  }
+};
+
+export { arrToMap, mapToArr, mapArrWithEventName, removeAuxiliaryFields };

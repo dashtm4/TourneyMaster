@@ -1,24 +1,22 @@
 import React from 'react';
 import { SectionDropdown, SortTable } from 'components/common';
-import { MenuTitles } from 'common/enums';
+import { MenuTitles, EntryPoints } from 'common/enums';
+import { BindingCbWithTwo } from 'common/models';
+import { IEntity } from 'common/types';
 import { ILibraryManagerRegistration } from '../../common';
 
 interface Props {
   registrations: ILibraryManagerRegistration[];
+  changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
-const Registration = ({ registrations }: Props) => {
-  const [
-    confRegistration,
-    onConfRegistration,
-  ] = React.useState<ILibraryManagerRegistration | null>(null);
-
-  const onEditRegistr = (id: string) => {
+const Registration = ({ registrations, changeSharedItem }: Props) => {
+  const onShareRegistr = (id: string) => {
     const editedRegistration = registrations.find(
       it => it.registration_id === id
     );
 
-    onConfRegistration(editedRegistration!);
+    changeSharedItem(editedRegistration!, EntryPoints.REGISTRATIONS);
   };
 
   // ! in future it can not be null(now database has it field like null)
@@ -34,7 +32,7 @@ const Registration = ({ registrations }: Props) => {
   }));
 
   return (
-    <>
+    <li>
       <SectionDropdown
         id={MenuTitles.REGISTRATION}
         type="section"
@@ -42,10 +40,9 @@ const Registration = ({ registrations }: Props) => {
         isDefaultExpanded={true}
       >
         <span>{MenuTitles.REGISTRATION}</span>
-        <SortTable rows={rowForTable} onEdit={onEditRegistr} />
+        <SortTable rows={rowForTable} onShare={onShareRegistr} />
       </SectionDropdown>
-      {confRegistration && confRegistration.eventName}
-    </>
+    </li>
   );
 };
 
