@@ -139,7 +139,7 @@ const PopupEditSchedule = ({
               </p>
               <Button
                 variant={ButtonVarian.CONTAINED}
-                color={ButtonColors.PRIMATY}
+                color={ButtonColors.PRIMARY}
                 btnType={ButtonFormTypes.SUBMIT}
                 label="Save"
               />
