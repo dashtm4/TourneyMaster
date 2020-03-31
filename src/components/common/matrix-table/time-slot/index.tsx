@@ -95,6 +95,7 @@ const RenderTimeSlot = (props: IProps) => {
             onTeamCardUpdate={onTeamCardUpdate}
             isDndMode={isDndMode}
             isEnterScores={isEnterScores}
+            teamCards={teamCards}
           />
         ))}
     </tr>
