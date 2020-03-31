@@ -14,6 +14,9 @@ import {
   saveDraft,
   updateDraft,
   fetchSchedulesDetails,
+  publishSchedulesDetails,
+  updatePublishedSchedulesDetails,
+  getPublishedGames,
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
@@ -62,6 +65,7 @@ import {
   mapSchedulesTeamCards,
   mapScheduleData,
   mapTeamsFromSchedulesDetails,
+  mapTeamCardsToSchedulesGames,
 } from './mapScheduleData';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { IConfigurableSchedule, ISchedule, IPool } from 'common/models';
@@ -71,12 +75,14 @@ import { TableScheduleTypes } from 'common/enums';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import SchedulesLoader, { LoaderTypeEnum } from './loader';
+import { ISchedulesGame } from 'common/models/schedule/game';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
 interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   schedulesTeamCards?: ITeamCard[];
   draftSaved?: boolean;
+  schedulesPublished?: boolean;
   savingInProgress?: boolean;
   scheduleData?: IConfigurableSchedule | null;
   schedulesHistoryLength?: number;
@@ -90,10 +96,7 @@ interface IMapDispatchToProps {
     scheduleData: ISchedule,
     scheduleDetails: ISchedulesDetails[]
   ) => void;
-  updateDraft: (
-    scheduleData: ISchedule,
-    scheduleDetails: ISchedulesDetails[]
-  ) => void;
+  updateDraft: (scheduleDetails: ISchedulesDetails[]) => void;
   getAllPools: (divisionIds: string[]) => void;
   fetchFields: (facilitiesIds: string[]) => void;
   fetchEventSummary: (eventId: string) => void;
@@ -101,7 +104,22 @@ interface IMapDispatchToProps {
   updateSchedulesTable: (teamCard: ITeamCard) => void;
   onScheduleUndo: () => void;
   fetchSchedulesDetails: (scheduleId: string) => void;
+  publishSchedulesDetails: (
+    schedulesDetails: ISchedulesDetails[],
+    schedulesGames: ISchedulesGame[]
+  ) => void;
+  updatePublishedSchedulesDetails: (
+    schedulesDetails: ISchedulesDetails[],
+    schedulesGames: ISchedulesGame[]
+  ) => void;
+  getPublishedGames: (scheduleId: string) => void;
 }
+
+const publishBtnStyles = {
+  width: 180,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+};
 
 interface ComponentProps {
   match: any;
@@ -166,7 +184,7 @@ class Schedules extends Component<Props, State> {
     const { facilities, match } = this.props;
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
-
+    this.props.getPublishedGames(scheduleId);
     this.activateLoaders(scheduleId);
 
     if (facilitiesIds?.length) {
@@ -393,40 +411,87 @@ class Schedules extends Component<Props, State> {
     this.props.history.goBack();
   };
 
-  onSaveDraft = async () => {
-    const { cancelConfirmationOpen, games, scheduleId } = this.state;
-    const {
-      schedulesTeamCards,
-      scheduleData,
-      draftSaved,
-      schedulesDetails,
-    } = this.props;
+  getSchedule = () => {
+    const { schedule, scheduleData } = this.props;
+    return scheduleData ? mapScheduleData(scheduleData) : schedule;
+  };
 
-    const schedule = scheduleData
-      ? mapScheduleData(scheduleData)
-      : this.props.schedule;
+  retrieveSchedulesDetails = async (isDraft: boolean) => {
+    const { schedulesDetails, schedulesTeamCards } = this.props;
+    const { games } = this.state;
 
-    if (!games || !schedulesTeamCards || !schedule)
-      return errorToast("Couldn't save the data");
+    const localSchedule = this.getSchedule();
+
+    if (!games || !schedulesTeamCards || !localSchedule) {
+      throw errorToast('Failed to retrieve schedules data');
+    }
 
     const schedulesTableGames = settleTeamsPerGames(games, schedulesTeamCards);
-    const scheduleDetails: ISchedulesDetails[] = await mapSchedulesTeamCards(
-      schedule,
+
+    return mapSchedulesTeamCards(
+      localSchedule,
       schedulesTableGames,
-      true,
+      isDraft,
       schedulesDetails
     );
+  };
+
+  retrieveSchedulesGames = async () => {
+    const { games } = this.state;
+    const { schedulesTeamCards } = this.props;
+    const localSchedule = this.getSchedule();
+
+    if (!localSchedule || !games || !schedulesTeamCards) {
+      throw errorToast('Failed to retrieve schedules data');
+    }
+
+    const schedulesTableGames = settleTeamsPerGames(games, schedulesTeamCards);
+    return mapTeamCardsToSchedulesGames(localSchedule, schedulesTableGames);
+  };
+
+  onSaveDraft = async () => {
+    const { draftSaved } = this.props;
+    const { scheduleId, cancelConfirmationOpen } = this.state;
+    const localSchedule = this.getSchedule();
+
+    const schedulesDetails = await this.retrieveSchedulesDetails(true);
+
+    if (!localSchedule || !schedulesDetails) {
+      throw errorToast('Failed to save schedules data');
+    }
 
     if (!scheduleId && !draftSaved) {
-      this.props.saveDraft(schedule, scheduleDetails);
+      const localScheduleId = localSchedule.schedule_id;
+      const { eventId } = this.props.match?.params;
+      this.props.history.push(`/schedules/${eventId}/${localScheduleId}`);
+      this.props.saveDraft(localSchedule, schedulesDetails);
     } else {
-      this.props.updateDraft(schedule, scheduleDetails);
+      this.props.updateDraft(schedulesDetails);
     }
 
     if (cancelConfirmationOpen) {
       this.closeCancelConfirmation();
       this.onExit();
     }
+  };
+
+  saveAndPublish = async () => {
+    const { schedulesPublished } = this.props;
+    const schedulesDetails = await this.retrieveSchedulesDetails(false);
+    const schedulesGames = await this.retrieveSchedulesGames();
+
+    if (!schedulesDetails || !schedulesGames) {
+      throw errorToast('Failed to save schedules data');
+    }
+
+    if (schedulesPublished) {
+      this.props.updatePublishedSchedulesDetails(
+        schedulesDetails,
+        schedulesGames
+      );
+      return;
+    }
+    this.props.publishSchedulesDetails(schedulesDetails, schedulesGames);
   };
 
   onScheduleCardsUpdate = (teamCards: ITeamCard[]) => {
@@ -438,6 +503,8 @@ class Schedules extends Component<Props, State> {
   };
 
   renderPublishBtn = (status: string) => {
+    const { savingInProgress } = this.props;
+
     switch (status) {
       case 'Published':
         return (
@@ -451,10 +518,14 @@ class Schedules extends Component<Props, State> {
       case 'Draft':
         return (
           <Button
-            label="Save and Publish"
+            btnStyles={publishBtnStyles}
+            label={
+              savingInProgress ? 'Saving and publishing...' : 'Save and Publish'
+            }
             variant="contained"
             color="primary"
-            onClick={() => {}}
+            disabled={savingInProgress}
+            onClick={this.saveAndPublish}
           />
         );
     }
@@ -466,7 +537,6 @@ class Schedules extends Component<Props, State> {
       event,
       eventSummary,
       schedulesTeamCards,
-      draftSaved,
       onScheduleUndo,
       schedulesHistoryLength,
       savingInProgress,
@@ -500,6 +570,8 @@ class Schedules extends Component<Props, State> {
       schedulesTeamCards?.length
     );
 
+    console.log('schedulesTeamCards', schedulesTeamCards);
+
     return (
       <div className={styles.container}>
         <div className={styles.paperWrapper}>
@@ -520,10 +592,10 @@ class Schedules extends Component<Props, State> {
                   onClick={this.onCancel}
                 />
                 <Button
-                  label="Save"
+                  label={savingInProgress ? 'Saving...' : 'Save'}
                   variant="contained"
                   color="primary"
-                  disabled={draftSaved || savingInProgress}
+                  disabled={savingInProgress}
                   onClick={this.onSaveDraft}
                 />
                 {loadCondition &&
@@ -622,6 +694,7 @@ const mapStateToProps = ({
   schedulesTeamCards: schedulesTable?.current,
   schedulesHistoryLength: schedulesTable?.previous.length,
   draftSaved: schedules?.draftIsAlreadySaved,
+  schedulesPublished: schedules?.schedulesPublished,
   savingInProgress: schedules?.savingInProgress,
   scheduleData: scheduling?.schedule,
   schedule: schedules?.schedule,
@@ -638,6 +711,9 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       fetchEventSummary,
       fillSchedulesTable,
       updateSchedulesTable,
+      publishSchedulesDetails,
+      updatePublishedSchedulesDetails,
+      getPublishedGames,
       onScheduleUndo,
       fetchSchedulesDetails,
       getAllPools,

@@ -6,6 +6,7 @@ import { IMember } from 'common/models';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { getVarcharEight } from 'helpers';
 import { ITeam } from 'common/models/schedule/teams';
+import { ISchedulesGame } from 'common/models/schedule/game';
 
 export const mapScheduleData = (
   scheduleData: IConfigurableSchedule
@@ -30,19 +31,23 @@ const getVersionId = (
   return false;
 };
 
-export const mapSchedulesTeamCards = async (
-  scheduleData: ISchedule,
-  games: IGame[],
-  isDraft: boolean,
-  schedulesDetails?: ISchedulesDetails[]
-) => {
+const getMember = async () => {
   const currentSession = await Auth.currentSession();
   const userEmail = currentSession.getIdToken().payload.email;
   const members = await api.get(`/members?email_address=${userEmail}`);
   const member: IMember = members.find(
     (it: IMember) => it.email_address === userEmail
   );
+  return member;
+};
 
+export const mapSchedulesTeamCards = async (
+  scheduleData: ISchedule,
+  games: IGame[],
+  isDraft: boolean,
+  schedulesDetails?: ISchedulesDetails[]
+) => {
+  const member = await getMember();
   const memberId = member.member_id;
 
   const scheduleId = scheduleData.schedule_id;
@@ -81,6 +86,50 @@ export const mapSchedulesTeamCards = async (
   }));
 
   return scheduleDetails;
+};
+
+export const mapTeamCardsToSchedulesGames = async (
+  scheduleData: ISchedule,
+  games: IGame[]
+) => {
+  const member = await getMember();
+  const memberId = member.member_id;
+
+  const scheduleId = scheduleData.schedule_id;
+  const eventId = scheduleData.event_id;
+
+  const schedulesGames: ISchedulesGame[] = games.map(game => ({
+    game_id: String(game.id),
+    event_id: eventId,
+    schedule_id: scheduleId,
+    sport_id: 1,
+    facilities_id: game.facilityId || '',
+    field_id: game.fieldId,
+    game_date: '',
+    start_time: game.startTime || '',
+    away_team_id: game.awayTeam?.id || null,
+    home_team_id: game.homeTeam?.id || null,
+    away_team_score: null,
+    home_team_score: null,
+    is_active_YN: 1,
+    is_final_YN: null,
+    finalized_by: memberId,
+    finalized_datetime: new Date().toISOString(),
+    is_bracket_YN: null,
+    away_team_locked: game.awayTeam?.isLocked ? game.awayTeam?.id : null,
+    home_team_locked: game.homeTeam?.isLocked ? game.homeTeam?.id : null,
+    game_is_locked_YN: Boolean(
+      game.awayTeam?.isLocked && game.homeTeam?.isLocked
+    )
+      ? 1
+      : 0,
+    created_by: memberId,
+    created_datetime: game.createDate || new Date().toISOString(),
+    updated_by: memberId,
+    updated_datetime: new Date().toISOString(),
+  }));
+
+  return schedulesGames;
 };
 
 export const mapTeamsFromSchedulesDetails = (

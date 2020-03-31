@@ -27,12 +27,12 @@ const SchedulesLoader = ({ time, type }: IProps) => {
   const [completed, setCompleted] = useState(0);
 
   const loadSteps = () => {
-    let i = 1;
+    let i = 0;
     const stepsNum = 8;
     const updateTime = time / stepsNum;
 
     setTimeout(function load() {
-      if (i <= stepsNum) {
+      if (i < stepsNum) {
         i++;
         setProgress((100 / stepsNum) * i);
         setLoadingStep(LoadingStepEnum[i]);
