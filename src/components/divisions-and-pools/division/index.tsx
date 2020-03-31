@@ -57,7 +57,6 @@ class Division extends React.PureComponent<IDivisionProps> {
       division,
       pools,
       teams,
-      isArrange,
       changePool,
       onDeletePopupOpen,
       onEditPopupOpen,
@@ -95,7 +94,6 @@ class Division extends React.PureComponent<IDivisionProps> {
             pools={pools}
             teams={teams}
             areDetailsLoading={this.props.areDetailsLoading}
-            isArrange={isArrange}
             changePool={changePool}
             onDeletePopupOpen={onDeletePopupOpen}
             onEditPopupOpen={onEditPopupOpen}
