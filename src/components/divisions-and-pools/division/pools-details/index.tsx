@@ -21,6 +21,7 @@ interface IPoolsDetailsProps {
   pools: IPool[];
   teams: ITeam[];
   areDetailsLoading: boolean;
+  saveTeams: BindingCbWithOne<ITeam[]>;
 }
 
 const PoolsDetails = ({
@@ -29,6 +30,7 @@ const PoolsDetails = ({
   division,
   areDetailsLoading,
   onAddPool,
+  saveTeams,
 }: IPoolsDetailsProps) => {
   const [localTeams, changeLocalTeams] = React.useState<ITeam[]>(teams);
   const [configurableTeam, configutationTeam] = React.useState<ITeam | null>(
@@ -67,6 +69,14 @@ const PoolsDetails = ({
     onToggleConfirmPopup();
 
     toggleArrange(false);
+  };
+
+  const onSaveClick = () => {
+    saveTeams(localTeams);
+
+    toggleArrange(false);
+
+    toggleConfirmPopup(false);
   };
 
   const onAdd = () => onAddPool(division);
@@ -160,6 +170,7 @@ const PoolsDetails = ({
             onAdd={onAdd}
             onArrange={onToggleArrange}
             onCancel={onToggleConfirmPopup}
+            onSave={onSaveClick}
           />
         </div>
         {areDetailsLoading ? (
@@ -225,7 +236,7 @@ const PoolsDetails = ({
         isOpen={isConfirmPopupOpen}
         onClose={onToggleConfirmPopup}
         onExitClick={onCancelClick}
-        onSaveClick={() => {}}
+        onSaveClick={onSaveClick}
       />
     </>
   );

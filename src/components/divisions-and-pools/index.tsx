@@ -101,7 +101,7 @@ class DivisionsAndPools extends React.Component<
   };
 
   render() {
-    const { divisions, pools, teams, isLoading } = this.props;
+    const { divisions, pools, teams, isLoading, saveTeams } = this.props;
 
     return (
       <section className={styles.container}>
@@ -147,6 +147,7 @@ class DivisionsAndPools extends React.Component<
                       expanded={this.state.expanded[index]}
                       index={index}
                       onToggleOne={this.onToggleOne}
+                      saveTeams={saveTeams}
                     />
                   </li>
                 ))}

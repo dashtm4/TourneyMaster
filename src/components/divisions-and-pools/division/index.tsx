@@ -20,6 +20,7 @@ interface IDivisionProps {
   expanded: boolean;
   onToggleOne: BindingCbWithOne<number>;
   index: number;
+  saveTeams: BindingCbWithOne<ITeam[]>;
 }
 
 class Division extends React.PureComponent<IDivisionProps> {
@@ -45,7 +46,7 @@ class Division extends React.PureComponent<IDivisionProps> {
   };
 
   render() {
-    const { division, pools, teams } = this.props;
+    const { division, pools, teams, saveTeams } = this.props;
 
     return (
       <SectionDropdown
@@ -79,6 +80,7 @@ class Division extends React.PureComponent<IDivisionProps> {
             pools={pools}
             teams={teams}
             areDetailsLoading={this.props.areDetailsLoading}
+            saveTeams={saveTeams}
           />
         </div>
       </SectionDropdown>

@@ -15,9 +15,16 @@ interface Props {
   onAdd: BindingAction;
   onArrange: BindingAction;
   onCancel: BindingAction;
+  onSave: BindingAction;
 }
 
-const PoolsDetailsNav = ({ isArrange, onAdd, onArrange, onCancel }: Props) => (
+const PoolsDetailsNav = ({
+  isArrange,
+  onAdd,
+  onArrange,
+  onCancel,
+  onSave,
+}: Props) => (
   <div className={styles.wrapper}>
     <div className={styles.poolsBtns}>
       <Button
@@ -45,6 +52,7 @@ const PoolsDetailsNav = ({ isArrange, onAdd, onArrange, onCancel }: Props) => (
           />
           <span className={styles.btnWrapper}>
             <Button
+              onClick={onSave}
               variant={ButtonVarian.CONTAINED}
               color={ButtonColors.PRIMARY}
               label="Save"
