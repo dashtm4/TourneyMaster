@@ -178,7 +178,7 @@ class Schedules extends Component<Props, State> {
       teamCardsAlreadyUpdated,
     } = this.state;
 
-    if (!neccessaryDataCalculated && this.props.schedule) {
+    if (!neccessaryDataCalculated && schedule) {
       this.calculateNeccessaryData();
       return;
     }
@@ -464,6 +464,7 @@ class Schedules extends Component<Props, State> {
       timeSlots,
       games,
       facilities,
+      isLoading,
       teamsDiagnostics,
       divisionsDiagnostics,
       teamsDiagnosticsOpen,
@@ -489,7 +490,7 @@ class Schedules extends Component<Props, State> {
           <Paper>
             <div className={styles.paperContainer}>
               <div>
-                {loadCondition && !this.state.isLoading && (
+                {loadCondition && !isLoading && (
                   <HeadingLevelThree>
                     <span>{scheduleData?.schedule_name}</span>
                   </HeadingLevelThree>
@@ -519,7 +520,7 @@ class Schedules extends Component<Props, State> {
           </Paper>
         </div>
 
-        {loadCondition && !this.state.isLoading ? (
+        {loadCondition && !isLoading ? (
           <TableSchedule
             tableType={TableScheduleTypes.SCHEDULES}
             event={event!}
@@ -544,7 +545,7 @@ class Schedules extends Component<Props, State> {
         )}
 
         <div className={styles.diagnosticsContainer}>
-          {loadCondition && !this.state.isLoading && teamsDiagnostics && (
+          {loadCondition && !isLoading && teamsDiagnostics && (
             <>
               <Button
                 label="Teams Diagnostics"
@@ -561,7 +562,7 @@ class Schedules extends Component<Props, State> {
             </>
           )}
 
-          {loadCondition && !this.state.isLoading && divisionsDiagnostics && (
+          {loadCondition && !isLoading && divisionsDiagnostics && (
             <>
               <Button
                 label="Divisions Diagnostics"
