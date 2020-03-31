@@ -1,11 +1,13 @@
 import React from 'react';
 import { SectionDropdown, SortTable } from 'components/common';
-import { MenuTitles } from 'common/enums';
-import { ILibraryManagerRegistration, LibraryManagerItem } from '../../common';
+import { MenuTitles, EntryPoints } from 'common/enums';
+import { BindingCbWithTwo } from 'common/models';
+import { IEntity } from 'common/types';
+import { ILibraryManagerRegistration } from '../../common';
 
 interface Props {
   registrations: ILibraryManagerRegistration[];
-  changeSharedItem: (item: LibraryManagerItem) => void;
+  changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
 const Registration = ({ registrations, changeSharedItem }: Props) => {
@@ -14,7 +16,7 @@ const Registration = ({ registrations, changeSharedItem }: Props) => {
       it => it.registration_id === id
     );
 
-    changeSharedItem(editedRegistration!);
+    changeSharedItem(editedRegistration!, EntryPoints.REGISTRATIONS);
   };
 
   // ! in future it can not be null(now database has it field like null)

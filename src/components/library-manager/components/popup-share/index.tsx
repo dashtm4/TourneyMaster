@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, HeadingLevelTwo, Select, Button } from 'components/common';
-import { IEventDetails, BindingAction } from 'common/models';
+import { IEventDetails, BindingAction, BindingCbWithOne } from 'common/models';
 import styles from './styles.module.scss';
 import { ButtonVarian, ButtonColors } from 'common/enums';
 
@@ -9,7 +9,8 @@ interface Props {
   events: IEventDetails[];
   isOpen: boolean;
   onClose: BindingAction;
-  onChangeActiveEvent: (event: IEventDetails) => void;
+  onSave: BindingAction;
+  onChangeActiveEvent: BindingCbWithOne<IEventDetails>;
 }
 
 const PopupShare = ({
@@ -17,6 +18,7 @@ const PopupShare = ({
   events,
   isOpen,
   onClose,
+  onSave,
   onChangeActiveEvent,
 }: Props) => {
   const seletOptions = events.map(it => ({
@@ -58,6 +60,7 @@ const PopupShare = ({
           </span>
           <span className={styles.btnWrapper}>
             <Button
+              onClick={onSave}
               variant={ButtonVarian.CONTAINED}
               color={ButtonColors.PRIMARY}
               label="Save"

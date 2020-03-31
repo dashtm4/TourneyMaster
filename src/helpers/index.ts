@@ -10,3 +10,4 @@ export * from './map.helper';
 export * from './date.helper';
 export * from './schedule.helpers';
 export * from './on-save.helper';
+export * from './remove-object-fields';
