@@ -70,7 +70,7 @@ import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { TableScheduleTypes } from 'common/enums';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
-import SchedulesLoader from './loader';
+import SchedulesLoader, { LoaderTypeEnum } from './loader';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -135,6 +135,7 @@ interface State {
   isLoading: boolean;
   neccessaryDataCalculated: boolean;
   teamCardsAlreadyUpdated: boolean;
+  loadingType: LoaderTypeEnum;
 }
 
 class Schedules extends Component<Props, State> {
@@ -146,13 +147,27 @@ class Schedules extends Component<Props, State> {
     isLoading: true,
     neccessaryDataCalculated: false,
     teamCardsAlreadyUpdated: false,
+    loadingType: LoaderTypeEnum.CALCULATION,
+  };
+
+  activateLoaders = (scheduleId: string) => {
+    this.setState({
+      loadingType: scheduleId
+        ? LoaderTypeEnum.LOADING
+        : LoaderTypeEnum.CALCULATION,
+    });
+
+    const time = scheduleId ? 100 : 5000;
+
+    this.timer = setTimeout(() => this.setState({ isLoading: false }), time);
   };
 
   async componentDidMount() {
-    this.timer = setTimeout(() => this.setState({ isLoading: false }), 5000);
     const { facilities, match } = this.props;
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
+
+    this.activateLoaders(scheduleId);
 
     if (facilitiesIds?.length) {
       this.props.fetchFields(facilitiesIds);
@@ -470,6 +485,7 @@ class Schedules extends Component<Props, State> {
       teamsDiagnosticsOpen,
       divisionsDiagnosticsOpen,
       cancelConfirmationOpen,
+      loadingType,
     } = this.state;
 
     const loadCondition = !!(
@@ -540,7 +556,7 @@ class Schedules extends Component<Props, State> {
           />
         ) : (
           <div className={styles.loadingWrapper}>
-            <SchedulesLoader time={5000} />
+            <SchedulesLoader type={loadingType} time={5000} />
           </div>
         )}
 
