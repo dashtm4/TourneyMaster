@@ -11,12 +11,15 @@ import {
   SCHEDULES_DRAFT_SAVED_FAILURE,
   FETCH_SCHEDULES_DETAILS_SUCCESS,
   FETCH_SCHEDULES_DETAILS_FAILURE,
+  SCHEDULES_PUBLISHED_SUCCESS,
+  SCHEDULES_PUBLISHED_FAILURE,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
 import { IAppState } from 'reducers/root-reducer.types';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { successToast, errorToast } from 'components/common/toastr/showToasts';
+import { ISchedulesGame } from 'common/models/schedule/game';
 
 type ThunkActionType<R> = ThunkAction<R, IAppState, undefined, any>;
 
@@ -52,6 +55,13 @@ const fetchSchedulesDetailsSuccess = (payload: {
 }) => ({
   type: FETCH_SCHEDULES_DETAILS_SUCCESS,
   payload,
+});
+
+const publishedSuccess = () => ({
+  type: SCHEDULES_PUBLISHED_SUCCESS,
+});
+const publishFailure = () => ({
+  type: SCHEDULES_PUBLISHED_FAILURE,
 });
 
 const fetchSchedulesDetailsFailure = () => ({
@@ -116,30 +126,95 @@ export const saveDraft = (
 };
 
 export const updateDraft = (
-  _scheduleData: ISchedule,
-  scheduleDetails: ISchedulesDetails[]
+  schedulesDetails: ISchedulesDetails[]
 ): ThunkActionType<void> => async (dispatch: Dispatch) => {
   dispatch(schedulesSavingInProgress());
 
-  const scheduleDetailsChunk = chunk(scheduleDetails, 50);
+  const schedulesDetailsChunk = chunk(schedulesDetails, 50);
 
-  await Promise.all(
-    scheduleDetailsChunk.map(async arr => {
-      const url = `/schedules_details`;
-      await api.put(url, arr);
-    })
-  ).then((responses: any[]) => {
-    responses.some(response => {
-      if (!response) {
-        dispatch(draftSavedFailure());
-        errorToast('Something happened during the saving process');
-        return true;
-      }
+  const responses = await Promise.all(
+    schedulesDetailsChunk.map(
+      async arr => await api.put('/schedules_details', arr)
+    )
+  );
+  const responseOk = responses.every(item => item);
 
-      dispatch(draftSavedSuccess());
-      successToast('Schedules data successfully saved');
-    });
-  });
+  if (responseOk) {
+    dispatch(draftSavedSuccess());
+    successToast('Schedules data successfully saved');
+    return;
+  }
+
+  dispatch(draftSavedFailure());
+  errorToast('Something happened during the saving process');
+};
+
+export const publishSchedulesDetails = (
+  schedulesDetails: ISchedulesDetails[],
+  schedulesGames: ISchedulesGame[]
+) => async (dispatch: Dispatch) => {
+  dispatch(schedulesSavingInProgress());
+
+  const schedulesDetailsChunk = chunk(schedulesDetails, 50);
+  const schedulesResponses = await Promise.all(
+    schedulesDetailsChunk.map(
+      async arr => await api.put('/schedules_details', arr)
+    )
+  );
+  const schedulesResponseOk = schedulesResponses.every(item => item);
+
+  if (!schedulesResponseOk) {
+    return errorToast('Something happened during the publishing process');
+  }
+
+  const schedulesGamesChunk = chunk(schedulesGames, 50);
+  const gamesResponses = await Promise.all(
+    schedulesGamesChunk.map(async arr => await api.post('/games', arr))
+  );
+  const gamesResponseOk = gamesResponses.every(item => item);
+
+  if (schedulesResponseOk && gamesResponseOk) {
+    dispatch(publishedSuccess());
+    successToast('Schedules data successfully saved and published!');
+    return;
+  }
+
+  dispatch(publishFailure());
+  errorToast('Something happened during the saving process');
+};
+
+export const updatePublishedSchedulesDetails = (
+  schedulesDetails: ISchedulesDetails[],
+  schedulesGames: ISchedulesGame[]
+) => async (dispatch: Dispatch) => {
+  dispatch(schedulesSavingInProgress());
+
+  const schedulesDetailsChunk = chunk(schedulesDetails, 50);
+  const schedulesResponses = await Promise.all(
+    schedulesDetailsChunk.map(
+      async arr => await api.put('/schedules_details', arr)
+    )
+  );
+  const schedulesResponseOk = schedulesResponses.every(item => item);
+
+  if (!schedulesResponseOk) {
+    return errorToast('Something happened during the publishing process');
+  }
+
+  const schedulesGamesChunk = chunk(schedulesGames, 50);
+  const gamesResponses = await Promise.all(
+    schedulesGamesChunk.map(async arr => await api.put('/games', arr))
+  );
+  const gamesResponseOk = gamesResponses.every(item => item);
+
+  if (schedulesResponseOk && gamesResponseOk) {
+    dispatch(publishedSuccess());
+    successToast('Schedules data successfully saved and published!');
+    return;
+  }
+
+  dispatch(publishFailure());
+  errorToast('Something happened during the saving process');
 };
 
 export const fetchSchedulesDetails = (scheduleId: string) => async (
@@ -166,5 +241,14 @@ export const fetchSchedulesDetails = (scheduleId: string) => async (
     );
   } else {
     dispatch(fetchSchedulesDetailsFailure());
+  }
+};
+
+export const getPublishedGames = (scheduleId: string) => async (
+  dispatch: Dispatch
+) => {
+  const response = await api.get('/games', { schedule_id: scheduleId });
+  if (response) {
+    dispatch(publishedSuccess());
   }
 };

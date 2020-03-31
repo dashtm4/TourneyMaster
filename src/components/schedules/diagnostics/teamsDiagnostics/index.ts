@@ -81,7 +81,9 @@ const calculateTeamDiagnostics = (
   const { fields, games, divisions, totalGameTime } = diagnosticsProps;
 
   const name = teamCard.name;
-  const divisionName = find(divisions, ['id', teamCard.divisionId])?.name;
+  const division = find(divisions, { id: teamCard.divisionId });
+  const divisionName = division?.name || '';
+  const premierDivision = division?.isPremier ? 'True' : 'False';
   const numOfGames = teamCard.games?.length || 0;
   const teamGames = games.filter(
     game => findIndex(teamCard.games, { id: game.id }) >= 0
@@ -99,7 +101,6 @@ const calculateTeamDiagnostics = (
     .filter(field => fieldIds.includes(field.id))
     .map(field => field.name);
 
-  const numOfTimeSlots0 = calculateNumOfTimeSlots(0, teamCard, games);
   const numOfTimeSlots1 = calculateNumOfTimeSlots(1, teamCard, games);
   const numOfTimeSlots2 = calculateNumOfTimeSlots(2, teamCard, games);
   const numOfTimeSlots3 = calculateNumOfTimeSlots(3, teamCard, games);
@@ -110,10 +111,10 @@ const calculateTeamDiagnostics = (
   return [
     name,
     divisionName,
+    premierDivision,
     numOfGames,
     tournamentTime,
     numOfBackToBacks,
-    numOfTimeSlots0,
     numOfTimeSlots1,
     numOfTimeSlots2,
     numOfTimeSlots3,
@@ -131,10 +132,10 @@ const formatTeamsDiagnostics = (diagnosticsProps: ITeamsDiagnosticsProps) => {
   const header = [
     'Team Name',
     'Division Name',
+    'Premier Division',
     '# of Games',
     'Tournament Time',
     '# of Back-to-Back games',
-    '0 Time Slots between games',
     '1 Time Slots between games',
     '2 Time Slots between games',
     '3 Time Slots between games',
