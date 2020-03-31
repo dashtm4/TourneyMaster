@@ -31,7 +31,7 @@ const TourneyImport: React.FC<Props> = ({
   onDataLoaded,
   dataLoaded,
   onPreview,
-  completed
+  completed,
 }) => {
   const [showData, setShowData] = React.useState(false);
 
@@ -42,8 +42,6 @@ const TourneyImport: React.FC<Props> = ({
     }
   }, [events, games, locations, onDataLoaded]);
 
-
-
   return (
     <SectionDropdown
       id={MenuTitles.TOURNEY_IMPORT_TITLE}
@@ -52,83 +50,82 @@ const TourneyImport: React.FC<Props> = ({
       isDefaultExpanded={true}
     >
       <HeadingLevelThree>
-        <span className={styles.detailsSubtitle}>{MenuTitles.TOURNEY_IMPORT_TITLE}</span>
+        <span className={styles.detailsSubtitle}>
+          {MenuTitles.TOURNEY_IMPORT_TITLE}
+        </span>
       </HeadingLevelThree>
       <div className={styles.tournanment}>
-        {
-          !dataLoaded ? (
-            <div className={styles.tournanmentHeader}>
-              <Input
-                onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
-                  onGetTid(evt.target.value)
-                }
-                label="Enter the Identifier of the External Tournament: "
-                fullWidth={true}
-              />
-
-              <div className={styles.buttonGroup}>
-                <Button
-                  label="Cancel"
-                  onClick={() => history.push('/dashboard')}
-                  variant='text'
-                  color={ButtonColors.SECONDARY}
-                  btnType={ButtonFormTypes.SUBMIT}
-                />
-                <Button
-                  label="Submit"
-                  onClick={onPreview}
-                  variant={ButtonVarian.CONTAINED}
-                  color={ButtonColors.PRIMATY}
-                  btnType={ButtonFormTypes.SUBMIT}
-                />
-              </div>
-            </div>
-          ) : null
-        }
-        {
-          jobStatus.length ? (
-            <div className={styles.tournanmentBody}>
-              <LinearProgress variant="determinate" value={completed} />
-              <br />
-              <div className={styles.tabHeader}>
-                <SectionDropdown
-                  id="Status"
-                  type="section"
-                  panelDetailsType="flat"
-                  isDefaultExpanded={true}
-                >
-                  <h5>Status</h5>
-                  <JobStatus statuses={jobStatus} />
-                </SectionDropdown>
-              </div>
-              {
-                showData ? (
-                  <>
-                    <div className={styles.buttonGroup2}>
-                      <Button
-                        label="Cancel"
-                        variant='text'
-                        color={ButtonColors.SECONDARY}
-                        btnType={ButtonFormTypes.SUBMIT}
-                      />
-                      <Button
-                        label="Commit"
-                        variant={ButtonVarian.CONTAINED}
-                        color={ButtonColors.PRIMATY}
-                        btnType={ButtonFormTypes.SUBMIT}
-                      />
-                    </div>
-                    <FullWidthTabs events={events} locations={locations} games={games} />
-                  </>
-                ) : null
+        {!dataLoaded ? (
+          <div className={styles.tournanmentHeader}>
+            <Input
+              onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
+                onGetTid(evt.target.value)
               }
-            </div>
-          ) : null
-        }
+              label="Enter the Identifier of the External Tournament: "
+              fullWidth={true}
+            />
 
+            <div className={styles.buttonGroup}>
+              <Button
+                label="Cancel"
+                onClick={() => history.push('/dashboard')}
+                variant="text"
+                color={ButtonColors.SECONDARY}
+                btnType={ButtonFormTypes.SUBMIT}
+              />
+              <Button
+                label="Submit"
+                onClick={onPreview}
+                variant={ButtonVarian.CONTAINED}
+                color={ButtonColors.PRIMARY}
+                btnType={ButtonFormTypes.SUBMIT}
+              />
+            </div>
+          </div>
+        ) : null}
+        {jobStatus.length ? (
+          <div className={styles.tournanmentBody}>
+            <LinearProgress variant="determinate" value={completed} />
+            <br />
+            <div className={styles.tabHeader}>
+              <SectionDropdown
+                id="Status"
+                type="section"
+                panelDetailsType="flat"
+                isDefaultExpanded={true}
+              >
+                <h5>Status</h5>
+                <JobStatus statuses={jobStatus} />
+              </SectionDropdown>
+            </div>
+            {showData ? (
+              <>
+                <div className={styles.buttonGroup2}>
+                  <Button
+                    label="Cancel"
+                    variant="text"
+                    color={ButtonColors.SECONDARY}
+                    btnType={ButtonFormTypes.SUBMIT}
+                  />
+                  <Button
+                    label="Commit"
+                    variant={ButtonVarian.CONTAINED}
+                    color={ButtonColors.PRIMARY}
+                    btnType={ButtonFormTypes.SUBMIT}
+                  />
+                </div>
+                <FullWidthTabs
+                  events={events}
+                  locations={locations}
+                  games={games}
+                />
+              </>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </SectionDropdown>
-  )
+  );
 };
 
 export default TourneyImport;
