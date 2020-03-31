@@ -31,6 +31,7 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
     dispatch({
       type: LIBRARY_MANAGER_LOAD_DATA_SUCCESS,
       payload: {
+        events,
         registrations: mappedRegistrationWithEvent,
       },
     });

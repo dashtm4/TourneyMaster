@@ -27,10 +27,10 @@ const useStyles = makeStyles({
 });
 interface Props {
   rows: ITableSortRow[];
-  onEdit: (id: string) => void;
+  onShare: (id: string) => void;
 }
 
-const SortTable = ({ rows, onEdit }: Props) => {
+const SortTable = ({ rows, onShare }: Props) => {
   const classes = useStyles();
   const [order, setOrder] = React.useState<OrderTypes>(OrderTypes.ASC);
   const [orderBy, setOrderBy] = React.useState<TableSortRowTypes>(
@@ -80,9 +80,9 @@ const SortTable = ({ rows, onEdit }: Props) => {
                 <TableCell className={classes.tableCell}>
                   <button
                     className={styles.actionBtn}
-                    onClick={() => onEdit(row.id)}
+                    onClick={() => onShare(row.id)}
                   >
-                    Edit
+                    Share
                   </button>
                 </TableCell>
               </TableRow>

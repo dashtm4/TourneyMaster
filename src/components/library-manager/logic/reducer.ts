@@ -4,21 +4,24 @@ import {
   LIBRARY_MANAGER_LOAD_DATA_SUCCESS,
 } from './action-types';
 import { ILibraryManagerRegistration } from '../common';
+import { IEventDetails } from 'common/models';
+
+export interface ILibraryManagerState {
+  isLoading: boolean;
+  isLoaded: boolean;
+  events: IEventDetails[];
+  registrations: ILibraryManagerRegistration[];
+}
 
 const initialState = {
   isLoading: false,
   isLoaded: false,
+  events: [],
   registrations: [],
 };
 
-export interface AppState {
-  isLoading: boolean;
-  isLoaded: boolean;
-  registrations: ILibraryManagerRegistration[];
-}
-
 const libraryManagerReducer = (
-  state: AppState = initialState,
+  state: ILibraryManagerState = initialState,
   action: LibraryManagerAction
 ) => {
   switch (action.type) {
@@ -29,12 +32,13 @@ const libraryManagerReducer = (
       };
     }
     case LIBRARY_MANAGER_LOAD_DATA_SUCCESS: {
-      const { registrations } = action.payload;
+      const { registrations, events } = action.payload;
 
       return {
         ...state,
         isLoading: false,
         isLoaded: true,
+        events,
         registrations,
       };
     }
