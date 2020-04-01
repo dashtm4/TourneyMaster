@@ -570,8 +570,6 @@ class Schedules extends Component<Props, State> {
       schedulesTeamCards?.length
     );
 
-    console.log('schedulesTeamCards', schedulesTeamCards);
-
     return (
       <div className={styles.container}>
         <div className={styles.paperWrapper}>
