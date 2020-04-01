@@ -16,6 +16,7 @@ export const mapScheduleData = (
   delete data?.periods_per_game;
   delete data?.first_game_start;
   delete data?.last_game_end;
+  delete data?.isManualScheduling;
   return data;
 };
 

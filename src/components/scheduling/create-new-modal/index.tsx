@@ -57,7 +57,11 @@ const CreateNewModal = (props: IProps) => {
   const onCreateWithScheduler = () => {
     onCreate(schedule);
   };
-  const onCreateManually = () => {};
+
+  const onCreateManually = () => {
+    onChange('isManualScheduling', true);
+    onCreate(schedule);
+  };
 
   const renderStepOne = () => {
     return (
@@ -141,7 +145,7 @@ const CreateNewModal = (props: IProps) => {
             color="primary"
             variant="contained"
             onClick={type === 1 ? onCreateWithScheduler : onCreateManually}
-            disabled={type === 2}
+            disabled={!schedule.schedule_name?.length}
           />
         </div>
       </div>
