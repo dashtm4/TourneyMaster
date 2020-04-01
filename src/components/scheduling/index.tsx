@@ -11,11 +11,10 @@ import {
   updateSchedule,
   deleteSchedule,
 } from './logic/actions';
-import { HeadingLevelTwo, Loader, Modal } from 'components/common';
+import { HeadingLevelTwo, Loader, Modal, HazardList } from 'components/common';
 import Navigation from './navigation';
 import TourneyArchitect from './tourney-architect';
 import TournamentPlay from './tournament-play';
-import HazardList from './hazard-list';
 import styles from './styles.module.scss';
 import Brackets from './brackets';
 import { ISchedule, IConfigurableSchedule } from 'common/models/schedule';
