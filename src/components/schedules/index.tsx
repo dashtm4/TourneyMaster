@@ -544,6 +544,8 @@ class Schedules extends Component<Props, State> {
       pools,
     } = this.props;
 
+    console.log(this.state);
+
     const {
       fields,
       timeSlots,
