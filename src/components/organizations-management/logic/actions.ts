@@ -156,7 +156,9 @@ const deleteOrganization: ActionCreator<ThunkAction<
         it.member_id === member.member_id && it.org_id === organization.org_id
     );
 
-    Api.delete(`/org_members?org_member_id=${toBeDelOrgMember.org_member_id}`);
+    await Api.delete(
+      `/org_members?org_member_id=${toBeDelOrgMember.org_member_id}`
+    );
 
     dispatch({
       type: DELETE_ORGANIZATION_SUCCESS,
