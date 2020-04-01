@@ -1,6 +1,7 @@
 import React from 'react';
-import { Button, HeadingLevelThree, Paper } from 'components/common';
+import { Button, HeadingLevelThree, Paper, Tooltip } from 'components/common';
 import styles from './styles.module.scss';
+import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 
 const publishBtnStyles = {
   width: 180,
@@ -11,6 +12,7 @@ const publishBtnStyles = {
 interface IProps {
   scheduleName: string;
   savingInProgress?: boolean;
+  anotherSchedulePublished?: boolean;
   onClose: () => void;
   onSaveDraft: () => void;
   onUnpublish: () => void;
@@ -25,6 +27,7 @@ export default (props: IProps) => {
     onSaveDraft,
     onUnpublish,
     saveAndPublish,
+    anotherSchedulePublished,
   } = props;
 
   return (
@@ -44,7 +47,7 @@ export default (props: IProps) => {
               onClick={onClose}
             />
             <Button
-              label={savingInProgress ? 'Saving...' : 'Save'}
+              label={'Save'}
               variant="contained"
               color="primary"
               disabled={savingInProgress}
@@ -54,20 +57,25 @@ export default (props: IProps) => {
               label="Unpublish"
               variant="contained"
               color="primary"
+              disabled={savingInProgress || !anotherSchedulePublished}
               onClick={onUnpublish}
             />
-            <Button
-              btnStyles={publishBtnStyles}
-              label={
-                savingInProgress
-                  ? 'Saving and publishing...'
-                  : 'Save and Publish'
-              }
-              variant="contained"
-              color="primary"
-              disabled={savingInProgress}
-              onClick={saveAndPublish}
-            />
+            <Tooltip
+              disabled={!anotherSchedulePublished}
+              title="asdasd"
+              type={TooltipMessageTypes.INFO}
+            >
+              <>
+                <Button
+                  btnStyles={publishBtnStyles}
+                  label={'Save and Publish'}
+                  variant="contained"
+                  color="primary"
+                  disabled={anotherSchedulePublished || savingInProgress}
+                  onClick={saveAndPublish}
+                />
+              </>
+            </Tooltip>
           </div>
         </div>
       </Paper>

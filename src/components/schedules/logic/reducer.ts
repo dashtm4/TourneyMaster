@@ -10,20 +10,22 @@ import {
   SCHEDULES_PUBLISHED_FAILURE,
   SCHEDULES_PUBLISHED_SUCCESS,
   SCHEDULES_PUBLISHED_CLEAR,
+  ANOTHER_SCHEDULE_PUBLISHED,
 } from './actionTypes';
 import { IEventSummary } from 'common/models/event-summary';
 import { ISchedule } from 'common/models';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 
 export interface ISchedulesState {
-  error: boolean;
-  fetchError: boolean;
+  schedule?: ISchedule;
+  eventSummary?: IEventSummary[];
+  schedulesDetails?: ISchedulesDetails[];
+  anotherSchedulePublished: boolean;
   draftIsAlreadySaved: boolean;
   schedulesPublished: boolean;
   savingInProgress: boolean;
-  schedule?: ISchedule;
-  schedulesDetails?: ISchedulesDetails[];
-  eventSummary?: IEventSummary[];
+  fetchError: boolean;
+  error: boolean;
 }
 
 const initialState: ISchedulesState = {
@@ -32,6 +34,7 @@ const initialState: ISchedulesState = {
   savingInProgress: false,
   draftIsAlreadySaved: false,
   schedulesPublished: false,
+  anotherSchedulePublished: false,
 };
 
 const SchedulesReducer = (state = initialState, action: IScheduleAction) => {
@@ -89,6 +92,11 @@ const SchedulesReducer = (state = initialState, action: IScheduleAction) => {
       return {
         ...state,
         schedulesPublished: false,
+      };
+    case ANOTHER_SCHEDULE_PUBLISHED:
+      return {
+        ...state,
+        anotherSchedulePublished: action.payload,
       };
     default:
       return state;

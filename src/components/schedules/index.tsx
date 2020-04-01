@@ -85,6 +85,7 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   schedulesHistoryLength?: number;
   schedule?: ISchedule;
   schedulesDetails?: ISchedulesDetails[];
+  anotherSchedulePublished?: boolean;
   pools?: IPool[];
 }
 
@@ -111,7 +112,7 @@ interface IMapDispatchToProps {
     schedulesDetails: ISchedulesDetails[],
     schedulesGames: ISchedulesGame[]
   ) => void;
-  getPublishedGames: (scheduleId: string) => void;
+  getPublishedGames: (eventId: string, scheduleId: string) => void;
 }
 
 interface ComponentProps {
@@ -228,10 +229,12 @@ class Schedules extends Component<Props, State> {
   };
 
   getPublishedStatus = () => {
-    const { scheduleId } = this.props.match?.params;
+    const { event, match } = this.props;
+    const { scheduleId } = match?.params;
+    const eventId = event?.event_id!;
 
     if (scheduleId) {
-      return this.props.getPublishedGames(scheduleId);
+      return this.props.getPublishedGames(eventId, scheduleId);
     }
 
     this.props.publishedClear();
@@ -510,6 +513,7 @@ class Schedules extends Component<Props, State> {
       savingInProgress,
       scheduleData,
       pools,
+      anotherSchedulePublished,
     } = this.props;
 
     const {
@@ -553,6 +557,7 @@ class Schedules extends Component<Props, State> {
 
         <SchedulesPaper
           scheduleName={scheduleName}
+          anotherSchedulePublished={anotherSchedulePublished}
           savingInProgress={savingInProgress}
           onClose={this.onClose}
           onSaveDraft={this.onSaveDraft}
@@ -612,6 +617,7 @@ const mapStateToProps = ({
   schedulesHistoryLength: schedulesTable?.previous.length,
   draftSaved: schedules?.draftIsAlreadySaved,
   schedulesPublished: schedules?.schedulesPublished,
+  anotherSchedulePublished: schedules?.anotherSchedulePublished,
   savingInProgress: schedules?.savingInProgress,
   scheduleData: scheduling?.schedule,
   schedule: schedules?.schedule,

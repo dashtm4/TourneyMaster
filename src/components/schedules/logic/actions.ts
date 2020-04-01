@@ -14,6 +14,7 @@ import {
   SCHEDULES_PUBLISHED_SUCCESS,
   SCHEDULES_PUBLISHED_FAILURE,
   SCHEDULES_PUBLISHED_CLEAR,
+  ANOTHER_SCHEDULE_PUBLISHED,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
@@ -72,6 +73,11 @@ const publishFailure = () => ({
 
 const fetchSchedulesDetailsFailure = () => ({
   type: FETCH_SCHEDULES_DETAILS_FAILURE,
+});
+
+const anotherSchedulePublished = (payload: boolean) => ({
+  type: ANOTHER_SCHEDULE_PUBLISHED,
+  payload,
 });
 
 export const fetchFields = (
@@ -257,14 +263,25 @@ export const fetchSchedulesDetails = (scheduleId: string) => async (
   }
 };
 
-export const getPublishedGames = (scheduleId: string) => async (
-  dispatch: Dispatch
-) => {
-  const response = await api.get('/games', { schedule_id: scheduleId });
+export const getPublishedGames = (
+  eventId: string,
+  scheduleId: string
+) => async (dispatch: Dispatch) => {
+  const gamesResponse = await api.get('/games', { schedule_id: scheduleId });
 
-  if (response?.length) {
+  const schedulesResponse: ISchedule[] = await api.get('/schedules', {
+    event_id: eventId,
+  });
+
+  if (gamesResponse?.length) {
     dispatch(publishedSuccess());
   } else {
     dispatch(publishedClear());
+  }
+
+  if (schedulesResponse?.find(item => item.schedule_status === 'Published')) {
+    dispatch(anotherSchedulePublished(true));
+  } else {
+    dispatch(anotherSchedulePublished(false));
   }
 };
