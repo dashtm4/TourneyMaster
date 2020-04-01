@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { History } from 'history';
 import { bindActionCreators, Dispatch } from 'redux';
+import { chunk } from 'lodash-es';
+import api from 'api/api';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { ITeam, ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
@@ -16,17 +18,14 @@ import {
   fetchSchedulesDetails,
   publishSchedulesDetails,
   updatePublishedSchedulesDetails,
+  schedulesSavingInProgress,
   getPublishedGames,
+  publishedClear,
+  publishedSuccess,
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
-import {
-  TableSchedule,
-  Button,
-  Paper,
-  PopupExposure,
-  HeadingLevelThree,
-} from 'components/common';
+import { TableSchedule, PopupExposure } from 'components/common';
 import {
   defineGames,
   sortFieldsByPremier,
@@ -46,14 +45,13 @@ import {
   calculateTotalGameTime,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
-import Diagnostics, { IDiagnosticsInput } from './diagnostics';
+import { IDiagnosticsInput } from './diagnostics';
 import formatTeamsDiagnostics, {
   ITeamsDiagnosticsProps,
-} from './diagnostics/teamsDiagnostics';
+} from './diagnostics/teamsDiagnostics/calculateTeamsDiagnostics';
 import formatDivisionsDiagnostics, {
   IDivisionsDiagnosticsProps,
-} from './diagnostics/divisionsDiagnostics';
-import { DiagnosticTypes } from './types';
+} from './diagnostics/divisionsDiagnostics/calculateDivisionsDiagnostics';
 import styles from './styles.module.scss';
 import {
   fillSchedulesTable,
@@ -69,13 +67,14 @@ import {
 } from './mapScheduleData';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { IConfigurableSchedule, ISchedule, IPool } from 'common/models';
-import { errorToast } from 'components/common/toastr/showToasts';
+import { errorToast, successToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { TableScheduleTypes } from 'common/enums';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import SchedulesLoader, { LoaderTypeEnum } from './loader';
 import { ISchedulesGame } from 'common/models/schedule/game';
+import SchedulesPaper from './paper';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -88,6 +87,8 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   schedulesHistoryLength?: number;
   schedule?: ISchedule;
   schedulesDetails?: ISchedulesDetails[];
+  anotherSchedulePublished?: boolean;
+  gamesAlreadyExist?: boolean;
   pools?: IPool[];
 }
 
@@ -105,21 +106,19 @@ interface IMapDispatchToProps {
   onScheduleUndo: () => void;
   fetchSchedulesDetails: (scheduleId: string) => void;
   publishSchedulesDetails: (
+    scheduleData: ISchedule,
     schedulesDetails: ISchedulesDetails[],
     schedulesGames: ISchedulesGame[]
   ) => void;
+  publishedClear: () => void;
+  publishedSuccess: () => void;
   updatePublishedSchedulesDetails: (
     schedulesDetails: ISchedulesDetails[],
     schedulesGames: ISchedulesGame[]
   ) => void;
-  getPublishedGames: (scheduleId: string) => void;
+  getPublishedGames: (eventId: string, scheduleId?: string) => void;
+  schedulesSavingInProgress: (payload: boolean) => void;
 }
-
-const publishBtnStyles = {
-  width: 180,
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-};
 
 interface ComponentProps {
   match: any;
@@ -147,8 +146,6 @@ interface State {
   divisions?: IScheduleDivision[];
   teamsDiagnostics?: IDiagnosticsInput;
   divisionsDiagnostics?: IDiagnosticsInput;
-  teamsDiagnosticsOpen: boolean;
-  divisionsDiagnosticsOpen: boolean;
   cancelConfirmationOpen: boolean;
   isLoading: boolean;
   neccessaryDataCalculated: boolean;
@@ -159,8 +156,6 @@ interface State {
 class Schedules extends Component<Props, State> {
   timer: any;
   state: State = {
-    teamsDiagnosticsOpen: false,
-    divisionsDiagnosticsOpen: false,
     cancelConfirmationOpen: false,
     isLoading: true,
     neccessaryDataCalculated: false,
@@ -168,23 +163,11 @@ class Schedules extends Component<Props, State> {
     loadingType: LoaderTypeEnum.CALCULATION,
   };
 
-  activateLoaders = (scheduleId: string) => {
-    this.setState({
-      loadingType: scheduleId
-        ? LoaderTypeEnum.LOADING
-        : LoaderTypeEnum.CALCULATION,
-    });
-
-    const time = scheduleId ? 100 : 5000;
-
-    this.timer = setTimeout(() => this.setState({ isLoading: false }), time);
-  };
-
   async componentDidMount() {
     const { facilities, match } = this.props;
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
-    this.props.getPublishedGames(scheduleId);
+    this.getPublishedStatus();
     this.activateLoaders(scheduleId);
 
     if (facilitiesIds?.length) {
@@ -237,6 +220,26 @@ class Schedules extends Component<Props, State> {
       clearTimeout(this.timer);
     }
   }
+
+  activateLoaders = (scheduleId: string) => {
+    this.setState({
+      loadingType: scheduleId
+        ? LoaderTypeEnum.LOADING
+        : LoaderTypeEnum.CALCULATION,
+    });
+
+    const time = scheduleId ? 100 : 5000;
+
+    this.timer = setTimeout(() => this.setState({ isLoading: false }), time);
+  };
+
+  getPublishedStatus = () => {
+    const { event, match } = this.props;
+    const { scheduleId } = match?.params;
+    const eventId = event?.event_id!;
+
+    this.props.getPublishedGames(eventId, scheduleId);
+  };
 
   calculateNeccessaryData = () => {
     const {
@@ -381,34 +384,23 @@ class Schedules extends Component<Props, State> {
     });
   };
 
-  openTeamsDiagnostics = () =>
-    this.setState({
-      teamsDiagnosticsOpen: true,
-    });
-
-  openDivisionsDiagnostics = () =>
-    this.setState({
-      divisionsDiagnosticsOpen: true,
-    });
-
-  closeDiagnostics = () =>
-    this.setState({
-      teamsDiagnosticsOpen: false,
-      divisionsDiagnosticsOpen: false,
-    });
-
   openCancelConfirmation = () =>
     this.setState({ cancelConfirmationOpen: true });
 
   closeCancelConfirmation = () =>
     this.setState({ cancelConfirmationOpen: false });
 
-  onCancel = () => {
-    this.openCancelConfirmation();
+  onClose = () => {
+    if ((this.props.schedulesHistoryLength || 0) > 1) {
+      this.openCancelConfirmation();
+    } else {
+      this.onExit();
+    }
   };
 
   onExit = () => {
-    this.props.history.goBack();
+    const eventId = this.props.event?.event_id;
+    this.props.history.push(`/event/scheduling/${eventId}`);
   };
 
   getSchedule = () => {
@@ -416,7 +408,7 @@ class Schedules extends Component<Props, State> {
     return scheduleData ? mapScheduleData(scheduleData) : schedule;
   };
 
-  retrieveSchedulesDetails = async (isDraft: boolean) => {
+  retrieveSchedulesDetails = async (isDraft: boolean, type: 'POST' | 'PUT') => {
     const { schedulesDetails, schedulesTeamCards } = this.props;
     const { games } = this.state;
 
@@ -432,7 +424,7 @@ class Schedules extends Component<Props, State> {
       localSchedule,
       schedulesTableGames,
       isDraft,
-      schedulesDetails
+      type === 'POST' ? undefined : schedulesDetails
     );
   };
 
@@ -449,21 +441,123 @@ class Schedules extends Component<Props, State> {
     return mapTeamCardsToSchedulesGames(localSchedule, schedulesTableGames);
   };
 
+  save = async (publish: boolean) => {
+    const schedule = this.getSchedule();
+    this.props.schedulesSavingInProgress(true);
+
+    if ((this.props.schedulesPublished || publish) && schedule) {
+      schedule.schedule_status = 'Published';
+    }
+
+    const schedulesGames = await this.retrieveSchedulesGames();
+
+    const scheduleExist = !!this.props.match.params.scheduleId;
+    const schedulesPublished = !!this.props.schedulesPublished;
+    const gamesAlreadyExist = !!this.props.gamesAlreadyExist;
+
+    let schedulesResponse: any;
+    let schedulesDetailsResponse: any;
+    let schedulesGamesResponse: any;
+
+    // POST / PUT schedule
+    if (scheduleExist) {
+      schedulesResponse = await api.put('/schedules', schedule);
+    } else {
+      schedulesResponse = await api.post('/schedules', schedule);
+    }
+
+    // POST / PUT schedules_details
+
+    if (scheduleExist) {
+      const schedulesDetails = await this.retrieveSchedulesDetails(
+        !publish,
+        'PUT'
+      );
+      const schedulesDetailsChunk = chunk(schedulesDetails, 50);
+      schedulesDetailsResponse = await Promise.all(
+        schedulesDetailsChunk.map(
+          async arr => await api.put('/schedules_details', arr)
+        )
+      );
+    } else {
+      const schedulesDetails = await this.retrieveSchedulesDetails(
+        !publish,
+        'POST'
+      );
+      const schedulesDetailsChunk = chunk(schedulesDetails, 50);
+      schedulesDetailsResponse = await Promise.all(
+        schedulesDetailsChunk.map(
+          async arr => await api.post('/schedules_details', arr)
+        )
+      );
+    }
+
+    this.updateUrlWithScheduleId();
+    this.props.schedulesSavingInProgress(false);
+
+    if (schedulesResponse && schedulesDetailsResponse && !publish) {
+      successToast('Schedules data successfully saved');
+    }
+
+    if (publish) {
+      // POST / PUT games
+      const schedulesGamesChunk = chunk(schedulesGames, 50);
+
+      if (schedulesPublished || gamesAlreadyExist) {
+        schedulesGamesResponse = await Promise.all(
+          schedulesGamesChunk.map(async arr => await api.put('/games', arr))
+        );
+      } else {
+        schedulesGamesResponse = await Promise.all(
+          schedulesGamesChunk.map(async arr => await api.post('/games', arr))
+        );
+      }
+
+      if (
+        schedulesResponse &&
+        schedulesDetailsResponse &&
+        schedulesGamesResponse
+      ) {
+        successToast('Schedules data successfully saved and published');
+      }
+
+      this.props.schedulesSavingInProgress(false);
+      this.props.publishedSuccess();
+    }
+  };
+
+  unpublish = async () => {
+    const { event } = this.props;
+    const schedulesGames = await this.retrieveSchedulesGames();
+    const schedule = this.getSchedule();
+
+    if (schedule) {
+      const schedulesGamesChunk = chunk(schedulesGames, 50);
+      schedule.schedule_status = 'Draft';
+      const response = await api.put('/schedules', schedule);
+      await Promise.all(
+        schedulesGamesChunk.map(async arr => await api.delete('/games', arr))
+      );
+      if (response) {
+        this.props.publishedClear();
+      }
+      this.props.getPublishedGames(event!.event_id, schedule.schedule_id);
+    }
+  };
+
   onSaveDraft = async () => {
     const { draftSaved } = this.props;
     const { scheduleId, cancelConfirmationOpen } = this.state;
     const localSchedule = this.getSchedule();
 
-    const schedulesDetails = await this.retrieveSchedulesDetails(true);
+    const schedulesDetails = await this.retrieveSchedulesDetails(true, 'POST');
 
     if (!localSchedule || !schedulesDetails) {
       throw errorToast('Failed to save schedules data');
     }
 
     if (!scheduleId && !draftSaved) {
-      const localScheduleId = localSchedule.schedule_id;
-      const { eventId } = this.props.match?.params;
-      this.props.history.push(`/schedules/${eventId}/${localScheduleId}`);
+      this.updateUrlWithScheduleId();
       this.props.saveDraft(localSchedule, schedulesDetails);
     } else {
       this.props.updateDraft(schedulesDetails);
@@ -477,10 +571,11 @@ class Schedules extends Component<Props, State> {
 
   saveAndPublish = async () => {
     const { schedulesPublished } = this.props;
-    const schedulesDetails = await this.retrieveSchedulesDetails(false);
+    const schedulesDetails = await this.retrieveSchedulesDetails(false, 'POST');
     const schedulesGames = await this.retrieveSchedulesGames();
+    const localSchedule = this.getSchedule();
 
-    if (!schedulesDetails || !schedulesGames) {
+    if (!schedulesDetails || !schedulesGames || !localSchedule) {
       throw errorToast('Failed to save schedules data');
     }
 
@@ -491,7 +586,22 @@ class Schedules extends Component<Props, State> {
       );
       return;
     }
-    this.props.publishSchedulesDetails(schedulesDetails, schedulesGames);
+
+    this.updateUrlWithScheduleId();
+    this.props.publishSchedulesDetails(
+      localSchedule,
+      schedulesDetails,
+      schedulesGames
+    );
+  };
+
+  updateUrlWithScheduleId = () => {
+    const { event } = this.props;
+    const localSchedule = this.getSchedule();
+    const eventId = event?.event_id;
+    const scheduleId = localSchedule?.schedule_id;
+    const url = `/schedules/${eventId}/${scheduleId}`;
+    this.props.history.push(url);
   };
 
   onScheduleCardsUpdate = (teamCards: ITeamCard[]) => {
@@ -500,35 +610,6 @@ class Schedules extends Component<Props, State> {
 
   onScheduleCardUpdate = (teamCard: ITeamCard) => {
     this.props.updateSchedulesTable(teamCard);
-  };
-
-  renderPublishBtn = (status: string) => {
-    const { savingInProgress } = this.props;
-
-    switch (status) {
-      case 'Published':
-        return (
-          <Button
-            label="Unpublish"
-            variant="contained"
-            color="primary"
-            onClick={() => {}}
-          />
-        );
-      case 'Draft':
-        return (
-          <Button
-            btnStyles={publishBtnStyles}
-            label={
-              savingInProgress ? 'Saving and publishing...' : 'Save and Publish'
-            }
-            variant="contained"
-            color="primary"
-            disabled={savingInProgress}
-            onClick={this.saveAndPublish}
-          />
-        );
-    }
   };
 
   render() {
@@ -542,6 +623,8 @@ class Schedules extends Component<Props, State> {
       savingInProgress,
       scheduleData,
       pools,
+      anotherSchedulePublished,
+      schedulesPublished,
     } = this.props;
 
     console.log(this.state);
@@ -554,8 +637,6 @@ class Schedules extends Component<Props, State> {
       isLoading,
       teamsDiagnostics,
       divisionsDiagnostics,
-      teamsDiagnosticsOpen,
-      divisionsDiagnosticsOpen,
       cancelConfirmationOpen,
       loadingType,
     } = this.state;
@@ -572,41 +653,22 @@ class Schedules extends Component<Props, State> {
       schedulesTeamCards?.length
     );
 
+    const scheduleName = this.getSchedule()?.schedule_name || '';
+
     return (
       <div className={styles.container}>
-        <div className={styles.paperWrapper}>
-          <Paper>
-            <div className={styles.paperContainer}>
-              <div>
-                {loadCondition && !isLoading && (
-                  <HeadingLevelThree>
-                    <span>{scheduleData?.schedule_name}</span>
-                  </HeadingLevelThree>
-                )}
-              </div>
-              <div className={styles.btnsGroup}>
-                <Button
-                  label="Close"
-                  variant="text"
-                  color="secondary"
-                  onClick={this.onCancel}
-                />
-                <Button
-                  label={savingInProgress ? 'Saving...' : 'Save'}
-                  variant="contained"
-                  color="primary"
-                  disabled={savingInProgress}
-                  onClick={this.onSaveDraft}
-                />
-                {loadCondition &&
-                  !this.state.isLoading &&
-                  this.renderPublishBtn(
-                    scheduleData?.schedule_status || 'Draft'
-                  )}
-              </div>
-            </div>
-          </Paper>
-        </div>
+        {loadCondition && !isLoading && (
+          <SchedulesPaper
+            scheduleName={scheduleName}
+            schedulePublished={schedulesPublished}
+            anotherSchedulePublished={anotherSchedulePublished}
+            savingInProgress={savingInProgress}
+            onClose={this.onClose}
+            onSaveDraft={() => this.save(false)}
+            onUnpublish={this.unpublish}
+            saveAndPublish={() => this.save(true)}
+          />
+        )}
 
         {loadCondition && !isLoading ? (
           <TableSchedule
@@ -622,6 +684,8 @@ class Schedules extends Component<Props, State> {
             eventSummary={eventSummary!}
             scheduleData={scheduleData!}
             historyLength={schedulesHistoryLength}
+            teamsDiagnostics={teamsDiagnostics}
+            divisionsDiagnostics={divisionsDiagnostics}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
             onTeamCardUpdate={this.onScheduleCardUpdate}
             onUndo={onScheduleUndo}
@@ -632,47 +696,12 @@ class Schedules extends Component<Props, State> {
           </div>
         )}
 
-        <div className={styles.diagnosticsContainer}>
-          {loadCondition && !isLoading && teamsDiagnostics && (
-            <>
-              <Button
-                label="Teams Diagnostics"
-                variant="contained"
-                color="primary"
-                onClick={this.openTeamsDiagnostics}
-              />
-              <Diagnostics
-                isOpen={teamsDiagnosticsOpen}
-                tableData={teamsDiagnostics}
-                onClose={this.closeDiagnostics}
-                diagnosticType={DiagnosticTypes.TEAMS_DIAGNOSTICS}
-              />
-            </>
-          )}
-
-          {loadCondition && !isLoading && divisionsDiagnostics && (
-            <>
-              <Button
-                label="Divisions Diagnostics"
-                variant="contained"
-                color="primary"
-                onClick={this.openDivisionsDiagnostics}
-              />
-              <Diagnostics
-                isOpen={divisionsDiagnosticsOpen}
-                tableData={divisionsDiagnostics}
-                onClose={this.closeDiagnostics}
-                diagnosticType={DiagnosticTypes.DIVISIONS_DIAGNOSTICS}
-              />
-            </>
-          )}
-          <PopupExposure
-            isOpen={cancelConfirmationOpen}
-            onClose={this.closeCancelConfirmation}
-            onExitClick={this.onExit}
-            onSaveClick={this.onSaveDraft}
-          />
-        </div>
+        <PopupExposure
+          isOpen={cancelConfirmationOpen}
+          onClose={this.closeCancelConfirmation}
+          onExitClick={this.onExit}
+          onSaveClick={() => this.save(false)}
+        />
       </div>
     );
   }
@@ -695,11 +724,13 @@ const mapStateToProps = ({
   schedulesHistoryLength: schedulesTable?.previous.length,
   draftSaved: schedules?.draftIsAlreadySaved,
   schedulesPublished: schedules?.schedulesPublished,
+  anotherSchedulePublished: schedules?.anotherSchedulePublished,
   savingInProgress: schedules?.savingInProgress,
   scheduleData: scheduling?.schedule,
   schedule: schedules?.schedule,
   schedulesDetails: schedules?.schedulesDetails,
   pools: divisions?.pools,
+  gamesAlreadyExist: schedules?.gamesAlreadyExist,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
@@ -714,8 +745,11 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       publishSchedulesDetails,
       updatePublishedSchedulesDetails,
       getPublishedGames,
+      publishedClear,
+      publishedSuccess,
       onScheduleUndo,
       fetchSchedulesDetails,
+      schedulesSavingInProgress,
       getAllPools,
     },
     dispatch

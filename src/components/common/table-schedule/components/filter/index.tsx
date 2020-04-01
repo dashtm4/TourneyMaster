@@ -1,16 +1,11 @@
 import React from 'react';
-import { Button, CardMessage } from 'components/common';
-import { CardMessageTypes } from 'components/common/card-message/types';
+import { Button } from 'components/common';
 import { ButtonTypes } from 'common/enums';
 import { DayTypes, IScheduleFilter } from '../../types';
 import styles from './styles.module.scss';
 import MultiSelect, {
   IMultiSelectOption,
 } from 'components/common/multi-select';
-
-const CARD_MESSAGE_STYLES = {
-  maxWidth: '250px',
-};
 
 interface IProps {
   filterValues: IScheduleFilter;
@@ -95,12 +90,6 @@ const ScoringFilter = (props: IProps) => {
             />
           </fieldset>
         </div>
-        <CardMessage
-          type={CardMessageTypes.EMODJI_OBJECTS}
-          style={CARD_MESSAGE_STYLES}
-        >
-          Drag, drop, and zoom to navigate the schedule
-        </CardMessage>
       </form>
     </section>
   );

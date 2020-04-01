@@ -182,18 +182,11 @@ export const mapTeamsFromShedulesGames = (
           ({ awayTeamId, homeTeamId }) =>
             awayTeamId === team.id || homeTeamId === team.id
         )
-        .map(
-          ({
-            gameId,
-            awayTeamId,
-            awayTeamScore,
-            homeTeamScore,
-          }) => ({
-            id: Number(gameId),
-            teamPosition: awayTeamId === team.id ? 1 : 2,
-            teamScore: awayTeamId === team.id ? awayTeamScore : homeTeamScore,
-          })
-        ),
+        .map(({ gameId, awayTeamId, awayTeamScore, homeTeamScore }) => ({
+          id: Number(gameId),
+          teamPosition: awayTeamId === team.id ? 1 : 2,
+          teamScore: awayTeamId === team.id ? awayTeamScore : homeTeamScore,
+        })),
     ],
   }));
 
