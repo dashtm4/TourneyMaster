@@ -14,17 +14,25 @@
   position: relative;
   padding-top: 12px;
 
-  .topBtnsWrapper {
-    position: absolute;
-    width: 320px;
-    top: -15px;
+  .topAreaWrapper {
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    position: absolute;
+    top: -15px;
+    width: 100%;
 
-    h3 {
-      font-size: 16px;
-      color: #6a6a76;
+    .topBtnsWrapper {
+      width: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-right: 20px;
+
+      h3 {
+        font-size: 16px;
+        color: #6a6a76;
+      }
     }
   }
 }

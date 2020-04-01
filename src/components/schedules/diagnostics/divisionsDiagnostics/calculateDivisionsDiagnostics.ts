@@ -2,7 +2,7 @@ import { union, filter, find, orderBy, findIndex, flatten } from 'lodash-es';
 import {
   calculateTeamTournamentTime,
   calculateNumOfTimeSlots,
-} from '../teamsDiagnostics';
+} from '../teamsDiagnostics/calculateTeamsDiagnostics';
 import { getTimeFromString, timeToString } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';

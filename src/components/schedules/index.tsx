@@ -21,13 +21,7 @@ import {
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
-import {
-  TableSchedule,
-  Button,
-  Paper,
-  PopupExposure,
-  HeadingLevelThree,
-} from 'components/common';
+import { TableSchedule, PopupExposure } from 'components/common';
 import {
   defineGames,
   sortFieldsByPremier,
@@ -47,14 +41,15 @@ import {
   calculateTotalGameTime,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
-import Diagnostics, { IDiagnosticsInput } from './diagnostics';
+import { IDiagnosticsInput } from './diagnostics';
+import TeamsDiagnostics from './diagnostics/teamsDiagnostics';
+import DivisiondsDiagnostics from './diagnostics/divisionsDiagnostics';
 import formatTeamsDiagnostics, {
   ITeamsDiagnosticsProps,
-} from './diagnostics/teamsDiagnostics';
+} from './diagnostics/teamsDiagnostics/calculateTeamsDiagnostics';
 import formatDivisionsDiagnostics, {
   IDivisionsDiagnosticsProps,
-} from './diagnostics/divisionsDiagnostics';
-import { DiagnosticTypes } from './types';
+} from './diagnostics/divisionsDiagnostics/calculateDivisionsDiagnostics';
 import styles from './styles.module.scss';
 import {
   fillSchedulesTable,
@@ -77,6 +72,7 @@ import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import SchedulesLoader, { LoaderTypeEnum } from './loader';
 import { ISchedulesGame } from 'common/models/schedule/game';
+import SchedulesPaper from './paper';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -118,12 +114,6 @@ interface IMapDispatchToProps {
   getPublishedGames: (scheduleId: string) => void;
 }
 
-const publishBtnStyles = {
-  width: 180,
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-};
-
 interface ComponentProps {
   match: any;
   history: History;
@@ -150,8 +140,6 @@ interface State {
   divisions?: IScheduleDivision[];
   teamsDiagnostics?: IDiagnosticsInput;
   divisionsDiagnostics?: IDiagnosticsInput;
-  teamsDiagnosticsOpen: boolean;
-  divisionsDiagnosticsOpen: boolean;
   cancelConfirmationOpen: boolean;
   isLoading: boolean;
   neccessaryDataCalculated: boolean;
@@ -162,8 +150,6 @@ interface State {
 class Schedules extends Component<Props, State> {
   timer: any;
   state: State = {
-    teamsDiagnosticsOpen: false,
-    divisionsDiagnosticsOpen: false,
     cancelConfirmationOpen: false,
     isLoading: true,
     neccessaryDataCalculated: false,
@@ -394,29 +380,13 @@ class Schedules extends Component<Props, State> {
     });
   };
 
-  openTeamsDiagnostics = () =>
-    this.setState({
-      teamsDiagnosticsOpen: true,
-    });
-
-  openDivisionsDiagnostics = () =>
-    this.setState({
-      divisionsDiagnosticsOpen: true,
-    });
-
-  closeDiagnostics = () =>
-    this.setState({
-      teamsDiagnosticsOpen: false,
-      divisionsDiagnosticsOpen: false,
-    });
-
   openCancelConfirmation = () =>
     this.setState({ cancelConfirmationOpen: true });
 
   closeCancelConfirmation = () =>
     this.setState({ cancelConfirmationOpen: false });
 
-  onCancel = () => {
+  onClose = () => {
     this.openCancelConfirmation();
   };
 
@@ -529,35 +499,6 @@ class Schedules extends Component<Props, State> {
     this.props.updateSchedulesTable(teamCard);
   };
 
-  renderPublishBtn = (status: string) => {
-    const { savingInProgress } = this.props;
-
-    switch (status) {
-      case 'Published':
-        return (
-          <Button
-            label="Unpublish"
-            variant="contained"
-            color="primary"
-            onClick={() => {}}
-          />
-        );
-      case 'Draft':
-        return (
-          <Button
-            btnStyles={publishBtnStyles}
-            label={
-              savingInProgress ? 'Saving and publishing...' : 'Save and Publish'
-            }
-            variant="contained"
-            color="primary"
-            disabled={savingInProgress}
-            onClick={this.saveAndPublish}
-          />
-        );
-    }
-  };
-
   render() {
     const {
       divisions,
@@ -579,8 +520,6 @@ class Schedules extends Component<Props, State> {
       isLoading,
       teamsDiagnostics,
       divisionsDiagnostics,
-      teamsDiagnosticsOpen,
-      divisionsDiagnosticsOpen,
       cancelConfirmationOpen,
       loadingType,
     } = this.state;
@@ -597,41 +536,29 @@ class Schedules extends Component<Props, State> {
       schedulesTeamCards?.length
     );
 
+    const scheduleName = this.getSchedule()?.schedule_name || '';
+
     return (
       <div className={styles.container}>
-        <div className={styles.paperWrapper}>
-          <Paper>
-            <div className={styles.paperContainer}>
-              <div>
-                {loadCondition && !isLoading && (
-                  <HeadingLevelThree>
-                    <span>{scheduleData?.schedule_name}</span>
-                  </HeadingLevelThree>
-                )}
-              </div>
-              <div className={styles.btnsGroup}>
-                <Button
-                  label="Close"
-                  variant="text"
-                  color="secondary"
-                  onClick={this.onCancel}
-                />
-                <Button
-                  label={savingInProgress ? 'Saving...' : 'Save'}
-                  variant="contained"
-                  color="primary"
-                  disabled={savingInProgress}
-                  onClick={this.onSaveDraft}
-                />
-                {loadCondition &&
-                  !this.state.isLoading &&
-                  this.renderPublishBtn(
-                    scheduleData?.schedule_status || 'Draft'
-                  )}
-              </div>
-            </div>
-          </Paper>
+        <div className={styles.diagnosticsContainer}>
+          {teamsDiagnostics && (
+            <TeamsDiagnostics teamsDiagnostics={teamsDiagnostics} />
+          )}
+          {divisionsDiagnostics && (
+            <DivisiondsDiagnostics
+              divisionsDiagnostics={divisionsDiagnostics}
+            />
+          )}
         </div>
+
+        <SchedulesPaper
+          scheduleName={scheduleName}
+          savingInProgress={savingInProgress}
+          onClose={this.onClose}
+          onSaveDraft={this.onSaveDraft}
+          onUnpublish={() => {}}
+          saveAndPublish={this.saveAndPublish}
+        />
 
         {loadCondition && !isLoading ? (
           <TableSchedule
@@ -657,47 +584,12 @@ class Schedules extends Component<Props, State> {
           </div>
         )}
 
-        <div className={styles.diagnosticsContainer}>
-          {loadCondition && !isLoading && teamsDiagnostics && (
-            <>
-              <Button
-                label="Teams Diagnostics"
-                variant="contained"
-                color="primary"
-                onClick={this.openTeamsDiagnostics}
-              />
-              <Diagnostics
-                isOpen={teamsDiagnosticsOpen}
-                tableData={teamsDiagnostics}
-                onClose={this.closeDiagnostics}
-                diagnosticType={DiagnosticTypes.TEAMS_DIAGNOSTICS}
-              />
-            </>
-          )}
-
-          {loadCondition && !isLoading && divisionsDiagnostics && (
-            <>
-              <Button
-                label="Divisions Diagnostics"
-                variant="contained"
-                color="primary"
-                onClick={this.openDivisionsDiagnostics}
-              />
-              <Diagnostics
-                isOpen={divisionsDiagnosticsOpen}
-                tableData={divisionsDiagnostics}
-                onClose={this.closeDiagnostics}
-                diagnosticType={DiagnosticTypes.DIVISIONS_DIAGNOSTICS}
-              />
-            </>
-          )}
-          <PopupExposure
-            isOpen={cancelConfirmationOpen}
-            onClose={this.closeCancelConfirmation}
-            onExitClick={this.onExit}
-            onSaveClick={this.onSaveDraft}
-          />
-        </div>
+        <PopupExposure
+          isOpen={cancelConfirmationOpen}
+          onClose={this.closeCancelConfirmation}
+          onExitClick={this.onExit}
+          onSaveClick={this.onSaveDraft}
+        />
       </div>
     );
   }
