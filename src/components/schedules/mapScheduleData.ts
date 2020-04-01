@@ -109,8 +109,10 @@ export const mapTeamCardsToSchedulesGames = async (
     start_time: game.startTime || '',
     away_team_id: game.awayTeam?.id || null,
     home_team_id: game.homeTeam?.id || null,
-    away_team_score: null,
-    home_team_score: null,
+    away_team_score:
+      game.awayTeam?.games?.filter(g => g.id === game.id)[0].teamScore || null,
+    home_team_score:
+      game.homeTeam?.games?.filter(g => g.id === game.id)[0].teamScore || null,
     is_active_YN: 1,
     is_final_YN: null,
     finalized_by: memberId,
@@ -153,6 +155,37 @@ export const mapTeamsFromSchedulesDetails = (
         .map(({ gameId, awayTeamId }) => ({
           id: Number(gameId),
           teamPosition: awayTeamId === team.id ? 1 : 2,
+        })),
+    ],
+  }));
+
+  return teamCards;
+};
+
+export const mapTeamsFromShedulesGames = (
+  schedulesGames: ISchedulesGame[],
+  teams: ITeam[]
+) => {
+  const sd = schedulesGames.map(item => ({
+    gameId: item.game_id,
+    awayTeamId: item.away_team_id,
+    awayTeamScore: item.away_team_score,
+    homeTeamId: item.home_team_id,
+    homeTeamScore: item.home_team_score,
+  }));
+
+  const teamCards = teams.map(team => ({
+    ...team,
+    games: [
+      ...sd
+        .filter(
+          ({ awayTeamId, homeTeamId }) =>
+            awayTeamId === team.id || homeTeamId === team.id
+        )
+        .map(({ gameId, awayTeamId, awayTeamScore, homeTeamScore }) => ({
+          id: Number(gameId),
+          teamPosition: awayTeamId === team.id ? 1 : 2,
+          teamScore: awayTeamId === team.id ? awayTeamScore : homeTeamScore,
         })),
     ],
   }));

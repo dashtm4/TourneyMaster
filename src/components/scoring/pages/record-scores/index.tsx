@@ -3,19 +3,20 @@ import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import History from 'browserhistory';
-import { loadScoresData } from './logic/actions';
+import { loadScoresData, saveGames } from './logic/actions';
 import Navigation from './components/navigation';
 import { Loader, PopupExposure, TableSchedule } from 'components/common';
 import {
   IDivision,
   ITeam,
   IEventSummary,
-  ISchedulesDetails,
   IFacility,
   IEventDetails,
   IField,
   ISchedule,
   IPool,
+  ISchedulesGame,
+  BindingCbWithOne,
 } from 'common/models';
 import { Routes, TableScheduleTypes } from 'common/enums';
 import styles from './styles.module.scss';
@@ -30,18 +31,26 @@ import {
   sortFieldsByPremier,
   defineGames,
   IGame,
+  settleTeamsPerGames,
 } from 'components/common/matrix-table/helper';
 import { IAppState } from 'reducers/root-reducer.types';
 import {
   ITeam as IScheduleTeam,
   ITeamCard,
 } from 'common/models/schedule/teams';
-import { mapTeamsFromSchedulesDetails } from 'components/schedules/mapScheduleData';
-import { fillSchedulesTable } from 'components/schedules/logic/schedules-table/actions';
+import {
+  mapTeamsFromShedulesGames,
+  mapTeamCardsToSchedulesGames,
+} from 'components/schedules/mapScheduleData';
+import {
+  fillSchedulesTable,
+  updateSchedulesTable,
+} from 'components/schedules/logic/schedules-table/actions';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IScheduleDivision } from 'common/models/schedule/divisions';
 import { IField as IScheduleField } from 'common/models/schedule/fields';
+import { errorToast } from 'components/common/toastr/showToasts';
 
 interface MatchParams {
   eventId?: string;
@@ -58,10 +67,12 @@ interface Props {
   teams: ITeam[];
   schedule: ISchedule | null;
   eventSummary: IEventSummary[];
-  schedulesDetails: ISchedulesDetails[];
+  schedulesGames: ISchedulesGame[];
   schedulesTeamCards?: ITeamCard[];
   loadScoresData: (eventId: string) => void;
-  fillSchedulesTable: (teamCards: ITeamCard[]) => void;
+  fillSchedulesTable: BindingCbWithOne<ITeamCard[]>;
+  updateSchedulesTable: BindingCbWithOne<ITeamCard>;
+  saveGames: BindingCbWithOne<ISchedulesGame[]>;
 }
 
 interface State {
@@ -98,7 +109,7 @@ class RecordScores extends React.Component<
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { schedule, schedulesDetails } = this.props;
+    const { schedule, schedulesGames } = this.props;
     const { teams } = this.state;
 
     if (!prevProps.schedule && this.props.schedule) {
@@ -108,13 +119,13 @@ class RecordScores extends React.Component<
 
     if (
       !prevProps.schedulesTeamCards &&
-      schedulesDetails &&
-      Boolean(schedulesDetails.length) &&
+      schedulesGames &&
+      Boolean(schedulesGames.length) &&
       teams?.length &&
       Boolean(teams?.length) &&
       schedule
     ) {
-      const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
+      const mappedTeams = mapTeamsFromShedulesGames(schedulesGames, teams);
 
       this.props.fillSchedulesTable(mappedTeams);
     }
@@ -165,6 +176,31 @@ class RecordScores extends React.Component<
     });
   };
 
+  retrieveSchedulesGames = async () => {
+    const { games } = this.state;
+    const { schedulesTeamCards, schedule } = this.props;
+
+    if (!schedule || !games || !schedulesTeamCards) {
+      throw errorToast('Failed to retrieve schedules data');
+    }
+
+    const schedulesTableGames = settleTeamsPerGames(games, schedulesTeamCards);
+
+    return mapTeamCardsToSchedulesGames(schedule, schedulesTableGames);
+  };
+
+  saveDraft = async () => {
+    const schedulesGames = await this.retrieveSchedulesGames();
+
+    if (!schedulesGames) {
+      throw errorToast('Failed to save schedules data');
+    }
+
+    this.props.saveGames(schedulesGames);
+
+    this.setState({ isExposurePopupOpen: false });
+  };
+
   onChangeView = (flag: boolean) => this.setState({ isEnterScores: flag });
 
   leavePage = () => {
@@ -173,17 +209,13 @@ class RecordScores extends React.Component<
     History.push(`${Routes.SCORING}/${eventId || ''}`);
   };
 
-  onLeavePage = () => {
-    const { teams } = this.props;
-    const isTeamChange = teams.some(it => it.isChange);
-
-    // ! change in future
-    !isTeamChange
-      ? this.setState({ isExposurePopupOpen: true })
-      : this.leavePage();
-  };
+  onLeavePage = () => this.setState({ isExposurePopupOpen: true });
 
   onClosePopup = () => this.setState({ isExposurePopupOpen: false });
+
+  onScheduleCardUpdate = (teamCard: ITeamCard) => {
+    this.props.updateSchedulesTable(teamCard);
+  };
 
   render() {
     const {
@@ -223,6 +255,7 @@ class RecordScores extends React.Component<
           isEnterScores={isEnterScores}
           onLeavePage={this.onLeavePage}
           onChangeView={this.onChangeView}
+          onSaveDraft={this.saveDraft}
         />
         <section className={styles.scoringWrapper}>
           <h2 className="visually-hidden">Scoring</h2>
@@ -241,7 +274,7 @@ class RecordScores extends React.Component<
               scheduleData={schedule!}
               isEnterScores={isEnterScores}
               onTeamCardsUpdate={() => {}}
-              onTeamCardUpdate={() => {}}
+              onTeamCardUpdate={this.onScheduleCardUpdate}
               onUndo={() => {}}
             />
           ) : (
@@ -252,7 +285,7 @@ class RecordScores extends React.Component<
           isOpen={isExposurePopupOpen}
           onClose={this.onClosePopup}
           onExitClick={this.leavePage}
-          onSaveClick={() => {}}
+          onSaveClick={this.saveDraft}
         />
       </>
     );
@@ -272,8 +305,11 @@ export default connect(
     schedule: recordScores.schedule,
     eventSummary: recordScores.eventSummary,
     schedulesTeamCards: schedulesTable?.current,
-    schedulesDetails: recordScores.schedulesDetails,
+    schedulesGames: recordScores.schedulesGames,
   }),
   (dispatch: Dispatch) =>
-    bindActionCreators({ loadScoresData, fillSchedulesTable }, dispatch)
+    bindActionCreators(
+      { loadScoresData, fillSchedulesTable, updateSchedulesTable, saveGames },
+      dispatch
+    )
 )(RecordScores);

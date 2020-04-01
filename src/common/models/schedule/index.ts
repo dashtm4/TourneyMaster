@@ -1,3 +1,8 @@
+export enum ScheduleStatuses {
+  DRAFT = 'Draft',
+  PUBLISHED = 'Published',
+}
+
 export interface ISchedule {
   schedule_id: string;
   event_id: string;
