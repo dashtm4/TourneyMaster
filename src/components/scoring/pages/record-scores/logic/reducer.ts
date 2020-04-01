@@ -7,12 +7,12 @@ import {
   IDivision,
   ITeam,
   IEventSummary,
-  ISchedulesDetails,
   IFacility,
   IEventDetails,
   IField,
   ISchedule,
   IPool,
+  ISchedulesGame,
 } from 'common/models';
 
 export interface IRecordScoresState {
@@ -24,7 +24,7 @@ export interface IRecordScoresState {
   teams: ITeam[];
   schedule: ISchedule | null;
   eventSummary: IEventSummary[];
-  schedulesDetails: ISchedulesDetails[];
+  schedulesGames: ISchedulesGame[];
   isLoading: boolean;
   isLoaded: boolean;
 }
@@ -38,7 +38,7 @@ const initialState = {
   teams: [],
   schedule: null,
   eventSummary: [],
-  schedulesDetails: [],
+  schedulesGames: [],
   isLoading: false,
   isLoaded: false,
 };
@@ -61,7 +61,7 @@ const recordScoresReducer = (
         teams,
         eventSummary,
         pools,
-        schedulesDetails,
+        schedulesGames,
       } = action.payload;
 
       return {
@@ -76,7 +76,7 @@ const recordScoresReducer = (
         teams,
         eventSummary,
         pools,
-        schedulesDetails,
+        schedulesGames,
       };
     }
 
