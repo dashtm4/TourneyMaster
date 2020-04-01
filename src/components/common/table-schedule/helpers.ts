@@ -247,11 +247,4 @@ export const mapUnusedFields = (fields: IField[], games: IGame[]) => {
   }));
 };
 
-const mapGamesByField = (games: IGame[], fields: IField[]) =>
-  games.map(game => {
-    const currentField = fields.find(field => field.id === game.fieldId);
-
-    return { ...game, facilityId: currentField?.facilityId };
-  });
-
-export { getUnsatisfiedTeams, getSatisfiedTeams, mapGamesByField };
+export { getUnsatisfiedTeams, getSatisfiedTeams };
