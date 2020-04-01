@@ -15,7 +15,7 @@ import {
   IPool,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes } from './types';
-import { mapGamesByField } from './helpers';
+import { mapGamesByField } from 'helpers';
 import { IGame, settleTeamsPerGames } from '../matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';

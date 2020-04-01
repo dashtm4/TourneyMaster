@@ -627,6 +627,8 @@ class Schedules extends Component<Props, State> {
       schedulesPublished,
     } = this.props;
 
+    console.log(this.state);
+
     const {
       fields,
       timeSlots,
