@@ -469,6 +469,7 @@ class Schedules extends Component<Props, State> {
     const scheduleExist = !!this.props.match.params.scheduleId;
     const schedulesPublished = !!this.props.schedulesPublished;
     const gamesAlreadyExist = !!this.props.gamesAlreadyExist;
+    const { event } = this.props;
 
     let schedulesResponse: any;
     let schedulesDetailsResponse: any;
@@ -528,11 +529,18 @@ class Schedules extends Component<Props, State> {
         );
       }
 
+      // PUT events
+      const updatedEvent = {
+        ...event,
+        event_status: 'Published',
+      };
+
       if (
         schedulesResponse &&
         schedulesDetailsResponse &&
         schedulesGamesResponse
       ) {
+        await api.put(`/events?event_id=${event?.event_id}`, updatedEvent);
         successToast('Schedules data successfully saved and published');
       }
 
@@ -554,6 +562,12 @@ class Schedules extends Component<Props, State> {
         schedulesGamesChunk.map(async arr => await api.delete('/games', arr))
       );
       if (response) {
+        const updatedEvent = {
+          ...event,
+          event_status: 'Draft',
+        };
+        await api.put(`/events?event_id=${event?.event_id}`, updatedEvent);
+
         this.props.publishedClear();
       }
       this.props.getPublishedGames(event!.event_id, schedule.schedule_id);
@@ -641,8 +655,6 @@ class Schedules extends Component<Props, State> {
       anotherSchedulePublished,
       schedulesPublished,
     } = this.props;
-
-    console.log(this.state);
 
     const {
       fields,
