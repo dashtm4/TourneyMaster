@@ -69,7 +69,7 @@ const loadScoresData: ActionCreator<ThunkAction<
       type: LOAD_SCORES_DATA_SUCCESS,
       payload: {
         event: currentEvent,
-        // schedule: activeSchedule | schedules[0],
+        // schedule: activeSchedule,
         schedule: schedules[0],
         facilities,
         fields,
