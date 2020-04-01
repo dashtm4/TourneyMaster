@@ -13,6 +13,7 @@ import {
   FETCH_SCHEDULES_DETAILS_FAILURE,
   SCHEDULES_PUBLISHED_SUCCESS,
   SCHEDULES_PUBLISHED_FAILURE,
+  SCHEDULES_PUBLISHED_CLEAR,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
@@ -60,6 +61,11 @@ const fetchSchedulesDetailsSuccess = (payload: {
 const publishedSuccess = () => ({
   type: SCHEDULES_PUBLISHED_SUCCESS,
 });
+
+export const publishedClear = () => ({
+  type: SCHEDULES_PUBLISHED_CLEAR,
+});
+
 const publishFailure = () => ({
   type: SCHEDULES_PUBLISHED_FAILURE,
 });
@@ -150,10 +156,17 @@ export const updateDraft = (
 };
 
 export const publishSchedulesDetails = (
+  scheduleData: ISchedule,
   schedulesDetails: ISchedulesDetails[],
   schedulesGames: ISchedulesGame[]
 ) => async (dispatch: Dispatch) => {
   dispatch(schedulesSavingInProgress());
+
+  const response = await api.post('/schedules', scheduleData);
+
+  if (!response) {
+    return errorToast('Something happened during the publishing process');
+  }
 
   const schedulesDetailsChunk = chunk(schedulesDetails, 50);
   const schedulesResponses = await Promise.all(
@@ -248,7 +261,10 @@ export const getPublishedGames = (scheduleId: string) => async (
   dispatch: Dispatch
 ) => {
   const response = await api.get('/games', { schedule_id: scheduleId });
-  if (response) {
+
+  if (response?.length) {
     dispatch(publishedSuccess());
+  } else {
+    dispatch(publishedClear());
   }
 };

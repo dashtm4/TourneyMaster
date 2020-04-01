@@ -9,6 +9,7 @@ import {
   FETCH_SCHEDULES_DETAILS_FAILURE,
   SCHEDULES_PUBLISHED_FAILURE,
   SCHEDULES_PUBLISHED_SUCCESS,
+  SCHEDULES_PUBLISHED_CLEAR,
 } from './actionTypes';
 import { IEventSummary } from 'common/models/event-summary';
 import { ISchedule } from 'common/models';
@@ -83,6 +84,11 @@ const SchedulesReducer = (state = initialState, action: IScheduleAction) => {
       return {
         ...state,
         savingInProgress: false,
+      };
+    case SCHEDULES_PUBLISHED_CLEAR:
+      return {
+        ...state,
+        schedulesPublished: false,
       };
     default:
       return state;

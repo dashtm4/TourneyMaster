@@ -17,6 +17,7 @@ export const FETCH_SCHEDULES_DETAILS_FAILURE =
 
 export const SCHEDULES_PUBLISHED_FAILURE = 'SCHEDULES_PUBLISHED_SUCCESS';
 export const SCHEDULES_PUBLISHED_SUCCESS = 'SCHEDULES_PUBLISHED_FAILURE';
+export const SCHEDULES_PUBLISHED_CLEAR = 'SCHEDULES_PUBLISHED_CLEAR';
 
 interface IFetchFieldsSuccess {
   type: 'FETCH_FIELDS_SUCCESS';
@@ -64,6 +65,10 @@ interface SchedulesPublishedFailure {
   type: 'SCHEDULES_PUBLISHED_FAILURE';
 }
 
+interface SchedulesPublishedClear {
+  type: 'SCHEDULES_PUBLISHED_CLEAR';
+}
+
 interface FetchSchedulesDetailsFailure {
   type: 'FETCH_SCHEDULES_DETAILS_FAILURE';
 }
@@ -79,4 +84,5 @@ export type IScheduleAction =
   | FetchEventSummarySuccess
   | FetchEventSummaryFailure
   | SchedulesPublishedSuccess
-  | SchedulesPublishedFailure;
+  | SchedulesPublishedFailure
+  | SchedulesPublishedClear;

@@ -17,6 +17,7 @@ import {
   publishSchedulesDetails,
   updatePublishedSchedulesDetails,
   getPublishedGames,
+  publishedClear,
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
@@ -105,9 +106,11 @@ interface IMapDispatchToProps {
   onScheduleUndo: () => void;
   fetchSchedulesDetails: (scheduleId: string) => void;
   publishSchedulesDetails: (
+    scheduleData: ISchedule,
     schedulesDetails: ISchedulesDetails[],
     schedulesGames: ISchedulesGame[]
   ) => void;
+  publishedClear: () => void;
   updatePublishedSchedulesDetails: (
     schedulesDetails: ISchedulesDetails[],
     schedulesGames: ISchedulesGame[]
@@ -168,23 +171,11 @@ class Schedules extends Component<Props, State> {
     loadingType: LoaderTypeEnum.CALCULATION,
   };
 
-  activateLoaders = (scheduleId: string) => {
-    this.setState({
-      loadingType: scheduleId
-        ? LoaderTypeEnum.LOADING
-        : LoaderTypeEnum.CALCULATION,
-    });
-
-    const time = scheduleId ? 100 : 5000;
-
-    this.timer = setTimeout(() => this.setState({ isLoading: false }), time);
-  };
-
   async componentDidMount() {
     const { facilities, match } = this.props;
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
-    this.props.getPublishedGames(scheduleId);
+    this.getPublishedStatus();
     this.activateLoaders(scheduleId);
 
     if (facilitiesIds?.length) {
@@ -237,6 +228,28 @@ class Schedules extends Component<Props, State> {
       clearTimeout(this.timer);
     }
   }
+
+  activateLoaders = (scheduleId: string) => {
+    this.setState({
+      loadingType: scheduleId
+        ? LoaderTypeEnum.LOADING
+        : LoaderTypeEnum.CALCULATION,
+    });
+
+    const time = scheduleId ? 100 : 5000;
+
+    this.timer = setTimeout(() => this.setState({ isLoading: false }), time);
+  };
+
+  getPublishedStatus = () => {
+    const { scheduleId } = this.props.match?.params;
+
+    if (scheduleId) {
+      return this.props.getPublishedGames(scheduleId);
+    }
+
+    this.props.publishedClear();
+  };
 
   calculateNeccessaryData = () => {
     const {
@@ -461,9 +474,7 @@ class Schedules extends Component<Props, State> {
     }
 
     if (!scheduleId && !draftSaved) {
-      const localScheduleId = localSchedule.schedule_id;
-      const { eventId } = this.props.match?.params;
-      this.props.history.push(`/schedules/${eventId}/${localScheduleId}`);
+      this.updateUrlWithScheduleId();
       this.props.saveDraft(localSchedule, schedulesDetails);
     } else {
       this.props.updateDraft(schedulesDetails);
@@ -479,8 +490,9 @@ class Schedules extends Component<Props, State> {
     const { schedulesPublished } = this.props;
     const schedulesDetails = await this.retrieveSchedulesDetails(false);
     const schedulesGames = await this.retrieveSchedulesGames();
+    const localSchedule = this.getSchedule();
 
-    if (!schedulesDetails || !schedulesGames) {
+    if (!schedulesDetails || !schedulesGames || !localSchedule) {
       throw errorToast('Failed to save schedules data');
     }
 
@@ -491,7 +503,22 @@ class Schedules extends Component<Props, State> {
       );
       return;
     }
-    this.props.publishSchedulesDetails(schedulesDetails, schedulesGames);
+
+    this.updateUrlWithScheduleId();
+    this.props.publishSchedulesDetails(
+      localSchedule,
+      schedulesDetails,
+      schedulesGames
+    );
+  };
+
+  updateUrlWithScheduleId = () => {
+    const { event } = this.props;
+    const localSchedule = this.getSchedule();
+    const eventId = event?.event_id;
+    const scheduleId = localSchedule?.schedule_id;
+    const url = `/schedules/${eventId}/${scheduleId}`;
+    this.props.history.push(url);
   };
 
   onScheduleCardsUpdate = (teamCards: ITeamCard[]) => {
@@ -569,8 +596,6 @@ class Schedules extends Component<Props, State> {
       eventSummary?.length &&
       schedulesTeamCards?.length
     );
-
-    console.log('schedulesTeamCards', schedulesTeamCards);
 
     return (
       <div className={styles.container}>
@@ -714,6 +739,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       publishSchedulesDetails,
       updatePublishedSchedulesDetails,
       getPublishedGames,
+      publishedClear,
       onScheduleUndo,
       fetchSchedulesDetails,
       getAllPools,

@@ -10,6 +10,7 @@ export enum TeamPositionEnum {
 
 export interface IGame {
   id: number;
+  varcharId?: string;
   startTime?: string;
   facilityId?: string;
   homeTeam?: ITeamCard;

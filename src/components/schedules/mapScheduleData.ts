@@ -99,7 +99,7 @@ export const mapTeamCardsToSchedulesGames = async (
   const eventId = scheduleData.event_id;
 
   const schedulesGames: ISchedulesGame[] = games.map(game => ({
-    game_id: String(game.id),
+    game_id: game.varcharId || getVarcharEight(),
     event_id: eventId,
     schedule_id: scheduleId,
     sport_id: 1,
