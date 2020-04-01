@@ -20,6 +20,7 @@ export const SCHEDULES_PUBLISHED_SUCCESS = 'SCHEDULES_PUBLISHED_FAILURE';
 export const SCHEDULES_PUBLISHED_CLEAR = 'SCHEDULES_PUBLISHED_CLEAR';
 
 export const ANOTHER_SCHEDULE_PUBLISHED = 'ANOTHER_SCHEDULE_PUBLISHED';
+export const SCHEDULES_GAMES_ALREADY_EXIST = 'SCHEDULES_GAMES_ALREADY_EXIST';
 
 interface IFetchFieldsSuccess {
   type: 'FETCH_FIELDS_SUCCESS';
@@ -49,6 +50,7 @@ interface SchedulesDraftSavedFailure {
 
 interface SchedulesSavingInProgress {
   type: 'SCHEDULES_SAVING_IN_PROGRESS';
+  payload: boolean;
 }
 
 interface FetchSchedulesDetailsSuccess {
@@ -80,6 +82,11 @@ interface AnotherSchedulePublished {
   payload: boolean;
 }
 
+interface SchedulesGamesAlreadyExist {
+  type: 'SCHEDULES_GAMES_ALREADY_EXIST';
+  payload: boolean;
+}
+
 export type FieldsAction = IFetchFieldsSuccess | IFetchFieldsFailure;
 
 export type IScheduleAction =
@@ -93,4 +100,5 @@ export type IScheduleAction =
   | SchedulesPublishedSuccess
   | SchedulesPublishedFailure
   | SchedulesPublishedClear
-  | AnotherSchedulePublished;
+  | AnotherSchedulePublished
+  | SchedulesGamesAlreadyExist;

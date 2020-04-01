@@ -36,6 +36,9 @@ import moveTeamCard from './moveTeamCard';
 import { Button } from 'components/common';
 import { TableScheduleTypes } from 'common/enums';
 import { CardMessageTypes } from '../card-message/types';
+import TeamsDiagnostics from 'components/schedules/diagnostics/teamsDiagnostics';
+import DivisionsDiagnostics from 'components/schedules/diagnostics/divisionsDiagnostics';
+import { IDiagnosticsInput } from 'components/schedules/diagnostics';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -51,6 +54,8 @@ interface Props {
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
   historyLength?: number;
+  teamsDiagnostics?: IDiagnosticsInput;
+  divisionsDiagnostics?: IDiagnosticsInput;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
@@ -73,6 +78,8 @@ const TableSchedule = ({
   onTeamCardUpdate,
   onUndo,
   historyLength,
+  teamsDiagnostics,
+  divisionsDiagnostics,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -181,6 +188,15 @@ const TableSchedule = ({
             >
               Drag, drop, and zoom to navigate the schedule
             </CardMessage>
+            {teamsDiagnostics && divisionsDiagnostics && (
+              <div className={styles.diagnosticsWrapper}>
+                Diagnostics:
+                <TeamsDiagnostics teamsDiagnostics={teamsDiagnostics} />
+                <DivisionsDiagnostics
+                  divisionsDiagnostics={divisionsDiagnostics}
+                />
+              </div>
+            )}
           </div>
         )}
         <DndProvider backend={HTML5Backend}>

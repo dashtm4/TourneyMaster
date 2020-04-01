@@ -18,7 +18,7 @@ export default (props: IProps) => {
   return (
     <>
       <Button
-        label="Divisions Diagnostics"
+        label="Divisions"
         variant="contained"
         color="primary"
         onClick={openDianostics}
