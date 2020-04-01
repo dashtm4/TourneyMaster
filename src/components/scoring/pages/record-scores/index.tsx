@@ -51,6 +51,7 @@ import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IScheduleDivision } from 'common/models/schedule/divisions';
 import { IField as IScheduleField } from 'common/models/schedule/fields';
 import { errorToast } from 'components/common/toastr/showToasts';
+import { mapGamesWithSchedulesGamesId } from 'components/scoring/helpers';
 
 interface MatchParams {
   eventId?: string;
@@ -110,7 +111,7 @@ class RecordScores extends React.Component<
 
   componentDidUpdate(prevProps: Props) {
     const { schedule, schedulesGames } = this.props;
-    const { teams } = this.state;
+    const { teams, games } = this.state;
 
     if (!prevProps.schedule && this.props.schedule) {
       this.calculateNeccessaryData();
@@ -119,12 +120,17 @@ class RecordScores extends React.Component<
 
     if (
       !prevProps.schedulesTeamCards &&
+      games?.length &&
       schedulesGames &&
       Boolean(schedulesGames.length) &&
       teams?.length &&
       Boolean(teams?.length) &&
       schedule
     ) {
+      const mappedGames = mapGamesWithSchedulesGamesId(games, schedulesGames);
+
+      this.setState({ games: mappedGames });
+
       const mappedTeams = mapTeamsFromShedulesGames(schedulesGames, teams);
 
       this.props.fillSchedulesTable(mappedTeams);
