@@ -80,9 +80,7 @@ const loadScoresData: ActionCreator<ThunkAction<
         schedulesGames,
       },
     });
-  } catch (error) {
-    console.log(error);
-
+  } catch {
     dispatch({
       type: LOAD_SCORES_DATA_FAILURE,
     });
