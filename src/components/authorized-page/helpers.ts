@@ -1,4 +1,13 @@
-import { IMenuItem } from 'common/models';
+import {
+  IMenuItem,
+  IEventDetails,
+  IFacility,
+  IRegistration,
+  IDivision,
+  ITeam,
+  ISchedule,
+  ScheduleStatuses,
+} from 'common/models';
 import { RequiredMenuKeys, EventMenuTitles } from 'common/enums';
 
 const getIncompleteMenuItems = (
@@ -15,4 +24,54 @@ const getIncompleteMenuItems = (
   return incompleteMenuItems;
 };
 
-export { getIncompleteMenuItems };
+const checkIsCompletedEvent = (event: IEventDetails | null): boolean => {
+  const isEventCompleted = Boolean(event);
+
+  return isEventCompleted;
+};
+
+const checkIsCompletedRegistration = (
+  registration: IRegistration | null
+): boolean => {
+  const isRegistrationCompleted = Boolean(registration);
+
+  return isRegistrationCompleted;
+};
+
+const checkIsCompletedFacilities = (facilities: IFacility[]): boolean => {
+  const isFacilitiesCompleted = facilities.length > 0;
+
+  return isFacilitiesCompleted;
+};
+
+const checkIsCompletedDivisions = (divisions: IDivision[]): boolean => {
+  const isDivisionsCompleted = divisions.length > 0;
+
+  return isDivisionsCompleted;
+};
+
+const checkIsCompletedTeams = (teams: ITeam[]): boolean => {
+  const isTeamsCompleted =
+    teams.length > 0 && !teams.some(it => !it.pool_id || it.isDelete);
+
+  return isTeamsCompleted;
+};
+
+const checkIsCompletedSchedules = (schedules: ISchedule[]): boolean => {
+  const isSchedulesCompleted = schedules.some(
+    it => it.schedule_status === ScheduleStatuses.PUBLISHED
+  );
+
+  return isSchedulesCompleted;
+};
+
+const CheckIsCompleted = {
+  checkIsCompletedEvent,
+  checkIsCompletedRegistration,
+  checkIsCompletedFacilities,
+  checkIsCompletedDivisions,
+  checkIsCompletedTeams,
+  checkIsCompletedSchedules,
+};
+
+export { getIncompleteMenuItems, CheckIsCompleted };

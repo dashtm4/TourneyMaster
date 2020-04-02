@@ -32,6 +32,10 @@ import {
   FETCH_FIELDS_FAILURE,
   FieldsAction,
 } from 'components/schedules/logic/actionTypes';
+import {
+  SCHEDULE_FETCH_SUCCESS,
+  ScheduleActionType,
+} from 'components/scheduling/logic/actionTypes';
 import { sortTitleByField } from 'helpers';
 import { IMenuItem, ITournamentData } from 'common/models';
 import {
@@ -39,6 +43,7 @@ import {
   EventMenuRegistrationTitles,
   SortByFilesTypes,
 } from 'common/enums';
+import { CheckIsCompleted } from '../../helpers';
 
 export interface IPageEventState {
   isLoading: boolean;
@@ -56,6 +61,7 @@ const initialState = {
     registration: null,
     facilities: [],
     divisions: [],
+    schedules: [],
     teams: [],
     fields: [],
   },
@@ -71,6 +77,7 @@ const pageEventReducer = (
     | RegistrationAction
     | TeamsAction
     | FieldsAction
+    | ScheduleActionType
 ) => {
   switch (action.type) {
     case LOAD_AUTH_PAGE_DATA_START: {
@@ -87,6 +94,7 @@ const pageEventReducer = (
         facilities,
         divisions,
         teams,
+        schedules,
       } = tournamentData;
 
       return {
@@ -99,13 +107,15 @@ const pageEventReducer = (
             case EventMenuTitles.EVENT_DETAILS: {
               return {
                 ...item,
-                isCompleted: Boolean(event),
+                isCompleted: CheckIsCompleted.checkIsCompletedEvent(event),
               };
             }
             case EventMenuTitles.FACILITIES: {
               return {
                 ...item,
-                isCompleted: facilities.length > 0,
+                isCompleted: CheckIsCompleted.checkIsCompletedFacilities(
+                  facilities
+                ),
                 children: sortTitleByField(
                   facilities,
                   SortByFilesTypes.FACILITIES
@@ -115,7 +125,9 @@ const pageEventReducer = (
             case EventMenuTitles.REGISTRATION: {
               return {
                 ...item,
-                isCompleted: Boolean(registration),
+                isCompleted: CheckIsCompleted.checkIsCompletedRegistration(
+                  registration
+                ),
                 children: registration
                   ? Object.values(EventMenuRegistrationTitles)
                   : [],
@@ -124,7 +136,9 @@ const pageEventReducer = (
             case EventMenuTitles.DIVISIONS_AND_POOLS: {
               return {
                 ...item,
-                isCompleted: divisions.length > 0,
+                isCompleted: CheckIsCompleted.checkIsCompletedDivisions(
+                  divisions
+                ),
                 children: sortTitleByField(
                   divisions,
                   SortByFilesTypes.DIVISIONS
@@ -134,10 +148,16 @@ const pageEventReducer = (
             case EventMenuTitles.TEAMS: {
               return {
                 ...item,
-                isCompleted:
-                  teams.length > 0 &&
-                  teams.filter(it => !it.division_id || !it.pool_id).length ===
-                    0,
+                isCompleted: CheckIsCompleted.checkIsCompletedTeams(teams),
+              };
+            }
+            case EventMenuTitles.SCHEDULING:
+            case EventMenuTitles.SCORING: {
+              return {
+                ...item,
+                isCompleted: CheckIsCompleted.checkIsCompletedSchedules(
+                  schedules
+                ),
               };
             }
             default:
@@ -166,7 +186,9 @@ const pageEventReducer = (
           item.title === EventMenuTitles.REGISTRATION
             ? {
                 ...item,
-                isCompleted: Boolean(registration),
+                isCompleted: CheckIsCompleted.checkIsCompletedRegistration(
+                  registration
+                ),
                 children: registration
                   ? Object.values(EventMenuRegistrationTitles)
                   : [],
@@ -184,7 +206,9 @@ const pageEventReducer = (
           item.title === EventMenuTitles.FACILITIES
             ? {
                 ...item,
-                isCompleted: facilities.length > 0,
+                isCompleted: CheckIsCompleted.checkIsCompletedFacilities(
+                  facilities
+                ),
                 children: sortTitleByField(
                   facilities,
                   SortByFilesTypes.FACILITIES
@@ -208,7 +232,9 @@ const pageEventReducer = (
           item.title === EventMenuTitles.DIVISIONS_AND_POOLS
             ? {
                 ...item,
-                isCompleted: divisions.length > 0,
+                isCompleted: CheckIsCompleted.checkIsCompletedDivisions(
+                  divisions
+                ),
                 children: sortTitleByField(
                   divisions,
                   SortByFilesTypes.DIVISIONS
@@ -228,11 +254,25 @@ const pageEventReducer = (
           item.title === EventMenuTitles.TEAMS
             ? {
                 ...item,
-                isCompleted:
-                  teams.length > 0 &&
-                  teams.filter(
-                    it => !it.division_id || !it.pool_id || it.isDelete
-                  ).length === 0,
+                isCompleted: CheckIsCompleted.checkIsCompletedTeams(teams),
+              }
+            : item
+        ),
+      };
+    }
+    case SCHEDULE_FETCH_SUCCESS: {
+      const { schedules } = action.payload;
+
+      return {
+        ...state,
+        menuList: state.menuList.map(item =>
+          item.title === EventMenuTitles.SCHEDULING ||
+          item.title === EventMenuTitles.SCORING
+            ? {
+                ...item,
+                isCompleted: CheckIsCompleted.checkIsCompletedSchedules(
+                  schedules
+                ),
               }
             : item
         ),
