@@ -1,5 +1,7 @@
 .fieldItem {
   display: flex;
+
+  margin-bottom: 8px;
 }
 
 .fieldDates {
@@ -9,6 +11,7 @@
   flex-direction: column;
   align-items: center;
 
+  width: 100px;
   margin-right: 15px;
 
   color: #6a6a6a;
@@ -16,10 +19,14 @@
 }
 
 .fieldTable {
+  width: 100%;
+
   color: #6a6a6a;
   font-size: 14px;
 
   background-color: #ffffff;
+
+  table-layout: fixed;
 
   .fieldTeamTitle {
     position: relative;
@@ -56,5 +63,10 @@
 
     border-top: 8px solid #f4f4f4;
     border-left: 8px solid #f4f4f4;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    overflow: hidden;
   }
 }

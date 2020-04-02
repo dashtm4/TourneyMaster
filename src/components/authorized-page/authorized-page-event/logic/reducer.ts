@@ -24,7 +24,7 @@ import {
   DivisionsPoolsAction,
 } from 'components/divisions-and-pools/logic/actionTypes';
 import {
-  LOAD_DIVISIONS_TEAMS_SUCCESS,
+  LOAD_TEAMS_DATA_SUCCESS,
   TeamsAction,
 } from 'components/teams/logic/action-types';
 import {
@@ -244,7 +244,7 @@ const pageEventReducer = (
         ),
       };
     }
-    case LOAD_DIVISIONS_TEAMS_SUCCESS:
+    case LOAD_TEAMS_DATA_SUCCESS:
     case SAVE_TEAMS_SUCCESS: {
       const { teams } = action.payload;
 

@@ -205,6 +205,7 @@ class Sсoring extends React.Component<
             onDeleteTeamClick={this.onDeleteTeam}
             onChangeTeam={this.onChangeTeam}
             onCloseModal={this.onCloseModal}
+            games={[]}
           />
         </Modal>
       </section>
