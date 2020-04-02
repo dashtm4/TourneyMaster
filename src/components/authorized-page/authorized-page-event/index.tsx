@@ -112,13 +112,22 @@ const AuthorizedPageEvent = ({
             <Route path={Routes.SCHEDULES_ID} component={Schedules} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
-            <Route path={Routes.REPORTING_ID} component={Reporting} />
-
+            <Route
+              path={Routes.REPORTING_ID}
+              render={props => (
+                <Reporting
+                  {...props}
+                  incompleteMenuItems={getIncompleteMenuItems(
+                    menuList,
+                    EventMenuTitles.REPORTING
+                  )}
+                />
+              )}
+            />
             <Route path={Routes.RECORD_SCORES_ID} component={RecordScores} />
             <Route path={Routes.ADD_DIVISION} component={AddDivision} />
             <Route path={Routes.EDIT_DIVISION} component={AddDivision} />
             <Route path={Routes.CREATE_TEAM} component={CreateTeam} />
-
             <Route path={Routes.DEFAULT} component={EventDetails} />
           </Switch>
           <ScrollTopButton />
