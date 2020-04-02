@@ -52,11 +52,11 @@ const organizationsManagementReducer = (
       };
     }
     case ADD_USER_TO_ORGANIZATION_SUCCESS: {
-      const { organizations } = action.payload;
+      const { organization } = action.payload;
 
       return {
         ...state,
-        organizations,
+        organizations: [...state.organizations, organization],
       };
     }
     case DELETE_ORGANIZATION_SUCCESS: {

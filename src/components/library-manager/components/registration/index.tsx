@@ -1,6 +1,6 @@
 import React from 'react';
 import { SectionDropdown, SortTable } from 'components/common';
-import { MenuTitles, EntryPoints } from 'common/enums';
+import { EventMenuTitles, EntryPoints } from 'common/enums';
 import { BindingCbWithTwo } from 'common/models';
 import { IEntity } from 'common/types';
 import { ILibraryManagerRegistration } from '../../common';
@@ -34,12 +34,12 @@ const Registration = ({ registrations, changeSharedItem }: Props) => {
   return (
     <li>
       <SectionDropdown
-        id={MenuTitles.REGISTRATION}
+        id={EventMenuTitles.REGISTRATION}
         type="section"
         panelDetailsType="flat"
         isDefaultExpanded={true}
       >
-        <span>{MenuTitles.REGISTRATION}</span>
+        <span>{EventMenuTitles.REGISTRATION}</span>
         <SortTable rows={rowForTable} onShare={onShareRegistr} />
       </SectionDropdown>
     </li>
