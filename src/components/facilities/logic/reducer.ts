@@ -9,6 +9,7 @@ import {
   FacilitiesAction,
   UPDATE_FIELD,
   UPLOAD_FILE_MAP_SUCCESS,
+  SAVE_FACILITIES_SUCCESS,
 } from './action-types';
 import { IFacility, IField } from '../../../common/models';
 
@@ -111,6 +112,17 @@ const facilitiesReducer = (
         facilities: state.facilities.map(it =>
           it.facilities_id === facility.facilities_id ? facility : it
         ),
+      };
+    }
+    case SAVE_FACILITIES_SUCCESS: {
+      const { facilities } = action.payload;
+
+      return {
+        ...state,
+        facilities: [
+          ...state.facilities,
+          ...facilities.filter(fac => !state.facilities.includes(fac)),
+        ],
       };
     }
     default:

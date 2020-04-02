@@ -218,6 +218,7 @@ class CsvLoader extends React.Component<Props, State> {
       });
     } else if (this.props.type === 'facilities') {
       this.props.onCreate(events, []);
+      this.onModalClose();
     } else {
       this.props.onCreate(events, this.props.eventId);
       this.onModalClose();
