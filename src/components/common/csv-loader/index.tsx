@@ -27,6 +27,7 @@ import {
   parseMapping,
   mapDataForSaving,
   checkCsvForValidity,
+  getRequiredFields,
 } from './helpers';
 import { Toasts } from 'components/common';
 import { PopupExposure } from 'components/common';
@@ -283,6 +284,18 @@ class CsvLoader extends React.Component<Props, State> {
     this.setState({ isMappingModalOpen: false });
   };
 
+  onChangeIncludeAll = () => {
+    const areAllFieldsSelected = this.state.fields.every(
+      field => field.included
+    );
+    this.setState({
+      fields: this.state.fields.map(field => ({
+        ...field,
+        included: !areAllFieldsSelected,
+      })),
+    });
+  };
+
   render() {
     const columnOptions =
       this.props.tableColumns &&
@@ -295,6 +308,8 @@ class CsvLoader extends React.Component<Props, State> {
         value: map.map_id_json,
       }));
 
+    const requiredFields = getRequiredFields(this.props.type);
+
     return (
       <Modal isOpen={this.props.isOpen} onClose={this.onModalClose}>
         <div className={styles.container}>
@@ -304,12 +319,12 @@ class CsvLoader extends React.Component<Props, State> {
                 type={FileUploadTypes.BUTTON}
                 acceptTypes={[AcceptFileTypes.CSV]}
                 onUpload={this.onFileUpload}
-                btnLabel={'Upload CSV File'}
+                btnLabel={'Select CSV File'}
                 withoutRemoveBtn={true}
               />
             </div>
           </div>
-          <div className={styles.checkboxWrapper}>
+          <div className={styles.row}>
             <div style={{ display: 'flex' }}>
               <Checkbox
                 options={[
@@ -333,7 +348,7 @@ class CsvLoader extends React.Component<Props, State> {
             <Select
               width={'200px'}
               options={mappingsOptions || []}
-              label="Select Mapping"
+              label="Select Historical Mapping"
               value={''}
               onChange={this.onMappingSelect}
             />
@@ -344,7 +359,17 @@ class CsvLoader extends React.Component<Props, State> {
             onCheckboxChange={this.onCheckboxChange}
             onSelect={this.onSelect}
             columnOptions={columnOptions}
+            onChangeIncludeAll={this.onChangeIncludeAll}
           />
+          <div className={styles.requiredFieldWrapper}>
+            <span className={styles.title}>Required Fields:</span>{' '}
+            {requiredFields.map((field, index) =>
+              index !== requiredFields.length - 1
+                ? `"${field}", `
+                : `"${field}"`
+            )}
+          </div>
+
           <div className={styles.btnsWrapper}>
             <Button
               label="Cancel"

@@ -100,3 +100,26 @@ export const checkCsvForValidity = (
   }
   return false;
 };
+
+export const getRequiredFields = (type: string) => {
+  switch (type) {
+    case 'event_master':
+      return [
+        'Sport ID',
+        'Event Name',
+        'Event Description',
+        'Start Day',
+        'End Day',
+        'UTC Time Zone (+/-)',
+        'Period Duration',
+        'Time between Periods',
+        'Periods/Game',
+      ];
+    case 'divisions':
+      return ['Long Name', 'Short Name'];
+    case 'facilities':
+      return ['Facility Description'];
+    default:
+      return [];
+  }
+};
