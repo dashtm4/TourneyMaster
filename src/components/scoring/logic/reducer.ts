@@ -1,7 +1,7 @@
 import {
   TeamsAction,
-  LOAD_DIVISION_START,
-  LOAD_DIVISION_SUCCESS,
+  LOAD_SCORING_DATA_START,
+  LOAD_SCORING_DATA_SUCCESS,
   LOAD_POOLS_SUCCESS,
   LOAD_TEAMS_START,
   LOAD_TEAMS_SUCCESS,
@@ -9,7 +9,21 @@ import {
   DELETE_TEAM_SUCCESS,
   LOAD_POOLS_START,
 } from './action-types';
-import { IDivision, IPool, ITeam } from '../../../common/models';
+import {
+  IDivision,
+  IPool,
+  ITeam,
+  ISchedulesGameWithNames,
+} from 'common/models';
+
+export interface IScoringState {
+  isLoading: boolean;
+  isLoaded: boolean;
+  divisions: IDivision[];
+  pools: IPool[];
+  teams: ITeam[];
+  games: ISchedulesGameWithNames[];
+}
 
 const initialState = {
   isLoading: false,
@@ -17,28 +31,21 @@ const initialState = {
   divisions: [],
   pools: [],
   teams: [],
+  games: [],
 };
 
-export interface AppState {
-  isLoading: boolean;
-  isLoaded: boolean;
-  divisions: IDivision[];
-  pools: IPool[];
-  teams: ITeam[];
-}
-
 const scoringReducer = (
-  state: AppState = initialState,
+  state: IScoringState = initialState,
   action: TeamsAction
 ) => {
   switch (action.type) {
-    case LOAD_DIVISION_START: {
+    case LOAD_SCORING_DATA_START: {
       return { ...initialState, isLoading: true };
     }
-    case LOAD_DIVISION_SUCCESS: {
-      const { divisions } = action.payload;
+    case LOAD_SCORING_DATA_SUCCESS: {
+      const { divisions, games } = action.payload;
 
-      return { ...state, divisions, isLoading: false, isLoaded: true };
+      return { ...state, divisions, games, isLoading: false, isLoaded: true };
     }
     case LOAD_POOLS_START: {
       const { divisionId } = action.payload;

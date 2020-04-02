@@ -25,6 +25,7 @@ import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 import { PopupExposure } from 'components/common';
 import history from '../../browserhistory';
+import CsvLoader from 'components/common/csv-loader';
 
 const MOCKED_EVENT_ID = 'ABC123';
 
@@ -52,7 +53,12 @@ interface Props {
 class Facilities extends React.Component<
   Props & RouteComponentProps<MatchParams>
 > {
-  state = { expanded: [], expandAll: false, isModalOpen: false };
+  state = {
+    expanded: [],
+    expandAll: false,
+    isModalOpen: false,
+    isCsvLoaderOpen: false,
+  };
 
   componentDidMount() {
     const { loadFacilities } = this.props;
@@ -118,6 +124,14 @@ class Facilities extends React.Component<
     history.push('/');
   };
 
+  onCsvLoaderBtn = () => {
+    this.setState({ isCsvLoaderOpen: true });
+  };
+
+  onCsvLoaderClose = () => {
+    this.setState({ isCsvLoaderOpen: false });
+  };
+
   render() {
     const {
       isLoading,
@@ -139,6 +153,7 @@ class Facilities extends React.Component<
         <Navigation
           onClick={this.savingFacilities}
           onCancelClick={this.onCancelClick}
+          onCsvLoaderBtn={this.onCsvLoaderBtn}
         />
         <div className={styles.sectionWrapper}>
           <div className={styles.headingWrapper}>
@@ -216,6 +231,13 @@ class Facilities extends React.Component<
           onClose={this.onModalClose}
           onExitClick={this.onCancel}
           onSaveClick={this.savingFacilities}
+        />
+        <CsvLoader
+          isOpen={this.state.isCsvLoaderOpen}
+          onClose={this.onCsvLoaderClose}
+          type="facilities"
+          onCreate={this.props.saveFacilities}
+          eventId={this.props.match.params.eventId}
         />
       </section>
     );

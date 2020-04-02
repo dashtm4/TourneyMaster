@@ -7,6 +7,7 @@ import { ITeam } from '../../../common/models/teams';
 import { Icons } from '../../../common/enums/icons';
 import styles from './styles.module.scss';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import { ISchedulesGameWithNames } from 'common/models';
 
 const EDIT_ICON_STYLES = {
   marginRight: '5px',
@@ -16,6 +17,8 @@ const DELETE_ICON_STYLES = {
   marginRight: '5px',
   fill: '#FF0F19',
 };
+
+const MAX_GAMES_COUNT = 3;
 
 enum FORM_FIELDS {
   LONG_NAME = 'long_name',
@@ -38,12 +41,14 @@ interface Props {
   onChangeTeam: (evt: React.ChangeEvent<HTMLInputElement>) => void;
   onCloseModal: BindingAction;
   deleteMessage?: string;
+  games: ISchedulesGameWithNames[];
 }
 
 const TeamDetailsPopup = ({
   team,
   division,
   pool,
+  games,
   onSaveTeamClick,
   onDeleteTeamClick,
   onChangeTeam,
@@ -61,6 +66,10 @@ const TeamDetailsPopup = ({
   if (!team) {
     return null;
   }
+
+  const suitableGames = games
+    .filter(it => it.homeTeamId === team?.team_id)
+    .slice(0, MAX_GAMES_COUNT);
 
   return (
     <div className={styles.popupWrapper}>
@@ -234,7 +243,9 @@ const TeamDetailsPopup = ({
             </ul>
           </div>
           <ul className={styles.fieldList}>
-            <FieldItem />
+            {suitableGames.map(it => (
+              <FieldItem game={it} key={it.id} />
+            ))}
           </ul>
         </div>
         <div className={styles.btnsWrapper}>

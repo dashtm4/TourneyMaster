@@ -1,5 +1,9 @@
 import { getVarcharEight } from 'helpers';
-import { EntryPoints, IRegistrationFields } from 'common/enums';
+import {
+  EntryPoints,
+  IRegistrationFields,
+  IFacilityFields,
+} from 'common/enums';
 import { IEntity } from 'common/types';
 
 const generateEntityId = (entity: IEntity, entryPoint: EntryPoints) => {
@@ -10,7 +14,15 @@ const generateEntityId = (entity: IEntity, entryPoint: EntryPoints) => {
         [IRegistrationFields.REGISTRATION_ID]: getVarcharEight(),
       };
     }
+    case EntryPoints.FACILITIES: {
+      return {
+        ...entity,
+        [IFacilityFields.FACILITIES_ID]: getVarcharEight(),
+      };
+    }
   }
+
+  return entity;
 };
 
 export { generateEntityId };

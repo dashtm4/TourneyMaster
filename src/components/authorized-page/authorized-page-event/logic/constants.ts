@@ -67,6 +67,7 @@ export const EventMenu = [
     icon: Icons.SCORING,
     children: [],
     isAllowEdit: false,
+    isCompleted: false,
   },
   {
     title: EventMenuTitles.REPORTING,

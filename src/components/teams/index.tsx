@@ -2,7 +2,7 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
-import { loadDivisionsTeams, loadPools, saveTeams } from './logic/actions';
+import { loadTeamsData, loadPools, saveTeams } from './logic/actions';
 import Navigation from './components/navigation';
 import TeamManagement from './components/team-management';
 import {
@@ -12,8 +12,13 @@ import {
   Loader,
   PopupExposure,
 } from 'components/common';
-import { AppState } from './logic/reducer';
-import { IDivision, IPool, ITeam } from '../../common/models';
+import { IAppState } from 'reducers/root-reducer.types';
+import {
+  IDivision,
+  IPool,
+  ITeam,
+  ISchedulesGameWithNames,
+} from '../../common/models';
 import styles from './styles.module.scss';
 
 interface MatchParams {
@@ -26,7 +31,8 @@ interface Props {
   divisions: IDivision[];
   pools: IPool[];
   teams: ITeam[];
-  loadDivisionsTeams: (eventId: string) => void;
+  games: ISchedulesGameWithNames[];
+  loadTeamsData: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
   saveTeams: (teams: ITeam[]) => void;
 }
@@ -58,11 +64,11 @@ class Teams extends React.Component<
   }
 
   componentDidMount() {
-    const { loadDivisionsTeams } = this.props;
+    const { loadTeamsData } = this.props;
     const eventId = this.props.match.params.eventId;
 
     if (eventId) {
-      loadDivisionsTeams(eventId);
+      loadTeamsData(eventId);
     }
   }
 
@@ -150,7 +156,7 @@ class Teams extends React.Component<
   };
 
   render() {
-    const { isLoading, divisions, pools, loadPools } = this.props;
+    const { divisions, pools, games, isLoading, loadPools } = this.props;
 
     const {
       teams,
@@ -195,6 +201,7 @@ class Teams extends React.Component<
             onSaveTeamClick={this.onSaveTeam}
             onDeleteTeamClick={this.onDeleteTeam}
             onCloseModal={this.onCloseModal}
+            games={games}
           />
         </Modal>
         <PopupExposure
@@ -208,18 +215,15 @@ class Teams extends React.Component<
   }
 }
 
-interface IRootState {
-  teams: AppState;
-}
-
 export default connect(
-  (state: IRootState) => ({
-    isLoading: state.teams.isLoading,
-    isLoaded: state.teams.isLoaded,
-    divisions: state.teams.divisions,
-    pools: state.teams.pools,
-    teams: state.teams.teams,
+  ({ teams }: IAppState) => ({
+    isLoading: teams.isLoading,
+    isLoaded: teams.isLoaded,
+    divisions: teams.divisions,
+    pools: teams.pools,
+    teams: teams.teams,
+    games: teams.games,
   }),
   (dispatch: Dispatch) =>
-    bindActionCreators({ loadDivisionsTeams, loadPools, saveTeams }, dispatch)
+    bindActionCreators({ loadTeamsData, loadPools, saveTeams }, dispatch)
 )(Teams);

@@ -18,6 +18,7 @@ import utilities from 'components/utilities/components/user-profile/logic/reduce
 import complexities from 'components/gameday-complexities/logic/reducer';
 import schedules from 'components/schedules/logic/reducer';
 import schedulesTable from 'components/schedules/logic/schedules-table/schedulesTableReducer';
+import tableColumns from 'components/common/csv-loader/logic/reducer';
 import reporting from 'components/reporting/logic/reducer';
 
 const rootReducer = combineReducers({
@@ -39,6 +40,7 @@ const rootReducer = combineReducers({
   utilities,
   complexities,
   schedulesTable,
+  tableColumns,
   reporting,
 });
 

@@ -7,11 +7,13 @@ import { IAppState } from 'reducers/root-reducer.types';
 import Navigation from './components/navigation';
 import PopupShare from './components/popup-share';
 import Registration from './components/registration';
+import Facilities from './components/facilities';
 import { HeadingLevelTwo, Loader } from 'components/common';
 import {
   BindingAction,
   IEventDetails,
   BindingCbWithThree,
+  IFacility,
 } from 'common/models';
 import { MenuTitles, EntryPoints } from 'common/enums';
 import { IEntity } from 'common/types';
@@ -23,6 +25,7 @@ interface Props {
   isLoaded: boolean;
   events: IEventDetails[];
   registrations: ILibraryManagerRegistration[];
+  facilities: IFacility[];
   loadLibraryManagerData: BindingAction;
   saveSharedItem: BindingCbWithThree<IEventDetails, IEntity, EntryPoints>;
 }
@@ -31,6 +34,7 @@ const LibraryManager = ({
   isLoading,
   events,
   registrations,
+  facilities,
   loadLibraryManagerData,
   saveSharedItem,
 }: Props) => {
@@ -82,6 +86,10 @@ const LibraryManager = ({
         <HeadingLevelTwo>{MenuTitles.LIBRARY_MANAGER}</HeadingLevelTwo>
       </div>
       <ul className={styles.libraryList}>
+        <Facilities
+          facilities={facilities}
+          changeSharedItem={onChangeSharedItem}
+        />
         <Registration
           registrations={registrations}
           changeSharedItem={onChangeSharedItem}
@@ -105,6 +113,7 @@ export default connect(
     isLoaded: libraryManager.isLoaded,
     events: libraryManager.events,
     registrations: libraryManager.registrations,
+    facilities: libraryManager.facilities,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators({ loadLibraryManagerData, saveSharedItem }, dispatch)

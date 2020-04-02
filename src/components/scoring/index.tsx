@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dispatch, bindActionCreators } from 'redux';
 import {
-  loadDivision,
+  loadScoringData,
   loadPools,
   loadTeams,
   editTeam,
   deleteTeam,
 } from './logic/actions';
-import { AppState } from './logic/reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import Navigation from './components/navigation';
 import ScoringItem from './components/scoring-Item';
 import {
@@ -18,7 +18,13 @@ import {
   Loader,
   PopupTeamEdit,
 } from 'components/common';
-import { IDivision, IPool, ITeam, BindingCbWithOne } from 'common/models';
+import {
+  IDivision,
+  IPool,
+  ITeam,
+  BindingCbWithOne,
+  ISchedulesGameWithNames,
+} from 'common/models';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 
@@ -32,7 +38,8 @@ interface Props {
   divisions: IDivision[];
   pools: IPool[];
   teams: ITeam[];
-  loadDivision: (eventId: string) => void;
+  games: ISchedulesGameWithNames[];
+  loadScoringData: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
   loadTeams: (poolId: string) => void;
   editTeam: BindingCbWithOne<ITeam>;
@@ -66,11 +73,11 @@ class Sсoring extends React.Component<
   }
 
   componentDidMount() {
-    const { loadDivision } = this.props;
+    const { loadScoringData } = this.props;
     const eventId = this.props.match.params.eventId;
 
     if (eventId) {
-      loadDivision(eventId);
+      loadScoringData(eventId);
     }
   }
 
@@ -156,6 +163,7 @@ class Sсoring extends React.Component<
       divisions,
       loadPools,
       loadTeams,
+      games,
     } = this.props;
 
     if (isLoading) {
@@ -205,6 +213,7 @@ class Sсoring extends React.Component<
             onDeleteTeamClick={this.onDeleteTeam}
             onChangeTeam={this.onChangeTeam}
             onCloseModal={this.onCloseModal}
+            games={games}
           />
         </Modal>
       </section>
@@ -212,21 +221,18 @@ class Sсoring extends React.Component<
   }
 }
 
-interface IRootState {
-  scoring: AppState;
-}
-
 export default connect(
-  (state: IRootState) => ({
-    isLoading: state.scoring.isLoading,
-    isLoaded: state.scoring.isLoaded,
-    divisions: state.scoring.divisions,
-    pools: state.scoring.pools,
-    teams: state.scoring.teams,
+  ({ scoring }: IAppState) => ({
+    isLoading: scoring.isLoading,
+    isLoaded: scoring.isLoaded,
+    divisions: scoring.divisions,
+    pools: scoring.pools,
+    teams: scoring.teams,
+    games: scoring.games,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadDivision, loadPools, loadTeams, deleteTeam, editTeam },
+      { loadScoringData, loadPools, loadTeams, deleteTeam, editTeam },
       dispatch
     )
 )(Sсoring);

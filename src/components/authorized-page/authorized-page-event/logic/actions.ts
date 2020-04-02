@@ -38,6 +38,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
         )
       )
     ).flat();
+    const schedules = await Api.get(`/schedules/?event_id=${eventId}`);
 
     const currentEvent = events.find(
       (it: IEventDetails) => it.event_id === eventId
@@ -50,8 +51,6 @@ const loadAuthPageData: ActionCreator<ThunkAction<
     dispatch({
       type: LOAD_AUTH_PAGE_DATA_SUCCESS,
       payload: {
-        facilities,
-        divisions,
         tournamentData: {
           event: currentEvent,
           registration: currentRegistration,
@@ -59,6 +58,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
           fields,
           divisions,
           teams,
+          schedules,
         },
       },
     });

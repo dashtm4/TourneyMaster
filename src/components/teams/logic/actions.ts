@@ -3,49 +3,50 @@ import { ActionCreator, Dispatch } from 'redux';
 import * as Yup from 'yup';
 import {
   TeamsAction,
-  LOAD_DIVISIONS_TEAMS_START,
-  LOAD_DIVISIONS_TEAMS_SUCCESS,
-  LOAD_DIVISIONS_TEAMS_FAILURE,
+  LOAD_TEAMS_DATA_START,
+  LOAD_TEAMS_DATA_SUCCESS,
+  LOAD_TEAMS_DATA_FAILURE,
   LOAD_POOLS_START,
   LOAD_POOLS_SUCCESS,
   LOAD_POOLS_FAILURE,
   SAVE_TEAMS_SUCCESS,
   SAVE_TEAMS_FAILURE,
 } from './action-types';
-import { AppState } from './reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { teamSchema } from 'validations';
+import { mapScheduleGamesWithNames } from 'helpers';
 import { Toasts } from 'components/common';
 import { ITeam } from 'common/models';
 
-type IAppState = {
-  teams: AppState;
-};
-
-const loadDivisionsTeams: ActionCreator<ThunkAction<
-  void,
-  {},
-  null,
-  TeamsAction
->> = (eventId: string) => async (dispatch: Dispatch) => {
+const loadTeamsData: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
+  eventId: string
+) => async (dispatch: Dispatch) => {
   try {
     dispatch({
-      type: LOAD_DIVISIONS_TEAMS_START,
+      type: LOAD_TEAMS_DATA_START,
     });
 
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
     const teams = await Api.get(`/teams?event_id=${eventId}`);
+    const schedulesGames = await Api.get(`/games?event_id=${eventId}`);
+
+    const mappedGames = await mapScheduleGamesWithNames(
+      eventId,
+      schedulesGames
+    );
 
     dispatch({
-      type: LOAD_DIVISIONS_TEAMS_SUCCESS,
+      type: LOAD_TEAMS_DATA_SUCCESS,
       payload: {
         divisions,
         teams,
+        games: mappedGames,
       },
     });
   } catch {
     dispatch({
-      type: LOAD_DIVISIONS_TEAMS_FAILURE,
+      type: LOAD_TEAMS_DATA_FAILURE,
     });
   }
 };
@@ -129,4 +130,4 @@ const saveTeams = (teams: ITeam[]) => async (
   }
 };
 
-export { loadDivisionsTeams, loadPools, saveTeams };
+export { loadTeamsData, loadPools, saveTeams };

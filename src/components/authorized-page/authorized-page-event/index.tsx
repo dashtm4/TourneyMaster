@@ -10,7 +10,7 @@ import {
 } from './logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
-import Menu from 'components/common/menu';
+import { Loader, Menu, ScrollTopButton } from 'components/common';
 import Facilities from 'components/facilities';
 import Sсoring from 'components/scoring';
 import RecordScores from 'components/scoring/pages/record-scores';
@@ -22,20 +22,14 @@ import AddDivision from 'components/divisions-and-pools/add-division';
 import Scheduling from 'components/scheduling';
 import Teams from 'components/teams';
 import CreateTeam from 'components/teams/components/create-team';
-import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
-import {
-  Routes,
-  RequiredMenuKeys,
-  EventMenuTitles,
-  EventStatuses,
-} from 'common/enums';
-import { Loader } from 'components/common';
-import styles from '../styles.module.scss';
 import Footer from 'components/footer';
 import Schedules from 'components/schedules';
-import ScrollTopButton from 'components/common/scroll-top-button';
 import Reporting from 'components/reporting';
 import Playoffs from 'components/playoffs';
+import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
+import { Routes, EventMenuTitles, EventStatuses } from 'common/enums';
+import { getIncompleteMenuItems } from '../helpers';
+import styles from '../styles.module.scss';
 
 interface MatchParams {
   eventId?: string;
@@ -81,6 +75,11 @@ const AuthorizedPageEvent = ({
   }
 
   const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
+  const schedulingIgnoreList = [
+    EventMenuTitles.SCHEDULING,
+    EventMenuTitles.SCORING,
+  ];
+  const reportingIgnoreList = [EventMenuTitles.REPORTING];
 
   return (
     <div className={styles.container}>
@@ -109,11 +108,9 @@ const AuthorizedPageEvent = ({
               render={props => (
                 <Scheduling
                   {...props}
-                  incompleteMenuItems={menuList.filter(
-                    it =>
-                      it.hasOwnProperty(RequiredMenuKeys.IS_COMPLETED) &&
-                      !it.isCompleted &&
-                      it.title !== EventMenuTitles.SCHEDULING
+                  incompleteMenuItems={getIncompleteMenuItems(
+                    menuList,
+                    schedulingIgnoreList
                   )}
                 />
               )}
@@ -122,13 +119,22 @@ const AuthorizedPageEvent = ({
             <Route path={Routes.PLAYOFFS_ID} component={Playoffs} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
-            <Route path={Routes.REPORTING_ID} component={Reporting} />
-
+            <Route
+              path={Routes.REPORTING_ID}
+              render={props => (
+                <Reporting
+                  {...props}
+                  incompleteMenuItems={getIncompleteMenuItems(
+                    menuList,
+                    reportingIgnoreList
+                  )}
+                />
+              )}
+            />
             <Route path={Routes.RECORD_SCORES_ID} component={RecordScores} />
             <Route path={Routes.ADD_DIVISION} component={AddDivision} />
             <Route path={Routes.EDIT_DIVISION} component={AddDivision} />
             <Route path={Routes.CREATE_TEAM} component={CreateTeam} />
-
             <Route path={Routes.DEFAULT} component={EventDetails} />
           </Switch>
           <ScrollTopButton />

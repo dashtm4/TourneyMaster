@@ -23,7 +23,9 @@ const IncompleteItemDesc = {
   [EventMenuTitles.REGISTRATION]: 'You need to create a registration.',
   [EventMenuTitles.DIVISIONS_AND_POOLS]:
     'You need to create at least one division&pool.',
+  [EventMenuTitles.SCHEDULING]: 'There must be one published schedule.',
   [EventMenuTitles.TEAMS]: 'All teams must be assigned.',
+  [EventMenuTitles.SCORING]: 'There must be one published schedule.',
 };
 
 interface Props {
