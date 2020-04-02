@@ -36,7 +36,7 @@ const calculateDivisionFieldsNumber = (
   const divisionGames = divisionTeams
     .map(item => item.games)
     .flat()
-    .map(item => item.id);
+    .map(item => item?.id);
   const uniqueGameIds = union(divisionGames);
   const fieldIds = games
     .filter(game => uniqueGameIds.includes(game.id))

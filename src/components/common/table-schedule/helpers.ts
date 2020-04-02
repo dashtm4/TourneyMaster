@@ -233,7 +233,22 @@ export const mapFilterValues = (
   };
 };
 
-export const mapUnusedFields = (fields: IField[], games: IGame[]) => {
+export const mapUnusedFields = (
+  fields: IField[],
+  games: IGame[],
+  filterValues: IFilterValues
+) => {
+  const arr: IMultiSelectOption[] = [
+    ...filterValues.divisionsOptions,
+    ...filterValues.poolsOptions,
+    ...filterValues.teamsOptions,
+    ...filterValues.fieldsOptions,
+  ].flat();
+
+  if (arr.every(item => item.checked)) {
+    return fields;
+  }
+
   const filledGames = games.filter(
     game => game.awayTeam?.id || game.homeTeam?.id
   );

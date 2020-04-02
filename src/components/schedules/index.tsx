@@ -164,11 +164,13 @@ class Schedules extends Component<Props, State> {
   };
 
   async componentDidMount() {
-    const { facilities, match } = this.props;
+    const { facilities, match, scheduleData } = this.props;
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
+    const { isManualScheduling } = scheduleData || {};
+
     this.getPublishedStatus();
-    this.activateLoaders(scheduleId);
+    this.activateLoaders(scheduleId, !!isManualScheduling);
 
     if (facilitiesIds?.length) {
       this.props.fetchFields(facilitiesIds);
@@ -181,6 +183,18 @@ class Schedules extends Component<Props, State> {
       this.props.fetchSchedulesDetails(scheduleId);
     } else {
       await this.calculateNeccessaryData();
+
+      if (isManualScheduling) {
+        this.onScheduleCardsUpdate(
+          this.state.teams?.map(item => ({
+            ...item,
+            games: [],
+          }))!
+        );
+        this.calculateDiagnostics();
+        return;
+      }
+
       this.calculateSchedules();
     }
   }
@@ -221,11 +235,12 @@ class Schedules extends Component<Props, State> {
     }
   }
 
-  activateLoaders = (scheduleId: string) => {
+  activateLoaders = (scheduleId: string, isManualScheduling: boolean) => {
     this.setState({
-      loadingType: scheduleId
-        ? LoaderTypeEnum.LOADING
-        : LoaderTypeEnum.CALCULATION,
+      loadingType:
+        scheduleId || isManualScheduling
+          ? LoaderTypeEnum.LOADING
+          : LoaderTypeEnum.CALCULATION,
     });
 
     const time = scheduleId ? 100 : 5000;
@@ -454,6 +469,7 @@ class Schedules extends Component<Props, State> {
     const scheduleExist = !!this.props.match.params.scheduleId;
     const schedulesPublished = !!this.props.schedulesPublished;
     const gamesAlreadyExist = !!this.props.gamesAlreadyExist;
+    const { event } = this.props;
 
     let schedulesResponse: any;
     let schedulesDetailsResponse: any;
@@ -513,11 +529,18 @@ class Schedules extends Component<Props, State> {
         );
       }
 
+      // PUT events
+      const updatedEvent = {
+        ...event,
+        event_status: 'Published',
+      };
+
       if (
         schedulesResponse &&
         schedulesDetailsResponse &&
         schedulesGamesResponse
       ) {
+        await api.put(`/events?event_id=${event?.event_id}`, updatedEvent);
         successToast('Schedules data successfully saved and published');
       }
 
@@ -539,6 +562,12 @@ class Schedules extends Component<Props, State> {
         schedulesGamesChunk.map(async arr => await api.delete('/games', arr))
       );
       if (response) {
+        const updatedEvent = {
+          ...event,
+          event_status: 'Draft',
+        };
+        await api.put(`/events?event_id=${event?.event_id}`, updatedEvent);
+
         this.props.publishedClear();
       }
       this.props.getPublishedGames(event!.event_id, schedule.schedule_id);
@@ -626,8 +655,6 @@ class Schedules extends Component<Props, State> {
       anotherSchedulePublished,
       schedulesPublished,
     } = this.props;
-
-    console.log(this.state);
 
     const {
       fields,

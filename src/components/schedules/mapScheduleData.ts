@@ -16,6 +16,7 @@ export const mapScheduleData = (
   delete data?.periods_per_game;
   delete data?.first_game_start;
   delete data?.last_game_end;
+  delete data?.isManualScheduling;
   return data;
 };
 
@@ -99,7 +100,7 @@ export const mapTeamCardsToSchedulesGames = async (
   const eventId = scheduleData.event_id;
 
   const schedulesGames: ISchedulesGame[] = games.map(game => ({
-    game_id: String(game.varcharId),
+    game_id: String(game.varcharId || getVarcharEight()),
     event_id: eventId,
     schedule_id: scheduleId,
     sport_id: 1,

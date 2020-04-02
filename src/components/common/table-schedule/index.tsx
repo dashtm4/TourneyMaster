@@ -105,7 +105,7 @@ const TableSchedule = ({
   const filledGames = settleTeamsPerGames(games, teamCards);
   const filteredGames = mapGamesByFilter([...filledGames], filterValues);
 
-  const updatedFields = mapUnusedFields(fields, filteredGames);
+  const updatedFields = mapUnusedFields(fields, filteredGames, filterValues);
 
   const onFilterChange = (data: IScheduleFilter) => {
     const newData = mapFilterValues({ teamCards, pools }, data);
