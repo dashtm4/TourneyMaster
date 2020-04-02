@@ -1,0 +1,17 @@
+$width: 100%;
+$height: 400px;
+
+.container {
+  width: $width;
+  height: $height;
+
+  > div {
+    width: $width;
+  }
+
+  .bracketContainer {
+    width: $width;
+    height: 100%;
+    background: #f4f4f4;
+  }
+}

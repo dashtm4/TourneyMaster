@@ -35,6 +35,7 @@ enum Icons {
   DROPDOWN = 'DROPDOWN',
   DROPUP = 'DROPUP',
   CLEAR = 'CLEAR',
+  EYE = 'VISIBILITY',
 }
 
 export { Icons };

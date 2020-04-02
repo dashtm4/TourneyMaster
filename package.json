@@ -71,6 +71,7 @@
     "react-scripts": "3.3.0",
     "react-swipeable-views": "^0.13.9",
     "react-toastify": "^5.5.0",
+    "react-tournament-bracket": "^0.2.4",
     "react-virtualized": "^9.21.2",
     "react-zoom-pan-pinch": "^1.6.1",
     "redux": "^4.0.5",

@@ -35,6 +35,7 @@ import Footer from 'components/footer';
 import Schedules from 'components/schedules';
 import ScrollTopButton from 'components/common/scroll-top-button';
 import Reporting from 'components/reporting';
+import Playoffs from 'components/playoffs';
 
 interface MatchParams {
   eventId?: string;
@@ -79,7 +80,7 @@ const AuthorizedPageEvent = ({
     return <Loader />;
   }
 
-  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES];
+  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
 
   return (
     <div className={styles.container}>
@@ -118,6 +119,7 @@ const AuthorizedPageEvent = ({
               )}
             />
             <Route path={Routes.SCHEDULES_ID} component={Schedules} />
+            <Route path={Routes.PLAYOFFS_ID} component={Playoffs} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
             <Route path={Routes.REPORTING_ID} component={Reporting} />

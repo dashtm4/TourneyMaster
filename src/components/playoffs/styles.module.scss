@@ -1,0 +1,58 @@
+.container {
+  .paperWrapper {
+    margin-bottom: 20px;
+
+    .paperContainer {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+
+      > button {
+        margin-left: 15px;
+      }
+    }
+  }
+
+  .section {
+    padding: 24px 15px;
+    margin: 0 0 50px;
+    background-color: #f4f4f4;
+    border-radius: 5px;
+    box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.2);
+    //
+    min-height: 500px;
+    display: flex;
+
+    .seedsContainer {
+      width: 200px;
+      height: 490px;
+    }
+
+    .bodyWrapper {
+      width: calc(100% - 200px);
+      padding-left: 20px;
+
+      .bracketActions {
+        height: 60px;
+        width: 100%;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column-reverse;
+
+        .cardMessage {
+          display: flex;
+          justify-content: flex-start;
+        }
+
+        .buttonsWrapper {
+          display: flex;
+          justify-content: flex-end;
+
+          > button {
+            margin-left: 15px;
+          }
+        }
+      }
+    }
+  }
+}
