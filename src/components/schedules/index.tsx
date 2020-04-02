@@ -336,7 +336,7 @@ class Schedules extends Component<Props, State> {
       teamsInPlay: undefined,
     };
 
-    const days = ['1'];
+    const days = ['1', '2', '3'];
 
     const updateTeamsDayInfo = (teamCards: ITeamCard[], date: string) =>
       teamCards.map(item => ({

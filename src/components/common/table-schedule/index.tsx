@@ -14,7 +14,7 @@ import {
   ISchedule,
   IPool,
 } from 'common/models';
-import { IScheduleFilter, OptimizeTypes } from './types';
+import { IScheduleFilter, OptimizeTypes, DayTypes } from './types';
 import { mapGamesByField } from 'helpers';
 import {
   IGame,
@@ -126,7 +126,12 @@ const TableSchedule = ({
   const toggleZooming = () => changeZoomingAction(!zoomingDisabled);
 
   const moveCard = (dropParams: IDropParams) => {
-    const result = moveTeamCard(teamCards, dropParams);
+    const day = filterValues.selectedDay!;
+    const result = moveTeamCard(
+      teamCards,
+      dropParams,
+      days?.length ? days[DayTypes[day] - 1] : undefined
+    );
     if (result.divisionUnmatch) {
       onReplacementWarningChange(
         'The divisions of the teams do not match. Are you sure you want to continue?'
