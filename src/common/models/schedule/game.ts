@@ -24,3 +24,17 @@ export interface ISchedulesGame {
   updated_by: string | null;
   updated_datetime: string | null;
 }
+
+export interface ISchedulesGameWithNames {
+  id: string;
+  fieldId: string;
+  fieldName: string;
+  awayTeamId: string;
+  awayTeamName: string;
+  awayTeamScore: string | number;
+  homeTeamId: string;
+  homeTeamName: string;
+  homeTeamScore: string | number;
+  gameDate: string;
+  startTime: string;
+}

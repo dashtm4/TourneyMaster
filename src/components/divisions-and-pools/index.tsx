@@ -160,7 +160,9 @@ class DivisionsAndPools extends React.Component<
                       pools={pools.filter(
                         pool => pool.division_id === division.division_id
                       )}
-                      teams={teams}
+                      teams={teams.filter(
+                        team => team.division_id === division.division_id
+                      )}
                       onAddPool={this.onAddPool}
                       getPools={this.props.getPools}
                       areDetailsLoading={this.props.areDetailsLoading}

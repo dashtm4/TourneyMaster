@@ -8,6 +8,8 @@ import { ISchedulesTableState } from 'components/schedules/logic/schedules-table
 import { IRecordScoresState } from 'components/scoring/pages/record-scores/logic/reducer';
 import { ILibraryManagerState } from 'components/library-manager/logic/reducer';
 import { IReportingState } from 'components/reporting/logic/reducer';
+import { ITeamsState } from 'components/teams/logic/reducer';
+import { IScoringState } from 'components/scoring/logic/reducer';
 
 export interface IAppState {
   pageEvent: IPageEventState;
@@ -20,4 +22,6 @@ export interface IAppState {
   recordScores: IRecordScoresState;
   libraryManager: ILibraryManagerState;
   reporting: IReportingState;
+  teams: ITeamsState;
+  scoring: IScoringState;
 }

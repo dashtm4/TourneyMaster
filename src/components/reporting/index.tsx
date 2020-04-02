@@ -10,7 +10,7 @@ import {
   getTimeValuesFromEventSchedule,
   calculateTimeSlots,
 } from 'helpers';
-import { HeadingLevelTwo, Loader } from 'components/common';
+import { HeadingLevelTwo, Loader, HazardList } from 'components/common';
 import {
   IDivision,
   ITeam,
@@ -19,6 +19,7 @@ import {
   IField,
   ISchedule,
   ISchedulesDetails,
+  IMenuItem,
 } from 'common/models';
 import { EventMenuTitles } from 'common/enums';
 import { IAppState } from 'reducers/root-reducer.types';
@@ -51,6 +52,7 @@ interface MatchParams {
 interface Props {
   isLoading: boolean;
   isLoaded: boolean;
+  incompleteMenuItems: IMenuItem[];
   event: IEventDetails | null;
   facilities: IFacility[];
   divisions: IDivision[];
@@ -157,6 +159,18 @@ class Reporting extends React.Component<
   };
 
   render() {
+    const { incompleteMenuItems } = this.props;
+    const isAllowViewPage = incompleteMenuItems.length === 0;
+
+    if (!isAllowViewPage) {
+      return (
+        <HazardList
+          incompleteMenuItems={incompleteMenuItems}
+          eventId={this.props.match.params.eventId}
+        />
+      );
+    }
+
     const {
       isLoading,
       divisions,

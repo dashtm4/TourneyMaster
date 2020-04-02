@@ -25,6 +25,9 @@ import SortTable from './sort-table';
 import MatrixTable from './matrix-table';
 import TableSchedule from './table-schedule';
 import DeletePopupConfrim from './delete-popup-confirm';
+import HazardList from './hazard-list';
+import Menu from './menu';
+import ScrollTopButton from './scroll-top-button';
 import * as Toasts from './toastr/showToasts';
 
 export {
@@ -56,4 +59,7 @@ export {
   MatrixTable,
   TableSchedule,
   DeletePopupConfrim,
+  HazardList,
+  Menu,
+  ScrollTopButton,
 };
