@@ -1,6 +1,10 @@
 import { removeObjectFields } from 'helpers';
 import { IEventDetails } from 'common/models';
-import { EntryPoints, IRegistrationFields } from 'common/enums';
+import {
+  EntryPoints,
+  IRegistrationFields,
+  IFacilityFields,
+} from 'common/enums';
 import { IEntity } from 'common/types';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
@@ -39,7 +43,12 @@ const removeAuxiliaryFields = (entity: IEntity, entryPoint: EntryPoints) => {
     case EntryPoints.REGISTRATIONS: {
       return removeObjectFields(entity, Object.values(IRegistrationFields));
     }
+    case EntryPoints.FACILITIES: {
+      return removeObjectFields(entity, Object.values(IFacilityFields));
+    }
   }
+
+  return entity;
 };
 
 export {

@@ -87,12 +87,15 @@ const addUserToOrganization: ActionCreator<ThunkAction<
 
     await Api.post('/org_members', orgMembers);
 
-    const organizations = await Api.get(`/organizations`);
+    const organization = await Api.get(`/organizations?org_id=${invCode}`);
+    const currentOrganization = organization.find(
+      (it: IOrganization) => it.org_id === invCode
+    );
 
     dispatch({
       type: ADD_USER_TO_ORGANIZATION_SUCCESS,
       payload: {
-        organizations,
+        organization: currentOrganization,
       },
     });
 

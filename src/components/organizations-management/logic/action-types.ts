@@ -43,7 +43,7 @@ export interface createOrganizationSuccess {
 export interface addUserToOrganizationSuccess {
   type: 'ORGANIZATIONS_MANAGEMENT:ADD_USER_TO_ORGANIZATION_SUCCESS';
   payload: {
-    organizations: IOrganization[];
+    organization: IOrganization;
   };
 }
 

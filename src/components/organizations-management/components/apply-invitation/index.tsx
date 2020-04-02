@@ -29,7 +29,10 @@ const ApplyInvitation = ({
 
   const onApplyInvitation = (e: React.MouseEvent) => {
     e.stopPropagation();
+
     addUserToOrganization(invCode);
+
+    onChange('');
   };
 
   return (
