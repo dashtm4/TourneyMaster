@@ -6,6 +6,7 @@ import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 import { Tooltip } from 'components/common';
 import { getIcon } from 'helpers';
 import { Icons, TableScheduleTypes } from 'common/enums';
+import { IInputEvent } from 'common/types';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -36,17 +37,11 @@ export default (props: Props) => {
     isDndMode,
   } = props;
 
-  const [scoreValue, onChange] = React.useState<string>('0');
-
-  const onChangeScoreValue = ({
-    target: { value },
-  }: React.ChangeEvent<HTMLInputElement>) => onChange(value);
-
-  const team = teamCard.games?.filter(game => game.id === originGameId)[0];
+  const game = teamCard.games?.find(game => game.id === originGameId);
 
   const [{ isDragging }, drag] = useDrag({
     item: { id: teamCard.id, type, originGameId },
-    canDrag: !team?.isTeamLocked,
+    canDrag: !game?.isTeamLocked,
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -59,6 +54,15 @@ export default (props: Props) => {
         game.id === originGameId
           ? { ...game, isTeamLocked: !game.isTeamLocked }
           : game
+      ),
+    });
+  };
+
+  const onChangeScore = ({ target: { value } }: IInputEvent) => {
+    onTeamCardUpdate!({
+      ...teamCard,
+      games: teamCard.games?.map(game =>
+        game.id === originGameId ? { ...game, teamScore: value } : game
       ),
     });
   };
@@ -96,8 +100,8 @@ export default (props: Props) => {
         {tableType === TableScheduleTypes.SCORES && (
           <label className={styles.scoresInputWrapper}>
             <input
-              onChange={onChangeScoreValue}
-              value={scoreValue}
+              onChange={onChangeScore}
+              value={game?.teamScore || ''}
               type="number"
               style={{
                 color: isEnterScores
@@ -113,7 +117,7 @@ export default (props: Props) => {
         )}
         {tableType === TableScheduleTypes.SCHEDULES && originGameId && (
           <button className={styles.lockBtn} onClick={onLockClick}>
-            {getIcon(team?.isTeamLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+            {getIcon(game?.isTeamLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
               fill: showHeatmap ? '#ffffff' : '#00A3EA',
             })}
             <span className="visually-hidden">Unlock/Lock team</span>
@@ -127,7 +131,7 @@ export default (props: Props) => {
     <div
       ref={drag}
       className={`${styles.cardContainer} ${isDndMode &&
-        team?.isTeamLocked &&
+        game?.isTeamLocked &&
         styles.isLocked}`}
       style={{
         opacity: isDragging ? 0.8 : 1,

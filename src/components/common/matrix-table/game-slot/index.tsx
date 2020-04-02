@@ -14,6 +14,7 @@ interface Props {
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   isDndMode: boolean;
   isEnterScores?: boolean;
+  teamCards: ITeamCard[];
 }
 
 const RenderGameSlot = (props: Props) => {
@@ -25,6 +26,7 @@ const RenderGameSlot = (props: Props) => {
     onTeamCardUpdate,
     isDndMode,
     isEnterScores,
+    teamCards,
   } = props;
   const { awayTeam, homeTeam } = game;
   const acceptType = 'teamdrop';
@@ -37,6 +39,7 @@ const RenderGameSlot = (props: Props) => {
           gameId={game.id}
           position={1}
           onDrop={onDrop}
+          teamCards={teamCards}
         >
           {awayTeam && (
             <TeamDragCard
@@ -56,6 +59,7 @@ const RenderGameSlot = (props: Props) => {
           gameId={game.id}
           position={2}
           onDrop={onDrop}
+          teamCards={teamCards}
         >
           {homeTeam && (
             <TeamDragCard

@@ -34,7 +34,7 @@ interface State {
   tableData: IDiagnosticsInput;
 }
 
-type Cell = ReactText | undefined;
+type Cell = ReactText | boolean | undefined;
 
 enum sortOrderEnum {
   asc = 1,
@@ -70,16 +70,21 @@ class Diagnostics extends Component<Props, State> {
 
   createTableCell = (cellText: Cell, index: number, isHeader?: boolean) => (
     <TableCell
-      className={styles.tableCell}
+      className={isHeader ? styles.tableHeadCell : styles.tableCell}
       key={'cell-' + index}
       align="center"
     >
-      {cellText}
+      <span className={styles.cellText}>{cellText}</span>
 
       {isHeader && (
         <TableSortLabel
+          className={styles.sortButton}
           active={cellText === this.state.sortBy}
-          direction={this.state.sortOrder === 'asc' ? 'desc' : 'asc'}
+          direction={
+            this.state.sortOrder === 'desc' && cellText === this.state.sortBy
+              ? 'asc'
+              : 'desc'
+          }
           onClick={() => this.sortData(String(cellText))}
         />
       )}

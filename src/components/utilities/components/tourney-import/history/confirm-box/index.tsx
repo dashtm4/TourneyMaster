@@ -8,10 +8,11 @@ import { BindingAction } from 'common/models';
 import Slide from '@material-ui/core/Slide';
 import { TransitionProps } from '@material-ui/core/transitions';
 
-const Transition = React.forwardRef<unknown, TransitionProps>(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
+const Transition = React.forwardRef<unknown, TransitionProps>(
+  function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  }
+);
 
 interface DeleteProps {
   opened: boolean;
@@ -26,7 +27,6 @@ interface RerunProps {
 }
 
 export const DeleteComformBox = ({ opened, onNo, onYes }: DeleteProps) => {
-
   return (
     <div>
       <Dialog
@@ -37,12 +37,14 @@ export const DeleteComformBox = ({ opened, onNo, onYes }: DeleteProps) => {
         aria-labelledby="alert-dialog-slide-title"
         id="alert-dialog-box"
       >
-        <DialogTitle id="alert-dialog-title">{"Do you want to delete this item?"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          {'Do you want to delete this item?'}
+        </DialogTitle>
 
         <DialogActions>
           <Button
             label="No"
-            variant='text'
+            variant="text"
             onClick={onNo}
             color={ButtonColors.SECONDARY}
             btnType={ButtonFormTypes.SUBMIT}
@@ -51,7 +53,7 @@ export const DeleteComformBox = ({ opened, onNo, onYes }: DeleteProps) => {
             label="Yes"
             onClick={onYes}
             variant={ButtonVarian.CONTAINED}
-            color={ButtonColors.PRIMATY}
+            color={ButtonColors.PRIMARY}
             btnType={ButtonFormTypes.SUBMIT}
           />
         </DialogActions>
@@ -61,7 +63,6 @@ export const DeleteComformBox = ({ opened, onNo, onYes }: DeleteProps) => {
 };
 
 export const RerunComfirmBox = ({ opened, onNo, onYes }: RerunProps) => {
-
   return (
     <div>
       <Dialog
@@ -72,12 +73,14 @@ export const RerunComfirmBox = ({ opened, onNo, onYes }: RerunProps) => {
         aria-labelledby="alert-dialog-slide-title"
         id="alert-dialog-box"
       >
-        <DialogTitle id="alert-dialog-title">{"Do you want to re-run this item?"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          {'Do you want to re-run this item?'}
+        </DialogTitle>
 
         <DialogActions>
           <Button
             label="No"
-            variant='text'
+            variant="text"
             onClick={onNo}
             color={ButtonColors.SECONDARY}
             btnType={ButtonFormTypes.SUBMIT}
@@ -86,7 +89,7 @@ export const RerunComfirmBox = ({ opened, onNo, onYes }: RerunProps) => {
             label="Yes"
             variant={ButtonVarian.CONTAINED}
             onClick={onYes}
-            color={ButtonColors.PRIMATY}
+            color={ButtonColors.PRIMARY}
             btnType={ButtonFormTypes.SUBMIT}
           />
         </DialogActions>

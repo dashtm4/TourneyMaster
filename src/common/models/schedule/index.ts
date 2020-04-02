@@ -1,3 +1,8 @@
+export enum ScheduleStatuses {
+  DRAFT = 'Draft',
+  PUBLISHED = 'Published',
+}
+
 export interface ISchedule {
   schedule_id: string;
   event_id: string;
@@ -28,4 +33,5 @@ export interface IConfigurableSchedule extends ISchedule {
   periods_per_game: number;
   first_game_start: string;
   last_game_end: string;
+  isManualScheduling?: boolean;
 }
