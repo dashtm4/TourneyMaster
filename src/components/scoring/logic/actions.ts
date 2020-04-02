@@ -3,9 +3,9 @@ import { ActionCreator, Dispatch } from 'redux';
 import * as Yup from 'yup';
 import {
   TeamsAction,
-  LOAD_DIVISION_START,
-  LOAD_DIVISION_SUCCESS,
-  LOAD_DIVISION_FAILURE,
+  LOAD_SCORING_DATA_START,
+  LOAD_SCORING_DATA_SUCCESS,
+  LOAD_SCORING_DATA_FAILURE,
   LOAD_POOLS_START,
   LOAD_POOLS_SUCCESS,
   LOAD_POOLS_FAILURE,
@@ -17,35 +17,42 @@ import {
   DELETE_TEAM_SUCCESS,
   DELETE_TEAM_FAILURE,
 } from './action-types';
-import { AppState } from './reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { teamSchema } from 'validations';
-import { ITeam } from '../../../common/models';
+import { mapScheduleGamesWithNames } from 'helpers';
+import { ITeam } from 'common/models';
 import { Toasts } from 'components/common';
 
-type IAppState = {
-  scoring: AppState;
-};
-
-const loadDivision: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
-  eventId: string
-) => async (dispatch: Dispatch) => {
+const loadScoringData: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  TeamsAction
+>> = (eventId: string) => async (dispatch: Dispatch) => {
   try {
     dispatch({
-      type: LOAD_DIVISION_START,
+      type: LOAD_SCORING_DATA_START,
     });
 
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
+    const schedulesGames = await Api.get(`/games?event_id=${eventId}`);
+
+    const mappedGames = await mapScheduleGamesWithNames(
+      eventId,
+      schedulesGames
+    );
 
     dispatch({
-      type: LOAD_DIVISION_SUCCESS,
+      type: LOAD_SCORING_DATA_SUCCESS,
       payload: {
         divisions,
+        games: mappedGames
       },
     });
   } catch {
     dispatch({
-      type: LOAD_DIVISION_FAILURE,
+      type: LOAD_SCORING_DATA_FAILURE,
     });
   }
 };
@@ -172,4 +179,4 @@ const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-export { loadDivision, loadPools, loadTeams, editTeam, deleteTeam };
+export { loadScoringData, loadPools, loadTeams, editTeam, deleteTeam };

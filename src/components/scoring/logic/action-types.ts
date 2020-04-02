@@ -1,8 +1,13 @@
-import { ITeam, IPool, IDivision } from '../../../common/models';
+import {
+  ITeam,
+  IPool,
+  IDivision,
+  ISchedulesGameWithNames,
+} from 'common/models';
 
-export const LOAD_DIVISION_START = 'SCORING:LOAD_DIVISION_START';
-export const LOAD_DIVISION_SUCCESS = 'SCORING:LOAD_DIVISION_SUCCESS';
-export const LOAD_DIVISION_FAILURE = 'SCORING:LOAD_DIVISION_FAILURE';
+export const LOAD_SCORING_DATA_START = 'SCORING:LOAD_SCORING_DATA_START';
+export const LOAD_SCORING_DATA_SUCCESS = 'SCORING:LOAD_SCORING_DATA_SUCCESS';
+export const LOAD_SCORING_DATA_FAILURE = 'SCORING:LOAD_SCORING_DATA_FAILURE';
 
 export const LOAD_POOLS_START = 'SCORING:LOAD_POOLS_START';
 export const LOAD_POOLS_SUCCESS = 'SCORING:LOAD_POOLS_SUCCESS';
@@ -19,13 +24,14 @@ export const DELETE_TEAM_SUCCESS = 'SCORING:DELETE_TEAM_SUCCESS';
 export const DELETE_TEAM_FAILURE = 'SCORING:DELETE_TEAM_FAILURE';
 
 export interface loadDivisionStart {
-  type: 'SCORING:LOAD_DIVISION_START';
+  type: 'SCORING:LOAD_SCORING_DATA_START';
 }
 
 export interface loadDivisionSuccess {
-  type: 'SCORING:LOAD_DIVISION_SUCCESS';
+  type: 'SCORING:LOAD_SCORING_DATA_SUCCESS';
   payload: {
     divisions: IDivision[];
+    games: ISchedulesGameWithNames[];
   };
 }
 
@@ -47,14 +53,14 @@ export interface loadPoolsSuccess {
 export interface loadTeamsStart {
   type: 'SCORING:LOAD_TEAMS_START';
   payload: {
-    poolId: string,
+    poolId: string;
   };
 }
 
 export interface loadTeamsSuccess {
   type: 'SCORING:LOAD_TEAMS_SUCCESS';
   payload: {
-    poolId: string,
+    poolId: string;
     teams: ITeam[];
   };
 }
