@@ -30,12 +30,30 @@ const loadOrganizations: ActionCreator<ThunkAction<
       type: LOAD_ORGANIZATIONS_START,
     });
 
+    const currentSession = await Auth.currentSession();
+    const userEmail = currentSession.getIdToken().payload.email;
+    const members = await Api.get(`/members?email_address=${userEmail}`);
+    const member: IMember = members.find(
+      (it: IMember) => it.email_address === userEmail
+    );
     const organizations = await Api.get(`/organizations`);
+    const orgMembers = await Api.get('/org_members');
+
+    const userOwnOrgMembers = orgMembers.filter(
+      (it: IOrgMember) => it.member_id === member.member_id
+    );
+
+    const userOwnOrganizations = organizations.filter(
+      (organization: IOrganization) =>
+        userOwnOrgMembers.some(
+          (orgMember: IOrgMember) => organization.org_id === orgMember.org_id
+        ) || organization.created_by === member.member_id
+    );
 
     dispatch({
       type: LOAD_ORGANIZATIONS_SUCCESS,
       payload: {
-        organizations,
+        organizations: userOwnOrganizations,
       },
     });
   } catch {
@@ -105,6 +123,7 @@ const createOrganization: ActionCreator<ThunkAction<
     const organization = {
       ...organizationData,
       org_id: getVarcharEight(),
+      org_tag: organizationData.org_tag ? `@${organizationData.org_tag}` : null,
       is_active_YN: 1,
     };
 
@@ -160,12 +179,18 @@ const deleteOrganization: ActionCreator<ThunkAction<
       `/org_members?org_member_id=${toBeDelOrgMember.org_member_id}`
     );
 
+    if (organization.created_by === member.member_id) {
+      await Api.delete(`/organizations?org_id=${organization.org_id}`);
+    }
+
     dispatch({
       type: DELETE_ORGANIZATION_SUCCESS,
       payload: {
         organization,
       },
     });
+
+    Toasts.successToast('Changes successfully saved.');
   } catch {
     dispatch({
       type: DELETE_ORGANIZATION_FAILURE,
