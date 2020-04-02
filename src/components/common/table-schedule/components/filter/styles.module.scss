@@ -10,8 +10,12 @@
   align-items: baseline;
   flex-direction: row;
   width: 260px;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 0 8px;
+
+  > button {
+    margin-right: 15px;
+  }
 }
 
 .selectsContainer {

@@ -20,6 +20,7 @@ export interface IGame {
   fieldId: string;
   isPremier?: boolean;
   // added new
+  gameDate?: string;
   scheduleVersionId?: string;
   createDate?: string;
 }
@@ -71,6 +72,33 @@ export const selectProperGamesPerTimeSlot = (
   timeSlot: ITimeSlot,
   games: IGame[]
 ) => games.filter((game: IGame) => game.timeSlotId === timeSlot.id);
+
+export const settleTeamsPerGamesDays = (
+  games: IGame[],
+  teamCards: ITeamCard[],
+  day: string
+) => {
+  return games.map(game => ({
+    ...game,
+    gameDate: day,
+    awayTeam: teamCards.find(
+      team =>
+        findIndex(team.games, {
+          id: game.id,
+          teamPosition: 1,
+          date: day,
+        }) >= 0
+    ),
+    homeTeam: teamCards.find(
+      team =>
+        findIndex(team.games, {
+          id: game.id,
+          teamPosition: 2,
+          date: day,
+        }) >= 0
+    ),
+  }));
+};
 
 export const settleTeamsPerGames = (
   games: IGame[],

@@ -281,6 +281,7 @@ export const getPublishedGames = (
   if (!scheduleId) {
     if (schedulesResponse?.find(item => item.schedule_status === 'Published')) {
       dispatch(anotherSchedulePublished(true));
+      dispatch(publishedClear());
     }
 
     return;
@@ -308,6 +309,7 @@ export const getPublishedGames = (
     )
   ) {
     dispatch(anotherSchedulePublished(true));
+    dispatch(publishedClear());
   } else {
     dispatch(publishedClear());
   }

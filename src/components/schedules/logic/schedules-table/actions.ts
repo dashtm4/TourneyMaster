@@ -4,6 +4,7 @@ import {
   SCHEDULES_TABLE_FILL,
   SCHEDULES_TABLE_UPDATE,
   SCHEDULES_TABLE_UNDO,
+  SCHEDULES_TABLE_CLEAR,
 } from './actionTypes';
 
 const fillSchedulesTableAction = (payload: ITeamCard[]) => ({
@@ -20,6 +21,10 @@ const scheduleUndo = () => ({
   type: SCHEDULES_TABLE_UNDO,
 });
 
+const schedulesTableClear = () => ({
+  type: SCHEDULES_TABLE_CLEAR,
+});
+
 export const fillSchedulesTable = (teamCards: ITeamCard[]) => (
   dispatch: Dispatch
 ) => {
@@ -34,4 +39,8 @@ export const updateSchedulesTable = (teamCard: ITeamCard) => (
 
 export const onScheduleUndo = () => (dispatch: Dispatch) => {
   dispatch(scheduleUndo());
+};
+
+export const clearSchedulesTable = () => (dispatch: Dispatch) => {
+  dispatch(schedulesTableClear());
 };

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { History } from 'history';
 import { bindActionCreators, Dispatch } from 'redux';
 import { chunk, merge } from 'lodash-es';
+import moment from 'moment';
 import api from 'api/api';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { ITeam, ITeamCard } from 'common/models/schedule/teams';
@@ -31,6 +32,7 @@ import {
   sortFieldsByPremier,
   settleTeamsPerGames,
   IGame,
+  settleTeamsPerGamesDays,
 } from 'components/common/matrix-table/helper';
 import {
   mapFieldsData,
@@ -57,6 +59,7 @@ import {
   fillSchedulesTable,
   updateSchedulesTable,
   onScheduleUndo,
+  clearSchedulesTable,
 } from './logic/schedules-table/actions';
 import { ISchedulesTableState } from './logic/schedules-table/schedulesTableReducer';
 import {
@@ -116,6 +119,7 @@ interface IMapDispatchToProps {
     schedulesDetails: ISchedulesDetails[],
     schedulesGames: ISchedulesGame[]
   ) => void;
+  clearSchedulesTable: () => void;
   getPublishedGames: (eventId: string, scheduleId?: string) => void;
   schedulesSavingInProgress: (payload: boolean) => void;
 }
@@ -151,7 +155,7 @@ interface State {
   neccessaryDataCalculated: boolean;
   teamCardsAlreadyUpdated: boolean;
   loadingType: LoaderTypeEnum;
-  tournamentDays: { [key: string]: ITeamCard[] };
+  tournamentDays: string[];
 }
 
 class Schedules extends Component<Props, State> {
@@ -162,7 +166,7 @@ class Schedules extends Component<Props, State> {
     neccessaryDataCalculated: false,
     teamCardsAlreadyUpdated: false,
     loadingType: LoaderTypeEnum.CALCULATION,
-    tournamentDays: {},
+    tournamentDays: [],
   };
 
   async componentDidMount() {
@@ -171,6 +175,7 @@ class Schedules extends Component<Props, State> {
     const facilitiesIds = facilities?.map(f => f.facilities_id);
     const { isManualScheduling } = scheduleData || {};
 
+    this.props.clearSchedulesTable();
     this.getPublishedStatus();
     this.activateLoaders(scheduleId, !!isManualScheduling);
 
@@ -314,7 +319,7 @@ class Schedules extends Component<Props, State> {
 
   calculateSchedules = () => {
     const { fields, teams, games, timeSlots, facilities } = this.state;
-    const { divisions, scheduleData } = this.props;
+    const { divisions, scheduleData, event } = this.props;
 
     if (
       !scheduleData ||
@@ -336,7 +341,20 @@ class Schedules extends Component<Props, State> {
       teamsInPlay: undefined,
     };
 
-    const days = ['1', '2', '3'];
+    const startDate = event?.event_startdate;
+    const endDate = event?.event_enddate;
+
+    const daysDiff = moment(endDate).diff(startDate, 'day');
+
+    const days = [moment(startDate).toISOString()];
+
+    [...Array(daysDiff)].map((_v, i) =>
+      days.push(
+        moment(startDate)
+          .add(i + 1, 'days')
+          .toISOString()
+      )
+    );
 
     const updateTeamsDayInfo = (teamCards: ITeamCard[], date: string) =>
       teamCards.map(item => ({
@@ -363,8 +381,6 @@ class Schedules extends Component<Props, State> {
         teamsInPlay,
       });
 
-      console.log('result', result);
-
       if (!schedulerResult) {
         schedulerResult = result;
       }
@@ -389,6 +405,7 @@ class Schedules extends Component<Props, State> {
 
     this.setState({
       schedulerResult: schedulerResult!,
+      tournamentDays: days,
     });
 
     this.onScheduleCardsUpdate(teamcards);
@@ -471,7 +488,7 @@ class Schedules extends Component<Props, State> {
 
   retrieveSchedulesDetails = async (isDraft: boolean, type: 'POST' | 'PUT') => {
     const { schedulesDetails, schedulesTeamCards } = this.props;
-    const { games } = this.state;
+    const { games, tournamentDays } = this.state;
 
     const localSchedule = this.getSchedule();
 
@@ -479,7 +496,13 @@ class Schedules extends Component<Props, State> {
       throw errorToast('Failed to retrieve schedules data');
     }
 
-    const schedulesTableGames = settleTeamsPerGames(games, schedulesTeamCards);
+    let schedulesTableGames = [];
+    for (const day of tournamentDays) {
+      schedulesTableGames.push(
+        settleTeamsPerGamesDays(games, schedulesTeamCards, day)
+      );
+    }
+    schedulesTableGames = schedulesTableGames.flat();
 
     return mapSchedulesTeamCards(
       localSchedule,
@@ -515,7 +538,6 @@ class Schedules extends Component<Props, State> {
     const scheduleExist = !!this.props.match.params.scheduleId;
     const schedulesPublished = !!this.props.schedulesPublished;
     const gamesAlreadyExist = !!this.props.gamesAlreadyExist;
-    const { event } = this.props;
 
     let schedulesResponse: any;
     let schedulesDetailsResponse: any;
@@ -823,6 +845,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       onScheduleUndo,
       fetchSchedulesDetails,
       schedulesSavingInProgress,
+      clearSchedulesTable,
       getAllPools,
     },
     dispatch
