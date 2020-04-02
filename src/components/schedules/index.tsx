@@ -223,7 +223,7 @@ class Schedules extends Component<Props, State> {
       return;
     }
 
-    if (!schedulesTeamCards && schedulesDetails && teams) {
+    if (!schedulesTeamCards && schedulesDetails && teams && scheduleId) {
       const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
       this.onScheduleCardsUpdate(mappedTeams);
     }
