@@ -40,7 +40,7 @@ const CsvTable = ({
             <TableCell component="th" scope="row" style={{ width: 206 }}>
               <b>Data Header</b>
             </TableCell>
-            <TableCell component="th" scope="row" style={{ width: 150 }}>
+            <TableCell component="th" scope="row" style={{ width: 120 }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <b>Include</b>
                 <div
@@ -76,15 +76,15 @@ const CsvTable = ({
               key={index}
               style={{
                 backgroundColor: !fields[index].included
-                  ? '#DCDCDC'
+                  ? '#ececec'
                   : 'transparent',
               }}
             >
               <TableCell component="td" scope="row" style={{ width: 206 }}>
                 {col}
               </TableCell>
-              <TableCell component="td" scope="row" style={{ width: 150 }}>
-                <div className={styles.checkboxWrapper}>
+              <TableCell component="td" scope="row" style={{ width: 120 }}>
+                <div className={styles.includeCheckboxWrapper}>
                   <Checkbox
                     options={[
                       {
