@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { History } from 'history';
 import { bindActionCreators, Dispatch } from 'redux';
-import { chunk } from 'lodash-es';
+import { chunk, merge } from 'lodash-es';
 import api from 'api/api';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { ITeam, ITeamCard } from 'common/models/schedule/teams';
@@ -151,6 +151,7 @@ interface State {
   neccessaryDataCalculated: boolean;
   teamCardsAlreadyUpdated: boolean;
   loadingType: LoaderTypeEnum;
+  tournamentDays: { [key: string]: ITeamCard[] };
 }
 
 class Schedules extends Component<Props, State> {
@@ -161,6 +162,7 @@ class Schedules extends Component<Props, State> {
     neccessaryDataCalculated: false,
     teamCardsAlreadyUpdated: false,
     loadingType: LoaderTypeEnum.CALCULATION,
+    tournamentDays: {},
   };
 
   async componentDidMount() {
@@ -196,6 +198,9 @@ class Schedules extends Component<Props, State> {
       }
 
       this.calculateSchedules();
+      setTimeout(() => {
+        this.calculateDiagnostics();
+      }, 500);
     }
   }
 
@@ -328,24 +333,65 @@ class Schedules extends Component<Props, State> {
       facilities,
       gameOptions,
       divisions: mappedDivisions,
+      teamsInPlay: undefined,
     };
 
-    const schedulerResult = new Scheduler(
-      fields,
-      teams,
-      games,
-      timeSlots,
-      tournamentBaseInfo
-    );
+    const days = ['1', '2', '3'];
 
-    this.setState(
-      {
-        schedulerResult,
-      },
-      this.calculateDiagnostics
-    );
+    const updateTeamsDayInfo = (teamCards: ITeamCard[], date: string) =>
+      teamCards.map(item => ({
+        ...item,
+        games: [
+          ...(item?.games?.map(game => ({
+            ...game,
+            date: game.date || date,
+          })) || []),
+        ],
+      }));
 
-    this.onScheduleCardsUpdate(schedulerResult.teamCards);
+    const updateTeamGamesDateInfo = (games: any[], date: string) => [
+      ...games.map(game => ({ ...game, date })),
+    ];
+
+    let teamsInPlay = {};
+    let teamcards: ITeamCard[] = [];
+    let schedulerResult: Scheduler;
+
+    days.map(day => {
+      const result = new Scheduler(fields, teams, games, timeSlots, {
+        ...tournamentBaseInfo,
+        teamsInPlay,
+      });
+
+      console.log('result', result);
+
+      if (!schedulerResult) {
+        schedulerResult = result;
+      }
+
+      teamsInPlay = merge(teamsInPlay, result.teamsInPlay);
+
+      const resultTeams = result.teamCards;
+
+      teamcards = teamcards.length
+        ? teamcards.map(item => ({
+            ...item,
+            games: [
+              ...(item.games || []),
+              ...(updateTeamGamesDateInfo(
+                resultTeams.find(team => team.id === item.id)?.games || [],
+                day
+              ) || []),
+            ],
+          }))
+        : updateTeamsDayInfo(resultTeams, day);
+    });
+
+    this.setState({
+      schedulerResult: schedulerResult!,
+    });
+
+    this.onScheduleCardsUpdate(teamcards);
   };
 
   calculateDiagnostics = () => {
