@@ -59,6 +59,15 @@ $containerWidth: 100%;
 
 .btnWrapper {
   .uploadedWrapper {
+    display: flex;
+    align-items: center;
+    padding-left: 6px;
+  }
+}
+.withoutRemoveBtnWrapper {
+  display: flex;
+  align-items: center;
+  & > div {
     padding-left: 6px;
   }
 }
@@ -67,7 +76,7 @@ $containerWidth: 100%;
   display: flex;
   align-items: center;
 
-  margin-bottom: 20px;
+  // margin-bottom: 20px;
 
   color: #00a3ea;
 

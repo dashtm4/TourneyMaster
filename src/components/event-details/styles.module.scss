@@ -13,7 +13,7 @@ $sectionBodyPadding: 20px 0;
 
   .paperWrapper {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     & > :first-child {
       margin-right: 15px;
     }

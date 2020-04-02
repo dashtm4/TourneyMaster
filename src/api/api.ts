@@ -54,12 +54,13 @@ class Api {
       .catch(this.handleError);
   }
 
-  async delete(url: string) {
+  async delete(url: string, data?: any) {
     return await this.instance
       .delete(url, {
         headers: {
           Authorization: `Bearer ${await getToken()}`,
         },
+        data,
       })
       .then(this.handleResponse)
       .catch(this.handleError);

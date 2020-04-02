@@ -6,7 +6,7 @@ import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
 import PopupSaveReporting from './components/popup-save-reporting';
-import { MatrixTable } from 'components/common';
+import { MatrixTable, CardMessage } from 'components/common';
 import {
   IDivision,
   IEventSummary,
@@ -35,6 +35,10 @@ import { IDropParams } from '../matrix-table/dnd/drop';
 import moveTeamCard from './moveTeamCard';
 import { Button } from 'components/common';
 import { TableScheduleTypes } from 'common/enums';
+import { CardMessageTypes } from '../card-message/types';
+import TeamsDiagnostics from 'components/schedules/diagnostics/teamsDiagnostics';
+import DivisionsDiagnostics from 'components/schedules/diagnostics/divisionsDiagnostics';
+import { IDiagnosticsInput } from 'components/schedules/diagnostics';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -50,6 +54,8 @@ interface Props {
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
   historyLength?: number;
+  teamsDiagnostics?: IDiagnosticsInput;
+  divisionsDiagnostics?: IDiagnosticsInput;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
@@ -72,6 +78,8 @@ const TableSchedule = ({
   onTeamCardUpdate,
   onUndo,
   historyLength,
+  teamsDiagnostics,
+  divisionsDiagnostics,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -97,7 +105,7 @@ const TableSchedule = ({
   const filledGames = settleTeamsPerGames(games, teamCards);
   const filteredGames = mapGamesByFilter([...filledGames], filterValues);
 
-  const updatedFields = mapUnusedFields(fields, filteredGames);
+  const updatedFields = mapUnusedFields(fields, filteredGames, filterValues);
 
   const onFilterChange = (data: IScheduleFilter) => {
     const newData = mapFilterValues({ teamCards, pools }, data);
@@ -156,22 +164,39 @@ const TableSchedule = ({
       <h2 className="visually-hidden">Schedule table</h2>
       <div className={styles.scheduleTableWrapper}>
         {tableType === TableScheduleTypes.SCHEDULES && (
-          <div className={styles.topBtnsWrapper}>
-            <h3>Mode:</h3>
-            <Button
-              label="Zoom-n-Nav"
-              variant="contained"
-              color="primary"
-              type={zoomingDisabled ? 'squaredOutlined' : 'squared'}
-              onClick={toggleZooming}
-            />
-            <Button
-              label="Drag-n-Drop"
-              variant="contained"
-              color="primary"
-              type={zoomingDisabled ? 'squared' : 'squaredOutlined'}
-              onClick={toggleZooming}
-            />
+          <div className={styles.topAreaWrapper}>
+            <div className={styles.topBtnsWrapper}>
+              <h3>Mode:</h3>
+              <Button
+                label="Zoom-n-Nav"
+                variant="contained"
+                color="primary"
+                type={zoomingDisabled ? 'squaredOutlined' : 'squared'}
+                onClick={toggleZooming}
+              />
+              <Button
+                label="Drag-n-Drop"
+                variant="contained"
+                color="primary"
+                type={zoomingDisabled ? 'squared' : 'squaredOutlined'}
+                onClick={toggleZooming}
+              />
+            </div>
+            <CardMessage
+              type={CardMessageTypes.EMODJI_OBJECTS}
+              style={{ maxWidth: 400 }}
+            >
+              Drag, drop, and zoom to navigate the schedule
+            </CardMessage>
+            {teamsDiagnostics && divisionsDiagnostics && (
+              <div className={styles.diagnosticsWrapper}>
+                Diagnostics:
+                <TeamsDiagnostics teamsDiagnostics={teamsDiagnostics} />
+                <DivisionsDiagnostics
+                  divisionsDiagnostics={divisionsDiagnostics}
+                />
+              </div>
+            )}
           </div>
         )}
         <DndProvider backend={HTML5Backend}>

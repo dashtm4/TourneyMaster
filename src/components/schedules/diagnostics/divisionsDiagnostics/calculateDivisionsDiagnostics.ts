@@ -2,7 +2,7 @@ import { union, filter, find, orderBy, findIndex, flatten } from 'lodash-es';
 import {
   calculateTeamTournamentTime,
   calculateNumOfTimeSlots,
-} from '../teamsDiagnostics';
+} from '../teamsDiagnostics/calculateTeamsDiagnostics';
 import { getTimeFromString, timeToString } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
@@ -36,7 +36,7 @@ const calculateDivisionFieldsNumber = (
   const divisionGames = divisionTeams
     .map(item => item.games)
     .flat()
-    .map(item => item.id);
+    .map(item => item?.id);
   const uniqueGameIds = union(divisionGames);
   const fieldIds = games
     .filter(game => uniqueGameIds.includes(game.id))

@@ -13,6 +13,9 @@ import {
   FETCH_SCHEDULES_DETAILS_FAILURE,
   SCHEDULES_PUBLISHED_SUCCESS,
   SCHEDULES_PUBLISHED_FAILURE,
+  SCHEDULES_PUBLISHED_CLEAR,
+  ANOTHER_SCHEDULE_PUBLISHED,
+  SCHEDULES_GAMES_ALREADY_EXIST,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
@@ -41,8 +44,9 @@ const draftSavedSuccess = () => ({
   type: SCHEDULES_DRAFT_SAVED_SUCCESS,
 });
 
-const schedulesSavingInProgress = () => ({
+export const schedulesSavingInProgress = (payload: boolean) => ({
   type: SCHEDULES_SAVING_IN_PROGRESS,
+  payload,
 });
 
 const draftSavedFailure = () => ({
@@ -57,15 +61,30 @@ const fetchSchedulesDetailsSuccess = (payload: {
   payload,
 });
 
-const publishedSuccess = () => ({
+export const publishedSuccess = () => ({
   type: SCHEDULES_PUBLISHED_SUCCESS,
 });
+
+export const publishedClear = () => ({
+  type: SCHEDULES_PUBLISHED_CLEAR,
+});
+
 const publishFailure = () => ({
   type: SCHEDULES_PUBLISHED_FAILURE,
 });
 
 const fetchSchedulesDetailsFailure = () => ({
   type: FETCH_SCHEDULES_DETAILS_FAILURE,
+});
+
+const anotherSchedulePublished = (payload: boolean) => ({
+  type: ANOTHER_SCHEDULE_PUBLISHED,
+  payload,
+});
+
+export const gamesAlreadyExist = (payload: boolean) => ({
+  type: SCHEDULES_GAMES_ALREADY_EXIST,
+  payload,
 });
 
 export const fetchFields = (
@@ -102,7 +121,7 @@ export const saveDraft = (
   scheduleDetails: ISchedulesDetails[]
 ): ThunkActionType<void> => async (dispatch: Dispatch) => {
   const scheduleCondition = scheduleData;
-  dispatch(schedulesSavingInProgress());
+  dispatch(schedulesSavingInProgress(true));
 
   try {
     if (scheduleCondition) {
@@ -128,7 +147,7 @@ export const saveDraft = (
 export const updateDraft = (
   schedulesDetails: ISchedulesDetails[]
 ): ThunkActionType<void> => async (dispatch: Dispatch) => {
-  dispatch(schedulesSavingInProgress());
+  dispatch(schedulesSavingInProgress(true));
 
   const schedulesDetailsChunk = chunk(schedulesDetails, 50);
 
@@ -150,10 +169,17 @@ export const updateDraft = (
 };
 
 export const publishSchedulesDetails = (
+  scheduleData: ISchedule,
   schedulesDetails: ISchedulesDetails[],
   schedulesGames: ISchedulesGame[]
 ) => async (dispatch: Dispatch) => {
-  dispatch(schedulesSavingInProgress());
+  dispatch(schedulesSavingInProgress(true));
+
+  const response = await api.post('/schedules', scheduleData);
+
+  if (!response) {
+    return errorToast('Something happened during the publishing process');
+  }
 
   const schedulesDetailsChunk = chunk(schedulesDetails, 50);
   const schedulesResponses = await Promise.all(
@@ -187,7 +213,7 @@ export const updatePublishedSchedulesDetails = (
   schedulesDetails: ISchedulesDetails[],
   schedulesGames: ISchedulesGame[]
 ) => async (dispatch: Dispatch) => {
-  dispatch(schedulesSavingInProgress());
+  dispatch(schedulesSavingInProgress(true));
 
   const schedulesDetailsChunk = chunk(schedulesDetails, 50);
   const schedulesResponses = await Promise.all(
@@ -244,11 +270,45 @@ export const fetchSchedulesDetails = (scheduleId: string) => async (
   }
 };
 
-export const getPublishedGames = (scheduleId: string) => async (
-  dispatch: Dispatch
-) => {
-  const response = await api.get('/games', { schedule_id: scheduleId });
-  if (response) {
+export const getPublishedGames = (
+  eventId: string,
+  scheduleId?: string
+) => async (dispatch: Dispatch) => {
+  const schedulesResponse: ISchedule[] = await api.get('/schedules', {
+    event_id: eventId,
+  });
+
+  if (!scheduleId) {
+    if (schedulesResponse?.find(item => item.schedule_status === 'Published')) {
+      dispatch(anotherSchedulePublished(true));
+    }
+
+    return;
+  }
+
+  const gamesResponse = await api.get('/games', { schedule_id: scheduleId });
+
+  if (gamesResponse?.length) {
+    dispatch(gamesAlreadyExist(true));
+  } else {
+    dispatch(gamesAlreadyExist(false));
+  }
+
+  if (
+    schedulesResponse?.find(
+      item =>
+        item.schedule_status === 'Published' && item.schedule_id === scheduleId
+    )
+  ) {
     dispatch(publishedSuccess());
+  } else if (
+    schedulesResponse?.find(
+      item =>
+        item.schedule_status === 'Published' && item.schedule_id !== scheduleId
+    )
+  ) {
+    dispatch(anotherSchedulePublished(true));
+  } else {
+    dispatch(publishedClear());
   }
 };

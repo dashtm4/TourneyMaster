@@ -17,6 +17,10 @@ export const FETCH_SCHEDULES_DETAILS_FAILURE =
 
 export const SCHEDULES_PUBLISHED_FAILURE = 'SCHEDULES_PUBLISHED_SUCCESS';
 export const SCHEDULES_PUBLISHED_SUCCESS = 'SCHEDULES_PUBLISHED_FAILURE';
+export const SCHEDULES_PUBLISHED_CLEAR = 'SCHEDULES_PUBLISHED_CLEAR';
+
+export const ANOTHER_SCHEDULE_PUBLISHED = 'ANOTHER_SCHEDULE_PUBLISHED';
+export const SCHEDULES_GAMES_ALREADY_EXIST = 'SCHEDULES_GAMES_ALREADY_EXIST';
 
 interface IFetchFieldsSuccess {
   type: 'FETCH_FIELDS_SUCCESS';
@@ -46,6 +50,7 @@ interface SchedulesDraftSavedFailure {
 
 interface SchedulesSavingInProgress {
   type: 'SCHEDULES_SAVING_IN_PROGRESS';
+  payload: boolean;
 }
 
 interface FetchSchedulesDetailsSuccess {
@@ -64,8 +69,22 @@ interface SchedulesPublishedFailure {
   type: 'SCHEDULES_PUBLISHED_FAILURE';
 }
 
+interface SchedulesPublishedClear {
+  type: 'SCHEDULES_PUBLISHED_CLEAR';
+}
+
 interface FetchSchedulesDetailsFailure {
   type: 'FETCH_SCHEDULES_DETAILS_FAILURE';
+}
+
+interface AnotherSchedulePublished {
+  type: 'ANOTHER_SCHEDULE_PUBLISHED';
+  payload: boolean;
+}
+
+interface SchedulesGamesAlreadyExist {
+  type: 'SCHEDULES_GAMES_ALREADY_EXIST';
+  payload: boolean;
 }
 
 export type FieldsAction = IFetchFieldsSuccess | IFetchFieldsFailure;
@@ -79,4 +98,7 @@ export type IScheduleAction =
   | FetchEventSummarySuccess
   | FetchEventSummaryFailure
   | SchedulesPublishedSuccess
-  | SchedulesPublishedFailure;
+  | SchedulesPublishedFailure
+  | SchedulesPublishedClear
+  | AnotherSchedulePublished
+  | SchedulesGamesAlreadyExist;

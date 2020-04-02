@@ -26,6 +26,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import history from '../../browserhistory';
 import { PopupExposure } from 'components/common';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import CsvLoader from 'components/common/csv-loader';
 
 interface IMapStateProps {
   event: IEventState;
@@ -49,6 +50,7 @@ type State = {
   expandAll: boolean;
   isModalOpen: boolean;
   isDeleteModalOpen: boolean;
+  isCsvLoaderOpen: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
@@ -60,6 +62,7 @@ class EventDetails extends Component<Props, State> {
     expandAll: false,
     isModalOpen: false,
     isDeleteModalOpen: false,
+    isCsvLoaderOpen: false,
   };
 
   componentDidMount() {
@@ -165,6 +168,14 @@ class EventDetails extends Component<Props, State> {
     history.push('/');
   };
 
+  onCsvLoaderBtn = () => {
+    this.setState({ isCsvLoaderOpen: true });
+  };
+
+  onCsvLoaderClose = () => {
+    this.setState({ isCsvLoaderOpen: false });
+  };
+
   render() {
     const eventTypeOptions = ['Tournament', 'Showcase', 'League'];
     const { event } = this.state;
@@ -181,18 +192,30 @@ class EventDetails extends Component<Props, State> {
       <div className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.paperWrapper}>
-            <Button
-              label="Cancel"
-              color="secondary"
-              variant="text"
-              onClick={this.onCancelClick}
-            />
-            <Button
-              label="Save"
-              color="primary"
-              variant="contained"
-              onClick={this.onSave}
-            />
+            <div>
+              {!this.props.match?.params.eventId && (
+                <Button
+                  label="Import from CSV"
+                  color="secondary"
+                  variant="text"
+                  onClick={this.onCsvLoaderBtn}
+                />
+              )}
+            </div>
+            <div>
+              <Button
+                label="Cancel"
+                color="secondary"
+                variant="text"
+                onClick={this.onCancelClick}
+              />
+              <Button
+                label="Save"
+                color="primary"
+                variant="contained"
+                onClick={this.onSave}
+              />
+            </div>
           </div>
         </Paper>
         <div className={styles.headingContainer}>
@@ -261,6 +284,12 @@ class EventDetails extends Component<Props, State> {
           onClose={this.onModalClose}
           onExitClick={this.onCancel}
           onSaveClick={this.onSave}
+        />
+        <CsvLoader
+          isOpen={this.state.isCsvLoaderOpen}
+          onClose={this.onCsvLoaderClose}
+          type="event_master"
+          onCreate={this.props.createEvent}
         />
       </div>
     );

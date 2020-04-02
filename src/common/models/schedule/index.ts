@@ -33,4 +33,5 @@ export interface IConfigurableSchedule extends ISchedule {
   periods_per_game: number;
   first_game_start: string;
   last_game_end: string;
+  isManualScheduling?: boolean;
 }
