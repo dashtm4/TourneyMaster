@@ -3,13 +3,13 @@ import { RequiredMenuKeys, EventMenuTitles } from 'common/enums';
 
 const getIncompleteMenuItems = (
   menuList: IMenuItem[],
-  ignore: EventMenuTitles
+  ignorList: EventMenuTitles[]
 ) => {
   const incompleteMenuItems = menuList.filter(
-    it =>
-      it.hasOwnProperty(RequiredMenuKeys.IS_COMPLETED) &&
-      !it.isCompleted &&
-      it.title !== ignore
+    item =>
+      item.hasOwnProperty(RequiredMenuKeys.IS_COMPLETED) &&
+      !item.isCompleted &&
+      ignorList.every(ignore => item.title !== ignore)
   );
 
   return incompleteMenuItems;

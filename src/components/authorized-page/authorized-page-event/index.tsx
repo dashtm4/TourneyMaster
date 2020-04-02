@@ -74,6 +74,11 @@ const AuthorizedPageEvent = ({
   }
 
   const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES];
+  const schedulingIgnoreList = [
+    EventMenuTitles.SCHEDULING,
+    EventMenuTitles.SCORING,
+  ];
+  const reportingIgnoreList = [EventMenuTitles.REPORTING];
 
   return (
     <div className={styles.container}>
@@ -104,7 +109,7 @@ const AuthorizedPageEvent = ({
                   {...props}
                   incompleteMenuItems={getIncompleteMenuItems(
                     menuList,
-                    EventMenuTitles.SCHEDULING
+                    schedulingIgnoreList
                   )}
                 />
               )}
@@ -119,7 +124,7 @@ const AuthorizedPageEvent = ({
                   {...props}
                   incompleteMenuItems={getIncompleteMenuItems(
                     menuList,
-                    EventMenuTitles.REPORTING
+                    reportingIgnoreList
                   )}
                 />
               )}
