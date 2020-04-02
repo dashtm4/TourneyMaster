@@ -18,6 +18,7 @@ import utilities from 'components/utilities/components/user-profile/logic/reduce
 import complexities from 'components/gameday-complexities/logic/reducer';
 import schedules from 'components/schedules/logic/reducer';
 import schedulesTable from 'components/schedules/logic/schedules-table/schedulesTableReducer';
+import tableColumns from 'components/common/csv-loader/logic/reducer';
 
 const rootReducer = combineReducers({
   router: connectRouter(history),
@@ -38,6 +39,7 @@ const rootReducer = combineReducers({
   utilities,
   complexities,
   schedulesTable,
+  tableColumns,
 });
 
 export default rootReducer;

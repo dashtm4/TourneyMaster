@@ -4,7 +4,12 @@
 .mainMenu {
   width: 100%;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  .btnsWraper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
 }
 
 .sectionContainer {

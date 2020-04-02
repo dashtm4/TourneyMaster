@@ -10,10 +10,11 @@ import {
   getPools,
   savePool,
   saveTeams,
+  saveDivisions,
 } from './logic/actions';
 import Modal from '../common/modal';
 import AddPool from './division/add-pool';
-import { BindingCbWithOne } from 'common/models/callback';
+import { BindingCbWithOne, BindingCbWithTwo } from 'common/models/callback';
 import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
 import { CircularProgress } from '@material-ui/core';
@@ -25,6 +26,7 @@ import {
 } from 'components/common';
 import { getIcon } from 'helpers';
 import { Icons } from 'common/enums';
+import CsvLoader from 'components/common/csv-loader';
 
 const ICON_STYLES = {
   marginRight: '5px',
@@ -41,6 +43,7 @@ interface IDivisionsAndPoolsProps {
   getPools: BindingCbWithOne<string>;
   savePool: BindingCbWithOne<Partial<IPool>>;
   saveTeams: BindingCbWithOne<ITeam[]>;
+  saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
 }
 
 interface IDivisionAndPoolsState {
@@ -56,6 +59,7 @@ interface IDivisionAndPoolsState {
   isDeletePopupOpen: boolean;
   isEditPopupOpen: boolean;
   isConfirmModalOpen: boolean;
+  isCsvLoaderOpen: boolean;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -80,6 +84,7 @@ class DivisionsAndPools extends React.Component<
       isDeletePopupOpen: false,
       isEditPopupOpen: false,
       isConfirmModalOpen: false,
+      isCsvLoaderOpen: false,
     };
   }
 
@@ -246,6 +251,14 @@ class DivisionsAndPools extends React.Component<
     this.setState({ isConfirmModalOpen: true });
   };
 
+  onCsvLoaderBtn = () => {
+    this.setState({ isCsvLoaderOpen: true });
+  };
+
+  onCsvLoaderClose = () => {
+    this.setState({ isCsvLoaderOpen: false });
+  };
+
   render() {
     const { divisions, pools, isLoading } = this.props;
     const {
@@ -286,23 +299,31 @@ class DivisionsAndPools extends React.Component<
                 </span>
               </p>
             ) : (
-              <p>
+              <div className={styles.btnsWraper}>
                 <Button
-                  onClick={this.onArrangeClick}
-                  icon={getIcon(Icons.EDIT, ICON_STYLES)}
-                  label="Arrange Teams"
-                  variant="text"
+                  label="Import from CSV"
                   color="secondary"
+                  variant="text"
+                  onClick={this.onCsvLoaderBtn}
                 />
-                <span className={styles.btnWrapper}>
+                <div>
                   <Button
-                    label="+ Add Division"
-                    variant="contained"
-                    color="primary"
-                    onClick={this.onAddDivision}
+                    onClick={this.onArrangeClick}
+                    icon={getIcon(Icons.EDIT, ICON_STYLES)}
+                    label="Arrange Teams"
+                    variant="text"
+                    color="secondary"
                   />
-                </span>
-              </p>
+                  <span className={styles.btnWrapper}>
+                    <Button
+                      label="+ Add Division"
+                      variant="contained"
+                      color="primary"
+                      onClick={this.onAddDivision}
+                    />
+                  </span>
+                </div>
+              </div>
             )}
           </div>
         </Paper>
@@ -407,6 +428,13 @@ class DivisionsAndPools extends React.Component<
           onExitClick={this.onCancelClick}
           onSaveClick={this.onSaveClick}
         />
+        <CsvLoader
+          isOpen={this.state.isCsvLoaderOpen}
+          onClose={this.onCsvLoaderClose}
+          type="divisions"
+          onCreate={this.props.saveDivisions}
+          eventId={this.eventId}
+        />
       </section>
     );
   }
@@ -435,6 +463,7 @@ const mapDispatchToProps = {
   getPools,
   savePool,
   saveTeams,
+  saveDivisions,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DivisionsAndPools);
