@@ -100,6 +100,7 @@ const TeamItem = ({
                   height: '21px',
                   alignSelf: 'center',
                 }}
+                alt=""
               />
             </span>
           )}

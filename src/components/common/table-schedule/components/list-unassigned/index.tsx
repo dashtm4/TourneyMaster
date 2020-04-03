@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { ITeamCard } from 'common/models/schedule/teams';
 import styles from './styles.module.scss';
