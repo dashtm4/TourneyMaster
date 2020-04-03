@@ -1,5 +1,6 @@
 enum MenuTitles {
   LIBRARY_MANAGER = 'Library Manager',
+  FACILITIES = 'Facilities',
   REGISTRATION = 'Registration',
   UTILITIES = 'Utilities',
   USER_PROFILE = 'User Profile',
