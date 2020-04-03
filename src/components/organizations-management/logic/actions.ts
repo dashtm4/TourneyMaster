@@ -92,6 +92,10 @@ const addUserToOrganization: ActionCreator<ThunkAction<
       (it: IOrganization) => it.org_id === invCode
     );
 
+    if (!currentOrganization) {
+      return;
+    }
+
     dispatch({
       type: ADD_USER_TO_ORGANIZATION_SUCCESS,
       payload: {
