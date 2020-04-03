@@ -13,7 +13,6 @@ export enum OrderTypes {
 export interface ITableSortRow {
   id: string;
   title: string;
-  version: string;
   lastModified: string;
 }
 

@@ -22,7 +22,6 @@ const Registration = ({ registrations, changeSharedItem }: Props) => {
   const rowForTable = registrations.map(it => ({
     id: it.registration_id,
     title: it.eventName as string,
-    version: '1',
     lastModified: it.updated_datetime || it.created_datetime,
   }));
 

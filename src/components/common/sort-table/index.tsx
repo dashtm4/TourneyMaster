@@ -72,9 +72,6 @@ const SortTable = ({ rows, onShare }: Props) => {
                   {row.title}
                 </TableCell>
                 <TableCell className={classes.tableCell}>
-                  {row.version}
-                </TableCell>
-                <TableCell className={classes.tableCell}>
                   {moment(row.lastModified).format('lll')}
                 </TableCell>
                 <TableCell className={classes.tableCell}>

@@ -19,7 +19,6 @@ const Facilities = ({ facilities, changeSharedItem }: Props) => {
   const rowForTable = facilities.map(it => ({
     id: it.facilities_id,
     title: it.facilities_description,
-    version: '1',
     lastModified: it.updated_datetime || (it.created_datetime as string),
   }));
 
