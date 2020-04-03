@@ -187,3 +187,38 @@
     margin: 0 -5px;
   }
 }
+
+.modalContainer {
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+  padding: 20px;
+
+  > span {
+    font-size: 16px;
+    color: #646363;
+    padding: 0 0 10px 0;
+    line-height: 1.4;
+    margin-top: 10px;
+
+    > b {
+      white-space: nowrap;
+      margin-top: 20px;
+      display: block;
+      text-align: center;
+    }
+  }
+
+  .modalBtnsWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+    padding: 0 30px;
+
+    > button {
+      margin-top: 20px;
+      margin-left: 20px;
+    }
+  }
+}
