@@ -1,5 +1,6 @@
 import React from 'react';
-import { SectionDropdown, SortTable } from 'components/common';
+import TableSort from '../table-sort';
+import { SectionDropdown } from 'components/common';
 import { EventMenuTitles, EntryPoints } from 'common/enums';
 import { BindingCbWithTwo } from 'common/models';
 import { IEntity } from 'common/types';
@@ -34,7 +35,7 @@ const Registration = ({ registrations, changeSharedItem }: Props) => {
         isDefaultExpanded={true}
       >
         <span>{EventMenuTitles.REGISTRATION}</span>
-        <SortTable rows={rowForTable} onShare={onShareRegistr} />
+        <TableSort rows={rowForTable} onShare={onShareRegistr} />
       </SectionDropdown>
     </li>
   );
