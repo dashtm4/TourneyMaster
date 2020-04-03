@@ -97,6 +97,8 @@ const PlayoffsSection: React.FC<Props> = ({
     bracket_type,
     num_teams_bracket,
     bracket_durations_vary,
+    ranking_factor_divisions,
+    ranking_factor_pools,
   } = eventData;
 
   const bracketGameDurationOpts = [
@@ -166,12 +168,12 @@ const PlayoffsSection: React.FC<Props> = ({
 
   const rankingFactorDivisions = parseRankingFactor(
     'rankingFactorDivisions',
-    eventData.ranking_factor_divisions
+    ranking_factor_divisions
   );
 
   const rankingFactorPools = parseRankingFactor(
     'rankingFactorPools',
-    eventData.ranking_factor_pools
+    ranking_factor_pools
   );
 
   return (
