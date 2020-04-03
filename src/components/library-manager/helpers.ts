@@ -68,6 +68,7 @@ const checkAleadyExist = async (
       ) {
         throw new Error('The event already has such a registration');
       }
+      break;
     }
     case EntryPoints.FACILITIES: {
       const facility = sharedItem as IFacility;

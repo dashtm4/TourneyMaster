@@ -9,12 +9,13 @@ import styles from '../styles.module.scss';
 
 interface IProps {
   schedules: ISchedulingSchedule[];
-  onEditSchedule: BindingCbWithOne<ISchedulingSchedule>;
   eventId: string;
+  isSectionCollapse: boolean;
+  onEditSchedule: BindingCbWithOne<ISchedulingSchedule>;
 }
 
 export default (props: IProps) => {
-  const { schedules, eventId, onEditSchedule } = props;
+  const { schedules, eventId, isSectionCollapse, onEditSchedule } = props;
 
   const sortedScheduleByName = schedules.sort(
     (a, b) =>
@@ -26,6 +27,7 @@ export default (props: IProps) => {
     <SectionDropdown
       type="section"
       isDefaultExpanded={true}
+      expanded={isSectionCollapse}
       useBorder={true}
       id={EventMenuTitles.TOURNAMENT_PLAY}
     >

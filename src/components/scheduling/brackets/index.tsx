@@ -1,65 +1,41 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faNetworkWired } from '@fortawesome/free-solid-svg-icons';
-
-import {
-  SectionDropdown,
-  HeadingLevelThree,
-  HeadingLevelFour,
-  Button,
-  Paper,
-} from 'components/common';
-import styles from '../styles.module.scss';
+import { SectionDropdown, HeadingLevelThree } from 'components/common';
+import BraketsItem from '../brakets-item';
 import { EventMenuTitles } from 'common/enums';
-import { BindingAction } from 'common/models';
+import { ISchedulingSchedule } from '../types';
+import styles from '../styles.module.scss';
+import { compareTime } from 'helpers';
 
 interface IProps {
-  onManageBrackets: BindingAction;
+  schedules: ISchedulingSchedule[];
+  eventId: string;
+  isSectionCollapse: boolean;
 }
 
-export default (props: IProps) => {
-  const { onManageBrackets } = props;
+const Brackets = ({ schedules, eventId, isSectionCollapse }: IProps) => {
+  const sortedScheduleByName = schedules.sort(
+    (a, b) =>
+      compareTime(a.updated_datetime, b.updated_datetime) ||
+      compareTime(a.created_datetime, b.created_datetime)
+  );
 
   return (
     <SectionDropdown
       type="section"
       isDefaultExpanded={true}
       useBorder={true}
+      expanded={isSectionCollapse}
       id={EventMenuTitles.BRACKETS}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>{EventMenuTitles.BRACKETS}</span>
       </HeadingLevelThree>
-      <div className={styles.brackets}>
-        <Paper padding={20}>
-          <div className={styles.header}>
-            <HeadingLevelFour>
-              <span>Men's Spring Thaw (2020, 2021)</span>
-            </HeadingLevelFour>
-            <Button
-              icon={<FontAwesomeIcon icon={faNetworkWired} />}
-              label="Manage Bracket"
-              color="secondary"
-              variant="text"
-              onClick={onManageBrackets}
-            />
-          </div>
-          <div className={styles.tournamentName}>
-            <div className={styles.tnFirst}>
-              <div className={styles.sectionCellHor}>
-                <span>Teams:</span>
-                <p>24</p>
-              </div>
-            </div>
-            <div className={styles.tnSecond}>
-              <div className={styles.sectionCellHor}>
-                <span>Dates:</span>
-                <p>02/08/20 - 02/09/20</p>
-              </div>
-            </div>
-          </div>
-        </Paper>
-      </div>
+      <ul className={styles.braketsList}>
+        {sortedScheduleByName.map(it => (
+          <BraketsItem schedule={it} eventId={eventId} key={it.schedule_id} />
+        ))}
+      </ul>
     </SectionDropdown>
   );
 };
+export default Brackets;
