@@ -7,9 +7,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import moment from 'moment';
+import { Button } from 'components/common';
 import { getComparator, stableSort } from './helpers';
 import { ITableSortRow, OrderTypes, TableSortRowTypes } from './common';
 import styles from './styles.module.scss';
+import { ButtonColors, ButtonVarian } from 'common/enums';
 
 const useStyles = makeStyles({
   tableRowEven: {
@@ -25,6 +27,10 @@ const useStyles = makeStyles({
     border: 0,
   },
 });
+
+const APPLY_BTN_STYLES = {
+  fontSize: '15px',
+};
 interface Props {
   rows: ITableSortRow[];
   onShare: (id: string) => void;
@@ -75,12 +81,15 @@ const SortTable = ({ rows, onShare }: Props) => {
                   {moment(row.lastModified).format('lll')}
                 </TableCell>
                 <TableCell className={classes.tableCell}>
-                  <button
-                    className={styles.actionBtn}
-                    onClick={() => onShare(row.id)}
-                  >
-                    Share
-                  </button>
+                  <span className={styles.btnWrapper}>
+                    <Button
+                      onClick={() => onShare(row.id)}
+                      variant={ButtonVarian.TEXT}
+                      color={ButtonColors.SECONDARY}
+                      btnStyles={APPLY_BTN_STYLES}
+                      label="Apply to…"
+                    />
+                  </span>
                 </TableCell>
               </TableRow>
             ))}
