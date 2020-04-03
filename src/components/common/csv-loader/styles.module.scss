@@ -4,7 +4,8 @@
   margin: 20px;
 
   .uploaderWrapper {
-    // min-height: 65px;
+    display: flex;
+    justify-content: space-between;
   }
 
   .row {
@@ -13,7 +14,7 @@
   }
 
   .tableContainer {
-    height: 68%;
+    height: 66%;
     overflow-y: auto;
     margin: 10px 0;
   }

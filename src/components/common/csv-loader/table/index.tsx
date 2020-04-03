@@ -9,28 +9,28 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import styles from '../styles.module.scss';
 import { Select, Checkbox } from 'components/common/';
-import { IField } from '../index';
+import { IField } from 'common/models/table-columns';
 import { BindingAction, BindingCbWithTwo } from 'common/models';
 
 interface IProps {
-  preview: { headers: string[]; row: string[] };
+  preview: { header: string[]; row: string[] };
   fields: IField[];
-  onCheckboxChange: BindingCbWithTwo<
+  onFieldIncludeChange: BindingCbWithTwo<
     React.ChangeEvent<HTMLInputElement>,
     number
   >;
   onSelect: BindingCbWithTwo<React.ChangeEvent<HTMLInputElement>, number>;
   columnOptions: { label: string; value: string }[];
-  onChangeIncludeAll: BindingAction;
+  onIncludeAllChange: BindingAction;
 }
 
 const CsvTable = ({
   preview,
   fields,
-  onCheckboxChange,
+  onFieldIncludeChange,
   onSelect,
   columnOptions,
-  onChangeIncludeAll,
+  onIncludeAllChange,
 }: IProps) => {
   return (
     <TableContainer component={Paper} className={styles.tableContainer}>
@@ -54,7 +54,7 @@ const CsvTable = ({
                         checked: fields.every(field => field.included),
                       },
                     ]}
-                    onChange={onChangeIncludeAll}
+                    onChange={onIncludeAllChange}
                   />
                 </div>
               </div>
@@ -71,7 +71,7 @@ const CsvTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {preview.headers.map((col, index: number) => (
+          {preview.header.map((col, index: number) => (
             <TableRow
               key={index}
               style={{
@@ -93,7 +93,7 @@ const CsvTable = ({
                       },
                     ]}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      onCheckboxChange(e, index);
+                      onFieldIncludeChange(e, index);
                     }}
                   />
                 </div>
@@ -112,7 +112,7 @@ const CsvTable = ({
                 </div>
               </TableCell>
               <TableCell component="td" scope="row" style={{ width: 180 }}>
-                {fields[index]?.data_type}
+                {fields[index]?.dataType}
               </TableCell>
               <TableCell component="td" scope="row">
                 {preview.row[index]}

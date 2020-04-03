@@ -1,22 +1,23 @@
-import { IColumnDetails, IField } from './index';
+import { IColumnDetails, IField } from 'common/models/table-columns';
 import { getVarcharEight } from 'helpers';
+import { EventDetailsDTO } from 'components/event-details/logic/model';
 
 export const parseTableDetails = (tableDetails: string): IColumnDetails[] => {
   return JSON.parse(`[${tableDetails}]`).flat();
 };
 
-export const getPreviewFromResults = (
-  results: string[][],
+export const getPreview = (
+  data: string[][],
   isHeaderIncluded: boolean,
   headerPosition: number
 ) => {
   if (isHeaderIncluded) {
     return {
-      headers: results[headerPosition - 1],
-      row: results[headerPosition],
+      header: data[headerPosition - 1],
+      row: data[headerPosition],
     };
   } else {
-    return { headers: results[0].map((_res: string) => '—'), row: results[0] };
+    return { header: data[0].map((_f: string) => '—'), row: data[0] };
   }
 };
 
@@ -31,18 +32,34 @@ export const getColumnOptions = (tableDetails: string) => {
 export const mapFieldForSaving = (fields: IField[]) => {
   return fields.map(field => {
     if (field.included) {
-      return { [field.map_id]: field.csv_position };
+      return field.mapId;
     } else {
-      return { [field.map_id]: '' };
+      return '';
     }
   });
 };
 
-export const parseMapping = (_fields: IField[], _mapping: string) => {
-  const parsedMapping = JSON.parse(
-    '[{"24":""},{"26":1},{"27":2},{"28":3},{"29":4},{"30":5},{"31":6},{"32":7},{"33":8},{"35":9},{"36":10},{"37":11},{"38":12},{"39":13},{"40":14},{"41":15},{"42":16},{"43":17},{"44":18},{"45":19},{"46":20},{"47":21},{"48":22},{"49":23},{"50":24},{"51":25},{"53":26},{"54":27},{"55":28},{"56":29},{"57":30},{"58":31},{"59":32},{"60":33},{"61":34},{"62":35},{"63":36},{"64":37},{"65":38},{"66":39},{"67":40},{"68":41},{"69":42},{"70":43},{"71":44},{"72":45},{"73":46}]'
-  );
-  console.log(parsedMapping);
+export const parseMapping = (mapping: string, tableDetails: string) => {
+  const parsedTableDetails = parseTableDetails(tableDetails);
+  const fields = parsedTableDetails.map((column, index: number) => ({
+    value: column.column_name,
+    csvPosition: index,
+    dataType: column.data_type,
+    included: true,
+    mapId: column.map_id,
+  }));
+
+  const parsedMapping = JSON.parse(mapping);
+  const newFields = fields.map((field, index) => {
+    if (parsedMapping[index]) {
+      const obj = fields.find(f => f.mapId === parsedMapping[index]);
+      return { ...field, value: obj!.value, mapId: obj!.mapId };
+    } else {
+      return { ...field, value: '', mapId: '', dataType: '', included: false };
+    }
+  });
+
+  return newFields;
 };
 
 const getBaseObj = (type: string, eventId?: string) => {
@@ -74,9 +91,9 @@ export const mapDataForSaving = (
   const baseObj = getBaseObj(type, eventId);
 
   return fields.reduce((obj, item) => {
-    if (data[item.csv_position] && item.included) {
+    if (data[item.csvPosition] && item.included) {
       Object.assign(obj, {
-        [item.value]: data[item.csv_position],
+        [item.value]: data[item.csvPosition],
       });
     }
     return obj;
@@ -84,21 +101,21 @@ export const mapDataForSaving = (
 };
 
 export const checkCsvForValidity = (
-  results: string[],
+  data: string[],
   headerIncluded: boolean,
   headerPosition: number,
   fields: IField[]
 ) => {
-  if (headerIncluded && results.length <= headerPosition) {
-    return true;
+  if (headerIncluded && data.length <= headerPosition) {
+    return false;
   }
-  if (headerIncluded && results[headerPosition].length > fields.length) {
-    return true;
+  if (headerIncluded && data[headerPosition].length > fields.length) {
+    return false;
   }
-  if (!headerIncluded && results[0].length > fields.length) {
-    return true;
+  if (!headerIncluded && data[0].length > fields.length) {
+    return false;
   }
-  return false;
+  return true;
 };
 
 export const getRequiredFields = (type: string) => {
@@ -121,5 +138,23 @@ export const getRequiredFields = (type: string) => {
       return ['Facility Description'];
     default:
       return [];
+  }
+};
+
+export const saveData = (
+  data: any,
+  type: string,
+  onCreate: any,
+  eventId?: string
+) => {
+  switch (type) {
+    case 'event_master':
+      return data.forEach((event: EventDetailsDTO) => {
+        onCreate(event);
+      });
+    case 'facilities':
+      return onCreate(data, []);
+    case 'divisions':
+      onCreate(data, eventId);
   }
 };

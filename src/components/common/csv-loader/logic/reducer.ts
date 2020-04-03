@@ -1,20 +1,15 @@
 import {
   TABLE_COLUMNS_FETCH_SUCCESS,
-  MAPPING_FETCH_SUCCESS,
+  MAPPINGS_FETCH_SUCCESS,
+  ADD_MAPPING_SUCCESS,
+  REMOVE_MAPPING_SUCCESS,
   TableColumnsAction,
 } from './actionTypes';
-
-interface ITableColumns {
-  map_id: number;
-  table_name: string;
-  is_active_YN: number;
-  created_by: string;
-  table_details: string;
-}
+import { ITableColumns, IMapping } from 'common/models/table-columns';
 
 export interface ITableColumnsState {
   data?: ITableColumns;
-  mappings: any[];
+  mappings: IMapping[];
 }
 
 const defaultState: ITableColumnsState = {
@@ -30,10 +25,24 @@ export default (state = defaultState, action: TableColumnsAction) => {
         data: action.payload[0],
       };
     }
-    case MAPPING_FETCH_SUCCESS: {
+    case MAPPINGS_FETCH_SUCCESS: {
       return {
         ...state,
         mappings: action.payload,
+      };
+    }
+    case REMOVE_MAPPING_SUCCESS: {
+      return {
+        ...state,
+        mappings: state.mappings.filter(
+          mapping => mapping.member_map_id !== action.payload
+        ),
+      };
+    }
+    case ADD_MAPPING_SUCCESS: {
+      return {
+        ...state,
+        mappings: [...state.mappings, action.payload],
       };
     }
     default:
