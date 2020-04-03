@@ -36,6 +36,8 @@ enum Icons {
   DROPUP = 'DROPUP',
   CLEAR = 'CLEAR',
   EYE = 'VISIBILITY',
+  FULL_SCREEN = 'fullScreen',
+  FULL_SCREEN_EXIT = 'fullScreenExit',
 }
 
 export { Icons };

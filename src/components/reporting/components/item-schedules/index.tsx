@@ -62,7 +62,7 @@ const ItemSchedules = ({
         isHeatMap={true}
       />,
       event.event_name
-        ? `${event.event_name} Master Schedule(HeatMap)`
+        ? `${event.event_name} Master Schedule (HeatMap)`
         : 'Schedule'
     );
 
