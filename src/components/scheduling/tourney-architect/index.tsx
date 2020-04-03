@@ -39,10 +39,11 @@ interface IProps {
   schedule: IConfigurableSchedule;
   onChange: (name: string, value: any) => void;
   onViewEventMatrix: BindingAction;
+  isSectionCollapse: boolean;
 }
 
-export default (props: IProps) => {
-  const { schedule, onChange, onViewEventMatrix } = props;
+const TourneyArchitect = (props: IProps) => {
+  const { schedule, isSectionCollapse, onChange, onViewEventMatrix } = props;
 
   const timeValues = getTimeValuesFromSchedule(schedule);
   const scheduleTimeSlots = calculateTimeSlots(timeValues);
@@ -77,7 +78,7 @@ export default (props: IProps) => {
   return (
     <SectionDropdown
       type="section"
-      isDefaultExpanded={true}
+      expanded={isSectionCollapse}
       useBorder={true}
       id={EventMenuTitles.TOURNEY_ARCHITECT}
     >
@@ -210,3 +211,5 @@ export default (props: IProps) => {
     </SectionDropdown>
   );
 };
+
+export default TourneyArchitect;

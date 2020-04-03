@@ -11,7 +11,13 @@ import {
   updateSchedule,
   deleteSchedule,
 } from './logic/actions';
-import { HeadingLevelTwo, Loader, Modal, HazardList } from 'components/common';
+import {
+  HeadingLevelTwo,
+  Loader,
+  Modal,
+  HazardList,
+  Button,
+} from 'components/common';
 import Navigation from './navigation';
 import TourneyArchitect from './tourney-architect';
 import TournamentPlay from './tournament-play';
@@ -26,6 +32,7 @@ import { ISchedulingSchedule } from './types';
 import ViewMatrix from './view-matrix';
 import { getTimeValuesFromSchedule, calculateTimeSlots } from 'helpers';
 import { IField } from 'common/models';
+import { ButtonVarian, ButtonColors } from 'common/enums';
 
 interface IProps {
   schedule: IConfigurableSchedule | null;
@@ -48,6 +55,7 @@ interface IState {
   editedSchedule: ISchedulingSchedule | null;
   createModalOpen: boolean;
   viewMatrixOpen: boolean;
+  isSectionsCollapse: boolean;
 }
 
 class Scheduling extends Component<IProps, IState> {
@@ -55,6 +63,7 @@ class Scheduling extends Component<IProps, IState> {
     editedSchedule: null,
     createModalOpen: false,
     viewMatrixOpen: false,
+    isSectionsCollapse: true,
   };
 
   componentDidMount() {
@@ -89,6 +98,11 @@ class Scheduling extends Component<IProps, IState> {
   openViewMatrix = () => this.setState({ viewMatrixOpen: true });
   closeViewMatrix = () => this.setState({ viewMatrixOpen: false });
 
+  toggleSectionCollapse = () =>
+    this.setState(({ isSectionsCollapse }) => ({
+      isSectionsCollapse: !isSectionsCollapse,
+    }));
+
   render() {
     const {
       schedule,
@@ -100,7 +114,12 @@ class Scheduling extends Component<IProps, IState> {
       deleteSchedule,
       fields,
     } = this.props;
-    const { createModalOpen, editedSchedule, viewMatrixOpen } = this.state;
+    const {
+      createModalOpen,
+      editedSchedule,
+      viewMatrixOpen,
+      isSectionsCollapse,
+    } = this.state;
     const { eventId } = this.props.match?.params;
     const isAllowCreate = incompleteMenuItems.length === 0;
 
@@ -120,20 +139,34 @@ class Scheduling extends Component<IProps, IState> {
           />
           {isAllowCreate ? (
             <>
-              <HeadingLevelTwo margin="24px 0px">Scheduling</HeadingLevelTwo>
+              <div className={styles.titleWrapper}>
+                <HeadingLevelTwo margin="24px 0px">Scheduling</HeadingLevelTwo>
+                <Button
+                  onClick={this.toggleSectionCollapse}
+                  variant={ButtonVarian.TEXT}
+                  color={ButtonColors.SECONDARY}
+                  label={isSectionsCollapse ? 'Expand All' : 'Collapse All'}
+                />
+              </div>
               <TourneyArchitect
                 schedule={schedule}
                 onChange={this.onChange}
+                isSectionCollapse={isSectionsCollapse}
                 onViewEventMatrix={this.openViewMatrix}
               />
               {schedules.length > 0 && (
                 <>
                   <TournamentPlay
                     schedules={schedules}
-                    onEditSchedule={this.onEditSchedule}
+                    isSectionCollapse={isSectionsCollapse}
                     eventId={eventId}
+                    onEditSchedule={this.onEditSchedule}
                   />
-                  {false && <Brackets onManageBrackets={() => {}} />}
+                  <Brackets
+                    schedules={schedules}
+                    eventId={eventId}
+                    isSectionCollapse={isSectionsCollapse}
+                  />
                 </>
               )}
             </>
