@@ -45,6 +45,7 @@ export interface ITeamCard extends ITeam {
     teamPosition: TeamPositionEnum;
     isTeamLocked?: boolean;
     teamScore?: string | number | null;
+    date?: string;
   }[];
   fieldId?: string;
   timeSlotId?: number;

@@ -19,12 +19,7 @@ const Registration = ({ registrations, changeSharedItem }: Props) => {
     changeSharedItem(editedRegistration!, EntryPoints.REGISTRATIONS);
   };
 
-  // ! in future it can not be null(now database has it field like null)
-  const onlyTrulyRegistrations = registrations.filter(it =>
-    Boolean(it.eventName)
-  );
-
-  const rowForTable = onlyTrulyRegistrations.map(it => ({
+  const rowForTable = registrations.map(it => ({
     id: it.registration_id,
     title: it.eventName as string,
     version: '1',

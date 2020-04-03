@@ -1,0 +1,15 @@
+.container {
+  width: 500px;
+  height: 300px;
+  margin: 20px;
+  color: #6a6a6a;
+
+  .sectionTitle {
+    color: #1c315f;
+    font-size: 24px;
+    font-weight: 600;
+    padding-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+  }
+}

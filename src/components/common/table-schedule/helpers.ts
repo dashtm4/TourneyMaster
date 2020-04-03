@@ -4,6 +4,7 @@ import { IGame } from '../matrix-table/helper';
 import { IDivision, IEventSummary, IPool } from 'common/models';
 import { IField } from 'common/models/schedule/fields';
 import { IMultiSelectOption } from '../multi-select';
+import { DayTypes } from './types';
 
 interface IApplyFilterParams {
   divisions: IDivision[];
@@ -79,6 +80,7 @@ export const applyFilters = (params: IApplyFilterParams) => {
   );
 
   return {
+    selectedDay: DayTypes[1],
     divisionsOptions,
     poolsOptions,
     teamsOptions,

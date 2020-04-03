@@ -27,7 +27,7 @@ const TournamentStatus = ({
         </p>
         {tournamentStatus === EventStatuses.DRAFT && (
           <p className={styles.progressBarComplete}>
-            <output>{`${percentOfCompleted}%`}</output>
+            <output>{`${percentOfCompleted}% `}</output>
             Complete
           </p>
         )}

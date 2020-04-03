@@ -20,6 +20,24 @@ const styles = StyleSheet.create({
 
     borderColor: '#333',
   },
+  scheduleName: {
+    marginBottom: 5,
+  },
+  mainContactWrapper: {
+    flexDirection: 'row',
+  },
+  mainContactNameWrapper: {
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+    marginRight: 10,
+  },
+  mainContactTitle: {
+    fontSize: 11,
+    marginRight: 3,
+  },
+  mainContact: {
+    marginRight: 5,
+  },
   logoWrapper: {
     width: 100,
   },

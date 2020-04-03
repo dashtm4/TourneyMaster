@@ -33,6 +33,7 @@ import PanToolIcon from '@material-ui/icons/PanTool';
 import FlipToBackIcon from '@material-ui/icons/FlipToBack';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import { PinIcon } from './own-icons';
 import { Icons } from '../../common/enums/icons';
 
@@ -108,6 +109,8 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <ArrowDropUpIcon style={iconStyles} />;
     case Icons.CLEAR:
       return <ClearIcon style={iconStyles} />;
+    case Icons.EYE:
+      return <VisibilityIcon style={iconStyles} />;
   }
   return <ClearIcon />;
 };

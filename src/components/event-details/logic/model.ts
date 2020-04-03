@@ -4,6 +4,9 @@ export interface EventDetailsDTO {
   org_id: string;
   event_name: string;
   event_description: string;
+  main_contact: null | string;
+  main_contact_mobile: null | string;
+  main_contact_email: null | string;
   event_startdate: string;
   event_enddate: string;
   time_zone_utc: number;
