@@ -72,6 +72,7 @@ interface State {
   fields?: IScheduleField[];
   facilities?: IScheduleFacility[];
   divisions?: IScheduleDivision[];
+  neccessaryDataCalculated: boolean;
 }
 
 class Reporting extends React.Component<
@@ -81,7 +82,9 @@ class Reporting extends React.Component<
   constructor(props: Props & RouteComponentProps<MatchParams>) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      neccessaryDataCalculated: false,
+    };
   }
 
   componentDidMount() {
@@ -90,23 +93,16 @@ class Reporting extends React.Component<
     this.props.loadReportingData(eventId);
   }
 
-  componentDidUpdate(prevProps: Props) {
-    const { schedule, schedulesDetails } = this.props;
-    const { teams } = this.state;
+  componentDidUpdate() {
+    const { schedule, schedulesDetails, schedulesTeamCards } = this.props;
+    const { teams, neccessaryDataCalculated } = this.state;
 
-    if (!prevProps.schedule && this.props.schedule) {
+    if (!neccessaryDataCalculated && schedule) {
       this.calculateNeccessaryData();
       return;
     }
 
-    if (
-      !prevProps.schedulesTeamCards &&
-      schedulesDetails &&
-      Boolean(schedulesDetails.length) &&
-      teams?.length &&
-      Boolean(teams?.length) &&
-      schedule
-    ) {
+    if (!schedulesTeamCards && schedulesDetails && teams && schedule) {
       const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
 
       this.props.fillSchedulesTable(mappedTeams);
@@ -155,6 +151,7 @@ class Reporting extends React.Component<
       fields: sortedFields,
       teams: mappedTeams,
       facilities: mappedFacilities,
+      neccessaryDataCalculated: true,
     });
   };
 

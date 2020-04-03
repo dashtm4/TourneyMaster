@@ -16,6 +16,8 @@ import {
   IDivision,
   // ScheduleStatuses,
   ISchedulesGame,
+  ISchedule,
+  ScheduleStatuses,
 } from 'common/models';
 import { chunk } from 'lodash-es';
 import { Toasts } from 'components/common';
@@ -35,7 +37,7 @@ const loadScoresData: ActionCreator<ThunkAction<
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
     const teams = await Api.get(`/teams?event_id=${eventId}`);
     const eventSummary = await Api.get(`/event_summary?event_id=${eventId}`);
-    const schedules = await Api.get('/schedules');
+    const schedules = await Api.get(`/schedules?event_id=${eventId}`);
     const facilities = await Api.get(`/facilities?event_id=${eventId}`);
     const fields = (
       await Promise.all(
@@ -57,9 +59,9 @@ const loadScoresData: ActionCreator<ThunkAction<
       (it: IEventDetails) => it.event_id === eventId
     );
 
-    // const activeSchedule = schedules.find(
-    //   (it: ISchedule) => it.schedule_status === ScheduleStatuses.PUBLISHED
-    // );
+    const activeSchedule = schedules.find(
+      (it: ISchedule) => it.schedule_status === ScheduleStatuses.PUBLISHED
+    );
 
     const schedulesGames = await Api.get(
       `/games?event_id=${currentEvent.event_id}`
@@ -69,8 +71,7 @@ const loadScoresData: ActionCreator<ThunkAction<
       type: LOAD_SCORES_DATA_SUCCESS,
       payload: {
         event: currentEvent,
-        // schedule: activeSchedule,
-        schedule: schedules[0],
+        schedule: activeSchedule || null,
         facilities,
         fields,
         divisions,

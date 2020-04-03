@@ -59,6 +59,7 @@ interface TournamentInfo {
   teams: ITeam[];
   divisions: IDivision[];
 }
+import * as Yup from 'yup';
 
 const scheduleFetchInProgress = () => ({
   type: SCHEDULE_FETCH_IN_PROGRESS,
@@ -165,7 +166,17 @@ export const createNewSchedule = (schedule: IConfigurableSchedule) => async (
   dispatch: Dispatch
 ) => {
   try {
-    await scheduleSchema.validate(schedule);
+    const allSchedules = await api.get(
+      `/schedules?event_id=${schedule.event_id}`
+    );
+
+    await Yup.array()
+      .of(scheduleSchema)
+      .unique(
+        schedule => schedule.schedule_name,
+        'Oops. It looks like you already have schedule with the same name. The schedule must have a unique name.'
+      )
+      .validate([...allSchedules, schedule]);
 
     dispatch({
       type: CREATE_NEW_SCHEDULE_SUCCESS,
@@ -192,7 +203,17 @@ export const updateSchedule = (schedule: ISchedulingSchedule) => async (
     delete copiedSchedule.createdByName;
     delete copiedSchedule.updatedByName;
 
-    await updatedScheduleSchema.validate(copiedSchedule);
+    const allSchedules = await api.get(
+      `/schedules?event_id=${schedule.event_id}`
+    );
+
+    await Yup.array()
+      .of(updatedScheduleSchema)
+      .unique(
+        schedule => schedule.schedule_name,
+        'Oops. It looks like you already have schedule with the same name. The schedule must have a unique name.'
+      )
+      .validate([...allSchedules, copiedSchedule]);
 
     await api.put(
       `/schedules?schedule_id=${copiedSchedule.schedule_id}`,

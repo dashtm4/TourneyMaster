@@ -105,6 +105,7 @@ const FileUpload: React.FC<IProps> = props => {
           <img
             src={`https://tourneymaster.s3.amazonaws.com/public/${logo}`}
             className={styles.logo}
+            alt="Event logo"
           />
         )}
         <span>Drag & Drop files here</span>

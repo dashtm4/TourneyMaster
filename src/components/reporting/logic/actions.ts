@@ -7,7 +7,12 @@ import {
   LOAD_REPORTING_DATA_FAILURE,
 } from './action-types';
 import Api from 'api/api';
-import { IFacility, IEventDetails } from 'common/models';
+import {
+  IFacility,
+  IEventDetails,
+  ScheduleStatuses,
+  ISchedule,
+} from 'common/models';
 
 const loadReportingData: ActionCreator<ThunkAction<
   void,
@@ -23,7 +28,7 @@ const loadReportingData: ActionCreator<ThunkAction<
     const events = await Api.get(`/events?event_id=${eventId}`);
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
     const teams = await Api.get(`/teams?event_id=${eventId}`);
-    const schedules = await Api.get('/schedules');
+    const schedules = await Api.get(`/schedules?event_id=${eventId}`);
     const facilities = await Api.get(`/facilities?event_id=${eventId}`);
     const fields = (
       await Promise.all(
@@ -37,21 +42,19 @@ const loadReportingData: ActionCreator<ThunkAction<
       (it: IEventDetails) => it.event_id === eventId
     );
 
-    // // ! use enum in future
-    // const activeSchedule = schedules.find(
-    //   (it: ISchedule) => it.schedule_status === 'Published'
-    // );
+    const activeSchedule = schedules.find(
+      (it: ISchedule) => it.schedule_status === ScheduleStatuses.PUBLISHED
+    );
 
     const schedulesDetails = await Api.get(
-      `/schedules_details?schedule_id=${schedules[0].schedule_id}`
+      `/schedules_details?schedule_id=${activeSchedule.schedule_id}`
     );
 
     dispatch({
       type: LOAD_REPORTING_DATA_SUCCESS,
       payload: {
         event: currentEvent,
-        schedule: schedules[0],
-        // schedule: activeSchedule,
+        schedule: activeSchedule || null,
         facilities,
         fields,
         divisions,

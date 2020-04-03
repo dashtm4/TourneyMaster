@@ -42,6 +42,7 @@ import {
 import { ISchedulingSchedule } from './types';
 import ViewMatrix from './view-matrix';
 import { getTimeValuesFromSchedule, calculateTimeSlots } from 'helpers';
+import { ButtonVarian, ButtonColors } from 'common/enums';
 
 enum ComponentActionsEnum {
   SchedulePublish = 'schedulePublish',
@@ -82,6 +83,7 @@ interface IState {
   confirmText?: string;
   confirmCondition?: { name: string; data: any };
   componentAction?: ComponentActionsEnum;
+  isSectionsCollapse: boolean;
 }
 
 class Scheduling extends Component<IProps, IState> {
@@ -93,6 +95,7 @@ class Scheduling extends Component<IProps, IState> {
     confirmText: '',
     confirmCondition: undefined,
     componentAction: undefined,
+    isSectionsCollapse: true,
   };
 
   componentDidMount() {
@@ -174,6 +177,10 @@ class Scheduling extends Component<IProps, IState> {
       confirmationModalOpen: false,
     });
   };
+  toggleSectionCollapse = () =>
+    this.setState(({ isSectionsCollapse }) => ({
+      isSectionsCollapse: !isSectionsCollapse,
+    }));
 
   render() {
     const {
@@ -194,6 +201,7 @@ class Scheduling extends Component<IProps, IState> {
       confirmCondition,
       confirmationModalOpen,
       componentAction,
+      isSectionsCollapse,
     } = this.state;
     const { eventId } = this.props.match?.params;
     const isAllowCreate = incompleteMenuItems.length === 0;
@@ -219,24 +227,38 @@ class Scheduling extends Component<IProps, IState> {
           />
           {isAllowCreate ? (
             <>
-              <HeadingLevelTwo margin="24px 0px">Scheduling</HeadingLevelTwo>
+              <div className={styles.titleWrapper}>
+                <HeadingLevelTwo margin="24px 0px">Scheduling</HeadingLevelTwo>
+                <Button
+                  onClick={this.toggleSectionCollapse}
+                  variant={ButtonVarian.TEXT}
+                  color={ButtonColors.SECONDARY}
+                  label={isSectionsCollapse ? 'Expand All' : 'Collapse All'}
+                />
+              </div>
               <TourneyArchitect
                 schedule={schedule}
                 onChange={this.onChange}
+                isSectionCollapse={isSectionsCollapse}
                 onViewEventMatrix={this.openViewMatrix}
               />
               {schedules.length > 0 && (
                 <>
                   <TournamentPlay
                     schedules={schedules}
+                    isSectionCollapse={isSectionsCollapse}
+                    eventId={eventId}
                     onEditSchedule={this.onEditSchedule}
+                  />
+                  <Brackets
+                    schedules={schedules}
                     eventId={eventId}
                     onPublish={(data: ISchedule) => this.onPublish(data, true)}
                     onUnpublish={(data: ISchedule) =>
                       this.onPublish(data, false)
                     }
+                    isSectionCollapse={isSectionsCollapse}
                   />
-                  {false && <Brackets onManageBrackets={() => {}} />}
                 </>
               )}
             </>

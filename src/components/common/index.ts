@@ -21,7 +21,6 @@ import FileUpload from './file-upload';
 import ProgressBar from './progress-bar';
 import PopupExposure from './popup-exposure';
 import PopupConfirm from './popup-confirm';
-import SortTable from './sort-table';
 import MatrixTable from './matrix-table';
 import TableSchedule from './table-schedule';
 import DeletePopupConfrim from './delete-popup-confirm';
@@ -54,7 +53,6 @@ export {
   FileUpload,
   PopupExposure,
   PopupConfirm,
-  SortTable,
   ProgressBar,
   MatrixTable,
   TableSchedule,
