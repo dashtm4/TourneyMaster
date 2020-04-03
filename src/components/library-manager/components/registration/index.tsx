@@ -8,10 +8,15 @@ import { ILibraryManagerRegistration } from '../../common';
 
 interface Props {
   registrations: ILibraryManagerRegistration[];
+  isSectionCollapse: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
-const Registration = ({ registrations, changeSharedItem }: Props) => {
+const Registration = ({
+  registrations,
+  isSectionCollapse,
+  changeSharedItem,
+}: Props) => {
   const onShareRegistr = (id: string) => {
     const editedRegistration = registrations.find(
       it => it.registration_id === id
@@ -32,7 +37,7 @@ const Registration = ({ registrations, changeSharedItem }: Props) => {
         id={EventMenuTitles.REGISTRATION}
         type="section"
         panelDetailsType="flat"
-        isDefaultExpanded={true}
+        expanded={isSectionCollapse}
       >
         <span>{EventMenuTitles.REGISTRATION}</span>
         <TableSort rows={rowForTable} onShare={onShareRegistr} />

@@ -7,10 +7,15 @@ import { IEntity } from 'common/types';
 
 interface Props {
   facilities: IFacility[];
+  isSectionCollapse: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
-const Facilities = ({ facilities, changeSharedItem }: Props) => {
+const Facilities = ({
+  facilities,
+  isSectionCollapse,
+  changeSharedItem,
+}: Props) => {
   const onShareRegistr = (id: string) => {
     const editedRegistration = facilities.find(it => it.facilities_id === id);
 
@@ -29,7 +34,7 @@ const Facilities = ({ facilities, changeSharedItem }: Props) => {
         id={EventMenuTitles.FACILITIES}
         type="section"
         panelDetailsType="flat"
-        isDefaultExpanded={true}
+        expanded={isSectionCollapse}
       >
         <span>{EventMenuTitles.FACILITIES}</span>
         <TableSort rows={rowForTable} onShare={onShareRegistr} />
