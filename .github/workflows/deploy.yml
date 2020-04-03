@@ -14,6 +14,7 @@ jobs:
           ref: development
       - name: Build
         run: |
+          npm cache clean
           npm install
           npm run build
         env:
