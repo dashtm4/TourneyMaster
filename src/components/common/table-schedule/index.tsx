@@ -202,6 +202,7 @@ const TableSchedule = ({
         <DndProvider backend={HTML5Backend}>
           {tableType === TableScheduleTypes.SCHEDULES && (
             <ListUnassigned
+              pools={pools}
               tableType={tableType}
               teamCards={teamCards}
               minGamesNum={minGamesNum}
