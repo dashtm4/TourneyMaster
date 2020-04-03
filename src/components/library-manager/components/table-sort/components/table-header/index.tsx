@@ -21,7 +21,6 @@ const useStyles = makeStyles({
 
 const defaultHeadCells: HeadCell[] = [
   { id: TableSortRowTypes.TITLE, label: 'Title' },
-  { id: TableSortRowTypes.VERSION, label: 'Version' },
   { id: TableSortRowTypes.LAST_MODIFIED, label: 'Last Modified' },
 ];
 

@@ -8,14 +8,19 @@ import Navigation from './components/navigation';
 import PopupShare from './components/popup-share';
 import Registration from './components/registration';
 import Facilities from './components/facilities';
-import { HeadingLevelTwo, Loader } from 'components/common';
+import { HeadingLevelTwo, Loader, Button } from 'components/common';
 import {
   BindingAction,
   IEventDetails,
   BindingCbWithThree,
   IFacility,
 } from 'common/models';
-import { MenuTitles, EntryPoints } from 'common/enums';
+import {
+  MenuTitles,
+  EntryPoints,
+  ButtonVarian,
+  ButtonColors,
+} from 'common/enums';
 import { IEntity } from 'common/types';
 import { ILibraryManagerRegistration } from './common';
 import styles from './styles.module.scss';
@@ -52,6 +57,8 @@ const LibraryManager = ({
     changeEntryPoint,
   ] = React.useState<EntryPoints | null>(null);
 
+  const [isSectionsCollapse, toggleSectionCollapse] = React.useState(true);
+
   const onChangeActiveEvent = (event: IEventDetails) =>
     changeActiveEvent(event);
 
@@ -75,6 +82,10 @@ const LibraryManager = ({
     }
   };
 
+  const onToggleSectionCollapse = () => {
+    toggleSectionCollapse(!isSectionsCollapse);
+  };
+
   if (isLoading) {
     return <Loader />;
   }
@@ -84,14 +95,22 @@ const LibraryManager = ({
       <Navigation />
       <div className={styles.headingWrapper}>
         <HeadingLevelTwo>{MenuTitles.LIBRARY_MANAGER}</HeadingLevelTwo>
+        <Button
+          onClick={onToggleSectionCollapse}
+          variant={ButtonVarian.TEXT}
+          color={ButtonColors.SECONDARY}
+          label={isSectionsCollapse ? 'Expand All' : 'Collapse All'}
+        />
       </div>
       <ul className={styles.libraryList}>
         <Facilities
           facilities={facilities}
+          isSectionCollapse={isSectionsCollapse}
           changeSharedItem={onChangeSharedItem}
         />
         <Registration
           registrations={registrations}
+          isSectionCollapse={isSectionsCollapse}
           changeSharedItem={onChangeSharedItem}
         />
       </ul>

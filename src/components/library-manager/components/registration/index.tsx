@@ -1,5 +1,6 @@
 import React from 'react';
-import { SectionDropdown, SortTable } from 'components/common';
+import TableSort from '../table-sort';
+import { SectionDropdown } from 'components/common';
 import { EventMenuTitles, EntryPoints } from 'common/enums';
 import { BindingCbWithTwo } from 'common/models';
 import { IEntity } from 'common/types';
@@ -7,10 +8,15 @@ import { ILibraryManagerRegistration } from '../../common';
 
 interface Props {
   registrations: ILibraryManagerRegistration[];
+  isSectionCollapse: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
-const Registration = ({ registrations, changeSharedItem }: Props) => {
+const Registration = ({
+  registrations,
+  isSectionCollapse,
+  changeSharedItem,
+}: Props) => {
   const onShareRegistr = (id: string) => {
     const editedRegistration = registrations.find(
       it => it.registration_id === id
@@ -22,7 +28,6 @@ const Registration = ({ registrations, changeSharedItem }: Props) => {
   const rowForTable = registrations.map(it => ({
     id: it.registration_id,
     title: it.eventName as string,
-    version: '1',
     lastModified: it.updated_datetime || it.created_datetime,
   }));
 
@@ -32,10 +37,10 @@ const Registration = ({ registrations, changeSharedItem }: Props) => {
         id={EventMenuTitles.REGISTRATION}
         type="section"
         panelDetailsType="flat"
-        isDefaultExpanded={true}
+        expanded={isSectionCollapse}
       >
         <span>{EventMenuTitles.REGISTRATION}</span>
-        <SortTable rows={rowForTable} onShare={onShareRegistr} />
+        <TableSort rows={rowForTable} onShare={onShareRegistr} />
       </SectionDropdown>
     </li>
   );
