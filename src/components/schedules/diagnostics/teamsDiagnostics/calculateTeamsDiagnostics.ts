@@ -61,7 +61,7 @@ export const calculateNumOfTimeSlots = (
   teamCard: ITeamCard,
   games: IGame[]
 ) => {
-  if (!teamCard.games?.length) return -1;
+  if (!teamCard.games?.length) return 0;
 
   const timeSlotIds = games
     .filter(item => findIndex(teamCard.games, { id: item.id }) >= 0)

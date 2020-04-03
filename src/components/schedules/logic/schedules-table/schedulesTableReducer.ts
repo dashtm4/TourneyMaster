@@ -4,6 +4,7 @@ import {
   SCHEDULES_TABLE_FILL,
   SCHEDULES_TABLE_UNDO,
   SCHEDULES_TABLE_UPDATE,
+  SCHEDULES_TABLE_CLEAR,
 } from './actionTypes';
 
 export interface ISchedulesTableState {
@@ -36,6 +37,12 @@ const SchedulesTableReducer = (state = initialState, action: AnyAction) => {
         current: state.current!.map(team =>
           team!.id === action.payload.id ? action.payload : team
         ),
+      };
+    case SCHEDULES_TABLE_CLEAR:
+      return {
+        ...state,
+        previous: [],
+        current: undefined,
       };
     default:
       return state;

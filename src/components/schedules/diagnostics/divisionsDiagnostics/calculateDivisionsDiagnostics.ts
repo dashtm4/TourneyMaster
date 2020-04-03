@@ -90,7 +90,8 @@ const calculateTimeSlotsBetweenGames = (
   [...Array(5)].map((_, index) => {
     resultObject[`timeSlotsIn${index}`] = teamCards
       .map(item => calculateNumOfTimeSlots(index, item, games))
-      .filter(v => v).length;
+      .filter(v => v)
+      .reduce((a, b) => a + b, 0);
   });
 
   return resultObject;

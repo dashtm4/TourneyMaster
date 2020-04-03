@@ -3,7 +3,11 @@ import { ITeamCard } from 'common/models/schedule/teams';
 import { IDropParams } from '../matrix-table/dnd/drop';
 import { TeamPositionEnum } from '../matrix-table/helper';
 
-export default (teamCards: ITeamCard[], dropParams: IDropParams) => {
+export default (
+  teamCards: ITeamCard[],
+  dropParams: IDropParams,
+  day?: string
+) => {
   const { teamId, position, gameId, originGameId } = dropParams;
   let result = {
     teamCards: [...teamCards],
@@ -56,9 +60,9 @@ export default (teamCards: ITeamCard[], dropParams: IDropParams) => {
       ];
 
       if (gameId !== undefined && position !== undefined) {
-        games = [...games, { id: gameId, teamPosition: position }];
+        games = [...games, { id: gameId, teamPosition: position, date: day }];
       }
-
+      console.log('games 1', games);
       return {
         ...teamCard,
         games,
@@ -68,6 +72,9 @@ export default (teamCards: ITeamCard[], dropParams: IDropParams) => {
     if (
       findIndex(teamCard.games, { id: gameId, teamPosition: position }) >= 0
     ) {
+      console.log('games 2', [
+        ...teamCard.games?.filter(game => game.id !== gameId),
+      ]);
       return {
         ...teamCard,
         games: [...teamCard.games?.filter(game => game.id !== gameId)],

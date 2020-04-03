@@ -5,9 +5,9 @@ export enum DefaultSelectValues {
 }
 
 export enum DayTypes {
-  DAY_ONE = 'Day 1',
-  DAY_TWO = 'Day 2',
-  DAY_THREE = 'Day 3',
+  'Day 1' = 1,
+  'Day 2' = 2,
+  'Day 3' = 3,
 }
 
 export enum OptimizeTypes {
@@ -16,7 +16,7 @@ export enum OptimizeTypes {
 }
 
 export interface IScheduleFilter {
-  selectedDay?: DayTypes;
+  selectedDay?: string;
   divisionsOptions: IMultiSelectOption[];
   poolsOptions: IMultiSelectOption[];
   teamsOptions: IMultiSelectOption[];

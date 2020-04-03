@@ -64,7 +64,7 @@ export const mapSchedulesTeamCards = async (
     division_id: game.homeTeam?.divisionId || null,
     pool_id: game.homeTeam?.poolId || null,
     game_id: game.id,
-    game_date: null,
+    game_date: game.gameDate || null,
     game_time: game.startTime || null,
     field_id: game.fieldId,
     away_team_id: game.awayTeam?.id || null,

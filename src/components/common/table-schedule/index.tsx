@@ -14,9 +14,13 @@ import {
   ISchedule,
   IPool,
 } from 'common/models';
-import { IScheduleFilter, OptimizeTypes } from './types';
+import { IScheduleFilter, OptimizeTypes, DayTypes } from './types';
 import { mapGamesByField } from 'helpers';
-import { IGame, settleTeamsPerGames } from '../matrix-table/helper';
+import {
+  IGame,
+  settleTeamsPerGames,
+  calculateDays,
+} from '../matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import PopupConfirm from 'components/common/popup-confirm';
@@ -102,7 +106,14 @@ const TableSchedule = ({
     string | undefined
   >();
 
-  const filledGames = settleTeamsPerGames(games, teamCards);
+  const days = calculateDays(teamCards);
+
+  const filledGames = settleTeamsPerGames(
+    games,
+    teamCards,
+    days,
+    filterValues.selectedDay!
+  );
   const filteredGames = mapGamesByFilter([...filledGames], filterValues);
 
   const updatedFields = mapUnusedFields(fields, filteredGames, filterValues);
@@ -115,7 +126,12 @@ const TableSchedule = ({
   const toggleZooming = () => changeZoomingAction(!zoomingDisabled);
 
   const moveCard = (dropParams: IDropParams) => {
-    const result = moveTeamCard(teamCards, dropParams);
+    const day = filterValues.selectedDay!;
+    const result = moveTeamCard(
+      teamCards,
+      dropParams,
+      days?.length ? days[DayTypes[day] - 1] : undefined
+    );
     if (result.divisionUnmatch) {
       onReplacementWarningChange(
         'The divisions of the teams do not match. Are you sure you want to continue?'
@@ -211,6 +227,7 @@ const TableSchedule = ({
           )}
           <div className={styles.tableWrapper}>
             <Filter
+              days={days.length}
               filterValues={filterValues}
               onChangeFilterValue={onFilterChange}
             />

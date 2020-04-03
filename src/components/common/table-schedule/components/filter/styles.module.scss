@@ -6,16 +6,22 @@
 }
 
 .buttonsWrapper {
-  display: none;
-  width: 290px;
-  justify-content: space-between;
+  display: flex;
+  align-items: baseline;
+  flex-direction: row;
+  width: 260px;
+  justify-content: flex-start;
   padding: 0 8px;
+
+  > button {
+    margin-right: 15px;
+  }
 }
 
 .selectsContainer {
   display: flex;
   justify-content: flex-start;
-  width: 100%;
+  width: calc(100% - 270px);
   margin-top: 35px;
 
   .selectWrapper {

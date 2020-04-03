@@ -1,7 +1,8 @@
-import { orderBy, findIndex } from 'lodash-es';
+import { orderBy, findIndex, union } from 'lodash-es';
 import { IField } from 'common/models/schedule/fields';
 import { ITeamCard } from 'common/models/schedule/teams';
 import ITimeSlot from 'common/models/schedule/timeSlots';
+import { DayTypes } from '../table-schedule/types';
 
 export enum TeamPositionEnum {
   'awayTeam' = 1,
@@ -19,6 +20,7 @@ export interface IGame {
   fieldId: string;
   isPremier?: boolean;
   // added new
+  gameDate?: string;
   scheduleVersionId?: string;
   createDate?: string;
 }
@@ -71,8 +73,62 @@ export const selectProperGamesPerTimeSlot = (
   games: IGame[]
 ) => games.filter((game: IGame) => game.timeSlotId === timeSlot.id);
 
-export const settleTeamsPerGames = (games: IGame[], teamCards: ITeamCard[]) =>
-  games.map(game => ({
+export const settleTeamsPerGamesDays = (
+  games: IGame[],
+  teamCards: ITeamCard[],
+  day: string
+) => {
+  return games.map(game => ({
+    ...game,
+    gameDate: day,
+    awayTeam: teamCards.find(
+      team =>
+        findIndex(team.games, {
+          id: game.id,
+          teamPosition: 1,
+          date: day,
+        }) >= 0
+    ),
+    homeTeam: teamCards.find(
+      team =>
+        findIndex(team.games, {
+          id: game.id,
+          teamPosition: 2,
+          date: day,
+        }) >= 0
+    ),
+  }));
+};
+
+export const settleTeamsPerGames = (
+  games: IGame[],
+  teamCards: ITeamCard[],
+  days?: string[],
+  selectedDay?: string
+) => {
+  if (days?.length && days?.length > 1 && selectedDay) {
+    return games.map(game => ({
+      ...game,
+      awayTeam: teamCards.find(
+        team =>
+          findIndex(team.games, {
+            id: game.id,
+            teamPosition: 1,
+            date: days[DayTypes[selectedDay] - 1],
+          }) >= 0
+      ),
+      homeTeam: teamCards.find(
+        team =>
+          findIndex(team.games, {
+            id: game.id,
+            teamPosition: 2,
+            date: days[DayTypes[selectedDay] - 1],
+          }) >= 0
+      ),
+    }));
+  }
+
+  return games.map(game => ({
     ...game,
     awayTeam: teamCards.find(
       team => findIndex(team.games, { id: game.id, teamPosition: 1 }) >= 0
@@ -81,6 +137,7 @@ export const settleTeamsPerGames = (games: IGame[], teamCards: ITeamCard[]) =>
       team => findIndex(team.games, { id: game.id, teamPosition: 2 }) >= 0
     ),
   }));
+};
 
 export const arrayAverageOccurrence = (array: any[]) => {
   if (array.length === 0) return null;
@@ -111,3 +168,13 @@ export const getSortedByGamesNum = (data: any) =>
 
 export const getSortedDesc = (data: any) =>
   Object.keys(data).sort((a, b) => (data[a] < data[b] ? 1 : -1));
+
+export const calculateDays = (teamCards: ITeamCard[]) => {
+  const games = teamCards.map(item => item.games).flat();
+  const gamesDates = games
+    .map(item => item.date)
+    .filter(date => date !== undefined);
+  const uniqueNum = union(gamesDates);
+
+  return uniqueNum;
+};

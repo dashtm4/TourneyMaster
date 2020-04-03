@@ -25,6 +25,7 @@ import CreateTeam from 'components/teams/components/create-team';
 import Footer from 'components/footer';
 import Schedules from 'components/schedules';
 import Reporting from 'components/reporting';
+import Playoffs from 'components/playoffs';
 import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
 import { Routes, EventMenuTitles, EventStatuses } from 'common/enums';
 import { getIncompleteMenuItems } from '../helpers';
@@ -73,7 +74,7 @@ const AuthorizedPageEvent = ({
     return <Loader />;
   }
 
-  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES];
+  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
   const schedulingIgnoreList = [
     EventMenuTitles.SCHEDULING,
     EventMenuTitles.SCORING,
@@ -115,6 +116,7 @@ const AuthorizedPageEvent = ({
               )}
             />
             <Route path={Routes.SCHEDULES_ID} component={Schedules} />
+            <Route path={Routes.PLAYOFFS_ID} component={Playoffs} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
             <Route
