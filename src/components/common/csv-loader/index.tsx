@@ -324,7 +324,7 @@ class CsvLoader extends React.Component<Props, State> {
             />
           </div>
           <div className={styles.row}>
-            <div style={{ display: 'flex' }}>
+            <div className={styles.checkboxWrapper}>
               <Checkbox
                 options={[
                   {

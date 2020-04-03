@@ -17,34 +17,50 @@ interface ICheckboxProps {
   options: IOption[];
   formLabel?: string;
   onChange?: any;
+  withoutLabel?: boolean;
 }
 
 const Checkbox: React.FC<ICheckboxProps> = ({
   options,
   formLabel,
   onChange,
-}) => (
-  <div className={styles.container}>
-    <span className={styles.label}>{formLabel}</span>
-    <FormGroup>
+  withoutLabel,
+}) =>
+  withoutLabel ? (
+    <>
       {options.map((option: IOption, index: number) => (
-        <FormControlLabel
+        <MuiCheckbox
           key={index}
-          control={
-            <MuiCheckbox
-              value={option.label}
-              color="secondary"
-              checked={option.checked}
-              disabled={option.disabled}
-            />
-          }
-          label={option.label}
+          value={option.label}
+          color="secondary"
+          checked={option.checked}
           onChange={onChange}
-          name={option.name}
+          disabled={option.disabled}
         />
       ))}
-    </FormGroup>
-  </div>
-);
+    </>
+  ) : (
+    <div className={styles.container}>
+      <span className={styles.label}>{formLabel}</span>
+      <FormGroup>
+        {options.map((option: IOption, index: number) => (
+          <FormControlLabel
+            key={index}
+            control={
+              <MuiCheckbox
+                value={option.label}
+                color="secondary"
+                checked={option.checked}
+                disabled={option.disabled}
+              />
+            }
+            label={option.label}
+            onChange={onChange}
+            name={option.name}
+          />
+        ))}
+      </FormGroup>
+    </div>
+  );
 
 export default Checkbox;

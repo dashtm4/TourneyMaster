@@ -11,6 +11,10 @@
   .row {
     display: flex;
     justify-content: space-between;
+    .checkboxWrapper {
+      display: flex;
+      align-items: center;
+    }
   }
 
   .tableContainer {
@@ -19,14 +23,10 @@
     margin: 10px 0;
   }
 
-  .includeCheckboxWrapper,
   .selectWrapper {
     & > div {
       display: block;
     }
-  }
-  .includeCheckboxWrapper {
-    width: 25px;
   }
 
   .btnsWrapper {
