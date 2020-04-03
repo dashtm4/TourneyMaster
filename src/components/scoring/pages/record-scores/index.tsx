@@ -85,6 +85,7 @@ interface State {
   divisions?: IScheduleDivision[];
   isExposurePopupOpen: boolean;
   isEnterScores: boolean;
+  neccessaryDataCalculated: boolean;
 }
 
 class RecordScores extends React.Component<
@@ -97,6 +98,7 @@ class RecordScores extends React.Component<
     this.state = {
       isExposurePopupOpen: false,
       isEnterScores: false,
+      neccessaryDataCalculated: false,
     };
   }
 
@@ -109,22 +111,20 @@ class RecordScores extends React.Component<
     }
   }
 
-  componentDidUpdate(prevProps: Props) {
-    const { schedule, schedulesGames } = this.props;
-    const { teams, games } = this.state;
+  componentDidUpdate() {
+    const { schedule, schedulesGames, schedulesTeamCards } = this.props;
+    const { teams, games, neccessaryDataCalculated } = this.state;
 
-    if (!prevProps.schedule && this.props.schedule) {
+    if (!neccessaryDataCalculated && schedule) {
       this.calculateNeccessaryData();
       return;
     }
 
     if (
-      !prevProps.schedulesTeamCards &&
       games?.length &&
+      !schedulesTeamCards &&
       schedulesGames &&
-      Boolean(schedulesGames.length) &&
-      teams?.length &&
-      Boolean(teams?.length) &&
+      teams &&
       schedule
     ) {
       const mappedGames = mapGamesWithSchedulesGamesId(games, schedulesGames);
@@ -179,6 +179,7 @@ class RecordScores extends React.Component<
       fields: sortedFields,
       teams: mappedTeams,
       facilities: mappedFacilities,
+      neccessaryDataCalculated: true,
     });
   };
 
