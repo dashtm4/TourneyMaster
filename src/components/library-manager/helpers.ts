@@ -1,5 +1,5 @@
 import Api from '../../api/api';
-import { getVarcharEight } from 'helpers';
+import { getVarcharEight, removeAuxiliaryFields } from 'helpers';
 import {
   EntryPoints,
   IRegistrationFields,
@@ -25,6 +25,26 @@ const generateEntityId = (entity: IEntity, entryPoint: EntryPoints) => {
   }
 
   return entity;
+};
+
+const getClearScharedItem = (
+  sharedItem: IEntity,
+  event: IEventDetails,
+  entryPoint: EntryPoints
+) => {
+  const mappedSharedItem = {
+    ...sharedItem,
+    event_id: event.event_id,
+  };
+
+  const sharedItemWithNewId = generateEntityId(mappedSharedItem, entryPoint);
+
+  const clearSharedItem = removeAuxiliaryFields(
+    sharedItemWithNewId,
+    entryPoint
+  );
+
+  return clearSharedItem;
 };
 
 const checkAleadyExist = async (
@@ -113,4 +133,9 @@ const SetFormLibraryManager = {
   setRegistrationFromLibrary,
 };
 
-export { generateEntityId, checkAleadyExist, SetFormLibraryManager };
+export {
+  generateEntityId,
+  getClearScharedItem,
+  checkAleadyExist,
+  SetFormLibraryManager,
+};

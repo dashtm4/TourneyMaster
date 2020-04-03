@@ -10,7 +10,7 @@ import {
 } from './action-types';
 import Api from 'api/api';
 import { Toasts } from 'components/common';
-import { mapArrWithEventName, removeAuxiliaryFields } from 'helpers';
+import { mapArrWithEventName } from 'helpers';
 import {
   IEventDetails,
   IRegistration,
@@ -20,9 +20,9 @@ import {
 import { EntryPoints } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
-  generateEntityId,
   checkAleadyExist,
   SetFormLibraryManager,
+  getClearScharedItem,
 } from '../helpers';
 
 const loadLibraryManagerData: ActionCreator<ThunkAction<
@@ -73,17 +73,7 @@ const saveSharedItem: ActionCreator<ThunkAction<
   try {
     await checkAleadyExist(sharedItem, event, entryPoint);
 
-    const mappedSharedItem = {
-      ...sharedItem,
-      event_id: event.event_id,
-    };
-
-    const sharedItemWithNewId = generateEntityId(mappedSharedItem, entryPoint);
-
-    const clearSharedItem = removeAuxiliaryFields(
-      sharedItemWithNewId,
-      entryPoint
-    );
+    const clearSharedItem = getClearScharedItem(sharedItem, event, entryPoint);
 
     switch (entryPoint) {
       case EntryPoints.REGISTRATIONS: {
