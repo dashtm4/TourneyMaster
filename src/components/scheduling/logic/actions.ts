@@ -130,7 +130,9 @@ export const createNewSchedule = (schedule: IConfigurableSchedule) => async (
   dispatch: Dispatch
 ) => {
   try {
-    const allSchedules = await api.get('/schedules');
+    const allSchedules = await api.get(
+      `/schedules?event_id=${schedule.event_id}`
+    );
 
     await Yup.array()
       .of(scheduleSchema)
@@ -165,7 +167,9 @@ export const updateSchedule = (schedule: ISchedulingSchedule) => async (
     delete copiedSchedule.createdByName;
     delete copiedSchedule.updatedByName;
 
-    const allSchedules = await api.get('/schedules');
+    const allSchedules = await api.get(
+      `/schedules?event_id=${schedule.event_id}`
+    );
 
     await Yup.array()
       .of(updatedScheduleSchema)
