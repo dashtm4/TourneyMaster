@@ -11,10 +11,19 @@ import {
 import Api from 'api/api';
 import { Toasts } from 'components/common';
 import { mapArrWithEventName, removeAuxiliaryFields } from 'helpers';
-import { IEventDetails } from 'common/models';
+import {
+  IEventDetails,
+  IRegistration,
+  IFacility,
+  // IFacility
+} from 'common/models';
 import { EntryPoints } from 'common/enums';
 import { IEntity } from 'common/types';
-import { generateEntityId } from '../helpers';
+import {
+  generateEntityId,
+  checkAleadyExist,
+  SetFormLibraryManager,
+} from '../helpers';
 
 const loadLibraryManagerData: ActionCreator<ThunkAction<
   void,
@@ -62,6 +71,8 @@ const saveSharedItem: ActionCreator<ThunkAction<
   entryPoint: EntryPoints
 ) => async (dispatch: Dispatch) => {
   try {
+    await checkAleadyExist(sharedItem, event, entryPoint);
+
     const mappedSharedItem = {
       ...sharedItem,
       event_id: event.event_id,
@@ -74,14 +85,32 @@ const saveSharedItem: ActionCreator<ThunkAction<
       entryPoint
     );
 
-    await Api.post(entryPoint, clearSharedItem);
+    switch (entryPoint) {
+      case EntryPoints.REGISTRATIONS: {
+        await SetFormLibraryManager.setRegistrationFromLibrary(
+          sharedItem as IRegistration,
+          clearSharedItem as IRegistration,
+          event
+        );
+        break;
+      }
+      case EntryPoints.FACILITIES: {
+        await SetFormLibraryManager.setFacilityFromLibrary(
+          sharedItem as IFacility,
+          clearSharedItem as IFacility
+        );
+        break;
+      }
+    }
 
     dispatch({
       type: SAVE_SHARED_ITEM_SUCCESS,
     });
 
     Toasts.successToast('Changes successfully saved.');
-  } catch {
+  } catch (err) {
+    Toasts.errorToast(err.message);
+
     dispatch({
       type: SAVE_SHARED_ITEM_FAILURE,
     });
