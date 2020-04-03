@@ -1,6 +1,7 @@
 import { Dispatch } from 'redux';
 import { Auth } from 'aws-amplify';
 import { chunk } from 'lodash-es';
+import * as Yup from 'yup';
 import api from 'api/api';
 import { ISchedule, IConfigurableSchedule } from 'common/models/schedule';
 import { Toasts } from 'components/common';
@@ -59,7 +60,6 @@ interface TournamentInfo {
   teams: ITeam[];
   divisions: IDivision[];
 }
-import * as Yup from 'yup';
 
 const scheduleFetchInProgress = () => ({
   type: SCHEDULE_FETCH_IN_PROGRESS,

@@ -249,14 +249,14 @@ class Scheduling extends Component<IProps, IState> {
                     isSectionCollapse={isSectionsCollapse}
                     eventId={eventId}
                     onEditSchedule={this.onEditSchedule}
-                  />
-                  <Brackets
-                    schedules={schedules}
-                    eventId={eventId}
                     onPublish={(data: ISchedule) => this.onPublish(data, true)}
                     onUnpublish={(data: ISchedule) =>
                       this.onPublish(data, false)
                     }
+                  />
+                  <Brackets
+                    schedules={schedules}
+                    eventId={eventId}
                     isSectionCollapse={isSectionsCollapse}
                   />
                 </>
