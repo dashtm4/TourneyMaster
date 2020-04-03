@@ -1,182 +1,147 @@
-import React from 'react';
-import { BracketGenerator } from 'react-tournament-bracket';
+import React, { useState } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import styles from './styles.module.scss';
+import SeedDrop, { IBracketDrop } from '../dnd/drop';
+import Seed from '../dnd/seed';
 
 const TRANSFORM_WRAPPER_OPTIONS = {
   minScale: 0.3,
   limitToWrapper: true,
 };
 
-const Brackets = () => {
-  const game = {
-    id: '1',
-    name: 'Game 1',
-    bracketLabel: 'Field 1, Main Stadium',
-    scheduled: 1585826080000,
-    sides: {
-      home: {
-        score: { score: 1 },
-        team: {
-          id: '1',
-          name: 'Seed 1',
-        },
-      },
-      visitor: {
-        score: { score: 2 },
-        team: {
-          id: '2',
-          name: 'Seed 2',
-        },
-      },
-    },
-  };
+interface IBracketTeam {
+  id: number | string;
+  name: string;
+}
 
-  const game2 = {
-    id: '2',
-    name: 'Game 2',
-    bracketLabel: 'Field 2, Main Stadium',
-    scheduled: 1585826080000,
-    sides: {
-      home: {
-        score: { score: 1 },
-        team: {
-          id: '3',
-          name: 'Seed 3',
-        },
-      },
-      visitor: {
-        score: { score: 2 },
-        team: {
-          id: '4',
-          name: 'Seed 4',
-        },
-      },
-    },
-  };
+interface IBracketGame {
+  id: number;
+  awayDisplayName?: string;
+  homeDisplayName?: string;
+  away?: IBracketTeam;
+  home?: IBracketTeam;
+}
 
-  const game3 = {
-    id: '3',
-    name: 'Game 3',
-    bracketLabel: 'Field 3, Main Stadium',
-    scheduled: 1585826080000,
-    sides: {
-      home: {
-        score: { score: 2 },
-        team: {
-          id: '5',
-          name: 'Seed 5',
-        },
-      },
-      visitor: {
-        score: { score: 1 },
-        team: {
-          id: '6',
-          name: 'Seed 6',
-        },
-      },
-    },
-  };
+const selectStyleForConnector = (num: number) => {
+  switch (num) {
+    case 8:
+      return styles.connectors8;
+    case 4:
+      return styles.connectors4;
+    case 2:
+      return styles.connectors2;
+    default:
+      return styles.connectors2;
+  }
+};
 
-  const game4 = {
-    id: '4',
-    name: 'Game 4',
-    bracketLabel: 'Field 4, Main Stadium',
-    scheduled: 1585826080000,
-    sides: {
-      home: {
-        score: { score: 1 },
-        team: {
-          id: '7',
-          name: 'Seed 7',
-        },
-      },
-      visitor: {
-        score: { score: 2 },
-        team: {
-          id: '8',
-          name: 'Seed 8',
-        },
-      },
-    },
-  };
+const Round = ({
+  games,
+  onDrop,
+  title,
+}: {
+  games: IBracketGame[];
+  onDrop: any;
+  title: any;
+  seedRound?: boolean;
+}) => (
+  <div className={styles.bracketRound}>
+    <span className={styles.roundTitle}>{title}</span>
+    {games.map(game => (
+      <GameSlot game={game} onDrop={onDrop} />
+    ))}
+  </div>
+);
 
-  //
-  const resultOneTwo = {
-    id: '5',
-    name: 'Game 5',
-    bracketLabel: 'Field 1, Main Stadium',
-    scheduled: 1585988880000,
-    sides: {
-      home: {
-        seed: {
-          displayName: 'Winner Game 1',
-          rank: 1,
-          sourcePool: {},
-          sourceGame: game,
-        },
-      },
-      visitor: {
-        seed: {
-          displayName: 'Winner Game 2',
-          rank: 1,
-          sourcePool: {},
-          sourceGame: game2,
-        },
-      },
-    },
-  };
-  const resultThreeFour = {
-    id: '6',
-    name: 'Game 6',
-    bracketLabel: 'Field 2, Main Stadium',
-    scheduled: 1585988880000,
-    sides: {
-      home: {
-        seed: {
-          displayName: 'Winner Game 3',
-          rank: 1,
-          sourcePool: {},
-          sourceGame: game3,
-        },
-      },
-      visitor: {
-        seed: {
-          displayName: 'Winner Game 4',
-          rank: 1,
-          sourcePool: {},
-          sourceGame: game4,
-        },
-      },
-    },
-  };
+const GameSlot = ({ game, onDrop }: { game: IBracketGame; onDrop: any }) => (
+  <div key={game.id} className={styles.bracketGame}>
+    <SeedDrop id={game.id} position={1} type="seed" onDrop={onDrop}>
+      {game.away ? (
+        <Seed
+          id={game.away.id!}
+          name={game.away.name}
+          type="seed"
+          dropped={true}
+        />
+      ) : (
+        undefined
+      )}
+    </SeedDrop>
+    <div className={styles.bracketGameDescription}>
+      <span>Game 1: Field 1, Main Stadium</span>
+      <span>10:00 AM, 02/09/20</span>
+    </div>
+    <SeedDrop id={game.id} position={2} type="seed" onDrop={onDrop}>
+      {game.home ? (
+        <Seed
+          id={game.home.id!}
+          name={game.home.name}
+          type="seed"
+          dropped={true}
+        />
+      ) : (
+        undefined
+      )}
+    </SeedDrop>
+  </div>
+);
 
-  const games = [
+const Connector = ({ step }: { step: number }) => (
+  <div className={selectStyleForConnector(step)}>
+    {[...Array(step / 2)].map(() => (
+      <div className={styles.connector} />
+    ))}
+  </div>
+);
+
+interface IProps {
+  seeds: { id: number; name: string }[];
+}
+
+const Brackets = (props: IProps) => {
+  const { seeds } = props;
+
+  const games2 = [
     {
-      id: '7',
-      name: 'Championship',
-      bracketLabel: 'Field 1, Main Stadium',
-      scheduled: 1586999999000,
-      sides: {
-        home: {
-          seed: {
-            displayName: 'Winner Game 5',
-            rank: 1,
-            sourcePool: {},
-            sourceGame: resultOneTwo,
-          },
-        },
-        visitor: {
-          seed: {
-            displayName: 'Winner Game 6',
-            rank: 1,
-            sourcePool: {},
-            sourceGame: resultThreeFour,
-          },
-        },
-      },
+      id: 5,
+      awayDisplayName: 'Winner Game 1',
+      homeDisplayName: 'Winner Game 2',
+    },
+    {
+      id: 6,
+      awayDisplayName: 'Winner Game 3',
+      homeDisplayName: 'Winner Game 4',
     },
   ];
+
+  const games1 = [
+    {
+      id: 7,
+      awayDisplayName: 'Winner Game 5',
+      homeDisplayName: 'Winner Game 6',
+    },
+  ];
+
+  const [games, setGames] = useState(
+    [...Array(seeds.length / 2)].map((_v, i) => ({ id: i + 1 }))
+  );
+
+  const updateGames = (games: IBracketGame[], data: IBracketDrop) => {
+    return games.map(game =>
+      game.id === data.id
+        ? {
+            ...game,
+            [data.position === 1 ? 'away' : 'home']: seeds.find(
+              seed => seed.id === data.seedId
+            ),
+          }
+        : game
+    );
+  };
+
+  const onDrop = (data: IBracketDrop) => {
+    setGames(games => updateGames(games, data));
+  };
 
   return (
     <div className={styles.container}>
@@ -188,7 +153,16 @@ const Brackets = () => {
       >
         <TransformComponent>
           <div className={styles.bracketContainer}>
-            <BracketGenerator games={games} />
+            <Round
+              games={games}
+              seedRound={true}
+              onDrop={onDrop}
+              title="Elite Eight"
+            />
+            <Connector step={4} />
+            <Round games={games2} onDrop={onDrop} title="Final Four" />
+            <Connector step={2} />
+            <Round games={games1} onDrop={onDrop} title="Championship" />
           </div>
         </TransformComponent>
       </TransformWrapper>

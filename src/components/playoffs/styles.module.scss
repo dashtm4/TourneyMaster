@@ -26,6 +26,41 @@
     .seedsContainer {
       width: 200px;
       height: 490px;
+
+      .seedsWrapper {
+        background: #e8e8e8;
+        margin-top: 12px;
+        border-radius: 3px;
+
+        h4 {
+          text-align: center;
+          font-size: 14px;
+          color: #1c315f;
+          padding: 15px 0;
+        }
+
+        .seedsList {
+          margin-top: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-direction: column;
+
+          .singleSeedWrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+
+            span {
+              font-size: 12px;
+              color: #575757;
+              margin-right: 5px;
+            }
+          }
+        }
+      }
     }
 
     .bodyWrapper {
