@@ -2,21 +2,38 @@ import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
 import {
   TABLE_COLUMNS_FETCH_SUCCESS,
-  MAPPING_FETCH_SUCCESS,
+  MAPPINGS_FETCH_SUCCESS,
+  ADD_MAPPING_SUCCESS,
+  REMOVE_MAPPING_SUCCESS,
   TableColumnsAction,
 } from './actionTypes';
 import api from 'api/api';
-import { getVarcharEight } from 'helpers';
 import { Toasts } from 'components/common';
-import { ITableColumns } from '../index';
+import { ITableColumns, IMapping } from 'common/models/table-columns';
 
-export const getTableColumnsSuccess = (payload: ITableColumns): any => ({
+export const getTableColumnsSuccess = (
+  payload: ITableColumns
+): TableColumnsAction => ({
   type: TABLE_COLUMNS_FETCH_SUCCESS,
   payload,
 });
 
-export const getMappingSuccess = (payload: any): any => ({
-  type: MAPPING_FETCH_SUCCESS,
+export const getMappingsSuccess = (
+  payload: IMapping[]
+): TableColumnsAction => ({
+  type: MAPPINGS_FETCH_SUCCESS,
+  payload,
+});
+
+export const addMappingsSuccess = (
+  payload: Partial<IMapping>
+): TableColumnsAction => ({
+  type: ADD_MAPPING_SUCCESS,
+  payload,
+});
+
+export const removeMappingSuccess = (payload: number): TableColumnsAction => ({
+  type: REMOVE_MAPPING_SUCCESS,
   payload,
 });
 
@@ -38,21 +55,16 @@ export const saveMapping: ActionCreator<ThunkAction<
   {},
   null,
   TableColumnsAction
->> = (info: any) => async () => {
-  const data = {
-    member_map_id: getVarcharEight(),
-    import_description: info.name,
-    map_id_json: JSON.stringify(info.mapping),
-    destination_table: info.destination_table,
-  };
+>> = (data: Partial<IMapping>) => async (dispatch: Dispatch) => {
   const response = await api.post(`/data_import_history`, data);
 
   if (response) {
+    dispatch(addMappingsSuccess(data));
     return Toasts.successToast('Mapping is successfully saved');
   }
 };
 
-export const getMapping: ActionCreator<ThunkAction<
+export const getMappings: ActionCreator<ThunkAction<
   void,
   {},
   null,
@@ -64,6 +76,22 @@ export const getMapping: ActionCreator<ThunkAction<
   );
 
   if (response) {
-    dispatch(getMappingSuccess(filteredMapping));
+    dispatch(getMappingsSuccess(filteredMapping));
+  }
+};
+
+export const removeMapping: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  TableColumnsAction
+>> = (mappingId: number) => async (dispatch: Dispatch) => {
+  const response = await api.delete(
+    `/data_import_history?member_map_id=${mappingId}`
+  );
+
+  if (response) {
+    dispatch(removeMappingSuccess(mappingId));
+    return Toasts.successToast('Mapping is successfully deleted');
   }
 };

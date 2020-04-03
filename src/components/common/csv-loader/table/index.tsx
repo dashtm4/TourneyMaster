@@ -9,64 +9,82 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import styles from '../styles.module.scss';
 import { Select, Checkbox } from 'components/common/';
-import { IField } from '../index';
-import { BindingCbWithTwo } from 'common/models';
+import { IField } from 'common/models/table-columns';
+import { BindingAction, BindingCbWithTwo } from 'common/models';
 
 interface IProps {
-  preview: { headers: string[]; row: string[] };
+  preview: { header: string[]; row: string[] };
   fields: IField[];
-  onCheckboxChange: BindingCbWithTwo<
+  onFieldIncludeChange: BindingCbWithTwo<
     React.ChangeEvent<HTMLInputElement>,
     number
   >;
   onSelect: BindingCbWithTwo<React.ChangeEvent<HTMLInputElement>, number>;
   columnOptions: { label: string; value: string }[];
+  onIncludeAllChange: BindingAction;
 }
 
 const CsvTable = ({
   preview,
   fields,
-  onCheckboxChange,
+  onFieldIncludeChange,
   onSelect,
   columnOptions,
+  onIncludeAllChange,
 }: IProps) => {
   return (
     <TableContainer component={Paper} className={styles.tableContainer}>
       <Table stickyHeader={true} aria-label="simple table" padding="none">
         <TableHead>
           <TableRow>
-            <TableCell component="th" scope="row">
+            <TableCell component="th" scope="row" style={{ width: 206 }}>
               <b>Data Header</b>
             </TableCell>
-            <TableCell component="th" scope="row">
-              <b>Include</b>
+            <TableCell component="th" scope="row" style={{ width: 120 }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <b>Include</b>
+                <div
+                  className={styles.includeCheckboxWrapper}
+                  style={{ paddingLeft: '5px' }}
+                >
+                  <Checkbox
+                    options={[
+                      {
+                        label: '',
+                        checked: fields.every(field => field.included),
+                      },
+                    ]}
+                    onChange={onIncludeAllChange}
+                  />
+                </div>
+              </div>
             </TableCell>
-            <TableCell component="th" scope="row">
+            <TableCell component="th" scope="row" style={{ width: 250 }}>
               <b>Maps To</b>
             </TableCell>
-            <TableCell component="th" scope="row">
-              <b>Mapping Data type</b>
+            <TableCell component="th" scope="row" style={{ width: 180 }}>
+              <b>Mapping Data Type</b>
             </TableCell>
             <TableCell component="th" scope="row">
-              <b>Data Example</b>
+              <b>Data Preview</b>
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {preview.headers.map((col, index: number) => (
+          {preview.header.map((col, index: number) => (
             <TableRow
               key={index}
               style={{
                 backgroundColor: !fields[index].included
-                  ? '#DCDCDC'
+                  ? '#ececec'
                   : 'transparent',
               }}
             >
-              <TableCell component="td" scope="row">
+              <TableCell component="td" scope="row" style={{ width: 206 }}>
                 {col}
               </TableCell>
-              <TableCell component="td" scope="row">
-                <div className={styles.checkboxWrapper}>
+              <TableCell component="td" scope="row" style={{ width: 120 }}>
+                <div className={styles.includeCheckboxWrapper}>
                   <Checkbox
                     options={[
                       {
@@ -75,13 +93,13 @@ const CsvTable = ({
                       },
                     ]}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      onCheckboxChange(e, index);
+                      onFieldIncludeChange(e, index);
                     }}
                   />
                 </div>
               </TableCell>
-              <TableCell component="td" scope="row">
-                <div className={styles.selectWrapper}>
+              <TableCell component="td" scope="row" style={{ width: 250 }}>
+                <div className={styles.selectWrapper} style={{ width: 220 }}>
                   <Select
                     options={columnOptions || []}
                     label=""
@@ -93,8 +111,8 @@ const CsvTable = ({
                   />
                 </div>
               </TableCell>
-              <TableCell component="td" scope="row">
-                {fields[index]?.data_type}
+              <TableCell component="td" scope="row" style={{ width: 180 }}>
+                {fields[index]?.dataType}
               </TableCell>
               <TableCell component="td" scope="row">
                 {preview.row[index]}
