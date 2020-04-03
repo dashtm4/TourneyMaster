@@ -59,6 +59,15 @@ $sectionBodyPadding: 20px 0;
       }
     }
 
+    .piDetailsFirstContacts {
+      display: flex;
+      justify-content: space-between;
+
+      & > * {
+        width: 22%;
+      }
+    }
+
     .piDetailsSecond {
       display: flex;
       justify-content: flex-start;

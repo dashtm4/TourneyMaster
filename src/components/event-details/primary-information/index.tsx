@@ -9,7 +9,9 @@ import {
   Select,
   Button,
   DatePicker,
+  CardMessage,
 } from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 
 import { IPosition } from './map/autocomplete';
 import { EventMenuTitles } from 'common/enums';
@@ -23,6 +25,9 @@ import { BindingCbWithTwo, BindingCbWithOne } from 'common/models';
 import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
 import { timeToDate, dateToTime } from 'helpers';
 import { getDays, getDay } from 'helpers/getDays';
+
+const CONTACT_TOOLTIP_MESSAGE =
+  'Contact details will be included when printing schedules and fields by field datails';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -147,6 +152,15 @@ const PrimaryInformationSection: React.FC<Props> = ({
     onChange('primary_location_long', position.lng);
   };
 
+  const onMainContactChange = (e: InputTargetValue) =>
+    onChange('main_contact', e.target.value);
+
+  const onMainContactMobieChange = (e: InputTargetValue) =>
+    onChange('main_contact_mobile', e.target.value);
+
+  const onMainContactEmailChange = (e: InputTargetValue) =>
+    onChange('main_contact_email', e.target.value);
+
   const onSectionToggle = () => {
     onToggleOne(index);
   };
@@ -199,6 +213,29 @@ const PrimaryInformationSection: React.FC<Props> = ({
             value={genderEnum[dropdownGenderValue]}
             onChange={onGenderChange}
           />
+        </div>
+        <div className={styles.piDetailsFirstContacts}>
+          <Input
+            fullWidth={true}
+            label="Main Contact"
+            value={eventData.main_contact || ''}
+            onChange={onMainContactChange}
+          />
+          <Input
+            fullWidth={true}
+            label="Main Contact Mobile"
+            value={eventData.main_contact_mobile || ''}
+            onChange={onMainContactMobieChange}
+          />
+          <Input
+            fullWidth={true}
+            label="Main Contact Email"
+            value={eventData.main_contact_email || ''}
+            onChange={onMainContactEmailChange}
+          />
+          <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+            {CONTACT_TOOLTIP_MESSAGE}
+          </CardMessage>
         </div>
         <div className={styles.piSectionContainer}>
           <div className={styles.piSection}>
