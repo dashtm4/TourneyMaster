@@ -74,7 +74,6 @@ const DivisionItem = ({
           })}
           {teamsWithoutPool.length ? (
             <PoolItem
-              // pool={pools[0]}
               teams={teamsWithoutPool}
               division={division}
               onEditPopupOpen={onEditPopupOpen}
