@@ -31,7 +31,6 @@ import {
   mapDataForSaving,
   checkCsvForValidity,
   getRequiredFields,
-  saveData,
 } from './helpers';
 import { Toasts } from 'components/common';
 import { PopupExposure } from 'components/common';
@@ -194,7 +193,7 @@ class CsvLoader extends React.Component<Props, State> {
       dataToSave.push(event);
     });
 
-    saveData(dataToSave, type, onCreate, eventId);
+    onCreate(dataToSave, this.onModalClose);
   };
 
   onFieldIncludeChange = (

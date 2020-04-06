@@ -1,6 +1,5 @@
 import { IColumnDetails, IField } from 'common/models/table-columns';
 import { getVarcharEight } from 'helpers';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 
 export const parseTableDetails = (tableDetails: string): IColumnDetails[] => {
   return JSON.parse(`[${tableDetails}]`).flat();
@@ -71,9 +70,13 @@ const getBaseObj = (type: string, eventId?: string) => {
         isNew: true,
       };
     case 'event_master':
-    case 'divisions':
       return {
         event_id: getVarcharEight(),
+      };
+    case 'divisions':
+      return {
+        division_id: getVarcharEight(),
+        event_id: eventId,
       };
     default:
       return {
@@ -138,23 +141,5 @@ export const getRequiredFields = (type: string) => {
       return ['Facility Description'];
     default:
       return [];
-  }
-};
-
-export const saveData = (
-  data: any,
-  type: string,
-  onCreate: any,
-  eventId?: string
-) => {
-  switch (type) {
-    case 'event_master':
-      return data.forEach((event: EventDetailsDTO) => {
-        onCreate(event);
-      });
-    case 'facilities':
-      return onCreate(data, []);
-    case 'divisions':
-      onCreate(data, eventId);
   }
 };
