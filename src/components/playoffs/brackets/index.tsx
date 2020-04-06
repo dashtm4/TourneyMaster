@@ -40,6 +40,7 @@ const Round = ({
   games,
   onDrop,
   title,
+  seedRound,
 }: {
   games: IBracketGame[];
   onDrop: any;
@@ -49,14 +50,33 @@ const Round = ({
   <div className={styles.bracketRound}>
     <span className={styles.roundTitle}>{title}</span>
     {games.map(game => (
-      <GameSlot key={`${game.id}-round`} game={game} onDrop={onDrop} />
+      <GameSlot
+        key={`${game.id}-round`}
+        seedRound={seedRound}
+        game={game}
+        onDrop={onDrop}
+      />
     ))}
   </div>
 );
 
-const GameSlot = ({ game, onDrop }: { game: IBracketGame; onDrop: any }) => (
+const GameSlot = ({
+  game,
+  onDrop,
+  seedRound,
+}: {
+  game: IBracketGame;
+  onDrop: any;
+  seedRound?: boolean;
+}) => (
   <div key={game.id} className={styles.bracketGame}>
-    <SeedDrop id={game.id} position={1} type="seed" onDrop={onDrop}>
+    <SeedDrop
+      id={game.id}
+      position={1}
+      type="seed"
+      usePlaceholder={!seedRound}
+      onDrop={onDrop}
+    >
       {game.away ? (
         <Seed
           id={game.away.id!}
@@ -72,7 +92,13 @@ const GameSlot = ({ game, onDrop }: { game: IBracketGame; onDrop: any }) => (
       <span>Game 1: Field 1, Main Stadium</span>
       <span>10:00 AM, 02/09/20</span>
     </div>
-    <SeedDrop id={game.id} position={2} type="seed" onDrop={onDrop}>
+    <SeedDrop
+      id={game.id}
+      position={2}
+      type="seed"
+      usePlaceholder={!seedRound}
+      onDrop={onDrop}
+    >
       {game.home ? (
         <Seed
           id={game.home.id!}
@@ -95,6 +121,16 @@ const Connector = ({ step }: { step: number }) => (
   </div>
 );
 
+const calculateLeftovers = (arr: any[], point: number) => {
+  const localSeeds = [...arr].slice(0, point);
+  const leftOvers = [...arr].slice(point, arr.length);
+
+  return {
+    localSeeds,
+    leftOvers,
+  };
+};
+
 interface IProps {
   seeds: { id: number; name: string }[];
 }
@@ -103,13 +139,30 @@ const Brackets = (props: IProps) => {
   const { seeds } = props;
 
   const [games, setGames] = useState<IBracketGame[][]>();
+  const [, setOddSeeds] = useState<any[]>();
+
+  const truncateSeeds = () => {
+    const allowed = [2, 4, 8, 16];
+    const seedsLength = seeds.length;
+    let point = seedsLength;
+
+    if (allowed.includes(seedsLength)) return seeds;
+    if (seedsLength < 4 && seedsLength > 2) point = 2;
+    if (seedsLength < 8 && seedsLength > 4) point = 4;
+    if (seedsLength < 16 && seedsLength > 8) point = 8;
+
+    const { localSeeds, leftOvers } = calculateLeftovers(seeds, point);
+    setOddSeeds(leftOvers);
+    return localSeeds;
+  };
 
   useEffect(function allocate(lastGames?: any[]) {
+    const localSeeds = truncateSeeds();
     const localGames = lastGames || [];
     const thisIndex = localGames.flat().length;
     const thisLength = localGames?.length
       ? localGames[localGames.length - 1]?.length / 2
-      : seeds.length / 2;
+      : localSeeds.length / 2;
 
     if (thisLength < 1) {
       setGames(lastGames);
@@ -170,6 +223,7 @@ const Brackets = (props: IProps) => {
             {games?.map((round, index) => (
               <Fragment key={index}>
                 <Round
+                  seedRound={index === 0}
                   key={index}
                   games={round}
                   onDrop={onDrop}
