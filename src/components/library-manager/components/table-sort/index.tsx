@@ -7,10 +7,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import moment from 'moment';
+import { Button } from 'components/common';
 import { getComparator, stableSort } from './helpers';
+import { ButtonColors, ButtonVarian } from 'common/enums';
 import { ITableSortRow, OrderTypes, TableSortRowTypes } from './common';
 import styles from './styles.module.scss';
-
 const useStyles = makeStyles({
   tableRowEven: {
     backgroundColor: '#F7F7F7',
@@ -25,12 +26,16 @@ const useStyles = makeStyles({
     border: 0,
   },
 });
+
+const APPLY_BTN_STYLES = {
+  fontSize: '15px',
+};
 interface Props {
   rows: ITableSortRow[];
   onShare: (id: string) => void;
 }
 
-const SortTable = ({ rows, onShare }: Props) => {
+const TableSort = ({ rows, onShare }: Props) => {
   const classes = useStyles();
   const [order, setOrder] = React.useState<OrderTypes>(OrderTypes.ASC);
   const [orderBy, setOrderBy] = React.useState<TableSortRowTypes>(
@@ -72,18 +77,18 @@ const SortTable = ({ rows, onShare }: Props) => {
                   {row.title}
                 </TableCell>
                 <TableCell className={classes.tableCell}>
-                  {row.version}
-                </TableCell>
-                <TableCell className={classes.tableCell}>
                   {moment(row.lastModified).format('lll')}
                 </TableCell>
                 <TableCell className={classes.tableCell}>
-                  <button
-                    className={styles.actionBtn}
-                    onClick={() => onShare(row.id)}
-                  >
-                    Share
-                  </button>
+                  <span className={styles.btnWrapper}>
+                    <Button
+                      onClick={() => onShare(row.id)}
+                      variant={ButtonVarian.TEXT}
+                      color={ButtonColors.SECONDARY}
+                      btnStyles={APPLY_BTN_STYLES}
+                      label="Apply to…"
+                    />
+                  </span>
                 </TableCell>
               </TableRow>
             ))}
@@ -94,4 +99,4 @@ const SortTable = ({ rows, onShare }: Props) => {
   );
 };
 
-export default SortTable;
+export default TableSort;

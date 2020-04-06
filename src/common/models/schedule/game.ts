@@ -16,9 +16,6 @@ export interface ISchedulesGame {
   finalized_by: string | null;
   finalized_datetime: string | null;
   is_bracket_YN: number | null;
-  away_team_locked: string | null;
-  home_team_locked: string | null;
-  game_is_locked_YN: number | null;
   created_by: string;
   created_datetime: string;
   updated_by: string | null;

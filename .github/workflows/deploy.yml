@@ -14,10 +14,8 @@ jobs:
           ref: development
       - name: Build
         run: |
-          rm -rf node_modules package-lock.json
-          npm cache clean --force
           npm install
-          npm run build
+          node --max_old_space_size=4096 node_modules/.bin/react-scripts build
         env:
           REACT_APP_AWS_COGNITO_DOMAIN: ${{ secrets.REACT_APP_AWS_COGNITO_DOMAIN }}
           REACT_APP_AWS_USER_POOL_ID: ${{ secrets.REACT_APP_AWS_USER_POOL_ID }}
@@ -26,6 +24,7 @@ jobs:
           GENERATE_SOURCEMAP: 'false'
           REACT_APP_REDIRECT_URL: 'https://staging.tourneymaster.org/'
           REACT_APP_AWS_IDENTITY_POOL_ID: ${{ secrets.REACT_APP_AWS_IDENTITY_POOL_ID }}
+          CI: 'false'
       - name: Enable Amazon
         uses: chrislennon/action-aws-cli@v1.1
       - name: Amazon Push

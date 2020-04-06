@@ -5,21 +5,36 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { HeadingLevelFour, Tooltip, Button, Paper } from 'components/common';
-import { BindingCbWithOne } from 'common/models';
+import { BindingCbWithOne, ISchedule } from 'common/models';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
 import { Routes } from 'common/enums';
 import { getTournamentStatusColor } from 'helpers/getTournamentStatusColor';
+import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 
 const DEFAULT_UPDATED_VALUE = 'Not updated yet.';
 
 interface IProps {
   schedule: ISchedulingSchedule;
   eventId: string;
+  anotherSchedulePublished?: boolean;
+  savingInProgress?: boolean;
+  schedulePublished?: boolean;
   onEditSchedule: BindingCbWithOne<ISchedulingSchedule>;
+  onPublish: (schedule: ISchedule) => void;
+  onUnpublish: (schedule: ISchedule) => void;
 }
 
-const TournamentPlayItem = ({ schedule, eventId, onEditSchedule }: IProps) => {
+const TournamentPlayItem = ({
+  schedule,
+  eventId,
+  onEditSchedule,
+  onPublish,
+  onUnpublish,
+  anotherSchedulePublished,
+  schedulePublished,
+  savingInProgress,
+}: IProps) => {
   const localOnEditSchedule = () => onEditSchedule(schedule);
 
   return (
@@ -29,6 +44,37 @@ const TournamentPlayItem = ({ schedule, eventId, onEditSchedule }: IProps) => {
           <HeadingLevelFour>
             <span>{schedule.schedule_name}</span>
           </HeadingLevelFour>
+          <Tooltip
+            disabled={!anotherSchedulePublished}
+            title="You need to unpublish before you can publish this schedule"
+            type={TooltipMessageTypes.INFO}
+          >
+            <div
+              style={{
+                display: 'inline',
+                marginLeft: '15px',
+                padding: '10px 0',
+              }}
+            >
+              {schedulePublished ? (
+                <Button
+                  label="Unpublish"
+                  variant="text"
+                  color="secondary"
+                  disabled={savingInProgress}
+                  onClick={() => onUnpublish(schedule)}
+                />
+              ) : (
+                <Button
+                  label="Publish"
+                  variant="text"
+                  color="secondary"
+                  disabled={anotherSchedulePublished || savingInProgress}
+                  onClick={() => onPublish(schedule)}
+                />
+              )}
+            </div>
+          </Tooltip>
         </div>
         <p className={styles.textWrapper}>
           <b>Status:</b> <span>{schedule.schedule_status || '—'}</span>{' '}

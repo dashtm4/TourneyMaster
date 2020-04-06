@@ -12,3 +12,4 @@ export * from './schedule.helpers';
 export * from './on-save.helper';
 export * from './remove-object-fields';
 export * from './map-schedules-games.helper';
+export * from './full-screen.helper';

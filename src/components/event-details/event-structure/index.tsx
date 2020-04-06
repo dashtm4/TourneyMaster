@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 
 import {
@@ -300,7 +301,11 @@ const EventStructureSection: React.FC<Props> = ({
               rel="noopener noreferrer"
               href="https://www.waiverhub.com/"
             >
-              <img src={waiverHubLogo} style={{ width: '150px' }} />
+              <img
+                src={waiverHubLogo}
+                style={{ width: '150px' }}
+                alt="Waiverhub logo"
+              />
             </a>
           </div>
         </div>

@@ -13,7 +13,7 @@ export const MenuList = [
     link: Routes.LIBRARY_MANAGER,
     children: [
       // 'Tournaments',
-      // 'Facilities',
+      MenuTitles.FACILITIES,
       MenuTitles.REGISTRATION,
       // 'Divisions & Pools',
       // 'Team Management',
@@ -45,7 +45,7 @@ export const MenuList = [
     link: Routes.UTILITIES,
     children: [
       MenuTitles.USER_PROFILE,
-      MenuTitles.TOURNEY_IMPORT
+      MenuTitles.TOURNEY_IMPORT,
       // MenuTitles.EMAIL_SETUP
     ],
   },

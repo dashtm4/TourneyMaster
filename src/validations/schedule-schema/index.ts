@@ -12,12 +12,12 @@ const scheduleSchema = Yup.object({
     'Game start field is required to fill!'
   ),
   period_duration: Yup.string().required(
-    'Period duration uration is required to fill!'
+    'Period duration is required to fill!'
   ),
   time_btwn_periods: Yup.string().required(
     'Time between periods is required to fill!'
   ),
-  periods_per_game: Yup.string().required('Time division is required to fill!'),
+  // periods_per_game: Yup.string().required('Time division is required to fill!'),
 });
 
 const updatedScheduleSchema = Yup.object({
