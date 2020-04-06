@@ -7,6 +7,8 @@ import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { getVarcharEight } from 'helpers';
 import { ITeam } from 'common/models/schedule/teams';
 import { ISchedulesGame } from 'common/models/schedule/game';
+import { ISchedulingSchedule } from 'components/scheduling/types';
+import { unionWith, isEqual } from 'lodash-es';
 
 export const mapScheduleData = (
   scheduleData: IConfigurableSchedule
@@ -17,6 +19,15 @@ export const mapScheduleData = (
   delete data?.first_game_start;
   delete data?.last_game_end;
   delete data?.isManualScheduling;
+  return data;
+};
+
+export const mapSchedulingScheduleData = (
+  scheduleData: ISchedulingSchedule
+) => {
+  const data = { ...scheduleData };
+  delete data?.createdByName;
+  delete data?.updatedByName;
   return data;
 };
 
@@ -108,24 +119,19 @@ export const mapTeamCardsToSchedulesGames = async (
     field_id: game.fieldId,
     game_date: '',
     start_time: game.startTime || '',
+    division_id: game.awayTeam?.divisionId || null,
+    pool_id: game.awayTeam?.poolId || null,
     away_team_id: game.awayTeam?.id || null,
     home_team_id: game.homeTeam?.id || null,
     away_team_score:
       game.awayTeam?.games?.find(g => g.id === game.id)?.teamScore || null,
     home_team_score:
       game.homeTeam?.games?.find(g => g.id === game.id)?.teamScore || null,
-    is_active_YN: 1,
+    is_active_YN: 0,
     is_final_YN: null,
-    finalized_by: memberId,
-    finalized_datetime: new Date().toISOString(),
+    finalized_by: null,
+    finalized_datetime: null,
     is_bracket_YN: null,
-    away_team_locked: game.awayTeam?.isLocked ? game.awayTeam?.id : null,
-    home_team_locked: game.homeTeam?.isLocked ? game.homeTeam?.id : null,
-    game_is_locked_YN: Boolean(
-      game.awayTeam?.isLocked && game.homeTeam?.isLocked
-    )
-      ? 1
-      : 0,
     created_by: memberId,
     created_datetime: game.createDate || new Date().toISOString(),
     updated_by: memberId,
@@ -143,21 +149,31 @@ export const mapTeamsFromSchedulesDetails = (
     gameId: item.game_id,
     awayTeamId: item.away_team_id,
     homeTeamId: item.home_team_id,
+    date: item.game_date || undefined,
   }));
 
-  const teamCards = teams.map(team => ({
-    ...team,
-    games: [
+  console.log(schedulesDetails.map(it => it.game_id));
+
+  const runGamesSelection = (team: ITeam) => {
+    const games = [
       ...sd
         .filter(
           ({ awayTeamId, homeTeamId }) =>
             awayTeamId === team.id || homeTeamId === team.id
         )
-        .map(({ gameId, awayTeamId }) => ({
+        .map(({ gameId, awayTeamId, date }) => ({
           id: Number(gameId),
           teamPosition: awayTeamId === team.id ? 1 : 2,
+          date,
         })),
-    ],
+    ];
+
+    return unionWith(games, isEqual);
+  };
+
+  const teamCards = teams.map(team => ({
+    ...team,
+    games: runGamesSelection(team),
   }));
 
   return teamCards;
@@ -165,15 +181,22 @@ export const mapTeamsFromSchedulesDetails = (
 
 export const mapTeamsFromShedulesGames = (
   schedulesGames: ISchedulesGame[],
-  teams: ITeam[]
+  teams: ITeam[],
+  games: IGame[]
 ) => {
-  const sd = schedulesGames.map(item => ({
-    gameId: item.game_id,
-    awayTeamId: item.away_team_id,
-    awayTeamScore: item.away_team_score,
-    homeTeamId: item.home_team_id,
-    homeTeamScore: item.home_team_score,
-  }));
+  const sd = schedulesGames.map(item => {
+    const currentGame = games.find(game => game.varcharId === item.game_id);
+
+    const mappedSchedulesGame = {
+      gameId: currentGame!.id,
+      awayTeamId: item.away_team_id,
+      awayTeamScore: item.away_team_score,
+      homeTeamId: item.home_team_id,
+      homeTeamScore: item.home_team_score,
+    };
+
+    return mappedSchedulesGame;
+  });
 
   const teamCards = teams.map(team => ({
     ...team,

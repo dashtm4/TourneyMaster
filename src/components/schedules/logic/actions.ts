@@ -314,3 +314,52 @@ export const getPublishedGames = (
     dispatch(publishedClear());
   }
 };
+
+const callPostPut = (uri: string, data: any, isUpdate: boolean) =>
+  isUpdate ? api.put(uri, data) : api.post(uri, data);
+
+const showError = () => {
+  errorToast('Something happened during the saving process');
+};
+
+const saveSchedule = (
+  schedule: ISchedule,
+  schedulesDetails: ISchedulesDetails[],
+  isCreate: boolean
+) => async (dispatch: Dispatch) => {
+  dispatch(schedulesSavingInProgress(true));
+  /* POST/PUT Schedule */
+  const scheduleResp = await callPostPut('/schedules', schedule, !isCreate);
+
+  /* POST/PUT SchedulesDetails */
+
+  const schedulesDetailsChunk = chunk(schedulesDetails, 50);
+
+  const schedulesDetailsResp = await Promise.all(
+    schedulesDetailsChunk.map(
+      async arr => await callPostPut('/schedules_details', arr, !isCreate)
+    )
+  );
+
+  if (scheduleResp && schedulesDetailsResp.length) {
+    dispatch(draftSavedSuccess());
+    successToast('Schedule data was successfully saved');
+  } else {
+    dispatch(draftSavedFailure());
+    showError();
+  }
+};
+
+export const createSchedule = (
+  schedule: ISchedule,
+  schedulesDetails: ISchedulesDetails[]
+) => (dispatch: Dispatch) => {
+  dispatch<any>(saveSchedule(schedule, schedulesDetails, true));
+};
+
+export const updateSchedule = (
+  schedule: ISchedule,
+  schedulesDetails: ISchedulesDetails[]
+) => (dispatch: Dispatch) => {
+  dispatch<any>(saveSchedule(schedule, schedulesDetails, false));
+};

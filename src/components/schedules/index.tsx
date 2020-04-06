@@ -23,6 +23,8 @@ import {
   getPublishedGames,
   publishedClear,
   publishedSuccess,
+  createSchedule,
+  updateSchedule,
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
@@ -70,7 +72,7 @@ import {
 } from './mapScheduleData';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { IConfigurableSchedule, ISchedule, IPool } from 'common/models';
-import { errorToast, successToast } from 'components/common/toastr/showToasts';
+import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { TableScheduleTypes } from 'common/enums';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
@@ -122,6 +124,15 @@ interface IMapDispatchToProps {
   clearSchedulesTable: () => void;
   getPublishedGames: (eventId: string, scheduleId?: string) => void;
   schedulesSavingInProgress: (payload: boolean) => void;
+  //
+  createSchedule: (
+    schedule: ISchedule,
+    schedulesDetails: ISchedulesDetails[]
+  ) => void;
+  updateSchedule: (
+    schedule: ISchedule,
+    schedulesDetails: ISchedulesDetails[]
+  ) => void;
 }
 
 interface ComponentProps {
@@ -178,6 +189,7 @@ class Schedules extends Component<Props, State> {
     this.props.clearSchedulesTable();
     this.getPublishedStatus();
     this.activateLoaders(scheduleId, !!isManualScheduling);
+    this.calculateTournamentDays();
 
     if (facilitiesIds?.length) {
       this.props.fetchFields(facilitiesIds);
@@ -210,13 +222,28 @@ class Schedules extends Component<Props, State> {
   }
 
   componentDidUpdate() {
-    const { schedule, schedulesDetails, schedulesTeamCards } = this.props;
+    const {
+      schedule,
+      schedulesDetails,
+      schedulesTeamCards,
+      draftSaved,
+    } = this.props;
+
     const {
       scheduleId,
       teams,
       neccessaryDataCalculated,
       teamCardsAlreadyUpdated,
     } = this.state;
+
+    const localSchedule = this.getSchedule();
+
+    if (!scheduleId && draftSaved) {
+      this.setState({
+        scheduleId: localSchedule?.schedule_id,
+      });
+      this.updateUrlWithScheduleId();
+    }
 
     if (!neccessaryDataCalculated && schedule) {
       this.calculateNeccessaryData();
@@ -225,6 +252,7 @@ class Schedules extends Component<Props, State> {
 
     if (!schedulesTeamCards && schedulesDetails && teams && scheduleId) {
       const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
+
       this.onScheduleCardsUpdate(mappedTeams);
     }
 
@@ -317,9 +345,40 @@ class Schedules extends Component<Props, State> {
     });
   };
 
+  calculateTournamentDays = () => {
+    const { event } = this.props;
+    if (!event) return;
+
+    const startDate = event?.event_startdate;
+    const endDate = event?.event_enddate;
+
+    const daysDiff = moment(endDate).diff(startDate, 'day');
+
+    const days = [moment(startDate).toISOString()];
+
+    [...Array(daysDiff)].map((_v, i) =>
+      days.push(
+        moment(startDate)
+          .add(i + 1, 'days')
+          .toISOString()
+      )
+    );
+
+    this.setState({
+      tournamentDays: days,
+    });
+  };
+
   calculateSchedules = () => {
-    const { fields, teams, games, timeSlots, facilities } = this.state;
-    const { divisions, scheduleData, event } = this.props;
+    const {
+      fields,
+      teams,
+      games,
+      timeSlots,
+      facilities,
+      tournamentDays,
+    } = this.state;
+    const { divisions, scheduleData } = this.props;
 
     if (
       !scheduleData ||
@@ -341,21 +400,6 @@ class Schedules extends Component<Props, State> {
       teamsInPlay: undefined,
     };
 
-    const startDate = event?.event_startdate;
-    const endDate = event?.event_enddate;
-
-    const daysDiff = moment(endDate).diff(startDate, 'day');
-
-    const days = [moment(startDate).toISOString()];
-
-    [...Array(daysDiff)].map((_v, i) =>
-      days.push(
-        moment(startDate)
-          .add(i + 1, 'days')
-          .toISOString()
-      )
-    );
-
     const updateTeamsDayInfo = (teamCards: ITeamCard[], date: string) =>
       teamCards.map(item => ({
         ...item,
@@ -375,7 +419,7 @@ class Schedules extends Component<Props, State> {
     let teamcards: ITeamCard[] = [];
     let schedulerResult: Scheduler;
 
-    days.map(day => {
+    tournamentDays.map(day => {
       const result = new Scheduler(fields, teams, games, timeSlots, {
         ...tournamentBaseInfo,
         teamsInPlay,
@@ -405,7 +449,6 @@ class Schedules extends Component<Props, State> {
 
     this.setState({
       schedulerResult: schedulerResult!,
-      tournamentDays: days,
     });
 
     this.onScheduleCardsUpdate(teamcards);
@@ -525,96 +568,26 @@ class Schedules extends Component<Props, State> {
     return mapTeamCardsToSchedulesGames(localSchedule, schedulesTableGames);
   };
 
-  save = async (publish: boolean) => {
+  save = async () => {
+    const { scheduleId } = this.state;
     const schedule = this.getSchedule();
-    this.props.schedulesSavingInProgress(true);
 
-    if ((this.props.schedulesPublished || publish) && schedule) {
-      schedule.schedule_status = 'Published';
-    }
+    if (!schedule) return;
 
-    const schedulesGames = await this.retrieveSchedulesGames();
-
-    const scheduleExist = !!this.props.match.params.scheduleId;
-    const schedulesPublished = !!this.props.schedulesPublished;
-    const gamesAlreadyExist = !!this.props.gamesAlreadyExist;
-
-    let schedulesResponse: any;
-    let schedulesDetailsResponse: any;
-    let schedulesGamesResponse: any;
-
-    // POST / PUT schedule
-    if (scheduleExist) {
-      schedulesResponse = await api.put('/schedules', schedule);
-    } else {
-      schedulesResponse = await api.post('/schedules', schedule);
-    }
-
-    // POST / PUT schedules_details
-
-    if (scheduleExist) {
-      const schedulesDetails = await this.retrieveSchedulesDetails(
-        !publish,
+    if (scheduleId) {
+      const schedulesDetailsPUT = await this.retrieveSchedulesDetails(
+        true,
         'PUT'
       );
-      const schedulesDetailsChunk = chunk(schedulesDetails, 50);
-      schedulesDetailsResponse = await Promise.all(
-        schedulesDetailsChunk.map(
-          async arr => await api.put('/schedules_details', arr)
-        )
-      );
-    } else {
-      const schedulesDetails = await this.retrieveSchedulesDetails(
-        !publish,
-        'POST'
-      );
-      const schedulesDetailsChunk = chunk(schedulesDetails, 50);
-      schedulesDetailsResponse = await Promise.all(
-        schedulesDetailsChunk.map(
-          async arr => await api.post('/schedules_details', arr)
-        )
-      );
+      this.props.updateSchedule(schedule, schedulesDetailsPUT);
+      return;
     }
 
-    this.updateUrlWithScheduleId();
-    this.props.schedulesSavingInProgress(false);
-
-    if (schedulesResponse && schedulesDetailsResponse && !publish) {
-      successToast('Schedules data successfully saved');
-    }
-
-    if (publish) {
-      // POST / PUT games
-      const schedulesGamesChunk = chunk(schedulesGames, 50);
-
-      if (schedulesPublished || gamesAlreadyExist) {
-        schedulesGamesResponse = await Promise.all(
-          schedulesGamesChunk.map(async arr => await api.put('/games', arr))
-        );
-      } else {
-        schedulesGamesResponse = await Promise.all(
-          schedulesGamesChunk.map(async arr => await api.post('/games', arr))
-        );
-      }
-
-      // PUT events
-      // const updatedEvent = {
-      //   ...event,
-      //   event_status: 'Published',
-      // };
-
-      if (
-        schedulesResponse &&
-        schedulesDetailsResponse &&
-        schedulesGamesResponse
-      ) {
-        // await api.put(`/events?event_id=${event?.event_id}`, updatedEvent);
-        successToast('Schedules data successfully saved and published');
-      }
-
-      this.props.schedulesSavingInProgress(false);
-      this.props.publishedSuccess();
-    }
+    const schedulesDetailsPOST = await this.retrieveSchedulesDetails(
+      true,
+      'POST'
+    );
+    this.props.createSchedule(schedule, schedulesDetailsPOST);
   };
 
   unpublish = async () => {
@@ -630,12 +603,6 @@ class Schedules extends Component<Props, State> {
         schedulesGamesChunk.map(async arr => await api.delete('/games', arr))
       );
       if (response) {
-        // const updatedEvent = {
-        //   ...event,
-        //   event_status: 'Draft',
-        // };
-        // await api.put(`/events?event_id=${event?.event_id}`, updatedEvent);
-
         this.props.publishedClear();
       }
       this.props.getPublishedGames(event!.event_id, schedule.schedule_id);
@@ -759,9 +726,9 @@ class Schedules extends Component<Props, State> {
             anotherSchedulePublished={anotherSchedulePublished}
             savingInProgress={savingInProgress}
             onClose={this.onClose}
-            onSaveDraft={() => this.save(false)}
+            onSaveDraft={this.save}
             onUnpublish={this.unpublish}
-            saveAndPublish={() => this.save(true)}
+            saveAndPublish={this.save}
           />
         )}
 
@@ -795,7 +762,7 @@ class Schedules extends Component<Props, State> {
           isOpen={cancelConfirmationOpen}
           onClose={this.closeCancelConfirmation}
           onExitClick={this.onExit}
-          onSaveClick={() => this.save(false)}
+          onSaveClick={this.save}
         />
       </div>
     );
@@ -847,6 +814,9 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       schedulesSavingInProgress,
       clearSchedulesTable,
       getAllPools,
+      //
+      createSchedule,
+      updateSchedule,
     },
     dispatch
   );

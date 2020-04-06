@@ -131,7 +131,11 @@ class RecordScores extends React.Component<
 
       this.setState({ games: mappedGames });
 
-      const mappedTeams = mapTeamsFromShedulesGames(schedulesGames, teams);
+      const mappedTeams = mapTeamsFromShedulesGames(
+        schedulesGames,
+        teams,
+        mappedGames
+      );
 
       this.props.fillSchedulesTable(mappedTeams);
     }

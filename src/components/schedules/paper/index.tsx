@@ -55,7 +55,7 @@ export default (props: IProps) => {
               disabled={savingInProgress}
               onClick={onSaveDraft}
             />
-            {schedulePublished ? (
+            {schedulePublished && false ? (
               <Button
                 label="Unpublish"
                 variant="contained"
@@ -64,28 +64,30 @@ export default (props: IProps) => {
                 onClick={onUnpublish}
               />
             ) : (
-              <Tooltip
-                disabled={!anotherSchedulePublished}
-                title="Another Schedule is already published"
-                type={TooltipMessageTypes.INFO}
-              >
-                <div
-                  style={{
-                    display: 'inline',
-                    marginLeft: '15px',
-                    padding: '10px 0',
-                  }}
+              false && (
+                <Tooltip
+                  disabled={!anotherSchedulePublished}
+                  title="Another Schedule is already published"
+                  type={TooltipMessageTypes.INFO}
                 >
-                  <Button
-                    btnStyles={publishBtnStyles}
-                    label={'Save and Publish'}
-                    variant="contained"
-                    color="primary"
-                    disabled={anotherSchedulePublished || savingInProgress}
-                    onClick={saveAndPublish}
-                  />
-                </div>
-              </Tooltip>
+                  <div
+                    style={{
+                      display: 'inline',
+                      marginLeft: '15px',
+                      padding: '10px 0',
+                    }}
+                  >
+                    <Button
+                      btnStyles={publishBtnStyles}
+                      label={'Save and Publish'}
+                      variant="contained"
+                      color="primary"
+                      disabled={anotherSchedulePublished || savingInProgress}
+                      onClick={saveAndPublish}
+                    />
+                  </div>
+                </Tooltip>
+              )
             )}
           </div>
         </div>
