@@ -41,6 +41,10 @@ const DivisionItem = ({
     onToggleOne && onToggleOne(index!);
   };
 
+  const teamsWithoutPool = teams.filter(
+    team => team.division_id === division.division_id && !team.pool_id
+  );
+
   return (
     <li className={styles.divisionItem}>
       <SectionDropdown
@@ -68,6 +72,15 @@ const DivisionItem = ({
               />
             );
           })}
+          {teamsWithoutPool.length ? (
+            <PoolItem
+              // pool={pools[0]}
+              teams={teamsWithoutPool}
+              division={division}
+              onEditPopupOpen={onEditPopupOpen}
+              key={pools.length}
+            />
+          ) : null}
         </ul>
       </SectionDropdown>
     </li>
