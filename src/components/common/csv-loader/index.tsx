@@ -300,7 +300,12 @@ class CsvLoader extends React.Component<Props, State> {
       value: map.map_id_json,
     }));
 
-    const requiredFields = getRequiredFields(this.props.type);
+    const requiredFields = this.props.tableColumns
+      ? getRequiredFields(
+          this.props.type,
+          this.props.tableColumns?.table_details
+        )
+      : [];
 
     return (
       <Modal isOpen={this.props.isOpen} onClose={this.onModalClose}>

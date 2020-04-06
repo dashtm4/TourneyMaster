@@ -1,5 +1,10 @@
 import { IColumnDetails, IField } from 'common/models/table-columns';
 import { getVarcharEight } from 'helpers';
+import {
+  eventDetailsSchema,
+  divisionSchema,
+  facilitySchema,
+} from 'validations';
 
 export const parseTableDetails = (tableDetails: string): IColumnDetails[] => {
   return JSON.parse(`[${tableDetails}]`).flat();
@@ -121,25 +126,23 @@ export const checkCsvForValidity = (
   return true;
 };
 
-export const getRequiredFields = (type: string) => {
-  switch (type) {
-    case 'event_master':
-      return [
-        'Sport ID',
-        'Event Name',
-        'Event Description',
-        'Start Day',
-        'End Day',
-        'UTC Time Zone (+/-)',
-        'Period Duration',
-        'Time between Periods',
-        'Periods/Game',
-      ];
-    case 'divisions':
-      return ['Long Name', 'Short Name'];
-    case 'facilities':
-      return ['Facility Description'];
-    default:
-      return [];
+export const getRequiredFields = (type: string, tableDetails: string) => {
+  let requiredFromValidation: any = [];
+  if (type === 'event_master') {
+    requiredFromValidation = Object.keys(eventDetailsSchema.fields);
+  } else if (type === 'divisions') {
+    requiredFromValidation = Object.keys(divisionSchema.fields);
+  } else if (type === 'facilities') {
+    requiredFromValidation = Object.keys(facilitySchema.fields);
   }
+  const parsedTableDetails = parseTableDetails(tableDetails);
+
+  const requiredColumns = parsedTableDetails
+    .filter(
+      column =>
+        requiredFromValidation.includes(column.column_name) ||
+        column.is_nullable === 'NO'
+    )
+    .map(column => column.column_display);
+  return requiredColumns;
 };
