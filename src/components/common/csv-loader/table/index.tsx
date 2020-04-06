@@ -86,7 +86,15 @@ const CsvTable = ({
               <TableCell component="td" scope="row" style={{ width: 206 }}>
                 {col}
               </TableCell>
-              <TableCell component="td" scope="row" style={{ width: 120 }}>
+              <TableCell
+                component="td"
+                scope="row"
+                style={{
+                  width: 120,
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
                 <Checkbox
                   options={[
                     {
