@@ -134,8 +134,11 @@ const PlayoffsSection: React.FC<Props> = ({
       onChange('bracket_type', bracketTypesEnum['Single Elimination']);
   });
 
-  const onRankingFactorReorder = (name: string, cards: any) => {
-    const rankingFactor = JSON.stringify(cards.map((card: any) => card.id));
+  const onRankingFactorReorder = (
+    name: string,
+    cards: { id: number; text: string }[]
+  ) => {
+    const rankingFactor = JSON.stringify(cards.map(card => card.id));
 
     onChange(rankingFactors[name], rankingFactor);
   };
