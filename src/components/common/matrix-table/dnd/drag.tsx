@@ -103,6 +103,7 @@ export default (props: Props) => {
               onChange={onChangeScore}
               value={game?.teamScore || ''}
               type="number"
+              min="0"
               style={{
                 color: isEnterScores
                   ? '#000000'

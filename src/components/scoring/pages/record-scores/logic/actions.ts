@@ -92,28 +92,17 @@ const saveGames: ActionCreator<ThunkAction<
   RecordScoresAction
 >> = (games: ISchedulesGame[]) => async (dispatch: Dispatch) => {
   try {
-    const actGame = games.find(it =>
-      Boolean(it.away_team_score || it.home_team_score)
+    const gamesResponses = await Promise.all(
+      games.map((it: ISchedulesGame) =>
+        Api.put(`/games?game_id=${it.game_id}`, it)
+      )
     );
 
-    const gamesResponses = await Api.put(
-      `/games?game_id=${actGame!.game_id}`,
-      actGame
-    );
+    const gamesResponseSuccess = gamesResponses.every(item => item);
 
-    console.log(gamesResponses);
-
-    // const gamesResponses = await Promise.all(
-    //   games.map((it: ISchedulesGame) =>
-    //     Api.put(`/games?game_id=${it.game_id}`, it)
-    //   )
-    // );
-
-    // const gamesResponseSuccess = gamesResponses.every(item => item);
-
-    // if (!gamesResponseSuccess) {
-    //   throw Error('Something happened during the saving process');
-    // }
+    if (!gamesResponseSuccess) {
+      throw Error('Something happened during the saving process');
+    }
 
     dispatch({
       type: SAVE_GAME_SUCCESS,
