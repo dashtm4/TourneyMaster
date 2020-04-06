@@ -21,7 +21,7 @@ import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { teamSchema } from 'validations';
 import { mapScheduleGamesWithNames } from 'helpers';
-import { ITeam } from 'common/models';
+import { ITeam, ISchedule, ScheduleStatuses } from 'common/models';
 import { Toasts } from 'components/common';
 
 const loadScoringData: ActionCreator<ThunkAction<
@@ -36,7 +36,14 @@ const loadScoringData: ActionCreator<ThunkAction<
     });
 
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
-    const schedulesGames = await Api.get(`/games?event_id=${eventId}`);
+    const schedules = await Api.get(`/schedules?event_id=${eventId}`);
+    const publishedSchedule = schedules.find(
+      (it: ISchedule) => it.schedule_status === ScheduleStatuses.PUBLISHED
+    );
+
+    const schedulesGames = await Api.get(
+      `/games?schedule_id=${publishedSchedule.schedule_id}`
+    );
 
     const mappedGames = await mapScheduleGamesWithNames(
       eventId,
@@ -47,7 +54,7 @@ const loadScoringData: ActionCreator<ThunkAction<
       type: LOAD_SCORING_DATA_SUCCESS,
       payload: {
         divisions,
-        games: mappedGames
+        games: mappedGames,
       },
     });
   } catch {

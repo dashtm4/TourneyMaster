@@ -38,7 +38,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
         )
       )
     ).flat();
-    const schedules = await Api.get(`/schedules/?event_id=${eventId}`);
+    const schedules = await Api.get(`/schedules?event_id=${eventId}`);
 
     const currentEvent = events.find(
       (it: IEventDetails) => it.event_id === eventId
