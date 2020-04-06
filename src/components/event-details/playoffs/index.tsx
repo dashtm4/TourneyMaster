@@ -56,6 +56,11 @@ enum numTeamsBracketEnum {
   'All' = 2,
 }
 
+enum rankingFactors {
+  'rankingFactorDivisions' = 'ranking_factor_divisions',
+  'rankingFactorPools' = 'ranking_factor_pools',
+}
+
 interface Props {
   eventData: Partial<EventDetailsDTO>;
   onChange: any;
@@ -64,15 +69,7 @@ interface Props {
   index: number;
 }
 
-const rankingFactorDivisions = [
-  { id: 1, text: 'Best record' },
-  { id: 2, text: 'Head to Head' },
-  { id: 3, text: 'Goal Difference' },
-  { id: 4, text: 'Goals Scored' },
-  { id: 5, text: 'Goals Allowed' },
-];
-
-const rankingFactorPools = [
+export const defaultRankingFactor = [
   { id: 1, text: 'Best record' },
   { id: 2, text: 'Head to Head' },
   { id: 3, text: 'Goal Difference' },
@@ -92,6 +89,8 @@ const PlayoffsSection: React.FC<Props> = ({
     bracket_type,
     num_teams_bracket,
     bracket_durations_vary,
+    ranking_factor_divisions,
+    ranking_factor_pools,
   } = eventData;
 
   const bracketGameDurationOpts = [
@@ -101,7 +100,17 @@ const PlayoffsSection: React.FC<Props> = ({
     },
   ];
 
-  const onPlayoffs = () => onChange('playoffs_exist', playoffs_exist ? 0 : 1);
+  const onPlayoffs = () => {
+    onChange('playoffs_exist', playoffs_exist ? 0 : 1);
+    onChange(
+      'ranking_factor_divisions',
+      JSON.stringify(defaultRankingFactor.map(factor => factor.id))
+    );
+    onChange(
+      'ranking_factor_pools',
+      JSON.stringify(defaultRankingFactor.map(factor => factor.id))
+    );
+  };
 
   const onChangeBracketType = (e: InputTargetValue) =>
     onChange('bracket_type', bracketTypesEnum[e.target.value]);
@@ -125,13 +134,31 @@ const PlayoffsSection: React.FC<Props> = ({
       onChange('bracket_type', bracketTypesEnum['Single Elimination']);
   });
 
-  const onRankingFactorReorder = (name: string, cards: any) => {
-    console.log('cards:', name, cards);
+  const onRankingFactorReorder = (
+    name: string,
+    cards: { id: number; text: string }[]
+  ) => {
+    const rankingFactor = JSON.stringify(cards.map(card => card.id));
+
+    onChange(rankingFactors[name], rankingFactor);
   };
 
   const onSectionToggle = () => {
     onToggleOne(index);
   };
+
+  const parseRankingFactor = (factor?: string) => {
+    return factor
+      ? JSON.parse(factor).map((fact: number) => ({
+          id: fact,
+          text: defaultRankingFactor[fact - 1].text,
+        }))
+      : defaultRankingFactor;
+  };
+
+  const rankingFactorDivisions = parseRankingFactor(ranking_factor_divisions);
+
+  const rankingFactorPools = parseRankingFactor(ranking_factor_pools);
 
   return (
     <SectionDropdown
@@ -222,7 +249,6 @@ const PlayoffsSection: React.FC<Props> = ({
             {Boolean(bracket_durations_vary) && (
               <div className={styles.pdFourth}>
                 <Input
-                  // width="170px"
                   fullWidth={true}
                   endAdornment="Minutes"
                   label="Pregame Warmup"
@@ -230,7 +256,6 @@ const PlayoffsSection: React.FC<Props> = ({
                 />
                 <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
                 <Input
-                  // width="170px"
                   fullWidth={true}
                   endAdornment="Minutes"
                   label="Time Division Duration"
@@ -240,7 +265,6 @@ const PlayoffsSection: React.FC<Props> = ({
                   &nbsp;(0)&nbsp;+&nbsp;
                 </span>
                 <Input
-                  // width="170px"
                   fullWidth={true}
                   endAdornment="Minutes"
                   label="Time Between Periods"

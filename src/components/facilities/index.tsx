@@ -12,6 +12,7 @@ import {
   updateField,
   uploadFileMap,
   saveFacilities,
+  createFacilities,
 } from './logic/actions';
 import Navigation from './components/navigation';
 import FacilityDetails from './components/facility-details';
@@ -45,6 +46,7 @@ interface Props {
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
+  createFacilities: (facilities: IFacility[]) => void;
   expanded: boolean[];
   expandAll: boolean;
   isModalOpen: boolean;
@@ -236,7 +238,7 @@ class Facilities extends React.Component<
           isOpen={this.state.isCsvLoaderOpen}
           onClose={this.onCsvLoaderClose}
           type="facilities"
-          onCreate={this.props.saveFacilities}
+          onCreate={this.props.createFacilities}
           eventId={this.props.match.params.eventId}
         />
       </section>
@@ -261,6 +263,7 @@ export default connect(
         updateField,
         saveFacilities,
         uploadFileMap,
+        createFacilities,
       },
       dispatch
     )

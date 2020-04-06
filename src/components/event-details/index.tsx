@@ -8,6 +8,7 @@ import {
   createEvent,
   removeFiles,
   deleteEvent,
+  createEvents,
 } from './logic/actions';
 import { EventDetailsDTO, IIconFile } from './logic/model';
 import { IEventState } from './logic/reducer';
@@ -40,6 +41,7 @@ interface Props extends IMapStateProps {
   uploadFiles: (files: IIconFile[]) => void;
   removeFiles: (files: IIconFile[]) => void;
   deleteEvent: BindingCbWithOne<string>;
+  createEvents: (events: Partial<EventDetailsDTO>[]) => void;
 }
 
 type State = {
@@ -289,7 +291,7 @@ class EventDetails extends Component<Props, State> {
           isOpen={this.state.isCsvLoaderOpen}
           onClose={this.onCsvLoaderClose}
           type="event_master"
-          onCreate={this.props.createEvent}
+          onCreate={this.props.createEvents}
         />
       </div>
     );
@@ -312,6 +314,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       createEvent,
       removeFiles,
       deleteEvent,
+      createEvents,
     },
     dispatch
   );
