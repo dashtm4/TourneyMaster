@@ -152,8 +152,6 @@ export const mapTeamsFromSchedulesDetails = (
     date: item.game_date || undefined,
   }));
 
-  console.log(schedulesDetails.map(it => it.game_id));
-
   const runGamesSelection = (team: ITeam) => {
     const games = [
       ...sd

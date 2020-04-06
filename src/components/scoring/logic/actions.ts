@@ -22,6 +22,7 @@ import Api from 'api/api';
 import { teamSchema } from 'validations';
 import { mapScheduleGamesWithNames } from 'helpers';
 import { ITeam, ISchedule, ScheduleStatuses } from 'common/models';
+import { getTeamsWithResults } from '../helpers';
 import { Toasts } from 'components/common';
 
 const loadScoringData: ActionCreator<ThunkAction<
@@ -40,10 +41,16 @@ const loadScoringData: ActionCreator<ThunkAction<
     const publishedSchedule = schedules.find(
       (it: ISchedule) => it.schedule_status === ScheduleStatuses.PUBLISHED
     );
+    const teams = await Api.get(`/teams?event_id=${eventId}`);
 
     const schedulesGames = await Api.get(
       `/games?schedule_id=${publishedSchedule.schedule_id}`
     );
+
+    const mappedTeams = getTeamsWithResults(teams, schedulesGames);
+
+    if (mappedTeams) {
+    }
 
     const mappedGames = await mapScheduleGamesWithNames(
       eventId,
@@ -57,7 +64,9 @@ const loadScoringData: ActionCreator<ThunkAction<
         games: mappedGames,
       },
     });
-  } catch {
+  } catch (err) {
+    console.log(err);
+
     dispatch({
       type: LOAD_SCORING_DATA_FAILURE,
     });
