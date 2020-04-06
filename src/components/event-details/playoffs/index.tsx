@@ -69,15 +69,7 @@ interface Props {
   index: number;
 }
 
-export const defaultRankingFactorDivisions = [
-  { id: 1, text: 'Best record' },
-  { id: 2, text: 'Head to Head' },
-  { id: 3, text: 'Goal Difference' },
-  { id: 4, text: 'Goals Scored' },
-  { id: 5, text: 'Goals Allowed' },
-];
-
-export const defaultRankingFactorPools = [
+export const defaultRankingFactor = [
   { id: 1, text: 'Best record' },
   { id: 2, text: 'Head to Head' },
   { id: 3, text: 'Goal Difference' },
@@ -112,11 +104,11 @@ const PlayoffsSection: React.FC<Props> = ({
     onChange('playoffs_exist', playoffs_exist ? 0 : 1);
     onChange(
       'ranking_factor_divisions',
-      JSON.stringify(defaultRankingFactorDivisions.map(factor => factor.id))
+      JSON.stringify(defaultRankingFactor.map(factor => factor.id))
     );
     onChange(
       'ranking_factor_pools',
-      JSON.stringify(defaultRankingFactorPools.map(factor => factor.id))
+      JSON.stringify(defaultRankingFactor.map(factor => factor.id))
     );
   };
 
@@ -152,29 +144,18 @@ const PlayoffsSection: React.FC<Props> = ({
     onToggleOne(index);
   };
 
-  const parseRankingFactor = (type: string, factor?: string) => {
-    const defaultRankingFactor =
-      type === 'rankingFactorDivisions'
-        ? defaultRankingFactorDivisions
-        : defaultRankingFactorPools;
-
+  const parseRankingFactor = (factor?: string) => {
     return factor
-      ? JSON.parse(factor).map((factor: number) => ({
-          id: factor,
-          text: defaultRankingFactor[factor - 1].text,
+      ? JSON.parse(factor).map((fact: number) => ({
+          id: fact,
+          text: defaultRankingFactor[fact - 1].text,
         }))
       : defaultRankingFactor;
   };
 
-  const rankingFactorDivisions = parseRankingFactor(
-    'rankingFactorDivisions',
-    ranking_factor_divisions
-  );
+  const rankingFactorDivisions = parseRankingFactor(ranking_factor_divisions);
 
-  const rankingFactorPools = parseRankingFactor(
-    'rankingFactorPools',
-    ranking_factor_pools
-  );
+  const rankingFactorPools = parseRankingFactor(ranking_factor_pools);
 
   return (
     <SectionDropdown
