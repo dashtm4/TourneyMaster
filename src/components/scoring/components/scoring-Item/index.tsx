@@ -57,9 +57,7 @@ const ScoringItem = ({
         expanded={expanded !== undefined && expanded}
         onToggle={onSectionToggle}
       >
-        <span>
-          {division.short_name} ({division.long_name})
-        </span>
+        <span>{division.long_name}</span>
         <div>
           <ul className={styles.statisticList}>
             <li>
