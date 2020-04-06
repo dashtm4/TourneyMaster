@@ -79,6 +79,7 @@ const AuthorizedPageEvent = ({
     EventMenuTitles.SCHEDULING,
     EventMenuTitles.SCORING,
   ];
+  const scoringIgnoreList = [EventMenuTitles.SCORING];
   const reportingIgnoreList = [EventMenuTitles.REPORTING];
 
   return (
@@ -118,7 +119,18 @@ const AuthorizedPageEvent = ({
             <Route path={Routes.SCHEDULES_ID} component={Schedules} />
             <Route path={Routes.PLAYOFFS_ID} component={Playoffs} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
-            <Route path={Routes.SCORING_ID} component={Sсoring} />
+            <Route
+              path={Routes.SCORING_ID}
+              render={props => (
+                <Sсoring
+                  {...props}
+                  incompleteMenuItems={getIncompleteMenuItems(
+                    menuList,
+                    scoringIgnoreList
+                  )}
+                />
+              )}
+            />
             <Route
               path={Routes.REPORTING_ID}
               render={props => (

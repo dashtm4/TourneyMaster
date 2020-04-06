@@ -64,9 +64,7 @@ const loadScoringData: ActionCreator<ThunkAction<
         games: mappedGames,
       },
     });
-  } catch (err) {
-    console.log(err);
-
+  } catch {
     dispatch({
       type: LOAD_SCORING_DATA_FAILURE,
     });

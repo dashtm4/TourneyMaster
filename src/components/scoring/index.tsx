@@ -17,6 +17,7 @@ import {
   Modal,
   Loader,
   PopupTeamEdit,
+  HazardList,
 } from 'components/common';
 import {
   IDivision,
@@ -24,12 +25,13 @@ import {
   ITeam,
   BindingCbWithOne,
   ISchedulesGameWithNames,
+  IMenuItem,
 } from 'common/models';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 
 interface MatchParams {
-  eventId?: string;
+  eventId: string;
 }
 
 interface Props {
@@ -39,6 +41,7 @@ interface Props {
   pools: IPool[];
   teams: ITeam[];
   games: ISchedulesGameWithNames[];
+  incompleteMenuItems: IMenuItem[];
   loadScoringData: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
   loadTeams: (poolId: string) => void;
@@ -164,7 +167,19 @@ class Sсoring extends React.Component<
       loadPools,
       loadTeams,
       games,
+      incompleteMenuItems,
     } = this.props;
+
+    const isAllowViewPage = incompleteMenuItems.length === 0;
+
+    if (!isAllowViewPage) {
+      return (
+        <HazardList
+          incompleteMenuItems={incompleteMenuItems}
+          eventId={this.props.match.params.eventId}
+        />
+      );
+    }
 
     if (isLoading) {
       return <Loader />;
