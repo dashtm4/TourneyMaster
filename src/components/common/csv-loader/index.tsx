@@ -31,7 +31,6 @@ import {
   mapDataForSaving,
   checkCsvForValidity,
   getRequiredFields,
-  saveData,
 } from './helpers';
 import { Toasts } from 'components/common';
 import { PopupExposure } from 'components/common';
@@ -194,7 +193,7 @@ class CsvLoader extends React.Component<Props, State> {
       dataToSave.push(event);
     });
 
-    saveData(dataToSave, type, onCreate, eventId);
+    onCreate(dataToSave, this.onModalClose);
   };
 
   onFieldIncludeChange = (
@@ -301,7 +300,12 @@ class CsvLoader extends React.Component<Props, State> {
       value: map.map_id_json,
     }));
 
-    const requiredFields = getRequiredFields(this.props.type);
+    const requiredFields = this.props.tableColumns
+      ? getRequiredFields(
+          this.props.type,
+          this.props.tableColumns?.table_details
+        )
+      : [];
 
     return (
       <Modal isOpen={this.props.isOpen} onClose={this.onModalClose}>
@@ -324,7 +328,7 @@ class CsvLoader extends React.Component<Props, State> {
             />
           </div>
           <div className={styles.row}>
-            <div style={{ display: 'flex' }}>
+            <div className={styles.checkboxWrapper}>
               <Checkbox
                 options={[
                   {

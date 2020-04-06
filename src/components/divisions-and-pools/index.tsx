@@ -8,6 +8,7 @@ import {
   savePool,
   saveTeams,
   saveDivisions,
+  createDivisions,
 } from './logic/actions';
 import Modal from '../common/modal';
 import AddPool from './division/add-pool';
@@ -31,6 +32,7 @@ interface IDivisionsAndPoolsProps {
   savePool: BindingCbWithOne<Partial<IPool>>;
   saveTeams: BindingCbWithOne<ITeam[]>;
   saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
+  createDivisions: BindingCbWithOne<Partial<IDivision>[]>;
 }
 
 interface IDivisionAndPoolsState {
@@ -206,7 +208,7 @@ class DivisionsAndPools extends React.Component<
           isOpen={this.state.isCsvLoaderOpen}
           onClose={this.onCsvLoaderClose}
           type="divisions"
-          onCreate={this.props.saveDivisions}
+          onCreate={this.props.createDivisions}
           eventId={this.eventId}
         />
       </section>
@@ -238,6 +240,7 @@ const mapDispatchToProps = {
   savePool,
   saveTeams,
   saveDivisions,
+  createDivisions,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DivisionsAndPools);

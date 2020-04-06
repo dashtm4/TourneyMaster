@@ -22,7 +22,7 @@ import history from '../../../browserhistory';
 import { divisionSchema, poolSchema, teamSchema } from 'validations';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
-import { IPool, ITeam, IDivision } from 'common/models';
+import { IPool, ITeam, IDivision, BindingAction } from 'common/models';
 import { IAppState } from 'reducers/root-reducer.types';
 
 export const divisionsTeamsFetchStart = (): { type: string } => ({
@@ -364,5 +364,50 @@ export const saveTeams = (teams: ITeam[]) => async (
     });
 
     Toasts.errorToast(err.message);
+  }
+};
+
+export const createDivisions: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (divisions: IDivision[], cb: BindingAction) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    const allDivisions = await api.get(
+      `/divisions?event_id=${divisions[0].event_id}`
+    );
+    for (const division of divisions) {
+      await Yup.array()
+        .of(divisionSchema)
+        .unique(
+          div => div.long_name,
+          'You already have a division with the same long name. The division must have a unique long name.'
+        )
+        .unique(
+          div => div.short_name,
+          'You already have division with the same short name. The division must have a unique short name.'
+        )
+        .validate([...allDivisions, division]);
+    }
+    for (const division of divisions) {
+      await api.post('/divisions', division);
+      dispatch(addDivisionSuccess(division));
+    }
+
+    dispatch(saveDivisionsSuccess(divisions));
+
+    const successMsg = `Divisions are successfully created (${divisions.length})`;
+    Toasts.successToast(successMsg);
+    cb();
+  } catch (err) {
+    const div = err.value[err.value.length - 1];
+    const index = divisions.findIndex(
+      division => division.division_id === div.division_id
+    );
+    const errMessage = `Record ${index + 1}: ${err.message}`;
+    return Toasts.errorToast(errMessage);
   }
 };

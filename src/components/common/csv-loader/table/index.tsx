@@ -41,12 +41,14 @@ const CsvTable = ({
               <b>Data Header</b>
             </TableCell>
             <TableCell component="th" scope="row" style={{ width: 120 }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
                 <b>Include</b>
-                <div
-                  className={styles.includeCheckboxWrapper}
-                  style={{ paddingLeft: '5px' }}
-                >
+                <div style={{ paddingLeft: '5px' }}>
                   <Checkbox
                     options={[
                       {
@@ -55,6 +57,7 @@ const CsvTable = ({
                       },
                     ]}
                     onChange={onIncludeAllChange}
+                    withoutLabel={true}
                   />
                 </div>
               </div>
@@ -83,20 +86,27 @@ const CsvTable = ({
               <TableCell component="td" scope="row" style={{ width: 206 }}>
                 {col}
               </TableCell>
-              <TableCell component="td" scope="row" style={{ width: 120 }}>
-                <div className={styles.includeCheckboxWrapper}>
-                  <Checkbox
-                    options={[
-                      {
-                        label: '',
-                        checked: fields[index].included,
-                      },
-                    ]}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      onFieldIncludeChange(e, index);
-                    }}
-                  />
-                </div>
+              <TableCell
+                component="td"
+                scope="row"
+                style={{
+                  width: 120,
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <Checkbox
+                  options={[
+                    {
+                      label: '',
+                      checked: fields[index].included,
+                    },
+                  ]}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    onFieldIncludeChange(e, index);
+                  }}
+                  withoutLabel={true}
+                />
               </TableCell>
               <TableCell component="td" scope="row" style={{ width: 250 }}>
                 <div className={styles.selectWrapper} style={{ width: 220 }}>
