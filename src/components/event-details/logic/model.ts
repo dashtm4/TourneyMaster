@@ -28,10 +28,10 @@ export interface EventDetailsDTO {
   event_type: string;
   playoffs_exist: number;
   max_num_of_divisions: number;
-  ranking_factor_divisions: null;
+  ranking_factor_divisions: string;
   bracket_type: null;
   bracket_durations_vary: number | null;
-  ranking_factor_pools: null;
+  ranking_factor_pools: string;
   num_teams_bracket: null;
   max_num_teams_per_division: number;
   show_goals_scored: number;
