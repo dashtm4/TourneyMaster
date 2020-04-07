@@ -1,5 +1,5 @@
 import {
-  ITeam,
+  ITeamWithResults,
   IPool,
   IDivision,
   ISchedulesGameWithNames,
@@ -12,10 +12,6 @@ export const LOAD_SCORING_DATA_FAILURE = 'SCORING:LOAD_SCORING_DATA_FAILURE';
 export const LOAD_POOLS_START = 'SCORING:LOAD_POOLS_START';
 export const LOAD_POOLS_SUCCESS = 'SCORING:LOAD_POOLS_SUCCESS';
 export const LOAD_POOLS_FAILURE = 'SCORING:LOAD_POOLS_FAILURE';
-
-export const LOAD_TEAMS_START = 'SCORING:LOAD_TEAMS_START';
-export const LOAD_TEAMS_SUCCESS = 'SCORING:LOAD_TEAMS_SUCCESS';
-export const LOAD_TEAMS_FAILURE = 'SCORING:LOAD_TEAMS_FAILURE';
 
 export const EDIT_TEAM_SUCCESS = 'SCORING:EDIT_TEAM_SUCCESS';
 export const EDIT_TEAM_FAILURE = 'SCORING:EDIT_TEAM_FAILURE';
@@ -32,6 +28,7 @@ export interface loadDivisionSuccess {
   payload: {
     divisions: IDivision[];
     games: ISchedulesGameWithNames[];
+    teams: ITeamWithResults;
   };
 }
 
@@ -57,18 +54,10 @@ export interface loadTeamsStart {
   };
 }
 
-export interface loadTeamsSuccess {
-  type: 'SCORING:LOAD_TEAMS_SUCCESS';
-  payload: {
-    poolId: string;
-    teams: ITeam[];
-  };
-}
-
 export interface editTeamsSuccess {
   type: 'SCORING:EDIT_TEAM_SUCCESS';
   payload: {
-    team: ITeam;
+    team: ITeamWithResults;
   };
 }
 
@@ -85,6 +74,5 @@ export type TeamsAction =
   | loadDivisionStart
   | loadDivisionSuccess
   | loadPoolsSuccess
-  | loadTeamsSuccess
   | editTeamsSuccess
   | deleteTeamSuccess;

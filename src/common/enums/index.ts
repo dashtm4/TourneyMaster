@@ -8,3 +8,4 @@ export * from './table-schedule';
 export * from './entry-points';
 export * from './registration';
 export * from './facility';
+export * from './team';

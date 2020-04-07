@@ -25,3 +25,10 @@ export interface ITeam {
   isChange: boolean;
   isDelete: boolean;
 }
+
+export interface ITeamWithResults extends ITeam {
+  wins: number;
+  losses: number;
+  goalsScored: number;
+  goalsAllowed: number;
+}

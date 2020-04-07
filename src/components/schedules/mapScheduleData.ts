@@ -33,11 +33,15 @@ export const mapSchedulingScheduleData = (
 
 const getVersionId = (
   gameId: number,
+  gameDate?: string,
   schedulesDetails?: ISchedulesDetails[]
 ) => {
   if (schedulesDetails) {
     return schedulesDetails.find(
-      item => Number(item.game_id) === Number(gameId)
+      item =>
+        Number(item.game_id) === Number(gameId) &&
+        gameDate &&
+        item.game_date === gameDate
     )?.schedule_version_id;
   }
   return false;
@@ -67,7 +71,8 @@ export const mapSchedulesTeamCards = async (
 
   const scheduleDetails: ISchedulesDetails[] = games.map(game => ({
     schedule_version_id:
-      getVersionId(game.id, schedulesDetails) || getVarcharEight(),
+      getVersionId(game.id, game.gameDate, schedulesDetails) ||
+      getVarcharEight(),
     schedule_version_desc: null,
     schedule_id: scheduleId,
     schedule_desc: null,
@@ -179,15 +184,22 @@ export const mapTeamsFromSchedulesDetails = (
 
 export const mapTeamsFromShedulesGames = (
   schedulesGames: ISchedulesGame[],
-  teams: ITeam[]
+  teams: ITeam[],
+  games: IGame[]
 ) => {
-  const sd = schedulesGames.map(item => ({
-    gameId: item.game_id,
-    awayTeamId: item.away_team_id,
-    awayTeamScore: item.away_team_score,
-    homeTeamId: item.home_team_id,
-    homeTeamScore: item.home_team_score,
-  }));
+  const sd = schedulesGames.map(item => {
+    const currentGame = games.find(game => game.varcharId === item.game_id);
+
+    const mappedSchedulesGame = {
+      gameId: currentGame!.id,
+      awayTeamId: item.away_team_id,
+      awayTeamScore: item.away_team_score,
+      homeTeamId: item.home_team_id,
+      homeTeamScore: item.home_team_score,
+    };
+
+    return mappedSchedulesGame;
+  });
 
   const teamCards = teams.map(team => ({
     ...team,

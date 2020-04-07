@@ -1,13 +1,13 @@
 import React from 'react';
-import { ITeam } from '../../../../common/models/teams';
+import { ITeamWithResults } from 'common/models/teams';
 import styles from './styles.module.scss';
 
 interface Props {
-  team: ITeam;
+  team: ITeamWithResults;
   divisionName: string;
   poolName: string;
   onOpenTeamDetails: (
-    team: ITeam,
+    team: ITeamWithResults,
     divisionName: string,
     poolName: string
   ) => void;
@@ -28,10 +28,10 @@ const TeamItem = ({
         {team.short_name}
       </button>
     </td>
-    <td></td>
-    <td>1</td>
-    <td>1</td>
-    <td>1</td>
+    <td>{team.wins}</td>
+    <td>{team.losses}</td>
+    <td>{team.goalsScored}</td>
+    <td>{team.goalsAllowed}</td>
   </tr>
 );
 

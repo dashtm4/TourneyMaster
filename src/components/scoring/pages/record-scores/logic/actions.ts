@@ -12,14 +12,11 @@ import Api from 'api/api';
 import {
   IFacility,
   IEventDetails,
-  // ISchedule,
   IDivision,
-  // ScheduleStatuses,
   ISchedulesGame,
   ISchedule,
   ScheduleStatuses,
 } from 'common/models';
-import { chunk } from 'lodash-es';
 import { Toasts } from 'components/common';
 
 const loadScoresData: ActionCreator<ThunkAction<
@@ -64,7 +61,7 @@ const loadScoresData: ActionCreator<ThunkAction<
     );
 
     const schedulesGames = await Api.get(
-      `/games?event_id=${currentEvent.event_id}`
+      `/games?schedule_id=${activeSchedule.schedule_id}`
     );
 
     dispatch({
@@ -95,10 +92,10 @@ const saveGames: ActionCreator<ThunkAction<
   RecordScoresAction
 >> = (games: ISchedulesGame[]) => async (dispatch: Dispatch) => {
   try {
-    const schedulesGamesChunk = chunk(games, 50);
-
     const gamesResponses = await Promise.all(
-      schedulesGamesChunk.map(async arr => await Api.put('/games', arr))
+      games.map((it: ISchedulesGame) =>
+        Api.put(`/games?game_id=${it.game_id}`, it)
+      )
     );
 
     const gamesResponseSuccess = gamesResponses.every(item => item);

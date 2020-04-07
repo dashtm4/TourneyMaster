@@ -174,7 +174,8 @@ export const calculateDays = (teamCards: ITeamCard[]) => {
   const gamesDates = games
     .map(item => item.date)
     .filter(date => date !== undefined);
-  const uniqueNum = union(gamesDates);
+  const uniqueDates = union(gamesDates);
+  const sortedUniqueDates = orderBy(uniqueDates, [], 'asc');
 
-  return uniqueNum;
+  return sortedUniqueDates;
 };

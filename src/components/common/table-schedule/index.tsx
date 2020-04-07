@@ -13,6 +13,7 @@ import {
   IEventDetails,
   ISchedule,
   IPool,
+  BindingAction,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes, DayTypes } from './types';
 import { mapGamesByField } from 'helpers';
@@ -60,9 +61,11 @@ interface Props {
   historyLength?: number;
   teamsDiagnostics?: IDiagnosticsInput;
   divisionsDiagnostics?: IDiagnosticsInput;
+  isFullScreen?: boolean;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
+  onToggleFullScreen?: BindingAction;
 }
 
 const TableSchedule = ({
@@ -84,6 +87,8 @@ const TableSchedule = ({
   historyLength,
   teamsDiagnostics,
   divisionsDiagnostics,
+  isFullScreen,
+  onToggleFullScreen,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -245,6 +250,8 @@ const TableSchedule = ({
               onTeamCardUpdate={onTeamCardUpdate}
               onTeamCardsUpdate={onTeamCardsUpdate}
               teamCards={teamCards}
+              isFullScreen={isFullScreen}
+              onToggleFullScreen={onToggleFullScreen}
             />
           </div>
         </DndProvider>

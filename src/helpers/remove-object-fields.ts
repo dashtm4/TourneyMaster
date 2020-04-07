@@ -1,4 +1,4 @@
-const removeObjectFields = (obj: Object, fields: string[]) =>
+const removeObjKeysByKeys = (obj: Object, fields: string[]) =>
   fields.reduce((acc, key) => ({ ...acc, [key]: obj[key] }), {});
 
-export { removeObjectFields };
+export { removeObjKeysByKeys };
