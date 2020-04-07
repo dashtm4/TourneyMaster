@@ -67,6 +67,7 @@ const UnassignedList = (props: IProps) => {
         position: undefined,
         teamId: item.id,
         originGameId: item.originGameId,
+        originGameDate: item.originGameDate,
       });
     },
   });

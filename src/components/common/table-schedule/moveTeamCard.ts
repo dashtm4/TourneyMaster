@@ -1,14 +1,13 @@
-import { findIndex, find } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IDropParams } from '../matrix-table/dnd/drop';
-import { TeamPositionEnum } from '../matrix-table/helper';
+import { findIndex, find } from 'lodash-es';
 
 export default (
   teamCards: ITeamCard[],
   dropParams: IDropParams,
   day?: string
 ) => {
-  const { teamId, position, gameId, originGameId } = dropParams;
+  const { teamId, position, gameId, originGameId, originGameDate } = dropParams;
   let result = {
     teamCards: [...teamCards],
     divisionUnmatch: false,
@@ -22,18 +21,15 @@ export default (
       ({ games }) =>
         findIndex(games, {
           id: gameId,
-          teamPosition:
-            position === TeamPositionEnum.awayTeam
-              ? TeamPositionEnum.homeTeam
-              : TeamPositionEnum.awayTeam,
+          teamPosition: position,
+          date: day,
         }) >= 0
     );
 
-    /* Compare division ids between replacing teams */
     if (
       incomingTeam !== undefined &&
       outcomingTeam !== undefined &&
-      incomingTeam?.divisionId !== outcomingTeam?.divisionId
+      incomingTeam.divisionId !== outcomingTeam.divisionId
     ) {
       result = {
         ...result,
@@ -41,11 +37,10 @@ export default (
       };
     }
 
-    /* Compare pool ids between replacing teams */
     if (
       incomingTeam !== undefined &&
       outcomingTeam !== undefined &&
-      incomingTeam?.poolId !== outcomingTeam?.poolId
+      incomingTeam.poolId !== outcomingTeam.poolId
     ) {
       result = {
         ...result,
@@ -53,31 +48,78 @@ export default (
       };
     }
 
-    /* Find and update replacing teams */
-    if (teamCard.id === teamId) {
+    /* 1. Handle dropping inside the table */
+
+    if (gameId && position && teamId === teamCard.id) {
       let games = [
-        ...(teamCard.games?.filter(game => game.id !== originGameId) || []),
+        ...teamCard.games?.filter(
+          item => item.id !== originGameId || item.date !== originGameDate
+        ),
+        {
+          id: gameId,
+          teamPosition: position,
+          isTeamLocked: false,
+          date: day,
+        },
       ];
 
-      if (gameId !== undefined && position !== undefined) {
-        games = [...games, { id: gameId, teamPosition: position, date: day }];
+      if (
+        findIndex(teamCard.games, {
+          id: gameId,
+          teamPosition: position === 1 ? 2 : 1,
+          date: day,
+        }) >= 0
+      ) {
+        games = [
+          ...games.filter(
+            item =>
+              item.id !== gameId ||
+              item.teamPosition !== (position === 1 ? 2 : 1) ||
+              item.date !== day
+          ),
+        ];
       }
-      console.log('games 1', games);
+
       return {
         ...teamCard,
         games,
       };
     }
 
-    if (
-      findIndex(teamCard.games, { id: gameId, teamPosition: position }) >= 0
-    ) {
-      console.log('games 2', [
-        ...teamCard.games?.filter(game => game.id !== gameId),
-      ]);
+    /* 2. Handle dropping into the Unassigned table */
+
+    if (!gameId && !position && teamId === teamCard.id) {
+      const games = [
+        ...teamCard.games?.filter(
+          item => item.id !== originGameId || item.date !== originGameDate
+        ),
+      ];
       return {
         ...teamCard,
-        games: [...teamCard.games?.filter(game => game.id !== gameId)],
+        games,
+      };
+    }
+
+    /* 3. Remove replaced team game */
+
+    if (
+      findIndex(teamCard.games, {
+        id: gameId,
+        teamPosition: position,
+        date: day,
+      }) >= 0
+    ) {
+      const games = [
+        ...teamCard.games?.filter(
+          item =>
+            item.id !== gameId ||
+            item.teamPosition !== position ||
+            item.date !== day
+        ),
+      ];
+      return {
+        ...teamCard,
+        games,
       };
     }
 

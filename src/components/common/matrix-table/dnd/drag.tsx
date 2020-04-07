@@ -43,7 +43,7 @@ export default (props: Props) => {
   const game = find(teamCard.games, { id: originGameId, date: originGameDate });
 
   const [{ isDragging }, drag] = useDrag({
-    item: { id: teamCard.id, type, originGameId },
+    item: { id: teamCard.id, type, originGameId, originGameDate },
     canDrag: !game?.isTeamLocked,
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),

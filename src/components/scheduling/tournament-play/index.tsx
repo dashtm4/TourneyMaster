@@ -71,7 +71,7 @@ export default (props: IProps) => {
       </HeadingLevelThree>
       <ul className={styles.tournamentList}>
         <CardMessage
-          style={{ marginBottom: 30 }}
+          style={{ marginBottom: 30, width: '100%' }}
           type={CardMessageTypes.EMODJI_OBJECTS}
         >
           Schedules are sorted first on Status then on Last Update Date
