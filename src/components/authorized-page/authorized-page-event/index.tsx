@@ -12,7 +12,7 @@ import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
 import { Loader, Menu, ScrollTopButton } from 'components/common';
 import Facilities from 'components/facilities';
-import Sсoring from 'components/scoring';
+import Scoring from 'components/scoring';
 import RecordScores from 'components/scoring/pages/record-scores';
 import EventDetails from 'components/event-details';
 import Registration from 'components/registration';
@@ -122,7 +122,7 @@ const AuthorizedPageEvent = ({
             <Route
               path={Routes.SCORING_ID}
               render={props => (
-                <Sсoring
+                <Scoring
                   {...props}
                   incompleteMenuItems={getIncompleteMenuItems(
                     menuList,
