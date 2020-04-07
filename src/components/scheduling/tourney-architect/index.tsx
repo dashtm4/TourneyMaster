@@ -201,10 +201,6 @@ const TourneyArchitect = (props: IProps) => {
             'AVG # Games/Team',
             `${((totalGameSlots * 2) / schedule.num_teams).toFixed(1)}`
           )}
-          {renderSectionCell(
-            'Tournament Games Needed',
-            `${Number(schedule.min_num_games) * schedule.num_teams}`
-          )}
           {event &&
             renderSectionCell(
               'Bracket Games Needed',
