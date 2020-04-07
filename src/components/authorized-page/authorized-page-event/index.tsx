@@ -59,25 +59,36 @@ const AuthorizedPageEvent = ({
   clearAuthPageData,
   changeTournamentStatus,
 }: Props & RouteComponentProps<MatchParams>) => {
+  const [isFullScreen, toggleFullScreen] = React.useState<boolean>(false);
+  const onToggleFullScreen = () => {
+    toggleFullScreen(!isFullScreen);
+
+    isFullScreen ? closeFullscreen() : openFullscreen(document.documentElement);
+  };
   const eventId = match.params.eventId;
   const { event } = tournamentData;
+
+  const onFullScreen = () => {
+    if (!document.fullscreen) {
+      toggleFullScreen(false);
+    }
+  };
+
   React.useEffect(() => {
     if (eventId) {
       loadAuthPageData(eventId);
     }
 
-    return () => {
-      clearAuthPageData();
-    };
+    return () => clearAuthPageData();
   }, [eventId]);
 
-  const [isFullScreen, toggleFullScreen] = React.useState<boolean>(false);
+  React.useEffect(() => {
+    isFullScreen
+      ? window.addEventListener('fullscreenchange', onFullScreen)
+      : window.removeEventListener('fullscreenchange', onFullScreen);
 
-  const onToggleFullScreen = () => {
-    isFullScreen ? closeFullscreen() : openFullscreen(document.documentElement);
-
-    toggleFullScreen(!isFullScreen);
-  };
+    return () => window.removeEventListener('fullscreenchange', onFullScreen);
+  }, [isFullScreen]);
 
   const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
   const schedulingIgnoreList = [
