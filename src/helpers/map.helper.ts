@@ -1,4 +1,4 @@
-import { removeObjectFields } from 'helpers';
+import { removeObjKeysByKeys } from 'helpers';
 import { IEventDetails } from 'common/models';
 import {
   EntryPoints,
@@ -38,13 +38,16 @@ const mapGamesByField = (games: IGame[], fields: IField[]) =>
     return { ...game, facilityId: currentField?.facilityId };
   });
 
-const removeAuxiliaryFields = (entity: IEntity, entryPoint: EntryPoints) => {
+const removeObjKeysByEntryPoint = (
+  entity: IEntity,
+  entryPoint: EntryPoints
+) => {
   switch (entryPoint) {
     case EntryPoints.REGISTRATIONS: {
-      return removeObjectFields(entity, Object.values(IRegistrationFields));
+      return removeObjKeysByKeys(entity, Object.values(IRegistrationFields));
     }
     case EntryPoints.FACILITIES: {
-      return removeObjectFields(entity, Object.values(IFacilityFields));
+      return removeObjKeysByKeys(entity, Object.values(IFacilityFields));
     }
   }
 
@@ -55,6 +58,6 @@ export {
   arrToMap,
   mapToArr,
   mapArrWithEventName,
-  removeAuxiliaryFields,
+  removeObjKeysByEntryPoint,
   mapGamesByField,
 };

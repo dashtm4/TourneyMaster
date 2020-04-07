@@ -17,9 +17,19 @@ import {
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { teamSchema } from 'validations';
-import { mapScheduleGamesWithNames, getTeamsWithResults } from 'helpers';
-import { ITeam, ISchedule, ScheduleStatuses } from 'common/models';
+import {
+  mapScheduleGamesWithNames,
+  getTeamsWithResults,
+  removeObjKeysByKeys,
+} from 'helpers';
+import {
+  ITeam,
+  ISchedule,
+  ScheduleStatuses,
+  ITeamWithResults,
+} from 'common/models';
 import { Toasts } from 'components/common';
+import { ITeamFields } from 'common/enums';
 
 const loadScoringData: ActionCreator<ThunkAction<
   void,
@@ -91,11 +101,15 @@ const loadPools: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-const editTeam = (team: ITeam) => async (
+const editTeam = (team: ITeamWithResults) => async (
   dispatch: Dispatch,
   getState: () => IAppState
 ) => {
   try {
+    const clearTeam = removeObjKeysByKeys(
+      team,
+      Object.values(ITeamFields)
+    ) as ITeam;
     const { teams } = getState().scoring;
 
     await Yup.array()
@@ -111,19 +125,21 @@ const editTeam = (team: ITeam) => async (
       .validate(
         teams.reduce((acc, it) => {
           if (it.team_id === team.team_id) {
-            return [...acc, team];
+            return [...acc, clearTeam];
           }
 
           return it.division_id === team.division_id ? [...acc, it] : acc;
         }, [] as ITeam[])
       );
 
-    await Api.put(`/teams?team_id=${team.team_id}`, team);
+    await Api.put(`/teams?team_id=${team.team_id}`, clearTeam);
+
+    const updatedTeam = { ...team, ...clearTeam };
 
     dispatch({
       type: EDIT_TEAM_SUCCESS,
       payload: {
-        team,
+        team: updatedTeam,
       },
     });
 
