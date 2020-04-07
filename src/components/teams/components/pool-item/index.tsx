@@ -24,27 +24,29 @@ const PoolItem = ({ pool, teams, division, onEditPopupOpen }: Props) => {
       <h5 className={styles.poolTitle}>
         {pool ? `${pool.pool_name} (${teams.length})` : 'Unassigned'}
       </h5>
-      <table className={styles.teamsTable}>
-        <thead>
-          <tr>
-            <th className={styles.teamName}>Name</th>
-            <th>Contact name</th>
-            <th>Contact number</th>
-            <th className={styles.teamActions}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedTeams.map(it => (
-            <TeamItem
-              team={it}
-              divisionName={division.long_name}
-              poolName={pool?.pool_name}
-              onEditPopupOpen={onEditPopupOpen}
-              key={it.team_id}
-            />
-          ))}
-        </tbody>
-      </table>
+      {teams.length !== 0 && (
+        <table className={styles.teamsTable}>
+          <thead>
+            <tr>
+              <th className={styles.teamName}>Name</th>
+              <th>Contact name</th>
+              <th>Contact number</th>
+              <th className={styles.teamActions}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedTeams.map(it => (
+              <TeamItem
+                team={it}
+                divisionName={division.long_name}
+                poolName={pool?.pool_name}
+                onEditPopupOpen={onEditPopupOpen}
+                key={it.team_id}
+              />
+            ))}
+          </tbody>
+        </table>
+      )}
     </li>
   );
 };
