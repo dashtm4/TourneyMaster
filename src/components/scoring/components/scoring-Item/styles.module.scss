@@ -1,16 +1,12 @@
 .statisticList {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
 
   margin: 0;
   padding: 0;
 
   list-style: none;
   color: #6a6a6a;
-
-  li {
-    width: 50%;
-  }
 }
 
 .groupList {

@@ -39,12 +39,14 @@ const mapScheduleGamesWithNames = async (
         fieldName: currentField.field_name,
         awayTeamId: game.away_team_id!,
         awayTeamName: findTeam(game.away_team_id!, teams)?.short_name!,
-        awayTeamScore: game.away_team_score || '0',
+        awayTeamScore: game.away_team_score,
         homeTeamId: game.home_team_id!,
         homeTeamName: findTeam(game.home_team_id!, teams)?.short_name!,
-        homeTeamScore: game.home_team_score || '0',
+        homeTeamScore: game.home_team_score,
         gameDate: game.game_date,
         startTime: game.start_time!,
+        createTime: game.created_datetime,
+        updatedTime: game.updated_datetime,
       };
     }
   );
