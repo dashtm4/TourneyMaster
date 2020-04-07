@@ -1,18 +1,20 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
-import styles from './styles.module.scss';
+import { find } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 import { Tooltip } from 'components/common';
 import { getIcon } from 'helpers';
 import { Icons, TableScheduleTypes } from 'common/enums';
 import { IInputEvent } from 'common/types';
+import styles from './styles.module.scss';
 
 interface Props {
   tableType: TableScheduleTypes;
   type: string;
   teamCard: ITeamCard;
   originGameId?: number;
+  originGameDate?: string;
   isEnterScores?: boolean;
   showHeatmap?: boolean;
   onTeamCardUpdate?: (teamCard: ITeamCard) => void;
@@ -30,6 +32,7 @@ export default (props: Props) => {
     tableType,
     type,
     originGameId,
+    originGameDate,
     showHeatmap,
     teamCard,
     isEnterScores,
@@ -37,7 +40,7 @@ export default (props: Props) => {
     isDndMode,
   } = props;
 
-  const game = teamCard.games?.find(game => game.id === originGameId);
+  const game = find(teamCard.games, { id: originGameId, date: originGameDate });
 
   const [{ isDragging }, drag] = useDrag({
     item: { id: teamCard.id, type, originGameId },
@@ -50,10 +53,10 @@ export default (props: Props) => {
   const onLockClick = () => {
     onTeamCardUpdate!({
       ...teamCard,
-      games: teamCard.games?.map(game =>
-        game.id === originGameId
-          ? { ...game, isTeamLocked: !game.isTeamLocked }
-          : game
+      games: teamCard.games?.map(item =>
+        item.id === originGameId && item.date === originGameDate
+          ? { ...item, isTeamLocked: !item.isTeamLocked }
+          : item
       ),
     });
   };

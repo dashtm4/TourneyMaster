@@ -5,7 +5,7 @@ import api from 'api/api';
 import { IMember } from 'common/models';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { getVarcharEight } from 'helpers';
-import { ITeam } from 'common/models/schedule/teams';
+import { ITeam, ITeamCard } from 'common/models/schedule/teams';
 import { ISchedulesGame } from 'common/models/schedule/game';
 import { ISchedulingSchedule } from 'components/scheduling/types';
 import { unionWith, isEqual } from 'lodash-es';
@@ -57,6 +57,15 @@ const getMember = async () => {
   return member;
 };
 
+const getLockedValue = (team?: ITeamCard, game?: IGame) =>
+  team &&
+  game &&
+  team?.games?.find(
+    teamGame => teamGame.id === game?.id && teamGame.date === game?.gameDate
+  )?.isTeamLocked
+    ? 1
+    : 0;
+
 export const mapSchedulesTeamCards = async (
   scheduleData: ISchedule,
   games: IGame[],
@@ -86,14 +95,8 @@ export const mapSchedulesTeamCards = async (
     away_team_id: game.awayTeam?.id || null,
     home_team_id: game.homeTeam?.id || null,
     game_locked_YN: null,
-    away_team_locked: game.awayTeam?.games?.filter(g => g.id === game.id)[0]
-      .isTeamLocked
-      ? 1
-      : 0,
-    home_team_locked: game.homeTeam?.games?.filter(g => g.id === game.id)[0]
-      .isTeamLocked
-      ? 1
-      : 0,
+    away_team_locked: getLockedValue(game.awayTeam, game),
+    home_team_locked: getLockedValue(game.homeTeam, game),
     is_draft_YN: isDraft ? 1 : 0,
     is_published_YN: isDraft ? 0 : 1,
     created_by: memberId,
@@ -155,6 +158,8 @@ export const mapTeamsFromSchedulesDetails = (
     awayTeamId: item.away_team_id,
     homeTeamId: item.home_team_id,
     date: item.game_date || undefined,
+    awayTeamLocked: item.away_team_locked,
+    homeTeamLocked: item.home_team_locked,
   }));
 
   const runGamesSelection = (team: ITeam) => {
@@ -164,11 +169,17 @@ export const mapTeamsFromSchedulesDetails = (
           ({ awayTeamId, homeTeamId }) =>
             awayTeamId === team.id || homeTeamId === team.id
         )
-        .map(({ gameId, awayTeamId, date }) => ({
-          id: Number(gameId),
-          teamPosition: awayTeamId === team.id ? 1 : 2,
-          date,
-        })),
+        .map(
+          ({ gameId, awayTeamId, date, awayTeamLocked, homeTeamLocked }) => ({
+            id: Number(gameId),
+            teamPosition: awayTeamId === team.id ? 1 : 2,
+            isTeamLocked:
+              awayTeamId === team.id
+                ? Boolean(awayTeamLocked)
+                : Boolean(homeTeamLocked),
+            date,
+          })
+        ),
     ];
 
     return unionWith(games, isEqual);

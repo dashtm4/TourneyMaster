@@ -43,24 +43,27 @@ const RenderTimeSlot = (props: IProps) => {
     .filter(game => game.timeSlotId === timeSlot.id)
     .map(game => game.id);
 
+  const currentDate = games.find(item => item.gameDate)?.gameDate;
+
   const isEveryTeamInTimeSlotLocked = teamCards.every(team =>
     team.games
-      ?.filter(game => idsGamesForTimeSlot.includes(game.id))
+      ?.filter(
+        game =>
+          idsGamesForTimeSlot.includes(game.id) && currentDate === game.date
+      )
       .every(game => game.isTeamLocked)
   );
 
   const onLockClick = () => {
-    const updTeamCards = teamCards.map(team => {
-      return {
-        ...team,
-        games: team.games?.map(g =>
-          idsGamesForTimeSlot.includes(g.id)
-            ? { ...g, isTeamLocked: !isEveryTeamInTimeSlotLocked }
-            : g
-        ),
-      };
-    });
-    onTeamCardsUpdate(updTeamCards);
+    const updatedTeamCards = teamCards.map(teamCard => ({
+      ...teamCard,
+      games: teamCard.games?.map(item =>
+        idsGamesForTimeSlot.includes(item.id) && currentDate === item.date
+          ? { ...item, isTeamLocked: !isEveryTeamInTimeSlotLocked }
+          : item
+      ),
+    }));
+    onTeamCardsUpdate(updatedTeamCards);
   };
 
   return (
