@@ -15,9 +15,9 @@ const findTeam = (teamId: string, teams: ITeam[]) => {
 
 const mapScheduleGamesWithNames = async (
   eventId: string,
+  teams: ITeam[],
   games: ISchedulesGame[]
 ) => {
-  const teams = await Api.get(`/teams?event_id=${eventId}`);
   const facilities = await Api.get(`/facilities?event_id=${eventId}`);
   const fields = (
     await Promise.all(

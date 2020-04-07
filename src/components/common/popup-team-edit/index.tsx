@@ -3,7 +3,7 @@ import { HeadingLevelThree, Button } from '../../common';
 import FieldItem from './components/field-item';
 import { getIcon } from '../../../helpers/get-icon.helper';
 import { BindingAction } from '../../../common/models/callback';
-import { ITeam } from '../../../common/models/teams';
+import { ITeam, ITeamWithResults } from '../../../common/models/teams';
 import { Icons } from '../../../common/enums/icons';
 import styles from './styles.module.scss';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
@@ -33,11 +33,11 @@ enum FORM_FIELDS {
 }
 
 interface Props {
-  team: ITeam | null;
+  team: ITeam | ITeamWithResults | null;
   division: string | null;
   pool: string | null;
   onSaveTeamClick: BindingAction;
-  onDeleteTeamClick: (team: ITeam) => void;
+  onDeleteTeamClick: (team: ITeam | ITeamWithResults) => void;
   onChangeTeam: (evt: React.ChangeEvent<HTMLInputElement>) => void;
   onCloseModal: BindingAction;
   deleteMessage?: string;
@@ -68,7 +68,9 @@ const TeamDetailsPopup = ({
   }
 
   const suitableGames = games
-    .filter(it => it.homeTeamId === team?.team_id)
+    .filter(
+      it => it.homeTeamId === team?.team_id || it.awayTeamId === team?.team_id
+    )
     .slice(0, MAX_GAMES_COUNT);
 
   return (

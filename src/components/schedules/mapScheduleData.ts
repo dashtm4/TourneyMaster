@@ -184,15 +184,22 @@ export const mapTeamsFromSchedulesDetails = (
 
 export const mapTeamsFromShedulesGames = (
   schedulesGames: ISchedulesGame[],
-  teams: ITeam[]
+  teams: ITeam[],
+  games: IGame[]
 ) => {
-  const sd = schedulesGames.map(item => ({
-    gameId: item.game_id,
-    awayTeamId: item.away_team_id,
-    awayTeamScore: item.away_team_score,
-    homeTeamId: item.home_team_id,
-    homeTeamScore: item.home_team_score,
-  }));
+  const sd = schedulesGames.map(item => {
+    const currentGame = games.find(game => game.varcharId === item.game_id);
+
+    const mappedSchedulesGame = {
+      gameId: currentGame!.id,
+      awayTeamId: item.away_team_id,
+      awayTeamScore: item.away_team_score,
+      homeTeamId: item.home_team_id,
+      homeTeamScore: item.home_team_score,
+    };
+
+    return mappedSchedulesGame;
+  });
 
   const teamCards = teams.map(team => ({
     ...team,

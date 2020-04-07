@@ -1,23 +1,22 @@
 import React from 'react';
 import moment from 'moment';
-import { SectionDropdown, Loader } from '../../../common';
+import { SectionDropdown, Loader } from 'components/common';
 import GroupItem from '../group-item';
 import styles from './styles.module.scss';
 import {
   IDivision,
   IPool,
-  ITeam,
+  ITeamWithResults,
   BindingCbWithOne,
-} from '../../../../common/models';
+} from 'common/models';
 
 interface Props {
   division: IDivision;
   pools: IPool[];
-  teams: ITeam[];
+  teams: ITeamWithResults[];
   loadPools: (divisionId: string) => void;
-  loadTeams: (poolId: string) => void;
   onOpenTeamDetails: (
-    team: ITeam,
+    team: ITeamWithResults,
     divisionName: string,
     poolName: string
   ) => void;
@@ -31,7 +30,6 @@ const ScoringItem = ({
   pools,
   teams,
   loadPools,
-  loadTeams,
   onOpenTeamDetails,
   expanded,
   index,
@@ -57,9 +55,7 @@ const ScoringItem = ({
         expanded={expanded !== undefined && expanded}
         onToggle={onSectionToggle}
       >
-        <span>
-          {division.short_name} ({division.long_name})
-        </span>
+        <span>{division.long_name}</span>
         <div>
           <ul className={styles.statisticList}>
             <li>
@@ -89,7 +85,6 @@ const ScoringItem = ({
                 division={division}
                 pool={pool}
                 teams={teams.filter(it => it.pool_id === pool.pool_id)}
-                loadTeams={loadTeams}
                 onOpenTeamDetails={onOpenTeamDetails}
                 key={pool.pool_id}
               />

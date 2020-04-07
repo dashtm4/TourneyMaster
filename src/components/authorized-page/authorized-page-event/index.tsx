@@ -12,7 +12,7 @@ import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
 import { Loader, Menu, ScrollTopButton } from 'components/common';
 import Facilities from 'components/facilities';
-import Sсoring from 'components/scoring';
+import Scoring from 'components/scoring';
 import RecordScores from 'components/scoring/pages/record-scores';
 import EventDetails from 'components/event-details';
 import Registration from 'components/registration';
@@ -95,6 +95,7 @@ const AuthorizedPageEvent = ({
     EventMenuTitles.SCHEDULING,
     EventMenuTitles.SCORING,
   ];
+  const scoringIgnoreList = [EventMenuTitles.SCORING];
   const reportingIgnoreList = [EventMenuTitles.REPORTING];
 
   if (eventId && !isLoaded) {
@@ -151,7 +152,18 @@ const AuthorizedPageEvent = ({
             />
             <Route path={Routes.PLAYOFFS_ID} component={Playoffs} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
-            <Route path={Routes.SCORING_ID} component={Sсoring} />
+            <Route
+              path={Routes.SCORING_ID}
+              render={props => (
+                <Scoring
+                  {...props}
+                  incompleteMenuItems={getIncompleteMenuItems(
+                    menuList,
+                    scoringIgnoreList
+                  )}
+                />
+              )}
+            />
             <Route
               path={Routes.REPORTING_ID}
               render={props => (

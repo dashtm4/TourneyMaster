@@ -5,7 +5,6 @@ import { Dispatch, bindActionCreators } from 'redux';
 import {
   loadScoringData,
   loadPools,
-  loadTeams,
   editTeam,
   deleteTeam,
 } from './logic/actions';
@@ -17,19 +16,22 @@ import {
   Modal,
   Loader,
   PopupTeamEdit,
+  HazardList,
 } from 'components/common';
 import {
   IDivision,
   IPool,
-  ITeam,
+  ITeamWithResults,
   BindingCbWithOne,
   ISchedulesGameWithNames,
+  IMenuItem,
+  ITeam,
 } from 'common/models';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 
 interface MatchParams {
-  eventId?: string;
+  eventId: string;
 }
 
 interface Props {
@@ -37,17 +39,17 @@ interface Props {
   isLoaded: boolean;
   divisions: IDivision[];
   pools: IPool[];
-  teams: ITeam[];
+  teams: ITeamWithResults[];
   games: ISchedulesGameWithNames[];
+  incompleteMenuItems: IMenuItem[];
   loadScoringData: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
-  loadTeams: (poolId: string) => void;
-  editTeam: BindingCbWithOne<ITeam>;
+  editTeam: BindingCbWithOne<ITeamWithResults>;
   deleteTeam: (teamId: string) => void;
 }
 
 interface State {
-  changeableTeam: ITeam | null;
+  changeableTeam: ITeamWithResults | null;
   currentDivision: string | null;
   currentPool: string | null;
   isModalOpen: boolean;
@@ -92,7 +94,7 @@ class Sсoring extends React.Component<
     this.onCloseModal();
   };
 
-  onDeleteTeam = (team: ITeam) => {
+  onDeleteTeam = (team: ITeamWithResults | ITeam) => {
     const { deleteTeam } = this.props;
 
     deleteTeam(team.team_id);
@@ -106,11 +108,18 @@ class Sсoring extends React.Component<
     } = evt;
 
     this.setState(({ changeableTeam }) => ({
-      changeableTeam: { ...(changeableTeam as ITeam), [name]: value },
+      changeableTeam: {
+        ...(changeableTeam as ITeamWithResults),
+        [name]: value,
+      },
     }));
   };
 
-  onOpenTeamDetails = (team: ITeam, divisionName: string, poolName: string) => {
+  onOpenTeamDetails = (
+    team: ITeamWithResults,
+    divisionName: string,
+    poolName: string
+  ) => {
     this.setState({
       isModalOpen: true,
       changeableTeam: team,
@@ -162,9 +171,20 @@ class Sсoring extends React.Component<
       teams,
       divisions,
       loadPools,
-      loadTeams,
       games,
+      incompleteMenuItems,
     } = this.props;
+
+    const isAllowViewPage = incompleteMenuItems.length === 0;
+
+    if (!isAllowViewPage) {
+      return (
+        <HazardList
+          incompleteMenuItems={incompleteMenuItems}
+          eventId={this.props.match.params.eventId}
+        />
+      );
+    }
 
     if (isLoading) {
       return <Loader />;
@@ -194,7 +214,6 @@ class Sсoring extends React.Component<
                 )}
                 teams={teams}
                 loadPools={loadPools}
-                loadTeams={loadTeams}
                 onOpenTeamDetails={this.onOpenTeamDetails}
                 key={division.division_id}
                 expanded={this.state.expanded[index]}
@@ -232,7 +251,7 @@ export default connect(
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadScoringData, loadPools, loadTeams, deleteTeam, editTeam },
+      { loadScoringData, loadPools, deleteTeam, editTeam },
       dispatch
     )
 )(Sсoring);

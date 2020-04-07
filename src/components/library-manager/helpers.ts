@@ -1,5 +1,5 @@
 import Api from '../../api/api';
-import { getVarcharEight, removeAuxiliaryFields } from 'helpers';
+import { getVarcharEight, removeObjKeysByEntryPoint } from 'helpers';
 import {
   EntryPoints,
   IRegistrationFields,
@@ -39,7 +39,7 @@ const getClearScharedItem = (
 
   const sharedItemWithNewId = generateEntityId(mappedSharedItem, entryPoint);
 
-  const clearSharedItem = removeAuxiliaryFields(
+  const clearSharedItem = removeObjKeysByEntryPoint(
     sharedItemWithNewId,
     entryPoint
   );

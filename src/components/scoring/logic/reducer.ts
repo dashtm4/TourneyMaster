@@ -3,8 +3,6 @@ import {
   LOAD_SCORING_DATA_START,
   LOAD_SCORING_DATA_SUCCESS,
   LOAD_POOLS_SUCCESS,
-  LOAD_TEAMS_START,
-  LOAD_TEAMS_SUCCESS,
   EDIT_TEAM_SUCCESS,
   DELETE_TEAM_SUCCESS,
   LOAD_POOLS_START,
@@ -12,7 +10,7 @@ import {
 import {
   IDivision,
   IPool,
-  ITeam,
+  ITeamWithResults,
   ISchedulesGameWithNames,
 } from 'common/models';
 
@@ -21,7 +19,7 @@ export interface IScoringState {
   isLoaded: boolean;
   divisions: IDivision[];
   pools: IPool[];
-  teams: ITeam[];
+  teams: ITeamWithResults[];
   games: ISchedulesGameWithNames[];
 }
 
@@ -43,9 +41,16 @@ const scoringReducer = (
       return { ...initialState, isLoading: true };
     }
     case LOAD_SCORING_DATA_SUCCESS: {
-      const { divisions, games } = action.payload;
+      const { divisions, teams, games } = action.payload;
 
-      return { ...state, divisions, games, isLoading: false, isLoaded: true };
+      return {
+        ...state,
+        divisions,
+        teams,
+        games,
+        isLoading: false,
+        isLoaded: true,
+      };
     }
     case LOAD_POOLS_START: {
       const { divisionId } = action.payload;
@@ -68,29 +73,6 @@ const scoringReducer = (
             : it
         ),
         pools: [...state.pools, ...pools],
-      };
-    }
-    case LOAD_TEAMS_START: {
-      const { poolId } = action.payload;
-
-      return {
-        ...state,
-        pools: state.pools.map(it =>
-          it.pool_id === poolId ? { ...it, isTeamsLoading: true } : it
-        ),
-      };
-    }
-    case LOAD_TEAMS_SUCCESS: {
-      const { poolId, teams } = action.payload;
-
-      return {
-        ...state,
-        pools: state.pools.map(it =>
-          it.pool_id === poolId
-            ? { ...it, isTeamsLoading: false, isTeamsLoaded: true }
-            : it
-        ),
-        teams: [...state.teams, ...teams],
       };
     }
     case EDIT_TEAM_SUCCESS: {

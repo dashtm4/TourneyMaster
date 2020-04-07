@@ -33,6 +33,7 @@ const loadTeamsData: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
 
     const mappedGames = await mapScheduleGamesWithNames(
       eventId,
+      teams,
       schedulesGames
     );
 
