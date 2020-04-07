@@ -269,6 +269,7 @@ class RecordScores extends React.Component<
       <div className={isFullScreen ? styles.fullScreenWrapper : ''}>
         <Navigation
           isEnterScores={isEnterScores}
+          isFullScreen={isFullScreen}
           onLeavePage={this.onLeavePage}
           onChangeView={this.onChangeView}
           onSaveDraft={this.saveDraft}

@@ -1,11 +1,12 @@
 import React from 'react';
 import { Button } from 'components/common';
-import { ButtonTypes } from 'common/enums';
+import { ButtonTypes, ButtonVarian, ButtonColors } from 'common/enums';
 import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 
 interface Props {
   isEnterScores: boolean;
+  isFullScreen: boolean;
   onChangeView: (flag: boolean) => void;
   onLeavePage: BindingAction;
   onSaveDraft: BindingAction;
@@ -13,62 +14,59 @@ interface Props {
 
 const Navigation = ({
   isEnterScores,
+  isFullScreen,
   onChangeView,
   onLeavePage,
   onSaveDraft,
 }: Props) => {
+  const onFalseView = () => onChangeView(false);
+  const onTrueView = () => onChangeView(true);
+
   return (
     <div className={styles.navWrapper}>
       <p className={styles.btnsViewWrapper}>
         <span className={styles.btnWrapper}>
           <Button
-            onClick={() => onChangeView(false)}
+            onClick={onFalseView}
             type={
               isEnterScores ? ButtonTypes.SQUARED : ButtonTypes.SQUARED_OUTLINED
             }
+            variant={ButtonVarian.CONTAINED}
+            color={ButtonColors.PRIMARY}
             label="View Only"
-            variant="contained"
-            color="primary"
           />
         </span>
         <Button
-          onClick={() => onChangeView(true)}
+          onClick={onTrueView}
           type={
             isEnterScores ? ButtonTypes.SQUARED_OUTLINED : ButtonTypes.SQUARED
           }
+          variant={ButtonVarian.CONTAINED}
+          color={ButtonColors.PRIMARY}
           label="Enter Scores"
-          variant="contained"
-          color="primary"
         />
       </p>
       <p className={styles.btnsSaveWrapper}>
-        <span className={styles.btnWrapper}>
-          <Button
-            onClick={onLeavePage}
-            label="Close"
-            variant="text"
-            color="secondary"
-          />
-        </span>
+        {!isFullScreen && (
+          <span className={styles.btnWrapper}>
+            <Button
+              onClick={onLeavePage}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Close"
+            />
+          </span>
+        )}
         <span className={styles.btnWrapper}>
           <Button
             onClick={onSaveDraft}
+            variant={ButtonVarian.CONTAINED}
+            color={ButtonColors.PRIMARY}
             label="Save"
-            variant="contained"
-            color="primary"
           />
         </span>
-        {false && (
-          <Button
-            label="Save & Publish"
-            variant="contained"
-            color="primary"
-            disabled={true}
-          />
-        )}
       </p>
     </div>
   );
 };
-
 export default Navigation;

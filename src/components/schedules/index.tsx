@@ -737,6 +737,7 @@ class Schedules extends Component<Props, State> {
             schedulePublished={schedulesPublished}
             anotherSchedulePublished={anotherSchedulePublished}
             savingInProgress={savingInProgress}
+            isFullScreen={isFullScreen}
             onClose={this.onClose}
             onSaveDraft={this.save}
             onUnpublish={this.unpublish}

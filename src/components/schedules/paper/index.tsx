@@ -14,6 +14,7 @@ interface IProps {
   savingInProgress?: boolean;
   schedulePublished?: boolean;
   anotherSchedulePublished?: boolean;
+  isFullScreen: boolean;
   onClose: () => void;
   onSaveDraft: () => void;
   onUnpublish: () => void;
@@ -30,6 +31,7 @@ export default (props: IProps) => {
     saveAndPublish,
     schedulePublished,
     anotherSchedulePublished,
+    isFullScreen,
   } = props;
 
   return (
@@ -42,12 +44,14 @@ export default (props: IProps) => {
             </HeadingLevelThree>
           </div>
           <div className={styles.btnsGroup}>
-            <Button
-              label="Close"
-              variant="text"
-              color="secondary"
-              onClick={onClose}
-            />
+            {!isFullScreen && (
+              <Button
+                label="Close"
+                variant="text"
+                color="secondary"
+                onClick={onClose}
+              />
+            )}
             <Button
               label={'Save'}
               variant="contained"
