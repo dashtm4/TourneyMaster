@@ -30,6 +30,7 @@ import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
 import { Routes, EventMenuTitles, EventStatuses } from 'common/enums';
 import { getIncompleteMenuItems } from '../helpers';
 import styles from '../styles.module.scss';
+import { closeFullscreen, openFullscreen } from 'helpers';
 
 interface MatchParams {
   eventId?: string;
@@ -70,9 +71,13 @@ const AuthorizedPageEvent = ({
     };
   }, [eventId]);
 
-  if (eventId && !isLoaded) {
-    return <Loader />;
-  }
+  const [isFullScreen, toggleFullScreen] = React.useState<boolean>(false);
+
+  const onToggleFullScreen = () => {
+    isFullScreen ? closeFullscreen() : openFullscreen(document.documentElement);
+
+    toggleFullScreen(!isFullScreen);
+  };
 
   const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
   const schedulingIgnoreList = [
@@ -81,9 +86,13 @@ const AuthorizedPageEvent = ({
   ];
   const reportingIgnoreList = [EventMenuTitles.REPORTING];
 
+  if (eventId && !isLoaded) {
+    return <Loader />;
+  }
+
   return (
     <div className={styles.container}>
-      <Header />
+      {!isFullScreen && <Header />}
       <div className={styles.page}>
         <Menu
           list={menuList}
@@ -94,7 +103,11 @@ const AuthorizedPageEvent = ({
           eventName={event?.event_name || ''}
           changeTournamentStatus={changeTournamentStatus}
         />
-        <main className={styles.content}>
+        <main
+          className={`${styles.content} ${
+            isFullScreen ? styles.contentFullScreen : ''
+          }`}
+        >
           <Switch>
             <Route path={Routes.EVENT_DETAILS_ID} component={EventDetails} />
             <Route path={Routes.FACILITIES_ID} component={Facilities} />
@@ -115,7 +128,16 @@ const AuthorizedPageEvent = ({
                 />
               )}
             />
-            <Route path={Routes.SCHEDULES_ID} component={Schedules} />
+            <Route
+              path={Routes.SCHEDULES_ID}
+              render={props => (
+                <Schedules
+                  {...props}
+                  isFullScreen={isFullScreen}
+                  onToggleFullScreen={onToggleFullScreen}
+                />
+              )}
+            />
             <Route path={Routes.PLAYOFFS_ID} component={Playoffs} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
@@ -140,7 +162,7 @@ const AuthorizedPageEvent = ({
           <ScrollTopButton />
         </main>
       </div>
-      <Footer />
+      {!isFullScreen && <Footer />}
     </div>
   );
 };
