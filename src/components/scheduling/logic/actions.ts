@@ -347,6 +347,9 @@ const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
   const updatedSchedule: ISchedule = {
     ...schedule,
     schedule_status: isDraft ? 'Draft' : 'Published',
+    last_web_publish: isDraft
+      ? schedule.last_web_publish
+      : new Date().toISOString(),
   };
 
   /* Get SchedulesDetails and SchedulesGames */

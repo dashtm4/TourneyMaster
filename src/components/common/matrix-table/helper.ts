@@ -109,6 +109,7 @@ export const settleTeamsPerGames = (
   if (days?.length && days?.length > 1 && selectedDay) {
     return games.map(game => ({
       ...game,
+      gameDate: days[DayTypes[selectedDay] - 1],
       awayTeam: teamCards.find(
         team =>
           findIndex(team.games, {

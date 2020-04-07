@@ -28,7 +28,7 @@ const RenderGameSlot = (props: Props) => {
     isEnterScores,
     teamCards,
   } = props;
-  const { awayTeam, homeTeam } = game;
+  const { awayTeam, homeTeam, gameDate } = game;
   const acceptType = 'teamdrop';
 
   return (
@@ -46,6 +46,7 @@ const RenderGameSlot = (props: Props) => {
               tableType={tableType}
               type={acceptType}
               originGameId={game.id}
+              originGameDate={gameDate}
               showHeatmap={showHeatmap}
               teamCard={awayTeam}
               onTeamCardUpdate={onTeamCardUpdate}
@@ -66,6 +67,7 @@ const RenderGameSlot = (props: Props) => {
               tableType={tableType}
               type={acceptType}
               originGameId={game.id}
+              originGameDate={gameDate}
               showHeatmap={showHeatmap}
               teamCard={homeTeam}
               onTeamCardUpdate={onTeamCardUpdate}

@@ -15,6 +15,13 @@
     color: #6a6a6a;
   }
 
+  .checkboxWrapper {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+  }
+
   .dropArea {
     height: inherit;
     min-height: calc(100% - 62px);
@@ -53,6 +60,10 @@
           &.poolName {
             border-radius: 0;
             border-left: 1px solid #ececec;
+
+            svg {
+              opacity: 0.2;
+            }
           }
 
           &:last-child {
@@ -71,7 +82,7 @@
 
       tbody {
         display: block;
-        height: 330px;
+        height: 381px;
         width: 310px;
         overflow-x: hidden;
         overflow-y: scroll;

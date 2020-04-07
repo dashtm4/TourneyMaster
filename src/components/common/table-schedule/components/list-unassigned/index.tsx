@@ -67,6 +67,7 @@ const UnassignedList = (props: IProps) => {
         position: undefined,
         teamId: item.id,
         originGameId: item.originGameId,
+        originGameDate: item.originGameDate,
       });
     },
   });
@@ -84,14 +85,16 @@ const UnassignedList = (props: IProps) => {
       style={{ background: isOver ? '#fcfcfc' : '#ececec' }}
     >
       <h3 className={styles.title}>Needs Assignment</h3>
-      <Checkbox
-        options={[{ label: 'Show All Teams', checked: showAllTeams }]}
-        onChange={onCheck}
-      />
-      <Checkbox
-        options={[{ label: 'Show Pools', checked: showPools }]}
-        onChange={() => setShowPools(!showPools)}
-      />
+      <div className={styles.checkboxWrapper}>
+        <Checkbox
+          options={[{ label: 'All Teams', checked: showAllTeams }]}
+          onChange={onCheck}
+        />
+        <Checkbox
+          options={[{ label: 'Show Pools', checked: showPools }]}
+          onChange={() => setShowPools(!showPools)}
+        />
+      </div>
       <div ref={drop} className={styles.dropArea}>
         <table className={styles.table}>
           <thead>
