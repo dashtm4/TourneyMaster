@@ -332,7 +332,6 @@ const saveSchedule = (
   const scheduleResp = await callPostPut('/schedules', schedule, !isCreate);
 
   /* POST/PUT SchedulesDetails */
-
   const schedulesDetailsChunk = chunk(schedulesDetails, 50);
 
   const schedulesDetailsResp = await Promise.all(
