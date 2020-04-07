@@ -115,6 +115,7 @@ const OrganizationsList = ({
                                 label="Delete"
                                 variant="text"
                                 color="inherit"
+                                disabled={organizations.length === 1}
                               />
                             </span>
                           </td>
