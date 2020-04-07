@@ -278,7 +278,6 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   };
 
   render() {
-    console.log('RENDERt', this.state.isOnboardingWizardOpen);
     return (
       <div className={styles.main}>
         <Paper sticky={true}>
