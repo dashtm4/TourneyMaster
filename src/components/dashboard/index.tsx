@@ -17,7 +17,15 @@ import { getEvents, getCalendarEvents } from './logic/actions';
 import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { Loader } from 'components/common';
 import { notificationData } from './mockData';
-import { ITeam, IField, BindingAction, ICalendarEvent } from 'common/models';
+import {
+  ITeam,
+  IField,
+  BindingAction,
+  ICalendarEvent,
+  IOrganization,
+} from 'common/models';
+import OnboardingWizard from 'components/onboarding-wizard';
+import { loadOrganizations } from 'components/organizations-management/logic/actions';
 
 interface IFieldWithEventId extends IField {
   event_id: string;
@@ -34,11 +42,14 @@ interface IDashboardProps {
   getEvents: () => void;
   getCalendarEvents: BindingAction;
   calendarEvents: ICalendarEvent[];
+  loadOrganizations: BindingAction;
+  organizations: IOrganization[];
 }
 
 interface IDashboardState {
   order: number;
   filters: { status: string[]; historical: boolean };
+  isOnboardingWizardOpen: boolean;
 }
 
 enum EventStatus {
@@ -50,11 +61,24 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   state = {
     order: 1,
     filters: { status: ['Published', 'Draft'], historical: false },
+    isOnboardingWizardOpen: false,
   };
 
   componentDidMount() {
+    this.props.loadOrganizations();
     this.props.getEvents();
     this.props.getCalendarEvents();
+  }
+
+  componentDidUpdate(prevProps: IDashboardProps) {
+    if (
+      !prevProps.organizations.length &&
+      prevProps.organizations !== this.props.organizations
+    ) {
+      this.setState({
+        isOnboardingWizardOpen: !this.props.organizations.length,
+      });
+    }
   }
 
   onCreateTournament = () => {
@@ -295,6 +319,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
           />
         </div>
         {this.renderDashbaordInOrder()}
+        <OnboardingWizard isOpen={this.state.isOnboardingWizardOpen} />
       </div>
     );
   }
@@ -309,6 +334,7 @@ interface IState {
     isDetailLoading: boolean;
     areCalendarEventsLoading: boolean;
   };
+  organizationsManagement: { organizations: IOrganization[] };
 }
 
 const mapStateToProps = (state: IState) => ({
@@ -319,11 +345,13 @@ const mapStateToProps = (state: IState) => ({
   isLoading: state.events.isLoading,
   isDetailLoading: state.events.isDetailLoading,
   areCalendarEventsLoading: state.events.areCalendarEventsLoading,
+  organizations: state.organizationsManagement.organizations,
 });
 
 const mapDispatchToProps = {
   getEvents,
   getCalendarEvents,
+  loadOrganizations,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
