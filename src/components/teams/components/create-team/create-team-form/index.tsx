@@ -184,7 +184,6 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
               <Input
                 fullWidth={true}
                 label="Phone #"
-                type="number"
                 value={phone_num || ''}
                 onChange={this.onPhoneChange}
               />

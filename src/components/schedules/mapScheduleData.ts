@@ -33,11 +33,15 @@ export const mapSchedulingScheduleData = (
 
 const getVersionId = (
   gameId: number,
+  gameDate?: string,
   schedulesDetails?: ISchedulesDetails[]
 ) => {
   if (schedulesDetails) {
     return schedulesDetails.find(
-      item => Number(item.game_id) === Number(gameId)
+      item =>
+        Number(item.game_id) === Number(gameId) &&
+        gameDate &&
+        item.game_date === gameDate
     )?.schedule_version_id;
   }
   return false;
@@ -67,7 +71,8 @@ export const mapSchedulesTeamCards = async (
 
   const scheduleDetails: ISchedulesDetails[] = games.map(game => ({
     schedule_version_id:
-      getVersionId(game.id, schedulesDetails) || getVarcharEight(),
+      getVersionId(game.id, game.gameDate, schedulesDetails) ||
+      getVarcharEight(),
     schedule_version_desc: null,
     schedule_id: scheduleId,
     schedule_desc: null,

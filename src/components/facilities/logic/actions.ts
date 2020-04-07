@@ -278,3 +278,52 @@ export {
   saveFacilities,
   uploadFileMap,
 };
+
+export const createFacilities: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  FacilitiesAction
+>> = (facilities: IFacility[], cb: () => void) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    const allFacilities = await Api.get(
+      `/facilities?event_id=${facilities[0].event_id}`
+    );
+
+    for (const facility of facilities) {
+      await Yup.array()
+        .of(facilitySchema)
+        .unique(
+          fac => fac.facilities_description,
+          'You already have a facility with the same name. Facility must have a unique name.'
+        )
+        .validate([...allFacilities, facility]);
+    }
+
+    for (const facility of facilities) {
+      delete facility.isNew;
+
+      await Api.post('/facilities', facility);
+    }
+
+    dispatch({
+      type: SAVE_FACILITIES_SUCCESS,
+      payload: {
+        facilities,
+      },
+    });
+
+    const successMsg = `Facilities are successfully created (${facilities.length})`;
+    Toasts.successToast(successMsg);
+    cb();
+  } catch (err) {
+    const fac = err.value[err.value.length - 1];
+    const index = facilities.findIndex(
+      facility => facility.facilities_id === fac.facilities_id
+    );
+    const errMessage = `Record ${index + 1}: ${err.message}`;
+    return Toasts.errorToast(errMessage);
+  }
+};

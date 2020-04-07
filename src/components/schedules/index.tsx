@@ -71,7 +71,12 @@ import {
   mapTeamCardsToSchedulesGames,
 } from './mapScheduleData';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
-import { IConfigurableSchedule, ISchedule, IPool } from 'common/models';
+import {
+  IConfigurableSchedule,
+  ISchedule,
+  IPool,
+  BindingAction,
+} from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { TableScheduleTypes } from 'common/enums';
@@ -138,6 +143,8 @@ interface IMapDispatchToProps {
 interface ComponentProps {
   match: any;
   history: History;
+  isFullScreen: boolean;
+  onToggleFullScreen: BindingAction;
 }
 
 interface IRootState {
@@ -252,7 +259,6 @@ class Schedules extends Component<Props, State> {
 
     if (!schedulesTeamCards && schedulesDetails && teams && scheduleId) {
       const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
-
       this.onScheduleCardsUpdate(mappedTeams);
     }
 
@@ -689,6 +695,8 @@ class Schedules extends Component<Props, State> {
       pools,
       anotherSchedulePublished,
       schedulesPublished,
+      isFullScreen,
+      onToggleFullScreen,
     } = this.props;
 
     const {
@@ -718,7 +726,11 @@ class Schedules extends Component<Props, State> {
     const scheduleName = this.getSchedule()?.schedule_name || '';
 
     return (
-      <div className={styles.container}>
+      <div
+        className={`${styles.container} ${
+          isFullScreen ? styles.containerFullScreen : ''
+        }`}
+      >
         {loadCondition && !isLoading && (
           <SchedulesPaper
             scheduleName={scheduleName}
@@ -748,9 +760,11 @@ class Schedules extends Component<Props, State> {
             historyLength={schedulesHistoryLength}
             teamsDiagnostics={teamsDiagnostics}
             divisionsDiagnostics={divisionsDiagnostics}
+            isFullScreen={isFullScreen}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
             onTeamCardUpdate={this.onScheduleCardUpdate}
             onUndo={onScheduleUndo}
+            onToggleFullScreen={onToggleFullScreen}
           />
         ) : (
           <div className={styles.loadingWrapper}>

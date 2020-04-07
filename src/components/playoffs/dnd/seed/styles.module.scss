@@ -12,8 +12,13 @@
 
   &.dropped {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    top: -1px;
+    left: -1px;
+    width: 200px;
+    padding-left: 30px;
+    // position: absolute;
+    // top: 0;
+    // left: 0;
+    // width: 100%;
   }
 }
