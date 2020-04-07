@@ -12,9 +12,14 @@ const withSelectColor = (Component: React.ComponentType<Props>) => {
       super(props);
 
       this.state = {
-        activeColor: this.props.value,
+        activeColor: '1C315F',
         displayColorPicker: false,
       };
+    }
+
+    componentDidUpdate(prevProps: Props) {
+      if (prevProps.value !== this.props.value)
+        this.setState({ activeColor: this.props.value });
     }
 
     onClick = () => {
