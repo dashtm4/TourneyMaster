@@ -16,10 +16,10 @@
 .headingContainer {
   display: flex;
   justify-content: space-between;
-  .btnsGroup {
-    & > :first-child {
-      margin-right: 15px;
-    }
+}
+.btnsGroup {
+  & > :first-child {
+    margin-right: 15px;
   }
 }
 .formContainer {
@@ -30,4 +30,8 @@
   .inputGroup:first-of-type {
     margin-right: 100px;
   }
+}
+.btnsWrapper {
+  display: flex;
+  justify-content: flex-end;
 }

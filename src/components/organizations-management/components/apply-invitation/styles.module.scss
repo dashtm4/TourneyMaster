@@ -19,3 +19,14 @@
   display: flex;
   justify-content: space-between;
 }
+.wMessage {
+  color: #6a6a6a;
+  margin-bottom: 10px;
+}
+.wBtnsWrapper {
+  display: flex;
+  justify-content: flex-end;
+  & > :first-child {
+    margin-right: 15px;
+  }
+}

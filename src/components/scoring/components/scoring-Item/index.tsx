@@ -8,12 +8,16 @@ import {
   IPool,
   ITeamWithResults,
   BindingCbWithOne,
+  IEventDetails,
+  ISchedulesGameWithNames,
 } from 'common/models';
 
 interface Props {
+  event: IEventDetails | null;
   division: IDivision;
   pools: IPool[];
   teams: ITeamWithResults[];
+  games: ISchedulesGameWithNames[];
   loadPools: (divisionId: string) => void;
   onOpenTeamDetails: (
     team: ITeamWithResults,
@@ -29,6 +33,8 @@ const ScoringItem = ({
   division,
   pools,
   teams,
+  event,
+  games,
   loadPools,
   onOpenTeamDetails,
   expanded,
@@ -47,6 +53,16 @@ const ScoringItem = ({
     onToggleOne(index);
   };
 
+  const completedGames = games.filter(
+    it => it.awayTeamScore !== null || it.homeTeamScore !== null
+  );
+
+  const lastUpd = Math.max(
+    ...games.map(it =>
+      it.updatedTime ? +new Date(it.updatedTime) : +new Date(it.createTime)
+    )
+  );
+
   return (
     <li>
       <SectionDropdown
@@ -59,32 +75,25 @@ const ScoringItem = ({
         <div>
           <ul className={styles.statisticList}>
             <li>
-              <b>Games Complete:</b> {`1`}/{`72`}
-            </li>
-            <li>
-              <b>Dates: </b>
-              {`02/08/20`} - {`02/09/20`}
-            </li>
-            <li>
-              <b>Scores Recorded:</b> {`1`}
+              <b>Games Complete:</b> {completedGames.length}/{games.length}
             </li>
             <li>
               <b>Last Web Publishing: </b>
-              <time dateTime={division.latest_web_publish}>
-                {division.latest_web_publish
-                  ? moment(division.latest_web_publish).format(
-                      'YYYY-MM-DD, hh:mm:ss A'
-                    )
-                  : 'Last Web Publishing: No scores published'}
+              <time dateTime={new Date(lastUpd).toString()}>
+                {lastUpd
+                  ? moment(lastUpd).format('LLLL')
+                  : 'No scores published'}
               </time>
             </li>
           </ul>
           <ul className={styles.groupList}>
             {pools.map(pool => (
               <GroupItem
+                event={event}
                 division={division}
                 pool={pool}
                 teams={teams.filter(it => it.pool_id === pool.pool_id)}
+                games={games}
                 onOpenTeamDetails={onOpenTeamDetails}
                 key={pool.pool_id}
               />

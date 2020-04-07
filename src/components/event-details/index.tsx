@@ -29,6 +29,7 @@ import { PopupExposure } from 'components/common';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 import CsvLoader from 'components/common/csv-loader';
 
+
 interface IMapStateProps {
   event: IEventState;
 }

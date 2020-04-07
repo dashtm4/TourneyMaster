@@ -10,7 +10,11 @@ import {
   PopupExposure,
 } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
-import { IConfigurableOrganization, BindingCbWithOne } from 'common/models';
+import {
+  IConfigurableOrganization,
+  BindingCbWithOne,
+  BindingAction,
+} from 'common/models';
 import styles from './styles.module.scss';
 import history from 'browserhistory';
 
@@ -33,6 +37,8 @@ interface Props {
   index: number;
   expanded: boolean;
   onToggleOne: BindingCbWithOne<number>;
+  type?: string;
+  onCancelBtn?: BindingAction;
 }
 
 const CreateOrganization = ({
@@ -40,6 +46,8 @@ const CreateOrganization = ({
   expanded,
   onToggleOne,
   index,
+  type,
+  onCancelBtn,
 }: Props) => {
   const [organization, onChange] = React.useState<IConfigurableOrganization>(
     EMPTY_ORGANIZATION
@@ -58,6 +66,9 @@ const CreateOrganization = ({
 
   const onCancelClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (onCancelBtn) {
+      return onCancelBtn();
+    }
     onModalChange(true);
   };
 
@@ -75,6 +86,25 @@ const CreateOrganization = ({
     onModalChange(false);
   };
 
+  const renderBtns = () => {
+    return (
+      <div className={styles.btnsGroup}>
+        <Button
+          label="Cancel"
+          variant="text"
+          color="secondary"
+          onClick={onCancelClick}
+        />
+        <Button
+          label="Create"
+          variant="contained"
+          color="primary"
+          onClick={onCreateClick}
+        />
+      </div>
+    );
+  };
+
   return (
     <>
       <SectionDropdown
@@ -89,20 +119,7 @@ const CreateOrganization = ({
           <HeadingLevelThree>
             <span>Create Organization</span>
           </HeadingLevelThree>
-          <div className={styles.btnsGroup}>
-            <Button
-              label="Cancel"
-              variant="text"
-              color="secondary"
-              onClick={onCancelClick}
-            />
-            <Button
-              label="Create"
-              variant="contained"
-              color="primary"
-              onClick={onCreateClick}
-            />
-          </div>
+          {type !== 'wizard' && renderBtns()}
         </div>
 
         <div className={styles.section}>
@@ -123,6 +140,7 @@ const CreateOrganization = ({
                   }
                   value={organization.org_name || ''}
                   fullWidth={true}
+                  autofocus={true}
                   label="Organization Name"
                 />
               </div>
@@ -161,6 +179,9 @@ const CreateOrganization = ({
               </div>
             </div>
           </form>
+          {type === 'wizard' && (
+            <div className={styles.btnsWrapper}>{renderBtns()} </div>
+          )}
         </div>
       </SectionDropdown>
       <PopupConfirm

@@ -41,7 +41,7 @@
       display: flex;
       align-items: center;
 
-      font-size: 16px;
+      font-size: 15px;
       color: #6a6a6a;
 
       div.sectionCellHeader {
@@ -81,6 +81,29 @@
       justify-content: space-between;
 
       margin-bottom: 15px;
+      input {
+        text-align: center;
+      }
+    }
+
+    .results {
+      display: flex;
+      justify-content: space-between;
+
+      min-height: 64px;
+      margin-bottom: 15px;
+      padding: 12px 14px;
+
+      background-color: #f4f4f4;
+
+      border-radius: 5px;
+    }
+
+    .resultsBtns {
+      display: flex;
+      justify-content: flex-end;
+
+      margin: 0 -7px 15px;
     }
 
     .numberGames {
@@ -101,19 +124,6 @@
       display: flex;
       justify-content: center;
     }
-
-    .taThird {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      margin-bottom: 15px;
-      padding: 12px 14px;
-
-      background-color: #f4f4f4;
-
-      border-radius: 5px;
-    }
   }
 
   .tournamentPlay,
@@ -132,8 +142,7 @@
     }
 
     .tnFirst,
-    .tnSecond,
-    .tnThird {
+    .tnSecond {
       display: flex;
       align-items: center;
       justify-content: space-between;

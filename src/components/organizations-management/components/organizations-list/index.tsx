@@ -5,6 +5,7 @@ import {
   Toasts,
   Button,
   Paper,
+  Tooltip,
 } from 'components/common';
 import PopupDeleteConfirm from 'components/common/delete-popup-confirm';
 import { IOrganization, BindingCbWithOne } from 'common/models';
@@ -47,6 +48,27 @@ const OrganizationsList = ({
 
   const onSectionToggle = () => {
     onToggleOne(index);
+  };
+
+  const renderDisabledBtn = () => {
+    return (
+      <Tooltip
+        type="info"
+        title="You must be a part of at least one organization.
+        You need to join another organization before you are able to delete this one."
+      >
+        <span className={styles.delBtnWrapper}>
+          <Button
+            onClick={() => {}}
+            icon={getIcon(Icons.DELETE)}
+            label="Delete"
+            variant="text"
+            color="inherit"
+            disabled={true}
+          />
+        </span>
+      </Tooltip>
+    );
   };
 
   const deleteMessage = `You are about to delete this organization and this cannot be undone.
@@ -108,15 +130,19 @@ const OrganizationsList = ({
                             </button>
                           </td>
                           <td>
-                            <span className={styles.delBtnWrapper}>
-                              <Button
-                                onClick={() => onDeletePopup(organization)}
-                                icon={getIcon(Icons.DELETE)}
-                                label="Delete"
-                                variant="text"
-                                color="inherit"
-                              />
-                            </span>
+                            {organizations.length === 1 ? (
+                              renderDisabledBtn()
+                            ) : (
+                              <span className={styles.delBtnWrapper}>
+                                <Button
+                                  onClick={() => onDeletePopup(organization)}
+                                  icon={getIcon(Icons.DELETE)}
+                                  label="Delete"
+                                  variant="text"
+                                  color="inherit"
+                                />
+                              </span>
+                            )}
                           </td>
                         </tr>
                       ))}
