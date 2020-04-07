@@ -153,7 +153,16 @@ const AuthorizedPageEvent = ({
                 />
               )}
             />
-            <Route path={Routes.RECORD_SCORES_ID} component={RecordScores} />
+            <Route
+              path={Routes.RECORD_SCORES_ID}
+              render={props => (
+                <RecordScores
+                  {...props}
+                  isFullScreen={isFullScreen}
+                  onToggleFullScreen={onToggleFullScreen}
+                />
+              )}
+            />
             <Route path={Routes.ADD_DIVISION} component={AddDivision} />
             <Route path={Routes.EDIT_DIVISION} component={AddDivision} />
             <Route path={Routes.CREATE_TEAM} component={CreateTeam} />

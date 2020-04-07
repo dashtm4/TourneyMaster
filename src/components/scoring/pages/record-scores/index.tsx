@@ -17,6 +17,7 @@ import {
   IPool,
   ISchedulesGame,
   BindingCbWithOne,
+  BindingAction,
 } from 'common/models';
 import { Routes, TableScheduleTypes } from 'common/enums';
 import styles from './styles.module.scss';
@@ -70,10 +71,12 @@ interface Props {
   eventSummary: IEventSummary[];
   schedulesGames: ISchedulesGame[];
   schedulesTeamCards?: ITeamCard[];
+  isFullScreen: boolean;
   loadScoresData: (eventId: string) => void;
   fillSchedulesTable: BindingCbWithOne<ITeamCard[]>;
   updateSchedulesTable: BindingCbWithOne<ITeamCard>;
   saveGames: BindingCbWithOne<ISchedulesGame[]>;
+  onToggleFullScreen: BindingAction;
 }
 
 interface State {
@@ -233,6 +236,8 @@ class RecordScores extends React.Component<
       pools,
       schedule,
       schedulesTeamCards,
+      isFullScreen,
+      onToggleFullScreen,
     } = this.props;
 
     const {
@@ -257,7 +262,7 @@ class RecordScores extends React.Component<
     );
 
     return (
-      <>
+      <div className={isFullScreen ? styles.fullScreenWrapper : ''}>
         <Navigation
           isEnterScores={isEnterScores}
           onLeavePage={this.onLeavePage}
@@ -280,9 +285,11 @@ class RecordScores extends React.Component<
               eventSummary={eventSummary!}
               scheduleData={schedule!}
               isEnterScores={isEnterScores}
+              isFullScreen={isFullScreen}
               onTeamCardsUpdate={() => {}}
               onTeamCardUpdate={this.onScheduleCardUpdate}
               onUndo={() => {}}
+              onToggleFullScreen={onToggleFullScreen}
             />
           ) : (
             <Loader />
@@ -294,7 +301,7 @@ class RecordScores extends React.Component<
           onExitClick={this.leavePage}
           onSaveClick={this.saveDraft}
         />
-      </>
+      </div>
     );
   }
 }
