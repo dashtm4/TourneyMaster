@@ -81,10 +81,6 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
     }
   }
 
-  onOnboardingWizardClose = () => {
-    this.setState({ isOnboardingWizardOpen: false });
-  };
-
   onCreateTournament = () => {
     this.props.history.push('/event/event-details');
   };
@@ -282,6 +278,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   };
 
   render() {
+    console.log('RENDERt', this.state.isOnboardingWizardOpen);
     return (
       <div className={styles.main}>
         <Paper sticky={true}>
@@ -323,10 +320,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
           />
         </div>
         {this.renderDashbaordInOrder()}
-        <OnboardingWizard
-          isOpen={this.state.isOnboardingWizardOpen}
-          onClose={this.onOnboardingWizardClose}
-        />
+        <OnboardingWizard isOpen={this.state.isOnboardingWizardOpen} />
       </div>
     );
   }

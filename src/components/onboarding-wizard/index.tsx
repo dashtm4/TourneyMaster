@@ -4,11 +4,7 @@ import { Modal, Radio, Button, HeadingLevelTwo } from 'components/common';
 import styles from './styles.module.scss';
 import CreateOrganization from 'components/organizations-management/components/create-organization';
 import ApplyInvitation from 'components/organizations-management/components/apply-invitation';
-import {
-  BindingAction,
-  BindingCbWithOne,
-  IConfigurableOrganization,
-} from 'common/models';
+import { BindingCbWithOne, IConfigurableOrganization } from 'common/models';
 import {
   createOrganization,
   addUserToOrganization,
@@ -18,7 +14,6 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
   isOpen: boolean;
-  onClose: BindingAction;
   createOrganization: BindingCbWithOne<IConfigurableOrganization>;
   addUserToOrganization: BindingCbWithOne<string>;
 }
