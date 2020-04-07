@@ -1,11 +1,16 @@
 import React from 'react';
 import TournamentPlayItem from '../tournament-play-item';
-import { SectionDropdown, HeadingLevelThree } from 'components/common';
-import { compareTime } from 'helpers';
+import {
+  SectionDropdown,
+  HeadingLevelThree,
+  CardMessage,
+} from 'components/common';
 import { BindingCbWithOne, ISchedule } from 'common/models';
 import { EventMenuTitles } from 'common/enums';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
+import { CardMessageTypes } from 'components/common/card-message/types';
+import { orderBy } from 'lodash-es';
 
 interface IProps {
   schedules: ISchedulingSchedule[];
@@ -28,10 +33,13 @@ export default (props: IProps) => {
     onEditSchedule,
   } = props;
 
-  const sortedScheduleByName = schedules.sort(
-    (a, b) =>
-      compareTime(a.updated_datetime, b.updated_datetime) ||
-      compareTime(a.created_datetime, b.created_datetime)
+  const sortedSchedules = orderBy(
+    schedules,
+    ({ schedule_status, updated_datetime }) => [
+      schedule_status,
+      updated_datetime,
+    ],
+    ['desc', 'desc']
   );
 
   const isSchedulePublished = (id: string) => {
@@ -62,7 +70,13 @@ export default (props: IProps) => {
         </span>
       </HeadingLevelThree>
       <ul className={styles.tournamentList}>
-        {sortedScheduleByName.map(it => (
+        <CardMessage
+          style={{ marginBottom: 30 }}
+          type={CardMessageTypes.EMODJI_OBJECTS}
+        >
+          Schedules are sorted first on Status then on Last Update Date
+        </CardMessage>
+        {sortedSchedules.map(it => (
           <TournamentPlayItem
             schedule={it}
             eventId={eventId}
