@@ -26,6 +26,7 @@ import {
   ISchedulesGameWithNames,
   IMenuItem,
   ITeam,
+  IEventDetails,
 } from 'common/models';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
@@ -41,6 +42,7 @@ interface Props {
   pools: IPool[];
   teams: ITeamWithResults[];
   games: ISchedulesGameWithNames[];
+  event: IEventDetails | null;
   incompleteMenuItems: IMenuItem[];
   loadScoringData: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
@@ -172,6 +174,7 @@ class Sсoring extends React.Component<
       divisions,
       loadPools,
       games,
+      event,
       incompleteMenuItems,
     } = this.props;
 
@@ -208,11 +211,13 @@ class Sсoring extends React.Component<
           <ul className={styles.scoringList}>
             {divisions.map((division, index) => (
               <ScoringItem
+                event={event}
                 division={division}
                 pools={pools.filter(
                   pool => pool.division_id === division.division_id
                 )}
                 teams={teams}
+                games={games}
                 loadPools={loadPools}
                 onOpenTeamDetails={this.onOpenTeamDetails}
                 key={division.division_id}
@@ -241,13 +246,14 @@ class Sсoring extends React.Component<
 }
 
 export default connect(
-  ({ scoring }: IAppState) => ({
+  ({ scoring, pageEvent }: IAppState) => ({
     isLoading: scoring.isLoading,
     isLoaded: scoring.isLoaded,
     divisions: scoring.divisions,
     pools: scoring.pools,
     teams: scoring.teams,
     games: scoring.games,
+    event: pageEvent.tournamentData.event,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(

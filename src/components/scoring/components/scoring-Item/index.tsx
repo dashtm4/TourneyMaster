@@ -8,12 +8,16 @@ import {
   IPool,
   ITeamWithResults,
   BindingCbWithOne,
+  IEventDetails,
+  ISchedulesGameWithNames,
 } from 'common/models';
 
 interface Props {
+  event: IEventDetails | null;
   division: IDivision;
   pools: IPool[];
   teams: ITeamWithResults[];
+  games: ISchedulesGameWithNames[];
   loadPools: (divisionId: string) => void;
   onOpenTeamDetails: (
     team: ITeamWithResults,
@@ -29,6 +33,8 @@ const ScoringItem = ({
   division,
   pools,
   teams,
+  event,
+  games,
   loadPools,
   onOpenTeamDetails,
   expanded,
@@ -82,9 +88,11 @@ const ScoringItem = ({
           <ul className={styles.groupList}>
             {pools.map(pool => (
               <GroupItem
+                event={event}
                 division={division}
                 pool={pool}
                 teams={teams.filter(it => it.pool_id === pool.pool_id)}
+                games={games}
                 onOpenTeamDetails={onOpenTeamDetails}
                 key={pool.pool_id}
               />

@@ -1,4 +1,10 @@
-import { ITeam, ISchedulesGame, ITeamWithResults } from 'common/models';
+import {
+  ITeam,
+  ISchedulesGame,
+  ITeamWithResults,
+  ISchedulesGameWithNames,
+} from 'common/models';
+import { RankingFactorValues } from 'common/enums';
 
 const countMatchScore = (
   prevValue: undefined | number,
@@ -94,4 +100,113 @@ const getTeamsWithResults = (
   return localTeams;
 };
 
-export { getTeamsWithResults };
+const sortTeamsByBestRecord = (
+  a: ITeamWithResults,
+  b: ITeamWithResults,
+  _: unknown
+) => {
+  const sortedTeams = b.wins - a.wins;
+
+  return sortedTeams;
+};
+
+const sortTeamsByHeadToHead = (
+  a: ITeamWithResults,
+  b: ITeamWithResults,
+  games: ISchedulesGameWithNames[]
+) => {
+  const teamScores = games.reduce(
+    (acc, game) => {
+      if (
+        (game.homeTeamId === a.team_id && game.awayTeamId === b.team_id) ||
+        (game.homeTeamId === b.team_id && game.awayTeamId === a.team_id)
+      ) {
+        const gameTeamAScore =
+          a.team_id === game.homeTeamId
+            ? game.homeTeamScore
+            : game.awayTeamScore;
+
+        const gameTeamBScore =
+          b.team_id === game.homeTeamId
+            ? game.homeTeamScore
+            : game.awayTeamScore;
+
+        return {
+          teamAScore: acc.teamAScore = acc.teamAScore + Number(gameTeamAScore),
+          teamBScore: acc.teamBScore = acc.teamBScore + Number(gameTeamBScore),
+        };
+      }
+
+      return acc;
+    },
+    { teamAScore: 0, teamBScore: 0 }
+  );
+
+  const sortedTeams = teamScores.teamBScore - teamScores.teamAScore;
+
+  return sortedTeams;
+};
+
+const sortTeamsByGoalScored = (
+  a: ITeamWithResults,
+  b: ITeamWithResults,
+  _: unknown
+) => {
+  const sortedTeams = b.goalsScored - a.goalsScored;
+
+  return sortedTeams;
+};
+
+const sortTeamsByDifference = (
+  a: ITeamWithResults,
+  b: ITeamWithResults,
+  _: unknown
+) => {
+  const sortedTeams =
+    b.goalsScored - b.goalsAllowed - (a.goalsScored - a.goalsAllowed);
+
+  return sortedTeams;
+};
+
+const sortTeamsByGoalAllowrd = (
+  a: ITeamWithResults,
+  b: ITeamWithResults,
+  _: unknown
+) => {
+  const sortedTeams = b.goalsAllowed - a.goalsAllowed;
+
+  return sortedTeams;
+};
+
+const SortTeamsBy = {
+  [RankingFactorValues.BEST_RECORD]: sortTeamsByBestRecord,
+  [RankingFactorValues.GOAL_DIFFERENCE]: sortTeamsByDifference,
+  [RankingFactorValues.HEAD_TO_HEAD]: sortTeamsByHeadToHead,
+  [RankingFactorValues.GOAL_SCORED]: sortTeamsByGoalScored,
+  [RankingFactorValues.GOAL_ALLOWED]: sortTeamsByGoalAllowrd,
+};
+
+const sortTeamByScored = (
+  teams: ITeamWithResults[],
+  games: ISchedulesGameWithNames[],
+  rankings: string
+) => {
+  const parsedRankings = JSON.parse(rankings);
+
+  if (parsedRankings.length !== Object.keys(RankingFactorValues).length / 2) {
+    return teams;
+  }
+
+  const localTeams = [...teams];
+
+  return localTeams.sort(
+    (a, b) =>
+      SortTeamsBy[parsedRankings[0]](a, b, games) ||
+      SortTeamsBy[parsedRankings[1]](a, b, games) ||
+      SortTeamsBy[parsedRankings[2]](a, b, games) ||
+      SortTeamsBy[parsedRankings[3]](a, b, games) ||
+      SortTeamsBy[parsedRankings[4]](a, b, games)
+  );
+};
+
+export { getTeamsWithResults, sortTeamByScored };

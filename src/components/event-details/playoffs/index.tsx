@@ -18,6 +18,7 @@ import Dnd from '../dnd';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { BindingCbWithOne } from 'common/models';
+import { RankingFactorValues } from 'common/enums';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -70,11 +71,11 @@ interface Props {
 }
 
 export const defaultRankingFactor = [
-  { id: 1, text: 'Best record' },
-  { id: 2, text: 'Head to Head' },
-  { id: 3, text: 'Goal Difference' },
-  { id: 4, text: 'Goals Scored' },
-  { id: 5, text: 'Goals Allowed' },
+  { id: RankingFactorValues.BEST_RECORD, text: 'Best record' },
+  { id: RankingFactorValues.HEAD_TO_HEAD, text: 'Head to Head' },
+  { id: RankingFactorValues.GOAL_DIFFERENCE, text: 'Goal Difference' },
+  { id: RankingFactorValues.GOAL_SCORED, text: 'Goals Scored' },
+  { id: RankingFactorValues.GOAL_ALLOWED, text: 'Goals Allowed' },
 ];
 
 const PlayoffsSection: React.FC<Props> = ({
