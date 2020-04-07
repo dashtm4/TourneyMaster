@@ -1,5 +1,4 @@
 import { EventStatuses } from 'common/enums';
-
 export interface IEventDetails {
   event_id: string;
   sport_id: number;
