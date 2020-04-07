@@ -68,7 +68,9 @@ const TeamDetailsPopup = ({
   }
 
   const suitableGames = games
-    .filter(it => it.homeTeamId === team?.team_id)
+    .filter(
+      it => it.homeTeamId === team?.team_id || it.awayTeamId === team?.team_id
+    )
     .slice(0, MAX_GAMES_COUNT);
 
   return (
