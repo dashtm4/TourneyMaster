@@ -192,6 +192,7 @@ class Scheduling extends Component<IProps, IState> {
       updateSchedule,
       deleteSchedule,
       fields,
+      event
     } = this.props;
     const {
       createModalOpen,
@@ -238,6 +239,7 @@ class Scheduling extends Component<IProps, IState> {
               </div>
               <TourneyArchitect
                 schedule={schedule}
+                event={event}
                 onChange={this.onChange}
                 isSectionCollapse={isSectionsCollapse}
                 onViewEventMatrix={this.openViewMatrix}
