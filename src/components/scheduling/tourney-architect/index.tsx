@@ -23,7 +23,7 @@ import {
 } from 'helpers';
 
 import { EventMenuTitles, Icons } from 'common/enums';
-import { IConfigurableSchedule } from 'common/models';
+import { IConfigurableSchedule, IEventDetails } from 'common/models';
 import { BindingAction } from 'common/models';
 import { ArchitectFormFields, gameStartOnOptions } from '../types';
 import moment from 'moment';
@@ -37,13 +37,20 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface IProps {
   schedule: IConfigurableSchedule;
+  event?: IEventDetails | null;
   onChange: (name: string, value: any) => void;
   onViewEventMatrix: BindingAction;
   isSectionCollapse: boolean;
 }
 
 const TourneyArchitect = (props: IProps) => {
-  const { schedule, isSectionCollapse, onChange, onViewEventMatrix } = props;
+  const {
+    schedule,
+    event,
+    isSectionCollapse,
+    onChange,
+    onViewEventMatrix,
+  } = props;
 
   const timeValues = getTimeValuesFromSchedule(schedule);
   const scheduleTimeSlots = calculateTimeSlots(timeValues);
@@ -178,7 +185,7 @@ const TourneyArchitect = (props: IProps) => {
             label="Time Between Periods"
           />
         </div>
-        <div className={styles.taThird}>
+        <div className={styles.results}>
           {renderSectionCell(
             'Game Runtime',
             `${schedule.periods_per_game *
@@ -198,6 +205,14 @@ const TourneyArchitect = (props: IProps) => {
             'Tournament Games Needed',
             `${Number(schedule.min_num_games) * schedule.num_teams}`
           )}
+          {event &&
+            renderSectionCell(
+              'Bracket Games Needed',
+              `${(Number(event.num_teams_bracket) - 1) *
+                schedule.num_divisions}`
+            )}
+        </div>
+        <div className={styles.resultsBtns}>
           <Button
             label="View Time Slots"
             icon={<FontAwesomeIcon icon={faEye} />}
