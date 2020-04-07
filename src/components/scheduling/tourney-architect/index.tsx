@@ -121,7 +121,7 @@ const TourneyArchitect = (props: IProps) => {
             align="center"
           />
           <fieldset className={styles.numberGames}>
-            <legend>Min/Max # of Games</legend>
+            <legend>Min/Max # of Games/Day</legend>
             <div className={styles.numberGamesWrapper}>
               <Input
                 onChange={localChange}
@@ -189,10 +189,14 @@ const TourneyArchitect = (props: IProps) => {
                 'minutes'
               )} Minutes`
           )}
-          {renderSectionCell('Total Game Slots', `${totalGameSlots}`)}
+          {renderSectionCell('Game Slots/Day', `${totalGameSlots}`)}
           {renderSectionCell(
             'AVG # Games/Team',
             `${((totalGameSlots * 2) / schedule.num_teams).toFixed(1)}`
+          )}
+          {renderSectionCell(
+            'Tournament Games Needed',
+            `${Number(schedule.min_num_games) * schedule.num_teams}`
           )}
           <Button
             label="View Time Slots"

@@ -6,6 +6,17 @@
   border-radius: 3px;
   position: relative;
 
+  p.placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-left: 30px;
+    font-size: 12px;
+    color: #545454;
+    width: 200px;
+    height: 24px;
+  }
+
   &:before {
     content: '';
     display: block;
@@ -14,5 +25,7 @@
     background: #ececec;
     border-radius: 100%;
     margin: 5px 8px;
+    z-index: 100;
+    position: relative;
   }
 }
