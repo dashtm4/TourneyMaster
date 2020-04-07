@@ -9,9 +9,6 @@ import {
   LOAD_POOLS_START,
   LOAD_POOLS_SUCCESS,
   LOAD_POOLS_FAILURE,
-  LOAD_TEAMS_START,
-  LOAD_TEAMS_SUCCESS,
-  LOAD_TEAMS_FAILURE,
   EDIT_TEAM_SUCCESS,
   EDIT_TEAM_FAILURE,
   DELETE_TEAM_SUCCESS,
@@ -20,9 +17,8 @@ import {
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { teamSchema } from 'validations';
-import { mapScheduleGamesWithNames } from 'helpers';
+import { mapScheduleGamesWithNames, getTeamsWithResults } from 'helpers';
 import { ITeam, ISchedule, ScheduleStatuses } from 'common/models';
-import { getTeamsWithResults } from '../helpers';
 import { Toasts } from 'components/common';
 
 const loadScoringData: ActionCreator<ThunkAction<
@@ -42,18 +38,14 @@ const loadScoringData: ActionCreator<ThunkAction<
       (it: ISchedule) => it.schedule_status === ScheduleStatuses.PUBLISHED
     );
     const teams = await Api.get(`/teams?event_id=${eventId}`);
-
     const schedulesGames = await Api.get(
       `/games?schedule_id=${publishedSchedule.schedule_id}`
     );
 
     const mappedTeams = getTeamsWithResults(teams, schedulesGames);
-
-    if (mappedTeams) {
-    }
-
     const mappedGames = await mapScheduleGamesWithNames(
       eventId,
+      teams,
       schedulesGames
     );
 
@@ -61,6 +53,7 @@ const loadScoringData: ActionCreator<ThunkAction<
       type: LOAD_SCORING_DATA_SUCCESS,
       payload: {
         divisions,
+        teams: mappedTeams,
         games: mappedGames,
       },
     });
@@ -94,36 +87,6 @@ const loadPools: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   } catch {
     dispatch({
       type: LOAD_POOLS_FAILURE,
-    });
-  }
-};
-
-const loadTeams: ActionCreator<ThunkAction<
-  void,
-  {},
-  null,
-  TeamsAction
->> = poolId => async (dispatch: Dispatch) => {
-  try {
-    dispatch({
-      type: LOAD_TEAMS_START,
-      payload: {
-        poolId,
-      },
-    });
-
-    const teams = await Api.get(`/teams?pool_id=${poolId}`);
-
-    dispatch({
-      type: LOAD_TEAMS_SUCCESS,
-      payload: {
-        poolId,
-        teams,
-      },
-    });
-  } catch {
-    dispatch({
-      type: LOAD_TEAMS_FAILURE,
     });
   }
 };
@@ -193,4 +156,4 @@ const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-export { loadScoringData, loadPools, loadTeams, editTeam, deleteTeam };
+export { loadScoringData, loadPools, editTeam, deleteTeam };
