@@ -9,6 +9,16 @@
   }
 }
 
+.containerFullScreen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .diagnosticsContainer {
+    margin: 0;
+  }
+}
+
 .diagnosticsContainer {
   margin-top: 20px;
   margin-bottom: 20px;

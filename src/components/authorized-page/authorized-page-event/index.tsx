@@ -30,6 +30,7 @@ import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
 import { Routes, EventMenuTitles, EventStatuses } from 'common/enums';
 import { getIncompleteMenuItems } from '../helpers';
 import styles from '../styles.module.scss';
+import { closeFullscreen, openFullscreen } from 'helpers';
 
 interface MatchParams {
   eventId?: string;
@@ -58,21 +59,36 @@ const AuthorizedPageEvent = ({
   clearAuthPageData,
   changeTournamentStatus,
 }: Props & RouteComponentProps<MatchParams>) => {
+  const [isFullScreen, toggleFullScreen] = React.useState<boolean>(false);
+  const onToggleFullScreen = () => {
+    toggleFullScreen(!isFullScreen);
+
+    isFullScreen ? closeFullscreen() : openFullscreen(document.documentElement);
+  };
   const eventId = match.params.eventId;
   const { event } = tournamentData;
+
+  const onFullScreen = () => {
+    if (!document.fullscreen) {
+      toggleFullScreen(false);
+    }
+  };
+
   React.useEffect(() => {
     if (eventId) {
       loadAuthPageData(eventId);
     }
 
-    return () => {
-      clearAuthPageData();
-    };
+    return () => clearAuthPageData();
   }, [eventId]);
 
-  if (eventId && !isLoaded) {
-    return <Loader />;
-  }
+  React.useEffect(() => {
+    isFullScreen
+      ? window.addEventListener('fullscreenchange', onFullScreen)
+      : window.removeEventListener('fullscreenchange', onFullScreen);
+
+    return () => window.removeEventListener('fullscreenchange', onFullScreen);
+  }, [isFullScreen]);
 
   const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
   const schedulingIgnoreList = [
@@ -81,9 +97,13 @@ const AuthorizedPageEvent = ({
   ];
   const reportingIgnoreList = [EventMenuTitles.REPORTING];
 
+  if (eventId && !isLoaded) {
+    return <Loader />;
+  }
+
   return (
     <div className={styles.container}>
-      <Header />
+      {!isFullScreen && <Header />}
       <div className={styles.page}>
         <Menu
           list={menuList}
@@ -94,7 +114,11 @@ const AuthorizedPageEvent = ({
           eventName={event?.event_name || ''}
           changeTournamentStatus={changeTournamentStatus}
         />
-        <main className={styles.content}>
+        <main
+          className={`${styles.content} ${
+            isFullScreen ? styles.contentFullScreen : ''
+          }`}
+        >
           <Switch>
             <Route path={Routes.EVENT_DETAILS_ID} component={EventDetails} />
             <Route path={Routes.FACILITIES_ID} component={Facilities} />
@@ -115,7 +139,16 @@ const AuthorizedPageEvent = ({
                 />
               )}
             />
-            <Route path={Routes.SCHEDULES_ID} component={Schedules} />
+            <Route
+              path={Routes.SCHEDULES_ID}
+              render={props => (
+                <Schedules
+                  {...props}
+                  isFullScreen={isFullScreen}
+                  onToggleFullScreen={onToggleFullScreen}
+                />
+              )}
+            />
             <Route path={Routes.PLAYOFFS_ID} component={Playoffs} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route path={Routes.SCORING_ID} component={Sсoring} />
@@ -131,7 +164,16 @@ const AuthorizedPageEvent = ({
                 />
               )}
             />
-            <Route path={Routes.RECORD_SCORES_ID} component={RecordScores} />
+            <Route
+              path={Routes.RECORD_SCORES_ID}
+              render={props => (
+                <RecordScores
+                  {...props}
+                  isFullScreen={isFullScreen}
+                  onToggleFullScreen={onToggleFullScreen}
+                />
+              )}
+            />
             <Route path={Routes.ADD_DIVISION} component={AddDivision} />
             <Route path={Routes.EDIT_DIVISION} component={AddDivision} />
             <Route path={Routes.CREATE_TEAM} component={CreateTeam} />
@@ -140,7 +182,7 @@ const AuthorizedPageEvent = ({
           <ScrollTopButton />
         </main>
       </div>
-      <Footer />
+      {!isFullScreen && <Footer />}
     </div>
   );
 };
