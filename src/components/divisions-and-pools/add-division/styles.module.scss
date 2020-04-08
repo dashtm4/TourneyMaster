@@ -8,6 +8,11 @@
   width: 100%;
   display: flex;
   justify-content: flex-end;
+  .btnsWrapper {
+    & > :first-child {
+      margin-right: 15px;
+    }
+  }
 }
 .heading {
   margin: 24px 0;
