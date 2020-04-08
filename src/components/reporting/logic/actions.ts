@@ -12,6 +12,7 @@ import {
   IEventDetails,
   ScheduleStatuses,
   ISchedule,
+  IDivision,
 } from 'common/models';
 
 const loadReportingData: ActionCreator<ThunkAction<
@@ -34,6 +35,13 @@ const loadReportingData: ActionCreator<ThunkAction<
       await Promise.all(
         facilities.map((it: IFacility) =>
           Api.get(`/fields?facilities_id=${it.facilities_id}`)
+        )
+      )
+    ).flat();
+    const pools = (
+      await Promise.all(
+        divisions.map((it: IDivision) =>
+          Api.get(`/pools?division_id=${it.division_id}`)
         )
       )
     ).flat();
@@ -60,6 +68,7 @@ const loadReportingData: ActionCreator<ThunkAction<
         divisions,
         teams,
         schedulesDetails,
+        pools,
       },
     });
   } catch {
