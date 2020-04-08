@@ -259,7 +259,6 @@ class Schedules extends Component<Props, State> {
 
     if (!schedulesTeamCards && schedulesDetails && teams && scheduleId) {
       const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
-
       this.onScheduleCardsUpdate(mappedTeams);
     }
 

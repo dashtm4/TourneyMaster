@@ -48,8 +48,6 @@ const countTie = (
     Number(teamTwoScore) > 0 &&
     teamOneScore === teamTwoScore
   ) {
-    console.log(game);
-
     tie = tie + 1;
   }
 
