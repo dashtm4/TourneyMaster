@@ -207,6 +207,7 @@ export const mapTeamsFromShedulesGames = (
       awayTeamScore: item.away_team_score,
       homeTeamId: item.home_team_id,
       homeTeamScore: item.home_team_score,
+      date: item.game_date || undefined,
     };
 
     return mappedSchedulesGame;
@@ -220,7 +221,8 @@ export const mapTeamsFromShedulesGames = (
           ({ awayTeamId, homeTeamId }) =>
             awayTeamId === team.id || homeTeamId === team.id
         )
-        .map(({ gameId, awayTeamId, awayTeamScore, homeTeamScore }) => ({
+        .map(({ gameId, date, awayTeamId, awayTeamScore, homeTeamScore }) => ({
+          date,
           id: Number(gameId),
           teamPosition: awayTeamId === team.id ? 1 : 2,
           teamScore: awayTeamId === team.id ? awayTeamScore : homeTeamScore,
