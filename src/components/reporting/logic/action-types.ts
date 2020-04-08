@@ -6,6 +6,7 @@ import {
   IField,
   ISchedule,
   ISchedulesDetails,
+  IPool,
 } from 'common/models';
 
 const LOAD_REPORTING_DATA_START = 'LOAD_REPORTING_DATA_START';
@@ -26,6 +27,7 @@ export interface LoadReportingDataSuccess {
     teams: ITeam[];
     schedule: ISchedule;
     schedulesDetails: ISchedulesDetails[];
+    pools: IPool[];
   };
 }
 

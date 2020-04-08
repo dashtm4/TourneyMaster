@@ -4,7 +4,7 @@ import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
 import { HeadingLevelThree, Button } from 'components/common';
 import { onPDFSave, mapGamesByField, onXLSXSave } from 'helpers';
 import { ButtonVarian, ButtonColors } from 'common/enums';
-import { IEventDetails, ISchedule } from 'common/models';
+import { IEventDetails, ISchedule, IPool } from 'common/models';
 import { getScheduleTableXLSX } from '../../helpers';
 import {
   IGame,
@@ -24,6 +24,7 @@ interface Props {
   fields: IField[];
   schedule: ISchedule;
   teamCards: ITeamCard[];
+  pools: IPool[];
 }
 
 const ItemSchedules = ({
@@ -34,6 +35,7 @@ const ItemSchedules = ({
   fields,
   schedule,
   teamCards,
+  pools
 }: Props) => {
   const filledGames = settleTeamsPerGames(games, teamCards);
   const mappedGames = mapGamesByField(filledGames, fields);
@@ -90,6 +92,7 @@ const ItemSchedules = ({
       teamCards,
       facilities,
       fields,
+      pools
     );
 
     onXLSXSave(header, body, 'Master Schedule');
