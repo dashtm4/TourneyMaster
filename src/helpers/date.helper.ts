@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { IEventDetails } from 'common/models';
 
 const timeToDate = (time: string) => {
   if (!time) {
@@ -52,4 +53,30 @@ const timeToString = (time: number): string => {
 
 const compareTime = (a: string, b: string) => +new Date(b) - +new Date(a);
 
-export { timeToDate, dateToTime, getTimeFromString, timeToString, compareTime };
+const calculateTournamentDays = (event: IEventDetails) => {
+  const startDate = event?.event_startdate;
+  const endDate = event?.event_enddate;
+
+  const daysDiff = moment(endDate).diff(startDate, 'day');
+
+  const days = [moment(startDate).toISOString()];
+
+  [...Array(daysDiff)].map((_v, i) =>
+    days.push(
+      moment(startDate)
+        .add(i + 1, 'days')
+        .toISOString()
+    )
+  );
+
+  return days;
+};
+
+export {
+  timeToDate,
+  dateToTime,
+  getTimeFromString,
+  timeToString,
+  compareTime,
+  calculateTournamentDays,
+};

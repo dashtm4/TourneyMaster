@@ -11,6 +11,7 @@ import {
   IField,
   ISchedule,
   ISchedulesDetails,
+  IPool,
 } from 'common/models';
 
 export interface IReportingState {
@@ -21,6 +22,7 @@ export interface IReportingState {
   teams: ITeam[];
   schedule: ISchedule | null;
   schedulesDetails: ISchedulesDetails[];
+  pools: IPool[];
   isLoading: boolean;
   isLoaded: boolean;
 }
@@ -32,6 +34,7 @@ const initialState = {
   divisions: [],
   teams: [],
   schedulesDetails: [],
+  pools: [],
   schedule: null,
   isLoading: false,
   isLoaded: false,
@@ -54,6 +57,7 @@ const reportingReducer = (
         divisions,
         teams,
         schedulesDetails,
+        pools,
       } = action.payload;
 
       return {
@@ -67,6 +71,7 @@ const reportingReducer = (
         divisions,
         teams,
         schedulesDetails,
+        pools,
       };
     }
 

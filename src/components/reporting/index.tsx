@@ -20,6 +20,7 @@ import {
   ISchedule,
   ISchedulesDetails,
   IMenuItem,
+  IPool,
 } from 'common/models';
 import { EventMenuTitles } from 'common/enums';
 import { IAppState } from 'reducers/root-reducer.types';
@@ -59,6 +60,7 @@ interface Props {
   fields: IField[];
   teams: ITeam[];
   schedulesDetails: ISchedulesDetails[];
+  pools: IPool[];
   schedule: ISchedule | null;
   schedulesTeamCards?: ITeamCard[];
   loadReportingData: (eventId: string) => void;
@@ -174,6 +176,7 @@ class Reporting extends React.Component<
       event,
       schedule,
       schedulesTeamCards,
+      pools,
     } = this.props;
 
     const { fields, timeSlots, games, facilities } = this.state;
@@ -204,6 +207,7 @@ class Reporting extends React.Component<
               timeSlots={timeSlots!}
               games={games!}
               teamCards={schedulesTeamCards!}
+              pools={pools}
             />
           </ul>
         ) : (
@@ -226,6 +230,7 @@ export default connect(
     schedule: reporting.schedule,
     schedulesTeamCards: schedulesTable?.current,
     schedulesDetails: reporting.schedulesDetails,
+    pools: reporting.pools,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators({ loadReportingData, fillSchedulesTable }, dispatch)
