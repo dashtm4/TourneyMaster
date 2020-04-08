@@ -62,7 +62,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
         },
       },
     });
-  } catch {
+  } catch (err) {
     dispatch({
       type: LOAD_AUTH_PAGE_DATA_FAILURE,
     });

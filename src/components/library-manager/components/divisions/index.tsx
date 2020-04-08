@@ -19,7 +19,7 @@ const Divisions = ({
   const onShareRegistr = (id: string) => {
     const editedRegistration = divisions.find(it => it.division_id === id);
 
-    changeSharedItem(editedRegistration!, EntryPoints.FACILITIES);
+    changeSharedItem(editedRegistration!, EntryPoints.DIVISIONS);
   };
 
   const rowForTable = divisions.map(it => ({

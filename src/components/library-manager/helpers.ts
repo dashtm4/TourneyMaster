@@ -4,9 +4,18 @@ import {
   EntryPoints,
   IRegistrationFields,
   IFacilityFields,
+  IDivisionFields,
 } from 'common/enums';
 import { IEntity } from 'common/types';
-import { IRegistration, IEventDetails, IFacility, IField } from 'common/models';
+import {
+  IRegistration,
+  IEventDetails,
+  IFacility,
+  IField,
+  IDivision,
+  IPool,
+} from 'common/models';
+import { IPoolWithTeams } from './common';
 
 const generateEntityId = (entity: IEntity, entryPoint: EntryPoints) => {
   switch (entryPoint) {
@@ -20,6 +29,12 @@ const generateEntityId = (entity: IEntity, entryPoint: EntryPoints) => {
       return {
         ...entity,
         [IFacilityFields.FACILITIES_ID]: getVarcharEight(),
+      };
+    }
+    case EntryPoints.DIVISIONS: {
+      return {
+        ...entity,
+        [IDivisionFields.DIVISION_ID]: getVarcharEight(),
       };
     }
   }
@@ -81,6 +96,17 @@ const checkAleadyExist = async (
         throw new Error('The event already has such a facility');
       }
     }
+    case EntryPoints.DIVISIONS: {
+      const division = sharedItem as IDivision;
+
+      if (
+        ownSharedItems.some(
+          (it: IDivision) => it.division_id === division.division_id
+        )
+      ) {
+        throw new Error('The event already has such a division');
+      }
+    }
   }
 };
 
@@ -129,9 +155,56 @@ const setFacilityFromLibrary = async (
   );
 };
 
+const setDivisionFromLibrary = async (
+  division: IDivision,
+  newDivision: IDivision
+) => {
+  const divisionPools = await Api.get(
+    `/pools?division_id=${division.division_id}`
+  );
+
+  const poolWithTeams = (await Promise.all(
+    divisionPools.map(async (pool: IPool) => {
+      const teams = await Api.get(`/teams?pool_id=${pool.pool_id}`);
+
+      return {
+        ...pool,
+        teams,
+      };
+    })
+  )) as IPoolWithTeams[];
+
+  const mappedPoolsWithNewId = poolWithTeams.map((pool: IPoolWithTeams) => {
+    const newPoolId = getVarcharEight();
+
+    return {
+      ...pool,
+      pool_id: newPoolId,
+      division_id: newDivision.division_id,
+      teams: pool.teams.map(team => ({
+        ...team,
+        team_id: getVarcharEight(),
+        pool_id: newPoolId,
+        division_id: newDivision.division_id,
+        event_id: newDivision.event_id,
+      })),
+    };
+  });
+
+  console.log(mappedPoolsWithNewId, newDivision);
+  console.log(poolWithTeams, division);
+
+  // await Api.post(EntryPoints.FACILITIES, newFacility);
+
+  // await Promise.all(
+  //   mappedFieldsWithNewId.map((it: IField) => Api.post('/fields', it))
+  // );
+};
+
 const SetFormLibraryManager = {
   setFacilityFromLibrary,
   setRegistrationFromLibrary,
+  setDivisionFromLibrary,
 };
 
 export {

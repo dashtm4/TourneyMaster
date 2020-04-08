@@ -1,6 +1,9 @@
-import { IRegistration } from 'common/models';
+import { IRegistration, IPool, ITeam } from 'common/models';
 
 export interface ILibraryManagerRegistration extends IRegistration {
-  // ! in future it can not be null(now database has it field like null)
-  eventName: string | null;
+  eventName: string;
+}
+
+export interface IPoolWithTeams extends IPool {
+  teams: ITeam[];
 }

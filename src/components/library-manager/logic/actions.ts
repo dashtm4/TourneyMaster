@@ -15,6 +15,7 @@ import {
   IEventDetails,
   IRegistration,
   IFacility,
+  IDivision,
   // IFacility
 } from 'common/models';
 import { EntryPoints } from 'common/enums';
@@ -90,6 +91,13 @@ const saveSharedItem: ActionCreator<ThunkAction<
         await SetFormLibraryManager.setFacilityFromLibrary(
           sharedItem as IFacility,
           clearSharedItem as IFacility
+        );
+        break;
+      }
+      case EntryPoints.DIVISIONS: {
+        await SetFormLibraryManager.setDivisionFromLibrary(
+          sharedItem as IDivision,
+          clearSharedItem as IDivision
         );
         break;
       }

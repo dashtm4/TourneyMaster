@@ -10,3 +10,4 @@ export * from './registration';
 export * from './facility';
 export * from './team';
 export * from './ranking-factor';
+export * from './division';
