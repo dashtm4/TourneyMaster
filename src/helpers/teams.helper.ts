@@ -35,6 +35,25 @@ const countTeamScore = (
   return scoreValue;
 };
 
+const countTie = (
+  prevValue: undefined | number,
+  teamOneScore: null | string | number,
+  teamTwoScore: null | string | number,
+  game: ISchedulesGame
+) => {
+  let tie = prevValue === undefined ? 0 : prevValue;
+
+  if (
+    Number(teamOneScore) > 0 &&
+    Number(teamTwoScore) > 0 &&
+    teamOneScore === teamTwoScore
+  ) {
+    tie = tie + 1;
+  }
+
+  return tie;
+};
+
 const getTeamsWithResults = (
   teams: ITeam[],
   games: ISchedulesGame[]
@@ -65,6 +84,12 @@ const getTeamsWithResults = (
           game.home_team_score,
           game.away_team_score
         ),
+        tie: countTie(
+          awayTeam.tie,
+          game.home_team_score,
+          game.away_team_score,
+          game
+        ),
         goalsScored: countTeamScore(awayTeam.goalsScored, game.away_team_score),
         goalsAllowed: countTeamScore(
           awayTeam.goalsAllowed,
@@ -87,6 +112,12 @@ const getTeamsWithResults = (
           homeTeam.losses,
           game.away_team_score,
           game.home_team_score
+        ),
+        tie: countTie(
+          homeTeam.tie,
+          game.home_team_score,
+          game.away_team_score,
+          game
         ),
         goalsScored: countTeamScore(homeTeam.goalsScored, game.home_team_score),
         goalsAllowed: countTeamScore(

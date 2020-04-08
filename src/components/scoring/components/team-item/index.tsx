@@ -30,6 +30,7 @@ const TeamItem = ({
     </td>
     <td>{team.wins}</td>
     <td>{team.losses}</td>
+    <td>{team.tie}</td>
     <td>{team.goalsScored}</td>
     <td>{team.goalsAllowed}</td>
   </tr>

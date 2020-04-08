@@ -1,12 +1,11 @@
 .groupItem {
-  width: 370px;
+  width: 45%;
 }
 
 .groupTable {
-  color: #6a6a6a;
+  width: 100%;
 
-  width: 350px;
-  margin: 0 -15px;
+  color: #6a6a6a;
 
   background-color: #ffffff;
 
@@ -24,7 +23,7 @@
   }
 
   tr td:first-child {
-    width: 165px;
+    width: 100%;
 
     text-align: left;
   }

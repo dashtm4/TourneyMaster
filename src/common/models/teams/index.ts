@@ -29,6 +29,7 @@ export interface ITeam {
 export interface ITeamWithResults extends ITeam {
   wins: number;
   losses: number;
+  tie: number;
   goalsScored: number;
   goalsAllowed: number;
 }
