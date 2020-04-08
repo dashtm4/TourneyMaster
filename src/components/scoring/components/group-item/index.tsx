@@ -47,6 +47,7 @@ const GroupItem = ({
               <td>Team</td>
               <td>W</td>
               <td>L</td>
+              <td>T</td>
               <td>GS</td>
               <td>GA</td>
             </tr>
