@@ -1,10 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, Fragment } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { findIndex } from 'lodash-es';
 import styles from './styles.module.scss';
-import SeedDrop, { IBracketDrop } from '../dnd/drop';
-import Seed from '../dnd/seed';
+import { IBracketDrop } from '../dnd/drop';
+import BracketRound from './round';
+import BracketConnector from './connector';
 
 const TRANSFORM_WRAPPER_OPTIONS = {
   minScale: 0.3,
@@ -16,111 +16,13 @@ interface IBracketTeam {
   name: string;
 }
 
-interface IBracketGame {
+export interface IBracketGame {
   id: number;
   awayDisplayName?: string;
   homeDisplayName?: string;
   away?: IBracketTeam;
   home?: IBracketTeam;
 }
-
-const selectStyleForConnector = (num: number) => {
-  switch (num) {
-    case 8:
-      return styles.connectors8;
-    case 4:
-      return styles.connectors4;
-    case 2:
-      return styles.connectors2;
-    default:
-      return styles.connectors2;
-  }
-};
-
-const Round = ({
-  games,
-  onDrop,
-  title,
-  seedRound,
-}: {
-  games: IBracketGame[];
-  onDrop: any;
-  title: any;
-  seedRound?: boolean;
-}) => (
-  <div className={styles.bracketRound}>
-    <span className={styles.roundTitle}>{title}</span>
-    {games.map(game => (
-      <GameSlot
-        key={`${game.id}-round`}
-        seedRound={seedRound}
-        game={game}
-        onDrop={onDrop}
-      />
-    ))}
-  </div>
-);
-
-const GameSlot = ({
-  game,
-  onDrop,
-  seedRound,
-}: {
-  game: IBracketGame;
-  onDrop: any;
-  seedRound?: boolean;
-}) => (
-  <div key={game.id} className={styles.bracketGame}>
-    <SeedDrop
-      id={game.id}
-      position={1}
-      type="seed"
-      usePlaceholder={!seedRound}
-      onDrop={onDrop}
-    >
-      {game.away ? (
-        <Seed
-          id={game.away.id!}
-          name={game.away.name}
-          type="seed"
-          dropped={true}
-        />
-      ) : (
-        undefined
-      )}
-    </SeedDrop>
-    <div className={styles.bracketGameDescription}>
-      <span>Game 1: Field 1, Main Stadium</span>
-      <span>10:00 AM, 02/09/20</span>
-    </div>
-    <SeedDrop
-      id={game.id}
-      position={2}
-      type="seed"
-      usePlaceholder={!seedRound}
-      onDrop={onDrop}
-    >
-      {game.home ? (
-        <Seed
-          id={game.home.id!}
-          name={game.home.name}
-          type="seed"
-          dropped={true}
-        />
-      ) : (
-        undefined
-      )}
-    </SeedDrop>
-  </div>
-);
-
-const Connector = ({ step }: { step: number }) => (
-  <div className={selectStyleForConnector(step)}>
-    {[...Array(Math.round(step / 2))].map(() => (
-      <div key={Math.random()} className={styles.connector} />
-    ))}
-  </div>
-);
 
 const calculateLeftovers = (arr: any[], point: number) => {
   const localSeeds = [...arr].slice(0, point);
@@ -140,43 +42,52 @@ const Brackets = (props: IProps) => {
   const { seeds } = props;
 
   const [games, setGames] = useState<IBracketGame[][]>();
-  const [, setOddSeeds] = useState<any[]>();
+  const [oddSeeds, setOddSeeds] = useState<any[]>();
 
   const truncateSeeds = () => {
     const allowed = [2, 4, 8, 16];
     const seedsLength = seeds.length;
     let point = seedsLength;
 
-    if (allowed.includes(seedsLength)) return seeds;
+    if (allowed.includes(seedsLength)) {
+      setOddSeeds(undefined);
+      return seeds;
+    }
     if (seedsLength < 4 && seedsLength > 2) point = 2;
     if (seedsLength < 8 && seedsLength > 4) point = 4;
     if (seedsLength < 16 && seedsLength > 8) point = 8;
 
     const { localSeeds, leftOvers } = calculateLeftovers(seeds, point);
+
     setOddSeeds(leftOvers);
     return localSeeds;
   };
 
-  useEffect(function allocate(lastGames?: any[]) {
-    const localSeeds = truncateSeeds();
-    const localGames = lastGames || [];
-    const thisIndex = localGames.flat().length;
-    const thisLength = localGames?.length
-      ? localGames[localGames.length - 1]?.length / 2
-      : localSeeds.length / 2;
+  useEffect(
+    function allocate(lastGames?: any[]) {
+      const localSeeds = truncateSeeds();
+      const localGames = lastGames || [];
+      const thisIndex = localGames.flat().length;
+      const thisLength = localGames?.length
+        ? localGames[localGames.length - 1]?.length / 2
+        : localSeeds.length / 2;
 
-    if (thisLength < 1) {
-      setGames(lastGames);
-      return;
-    }
+      if (thisLength < 1) {
+        setGames(lastGames);
+        return;
+      }
 
-    const newGames = [...Array(thisLength)].map((_, i) => ({
-      id: i + thisIndex + 1,
-    }));
+      const newGames = [...Array(thisLength)].map((_, i) => ({
+        id: i + thisIndex + 1,
+        awayDisplayName: 'Game Winner',
+        homeDisplayName: 'Game Winner',
+      }));
 
-    localGames.push(newGames);
-    allocate(localGames);
-  }, seeds);
+      localGames.push(newGames);
+      allocate(localGames);
+    },
+    [seeds]
+  );
 
   const updateGames = (gamesArr: IBracketGame[][], data: IBracketDrop) => {
     return gamesArr.map(_games => {
@@ -211,6 +122,14 @@ const Brackets = (props: IProps) => {
     }
   };
 
+  const makeOddGames = (seeds?: any[]) => {
+    return seeds
+      ? [...Array(Math.round(seeds.length))].map((_, i) => ({
+          id: i + 100 + 1,
+        }))
+      : [];
+  };
+
   return (
     <div className={styles.container}>
       <TransformWrapper
@@ -221,9 +140,20 @@ const Brackets = (props: IProps) => {
       >
         <TransformComponent>
           <div className={styles.bracketContainer}>
+            {oddSeeds?.length && (
+              <>
+                <BracketRound
+                  seedRound={true}
+                  games={makeOddGames(oddSeeds)}
+                  onDrop={onDrop}
+                  title=""
+                />
+                <BracketConnector step={2} />
+              </>
+            )}
             {games?.map((round, index) => (
               <Fragment key={index}>
-                <Round
+                <BracketRound
                   seedRound={index === 0}
                   key={index}
                   games={round}
@@ -231,7 +161,7 @@ const Brackets = (props: IProps) => {
                   title={getRoundTitle(round.length)}
                 />
                 {round.length % 2 === 0 ? (
-                  <Connector step={round.length} />
+                  <BracketConnector step={round.length} />
                 ) : null}
               </Fragment>
             ))}

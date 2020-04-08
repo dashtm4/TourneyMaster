@@ -9,8 +9,29 @@ import { getIcon } from 'helpers';
 import { Icons } from 'common/enums';
 import Seed from './dnd/seed';
 
-class Playoffs extends Component {
+interface ISeed {
+  id: number;
+  name: string;
+}
+
+interface IState {
+  seeds?: ISeed[];
+}
+
+class Playoffs extends Component<{}, IState> {
   dragType = 'seed';
+  state = {
+    seeds: [
+      { id: 1, name: 'Seed 1' },
+      { id: 2, name: 'Seed 2' },
+      { id: 3, name: 'Seed 3' },
+      { id: 4, name: 'Seed 4' },
+      { id: 5, name: 'Seed 5' },
+      { id: 6, name: 'Seed 6' },
+      { id: 7, name: 'Seed 7' },
+      { id: 8, name: 'Seed 8' },
+    ],
+  };
 
   renderSeed = (item: any, index: number) => {
     return (
@@ -26,19 +47,22 @@ class Playoffs extends Component {
     );
   };
 
+  addGame = () => {
+    this.setState(({ seeds }) => ({
+      seeds: [
+        ...(seeds || []),
+        {
+          id: (seeds?.length || 0) + 1,
+          name: `Seed ${(seeds?.length || 0) + 1}`,
+        },
+      ],
+    }));
+  };
+
   render() {
     const divisionsOptions = [{ label: '2020', value: 'ADLN001' }];
     const selectedDivision = divisionsOptions[0].value;
-    const seeds = [
-      { id: 1, name: 'Seed 1' },
-      { id: 2, name: 'Seed 2' },
-      { id: 3, name: 'Seed 3' },
-      { id: 4, name: 'Seed 4' },
-      { id: 5, name: 'Seed 5' },
-      { id: 6, name: 'Seed 6' },
-      { id: 7, name: 'Seed 7' },
-      { id: 8, name: 'Seed 8' },
-    ];
+    const { seeds } = this.state;
 
     return (
       <div className={styles.container}>
@@ -80,6 +104,12 @@ class Playoffs extends Component {
                   >
                     Drag, drop, and zoom to navigate the bracket
                   </CardMessage>
+                  <Button
+                    label="+ Add Game"
+                    variant="text"
+                    color="secondary"
+                    onClick={this.addGame}
+                  />
                 </div>
                 <div className={styles.buttonsWrapper}>
                   <Button
