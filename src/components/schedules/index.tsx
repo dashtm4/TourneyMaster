@@ -692,6 +692,7 @@ class Schedules extends Component<Props, State> {
       schedulesHistoryLength,
       savingInProgress,
       scheduleData,
+      schedule,
       pools,
       anotherSchedulePublished,
       schedulesPublished,
@@ -723,7 +724,8 @@ class Schedules extends Component<Props, State> {
       schedulesTeamCards?.length
     );
 
-    const scheduleName = this.getSchedule()?.schedule_name || '';
+    const scheduleName =
+      scheduleData?.schedule_name || schedule?.schedule_name || '';
 
     return (
       <div
