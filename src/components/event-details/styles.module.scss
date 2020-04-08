@@ -220,6 +220,17 @@ $sectionBodyPadding: 20px 0;
     }
   }
 
+  .tooltipWrapper {
+    margin-bottom: 20px;
+  }
+
+  .checkBoxWrapper {
+    display: flex;
+    align-items: center;
+
+    margin-bottom: 20px;
+  }
+
   .maDetails {
     width: 100%;
     height: 100%;
