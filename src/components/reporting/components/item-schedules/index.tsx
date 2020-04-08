@@ -2,9 +2,10 @@ import React from 'react';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
 import { HeadingLevelThree, Button } from 'components/common';
-import { onPDFSave, mapGamesByField } from 'helpers';
+import { onPDFSave, mapGamesByField, onXLSXSave } from 'helpers';
 import { ButtonVarian, ButtonColors } from 'common/enums';
 import { IEventDetails, ISchedule } from 'common/models';
+import { getScheduleTableXLSX } from '../../helpers';
 import {
   IGame,
   settleTeamsPerGames,
@@ -12,8 +13,8 @@ import {
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
-import styles from './styles.module.scss';
 import { ITeamCard } from 'common/models/schedule/teams';
+import styles from './styles.module.scss';
 
 interface Props {
   event: IEventDetails;
@@ -81,6 +82,19 @@ const ItemSchedules = ({
         : 'FieldsSchedule'
     );
 
+  const onScheduleTableXLSXSave = async () => {
+    const { header, body } = await getScheduleTableXLSX(
+      event,
+      schedule,
+      games,
+      teamCards,
+      facilities,
+      fields,
+    );
+
+    onXLSXSave(header, body, 'Master Schedule');
+  };
+
   return (
     <li>
       <div className={styles.titleWrapper}>
@@ -102,7 +116,7 @@ const ItemSchedules = ({
             onClick={onHeatmapScheduleTableSave}
             variant={ButtonVarian.TEXT}
             color={ButtonColors.SECONDARY}
-            label="Master Schedule(with Heatmap)"
+            label="Master Schedule (with Heatmap)"
           />
         </li>
         <li>
@@ -110,7 +124,15 @@ const ItemSchedules = ({
             onClick={onScheduleFieldsSave}
             variant={ButtonVarian.TEXT}
             color={ButtonColors.SECONDARY}
-            label="Master Schedule(by fields)"
+            label="Master Schedule (by fields)"
+          />
+        </li>
+        <li>
+          <Button
+            onClick={onScheduleTableXLSXSave}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            label="Master Schedule (XLSX)"
           />
         </li>
       </ul>
