@@ -14,9 +14,6 @@ import { EventMenuTitles } from 'common/enums';
 import styles from '../styles.module.scss';
 import { EventDetailsDTO } from '../logic/model';
 
-import Dnd from '../dnd';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 import { BindingCbWithOne } from 'common/models';
 import { RankingFactorValues } from 'common/enums';
 
@@ -57,11 +54,6 @@ enum numTeamsBracketEnum {
   'All' = 2,
 }
 
-enum rankingFactors {
-  'rankingFactorDivisions' = 'ranking_factor_divisions',
-  'rankingFactorPools' = 'ranking_factor_pools',
-}
-
 interface Props {
   eventData: Partial<EventDetailsDTO>;
   onChange: any;
@@ -70,7 +62,7 @@ interface Props {
   index: number;
 }
 
-export const defaultRankingFactor = [
+const defaultRankingFactor = [
   { id: RankingFactorValues.BEST_RECORD, text: 'Best record' },
   { id: RankingFactorValues.HEAD_TO_HEAD, text: 'Head to Head' },
   { id: RankingFactorValues.GOAL_DIFFERENCE, text: 'Goal Difference' },
@@ -90,8 +82,6 @@ const PlayoffsSection: React.FC<Props> = ({
     bracket_type,
     num_teams_bracket,
     bracket_durations_vary,
-    ranking_factor_divisions,
-    ranking_factor_pools,
   } = eventData;
 
   const bracketGameDurationOpts = [
@@ -135,31 +125,9 @@ const PlayoffsSection: React.FC<Props> = ({
       onChange('bracket_type', bracketTypesEnum['Single Elimination']);
   });
 
-  const onRankingFactorReorder = (
-    name: string,
-    cards: { id: number; text: string }[]
-  ) => {
-    const rankingFactor = JSON.stringify(cards.map(card => card.id));
-
-    onChange(rankingFactors[name], rankingFactor);
-  };
-
   const onSectionToggle = () => {
     onToggleOne(index);
   };
-
-  const parseRankingFactor = (factor?: string) => {
-    return factor
-      ? JSON.parse(factor).map((fact: number) => ({
-          id: fact,
-          text: defaultRankingFactor[fact - 1].text,
-        }))
-      : defaultRankingFactor;
-  };
-
-  const rankingFactorDivisions = parseRankingFactor(ranking_factor_divisions);
-
-  const rankingFactorPools = parseRankingFactor(ranking_factor_pools);
 
   return (
     <SectionDropdown
@@ -215,33 +183,6 @@ const PlayoffsSection: React.FC<Props> = ({
               />
             </div>
             <div className={styles.pdThird}>
-              <div className={styles.dndTitleWrapper}>
-                <span>Ranking Factors (in Divisions)</span>
-                <span>Ranking Factors (in Pools)</span>
-              </div>
-              <div className={styles.dndWrapper}>
-                <DndProvider backend={HTML5Backend}>
-                  <Dnd
-                    name="rankingFactorDivisions"
-                    cards={rankingFactorDivisions}
-                    onUpdate={onRankingFactorReorder.bind(
-                      undefined,
-                      'rankingFactorDivisions'
-                    )}
-                  />
-                  <Dnd
-                    name="rankingFactorPools"
-                    cards={rankingFactorPools}
-                    onUpdate={onRankingFactorReorder.bind(
-                      undefined,
-                      'rankingFactorPools'
-                    )}
-                  />
-                </DndProvider>
-              </div>
-              <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-                Drag and Drop to reorder Ranking Factors
-              </CardMessage>
               <Checkbox
                 options={bracketGameDurationOpts}
                 onChange={onBracketGameDuration}

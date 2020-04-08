@@ -17,6 +17,7 @@ import PrimaryInformationSection from './primary-information';
 import EventStructureSection from './event-structure';
 import MediaAssetsSection from './media-assets';
 import PlayoffsSection from './playoffs';
+import Rankings from './rankings';
 
 import { Button, HeadingLevelTwo, Paper, Loader } from 'components/common';
 import { IUploadFile, BindingCbWithOne } from 'common/models';
@@ -28,7 +29,6 @@ import history from '../../browserhistory';
 import { PopupExposure } from 'components/common';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 import CsvLoader from 'components/common/csv-loader';
-
 
 interface IMapStateProps {
   event: IEventState;
@@ -257,18 +257,25 @@ class EventDetails extends Component<Props, State> {
           expanded={this.state.expanded[1]}
           onToggleOne={this.onToggleOne}
         />
-        <PlayoffsSection
+        <Rankings
           eventData={event}
           onChange={this.onChange}
           index={2}
           expanded={this.state.expanded[2]}
           onToggleOne={this.onToggleOne}
         />
+        <PlayoffsSection
+          eventData={event}
+          onChange={this.onChange}
+          index={3}
+          expanded={this.state.expanded[3]}
+          onToggleOne={this.onToggleOne}
+        />
         <MediaAssetsSection
           onFileUpload={this.onFileUpload}
           onFileRemove={this.onFileRemove}
-          index={3}
-          expanded={this.state.expanded[3]}
+          index={4}
+          expanded={this.state.expanded[4]}
           onToggleOne={this.onToggleOne}
           logo={event.desktop_icon_URL}
         />
