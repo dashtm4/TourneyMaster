@@ -29,7 +29,6 @@ import { PopupExposure } from 'components/common';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 import CsvLoader from 'components/common/csv-loader';
 
-
 interface IMapStateProps {
   event: IEventState;
 }
@@ -183,7 +182,6 @@ class EventDetails extends Component<Props, State> {
     const eventTypeOptions = ['Tournament', 'Showcase', 'League'];
     const { event } = this.state;
     const { isEventLoading } = this.props.event;
-
     const deleteMessage = `You are about to delete this event and this cannot be undone. All related data to this event will be deleted too.
       Please, enter the name of the event to continue.`;
 
@@ -205,7 +203,7 @@ class EventDetails extends Component<Props, State> {
                 />
               )}
             </div>
-            <div>
+            <div className={styles.btnsWrapper}>
               <Button
                 label="Cancel"
                 color="secondary"

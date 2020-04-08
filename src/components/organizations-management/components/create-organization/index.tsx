@@ -69,7 +69,11 @@ const CreateOrganization = ({
     if (onCancelBtn) {
       return onCancelBtn();
     }
-    onModalChange(true);
+    if (organization !== EMPTY_ORGANIZATION) {
+      onModalChange(true);
+    } else {
+      onCancel();
+    }
   };
 
   const onModalClose = () => {

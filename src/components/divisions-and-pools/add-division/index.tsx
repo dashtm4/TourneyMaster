@@ -79,8 +79,25 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     }));
   };
 
+  checkIfChangesAreMade = () => {
+    if (this.divisionId) {
+      const oldDiv = this.props.divisions.find(
+        division => division.division_id === this.divisionId
+      );
+      return this.state.divisions[0] !== oldDiv;
+    } else {
+      return this.state.divisions.some(
+        division => Object.entries(division).length !== 0
+      );
+    }
+  };
+
   onCancel = () => {
-    this.setState({ isModalConfirmOpen: true });
+    if (this.checkIfChangesAreMade()) {
+      this.setState({ isModalConfirmOpen: true });
+    } else {
+      this.onExit();
+    }
   };
 
   onSave = () => {
@@ -152,13 +169,21 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     ) {
       this.setState({
         defaultDivision: {
-          entry_fee: this.props.registration.entry_fee,
-          max_num_teams: this.props.registration.max_teams_per_division,
+          ...(this.props.registration.entry_fee && {
+            entry_fee: this.props.registration.entry_fee,
+          }),
+          ...(this.props.registration.max_teams_per_division && {
+            max_num_teams: this.props.registration.max_teams_per_division,
+          }),
         },
         divisions: [
           {
-            entry_fee: this.props.registration.entry_fee,
-            max_num_teams: this.props.registration.max_teams_per_division,
+            ...(this.props.registration.entry_fee && {
+              entry_fee: this.props.registration.entry_fee,
+            }),
+            ...(this.props.registration.max_teams_per_division && {
+              max_num_teams: this.props.registration.max_teams_per_division,
+            }),
           },
         ],
       });
@@ -176,7 +201,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
       <section className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.mainMenu}>
-            <div>
+            <div className={styles.btnsWrapper}>
               <Button
                 label="Cancel"
                 variant="text"

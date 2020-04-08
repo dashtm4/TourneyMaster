@@ -109,6 +109,7 @@ const TeamDetailsPopup = ({
                       value={team.long_name || ''}
                       name={FORM_FIELDS.LONG_NAME}
                       type="text"
+                      autoFocus={true}
                     />
                     <span className="visually-hidden">Long Name</span>
                   </label>

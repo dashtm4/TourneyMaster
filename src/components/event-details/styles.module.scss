@@ -17,6 +17,11 @@ $sectionBodyPadding: 20px 0;
     & > :first-child {
       margin-right: 15px;
     }
+    .btnsWrapper {
+      & > :first-child {
+        margin-right: 15px;
+      }
+    }
   }
 
   .blockHeading {

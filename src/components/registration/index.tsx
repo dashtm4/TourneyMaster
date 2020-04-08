@@ -117,6 +117,7 @@ class RegistrationView extends React.Component<
     if (this.state.isEdit) {
       return (
         <RegistrationEdit
+          previousRegistration={this.props.registration}
           registration={this.state.registration}
           onChange={this.onChange}
           onCancel={this.onCancelClick}
