@@ -32,6 +32,7 @@ import {
   mapFilterValues,
   applyFilters,
   mapUnusedFields,
+  moveCardMessages,
 } from './helpers';
 
 import { IScheduleFacility } from 'common/models/schedule/facilities';
@@ -134,25 +135,35 @@ const TableSchedule = ({
     const day = filterValues.selectedDay!;
     const result = moveTeamCard(
       teamCards,
+      filledGames,
       dropParams,
       days?.length ? days[DayTypes[day] - 1] : undefined
     );
-    if (result.divisionUnmatch) {
-      onReplacementWarningChange(
-        'The divisions of the teams do not match. Are you sure you want to continue?'
-      );
-      replacementTeamCardsChange(result.teamCards);
-    } else if (result.poolUnmatch) {
-      onReplacementWarningChange(
-        'The pools of the teams do not match. Are you sure you want to continue?'
-      );
-      replacementTeamCardsChange(result.teamCards);
-    } else {
-      onTeamCardsUpdate(result.teamCards);
+
+    switch (true) {
+      case result.timeSlotInUse:
+        return onReplacementWarningChange(moveCardMessages.timeSlotInUse);
+      case result.differentFacility: {
+        onReplacementWarningChange(moveCardMessages.differentFacility);
+        return replacementTeamCardsChange(result.teamCards);
+      }
+      case result.divisionUnmatch: {
+        onReplacementWarningChange(moveCardMessages.divisionUnmatch);
+        return replacementTeamCardsChange(result.teamCards);
+      }
+      case result.poolUnmatch: {
+        onReplacementWarningChange(moveCardMessages.poolUnmatch);
+        return replacementTeamCardsChange(result.teamCards);
+      }
+      default:
+        onTeamCardsUpdate(result.teamCards);
     }
   };
 
-  const toggleReplacementWarning = () => onReplacementWarningChange(undefined);
+  const toggleReplacementWarning = () => {
+    replacementTeamCardsChange(undefined);
+    onReplacementWarningChange(undefined);
+  };
 
   const confirmReplacement = () => {
     if (replacementTeamCards) {
@@ -288,6 +299,8 @@ const TableSchedule = ({
           </>
         )}
         <PopupConfirm
+          type="warning"
+          showYes={!!replacementTeamCards}
           isOpen={!!replacementWarning}
           message={replacementWarning || ''}
           onClose={toggleReplacementWarning}

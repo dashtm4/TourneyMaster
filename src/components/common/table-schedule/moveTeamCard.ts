@@ -1,9 +1,11 @@
+import { findIndex, find } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IDropParams } from '../matrix-table/dnd/drop';
-import { findIndex, find } from 'lodash-es';
+import { IGame } from '../matrix-table/helper';
 
 export default (
   teamCards: ITeamCard[],
+  filledGames: IGame[],
   dropParams: IDropParams,
   day?: string
 ) => {
@@ -12,6 +14,8 @@ export default (
     teamCards: [...teamCards],
     divisionUnmatch: false,
     poolUnmatch: false,
+    timeSlotInUse: false,
+    differentFacility: false,
   };
 
   const newTeamCards = [...teamCards].map(teamCard => {
@@ -25,7 +29,45 @@ export default (
           date: day,
         }) >= 0
     );
+    const incomingTeamFiltered = {
+      ...incomingTeam,
+      games: [...incomingTeam?.games?.filter(item => item.id !== originGameId)],
+    };
 
+    const gamePlace = filledGames.find(item => item.id === gameId);
+    const incomingTeamGames = filledGames.filter(
+      item =>
+        findIndex(incomingTeamFiltered.games, { id: item.id, date: day }) >= 0
+    );
+
+    const timeSlot = gamePlace?.timeSlotId;
+    const facility = gamePlace?.facilityId;
+
+    const teamTimeSlots = incomingTeamGames.map(item => item.timeSlotId);
+    const teamFacilities = incomingTeamGames.map(item => item.facilityId);
+
+    /* When a team placed in used timeslot */
+    if (gameId && position && teamTimeSlots.includes(timeSlot!)) {
+      result = {
+        ...result,
+        timeSlotInUse: true,
+      };
+    }
+
+    /* When a team is placed in another facility */
+    if (
+      gameId &&
+      position &&
+      teamFacilities.length &&
+      !teamFacilities.includes(facility)
+    ) {
+      result = {
+        ...result,
+        differentFacility: true,
+      };
+    }
+
+    /* When divisions do not match */
     if (
       incomingTeam !== undefined &&
       outcomingTeam !== undefined &&
@@ -37,6 +79,7 @@ export default (
       };
     }
 
+    /* When pools do not match */
     if (
       incomingTeam !== undefined &&
       outcomingTeam !== undefined &&
@@ -49,7 +92,6 @@ export default (
     }
 
     /* 1. Handle dropping inside the table */
-
     if (gameId && position && teamId === teamCard.id) {
       let games = [
         ...teamCard.games?.filter(
@@ -87,7 +129,6 @@ export default (
     }
 
     /* 2. Handle dropping into the Unassigned table */
-
     if (!gameId && !position && teamId === teamCard.id) {
       const games = [
         ...teamCard.games?.filter(
@@ -101,7 +142,6 @@ export default (
     }
 
     /* 3. Remove replaced team game */
-
     if (
       findIndex(teamCard.games, {
         id: gameId,

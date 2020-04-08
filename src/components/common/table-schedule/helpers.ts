@@ -264,4 +264,14 @@ export const mapUnusedFields = (
   }));
 };
 
-export { getUnsatisfiedTeams, getSatisfiedTeams };
+const moveCardMessages = {
+  timeSlotInUse: 'This team is already playing at this time',
+  differentFacility:
+    'This division is not playing at this facility on this day. Please confirm your intentions.',
+  divisionUnmatch:
+    'The divisions of the teams do not match. Are you sure you want to continue?',
+  poolUnmatch:
+    'The pools of the teams do not match. Are you sure you want to continue?',
+};
+
+export { getUnsatisfiedTeams, getSatisfiedTeams, moveCardMessages };
