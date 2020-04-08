@@ -8,12 +8,14 @@ import Navigation from './components/navigation';
 import PopupShare from './components/popup-share';
 import Registration from './components/registration';
 import Facilities from './components/facilities';
+import Divisions from './components/divisions';
 import { HeadingLevelTwo, Loader, Button } from 'components/common';
 import {
   BindingAction,
   IEventDetails,
   BindingCbWithThree,
   IFacility,
+  IDivision,
 } from 'common/models';
 import {
   MenuTitles,
@@ -31,6 +33,7 @@ interface Props {
   events: IEventDetails[];
   registrations: ILibraryManagerRegistration[];
   facilities: IFacility[];
+  divisions: IDivision[];
   loadLibraryManagerData: BindingAction;
   saveSharedItem: BindingCbWithThree<IEventDetails, IEntity, EntryPoints>;
 }
@@ -40,6 +43,7 @@ const LibraryManager = ({
   events,
   registrations,
   facilities,
+  divisions,
   loadLibraryManagerData,
   saveSharedItem,
 }: Props) => {
@@ -113,6 +117,11 @@ const LibraryManager = ({
           isSectionCollapse={isSectionsCollapse}
           changeSharedItem={onChangeSharedItem}
         />
+        <Divisions
+          divisions={divisions}
+          isSectionCollapse={isSectionsCollapse}
+          changeSharedItem={onChangeSharedItem}
+        />
       </ul>
       <PopupShare
         activeEvent={activeEvent}
@@ -133,6 +142,7 @@ export default connect(
     events: libraryManager.events,
     registrations: libraryManager.registrations,
     facilities: libraryManager.facilities,
+    divisions: libraryManager.divisions,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators({ loadLibraryManagerData, saveSharedItem }, dispatch)

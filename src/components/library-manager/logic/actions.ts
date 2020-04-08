@@ -36,9 +36,10 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
       type: LIBRARY_MANAGER_LOAD_DATA_START,
     });
 
-    const events = await Api.get('/events');
-    const registrations = await Api.get('/registrations');
-    const facilities = await Api.get('/facilities');
+    const events = await Api.get(EntryPoints.EVENTS);
+    const registrations = await Api.get(EntryPoints.REGISTRATIONS);
+    const facilities = await Api.get(EntryPoints.FACILITIES);
+    const divisions = await Api.get(EntryPoints.DIVISIONS);
 
     const mappedRegistrationWithEvent = mapArrWithEventName(
       registrations,
@@ -51,6 +52,7 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
         events,
         registrations: mappedRegistrationWithEvent,
         facilities,
+        divisions,
       },
     });
   } catch {
