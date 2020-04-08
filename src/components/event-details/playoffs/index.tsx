@@ -81,8 +81,6 @@ const PlayoffsSection: React.FC<Props> = ({
     },
   ];
 
-  // console.log(JSON.stringify(defaultRankingFactor.map(factor => factor.id)));
-
   const onPlayoffs = () => onChange('playoffs_exist', playoffs_exist ? 0 : 1);
 
   const onChangeBracketType = (e: InputTargetValue) =>

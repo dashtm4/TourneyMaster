@@ -221,14 +221,15 @@ $sectionBodyPadding: 20px 0;
   }
 
   .tooltipWrapper {
+    display: flex;
+    justify-content: space-between;
+
     margin-bottom: 20px;
   }
 
   .checkBoxWrapper {
     display: flex;
     align-items: center;
-
-    margin-bottom: 20px;
   }
 
   .maDetails {

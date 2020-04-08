@@ -9,20 +9,13 @@ import {
   Checkbox,
   Select,
 } from 'components/common';
-import { BindingCbWithOne } from 'common/models';
-import { EventMenuTitles, RankingFactorValues } from 'common/enums';
-import { EventDetailsDTO } from '../logic/model';
-import styles from '../styles.module.scss';
 import { CardMessageTypes } from 'components/common/card-message/types';
+import { BindingCbWithOne } from 'common/models';
+import { EventMenuTitles } from 'common/enums';
 import { IInputEvent } from 'common/types';
-
-const defaultRankingFactor = [
-  { id: RankingFactorValues.BEST_RECORD, text: 'Best record' },
-  { id: RankingFactorValues.HEAD_TO_HEAD, text: 'Head to Head' },
-  { id: RankingFactorValues.GOAL_DIFFERENCE, text: 'Goal Difference' },
-  { id: RankingFactorValues.GOAL_SCORED, text: 'Goals Scored' },
-  { id: RankingFactorValues.GOAL_ALLOWED, text: 'Goals Allowed' },
-];
+import { EventDetailsDTO } from '../logic/model';
+import { defaultRankingFactor } from '../state';
+import styles from '../styles.module.scss';
 
 const MAX_GOAL_ALLOWED_COUNT = 8;
 
@@ -149,14 +142,17 @@ const Rankings = ({
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
               Drag and Drop to reorder Ranking Factors
             </CardMessage>
-          </div>
-          <div className={styles.checkBoxWrapper}>
-            <Checkbox options={goalAllowedCheckboxOptions} />
-            <Select
-              onChange={onGoalAllowedChage}
-              options={[goalAllowedDefaultOption, ...goalAllowedSelectOptions]}
-              value={max_goal_differential || SELECT_DEFAULT_VALUE}
-            />
+            <div className={styles.checkBoxWrapper}>
+              <Checkbox options={goalAllowedCheckboxOptions} />
+              <Select
+                onChange={onGoalAllowedChage}
+                options={[
+                  goalAllowedDefaultOption,
+                  ...goalAllowedSelectOptions,
+                ]}
+                value={max_goal_differential || SELECT_DEFAULT_VALUE}
+              />
+            </div>
           </div>
         </div>
       </div>
