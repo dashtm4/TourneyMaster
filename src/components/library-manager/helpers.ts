@@ -95,6 +95,7 @@ const checkAleadyExist = async (
       ) {
         throw new Error('The event already has such a facility');
       }
+      break;
     }
     case EntryPoints.DIVISIONS: {
       const division = sharedItem as IDivision;
@@ -106,6 +107,7 @@ const checkAleadyExist = async (
       ) {
         throw new Error('The event already has such a division');
       }
+      break;
     }
   }
 };
@@ -191,14 +193,17 @@ const setDivisionFromLibrary = async (
     };
   });
 
-  console.log(mappedPoolsWithNewId, newDivision);
-  console.log(poolWithTeams, division);
+  await Api.post(EntryPoints.DIVISIONS, newDivision);
 
-  // await Api.post(EntryPoints.FACILITIES, newFacility);
+  for await (let pool of mappedPoolsWithNewId) {
+    await Promise.all(
+      pool.teams.map(team => Api.post(EntryPoints.TEAMS, team))
+    );
 
-  // await Promise.all(
-  //   mappedFieldsWithNewId.map((it: IField) => Api.post('/fields', it))
-  // );
+    delete pool.teams;
+
+    await Api.post(EntryPoints.POOLS, pool);
+  }
 };
 
 const SetFormLibraryManager = {

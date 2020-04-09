@@ -3,6 +3,8 @@ enum EntryPoints {
   REGISTRATIONS = '/registrations',
   FACILITIES = '/facilities',
   DIVISIONS = '/divisions',
+  POOLS = '/pools',
+  TEAMS = '/teams',
 }
 
 export { EntryPoints };
