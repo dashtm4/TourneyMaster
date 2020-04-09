@@ -1,5 +1,6 @@
 import { ISchedule } from 'common/models/schedule';
 import { ISchedulingSchedule } from '../types';
+import { ICreateBracketModalOutput } from '../create-new-bracket';
 
 export const SCHEDULE_FETCH_IN_PROGRESS = 'SCHEDULE_FETCH_IN_PROGRESS';
 export const SCHEDULE_FETCH_SUCCESS = 'SCHEDULE_FETCH_SUCCESS';
@@ -17,6 +18,8 @@ export const UPDATE_SCHEDULE_FAILURE = 'UPDATE_SCHEDULE_FAILURE';
 
 export const DELETE_SCHEDULE_SUCCESS = 'DELETE_SCHEDULE_SUCCESS';
 export const DELETE_SCHEDULE_FAILURE = 'DELETE_SCHEDULE_FAILURE';
+
+export const ADD_NEW_BRACKET = 'ADD_NEW_BRACKET';
 
 interface IScheduleFetchInProgress {
   type: 'SCHEDULE_FETCH_IN_PROGRESS';
@@ -61,6 +64,11 @@ interface ISIScheduleDeleteSchedule {
   };
 }
 
+interface IAddNewBracket {
+  type: 'ADD_NEW_BRACKET';
+  payload: ICreateBracketModalOutput;
+}
+
 export type ScheduleActionType =
   | IScheduleFetchInProgress
   | IScheduleFetchSuccess
@@ -68,4 +76,5 @@ export type ScheduleActionType =
   | IScheduleAddNewSchedule
   | IScheduleChangeSchedule
   | ISIScheduleUpdateSchedule
-  | ISIScheduleDeleteSchedule;
+  | ISIScheduleDeleteSchedule
+  | IAddNewBracket;

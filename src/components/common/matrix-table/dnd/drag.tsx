@@ -65,7 +65,9 @@ export default (props: Props) => {
     onTeamCardUpdate!({
       ...teamCard,
       games: teamCard.games?.map(game =>
-        game.id === originGameId ? { ...game, teamScore: value } : game
+        game.id === originGameId && game.date === originGameDate
+          ? { ...game, teamScore: value }
+          : game
       ),
     });
   };

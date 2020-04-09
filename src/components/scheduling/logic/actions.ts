@@ -17,6 +17,7 @@ import {
   UPDATE_SCHEDULE_FAILURE,
   DELETE_SCHEDULE_SUCCESS,
   DELETE_SCHEDULE_FAILURE,
+  ADD_NEW_BRACKET,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
 import { scheduleSchema, updatedScheduleSchema } from 'validations';
@@ -52,6 +53,7 @@ import {
   mapSchedulingScheduleData,
 } from 'components/schedules/mapScheduleData';
 import { errorToast, successToast } from 'components/common/toastr/showToasts';
+import { ICreateBracketModalOutput } from '../create-new-bracket';
 
 type GetState = () => IAppState;
 
@@ -75,6 +77,11 @@ const scheduleFetchSuccess = (schedules: ISchedulingSchedule) => ({
 
 const scheduleFetchFailure = () => ({
   type: SCHEDULE_FETCH_FAILURE,
+});
+
+const addNewBracket = (payload: ICreateBracketModalOutput) => ({
+  type: ADD_NEW_BRACKET,
+  payload,
 });
 
 export const addNewSchedule = () => async (
@@ -438,4 +445,12 @@ export const unpublishSchedule = (scheduleId: string) => (
   dispatch: Dispatch
 ) => {
   dispatch<any>(updateScheduleStatus(scheduleId, true));
+};
+
+/* BRACKETS SECTION */
+
+export const createNewBracket = (bracketData: ICreateBracketModalOutput) => (
+  dispatch: Dispatch
+) => {
+  dispatch(addNewBracket(bracketData));
 };

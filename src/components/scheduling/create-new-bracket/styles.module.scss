@@ -1,0 +1,27 @@
+@import 'src/styles/variables.scss';
+
+.wrapper {
+  width: 540px;
+  height: 310px;
+  padding: 20px;
+
+  .mainBody {
+    .inputsWrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+  }
+
+  .buttonsWrapper {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    > button {
+      margin-left: 20px;
+    }
+  }
+}

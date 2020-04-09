@@ -2,15 +2,13 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { Paper, Button } from 'components/common';
-import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 
 interface Props {
   isAllowCreate: boolean;
-  onCreatePressed: BindingAction
 }
 
-const Navigation = ({ isAllowCreate, onCreatePressed }: Props) => (
+const Navigation = ({ isAllowCreate }: Props) => (
   <section className={styles.paper}>
     <Paper>
       <div>
@@ -30,13 +28,6 @@ const Navigation = ({ isAllowCreate, onCreatePressed }: Props) => (
           disabled={!isAllowCreate}
         />
       </div>
-      <Button
-        label="Create New Version"
-        color="primary"
-        variant="contained"
-        onClick={onCreatePressed}
-        disabled={!isAllowCreate}
-      />
     </Paper>
   </section>
 );

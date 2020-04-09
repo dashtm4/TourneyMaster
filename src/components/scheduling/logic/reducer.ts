@@ -7,9 +7,11 @@ import {
   CHANGE_SCHEDULE,
   UPDATE_SCHEDULE_SUCCESS,
   DELETE_SCHEDULE_SUCCESS,
+  ADD_NEW_BRACKET,
 } from './actionTypes';
 import { IConfigurableSchedule } from 'common/models/schedule';
 import { ISchedulingSchedule } from '../types';
+import { IBracket } from 'common/models/playoffs/bracket';
 
 export interface ISchedulingState {
   schedule: IConfigurableSchedule | null;
@@ -17,6 +19,7 @@ export interface ISchedulingState {
   isLoading: boolean;
   isLoaded: boolean;
   error: boolean;
+  bracket: IBracket | null;
 }
 
 const appState: ISchedulingState = {
@@ -25,6 +28,7 @@ const appState: ISchedulingState = {
   isLoading: false,
   isLoaded: false,
   error: false,
+  bracket: null,
 };
 
 export default (state = appState, action: ScheduleActionType) => {
@@ -91,6 +95,11 @@ export default (state = appState, action: ScheduleActionType) => {
         ),
       };
     }
+    case ADD_NEW_BRACKET:
+      return {
+        ...state,
+        bracket: action.payload,
+      };
     default:
       return state;
   }
