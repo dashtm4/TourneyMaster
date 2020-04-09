@@ -1,5 +1,7 @@
 import { ILibraryManagerRegistration } from '../common';
 import { IEventDetails, IFacility, IDivision, ISchedule } from 'common/models';
+import { IEntity } from 'common/types';
+import { EntryPoints } from 'common/enums';
 
 const LIBRARY_MANAGER_LOAD_DATA_START = 'LIBRARY_MANAGER_LOAD_DATA_START';
 const LIBRARY_MANAGER_LOAD_DATA_SUCCESS = 'LIBRARY_MANAGER_LOAD_DATA_SUCCESS';
@@ -23,9 +25,18 @@ interface LibraryManagerLoadDataSuccess {
   };
 }
 
+interface SaveSharedItemSuccess {
+  type: 'SAVE_SHARED_ITEM_SUCCESS';
+  payload: {
+    sharedItem: IEntity;
+    entryPoint: EntryPoints;
+  };
+}
+
 export type LibraryManagerAction =
   | LibraryManagerLoadDataStart
-  | LibraryManagerLoadDataSuccess;
+  | LibraryManagerLoadDataSuccess
+  | SaveSharedItemSuccess;
 
 export {
   LIBRARY_MANAGER_LOAD_DATA_START,

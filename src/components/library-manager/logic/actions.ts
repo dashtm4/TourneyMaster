@@ -120,6 +120,10 @@ const saveSharedItem: ActionCreator<ThunkAction<
 
     dispatch({
       type: SAVE_SHARED_ITEM_SUCCESS,
+      payload: {
+        sharedItem: clearSharedItem,
+        entryPoint
+      }
     });
 
     Toasts.successToast('Changes successfully saved.');
