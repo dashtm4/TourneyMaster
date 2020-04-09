@@ -3,6 +3,7 @@ import styles from './styles.module.scss';
 
 interface IProps {
   step: number;
+  hidden?: any[];
 }
 
 const selectStyle = (num: number) => {
@@ -18,14 +19,37 @@ const selectStyle = (num: number) => {
   }
 };
 
+const getHiddenStyle = (hiddenTop: boolean, hiddenBottom: boolean) => {
+  switch (true) {
+    case hiddenTop && hiddenBottom:
+      return styles.hidden;
+    case hiddenTop && !hiddenBottom:
+      return styles.hiddenTop;
+    case !hiddenTop && hiddenBottom:
+      return styles.hiddenBottom;
+  }
+};
+
 const BracketConnector = (props: IProps) => {
-  const { step } = props;
+  const { step, hidden } = props;
 
   return (
     <div className={selectStyle(step)}>
-      {[...Array(Math.round(step / 2))].map(() => (
-        <div key={Math.random()} className={styles.connector} />
-      ))}
+      {hidden &&
+        hidden.map(({ hiddenTop, hiddenBottom }) => (
+          <div
+            key={Math.random()}
+            className={`${styles.connector} ${getHiddenStyle(
+              hiddenTop,
+              hiddenBottom
+            )}`}
+          />
+        ))}
+
+      {!hidden &&
+        [...Array(Math.round(step / 2))].map(() => (
+          <div key={Math.random()} className={styles.connector} />
+        ))}
     </div>
   );
 };

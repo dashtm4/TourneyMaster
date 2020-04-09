@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { findIndex } from 'lodash-es';
+import { findIndex, union, intersection } from 'lodash-es';
 import styles from './styles.module.scss';
 import { IBracketDrop } from '../dnd/drop';
 import BracketRound from './round';
@@ -12,7 +12,7 @@ const TRANSFORM_WRAPPER_OPTIONS = {
 };
 
 interface IBracketTeam {
-  id: number | string;
+  id: number;
   name: string;
 }
 
@@ -22,6 +22,7 @@ export interface IBracketGame {
   homeDisplayName?: string;
   away?: IBracketTeam;
   home?: IBracketTeam;
+  hidden?: boolean;
 }
 
 const calculateLeftovers = (arr: any[], point: number) => {
@@ -36,10 +37,11 @@ const calculateLeftovers = (arr: any[], point: number) => {
 
 interface IProps {
   seeds: { id: number; name: string }[];
+  onSeedsUsed: (ids: (number | undefined)[]) => void;
 }
 
 const Brackets = (props: IProps) => {
-  const { seeds } = props;
+  const { seeds, onSeedsUsed } = props;
 
   const [games, setGames] = useState<IBracketGame[][]>();
   const [oddSeeds, setOddSeeds] = useState<any[]>();
@@ -89,6 +91,19 @@ const Brackets = (props: IProps) => {
     [seeds]
   );
 
+  useEffect(() => {
+    const seedIds = games
+      ?.flat()
+      .map(item => [item.away?.id, item.home?.id])
+      .flat();
+
+    const seedIdsUnique = union(seedIds);
+    const localSeedIds = seeds.map(item => item.id);
+    if (false && intersection(seedIdsUnique, localSeedIds)?.length) {
+      onSeedsUsed(seedIdsUnique);
+    }
+  }, [games]);
+
   const updateGames = (gamesArr: IBracketGame[][], data: IBracketDrop) => {
     return gamesArr.map(_games => {
       if (findIndex(_games, { id: data.id }) >= 0) {
@@ -113,6 +128,8 @@ const Brackets = (props: IProps) => {
 
   const getRoundTitle = (gamesLength: number) => {
     switch (gamesLength) {
+      case 8:
+        return 'Sweet 16';
       case 4:
         return 'Elite Eight';
       case 2:
@@ -122,13 +139,31 @@ const Brackets = (props: IProps) => {
     }
   };
 
-  const makeOddGames = (seeds?: any[]) => {
-    return seeds
-      ? [...Array(Math.round(seeds.length))].map((_, i) => ({
-          id: i + 100 + 1,
-        }))
-      : [];
+  const makeOddGames = (addedSeeds: any[], overallSeedsLength: number) => {
+    const localSeeds = [...Array(overallSeedsLength)];
+    const order = [1, 7, 3, 5, 4, 2, 6];
+    order.forEach((v, i) => (localSeeds[v] = addedSeeds[i]));
+
+    const arr = [...Array(overallSeedsLength)].map((_, i) => ({
+      id: i + 100,
+      hidden: i === 0 || !localSeeds[i],
+    }));
+    return arr;
   };
+
+  const oddGames =
+    oddSeeds &&
+    makeOddGames(oddSeeds, games?.length ? Math.round(games[0].length * 2) : 0);
+
+  const hidden = [];
+  if (oddGames) {
+    for (let i = 0; i < oddGames?.length; i += 2) {
+      hidden.push({
+        hiddenTop: oddGames[i].hidden,
+        hiddenBottom: oddGames[i + 1].hidden,
+      });
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -140,15 +175,15 @@ const Brackets = (props: IProps) => {
       >
         <TransformComponent>
           <div className={styles.bracketContainer}>
-            {oddSeeds?.length && (
+            {oddGames?.length && (
               <>
                 <BracketRound
                   seedRound={true}
-                  games={makeOddGames(oddSeeds)}
+                  games={oddGames}
                   onDrop={onDrop}
                   title=""
                 />
-                <BracketConnector step={2} />
+                <BracketConnector hidden={hidden} step={oddGames.length} />
               </>
             )}
             {games?.map((round, index) => (

@@ -12,6 +12,7 @@ import Seed from './dnd/seed';
 interface ISeed {
   id: number;
   name: string;
+  hidden?: boolean;
 }
 
 interface IState {
@@ -20,7 +21,7 @@ interface IState {
 
 class Playoffs extends Component<{}, IState> {
   dragType = 'seed';
-  state = {
+  state: IState = {
     seeds: [
       { id: 1, name: 'Seed 1' },
       { id: 2, name: 'Seed 2' },
@@ -59,6 +60,14 @@ class Playoffs extends Component<{}, IState> {
     }));
   };
 
+  onSeedsUsed = (seedIds: (number | undefined)[]) => {
+    this.setState(({ seeds }) => ({
+      seeds: [
+        ...seeds?.map(item => ({ ...item, hidden: seedIds.includes(item.id) })),
+      ],
+    }));
+  };
+
   render() {
     const divisionsOptions = [{ label: '2020', value: 'ADLN001' }];
     const selectedDivision = divisionsOptions[0].value;
@@ -90,7 +99,9 @@ class Playoffs extends Component<{}, IState> {
                   Drag & drop to reorder
                 </CardMessage>
                 <div className={styles.seedsList}>
-                  {seeds.map((v, i) => this.renderSeed(v, i))}
+                  {seeds
+                    ?.filter(item => !item.hidden)
+                    .map((v, i) => this.renderSeed(v, i))}
                 </div>
               </div>
             </div>
@@ -131,7 +142,9 @@ class Playoffs extends Component<{}, IState> {
                   />
                 </div>
               </div>
-              <Brackets seeds={seeds} />
+              {seeds && (
+                <Brackets seeds={seeds} onSeedsUsed={this.onSeedsUsed} />
+              )}
             </div>
           </DndProvider>
         </section>

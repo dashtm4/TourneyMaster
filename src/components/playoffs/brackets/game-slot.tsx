@@ -14,7 +14,10 @@ const BracketGameSlot = (props: IProps) => {
   const { game, onDrop, seedRound } = props;
 
   return (
-    <div key={game.id} className={styles.bracketGame}>
+    <div
+      key={game.id}
+      className={`${styles.bracketGame} ${game.hidden && styles.hidden}`}
+    >
       <SeedDrop
         id={game.id}
         position={1}

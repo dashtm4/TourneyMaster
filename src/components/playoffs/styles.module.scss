@@ -41,6 +41,9 @@
 
         .seedsList {
           margin-top: 10px;
+          max-height: 310px;
+          overflow-y: scroll;
+          overflow-x: hidden;
           display: flex;
           align-items: center;
           justify-content: space-between;
