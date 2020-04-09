@@ -26,6 +26,7 @@ import {
   checkAleadyExist,
   SetFormLibraryManager,
   getClearScharedItem,
+  getLibraryallowedItems,
 } from '../helpers';
 
 const loadLibraryManagerData: ActionCreator<ThunkAction<
@@ -45,19 +46,25 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
     const divisions = await Api.get(EntryPoints.DIVISIONS);
     const schedules = await Api.get(EntryPoints.SCHEDULES);
 
+    const allowedEvents = getLibraryallowedItems(events);
+    const allowedRegistrations = getLibraryallowedItems(registrations);
+    const allowedFacilities = getLibraryallowedItems(facilities);
+    const allowedDivision = getLibraryallowedItems(divisions);
+    const allowedSchedules = getLibraryallowedItems(schedules);
+
     const mappedRegistrationWithEvent = mapArrWithEventName(
-      registrations,
+      allowedRegistrations,
       events
     );
 
     dispatch({
       type: LIBRARY_MANAGER_LOAD_DATA_SUCCESS,
       payload: {
-        events,
+        events: allowedEvents,
         registrations: mappedRegistrationWithEvent,
-        facilities,
-        divisions,
-        schedules,
+        facilities: allowedFacilities,
+        divisions: allowedDivision,
+        schedules: allowedSchedules,
       },
     });
   } catch {

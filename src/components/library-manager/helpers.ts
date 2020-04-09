@@ -17,7 +17,11 @@ import {
 } from 'common/models';
 import { IPoolWithTeams } from './common';
 
-// const getLibraryallowedItems = (items: IEntity[]) => {};
+const getLibraryallowedItems = (items: IEntity[]) => {
+  const allowedItems = items.filter(it => Boolean(it.is_library_YN));
+
+  return allowedItems;
+};
 
 const getClearScharedItem = (
   sharedItem: IEntity,
@@ -232,4 +236,9 @@ const SetFormLibraryManager = {
   setScheduleFromLibrary,
 };
 
-export { getClearScharedItem, checkAleadyExist, SetFormLibraryManager };
+export {
+  getClearScharedItem,
+  checkAleadyExist,
+  SetFormLibraryManager,
+  getLibraryallowedItems,
+};
