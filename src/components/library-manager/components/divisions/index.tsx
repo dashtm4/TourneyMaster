@@ -1,7 +1,7 @@
 import React from 'react';
 import TableSort from '../table-sort';
 import { SectionDropdown } from 'components/common';
-import { EventMenuTitles, EntryPoints } from 'common/enums';
+import { MenuTitles, EntryPoints } from 'common/enums';
 import { BindingCbWithTwo, IDivision } from 'common/models';
 import { IEntity } from 'common/types';
 
@@ -31,12 +31,12 @@ const Divisions = ({
   return (
     <li>
       <SectionDropdown
-        id={EventMenuTitles.DIVISIONS_AND_POOLS}
+        id={MenuTitles.DIVISIONS_AND_POOLS}
         type="section"
         panelDetailsType="flat"
         expanded={isSectionCollapse}
       >
-        <span>{EventMenuTitles.DIVISIONS_AND_POOLS}</span>
+        <span>{MenuTitles.DIVISIONS_AND_POOLS}</span>
         <TableSort rows={rowForTable} onShare={onShareRegistr} />
       </SectionDropdown>
     </li>

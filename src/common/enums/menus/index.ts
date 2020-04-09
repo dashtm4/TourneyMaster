@@ -1,7 +1,9 @@
 enum MenuTitles {
+  TOURNAMENTS = 'Tournaments',
   LIBRARY_MANAGER = 'Library Manager',
   FACILITIES = 'Facilities',
   REGISTRATION = 'Registration',
+  DIVISIONS_AND_POOLS = 'Divisions & Pools',
   UTILITIES = 'Utilities',
   USER_PROFILE = 'User Profile',
   TOURNEY_IMPORT = 'Tourney Import',

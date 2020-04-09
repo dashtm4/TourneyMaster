@@ -5,6 +5,7 @@ import {
   IRegistrationFields,
   IFacilityFields,
   IDivisionFields,
+  IEventDetailsFields,
 } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
@@ -19,6 +20,12 @@ import { IPoolWithTeams } from './common';
 
 const generateEntityId = (entity: IEntity, entryPoint: EntryPoints) => {
   switch (entryPoint) {
+    case EntryPoints.EVENTS: {
+      return {
+        ...entity,
+        [IEventDetailsFields.EVENT_ID]: getVarcharEight(),
+      };
+    }
     case EntryPoints.REGISTRATIONS: {
       return {
         ...entity,
@@ -72,6 +79,18 @@ const checkAleadyExist = async (
   );
 
   switch (entryPoint) {
+    case EntryPoints.EVENTS: {
+      const event = sharedItem as IEventDetails;
+
+      if (
+        ownSharedItems.some(
+          (it: IEventDetails) => it.event_id === event.event_id
+        )
+      ) {
+        throw new Error('The event already has such an event');
+      }
+      break;
+    }
     case EntryPoints.REGISTRATIONS: {
       const registration = sharedItem as IRegistration;
 
@@ -110,6 +129,18 @@ const checkAleadyExist = async (
       break;
     }
   }
+};
+
+const setEventFromLibrary = async (
+  event: IEventDetails,
+  newEvent: IEventDetails
+) => {
+  const updatedEvent = { ...newEvent, event_id: event.event_id };
+
+  await Api.put(
+    `${EntryPoints.EVENTS}?event_id=${event.event_id}`,
+    updatedEvent
+  );
 };
 
 const setRegistrationFromLibrary = async (
@@ -207,6 +238,7 @@ const setDivisionFromLibrary = async (
 };
 
 const SetFormLibraryManager = {
+  setEventFromLibrary,
   setFacilityFromLibrary,
   setRegistrationFromLibrary,
   setDivisionFromLibrary,

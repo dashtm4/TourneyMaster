@@ -6,6 +6,7 @@ import { loadLibraryManagerData, saveSharedItem } from './logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
 import Navigation from './components/navigation';
 import PopupShare from './components/popup-share';
+import Tournaments from './components/tournaments';
 import Registration from './components/registration';
 import Facilities from './components/facilities';
 import Divisions from './components/divisions';
@@ -107,6 +108,11 @@ const LibraryManager = ({
         />
       </div>
       <ul className={styles.libraryList}>
+        <Tournaments
+          events={events}
+          isSectionCollapse={isSectionsCollapse}
+          changeSharedItem={onChangeSharedItem}
+        />
         <Facilities
           facilities={facilities}
           isSectionCollapse={isSectionsCollapse}

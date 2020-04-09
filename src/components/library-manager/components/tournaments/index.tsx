@@ -2,48 +2,45 @@ import React from 'react';
 import TableSort from '../table-sort';
 import { SectionDropdown } from 'components/common';
 import { MenuTitles, EntryPoints } from 'common/enums';
-import { BindingCbWithTwo } from 'common/models';
+import { BindingCbWithTwo, IEventDetails } from 'common/models';
 import { IEntity } from 'common/types';
-import { ILibraryManagerRegistration } from '../../common';
 
 interface Props {
-  registrations: ILibraryManagerRegistration[];
+  events: IEventDetails[];
   isSectionCollapse: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
-const Registration = ({
-  registrations,
+const Tournaments = ({
+  events,
   isSectionCollapse,
   changeSharedItem,
 }: Props) => {
   const onShareRegistr = (id: string) => {
-    const editedRegistration = registrations.find(
-      it => it.registration_id === id
-    );
+    const editedRegistration = events.find(it => it.event_id === id);
 
-    changeSharedItem(editedRegistration!, EntryPoints.REGISTRATIONS);
+    changeSharedItem(editedRegistration!, EntryPoints.EVENTS);
   };
 
-  const rowForTable = registrations.map(it => ({
-    id: it.registration_id,
-    title: it.eventName as string,
-    lastModified: it.updated_datetime || it.created_datetime,
+  const rowForTable = events.map(it => ({
+    id: it.event_id,
+    title: it.event_name,
+    lastModified: it.updated_datetime || (it.created_datetime as string),
   }));
 
   return (
     <li>
       <SectionDropdown
-        id={MenuTitles.REGISTRATION}
+        id={MenuTitles.TOURNAMENTS}
         type="section"
         panelDetailsType="flat"
         expanded={isSectionCollapse}
       >
-        <span>{MenuTitles.REGISTRATION}</span>
+        <span>{MenuTitles.TOURNAMENTS}</span>
         <TableSort rows={rowForTable} onShare={onShareRegistr} />
       </SectionDropdown>
     </li>
   );
 };
 
-export default Registration;
+export default Tournaments;

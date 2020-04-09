@@ -79,6 +79,13 @@ const saveSharedItem: ActionCreator<ThunkAction<
     const clearSharedItem = getClearScharedItem(sharedItem, event, entryPoint);
 
     switch (entryPoint) {
+      case EntryPoints.EVENTS: {
+        await SetFormLibraryManager.setEventFromLibrary(
+          event as IEventDetails,
+          clearSharedItem as IEventDetails
+        );
+        break;
+      }
       case EntryPoints.REGISTRATIONS: {
         await SetFormLibraryManager.setRegistrationFromLibrary(
           sharedItem as IRegistration,
