@@ -33,6 +33,7 @@ import {
   getVarcharEight,
   getTimeValuesFromEventSchedule,
   calculateTimeSlots,
+  calculateTournamentDays,
 } from 'helpers';
 import { gameStartOnOptions, ISchedulingSchedule } from '../types';
 import {
@@ -42,7 +43,7 @@ import {
 import {
   sortFieldsByPremier,
   defineGames,
-  settleTeamsPerGames,
+  settleTeamsPerGamesDays,
 } from 'components/common/matrix-table/helper';
 import {
   mapTeamsFromSchedulesDetails,
@@ -294,7 +295,7 @@ const getSchedulesData = async (
     loadedSchedulesDetails,
     mappedTeams
   );
-  return { games, tableTeams };
+  return { games, tableTeams, schedulesDetails: loadedSchedulesDetails };
 };
 
 export const getSchedulesDetails = async (
@@ -302,24 +303,51 @@ export const getSchedulesDetails = async (
   isDraft: boolean,
   tournamentInfo: TournamentInfo
 ) => {
-  const { games, tableTeams } = await getSchedulesData(
+  const { games, tableTeams, schedulesDetails } = await getSchedulesData(
     schedule,
     tournamentInfo
   );
-  const tableGames = settleTeamsPerGames(games, tableTeams);
-  return mapSchedulesTeamCards(schedule, tableGames, isDraft);
+  const { event } = tournamentInfo;
+  const tournamentDays = calculateTournamentDays(event);
+
+  let schedulesTableGames = [];
+  for (const day of tournamentDays) {
+    schedulesTableGames.push(settleTeamsPerGamesDays(games, tableTeams, day));
+  }
+  schedulesTableGames = schedulesTableGames.flat();
+
+  return mapSchedulesTeamCards(
+    schedule,
+    schedulesTableGames,
+    isDraft,
+    schedulesDetails
+  );
 };
 
 const getSchedulesGames = async (
   schedule: ISchedule,
   tournamentInfo: TournamentInfo
 ) => {
+  const { schedule_id } = schedule;
   const { games, tableTeams } = await getSchedulesData(
     schedule,
     tournamentInfo
   );
-  const tableGames = settleTeamsPerGames(games, tableTeams);
-  return mapTeamCardsToSchedulesGames(schedule, tableGames);
+  const { event } = tournamentInfo;
+  const tournamentDays = calculateTournamentDays(event);
+  const publishedGames = await api.get('/games', { schedule_id });
+
+  let schedulesTableGames = [];
+  for (const day of tournamentDays) {
+    schedulesTableGames.push(settleTeamsPerGamesDays(games, tableTeams, day));
+  }
+  schedulesTableGames = schedulesTableGames.flat();
+
+  return mapTeamCardsToSchedulesGames(
+    schedule,
+    schedulesTableGames,
+    publishedGames
+  );
 };
 
 const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
