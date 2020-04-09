@@ -2,12 +2,16 @@ import React from 'react';
 import TableSort from '../table-sort';
 import { SectionDropdown } from 'components/common';
 import { MenuTitles, EntryPoints } from 'common/enums';
-import { BindingCbWithTwo, IFacility, BindingCbWithThree } from 'common/models';
+import {
+  BindingCbWithTwo,
+  BindingCbWithThree,
+  IEventDetails,
+} from 'common/models';
 import { IEntity } from 'common/types';
 import { ITableSortEntity } from '../../common';
 
 interface Props {
-  facilities: IFacility[];
+  events: IEventDetails[];
   isSectionCollapse: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
   onConfirmDeleteItem: BindingCbWithThree<
@@ -17,44 +21,42 @@ interface Props {
   >;
 }
 
-const Facilities = ({
-  facilities,
+const Tournaments = ({
+  events,
   isSectionCollapse,
   changeSharedItem,
   onConfirmDeleteItem,
 }: Props) => {
-  const onShareFacility = (id: string) => {
-    const editedFacility = facilities.find(it => it.facilities_id === id);
+  const onShareTournament = (id: string) => {
+    const editedTournament = events.find(it => it.event_id === id);
 
-    changeSharedItem(editedFacility!, EntryPoints.FACILITIES);
+    changeSharedItem(editedTournament!, EntryPoints.EVENTS);
   };
 
   const onConfirmDelete = (tableEntity: ITableSortEntity) => {
-    const currentFacility = facilities.find(
-      it => it.facilities_id === tableEntity.id
-    );
+    const currentTournament = events.find(it => it.event_id === tableEntity.id);
 
-    onConfirmDeleteItem(currentFacility!, tableEntity, EntryPoints.FACILITIES);
+    onConfirmDeleteItem(currentTournament!, tableEntity, EntryPoints.EVENTS);
   };
 
-  const rowForTable = facilities.map(it => ({
-    id: it.facilities_id,
-    title: it.facilities_description,
+  const rowForTable = events.map(it => ({
+    id: it.event_id,
+    title: it.event_name,
     lastModified: it.updated_datetime || (it.created_datetime as string),
   }));
 
   return (
     <li>
       <SectionDropdown
-        id={MenuTitles.FACILITIES}
+        id={MenuTitles.TOURNAMENTS}
         type="section"
         panelDetailsType="flat"
         expanded={isSectionCollapse}
       >
-        <span>{MenuTitles.FACILITIES}</span>
+        <span>{MenuTitles.TOURNAMENTS}</span>
         <TableSort
           rows={rowForTable}
-          onShare={onShareFacility}
+          onShare={onShareTournament}
           onDelete={onConfirmDelete}
         />
       </SectionDropdown>
@@ -62,4 +64,4 @@ const Facilities = ({
   );
 };
 
-export default Facilities;
+export default Tournaments;

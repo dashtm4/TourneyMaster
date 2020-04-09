@@ -1,4 +1,5 @@
-import { ITableSortRow, OrderTypes, TableSortRowTypes } from './common';
+import { OrderTypes, TableSortRowTypes } from './common';
+import { ITableSortEntity } from '../../common';
 
 const descendingComparator = <T>(a: T, b: T, orderBy: TableSortRowTypes) => {
   if (b[orderBy] < a[orderBy]) {
@@ -12,9 +13,9 @@ const descendingComparator = <T>(a: T, b: T, orderBy: TableSortRowTypes) => {
 
 const getComparator = (order: OrderTypes, orderBy: TableSortRowTypes) => {
   return order === OrderTypes.DESC
-    ? (a: ITableSortRow, b: ITableSortRow) =>
+    ? (a: ITableSortEntity, b: ITableSortEntity) =>
         descendingComparator(a, b, orderBy)
-    : (a: ITableSortRow, b: ITableSortRow) =>
+    : (a: ITableSortEntity, b: ITableSortEntity) =>
         -descendingComparator(a, b, orderBy);
 };
 
@@ -24,7 +25,9 @@ const stableSort = <T>(array: T[], comparator: (a: T, b: T) => number): T[] => {
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
 
-    if (order !== 0) return order;
+    if (order !== 0) {
+      return order;
+    }
 
     return a[1] - b[1];
   });

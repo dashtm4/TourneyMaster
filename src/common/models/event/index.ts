@@ -52,7 +52,7 @@ export interface IEventDetails {
   mobile_icon_URL: number | null;
   desktop_icon_URL: number | null;
   is_active_YN: number | null;
-  is_library_YN: number | null;
+  is_library_YN: 0 | 1 | null;
   num_games_completed: number | null;
   last_web_published: string | null;
   //! from server

@@ -10,7 +10,8 @@ import moment from 'moment';
 import { Button } from 'components/common';
 import { getComparator, stableSort } from './helpers';
 import { ButtonColors, ButtonVarian } from 'common/enums';
-import { ITableSortRow, OrderTypes, TableSortRowTypes } from './common';
+import { OrderTypes, TableSortRowTypes } from './common';
+import { ITableSortEntity } from '../../common';
 import styles from './styles.module.scss';
 const useStyles = makeStyles({
   tableRowEven: {
@@ -19,23 +20,31 @@ const useStyles = makeStyles({
   tableRowOdd: {
     backgroundColor: '#ffffff',
   },
-  tableTitle: {
-    color: '#00A3EA;',
-  },
   tableCell: {
     border: 0,
   },
+  cellTitle: {
+    width: '50%',
+    color: '#00A3EA;',
+  },
+  cellDate: {
+    width: '25%',
+  },
+  cellAction: {
+    width: '25%',
+  },
 });
 
-const APPLY_BTN_STYLES = {
+const BTN_STYLES = {
   fontSize: '15px',
 };
 interface Props {
-  rows: ITableSortRow[];
+  rows: ITableSortEntity[];
   onShare: (id: string) => void;
+  onDelete: (entity: ITableSortEntity) => void;
 }
 
-const TableSort = ({ rows, onShare }: Props) => {
+const TableSort = ({ rows, onShare, onDelete }: Props) => {
   const classes = useStyles();
   const [order, setOrder] = React.useState<OrderTypes>(OrderTypes.ASC);
   const [orderBy, setOrderBy] = React.useState<TableSortRowTypes>(
@@ -63,7 +72,7 @@ const TableSort = ({ rows, onShare }: Props) => {
             rowCount={rows.length}
           />
           <TableBody>
-            {sorteRows.map((row: ITableSortRow, idx: number) => (
+            {sorteRows.map((row: ITableSortEntity, idx: number) => (
               <TableRow
                 className={
                   idx % 2 === 0 ? classes.tableRowEven : classes.tableRowOdd
@@ -72,22 +81,35 @@ const TableSort = ({ rows, onShare }: Props) => {
                 hover
               >
                 <TableCell
-                  className={`${classes.tableTitle} ${classes.tableCell}`}
+                  className={`${classes.cellTitle} ${classes.tableCell}`}
                 >
                   {row.title}
                 </TableCell>
-                <TableCell className={classes.tableCell}>
+                <TableCell
+                  className={`${classes.tableCell} ${classes.cellDate}`}
+                >
                   {moment(row.lastModified).format('lll')}
                 </TableCell>
-                <TableCell className={classes.tableCell}>
+                <TableCell
+                  className={`${classes.tableCell} ${classes.cellAction}`}
+                >
                   <span className={styles.btnWrapper}>
                     <Button
                       onClick={() => onShare(row.id)}
                       variant={ButtonVarian.TEXT}
                       color={ButtonColors.SECONDARY}
-                      btnStyles={APPLY_BTN_STYLES}
+                      btnStyles={BTN_STYLES}
                       label="Apply to…"
                     />
+                    <span className={styles.deleteBtnWrapper}>
+                      <Button
+                        onClick={() => onDelete(row)}
+                        variant={ButtonVarian.TEXT}
+                        color={ButtonColors.INHERIT}
+                        btnStyles={BTN_STYLES}
+                        label="Delete"
+                      />
+                    </span>
                   </span>
                 </TableCell>
               </TableRow>

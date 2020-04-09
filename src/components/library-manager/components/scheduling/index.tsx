@@ -2,12 +2,12 @@ import React from 'react';
 import TableSort from '../table-sort';
 import { SectionDropdown } from 'components/common';
 import { MenuTitles, EntryPoints } from 'common/enums';
-import { BindingCbWithTwo, BindingCbWithThree } from 'common/models';
+import { BindingCbWithTwo, ISchedule, BindingCbWithThree } from 'common/models';
 import { IEntity } from 'common/types';
-import { ILibraryManagerRegistration, ITableSortEntity } from '../../common';
+import { ITableSortEntity } from '../../common';
 
 interface Props {
-  registrations: ILibraryManagerRegistration[];
+  schedules: ISchedule[];
   isSectionCollapse: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
   onConfirmDeleteItem: BindingCbWithThree<
@@ -17,50 +17,44 @@ interface Props {
   >;
 }
 
-const Registration = ({
-  registrations,
+const Scheduling = ({
+  schedules,
   isSectionCollapse,
   changeSharedItem,
   onConfirmDeleteItem,
 }: Props) => {
-  const onShareRegistr = (id: string) => {
-    const editedRegistration = registrations.find(
-      it => it.registration_id === id
-    );
+  const onShareSchedule = (id: string) => {
+    const editedSchedule = schedules.find(it => it.schedule_id === id);
 
-    changeSharedItem(editedRegistration!, EntryPoints.REGISTRATIONS);
+    changeSharedItem(editedSchedule!, EntryPoints.SCHEDULES);
   };
 
   const onConfirmDelete = (tableEntity: ITableSortEntity) => {
-    const currentRegistration = registrations.find(
-      it => it.registration_id === tableEntity.id
+    const currentSchedule = schedules.find(
+      it => it.schedule_id === tableEntity.id
     );
 
-    onConfirmDeleteItem(
-      currentRegistration!,
-      tableEntity,
-      EntryPoints.REGISTRATIONS
-    );
+    onConfirmDeleteItem(currentSchedule!, tableEntity, EntryPoints.SCHEDULES);
   };
 
-  const rowForTable = registrations.map(it => ({
-    id: it.registration_id,
-    title: it.eventName as string,
+  const rowForTable = schedules.map(it => ({
+    id: it.schedule_id,
+    title: it.schedule_name,
     lastModified: it.updated_datetime || it.created_datetime,
   }));
 
   return (
     <li>
       <SectionDropdown
-        id={MenuTitles.REGISTRATION}
+        id={MenuTitles.SCHEDULING}
         type="section"
         panelDetailsType="flat"
         expanded={isSectionCollapse}
       >
-        <span>{MenuTitles.REGISTRATION}</span>
+        <span>{MenuTitles.SCHEDULING}</span>
         <TableSort
           rows={rowForTable}
-          onShare={onShareRegistr}
+          onShare={onShareSchedule}
           onDelete={onConfirmDelete}
         />
       </SectionDropdown>
@@ -68,4 +62,4 @@ const Registration = ({
   );
 };
 
-export default Registration;
+export default Scheduling;
