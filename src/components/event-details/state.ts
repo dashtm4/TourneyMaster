@@ -1,6 +1,19 @@
 import { getVarcharEight } from 'helpers';
+import { RankingFactorValues } from 'common/enums';
 
-export const eventState = () => ({
+const defaultRankingFactor = [
+  { id: RankingFactorValues.WIN_PERCENTAGE, text: 'Win Percentage' },
+  { id: RankingFactorValues.HEAD_TO_HEAD, text: 'Head to Head' },
+  { id: RankingFactorValues.GOAL_ALLOWED, text: 'Goals Allowed' },
+  { id: RankingFactorValues.GOAL_DIFFERENCE, text: 'Goal Difference' },
+  { id: RankingFactorValues.GOAL_SCORED, text: 'Goals Scored' },
+];
+
+const DEFAULT_RANKING_VALUE = JSON.stringify(
+  defaultRankingFactor.map(factor => factor.id)
+);
+
+const eventState = () => ({
   event_id: getVarcharEight(),
   sport_id: 1,
   org_id: '',
@@ -16,8 +29,8 @@ export const eventState = () => ({
   event_level: 'Other',
   event_status: 'Draft',
   event_format_id: 0,
-  first_game_time: '00:00:00',
-  last_game_end: '00:00:00',
+  first_game_time: '08:30:00',
+  last_game_end: '17:30:00',
   primary_location_desc: '',
   period_duration: '',
   periods_per_game: 2,
@@ -27,10 +40,14 @@ export const eventState = () => ({
   max_num_of_divisions: undefined,
   assoc_docs_URL: '',
   division_id: undefined,
+  ranking_factor_divisions: DEFAULT_RANKING_VALUE,
+  ranking_factor_pools: DEFAULT_RANKING_VALUE,
   is_active_YN: 0,
 });
 
-export enum UploadLogoTypes {
+enum UploadLogoTypes {
   MOBILE = 'mobile_icon_URL',
   DESKTOP = 'desktop_icon_URL',
 }
+
+export { defaultRankingFactor, eventState, UploadLogoTypes };

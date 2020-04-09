@@ -40,7 +40,12 @@ class AddPool extends React.Component<IAddPoolProps, IAddPoolState> {
   };
 
   onCancelClick = () => {
-    this.setState({ isModalConfirmOpen: true });
+    const changesAreMade = !!this.state.pool_name || !!this.state.pool_tag;
+    if (changesAreMade) {
+      this.setState({ isModalConfirmOpen: true });
+    } else {
+      this.props.onClose();
+    }
   };
 
   onSave = () => {
@@ -87,20 +92,18 @@ class AddPool extends React.Component<IAddPoolProps, IAddPoolState> {
           <span className={styles.title}>Teams:</span> {this.props.numOfTeams}
         </div>
         <div className={styles.buttonsGroup}>
-          <div>
-            <Button
-              label="Cancel"
-              variant="text"
-              color="secondary"
-              onClick={this.onCancelClick}
-            />
-            <Button
-              label="Save"
-              variant="contained"
-              color="primary"
-              onClick={this.onSave}
-            />
-          </div>
+          <Button
+            label="Cancel"
+            variant="text"
+            color="secondary"
+            onClick={this.onCancelClick}
+          />
+          <Button
+            label="Save"
+            variant="contained"
+            color="primary"
+            onClick={this.onSave}
+          />
         </div>
         <PopupExposure
           isOpen={this.state.isModalConfirmOpen}

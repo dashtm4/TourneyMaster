@@ -19,6 +19,7 @@ interface IPoolProps {
     divisionName: string,
     poolName: string
   ) => void;
+  toggleChangesAreMade: any;
 }
 
 const Pool = ({
@@ -29,13 +30,17 @@ const Pool = ({
   changePool,
   onDeletePopupOpen,
   onEditPopupOpen,
+  toggleChangesAreMade,
 }: IPoolProps) => {
   const [, drop] = useDrop({
     accept: DndItems.TEAM,
-    drop: () => ({
-      divisionId: division.division_id,
-      poolId: pool ? pool.pool_id : null,
-    }),
+    drop: () => {
+      toggleChangesAreMade(true);
+      return {
+        divisionId: division.division_id,
+        poolId: pool ? pool.pool_id : null,
+      };
+    },
   });
 
   return (

@@ -16,6 +16,7 @@ enum EventMenuTitles {
   EVENT_STRUCTURE = 'Event Structure',
   PLAYOFFS = 'Playoffs',
   MEDIA_ASSETS = 'Media Assets',
+  RANKINGS = 'Rankings',
   ADVANCED_SETTINGS = 'Advanced Settings',
   FACILITIES = 'Facilities',
   REGISTRATION = 'Registration',

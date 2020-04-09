@@ -17,6 +17,11 @@ $sectionBodyPadding: 20px 0;
     & > :first-child {
       margin-right: 15px;
     }
+    .btnsWrapper {
+      & > :first-child {
+        margin-right: 15px;
+      }
+    }
   }
 
   .blockHeading {
@@ -218,6 +223,18 @@ $sectionBodyPadding: 20px 0;
       flex-direction: row;
       justify-content: space-between;
     }
+  }
+
+  .tooltipWrapper {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+  }
+
+  .checkBoxWrapper {
+    display: flex;
+    align-items: center;
   }
 
   .maDetails {

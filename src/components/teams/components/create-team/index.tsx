@@ -40,8 +40,16 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
     }));
   };
 
+  checkIfChangesAreMade = () => {
+    return this.state.teams.some(team => Object.entries(team).length !== 0);
+  };
+
   onCancel = () => {
-    this.setState({ isModalOpen: true });
+    if (this.checkIfChangesAreMade()) {
+      this.setState({ isModalOpen: true });
+    } else {
+      this.onExit();
+    }
   };
 
   onSave = () => {
@@ -66,7 +74,7 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
       <section className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.mainMenu}>
-            <div>
+            <div className={styles.btnsWrapper}>
               <Button
                 label="Cancel"
                 variant="text"

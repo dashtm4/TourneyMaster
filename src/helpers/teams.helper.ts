@@ -199,11 +199,11 @@ const sortTeamsByGoalAllowrd = (
 };
 
 const SortTeamsBy = {
-  [RankingFactorValues.BEST_RECORD]: sortTeamsByBestRecord,
-  [RankingFactorValues.GOAL_DIFFERENCE]: sortTeamsByDifference,
+  [RankingFactorValues.WIN_PERCENTAGE]: sortTeamsByBestRecord,
   [RankingFactorValues.HEAD_TO_HEAD]: sortTeamsByHeadToHead,
-  [RankingFactorValues.GOAL_SCORED]: sortTeamsByGoalScored,
   [RankingFactorValues.GOAL_ALLOWED]: sortTeamsByGoalAllowrd,
+  [RankingFactorValues.GOAL_DIFFERENCE]: sortTeamsByDifference,
+  [RankingFactorValues.GOAL_SCORED]: sortTeamsByGoalScored,
 };
 
 const sortTeamByScored = (

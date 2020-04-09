@@ -6,7 +6,12 @@
   width: 100%;
   display: flex;
   justify-content: flex-end;
-  padding-right: 25px;
+  margin-right: 15px;
+  .btnsWrapper {
+    & > :first-child {
+      margin-right: 15px;
+    }
+  }
 }
 .heading {
   margin-top: 24px;

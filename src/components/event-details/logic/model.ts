@@ -56,6 +56,7 @@ export interface EventDetailsDTO {
   primary_location_long?: number;
   waiverhub_utilized?: number;
   league_dates: string;
+  max_goal_differential: null | string;
 }
 
 export interface IIconFile {
