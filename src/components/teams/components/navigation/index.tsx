@@ -15,6 +15,7 @@ interface Props {
   onCancelClick: BindingAction;
   eventId: string | undefined;
   history: History;
+  onImportFromCsv: BindingAction;
 }
 
 const Navigation = ({
@@ -22,6 +23,7 @@ const Navigation = ({
   onCancelClick,
   eventId,
   history,
+  onImportFromCsv,
 }: Props) => {
   const onCreateTeam = () => {
     const path = eventId
@@ -41,10 +43,10 @@ const Navigation = ({
           color="secondary"
         />
         <Button
-          icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
-          label="Upload From File"
+          label="Import from CSV"
           variant="text"
           color="secondary"
+          onClick={onImportFromCsv}
         />
       </p>
       <p>

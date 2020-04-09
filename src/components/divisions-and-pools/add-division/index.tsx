@@ -197,8 +197,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   render() {
     const { short_name }: Partial<IDivision> = this.state.divisions[0] || '';
     const deleteMessage = `You are about to delete this division and this cannot be undone.
-    Deleting a division will also delete all pools (${this.props.location.state?.pools.length}) inside the division.
-    Teams (${this.props.location.state?.teams.length}) inside the division will be moved to unassigned.
+    Deleting a division will also delete all pools (${this.props.location.state?.pools.length}) and teams (${this.props.location.state?.teams.length}) inside the division.
     Please, enter the name of the division to continue.`;
 
     return (
