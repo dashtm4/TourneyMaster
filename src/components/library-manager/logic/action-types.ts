@@ -1,5 +1,5 @@
 import { ILibraryManagerRegistration } from '../common';
-import { IEventDetails, IFacility, IDivision } from 'common/models';
+import { IEventDetails, IFacility, IDivision, ISchedule } from 'common/models';
 
 const LIBRARY_MANAGER_LOAD_DATA_START = 'LIBRARY_MANAGER_LOAD_DATA_START';
 const LIBRARY_MANAGER_LOAD_DATA_SUCCESS = 'LIBRARY_MANAGER_LOAD_DATA_SUCCESS';
@@ -19,6 +19,7 @@ interface LibraryManagerLoadDataSuccess {
     registrations: ILibraryManagerRegistration[];
     facilities: IFacility[];
     divisions: IDivision[];
+    schedules: ISchedule[];
   };
 }
 

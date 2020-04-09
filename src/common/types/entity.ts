@@ -4,6 +4,7 @@ import {
   IFacility,
   IDivision,
   ITeam,
+  ISchedule,
 } from 'common/models';
 
 export type IEntity =
@@ -11,4 +12,5 @@ export type IEntity =
   | IRegistration
   | IFacility
   | IDivision
-  | ITeam;
+  | ITeam
+  | ISchedule;

@@ -16,6 +16,7 @@ export const MenuList = [
       MenuTitles.FACILITIES,
       MenuTitles.REGISTRATION,
       MenuTitles.DIVISIONS_AND_POOLS,
+      MenuTitles.SCHEDULING,
     ],
   },
   {

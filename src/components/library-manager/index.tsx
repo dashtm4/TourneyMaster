@@ -10,6 +10,7 @@ import Tournaments from './components/tournaments';
 import Registration from './components/registration';
 import Facilities from './components/facilities';
 import Divisions from './components/divisions';
+import Scheduling from './components/scheduling';
 import { HeadingLevelTwo, Loader, Button } from 'components/common';
 import {
   BindingAction,
@@ -17,6 +18,7 @@ import {
   BindingCbWithThree,
   IFacility,
   IDivision,
+  ISchedule,
 } from 'common/models';
 import {
   MenuTitles,
@@ -35,6 +37,7 @@ interface Props {
   registrations: ILibraryManagerRegistration[];
   facilities: IFacility[];
   divisions: IDivision[];
+  schedules: ISchedule[];
   loadLibraryManagerData: BindingAction;
   saveSharedItem: BindingCbWithThree<IEventDetails, IEntity, EntryPoints>;
 }
@@ -45,6 +48,7 @@ const LibraryManager = ({
   registrations,
   facilities,
   divisions,
+  schedules,
   loadLibraryManagerData,
   saveSharedItem,
 }: Props) => {
@@ -128,6 +132,11 @@ const LibraryManager = ({
           isSectionCollapse={isSectionsCollapse}
           changeSharedItem={onChangeSharedItem}
         />
+        <Scheduling
+          schedules={schedules}
+          isSectionCollapse={isSectionsCollapse}
+          changeSharedItem={onChangeSharedItem}
+        />
       </ul>
       <PopupShare
         activeEvent={activeEvent}
@@ -149,6 +158,7 @@ export default connect(
     registrations: libraryManager.registrations,
     facilities: libraryManager.facilities,
     divisions: libraryManager.divisions,
+    schedules: libraryManager.schedules,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators({ loadLibraryManagerData, saveSharedItem }, dispatch)

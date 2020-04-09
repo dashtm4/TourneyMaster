@@ -16,10 +16,10 @@ const Tournaments = ({
   isSectionCollapse,
   changeSharedItem,
 }: Props) => {
-  const onShareRegistr = (id: string) => {
-    const editedRegistration = events.find(it => it.event_id === id);
+  const onShareTournament = (id: string) => {
+    const editedTournament = events.find(it => it.event_id === id);
 
-    changeSharedItem(editedRegistration!, EntryPoints.EVENTS);
+    changeSharedItem(editedTournament!, EntryPoints.EVENTS);
   };
 
   const rowForTable = events.map(it => ({
@@ -37,7 +37,7 @@ const Tournaments = ({
         expanded={isSectionCollapse}
       >
         <span>{MenuTitles.TOURNAMENTS}</span>
-        <TableSort rows={rowForTable} onShare={onShareRegistr} />
+        <TableSort rows={rowForTable} onShare={onShareTournament} />
       </SectionDropdown>
     </li>
   );

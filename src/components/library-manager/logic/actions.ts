@@ -41,6 +41,7 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
     const registrations = await Api.get(EntryPoints.REGISTRATIONS);
     const facilities = await Api.get(EntryPoints.FACILITIES);
     const divisions = await Api.get(EntryPoints.DIVISIONS);
+    const schedules = await Api.get(EntryPoints.SCHEDULES)
 
     const mappedRegistrationWithEvent = mapArrWithEventName(
       registrations,
@@ -54,6 +55,7 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
         registrations: mappedRegistrationWithEvent,
         facilities,
         divisions,
+        schedules
       },
     });
   } catch {

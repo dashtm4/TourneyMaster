@@ -7,7 +7,7 @@ export interface ISchedule {
   schedule_id: string;
   event_id: string;
   member_id: string;
-  schedule_name: string | null;
+  schedule_name: string;
   schedule_tag: string | null;
   num_divisions: number;
   num_teams: number;

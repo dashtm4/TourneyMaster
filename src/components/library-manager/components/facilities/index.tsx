@@ -16,10 +16,10 @@ const Facilities = ({
   isSectionCollapse,
   changeSharedItem,
 }: Props) => {
-  const onShareRegistr = (id: string) => {
-    const editedRegistration = facilities.find(it => it.facilities_id === id);
+  const onShareFacility = (id: string) => {
+    const editedFacility = facilities.find(it => it.facilities_id === id);
 
-    changeSharedItem(editedRegistration!, EntryPoints.FACILITIES);
+    changeSharedItem(editedFacility!, EntryPoints.FACILITIES);
   };
 
   const rowForTable = facilities.map(it => ({
@@ -37,7 +37,7 @@ const Facilities = ({
         expanded={isSectionCollapse}
       >
         <span>{MenuTitles.FACILITIES}</span>
-        <TableSort rows={rowForTable} onShare={onShareRegistr} />
+        <TableSort rows={rowForTable} onShare={onShareFacility} />
       </SectionDropdown>
     </li>
   );

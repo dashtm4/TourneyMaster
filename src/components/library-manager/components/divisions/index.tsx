@@ -16,10 +16,10 @@ const Divisions = ({
   isSectionCollapse,
   changeSharedItem,
 }: Props) => {
-  const onShareRegistr = (id: string) => {
-    const editedRegistration = divisions.find(it => it.division_id === id);
+  const onShareDivision = (id: string) => {
+    const editedDivision = divisions.find(it => it.division_id === id);
 
-    changeSharedItem(editedRegistration!, EntryPoints.DIVISIONS);
+    changeSharedItem(editedDivision!, EntryPoints.DIVISIONS);
   };
 
   const rowForTable = divisions.map(it => ({
@@ -37,7 +37,7 @@ const Divisions = ({
         expanded={isSectionCollapse}
       >
         <span>{MenuTitles.DIVISIONS_AND_POOLS}</span>
-        <TableSort rows={rowForTable} onShare={onShareRegistr} />
+        <TableSort rows={rowForTable} onShare={onShareDivision} />
       </SectionDropdown>
     </li>
   );
