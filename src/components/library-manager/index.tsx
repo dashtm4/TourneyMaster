@@ -11,7 +11,12 @@ import Registration from './components/registration';
 import Facilities from './components/facilities';
 import Divisions from './components/divisions';
 import Scheduling from './components/scheduling';
-import { HeadingLevelTwo, Loader, Button } from 'components/common';
+import {
+  HeadingLevelTwo,
+  Loader,
+  Button,
+  DeletePopupConfrim,
+} from 'components/common';
 import {
   BindingAction,
   IEventDetails,
@@ -27,7 +32,7 @@ import {
   ButtonColors,
 } from 'common/enums';
 import { IEntity } from 'common/types';
-import { ILibraryManagerRegistration } from './common';
+import { ILibraryManagerRegistration, ITableSortEntity } from './common';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -59,17 +64,26 @@ const LibraryManager = ({
   const [activeEvent, changeActiveEvent] = React.useState<IEventDetails | null>(
     null
   );
+
   const [sharedItem, changeSharedItem] = React.useState<IEntity | null>(null);
+
+  const [
+    tableEntity,
+    changeTableEntity,
+  ] = React.useState<ITableSortEntity | null>();
 
   const [
     currentEntryPoint,
     changeEntryPoint,
   ] = React.useState<EntryPoints | null>(null);
 
-  const [isSectionsCollapse, toggleSectionCollapse] = React.useState(true);
+  const [isSectionsCollapse, toggleSectionCollapse] = React.useState<boolean>(
+    true
+  );
 
-  const onChangeActiveEvent = (event: IEventDetails) =>
+  const onChangeActiveEvent = (event: IEventDetails) => {
     changeActiveEvent(event);
+  };
 
   const onChangeSharedItem = (sharedItem: IEntity, entryPoint: EntryPoints) => {
     changeSharedItem(sharedItem);
@@ -77,17 +91,30 @@ const LibraryManager = ({
     changeEntryPoint(entryPoint);
   };
 
-  const onClosePopupShare = () => {
+  const onConfirmDeleteItem = (
+    tableEntity: ITableSortEntity,
+    entryPoint: EntryPoints
+  ) => {
+    changeTableEntity(tableEntity);
+
+    changeEntryPoint(entryPoint);
+  };
+
+  const onClosePopup = () => {
+    changeActiveEvent(null);
+
+    changeTableEntity(null);
+
     changeSharedItem(null);
 
-    changeActiveEvent(null);
+    changeEntryPoint(null);
   };
 
   const onSaveShatedItem = () => {
     if (activeEvent && sharedItem && currentEntryPoint) {
       saveSharedItem(activeEvent, sharedItem, currentEntryPoint);
 
-      onClosePopupShare();
+      onClosePopup();
     }
   };
 
@@ -116,36 +143,50 @@ const LibraryManager = ({
           events={events}
           isSectionCollapse={isSectionsCollapse}
           changeSharedItem={onChangeSharedItem}
+          onConfirmDeleteItem={onConfirmDeleteItem}
         />
         <Facilities
           facilities={facilities}
           isSectionCollapse={isSectionsCollapse}
           changeSharedItem={onChangeSharedItem}
+          onConfirmDeleteItem={onConfirmDeleteItem}
         />
         <Registration
           registrations={registrations}
           isSectionCollapse={isSectionsCollapse}
           changeSharedItem={onChangeSharedItem}
+          onConfirmDeleteItem={onConfirmDeleteItem}
         />
         <Divisions
           divisions={divisions}
           isSectionCollapse={isSectionsCollapse}
           changeSharedItem={onChangeSharedItem}
+          onConfirmDeleteItem={onConfirmDeleteItem}
         />
         <Scheduling
           schedules={schedules}
           isSectionCollapse={isSectionsCollapse}
           changeSharedItem={onChangeSharedItem}
+          onConfirmDeleteItem={onConfirmDeleteItem}
         />
       </ul>
       <PopupShare
         activeEvent={activeEvent}
         events={events}
         isOpen={Boolean(sharedItem)}
-        onClose={onClosePopupShare}
+        onClose={onClosePopup}
         onSave={onSaveShatedItem}
         onChangeActiveEvent={onChangeActiveEvent}
       />
+      {tableEntity && (
+        <DeletePopupConfrim
+          type="item"
+          deleteTitle={tableEntity?.title || ''}
+          isOpen={Boolean(tableEntity)}
+          onClose={onClosePopup}
+          onDeleteClick={() => {}}
+        />
+      )}
     </>
   );
 };

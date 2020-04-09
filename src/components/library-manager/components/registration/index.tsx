@@ -4,18 +4,20 @@ import { SectionDropdown } from 'components/common';
 import { MenuTitles, EntryPoints } from 'common/enums';
 import { BindingCbWithTwo } from 'common/models';
 import { IEntity } from 'common/types';
-import { ILibraryManagerRegistration } from '../../common';
+import { ILibraryManagerRegistration, ITableSortEntity } from '../../common';
 
 interface Props {
   registrations: ILibraryManagerRegistration[];
   isSectionCollapse: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
+  onConfirmDeleteItem: BindingCbWithTwo<ITableSortEntity, EntryPoints>;
 }
 
 const Registration = ({
   registrations,
   isSectionCollapse,
   changeSharedItem,
+  onConfirmDeleteItem,
 }: Props) => {
   const onShareRegistr = (id: string) => {
     const editedRegistration = registrations.find(
@@ -23,6 +25,10 @@ const Registration = ({
     );
 
     changeSharedItem(editedRegistration!, EntryPoints.REGISTRATIONS);
+  };
+
+  const onConfirmDelete = (tableEntity: ITableSortEntity) => {
+    onConfirmDeleteItem(tableEntity, EntryPoints.REGISTRATIONS);
   };
 
   const rowForTable = registrations.map(it => ({
@@ -40,7 +46,11 @@ const Registration = ({
         expanded={isSectionCollapse}
       >
         <span>{MenuTitles.REGISTRATION}</span>
-        <TableSort rows={rowForTable} onShare={onShareRegistr} />
+        <TableSort
+          rows={rowForTable}
+          onShare={onShareRegistr}
+          onDelete={onConfirmDelete}
+        />
       </SectionDropdown>
     </li>
   );

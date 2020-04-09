@@ -7,3 +7,9 @@ export interface ILibraryManagerRegistration extends IRegistration {
 export interface IPoolWithTeams extends IPool {
   teams: ITeam[];
 }
+
+export interface ITableSortEntity {
+  id: string;
+  title: string;
+  lastModified: string;
+}

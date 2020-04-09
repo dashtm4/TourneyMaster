@@ -21,7 +21,7 @@ const PopupShare = ({
   onSave,
   onChangeActiveEvent,
 }: Props) => {
-  const seletOptions = events.map(it => ({
+  const selectOptions = events.map(it => ({
     label: it.event_name,
     value: it.event_id,
   }));
@@ -44,7 +44,7 @@ const PopupShare = ({
           <Select
             onChange={onChange}
             value={activeEvent?.event_id || ''}
-            options={seletOptions}
+            options={selectOptions}
             label="Select event"
             width="100%"
           />
