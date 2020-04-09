@@ -61,9 +61,9 @@ const Rankings = ({
     if (max_goal_differential) {
       onChange('max_goal_differential', null);
 
-      toggleGoalCheckbox(!isGoalCheckboxAllowed);
+      toggleGoalCheckbox(false);
     } else {
-      toggleGoalCheckbox(!isGoalCheckboxAllowed);
+      toggleGoalCheckbox(true);
     }
   };
 
