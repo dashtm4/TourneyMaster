@@ -17,22 +17,15 @@ import { EventDetailsDTO } from '../logic/model';
 import { defaultRankingFactor } from '../state';
 import styles from '../styles.module.scss';
 
-const MAX_GOAL_ALLOWED_COUNT = 15;
+const MAX_GOAL_ALLOWED_COUNT = 16;
 
 const goalAllowedSelectOptions = Array.from(
   new Array(MAX_GOAL_ALLOWED_COUNT),
   (_, idx) => ({
-    label: (idx + 1).toString(),
-    value: (idx + 1).toString(),
+    label: idx.toString(),
+    value: idx.toString(),
   })
 );
-
-const SELECT_DEFAULT_VALUE = 'none';
-
-const goalAllowedDefaultOption = {
-  label: 'None',
-  value: SELECT_DEFAULT_VALUE,
-};
 
 enum rankingFactors {
   'rankingFactorDivisions' = 'ranking_factor_divisions',
@@ -60,14 +53,19 @@ const Rankings = ({
     max_goal_differential,
   } = eventData;
 
-  const [isGoalCheckboxAllowed] = React.useState<Boolean>(
+  const [isGoalCheckboxAllowed, toggleGoalCheckbox] = React.useState<boolean>(
     Boolean(max_goal_differential)
   );
 
-  // const onChangeGoalCheckbox = () => {
-  //   if (max_goal_differential) {
-  //   }
-  // };
+  const onChangeGoalCheckbox = () => {
+    if (max_goal_differential) {
+      onChange('max_goal_differential', null);
+
+      toggleGoalCheckbox(!isGoalCheckboxAllowed);
+    } else {
+      toggleGoalCheckbox(!isGoalCheckboxAllowed);
+    }
+  };
 
   const onRankingFactorReorder = (
     name: string,
@@ -98,14 +96,12 @@ const Rankings = ({
   const goalAllowedCheckboxOptions = [
     {
       label: 'Cap Goals Allowed Differential',
-      checked: Boolean(max_goal_differential),
+      checked: isGoalCheckboxAllowed,
     },
   ];
 
-  const onGoalAllowedChage = ({ target: { value } }: IInputEvent) => {
-    value === SELECT_DEFAULT_VALUE
-      ? onChange('max_goal_differential', null)
-      : onChange('max_goal_differential', value);
+  const onGoalAllowedChage = (evt: IInputEvent) => {
+    onChange('max_goal_differential', evt.target.value);
   };
 
   return (
@@ -152,15 +148,15 @@ const Rankings = ({
               Drag and Drop to reorder Ranking Factors
             </CardMessage>
             <div className={styles.checkBoxWrapper}>
-              <Checkbox options={goalAllowedCheckboxOptions} />
+              <Checkbox
+                onChange={onChangeGoalCheckbox}
+                options={goalAllowedCheckboxOptions}
+              />
               {isGoalCheckboxAllowed && (
                 <Select
                   onChange={onGoalAllowedChage}
-                  options={[
-                    goalAllowedDefaultOption,
-                    ...goalAllowedSelectOptions,
-                  ]}
-                  value={max_goal_differential || SELECT_DEFAULT_VALUE}
+                  options={goalAllowedSelectOptions}
+                  value={max_goal_differential || ''}
                 />
               )}
             </div>
