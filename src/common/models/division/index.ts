@@ -17,6 +17,8 @@ export interface IDivision {
   game_duration_override: null;
   unique_bracket_game_duration: null;
   division_sort: null;
+  plays_at_spec_facility: number;
+  spec_facilities_id: string;
   latest_web_publish: string;
   is_active_YN: number;
   is_library_YN: null;

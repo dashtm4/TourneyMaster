@@ -177,6 +177,7 @@ class Scheduling extends Component<IProps, IState> {
       confirmationModalOpen: false,
     });
   };
+
   toggleSectionCollapse = () =>
     this.setState(({ isSectionsCollapse }) => ({
       isSectionsCollapse: !isSectionsCollapse,
@@ -192,8 +193,9 @@ class Scheduling extends Component<IProps, IState> {
       updateSchedule,
       deleteSchedule,
       fields,
-      event
+      event,
     } = this.props;
+
     const {
       createModalOpen,
       editedSchedule,
@@ -204,6 +206,7 @@ class Scheduling extends Component<IProps, IState> {
       componentAction,
       isSectionsCollapse,
     } = this.state;
+
     const { eventId } = this.props.match?.params;
     const isAllowCreate = incompleteMenuItems.length === 0;
 

@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { History } from 'history';
 import { bindActionCreators, Dispatch } from 'redux';
 import { chunk, merge } from 'lodash-es';
-import moment from 'moment';
 import api from 'api/api';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { ITeam, ITeamCard } from 'common/models/schedule/teams';
@@ -47,6 +46,7 @@ import {
   setGameOptions,
   getTimeValuesFromEventSchedule,
   calculateTotalGameTime,
+  calculateTournamentDays,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IDiagnosticsInput } from './diagnostics';
@@ -355,24 +355,9 @@ class Schedules extends Component<Props, State> {
     const { event } = this.props;
     if (!event) return;
 
-    const startDate = event?.event_startdate;
-    const endDate = event?.event_enddate;
+    const tournamentDays = calculateTournamentDays(event);
 
-    const daysDiff = moment(endDate).diff(startDate, 'day');
-
-    const days = [moment(startDate).toISOString()];
-
-    [...Array(daysDiff)].map((_v, i) =>
-      days.push(
-        moment(startDate)
-          .add(i + 1, 'days')
-          .toISOString()
-      )
-    );
-
-    this.setState({
-      tournamentDays: days,
-    });
+    this.setState({ tournamentDays });
   };
 
   calculateSchedules = () => {
