@@ -1,12 +1,10 @@
 import Api from '../../api/api';
-import { getVarcharEight, removeObjKeysByEntryPoint } from 'helpers';
 import {
-  EntryPoints,
-  IRegistrationFields,
-  IFacilityFields,
-  IDivisionFields,
-  IEventDetailsFields,
-} from 'common/enums';
+  getVarcharEight,
+  removeObjKeysByEntryPoint,
+  generateEntityId,
+} from 'helpers';
+import { EntryPoints } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
   IRegistration,
@@ -15,39 +13,9 @@ import {
   IField,
   IDivision,
   IPool,
+  ISchedule,
 } from 'common/models';
 import { IPoolWithTeams } from './common';
-
-const generateEntityId = (entity: IEntity, entryPoint: EntryPoints) => {
-  switch (entryPoint) {
-    case EntryPoints.EVENTS: {
-      return {
-        ...entity,
-        [IEventDetailsFields.EVENT_ID]: getVarcharEight(),
-      };
-    }
-    case EntryPoints.REGISTRATIONS: {
-      return {
-        ...entity,
-        [IRegistrationFields.REGISTRATION_ID]: getVarcharEight(),
-      };
-    }
-    case EntryPoints.FACILITIES: {
-      return {
-        ...entity,
-        [IFacilityFields.FACILITIES_ID]: getVarcharEight(),
-      };
-    }
-    case EntryPoints.DIVISIONS: {
-      return {
-        ...entity,
-        [IDivisionFields.DIVISION_ID]: getVarcharEight(),
-      };
-    }
-  }
-
-  return entity;
-};
 
 const getClearScharedItem = (
   sharedItem: IEntity,
@@ -125,6 +93,18 @@ const checkAleadyExist = async (
         )
       ) {
         throw new Error('The event already has such a division');
+      }
+      break;
+    }
+    case EntryPoints.SCHEDULES: {
+      const schedule = sharedItem as ISchedule;
+
+      if (
+        ownSharedItems.some(
+          (it: ISchedule) => it.schedule_id === schedule.schedule_id
+        )
+      ) {
+        throw new Error('The event already has such a schedule');
       }
       break;
     }
@@ -237,16 +217,16 @@ const setDivisionFromLibrary = async (
   }
 };
 
+const setScheduleFromLibrary = async (newSchedule: ISchedule) => {
+  await Api.post(EntryPoints.SCHEDULES, newSchedule);
+};
+
 const SetFormLibraryManager = {
   setEventFromLibrary,
   setFacilityFromLibrary,
   setRegistrationFromLibrary,
   setDivisionFromLibrary,
+  setScheduleFromLibrary,
 };
 
-export {
-  generateEntityId,
-  getClearScharedItem,
-  checkAleadyExist,
-  SetFormLibraryManager,
-};
+export { getClearScharedItem, checkAleadyExist, SetFormLibraryManager };

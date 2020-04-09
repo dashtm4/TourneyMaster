@@ -16,7 +16,7 @@ import {
   IRegistration,
   IFacility,
   IDivision,
-  // IFacility
+  ISchedule,
 } from 'common/models';
 import { EntryPoints } from 'common/enums';
 import { IEntity } from 'common/types';
@@ -41,7 +41,7 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
     const registrations = await Api.get(EntryPoints.REGISTRATIONS);
     const facilities = await Api.get(EntryPoints.FACILITIES);
     const divisions = await Api.get(EntryPoints.DIVISIONS);
-    const schedules = await Api.get(EntryPoints.SCHEDULES)
+    const schedules = await Api.get(EntryPoints.SCHEDULES);
 
     const mappedRegistrationWithEvent = mapArrWithEventName(
       registrations,
@@ -55,7 +55,7 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
         registrations: mappedRegistrationWithEvent,
         facilities,
         divisions,
-        schedules
+        schedules,
       },
     });
   } catch {
@@ -107,6 +107,12 @@ const saveSharedItem: ActionCreator<ThunkAction<
         await SetFormLibraryManager.setDivisionFromLibrary(
           sharedItem as IDivision,
           clearSharedItem as IDivision
+        );
+        break;
+      }
+      case EntryPoints.SCHEDULES: {
+        await SetFormLibraryManager.setScheduleFromLibrary(
+          clearSharedItem as ISchedule
         );
         break;
       }

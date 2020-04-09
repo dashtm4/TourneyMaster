@@ -6,6 +6,7 @@ import {
   IFacilityFields,
   IDivisionFields,
   IEventDetailsFields,
+  IScheduleFields,
 } from 'common/enums';
 import { IEntity } from 'common/types';
 import { IGame } from 'components/common/matrix-table/helper';
@@ -56,6 +57,9 @@ const removeObjKeysByEntryPoint = (
     }
     case EntryPoints.DIVISIONS: {
       return removeObjKeysByKeys(entity, Object.values(IDivisionFields));
+    }
+    case EntryPoints.SCHEDULES: {
+      return removeObjKeysByKeys(entity, Object.values(IScheduleFields));
     }
   }
 
