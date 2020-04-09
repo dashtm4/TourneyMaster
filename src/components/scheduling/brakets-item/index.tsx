@@ -13,7 +13,7 @@ interface Props {
 }
 
 const BraketsItem = ({ schedule, eventId }: Props) => (
-  <div className={styles.brackets}>
+  <li className={styles.brackets}>
     <Paper padding={20}>
       <div className={styles.header}>
         <HeadingLevelFour>
@@ -37,7 +37,7 @@ const BraketsItem = ({ schedule, eventId }: Props) => (
         </p>
       </div>
     </Paper>
-  </div>
+  </li>
 );
 
 export default BraketsItem;
