@@ -8,4 +8,14 @@ enum EntryPoints {
   SCHEDULES = '/schedules',
 }
 
-export { EntryPoints };
+enum EntryPointsWithId {
+  EVENTS = '/events?event_id=',
+  REGISTRATIONS = '/registrations?registration_id=',
+  FACILITIES = '/facilities?facilities_id=',
+  DIVISIONS = '/divisions?division_id=',
+  POOLS = '/pools?pool_id=',
+  TEAMS = '/teams?team_id=',
+  SCHEDULES = '/schedules?schedule_id=',
+}
+
+export { EntryPoints, EntryPointsWithId };

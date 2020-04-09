@@ -20,7 +20,7 @@ export interface ISchedule {
   pre_game_warmup: string | null;
   time_btwn_periods: string;
   is_active_YN: number;
-  is_library_YN: number;
+  is_library_YN: 0 | 1 | null;
   // ! from server
   created_by: string;
   created_datetime: string;

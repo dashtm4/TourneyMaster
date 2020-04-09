@@ -2,7 +2,7 @@ import React from 'react';
 import TableSort from '../table-sort';
 import { SectionDropdown } from 'components/common';
 import { MenuTitles, EntryPoints } from 'common/enums';
-import { BindingCbWithTwo, IFacility } from 'common/models';
+import { BindingCbWithTwo, IFacility, BindingCbWithThree } from 'common/models';
 import { IEntity } from 'common/types';
 import { ITableSortEntity } from '../../common';
 
@@ -10,7 +10,11 @@ interface Props {
   facilities: IFacility[];
   isSectionCollapse: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
-  onConfirmDeleteItem: BindingCbWithTwo<ITableSortEntity, EntryPoints>;
+  onConfirmDeleteItem: BindingCbWithThree<
+    IEntity,
+    ITableSortEntity,
+    EntryPoints
+  >;
 }
 
 const Facilities = ({
@@ -26,7 +30,11 @@ const Facilities = ({
   };
 
   const onConfirmDelete = (tableEntity: ITableSortEntity) => {
-    onConfirmDeleteItem(tableEntity, EntryPoints.FACILITIES);
+    const currentFacility = facilities.find(
+      it => it.facilities_id === tableEntity.id
+    );
+
+    onConfirmDeleteItem(currentFacility!, tableEntity, EntryPoints.FACILITIES);
   };
 
   const rowForTable = facilities.map(it => ({

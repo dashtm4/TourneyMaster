@@ -19,7 +19,7 @@ export interface IDivision {
   division_sort: null;
   latest_web_publish: string;
   is_active_YN: number;
-  is_library_YN: null;
+  is_library_YN: 0 | 1 | null;
   created_by: string;
   created_datetime: string;
   updated_by: null;

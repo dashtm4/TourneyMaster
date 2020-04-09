@@ -2,7 +2,7 @@ import React from 'react';
 import TableSort from '../table-sort';
 import { SectionDropdown } from 'components/common';
 import { MenuTitles, EntryPoints } from 'common/enums';
-import { BindingCbWithTwo, ISchedule } from 'common/models';
+import { BindingCbWithTwo, ISchedule, BindingCbWithThree } from 'common/models';
 import { IEntity } from 'common/types';
 import { ITableSortEntity } from '../../common';
 
@@ -10,7 +10,11 @@ interface Props {
   schedules: ISchedule[];
   isSectionCollapse: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
-  onConfirmDeleteItem: BindingCbWithTwo<ITableSortEntity, EntryPoints>;
+  onConfirmDeleteItem: BindingCbWithThree<
+    IEntity,
+    ITableSortEntity,
+    EntryPoints
+  >;
 }
 
 const Scheduling = ({
@@ -26,7 +30,11 @@ const Scheduling = ({
   };
 
   const onConfirmDelete = (tableEntity: ITableSortEntity) => {
-    onConfirmDeleteItem(tableEntity, EntryPoints.SCHEDULES);
+    const currentSchedule = schedules.find(
+      it => it.schedule_id === tableEntity.id
+    );
+
+    onConfirmDeleteItem(currentSchedule!, tableEntity, EntryPoints.SCHEDULES);
   };
 
   const rowForTable = schedules.map(it => ({

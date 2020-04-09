@@ -2,7 +2,7 @@ import React from 'react';
 import TableSort from '../table-sort';
 import { SectionDropdown } from 'components/common';
 import { MenuTitles, EntryPoints } from 'common/enums';
-import { BindingCbWithTwo, IDivision } from 'common/models';
+import { BindingCbWithTwo, IDivision, BindingCbWithThree } from 'common/models';
 import { IEntity } from 'common/types';
 import { ITableSortEntity } from '../../common';
 
@@ -10,7 +10,11 @@ interface Props {
   divisions: IDivision[];
   isSectionCollapse: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
-  onConfirmDeleteItem: BindingCbWithTwo<ITableSortEntity, EntryPoints>;
+  onConfirmDeleteItem: BindingCbWithThree<
+    IEntity,
+    ITableSortEntity,
+    EntryPoints
+  >;
 }
 
 const Divisions = ({
@@ -26,7 +30,11 @@ const Divisions = ({
   };
 
   const onConfirmDelete = (tableEntity: ITableSortEntity) => {
-    onConfirmDeleteItem(tableEntity, EntryPoints.DIVISIONS);
+    const currentDivision = divisions.find(
+      it => it.division_id === tableEntity.id
+    );
+
+    onConfirmDeleteItem(currentDivision!, tableEntity, EntryPoints.DIVISIONS);
   };
 
   const rowForTable = divisions.map(it => ({

@@ -17,6 +17,8 @@ import {
 } from 'common/models';
 import { IPoolWithTeams } from './common';
 
+// const getLibraryallowedItems = (items: IEntity[]) => {};
+
 const getClearScharedItem = (
   sharedItem: IEntity,
   event: IEventDetails,
@@ -25,7 +27,8 @@ const getClearScharedItem = (
   const mappedSharedItem = {
     ...sharedItem,
     event_id: event.event_id,
-  };
+    is_library_YN: 0,
+  } as IEntity;
 
   const sharedItemWithNewId = generateEntityId(mappedSharedItem, entryPoint);
 

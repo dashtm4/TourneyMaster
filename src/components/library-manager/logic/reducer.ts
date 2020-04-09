@@ -2,10 +2,16 @@ import {
   LibraryManagerAction,
   LIBRARY_MANAGER_LOAD_DATA_START,
   LIBRARY_MANAGER_LOAD_DATA_SUCCESS,
-  SAVE_SHARED_ITEM_SUCCESS,
+  DELETE_LIBRARY_ITEM_SUCCESS,
 } from './action-types';
 import { ILibraryManagerRegistration } from '../common';
-import { IEventDetails, IFacility, IDivision, ISchedule } from 'common/models';
+import {
+  IEventDetails,
+  IFacility,
+  IDivision,
+  ISchedule,
+  IRegistration,
+} from 'common/models';
 import { EntryPoints } from 'common/enums';
 
 export interface ILibraryManagerState {
@@ -59,38 +65,56 @@ const libraryManagerReducer = (
         schedules,
       };
     }
-    case SAVE_SHARED_ITEM_SUCCESS: {
-      const { sharedItem, entryPoint } = action.payload;
+    case DELETE_LIBRARY_ITEM_SUCCESS: {
+      const { libraryItem, entryPoint } = action.payload;
 
       switch (entryPoint) {
         case EntryPoints.EVENTS: {
+          const event = libraryItem as IEventDetails;
+
           return {
             ...state,
-            events: [...state.events, sharedItem],
+            events: state.events.filter(it => it.event_id !== event.event_id),
           };
         }
         case EntryPoints.REGISTRATIONS: {
+          const registration = libraryItem as IRegistration;
+
           return {
             ...state,
-            registrations: [...state.registrations, sharedItem],
+            registrations: state.registrations.filter(
+              it => it.registration_id !== registration.registration_id
+            ),
           };
         }
         case EntryPoints.FACILITIES: {
+          const facility = libraryItem as IFacility;
+
           return {
             ...state,
-            facilities: [...state.facilities, sharedItem],
+            facilities: state.facilities.filter(
+              it => it.facilities_id !== facility.facilities_id
+            ),
           };
         }
         case EntryPoints.DIVISIONS: {
+          const division = libraryItem as IDivision;
+
           return {
             ...state,
-            divisions: [...state.divisions, sharedItem],
+            divisions: state.divisions.filter(
+              it => it.division_id !== division.division_id
+            ),
           };
         }
         case EntryPoints.SCHEDULES: {
+          const schedule = libraryItem as ISchedule;
+
           return {
             ...state,
-            schedules: [...state.schedules, sharedItem],
+            schedules: state.schedules.filter(
+              it => it.schedule_id !== schedule.schedule_id
+            ),
           };
         }
       }

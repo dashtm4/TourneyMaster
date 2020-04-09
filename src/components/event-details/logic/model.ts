@@ -45,7 +45,7 @@ export interface EventDetailsDTO {
   waivers_required: number | null;
   back_to_back_warning: true | null;
   is_active_YN: number;
-  is_library_YN: number;
+  is_library_YN: 0 | 1 | null;
   num_games_completed: number;
   last_web_published: null;
   created_by: string;

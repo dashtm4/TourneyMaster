@@ -10,6 +10,9 @@ const LIBRARY_MANAGER_LOAD_DATA_FAILURE = 'LIBRARY_MANAGER_LOAD_DATA_FAILURE';
 const SAVE_SHARED_ITEM_SUCCESS = 'SAVE_SHARED_ITEM_SUCCESS';
 const SAVE_SHARED_ITEM_FAILURE = 'SAVE_SHARED_ITEM_FAILURE';
 
+const DELETE_LIBRARY_ITEM_SUCCESS = 'DELETE_LIBRARY_ITEM_SUCCESS';
+const DELETE_LIBRARY_ITEM_FAILURE = 'DELETE_LIBRARY_ITEM_FAILURE';
+
 interface LibraryManagerLoadDataStart {
   type: 'LIBRARY_MANAGER_LOAD_DATA_START';
 }
@@ -27,8 +30,12 @@ interface LibraryManagerLoadDataSuccess {
 
 interface SaveSharedItemSuccess {
   type: 'SAVE_SHARED_ITEM_SUCCESS';
+}
+
+interface DeleteLibraryItemSuccess {
+  type: 'DELETE_LIBRARY_ITEM_SUCCESS';
   payload: {
-    sharedItem: IEntity;
+    libraryItem: IEntity;
     entryPoint: EntryPoints;
   };
 }
@@ -36,7 +43,8 @@ interface SaveSharedItemSuccess {
 export type LibraryManagerAction =
   | LibraryManagerLoadDataStart
   | LibraryManagerLoadDataSuccess
-  | SaveSharedItemSuccess;
+  | SaveSharedItemSuccess
+  | DeleteLibraryItemSuccess;
 
 export {
   LIBRARY_MANAGER_LOAD_DATA_START,
@@ -44,4 +52,6 @@ export {
   LIBRARY_MANAGER_LOAD_DATA_FAILURE,
   SAVE_SHARED_ITEM_SUCCESS,
   SAVE_SHARED_ITEM_FAILURE,
+  DELETE_LIBRARY_ITEM_SUCCESS,
+  DELETE_LIBRARY_ITEM_FAILURE,
 };
