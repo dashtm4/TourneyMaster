@@ -17,7 +17,7 @@ import { EventDetailsDTO } from '../logic/model';
 import { defaultRankingFactor } from '../state';
 import styles from '../styles.module.scss';
 
-const MAX_GOAL_ALLOWED_COUNT = 8;
+const MAX_GOAL_ALLOWED_COUNT = 15;
 
 const goalAllowedSelectOptions = Array.from(
   new Array(MAX_GOAL_ALLOWED_COUNT),
@@ -59,6 +59,15 @@ const Rankings = ({
     ranking_factor_pools,
     max_goal_differential,
   } = eventData;
+
+  const [isGoalCheckboxAllowed] = React.useState<Boolean>(
+    Boolean(max_goal_differential)
+  );
+
+  // const onChangeGoalCheckbox = () => {
+  //   if (max_goal_differential) {
+  //   }
+  // };
 
   const onRankingFactorReorder = (
     name: string,
@@ -144,14 +153,16 @@ const Rankings = ({
             </CardMessage>
             <div className={styles.checkBoxWrapper}>
               <Checkbox options={goalAllowedCheckboxOptions} />
-              <Select
-                onChange={onGoalAllowedChage}
-                options={[
-                  goalAllowedDefaultOption,
-                  ...goalAllowedSelectOptions,
-                ]}
-                value={max_goal_differential || SELECT_DEFAULT_VALUE}
-              />
+              {isGoalCheckboxAllowed && (
+                <Select
+                  onChange={onGoalAllowedChage}
+                  options={[
+                    goalAllowedDefaultOption,
+                    ...goalAllowedSelectOptions,
+                  ]}
+                  value={max_goal_differential || SELECT_DEFAULT_VALUE}
+                />
+              )}
             </div>
           </div>
         </div>
