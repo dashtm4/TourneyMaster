@@ -1,6 +1,5 @@
 export interface IPool {
   pool_id: string;
-  event_id: string;
   division_id: string;
   pool_desc: string;
   pool_name: string;

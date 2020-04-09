@@ -2,12 +2,12 @@ import React from 'react';
 import TableSort from '../table-sort';
 import { SectionDropdown } from 'components/common';
 import { MenuTitles, EntryPoints } from 'common/enums';
-import { BindingCbWithTwo, IFacility, BindingCbWithThree } from 'common/models';
+import { BindingCbWithTwo, IDivision, BindingCbWithThree } from 'common/models';
 import { IEntity } from 'common/types';
 import { ITableSortEntity } from '../../common';
 
 interface Props {
-  facilities: IFacility[];
+  divisions: IDivision[];
   isSectionCollapse: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
   onConfirmDeleteItem: BindingCbWithThree<
@@ -17,44 +17,44 @@ interface Props {
   >;
 }
 
-const Facilities = ({
-  facilities,
+const Divisions = ({
+  divisions,
   isSectionCollapse,
   changeSharedItem,
   onConfirmDeleteItem,
 }: Props) => {
-  const onShareFacility = (id: string) => {
-    const editedFacility = facilities.find(it => it.facilities_id === id);
+  const onShareDivision = (id: string) => {
+    const editedDivision = divisions.find(it => it.division_id === id);
 
-    changeSharedItem(editedFacility!, EntryPoints.FACILITIES);
+    changeSharedItem(editedDivision!, EntryPoints.DIVISIONS);
   };
 
   const onConfirmDelete = (tableEntity: ITableSortEntity) => {
-    const currentFacility = facilities.find(
-      it => it.facilities_id === tableEntity.id
+    const currentDivision = divisions.find(
+      it => it.division_id === tableEntity.id
     );
 
-    onConfirmDeleteItem(currentFacility!, tableEntity, EntryPoints.FACILITIES);
+    onConfirmDeleteItem(currentDivision!, tableEntity, EntryPoints.DIVISIONS);
   };
 
-  const rowForTable = facilities.map(it => ({
-    id: it.facilities_id,
-    title: it.facilities_description,
+  const rowForTable = divisions.map(it => ({
+    id: it.division_id,
+    title: it.long_name,
     lastModified: it.updated_datetime || (it.created_datetime as string),
   }));
 
   return (
     <li>
       <SectionDropdown
-        id={MenuTitles.FACILITIES}
+        id={MenuTitles.DIVISIONS_AND_POOLS}
         type="section"
         panelDetailsType="flat"
         expanded={isSectionCollapse}
       >
-        <span>{MenuTitles.FACILITIES}</span>
+        <span>{MenuTitles.DIVISIONS_AND_POOLS}</span>
         <TableSort
           rows={rowForTable}
-          onShare={onShareFacility}
+          onShare={onShareDivision}
           onDelete={onConfirmDelete}
         />
       </SectionDropdown>
@@ -62,4 +62,4 @@ const Facilities = ({
   );
 };
 
-export default Facilities;
+export default Divisions;

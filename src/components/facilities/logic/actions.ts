@@ -121,6 +121,7 @@ const addEmptyField = (
       field_name: `Field ${fieldsLength + 1}`,
       isNew: true,
       facilities_id: facilityId,
+      is_library_YN: 0,
     },
   },
 });

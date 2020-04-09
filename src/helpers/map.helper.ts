@@ -4,6 +4,9 @@ import {
   EntryPoints,
   IRegistrationFields,
   IFacilityFields,
+  IDivisionFields,
+  IEventDetailsFields,
+  IScheduleFields,
 } from 'common/enums';
 import { IEntity } from 'common/types';
 import { IGame } from 'components/common/matrix-table/helper';
@@ -43,11 +46,20 @@ const removeObjKeysByEntryPoint = (
   entryPoint: EntryPoints
 ) => {
   switch (entryPoint) {
+    case EntryPoints.EVENTS: {
+      return removeObjKeysByKeys(entity, Object.values(IEventDetailsFields));
+    }
     case EntryPoints.REGISTRATIONS: {
       return removeObjKeysByKeys(entity, Object.values(IRegistrationFields));
     }
     case EntryPoints.FACILITIES: {
       return removeObjKeysByKeys(entity, Object.values(IFacilityFields));
+    }
+    case EntryPoints.DIVISIONS: {
+      return removeObjKeysByKeys(entity, Object.values(IDivisionFields));
+    }
+    case EntryPoints.SCHEDULES: {
+      return removeObjKeysByKeys(entity, Object.values(IScheduleFields));
     }
   }
 
