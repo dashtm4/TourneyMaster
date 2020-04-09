@@ -6,12 +6,12 @@ import Paper from 'components/common/paper';
 import Button from 'components/common/buttons/button';
 import HeadingLevelTwo from 'components/common/headings/heading-level-two';
 import AddTeamForm from './create-team-form';
-import { saveTeams } from './logic/actions';
+import { createTeams } from '../../logic/actions';
 import {
   BindingCbWithOne,
   IDivision,
   ITeam,
-  BindingCbWithThree,
+  BindingCbWithTwo,
 } from 'common/models';
 import { PopupExposure } from 'components/common';
 
@@ -24,7 +24,7 @@ interface ICreateTeamProps {
   history: History;
   match: any;
   divisions: IDivision[];
-  saveTeams: BindingCbWithThree<Partial<ITeam>[], string, History>;
+  createTeams: BindingCbWithTwo<Partial<ITeam>[], string>;
   getDivisions: BindingCbWithOne<string>;
 }
 
@@ -53,7 +53,7 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
   };
 
   onSave = () => {
-    this.props.saveTeams(this.state.teams, this.eventId, this.props.history);
+    this.props.createTeams(this.state.teams, this.eventId);
     this.setState({ isModalOpen: false });
   };
 
@@ -128,7 +128,7 @@ const mapStateToProps = (state: IState) => ({
 });
 
 const mapDispatchToProps = {
-  saveTeams,
+  createTeams,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateTeam);

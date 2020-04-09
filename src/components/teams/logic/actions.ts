@@ -11,13 +11,15 @@ import {
   LOAD_POOLS_FAILURE,
   SAVE_TEAMS_SUCCESS,
   SAVE_TEAMS_FAILURE,
+  CREATE_TEAMS_SUCCESS,
 } from './action-types';
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { teamSchema } from 'validations';
-import { mapScheduleGamesWithNames } from 'helpers';
+import { mapScheduleGamesWithNames, getVarcharEight } from 'helpers';
 import { Toasts } from 'components/common';
-import { ITeam } from 'common/models';
+import { ITeam, BindingAction, IDivision } from 'common/models';
+import history from 'browserhistory';
 
 const loadTeamsData: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   eventId: string
@@ -132,3 +134,123 @@ const saveTeams = (teams: ITeam[]) => async (
 };
 
 export { loadTeamsData, loadPools, saveTeams };
+
+export const createTeams: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (teams: Partial<ITeam>[], eventId: string) => async () => {
+  try {
+    const allTeams = await Api.get(`/teams?event_id=${eventId}`);
+    const mappedDivisionTeams = Object.values(
+      [...allTeams, ...teams].reduce((acc, it: ITeam) => {
+        const divisionId = it.division_id;
+
+        acc[divisionId] = [...(acc[divisionId] || []), it];
+
+        return acc;
+      }, {})
+    );
+
+    for await (let mappedTeams of mappedDivisionTeams) {
+      await Yup.array()
+        .of(teamSchema)
+        .unique(
+          team => team.long_name,
+          'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
+        )
+        .unique(
+          team => team.short_name,
+          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+        )
+        .validate(mappedTeams);
+    }
+
+    for await (const team of teams) {
+      const data = {
+        ...team,
+        event_id: eventId,
+        team_id: getVarcharEight(),
+      };
+
+      const response = await Api.post(`/teams`, data);
+
+      if (response?.errorType === 'Error') {
+        return Toasts.errorToast("Couldn't create a team");
+      }
+    }
+
+    history.goBack();
+
+    Toasts.successToast('Team is successfully created');
+  } catch (err) {
+    Toasts.errorToast(err.message);
+  }
+};
+
+export const createTeamsCsv: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (teams: Partial<ITeam>[], cb: BindingAction) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    const allDivisions = await Api.get(
+      `/divisions?event_id=${teams[0].event_id}`
+    );
+    const allTeams = await Api.get(`/teams?event_id=${teams[0].event_id}`);
+
+    const data = teams.map(team => {
+      const divisionId = allDivisions.find(
+        (div: IDivision) =>
+          div.long_name.toLowerCase() === team.division_id?.toLowerCase()
+      )?.division_id;
+
+      return { ...team, division_id: divisionId };
+    });
+
+    for (const team of data) {
+      const teamsInDivision = allTeams.filter(
+        (t: ITeam) => t.division_id === team.division_id
+      );
+      await Yup.array()
+        .of(teamSchema)
+        .unique(
+          t => t.long_name,
+          'You already have a division with the same long name. The division must have a unique long name.'
+        )
+        .unique(
+          t => t.short_name,
+          'You already have division with the same short name. The division must have a unique short name.'
+        )
+        .validate([...teamsInDivision, team]);
+    }
+
+    for (const team of data) {
+      const response = await Api.post(`/teams`, team);
+      if (response?.errorType === 'Error') {
+        return Toasts.errorToast("Couldn't create a team");
+      }
+    }
+
+    dispatch({
+      type: CREATE_TEAMS_SUCCESS,
+      payload: {
+        data,
+      },
+    });
+
+    cb();
+
+    const successMsg = `Teams are successfully created (${data.length})`;
+    Toasts.successToast(successMsg);
+  } catch (err) {
+    const invalidTeam = err.value[err.value.length - 1];
+    const index = teams.findIndex(team => team.team_id === invalidTeam.team_id);
+    const errMessage = `Record ${index + 1}: ${err.message}`;
+    return Toasts.errorToast(errMessage);
+  }
+};

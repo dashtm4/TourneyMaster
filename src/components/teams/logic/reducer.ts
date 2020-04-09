@@ -5,6 +5,7 @@ import {
   LOAD_POOLS_START,
   LOAD_POOLS_SUCCESS,
   SAVE_TEAMS_SUCCESS,
+  CREATE_TEAMS_SUCCESS,
 } from './action-types';
 import {
   IDivision,
@@ -79,6 +80,10 @@ const teamsReducer = (
       const { teams } = action.payload;
 
       return { ...state, teams };
+    }
+    case CREATE_TEAMS_SUCCESS: {
+      const { data } = action.payload;
+      return { ...state, teams: [...state.teams, ...data] };
     }
     default:
       return state;
