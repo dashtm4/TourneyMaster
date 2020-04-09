@@ -113,8 +113,10 @@ const getGameIdFromPublished = (game: IGame, games?: ISchedulesGame[]) => {
     ? games.find(
         item =>
           (item.start_time === game.startTime &&
+            item.game_date === game.gameDate &&
             item.field_id === game.fieldId) ||
           (item.away_team_id === game.awayTeam?.id &&
+            item.game_date === game.gameDate &&
             item.home_team_id === game.homeTeam?.id)
       )?.game_id
     : null;
@@ -145,9 +147,13 @@ export const mapTeamCardsToSchedulesGames = async (
     away_team_id: game.awayTeam?.id || null,
     home_team_id: game.homeTeam?.id || null,
     away_team_score:
-      game.awayTeam?.games?.find(g => g.id === game.id)?.teamScore || null,
+      game.awayTeam?.games?.find(
+        g => g.id === game.id && game.gameDate === g.date
+      )?.teamScore || null,
     home_team_score:
-      game.homeTeam?.games?.find(g => g.id === game.id)?.teamScore || null,
+      game.homeTeam?.games?.find(
+        g => g.id === game.id && game.gameDate === g.date
+      )?.teamScore || null,
     is_active_YN: 1,
     is_final_YN: null,
     finalized_by: null,
@@ -211,36 +217,44 @@ export const mapTeamsFromShedulesGames = (
   teams: ITeam[],
   games: IGame[]
 ) => {
-  const sd = schedulesGames.map(item => {
-    const currentGame = games.find(game => game.varcharId === item.game_id);
+  const sg = schedulesGames.map(item => ({
+    awayTeamId: item.away_team_id,
+    homeTeamId: item.home_team_id,
+    awayTeamScore: item.away_team_score,
+    homeTeamScore: item.home_team_score,
+    startTime: item.start_time,
+    fieldId: item.field_id,
+    date: item.game_date,
+  }));
 
-    const mappedSchedulesGame = {
-      gameId: currentGame!.id,
-      awayTeamId: item.away_team_id,
-      awayTeamScore: item.away_team_score,
-      homeTeamId: item.home_team_id,
-      homeTeamScore: item.home_team_score,
-      date: item.game_date || undefined,
-    };
-
-    return mappedSchedulesGame;
-  });
-
-  const teamCards = teams.map(team => ({
-    ...team,
-    games: [
-      ...sd
+  const runGamesSelection = (team: ITeam) => {
+    const localGames = [
+      ...sg
         .filter(
           ({ awayTeamId, homeTeamId }) =>
             awayTeamId === team.id || homeTeamId === team.id
         )
-        .map(({ gameId, date, awayTeamId, awayTeamScore, homeTeamScore }) => ({
-          date,
-          id: Number(gameId),
-          teamPosition: awayTeamId === team.id ? 1 : 2,
-          teamScore: awayTeamId === team.id ? awayTeamScore : homeTeamScore,
+        .map(scheduleGame => ({
+          id: games.find(
+            game =>
+              game.startTime === scheduleGame.startTime &&
+              game.fieldId === scheduleGame.fieldId
+          )?.id!,
+          date: scheduleGame.date,
+          teamPosition: scheduleGame.awayTeamId === team.id ? 1 : 2,
+          teamScore:
+            scheduleGame.awayTeamId === team.id
+              ? scheduleGame.awayTeamScore
+              : scheduleGame.homeTeamScore,
         })),
-    ],
+    ];
+
+    return unionWith(localGames, isEqual);
+  };
+
+  const teamCards = teams.map(team => ({
+    ...team,
+    games: runGamesSelection(team),
   }));
 
   return teamCards;

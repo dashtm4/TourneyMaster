@@ -67,12 +67,7 @@ export default (
   };
 
   const topFacilityData = orderBy(data2, ['firstRoundTimeSlots'], 'desc')[0];
-  const timeSlotsRequired = recursor(
-    rounds,
-    [],
-    topFacilityData.games,
-    topFacilityData.fields!
-  );
+  recursor(rounds, [], topFacilityData.games, topFacilityData.fields!);
 
   return {
     fields,
