@@ -108,9 +108,22 @@ export const mapSchedulesTeamCards = async (
   return scheduleDetails;
 };
 
+const getGameIdFromPublished = (game: IGame, games?: ISchedulesGame[]) => {
+  return games
+    ? games.find(
+        item =>
+          (item.start_time === game.startTime &&
+            item.field_id === game.fieldId) ||
+          (item.away_team_id === game.awayTeam?.id &&
+            item.home_team_id === game.homeTeam?.id)
+      )?.game_id
+    : null;
+};
+
 export const mapTeamCardsToSchedulesGames = async (
   scheduleData: ISchedule,
-  games: IGame[]
+  games: IGame[],
+  publishedGames?: ISchedulesGame[]
 ) => {
   const member = await getMember();
   const memberId = member.member_id;
@@ -119,13 +132,13 @@ export const mapTeamCardsToSchedulesGames = async (
   const eventId = scheduleData.event_id;
 
   const schedulesGames: ISchedulesGame[] = games.map(game => ({
-    game_id: String(game.varcharId || getVarcharEight()),
+    game_id: getGameIdFromPublished(game, publishedGames) || getVarcharEight(),
     event_id: eventId,
     schedule_id: scheduleId,
     sport_id: 1,
     facilities_id: game.facilityId || '',
     field_id: game.fieldId,
-    game_date: '',
+    game_date: game.gameDate || '',
     start_time: game.startTime || '',
     division_id: game.awayTeam?.divisionId || null,
     pool_id: game.awayTeam?.poolId || null,
@@ -135,7 +148,7 @@ export const mapTeamCardsToSchedulesGames = async (
       game.awayTeam?.games?.find(g => g.id === game.id)?.teamScore || null,
     home_team_score:
       game.homeTeam?.games?.find(g => g.id === game.id)?.teamScore || null,
-    is_active_YN: 0,
+    is_active_YN: 1,
     is_final_YN: null,
     finalized_by: null,
     finalized_datetime: null,
