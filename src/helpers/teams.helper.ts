@@ -221,15 +221,14 @@ const sortTeamByScored = (
 
   const localTeams = [...teams];
 
-  return localTeams.sort((a, b) => {
-    return (
+  return localTeams.sort(
+    (a, b) =>
       SortTeamsBy[parsedRankings[0]](a, b, games) ||
       SortTeamsBy[parsedRankings[1]](a, b, games) ||
       SortTeamsBy[parsedRankings[2]](a, b, games) ||
       SortTeamsBy[parsedRankings[3]](a, b, games) ||
       SortTeamsBy[parsedRankings[4]](a, b, games)
-    );
-  });
+  );
 };
 
 export { getTeamsWithResults, sortTeamByScored };
