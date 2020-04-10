@@ -48,4 +48,5 @@ export type AuthPageAction =
   | loadAuthPageDataStart
   | loadAuthPageDataSuccess
   | cleatAuthPageData
-  | publishTournamentSuccess;
+  | publishTournamentSuccess
+  | addEntityToLibrarySuccess;

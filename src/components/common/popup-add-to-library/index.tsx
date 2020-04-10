@@ -33,6 +33,8 @@ const PopupAddToLibrary = ({
       const entity = getEntityByOption(entities, activeOptionId, entryPoint);
 
       addEntityToLibrary(entity!, entryPoint);
+
+      onClose();
     }
   };
 

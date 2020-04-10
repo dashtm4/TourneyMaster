@@ -15,7 +15,12 @@ import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { Toasts } from 'components/common';
 import { IEventDetails, IRegistration, IFacility } from 'common/models';
-import { EventStatuses, EntryPoints, MethodTypes } from 'common/enums';
+import {
+  EventStatuses,
+  EntryPoints,
+  MethodTypes,
+  LibraryStates,
+} from 'common/enums';
 import { IEntity } from 'common/types';
 import { sentToServerByRoute, removeObjKeysByEntryPoint } from 'helpers';
 
@@ -109,14 +114,20 @@ const changeTournamentStatus = (status: EventStatuses) => async (
 const addEntityToLibrary = (entity: IEntity, entryPoint: EntryPoints) => async (
   dispatch: Dispatch
 ) => {
-  const updatedEntity: IEntity = {
-    ...entity,
-    is_library_YN: 1,
-  };
-
-  const clearEntity = removeObjKeysByEntryPoint(updatedEntity, entryPoint);
-
   try {
+    if (entity.is_library_YN === LibraryStates.TRUE) {
+      throw new Error('The item is already in the library.');
+    }
+
+    console.log(entity);
+
+    const updatedEntity: IEntity = {
+      ...entity,
+      is_library_YN: LibraryStates.TRUE,
+    };
+
+    const clearEntity = removeObjKeysByEntryPoint(updatedEntity, entryPoint);
+
     await sentToServerByRoute(clearEntity, entryPoint, MethodTypes.PUT);
 
     dispatch({
@@ -129,11 +140,11 @@ const addEntityToLibrary = (entity: IEntity, entryPoint: EntryPoints) => async (
 
     Toasts.successToast('Changes successfully saved.');
   } catch (err) {
-    Toasts.errorToast(err);
-
     dispatch({
       type: ADD_ENTITY_TO_LIBRARY_FAILURE,
     });
+
+    Toasts.errorToast(err.message);
   }
 };
 

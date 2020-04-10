@@ -24,7 +24,7 @@ import {
   IDivision,
   ISchedule,
 } from 'common/models';
-import { EntryPoints, MethodTypes } from 'common/enums';
+import { EntryPoints, MethodTypes, LibraryStates } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
   checkAleadyExist,
@@ -157,7 +157,7 @@ const deleteLibraryItem: ActionCreator<ThunkAction<
 
   const updatedSharedItem: IEntity = {
     ...clearSharedItem,
-    is_library_YN: 0,
+    is_library_YN: LibraryStates.FALSE,
   };
 
   try {
