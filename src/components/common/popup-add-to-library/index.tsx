@@ -28,6 +28,12 @@ const PopupAddToLibrary = ({
   const [isConfirm, toggleConfirm] = React.useState<boolean>(false);
   const [activeOptionId, changeOption] = React.useState<string | null>(null);
 
+  React.useEffect(() => {
+    toggleConfirm(false);
+
+    changeOption(null);
+  }, [isOpen]);
+
   const selectOptions = getSelectOptions(entities, entryPoint);
 
   const isAllowShare = entities.length > 0;
