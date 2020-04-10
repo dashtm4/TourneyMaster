@@ -13,13 +13,14 @@ import {
 import { EventDetailsDTO, IIconFile } from './logic/model';
 import { IEventState } from './logic/reducer';
 
+import Navigation from './navigation';
 import PrimaryInformationSection from './primary-information';
 import EventStructureSection from './event-structure';
 import MediaAssetsSection from './media-assets';
 import PlayoffsSection from './playoffs';
 import Rankings from './rankings';
 
-import { Button, HeadingLevelTwo, Paper, Loader } from 'components/common';
+import { Button, HeadingLevelTwo, Loader } from 'components/common';
 import { IUploadFile, BindingCbWithOne } from 'common/models';
 import { uploadFile } from 'helpers';
 import styles from './styles.module.scss';
@@ -193,34 +194,12 @@ class EventDetails extends Component<Props, State> {
 
     return (
       <div className={styles.container}>
-        <Paper sticky={true}>
-          <div className={styles.paperWrapper}>
-            <div>
-              {!this.props.match?.params.eventId && (
-                <Button
-                  label="Import from CSV"
-                  color="secondary"
-                  variant="text"
-                  onClick={this.onCsvLoaderBtn}
-                />
-              )}
-            </div>
-            <div>
-              <Button
-                label="Cancel"
-                color="secondary"
-                variant="text"
-                onClick={this.onCancelClick}
-              />
-              <Button
-                label="Save"
-                color="primary"
-                variant="contained"
-                onClick={this.onSave}
-              />
-            </div>
-          </div>
-        </Paper>
+        <Navigation
+          isEventId={!this.props.match?.params.eventId}
+          onCancelClick={this.onCancelClick}
+          onCsvLoaderBtn={this.onCsvLoaderBtn}
+          onSave={this.onSave}
+        />
         <div className={styles.headingContainer}>
           <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
           <div>

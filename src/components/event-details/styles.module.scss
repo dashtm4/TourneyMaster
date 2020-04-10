@@ -14,6 +14,8 @@ $sectionBodyPadding: 20px 0;
   .paperWrapper {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+
     & > :first-child {
       margin-right: 15px;
     }
@@ -253,4 +255,13 @@ $sectionBodyPadding: 20px 0;
 .buttonContainer {
   display: flex;
   justify-content: flex-end;
+}
+
+.libraryBtn {
+  display: flex;
+  align-items: center;
+
+  padding: 0 8px;
+
+  color: #00a3ea;
 }
