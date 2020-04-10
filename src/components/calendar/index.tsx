@@ -10,7 +10,6 @@ import CalendarBody from './body';
 
 import {
   getCalendarEvents,
-  saveCalendar,
   saveCalendarEvent,
   updateCalendarEvent,
   deleteCalendarEvent,
@@ -32,7 +31,6 @@ interface IMapStateToProps {
 
 interface IProps extends IMapStateToProps {
   getCalendarEvents: () => void;
-  saveCalendar: (data: Partial<ICalendarEvent>[]) => void;
   saveCalendarEvent: (event: Partial<ICalendarEvent>) => void;
   updateCalendarEvent: (event: Partial<ICalendarEvent>) => void;
   deleteCalendarEvent: (id: string) => void;
@@ -81,11 +79,6 @@ class Calendar extends Component<any, IState> {
     this.setState({ dateSelect: { left, top } });
   };
 
-  onSave = () => {
-    const { eventsList } = this.state;
-    this.props.saveCalendar(eventsList!);
-  };
-
   onDatePressed = (dateSelect: IDateSelect) => {
     const { left, top, date } = dateSelect;
     const { leftPosition, topPosition } = calculateDialogPosition(left, top);
@@ -130,34 +123,32 @@ class Calendar extends Component<any, IState> {
   };
 
   onUpdateEvent = (data: Partial<ICalendarEvent>) => {
-    this.props.updateCalendarEvent(data);
+    const e = this.state.eventsList.find(
+      (event: ICalendarEvent) => event.cal_event_id === data.cal_event_id
+    );
+
+    const updEvent = Object.assign(e, data);
+
     this.setState(({ eventsList }) => ({
       eventsList: eventsList?.map(event =>
-        event.cal_event_id === data.cal_event_id
-          ? {
-              ...event,
-              cal_event_startdate: data.cal_event_startdate,
-              cal_event_enddate: data.cal_event_enddate,
-            }
-          : event
+        event.cal_event_id === data.cal_event_id ? updEvent : event
       ),
     }));
+    this.props.updateCalendarEvent(updEvent);
   };
 
   onReminderAndTaskUpdate = (data: Partial<ICalendarEvent>) => {
-    this.props.updateCalendarEvent(data);
+    const e = this.state.eventsList.find(
+      (event: ICalendarEvent) => event.cal_event_id === data.cal_event_id
+    );
+    const updEvent = Object.assign(e, data);
+
     this.setState(({ eventsList }) => ({
       eventsList: eventsList?.map(event =>
-        event.cal_event_id === data.cal_event_id
-          ? {
-              ...event,
-              cal_event_startdate: data.cal_event_startdate,
-              cal_event_enddate: data.cal_event_enddate,
-              cal_event_datetime: data.cal_event_datetime,
-            }
-          : event
+        event.cal_event_id === data.cal_event_id ? updEvent : event
       ),
     }));
+    this.props.updateCalendarEvent(updEvent);
   };
 
   onDeleteCalendarEvent = (id: string) => {
@@ -168,23 +159,17 @@ class Calendar extends Component<any, IState> {
   };
 
   onUpdateCalendarEventDetails = (data: Partial<ICalendarEvent>) => {
-    this.props.updateCalendarEvent(data);
+    const e = this.state.eventsList.find(
+      (event: ICalendarEvent) => event.cal_event_id === data.cal_event_id
+    );
+    const updEvent = Object.assign(e, data);
+
     this.setState(({ eventsList }) => ({
       eventsList: eventsList?.map(event =>
-        event.cal_event_id === data.cal_event_id
-          ? {
-              ...event,
-              cal_event_datetime: data.cal_event_datetime,
-              cal_event_startdate: data.cal_event_startdate,
-              cal_event_enddate: data.cal_event_enddate,
-              cal_event_title: data.cal_event_title,
-              cal_event_desc: data.cal_event_desc,
-              cal_event_tag: data.cal_event_tag,
-              status_id: data.status_id,
-            }
-          : event
+        event.cal_event_id === data.cal_event_id ? updEvent : event
       ),
     }));
+    this.props.updateCalendarEvent(updEvent);
   };
 
   render() {
@@ -236,7 +221,6 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     {
       getCalendarEvents,
-      saveCalendar,
       saveCalendarEvent,
       updateCalendarEvent,
       deleteCalendarEvent,

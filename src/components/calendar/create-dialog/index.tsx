@@ -17,7 +17,7 @@ import { isCalendarEventValid } from '../logic/helper';
 import { getVarcharEight } from 'helpers';
 import { debounce } from 'lodash';
 import ITag from 'common/models/calendar/tag';
-
+import moment from 'moment';
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface IProps {
@@ -34,11 +34,11 @@ const defaultCalendarEvent = (): Partial<ICalendarEvent> => ({
   cal_event_title: '',
   cal_event_startdate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
   cal_event_enddate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
-  cal_event_datetime: new Date().toISOString(),
+  cal_event_datetime: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(),
   cal_event_tag: '',
   cal_event_type: 'event',
   cal_event_desc: '',
-  has_reminder_YN: 0,
+  has_reminder_YN: 1,
   status_id: 1,
 });
 
@@ -69,7 +69,10 @@ export default (props: IProps) => {
         ...calendarEvent,
         cal_event_startdate: date! || calendarEvent.cal_event_startdate,
         cal_event_enddate: date! || calendarEvent.cal_event_enddate,
-        cal_event_datetime: date! || calendarEvent.cal_event_datetime,
+        cal_event_datetime:
+          moment(new Date(date!))
+            .add('hours', 8)
+            .toISOString() || calendarEvent.cal_event_datetime,
       }),
     [dateSelect]
   );
@@ -204,7 +207,11 @@ export default (props: IProps) => {
               <FontAwesomeIcon icon={faAt} />
               <SearchSelect
                 width="257px"
-                placeholder="Tag"
+                placeholder={
+                  calendarEvent.cal_event_type === 'event'
+                    ? 'Tag'
+                    : 'Assigned to'
+                }
                 options={tagsOptions}
                 onInputChange={onTagInputChange}
                 value={calendarEvent.cal_event_tag! || ''}
@@ -226,17 +233,19 @@ export default (props: IProps) => {
                 placeholder="Description"
               />
             </div>
-            <div className={styles.checkboxWrapper}>
-              <Checkbox
-                options={[
-                  {
-                    label: 'Set Reminder',
-                    checked: Boolean(calendarEvent.has_reminder_YN),
-                  },
-                ]}
-                onChange={onHasReminderChange}
-              />
-            </div>
+            {calendarEvent.cal_event_type === 'task' && (
+              <div className={styles.checkboxWrapper}>
+                <Checkbox
+                  options={[
+                    {
+                      label: 'Set Reminder',
+                      checked: Boolean(calendarEvent.has_reminder_YN),
+                    },
+                  ]}
+                  onChange={onHasReminderChange}
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className={styles.controlWrapper}>
