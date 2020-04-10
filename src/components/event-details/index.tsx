@@ -10,6 +10,7 @@ import {
   deleteEvent,
   createEvents,
 } from './logic/actions';
+import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import { IIconFile } from './logic/model';
 import { IEventState } from './logic/reducer';
 
@@ -21,7 +22,12 @@ import PlayoffsSection from './playoffs';
 import Rankings from './rankings';
 
 import { Button, HeadingLevelTwo, Loader } from 'components/common';
-import { IUploadFile, BindingCbWithOne, IEventDetails } from 'common/models';
+import {
+  IUploadFile,
+  BindingCbWithOne,
+  IEventDetails,
+  BindingCbWithTwo,
+} from 'common/models';
 import { uploadFile } from 'helpers';
 import styles from './styles.module.scss';
 import { eventState } from './state';
@@ -30,6 +36,8 @@ import history from '../../browserhistory';
 import { PopupExposure } from 'components/common';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 import CsvLoader from 'components/common/csv-loader';
+import { IEntity } from 'common/types';
+import { EntryPoints, LibraryStates } from 'common/enums';
 
 interface IMapStateProps {
   event: IEventState;
@@ -44,6 +52,7 @@ interface Props extends IMapStateProps {
   removeFiles: (files: IIconFile[]) => void;
   deleteEvent: BindingCbWithOne<string>;
   createEvents: (events: Partial<IEventDetails>[]) => void;
+  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
 type State = {
@@ -180,6 +189,16 @@ class EventDetails extends Component<Props, State> {
     this.setState({ isCsvLoaderOpen: false });
   };
 
+  onAddToLibraryManager = () => {
+    const { event } = this.state;
+
+    if (event?.is_library_YN === LibraryStates.FALSE) {
+      this.onChange('is_library_YN', LibraryStates.TRUE);
+    }
+
+    this.props.addEntityToLibrary(event as IEventDetails, EntryPoints.EVENTS);
+  };
+
   render() {
     const eventTypeOptions = ['Tournament', 'Showcase', 'League'];
     const { event } = this.state;
@@ -198,6 +217,7 @@ class EventDetails extends Component<Props, State> {
           isEventId={!this.props.match?.params.eventId}
           onCancelClick={this.onCancelClick}
           onCsvLoaderBtn={this.onCsvLoaderBtn}
+          onAddToLibraryManager={this.onAddToLibraryManager}
           onSave={this.onSave}
         />
         <div className={styles.headingContainer}>
@@ -302,6 +322,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       removeFiles,
       deleteEvent,
       createEvents,
+      addEntityToLibrary,
     },
     dispatch
   );

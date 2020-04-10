@@ -14,6 +14,7 @@ interface Props {
   isEventId: boolean;
   onCsvLoaderBtn: BindingAction;
   onCancelClick: BindingAction;
+  onAddToLibraryManager: BindingAction;
   onSave: BindingAction;
 }
 
@@ -21,11 +22,12 @@ const Navigation = ({
   isEventId,
   onCsvLoaderBtn,
   onCancelClick,
+  onAddToLibraryManager,
   onSave,
 }: Props) => (
   <Paper sticky={true}>
     <div className={styles.paperWrapper}>
-      <div>
+      <div className={styles.loadBtnsWrapper}>
         {isEventId && (
           <Button
             onClick={onCsvLoaderBtn}
@@ -37,6 +39,13 @@ const Navigation = ({
         <Link className={styles.libraryBtn} to={Routes.LIBRARY_MANAGER}>
           {getIcon(Icons.GET_APP, ICON_STYLES)} Load From Library
         </Link>
+        <Button
+          onClick={onAddToLibraryManager}
+          icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
+          variant={ButtonVarian.TEXT}
+          color={ButtonColors.SECONDARY}
+          label="Save to Library"
+        />
       </div>
       <div>
         <Button

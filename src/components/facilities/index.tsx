@@ -38,8 +38,6 @@ import history from '../../browserhistory';
 import { EntryPoints } from 'common/enums';
 import { IEntity } from 'common/types';
 
-const MOCKED_EVENT_ID = 'ABC123';
-
 interface MatchParams {
   eventId?: string;
 }
@@ -98,7 +96,7 @@ class Facilities extends React.Component<
     const eventId = this.props.match.params.eventId;
 
     if (evt.target.value > facilities.length) {
-      addEmptyFacility(eventId || MOCKED_EVENT_ID);
+      addEmptyFacility(eventId!);
     }
   };
 
@@ -172,7 +170,6 @@ class Facilities extends React.Component<
       updateFacilities,
       updateField,
       uploadFileMap,
-      addEntityToLibrary,
     } = this.props;
 
     const { isLibraryPopupOpen } = this.state;
@@ -278,7 +275,7 @@ class Facilities extends React.Component<
           entryPoint={EntryPoints.FACILITIES}
           isOpen={isLibraryPopupOpen}
           onClose={this.toggleLibraryPopup}
-          addEntityToLibrary={addEntityToLibrary}
+          addEntityToLibrary={this.props.addEntityToLibrary}
         />
       </section>
     );
