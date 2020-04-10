@@ -188,12 +188,12 @@ const sortTeamsByDifference = (
   return sortedTeams;
 };
 
-const sortTeamsByGoalAllowrd = (
+const sortTeamsByGoalAllowed = (
   a: ITeamWithResults,
   b: ITeamWithResults,
   _: unknown
 ) => {
-  const sortedTeams = b.goalsAllowed - a.goalsAllowed;
+  const sortedTeams = a.goalsAllowed - b.goalsAllowed;
 
   return sortedTeams;
 };
@@ -201,7 +201,7 @@ const sortTeamsByGoalAllowrd = (
 const SortTeamsBy = {
   [RankingFactorValues.WIN_PERCENTAGE]: sortTeamsByBestRecord,
   [RankingFactorValues.HEAD_TO_HEAD]: sortTeamsByHeadToHead,
-  [RankingFactorValues.GOAL_ALLOWED]: sortTeamsByGoalAllowrd,
+  [RankingFactorValues.GOAL_ALLOWED]: sortTeamsByGoalAllowed,
   [RankingFactorValues.GOAL_DIFFERENCE]: sortTeamsByDifference,
   [RankingFactorValues.GOAL_SCORED]: sortTeamsByGoalScored,
 };
@@ -213,20 +213,23 @@ const sortTeamByScored = (
 ) => {
   const parsedRankings = JSON.parse(rankings);
 
+  console.log(rankings);
+
   if (parsedRankings.length !== Object.keys(RankingFactorValues).length / 2) {
     return teams;
   }
 
   const localTeams = [...teams];
 
-  return localTeams.sort(
-    (a, b) =>
+  return localTeams.sort((a, b) => {
+    return (
       SortTeamsBy[parsedRankings[0]](a, b, games) ||
       SortTeamsBy[parsedRankings[1]](a, b, games) ||
       SortTeamsBy[parsedRankings[2]](a, b, games) ||
       SortTeamsBy[parsedRankings[3]](a, b, games) ||
       SortTeamsBy[parsedRankings[4]](a, b, games)
-  );
+    );
+  });
 };
 
 export { getTeamsWithResults, sortTeamByScored };
