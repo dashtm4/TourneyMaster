@@ -1,3 +1,4 @@
+// ! If the interface changes, you must change the fields for Enum 'common/enums/_entity_'
 export interface IDivision {
   division_id: string;
   event_id: string;

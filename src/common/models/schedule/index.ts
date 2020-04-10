@@ -3,6 +3,7 @@ export enum ScheduleStatuses {
   PUBLISHED = 'Published',
 }
 
+// ! If the interface changes, you must change the fields for Enum 'common/enums/_entity_'
 export interface ISchedule {
   schedule_id: string;
   event_id: string;

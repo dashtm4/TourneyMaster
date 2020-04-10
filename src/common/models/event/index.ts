@@ -1,4 +1,5 @@
 import { EventStatuses } from 'common/enums';
+// ! If the interface changes, you must change the fields for Enum 'common/enums/_entity_'
 export interface IEventDetails {
   event_id: string;
   sport_id: number;
