@@ -3,7 +3,7 @@ import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Button from '../common/buttons/button';
 import SectionDropdown from '../common/section-dropdown';
 import styles from './styles.module.scss';
-import Paper from '../common/paper';
+import Navigation from './navigation';
 import PrimaryInformation from './primary-information';
 import TeamsAthletesInfo from './teams-athletes';
 import MainContact from './main-contact';
@@ -126,16 +126,10 @@ class RegistrationView extends React.Component<
     } else {
       return (
         <section className={styles.container}>
-          <Paper sticky={true}>
-            <div className={styles.mainMenu}>
-              <Button
-                label={registration ? 'Edit' : 'Add'}
-                variant="contained"
-                color="primary"
-                onClick={this.onRegistrationEdit}
-              />
-            </div>
-          </Paper>
+          <Navigation
+            registration={registration}
+            onRegistrationEdit={this.onRegistrationEdit}
+          />
           <div className={styles.sectionContainer}>
             <div className={styles.heading}>
               <HeadingLevelTwo>Registration</HeadingLevelTwo>

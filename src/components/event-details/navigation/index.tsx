@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
 import { Button, Paper } from 'components/common';
 import { getIcon } from 'helpers';
 import { ButtonColors, ButtonVarian, Routes, Icons } from 'common/enums';
