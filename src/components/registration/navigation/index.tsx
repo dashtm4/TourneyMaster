@@ -13,14 +13,30 @@ const ICON_STYLES = {
 interface Props {
   registration: IRegistration;
   onRegistrationEdit: BindingAction;
+  onAddToLibraryManager: BindingAction;
 }
 
-const Navigation = ({ registration, onRegistrationEdit }: Props) => (
+const Navigation = ({
+  registration,
+  onRegistrationEdit,
+  onAddToLibraryManager,
+}: Props) => (
   <Paper sticky={true}>
     <div className={styles.mainMenu}>
-      <Link className={styles.libraryBtn} to={Routes.LIBRARY_MANAGER}>
-        {getIcon(Icons.GET_APP, ICON_STYLES)} Load From Library
-      </Link>
+      <p className={styles.loadBtnsWrapper}>
+        <Link className={styles.libraryBtn} to={Routes.LIBRARY_MANAGER}>
+          {getIcon(Icons.GET_APP, ICON_STYLES)} Load From Library
+        </Link>
+        {registration && (
+          <Button
+            onClick={onAddToLibraryManager}
+            icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            label="Save to Library"
+          />
+        )}
+      </p>
       <Button
         variant={ButtonVarian.CONTAINED}
         color={ButtonColors.PRIMARY}
