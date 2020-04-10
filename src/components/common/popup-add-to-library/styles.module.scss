@@ -1,5 +1,5 @@
 .section {
-  width: 400px;
+  width: 550px;
   padding: 24px 32px 12px;
 }
 
@@ -14,8 +14,22 @@
 .btnsWrapper {
   display: flex;
   justify-content: flex-end;
+
+  margin-bottom: 15px;
 }
 
 .btnWrapper {
-  margin-left: 15px;
+  margin-left: 25px;
+}
+
+.confirmText {
+  margin: 0 0 25px;
+
+  color: #6a6a6a;
+  font-weight: 600;
+}
+
+.confirmBtns {
+  display: flex;
+  justify-content: flex-end;
 }
