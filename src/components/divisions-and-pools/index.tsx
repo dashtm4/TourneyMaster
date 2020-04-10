@@ -1,7 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { History } from 'history';
-import { Loader, Button, HeadingLevelTwo } from 'components/common';
+import {
+  Loader,
+  Button,
+  HeadingLevelTwo,
+  PopupAddToLibrary,
+} from 'components/common';
 import {
   getDivisionsTeams,
   getPools,
@@ -10,6 +15,7 @@ import {
   saveDivisions,
   createDivisions,
 } from './logic/actions';
+import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import Modal from '../common/modal';
 import AddPool from './division/add-pool';
 import { BindingCbWithOne, BindingCbWithTwo } from 'common/models/callback';
@@ -19,6 +25,8 @@ import Navigation from './navigation';
 import Division from './division';
 import styles from './styles.module.scss';
 import CsvLoader from 'components/common/csv-loader';
+import { EntryPoints } from 'common/enums';
+import { IEntity } from 'common/types';
 
 interface IDivisionsAndPoolsProps {
   divisions: IDivision[];
@@ -34,6 +42,7 @@ interface IDivisionsAndPoolsProps {
   saveTeams: BindingCbWithOne<ITeam[]>;
   saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
   createDivisions: BindingCbWithOne<Partial<IDivision>[]>;
+  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
 interface IDivisionAndPoolsState {
@@ -42,6 +51,7 @@ interface IDivisionAndPoolsState {
   expanded: boolean[];
   expandAll: boolean;
   isCsvLoaderOpen: boolean;
+  isLibraryPopupOpen: boolean;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -59,6 +69,7 @@ class DivisionsAndPools extends React.Component<
       expanded: [],
       expandAll: false,
       isCsvLoaderOpen: false,
+      isLibraryPopupOpen: false,
     };
   }
 
@@ -116,14 +127,22 @@ class DivisionsAndPools extends React.Component<
     this.setState({ isCsvLoaderOpen: false });
   };
 
+  toggleLibraryPopup = () => {
+    this.setState(({ isLibraryPopupOpen }) => ({
+      isLibraryPopupOpen: !isLibraryPopupOpen,
+    }));
+  };
+
   render() {
     const { divisions, pools, teams, isLoading, saveTeams } = this.props;
+    const { isLibraryPopupOpen } = this.state;
 
     return (
       <section className={styles.container}>
         <Navigation
           onCsvLoaderBtn={this.onCsvLoaderBtn}
           onAddDivision={this.onAddDivision}
+          toggleLibraryPopup={this.toggleLibraryPopup}
         />
         <div className={styles.sectionContainer}>
           <div className={styles.headingContainer}>
@@ -198,6 +217,13 @@ class DivisionsAndPools extends React.Component<
           onCreate={this.props.createDivisions}
           eventId={this.eventId}
         />
+        <PopupAddToLibrary
+          entities={divisions}
+          entryPoint={EntryPoints.DIVISIONS}
+          isOpen={isLibraryPopupOpen}
+          onClose={this.toggleLibraryPopup}
+          addEntityToLibrary={this.props.addEntityToLibrary}
+        />
       </section>
     );
   }
@@ -228,6 +254,7 @@ const mapDispatchToProps = {
   saveTeams,
   saveDivisions,
   createDivisions,
+  addEntityToLibrary,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DivisionsAndPools);

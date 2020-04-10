@@ -13,9 +13,14 @@ const ICON_STYLES = {
 interface Props {
   onCsvLoaderBtn: BindingAction;
   onAddDivision: BindingAction;
+  toggleLibraryPopup: BindingAction;
 }
 
-const Navigation = ({ onCsvLoaderBtn, onAddDivision }: Props) => (
+const Navigation = ({
+  onCsvLoaderBtn,
+  onAddDivision,
+  toggleLibraryPopup,
+}: Props) => (
   <Paper sticky={true}>
     <div className={styles.mainMenu}>
       <div className={styles.btnsWraper}>
@@ -23,6 +28,13 @@ const Navigation = ({ onCsvLoaderBtn, onAddDivision }: Props) => (
           <Link className={styles.libraryBtn} to={Routes.LIBRARY_MANAGER}>
             {getIcon(Icons.GET_APP, ICON_STYLES)} Load From Library
           </Link>
+          <Button
+            onClick={toggleLibraryPopup}
+            icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            label="Save to Library"
+          />
           <Button
             color={ButtonColors.SECONDARY}
             variant={ButtonVarian.TEXT}
