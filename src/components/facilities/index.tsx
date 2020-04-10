@@ -16,17 +16,25 @@ import {
 } from './logic/actions';
 import Navigation from './components/navigation';
 import FacilityDetails from './components/facility-details';
-import { HeadingLevelTwo, Select, Loader } from '../common';
-import { IFacility, IField, IUploadFile } from '../../common/models';
 import {
+  HeadingLevelTwo,
+  Select,
+  Loader,
+  Button,
+  PopupExposure,
+  CsvLoader,
+  PopupAddToLibrary,
+} from 'components/common';
+import {
+  IFacility,
+  IField,
+  IUploadFile,
   BindingCbWithOne,
   BindingCbWithTwo,
-} from '../../common/models/callback';
+} from 'common/models';
 import styles from './styles.module.scss';
-import Button from 'components/common/buttons/button';
-import { PopupExposure } from 'components/common';
 import history from '../../browserhistory';
-import CsvLoader from 'components/common/csv-loader';
+import { EntryPoints } from 'common/enums';
 
 const MOCKED_EVENT_ID = 'ABC123';
 
@@ -240,6 +248,13 @@ class Facilities extends React.Component<
           type="facilities"
           onCreate={this.props.createFacilities}
           eventId={this.props.match.params.eventId}
+        />
+        <PopupAddToLibrary
+          entities={facilities}
+          entryPoint={EntryPoints.FACILITIES}
+          isOpen={true}
+          onClose={() => {}}
+          onSave={() => {}}
         />
       </section>
     );

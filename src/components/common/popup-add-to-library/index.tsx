@@ -1,53 +1,51 @@
 import React from 'react';
 import { Modal, HeadingLevelTwo, Select, Button } from 'components/common';
-import { IEventDetails, BindingAction, BindingCbWithOne } from 'common/models';
-import { ButtonVarian, ButtonColors } from 'common/enums';
+import { BindingAction } from 'common/models';
+import { ButtonVarian, ButtonColors, EntryPoints } from 'common/enums';
+import { IEntity, IInputEvent } from 'common/types';
+import { getSelectOptions } from './helpers';
 import styles from './styles.module.scss';
 
 interface Props {
-  activeEvent: IEventDetails | null;
-  events: IEventDetails[];
+  entities: IEntity[];
+  entryPoint: EntryPoints;
   isOpen: boolean;
   onClose: BindingAction;
   onSave: BindingAction;
-  onChangeActiveEvent: BindingCbWithOne<IEventDetails>;
 }
 
-const PopupShare = ({
-  activeEvent,
-  events,
+const PopupAddToLibrary = ({
+  entities,
+  entryPoint,
   isOpen,
   onClose,
   onSave,
-  onChangeActiveEvent,
 }: Props) => {
-  const selectOptions = events.map(it => ({
-    label: it.event_name,
-    value: it.event_id,
-  }));
+  const [activeOption, changeOption] = React.useState<string | null>(null);
+  const selectOptions = getSelectOptions(entities, entryPoint);
 
-  const onChange = ({
-    target: { value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
-    const currentEvent = events.find(it => it.event_id === value);
-
-    onChangeActiveEvent(currentEvent!);
+  const onChangeOption = (evt: IInputEvent) => {
+    changeOption(evt.target.value);
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.section}>
         <div className={styles.titleWrapper}>
-          <HeadingLevelTwo>Share with event</HeadingLevelTwo>
+          <HeadingLevelTwo>Save to Library:</HeadingLevelTwo>
         </div>
         <div className={styles.SelectWrapper}>
-          <Select
-            onChange={onChange}
-            value={activeEvent?.event_id || ''}
-            options={selectOptions}
-            label="Select event"
-            width="100%"
-          />
+          {selectOptions?.length !== 0 ? (
+            <Select
+              onChange={onChangeOption}
+              value={activeOption || ''}
+              options={selectOptions!}
+              label="Select event"
+              width="100%"
+            />
+          ) : (
+            <p>You don’t have items to share</p>
+          )}
         </div>
         <p className={styles.btnsWrapper}>
           <span className={styles.btnWrapper}>
@@ -72,4 +70,4 @@ const PopupShare = ({
   );
 };
 
-export default PopupShare;
+export default PopupAddToLibrary;

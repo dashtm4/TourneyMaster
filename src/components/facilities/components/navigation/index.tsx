@@ -23,6 +23,12 @@ const Navigation = ({ onClick, onCancelClick, onCsvLoaderBtn }: Props) => (
         {getIcon(Icons.GET_APP, ICON_STYLES)} Load From Library
       </Link>
       <Button
+        icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
+        variant={ButtonVarian.TEXT}
+        color={ButtonColors.SECONDARY}
+        label="Save to Library"
+      />
+      <Button
         onClick={onCsvLoaderBtn}
         variant={ButtonVarian.TEXT}
         color={ButtonColors.SECONDARY}
