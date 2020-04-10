@@ -1,16 +1,20 @@
 import React from 'react';
 import styles from './styles.module.scss';
-import { BindingAction, IFacility, BindingCbWithOne } from 'common/models';
+import {
+  BindingAction,
+  IFacility,
+  BindingCbWithOne,
+  IEventDetails,
+} from 'common/models';
 import CreateBackupForm from '../create-backup-form';
 import Button from 'components/common/buttons/button';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { IField } from 'common/models';
 import { PopupExposure } from 'components/common';
 import { IBackupPlan } from 'common/models/backup_plan';
 
 interface Props {
   onCancel: BindingAction;
-  events: EventDetailsDTO[];
+  events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
   saveBackupPlans: BindingCbWithOne<Partial<IBackupPlan>[]>;

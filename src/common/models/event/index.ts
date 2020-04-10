@@ -1,5 +1,5 @@
 import { EventStatuses } from 'common/enums';
-// ! If the interface changes, you must change the fields for Enum 'common/enums/_entity_'
+// ! If the interface changes, you must change the fields for the enum 'common/enums/_entity_'
 export interface IEventDetails {
   event_id: string;
   sport_id: number;
@@ -11,6 +11,7 @@ export interface IEventDetails {
   main_contact_email: null | string;
   event_startdate: string;
   event_enddate: string;
+  league_dates: null | string;
   time_zone_utc: number | null;
   event_level: string | null;
   event_tag: string | null;
@@ -22,8 +23,8 @@ export interface IEventDetails {
   primary_location_desc: string | null;
   primary_location_city: string | null;
   primary_location_state: string | null;
-  primary_location_long: string | null;
-  primary_location_lat: string | null;
+  primary_location_long: number | null;
+  primary_location_lat: number | null;
   pre_game_warmup: string | null;
   period_duration: string;
   time_btwn_periods: string;
@@ -38,8 +39,8 @@ export interface IEventDetails {
   playoffs_exist: number | null;
   max_num_of_divisions: number | null;
   bracket_type: string | null;
-  ranking_factor_divisions: string | null;
-  ranking_factor_pools: string | null;
+  ranking_factor_divisions: string;
+  ranking_factor_pools: string;
   bracket_durations_vary: string | null;
   bracket_duration: string | null;
   bracket_time_btwn_periods: string | null;
@@ -51,7 +52,7 @@ export interface IEventDetails {
   assoc_docs_URL: string | null;
   event_logo_path: string | null;
   mobile_icon_URL: number | null;
-  desktop_icon_URL: number | null;
+  desktop_icon_URL: string;
   is_active_YN: number | null;
   is_library_YN: 0 | 1 | null;
   num_games_completed: number | null;

@@ -10,7 +10,7 @@ import {
   deleteEvent,
   createEvents,
 } from './logic/actions';
-import { EventDetailsDTO, IIconFile } from './logic/model';
+import { IIconFile } from './logic/model';
 import { IEventState } from './logic/reducer';
 
 import Navigation from './navigation';
@@ -21,7 +21,7 @@ import PlayoffsSection from './playoffs';
 import Rankings from './rankings';
 
 import { Button, HeadingLevelTwo, Loader } from 'components/common';
-import { IUploadFile, BindingCbWithOne } from 'common/models';
+import { IUploadFile, BindingCbWithOne, IEventDetails } from 'common/models';
 import { uploadFile } from 'helpers';
 import styles from './styles.module.scss';
 import { eventState } from './state';
@@ -38,17 +38,17 @@ interface IMapStateProps {
 interface Props extends IMapStateProps {
   match: any;
   getEventDetails: (eventId: string) => void;
-  saveEventDetails: (event: Partial<EventDetailsDTO>) => void;
-  createEvent: (event: Partial<EventDetailsDTO>) => void;
+  saveEventDetails: (event: Partial<IEventDetails>) => void;
+  createEvent: (event: Partial<IEventDetails>) => void;
   uploadFiles: (files: IIconFile[]) => void;
   removeFiles: (files: IIconFile[]) => void;
   deleteEvent: BindingCbWithOne<string>;
-  createEvents: (events: Partial<EventDetailsDTO>[]) => void;
+  createEvents: (events: Partial<IEventDetails>[]) => void;
 }
 
 type State = {
   eventId: string | undefined;
-  event?: Partial<EventDetailsDTO>;
+  event?: Partial<IEventDetails>;
   error: boolean;
   expanded: boolean[];
   expandAll: boolean;

@@ -17,11 +17,14 @@ import { IPosition } from './map/autocomplete';
 import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
-import { EventDetailsDTO } from '../logic/model';
 
 import Map from './map';
 import PlacesAutocompleteInput from './map/autocomplete';
-import { BindingCbWithTwo, BindingCbWithOne } from 'common/models';
+import {
+  BindingCbWithTwo,
+  BindingCbWithOne,
+  IEventDetails,
+} from 'common/models';
 import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
 import { timeToDate, dateToTime } from 'helpers';
 import { getDays, getDay } from 'helpers/getDays';
@@ -32,7 +35,7 @@ const CONTACT_TOOLTIP_MESSAGE =
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
-  eventData: Partial<EventDetailsDTO>;
+  eventData: Partial<IEventDetails>;
   onChange: BindingCbWithTwo<string, string | number>;
   expanded: boolean;
   onToggleOne: BindingCbWithOne<number>;

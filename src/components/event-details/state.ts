@@ -1,4 +1,5 @@
 import { getVarcharEight } from 'helpers';
+import { EventStatuses } from 'common/enums';
 
 export const eventState = () => ({
   event_id: getVarcharEight(),
@@ -14,7 +15,7 @@ export const eventState = () => ({
   time_zone_utc: -5,
   event_tag: '',
   event_level: 'Other',
-  event_status: 'Draft',
+  event_status: EventStatuses.DRAFT,
   event_format_id: 0,
   first_game_time: '00:00:00',
   last_game_end: '00:00:00',

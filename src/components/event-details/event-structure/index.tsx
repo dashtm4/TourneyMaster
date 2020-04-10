@@ -12,9 +12,8 @@ import {
 import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
-import { EventDetailsDTO } from '../logic/model';
 import { getTimeFromString, timeToString } from 'helpers';
-import { BindingCbWithOne } from 'common/models';
+import { BindingCbWithOne, IEventDetails } from 'common/models';
 import waiverHubLogo from 'assets/WaiverHubLogo.png';
 import { getDays, getDay } from 'helpers/getDays';
 
@@ -51,7 +50,7 @@ enum DayOptions {
 
 interface Props {
   eventTypeOptions: string[];
-  eventData: Partial<EventDetailsDTO>;
+  eventData: Partial<IEventDetails>;
   onChange: any;
   expanded: boolean;
   onToggleOne: BindingCbWithOne<number>;

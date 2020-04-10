@@ -7,11 +7,10 @@ import {
   CALENDAR_EVENTS_FETCH_START,
   CALENDAR_EVENTS_FETCH_SUCCESS,
 } from './actionTypes';
-import { EventDetailsDTO } from '../../event-details/logic/model';
-import { ITeam, IField, ICalendarEvent } from 'common/models';
+import { ITeam, IField, ICalendarEvent, IEventDetails } from 'common/models';
 
 export interface IState {
-  data?: EventDetailsDTO[];
+  data?: IEventDetails[];
   teams: ITeam[];
   fields: IField[];
   calendarEvents: ICalendarEvent[];
@@ -48,7 +47,7 @@ export default (
       return {
         ...state,
         data: action.payload.sort(
-          (a: EventDetailsDTO, b: EventDetailsDTO) =>
+          (a: IEventDetails, b: IEventDetails) =>
             +new Date(b.event_startdate) - +new Date(a.event_startdate)
         ),
         isLoading: false,

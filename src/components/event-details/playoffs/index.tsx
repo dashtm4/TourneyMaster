@@ -12,9 +12,8 @@ import { CardMessageTypes } from 'components/common/card-message/types';
 import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
-import { EventDetailsDTO } from '../logic/model';
 
-import { BindingCbWithOne } from 'common/models';
+import { BindingCbWithOne, IEventDetails } from 'common/models';
 import { RankingFactorValues } from 'common/enums';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
@@ -55,7 +54,7 @@ enum numTeamsBracketEnum {
 }
 
 interface Props {
-  eventData: Partial<EventDetailsDTO>;
+  eventData: Partial<IEventDetails>;
   onChange: any;
   expanded: boolean;
   onToggleOne: BindingCbWithOne<number>;

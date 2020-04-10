@@ -7,9 +7,8 @@ import {
   HeadingLevelThree,
   CardMessage,
 } from 'components/common';
-import { BindingCbWithOne } from 'common/models';
+import { BindingCbWithOne, IEventDetails } from 'common/models';
 import { EventMenuTitles, RankingFactorValues } from 'common/enums';
-import { EventDetailsDTO } from '../logic/model';
 import styles from '../styles.module.scss';
 import { CardMessageTypes } from 'components/common/card-message/types';
 
@@ -27,7 +26,7 @@ enum rankingFactors {
 }
 
 interface Props {
-  eventData: Partial<EventDetailsDTO>;
+  eventData: Partial<IEventDetails>;
   onChange: any;
   expanded: boolean;
   onToggleOne: BindingCbWithOne<number>;

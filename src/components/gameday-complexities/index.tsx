@@ -5,7 +5,6 @@ import rain from '../../assets/rain.svg';
 import Modal from 'components/common/modal';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import CreateBackupModal from './create-backup-modal';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { connect } from 'react-redux';
 import {
   getEvents,
@@ -16,7 +15,12 @@ import {
   deleteBackupPlan,
   updateBackupPlan,
 } from './logic/actions';
-import { BindingAction, IFacility, BindingCbWithOne } from 'common/models';
+import {
+  BindingAction,
+  IFacility,
+  BindingCbWithOne,
+  IEventDetails,
+} from 'common/models';
 import { IField } from 'common/models';
 import BackupPlan from './backup-plan';
 import { IBackupPlan } from 'common/models/backup_plan';
@@ -30,7 +34,7 @@ interface Props {
   saveBackupPlans: BindingCbWithOne<Partial<IBackupPlan>[]>;
   deleteBackupPlan: BindingCbWithOne<string>;
   updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
-  events: EventDetailsDTO[];
+  events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
   backupPlans: IBackupPlan[];
@@ -164,7 +168,7 @@ class GamedayComplexities extends React.Component<Props, State> {
 
 interface IState {
   complexities: {
-    data: EventDetailsDTO[];
+    data: IEventDetails[];
     facilities: IFacility[];
     fields: IField[];
     backupPlans: IBackupPlan[];

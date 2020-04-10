@@ -1,5 +1,5 @@
 enum EventStatuses {
-  PUBLIHSED = 'Published',
+  PUBLISHED = 'Published',
   DRAFT = 'Draft',
 }
 
