@@ -164,6 +164,8 @@ const TableSchedule = ({
     );
 
     switch (true) {
+      case result.playoffSlot:
+        return onReplacementWarningChange(moveCardMessages.playoffSlot);
       case result.timeSlotInUse:
         return onReplacementWarningChange(moveCardMessages.timeSlotInUse);
       case result.differentFacility: {

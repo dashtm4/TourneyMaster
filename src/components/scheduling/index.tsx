@@ -135,7 +135,7 @@ class Scheduling extends Component<IProps, IState> {
     const scheduleId = bracketData.scheduleId;
     this.props.createNewBracket(bracketData);
     this.onCreateBracketClosed();
-    this.props.history.push(`/schedules/${eventId}/${scheduleId}`);
+    this.props.history.push(`/playoffs/${eventId}/${scheduleId}`);
   };
 
   onEditSchedule = (schedule: ISchedulingSchedule) =>
