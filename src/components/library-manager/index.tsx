@@ -40,6 +40,9 @@ import { IEntity } from 'common/types';
 import { ILibraryManagerRegistration, ITableSortEntity } from './common';
 import styles from './styles.module.scss';
 
+const DELETE_POPUP_MESSAGE =
+  'To confirm that you want to delete this item from your library, please confirm by re-typing its name.';
+
 interface Props {
   isLoading: boolean;
   isLoaded: boolean;
@@ -212,6 +215,7 @@ const LibraryManager = ({
       <DeletePopupConfrim
         type="item"
         deleteTitle={tableEntity?.title || ''}
+        message={DELETE_POPUP_MESSAGE}
         isOpen={isCondfirmPopupOpen}
         onClose={onClosePopup}
         onDeleteClick={onDeleteLibraryItem}
