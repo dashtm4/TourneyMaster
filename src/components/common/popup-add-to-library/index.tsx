@@ -53,7 +53,7 @@ const PopupAddToLibrary = ({
               onChange={onChangeOption}
               value={activeOptionId || ''}
               options={selectOptions!}
-              label="Select event"
+              label="Select item"
               width="100%"
             />
           ) : (
