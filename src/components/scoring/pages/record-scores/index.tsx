@@ -27,12 +27,16 @@ import {
   mapTeamsData,
   mapDivisionsData,
 } from 'components/schedules/mapTournamentData';
-import { getTimeValuesFromEventSchedule, calculateTimeSlots } from 'helpers';
+import {
+  getTimeValuesFromEventSchedule,
+  calculateTimeSlots,
+  calculateTournamentDays,
+} from 'helpers';
 import {
   sortFieldsByPremier,
   defineGames,
   IGame,
-  settleTeamsPerGames,
+  settleTeamsPerGamesDays,
 } from 'components/common/matrix-table/helper';
 import { IAppState } from 'reducers/root-reducer.types';
 import {
@@ -53,6 +57,7 @@ import { IScheduleDivision } from 'common/models/schedule/divisions';
 import { IField as IScheduleField } from 'common/models/schedule/fields';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { mapGamesWithSchedulesGamesId } from 'components/scoring/helpers';
+import api from 'api/api';
 
 interface MatchParams {
   eventId?: string;
@@ -192,15 +197,30 @@ class RecordScores extends React.Component<
 
   retrieveSchedulesGames = async () => {
     const { games } = this.state;
-    const { schedulesTeamCards, schedule } = this.props;
+    const { schedulesTeamCards, schedule, event } = this.props;
 
     if (!schedule || !games || !schedulesTeamCards) {
       throw errorToast('Failed to retrieve schedules data');
     }
 
-    const schedulesTableGames = settleTeamsPerGames(games, schedulesTeamCards);
+    const tournamentDays = calculateTournamentDays(event!);
+    const publishedGames = await api.get('/games', {
+      schedule_id: schedule.schedule_id,
+    });
 
-    return mapTeamCardsToSchedulesGames(schedule, schedulesTableGames);
+    let schedulesTableGames = [];
+    for (const day of tournamentDays) {
+      schedulesTableGames.push(
+        settleTeamsPerGamesDays(games, schedulesTeamCards, day)
+      );
+    }
+    schedulesTableGames = schedulesTableGames.flat();
+
+    return mapTeamCardsToSchedulesGames(
+      schedule,
+      schedulesTableGames,
+      publishedGames
+    );
   };
 
   saveDraft = async () => {

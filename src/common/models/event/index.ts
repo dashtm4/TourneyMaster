@@ -57,6 +57,7 @@ export interface IEventDetails {
   is_library_YN: 0 | 1 | null;
   num_games_completed: number | null;
   last_web_published: string | null;
+  max_goal_differential: string | null;
   //! from server
   created_by: string;
   created_datetime: string;

@@ -46,6 +46,7 @@ const PoolsDetails = ({
   const [isConfirmPopupOpen, toggleConfirmPopup] = React.useState<boolean>(
     false
   );
+  const [changesAreMade, toggleChangesAreMade] = React.useState<boolean>(false);
 
   const onCloseModal = () => {
     configutationTeam(null);
@@ -59,7 +60,13 @@ const PoolsDetails = ({
     changePoolName(null);
   };
 
-  const onToggleConfirmPopup = () => toggleConfirmPopup(!isConfirmPopupOpen);
+  const onToggleConfirmPopup = () => {
+    if (changesAreMade) {
+      toggleConfirmPopup(!isConfirmPopupOpen);
+    } else {
+      toggleArrange(false);
+    }
+  };
 
   const onToggleArrange = () => toggleArrange(!isArrange);
 
@@ -185,6 +192,7 @@ const PoolsDetails = ({
                 changePool={changePool}
                 onDeletePopupOpen={onDeletePopupOpen}
                 onEditPopupOpen={onEditPopupOpen}
+                toggleChangesAreMade={toggleChangesAreMade}
               />
               {pools.map(pool => (
                 <Pool
@@ -198,6 +206,7 @@ const PoolsDetails = ({
                   changePool={changePool}
                   onDeletePopupOpen={onDeletePopupOpen}
                   onEditPopupOpen={onEditPopupOpen}
+                  toggleChangesAreMade={toggleChangesAreMade}
                 />
               ))}
             </DndProvider>

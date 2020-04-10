@@ -10,6 +10,7 @@ interface Props {
   onCancelClick: BindingAction;
   eventId: string | undefined;
   history: History;
+  onImportFromCsv: BindingAction;
 }
 
 const Navigation = ({
@@ -17,6 +18,7 @@ const Navigation = ({
   onCancelClick,
   eventId,
   history,
+  onImportFromCsv,
 }: Props) => {
   const onCreateTeam = () => {
     const path = eventId
@@ -40,6 +42,12 @@ const Navigation = ({
           variant={ButtonVarian.CONTAINED}
           color={ButtonColors.PRIMARY}
           label="Save"
+        />
+        <Button
+          onClick={onImportFromCsv}
+          variant={ButtonVarian.TEXT}
+          color={ButtonColors.SECONDARY}
+          label="Import from CSV"
         />
       </span>
       <span className={styles.btnWrapper}>

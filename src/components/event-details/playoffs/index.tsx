@@ -14,7 +14,6 @@ import { EventMenuTitles } from 'common/enums';
 import styles from '../styles.module.scss';
 
 import { BindingCbWithOne, IEventDetails } from 'common/models';
-import { RankingFactorValues } from 'common/enums';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -61,14 +60,6 @@ interface Props {
   index: number;
 }
 
-const defaultRankingFactor = [
-  { id: RankingFactorValues.BEST_RECORD, text: 'Best record' },
-  { id: RankingFactorValues.HEAD_TO_HEAD, text: 'Head to Head' },
-  { id: RankingFactorValues.GOAL_DIFFERENCE, text: 'Goal Difference' },
-  { id: RankingFactorValues.GOAL_SCORED, text: 'Goals Scored' },
-  { id: RankingFactorValues.GOAL_ALLOWED, text: 'Goals Allowed' },
-];
-
 const PlayoffsSection: React.FC<Props> = ({
   eventData,
   onChange,
@@ -90,17 +81,7 @@ const PlayoffsSection: React.FC<Props> = ({
     },
   ];
 
-  const onPlayoffs = () => {
-    onChange('playoffs_exist', playoffs_exist ? 0 : 1);
-    onChange(
-      'ranking_factor_divisions',
-      JSON.stringify(defaultRankingFactor.map(factor => factor.id))
-    );
-    onChange(
-      'ranking_factor_pools',
-      JSON.stringify(defaultRankingFactor.map(factor => factor.id))
-    );
-  };
+  const onPlayoffs = () => onChange('playoffs_exist', playoffs_exist ? 0 : 1);
 
   const onChangeBracketType = (e: InputTargetValue) =>
     onChange('bracket_type', bracketTypesEnum[e.target.value]);

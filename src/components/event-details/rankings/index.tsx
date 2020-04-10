@@ -6,19 +6,25 @@ import {
   SectionDropdown,
   HeadingLevelThree,
   CardMessage,
+  Checkbox,
+  Select,
 } from 'components/common';
 import { BindingCbWithOne, IEventDetails } from 'common/models';
-import { EventMenuTitles, RankingFactorValues } from 'common/enums';
-import styles from '../styles.module.scss';
+import { EventMenuTitles } from 'common/enums';
 import { CardMessageTypes } from 'components/common/card-message/types';
+import { IInputEvent } from 'common/types';
+import { defaultRankingFactor } from '../state';
+import styles from '../styles.module.scss';
 
-const defaultRankingFactor = [
-  { id: RankingFactorValues.BEST_RECORD, text: 'Best record' },
-  { id: RankingFactorValues.HEAD_TO_HEAD, text: 'Head to Head' },
-  { id: RankingFactorValues.GOAL_DIFFERENCE, text: 'Goal Difference' },
-  { id: RankingFactorValues.GOAL_SCORED, text: 'Goals Scored' },
-  { id: RankingFactorValues.GOAL_ALLOWED, text: 'Goals Allowed' },
-];
+const MAX_GOAL_ALLOWED_COUNT = 16;
+
+const goalAllowedSelectOptions = Array.from(
+  new Array(MAX_GOAL_ALLOWED_COUNT),
+  (_, idx) => ({
+    label: idx.toString(),
+    value: idx.toString(),
+  })
+);
 
 enum rankingFactors {
   'rankingFactorDivisions' = 'ranking_factor_divisions',
@@ -40,7 +46,25 @@ const Rankings = ({
   onToggleOne,
   index,
 }: Props) => {
-  const { ranking_factor_divisions, ranking_factor_pools } = eventData;
+  const {
+    ranking_factor_divisions,
+    ranking_factor_pools,
+    max_goal_differential,
+  } = eventData;
+
+  const [isGoalCheckboxAllowed, toggleGoalCheckbox] = React.useState<boolean>(
+    Boolean(max_goal_differential)
+  );
+
+  const onChangeGoalCheckbox = () => {
+    if (max_goal_differential) {
+      onChange('max_goal_differential', null);
+
+      toggleGoalCheckbox(false);
+    } else {
+      toggleGoalCheckbox(true);
+    }
+  };
 
   const onRankingFactorReorder = (
     name: string,
@@ -67,6 +91,17 @@ const Rankings = ({
   const rankingFactorDivisions = parseRankingFactor(ranking_factor_divisions);
 
   const rankingFactorPools = parseRankingFactor(ranking_factor_pools);
+
+  const goalAllowedCheckboxOptions = [
+    {
+      label: 'Cap Goals Allowed Differential',
+      checked: isGoalCheckboxAllowed,
+    },
+  ];
+
+  const onGoalAllowedChage = (evt: IInputEvent) => {
+    onChange('max_goal_differential', evt.target.value);
+  };
 
   return (
     <SectionDropdown
@@ -107,9 +142,24 @@ const Rankings = ({
               />
             </DndProvider>
           </div>
-          <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-            Drag and Drop to reorder Ranking Factors
-          </CardMessage>
+          <div className={styles.tooltipWrapper}>
+            <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+              Drag and Drop to reorder Ranking Factors
+            </CardMessage>
+            <div className={styles.checkBoxWrapper}>
+              <Checkbox
+                onChange={onChangeGoalCheckbox}
+                options={goalAllowedCheckboxOptions}
+              />
+              {isGoalCheckboxAllowed && (
+                <Select
+                  onChange={onGoalAllowedChage}
+                  options={goalAllowedSelectOptions}
+                  value={max_goal_differential || ''}
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </SectionDropdown>

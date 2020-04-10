@@ -4,6 +4,7 @@ import {
   eventDetailsSchema,
   divisionSchema,
   facilitySchema,
+  teamSchema,
 } from 'validations';
 
 export const parseTableDetails = (tableDetails: string): IColumnDetails[] => {
@@ -83,6 +84,11 @@ const getBaseObj = (type: string, eventId?: string) => {
         division_id: getVarcharEight(),
         event_id: eventId,
       };
+    case 'teams':
+      return {
+        team_id: getVarcharEight(),
+        event_id: eventId,
+      };
     default:
       return {
         event_id: getVarcharEight(),
@@ -134,6 +140,8 @@ export const getRequiredFields = (type: string, tableDetails: string) => {
     requiredFromValidation = Object.keys(divisionSchema.fields);
   } else if (type === 'facilities') {
     requiredFromValidation = Object.keys(facilitySchema.fields);
+  } else if (type === 'teams') {
+    requiredFromValidation = Object.keys(teamSchema.fields);
   }
   const parsedTableDetails = parseTableDetails(tableDetails);
 

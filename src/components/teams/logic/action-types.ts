@@ -16,6 +16,7 @@ export const LOAD_POOLS_FAILURE = 'TEAMS:LOAD_POOLS_FAILURE';
 export const SAVE_TEAMS_START = 'TEAMS:SAVE_TEAMS_START';
 export const SAVE_TEAMS_SUCCESS = 'TEAMS:SAVE_TEAMS_SUCCESS';
 export const SAVE_TEAMS_FAILURE = 'TEAMS:SAVE_TEAMS_FAILURE';
+export const CREATE_TEAMS_SUCCESS = 'TEAMS:CREATE_TEAMS_SUCCESS';
 
 export interface loadDivisionsTeamsStart {
   type: 'TEAMS:LOAD_TEAMS_DATA_START';
@@ -52,9 +53,17 @@ export interface saveTeamsSuccess {
   };
 }
 
+export interface createTeamsSuccess {
+  type: 'TEAMS:CREATE_TEAMS_SUCCESS';
+  payload: {
+    data: ITeam[];
+  };
+}
+
 export type TeamsAction =
   | loadDivisionsTeamsStart
   | loadDivisionsTeamsSuccess
   | loadPoolsStart
   | loadPoolsSuccess
-  | saveTeamsSuccess;
+  | saveTeamsSuccess
+  | createTeamsSuccess;

@@ -139,11 +139,15 @@ class Facilities extends React.Component<
   };
 
   onCancelClick = () => {
-    this.setState({ isModalOpen: true });
+    if (this.props.facilities.length) {
+      this.setState({ isModalOpen: true });
+    } else {
+      this.onCancel();
+    }
   };
 
   onCancel = () => {
-    history.push('/');
+    history.push(`/event/event-details/${this.props.match.params.eventId}`);
   };
 
   onCsvLoaderBtn = () => {

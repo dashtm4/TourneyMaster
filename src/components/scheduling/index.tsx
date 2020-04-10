@@ -11,6 +11,7 @@ import {
   deleteSchedule,
   publishSchedule,
   unpublishSchedule,
+  createNewBracket,
 } from './logic/actions';
 import {
   HeadingLevelTwo,
@@ -43,6 +44,9 @@ import { ISchedulingSchedule } from './types';
 import ViewMatrix from './view-matrix';
 import { getTimeValuesFromSchedule, calculateTimeSlots } from 'helpers';
 import { ButtonVarian, ButtonColors } from 'common/enums';
+import CreateNewBracket, {
+  ICreateBracketModalOutput,
+} from './create-new-bracket';
 
 enum ComponentActionsEnum {
   SchedulePublish = 'schedulePublish',
@@ -68,6 +72,7 @@ interface IProps {
   deleteSchedule: BindingCbWithOne<ISchedulingSchedule>;
   publishSchedule: BindingCbWithOne<string>;
   unpublishSchedule: BindingCbWithOne<string>;
+  createNewBracket: BindingCbWithOne<ICreateBracketModalOutput>;
   divisions?: IDivision[];
   teams?: ITeam[];
   event?: IEventDetails | null;
@@ -84,6 +89,7 @@ interface IState {
   confirmCondition?: { name: string; data: any };
   componentAction?: ComponentActionsEnum;
   isSectionsExpand: boolean;
+  createBracketOpen: boolean;
 }
 
 class Scheduling extends Component<IProps, IState> {
@@ -96,6 +102,7 @@ class Scheduling extends Component<IProps, IState> {
     confirmCondition: undefined,
     componentAction: undefined,
     isSectionsExpand: true,
+    createBracketOpen: false,
   };
 
   componentDidMount() {
@@ -114,12 +121,17 @@ class Scheduling extends Component<IProps, IState> {
     changeSchedule({ [name]: value });
   };
 
-  onCreatePressed = () => {
-    this.setState({ createModalOpen: true });
-  };
+  onCreatePressed = () => this.setState({ createModalOpen: true });
 
-  onCreateClosed = () => {
-    this.setState({ createModalOpen: false });
+  onCreateBracketPressed = () => this.setState({ createBracketOpen: true });
+
+  onCreateClosed = () => this.setState({ createModalOpen: false });
+
+  onCreateBracketClosed = () => this.setState({ createBracketOpen: false });
+
+  onCreateBracket = (bracketData: ICreateBracketModalOutput) => {
+    this.props.createNewBracket(bracketData);
+    this.onCreateBracketClosed();
   };
 
   onEditSchedule = (schedule: ISchedulingSchedule) =>
@@ -177,6 +189,7 @@ class Scheduling extends Component<IProps, IState> {
       confirmationModalOpen: false,
     });
   };
+
   toggleSectionCollapse = () =>
     this.setState(({ isSectionsExpand }) => ({
       isSectionsExpand: !isSectionsExpand,
@@ -194,6 +207,7 @@ class Scheduling extends Component<IProps, IState> {
       fields,
       event,
     } = this.props;
+
     const {
       createModalOpen,
       editedSchedule,
@@ -203,7 +217,9 @@ class Scheduling extends Component<IProps, IState> {
       confirmationModalOpen,
       componentAction,
       isSectionsExpand,
+      createBracketOpen,
     } = this.state;
+
     const { eventId } = this.props.match?.params;
     const isAllowCreate = incompleteMenuItems.length === 0;
 
@@ -222,10 +238,7 @@ class Scheduling extends Component<IProps, IState> {
     return (
       <>
         <div className={styles.container}>
-          <Navigation
-            isAllowCreate={isAllowCreate}
-            onCreatePressed={this.onCreatePressed}
-          />
+          <Navigation />
           {isAllowCreate ? (
             <>
               <div className={styles.titleWrapper}>
@@ -249,7 +262,9 @@ class Scheduling extends Component<IProps, IState> {
                   <TournamentPlay
                     schedules={schedules}
                     isSectionExpand={isSectionsExpand}
+                    isAllowCreate={isAllowCreate}
                     eventId={eventId}
+                    onCreatePressed={this.onCreatePressed}
                     onEditSchedule={this.onEditSchedule}
                     onPublish={(data: ISchedule) => this.onPublish(data, true)}
                     onUnpublish={(data: ISchedule) =>
@@ -260,6 +275,8 @@ class Scheduling extends Component<IProps, IState> {
                     schedules={schedules}
                     eventId={eventId}
                     isSectionExpand={isSectionsExpand}
+                    bracketCreationAllowed={true}
+                    onCreateBracket={this.onCreateBracketPressed}
                   />
                 </>
               )}
@@ -277,6 +294,12 @@ class Scheduling extends Component<IProps, IState> {
           onCreate={createNewSchedule}
           onClose={this.onCreateClosed}
           onChange={this.onChange}
+        />
+        <CreateNewBracket
+          schedules={schedules}
+          isOpen={createBracketOpen}
+          onCreateBracket={this.onCreateBracket}
+          onClose={this.onCreateBracketClosed}
         />
         <Modal isOpen={viewMatrixOpen} onClose={this.closeViewMatrix}>
           <ViewMatrix
@@ -352,6 +375,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
     {
       getScheduling,
       createNewSchedule,
+      createNewBracket,
       addNewSchedule,
       changeSchedule,
       updateSchedule,

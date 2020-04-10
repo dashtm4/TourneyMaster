@@ -2,7 +2,12 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
-import { loadTeamsData, loadPools, saveTeams } from './logic/actions';
+import {
+  loadTeamsData,
+  loadPools,
+  saveTeams,
+  createTeamsCsv,
+} from './logic/actions';
 import Navigation from './components/navigation';
 import TeamManagement from './components/team-management';
 import {
@@ -20,6 +25,7 @@ import {
   ISchedulesGameWithNames,
 } from '../../common/models';
 import styles from './styles.module.scss';
+import CsvLoader from 'components/common/csv-loader';
 
 interface MatchParams {
   eventId?: string;
@@ -35,6 +41,7 @@ interface Props {
   loadTeamsData: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
   saveTeams: (teams: ITeam[]) => void;
+  createTeamsCsv: (teams: ITeam[]) => void;
 }
 
 interface State {
@@ -44,6 +51,7 @@ interface State {
   currentPool: string | null;
   isEditPopupOpen: boolean;
   isConfirmModalOpen: boolean;
+  isCsvLoaderOpen: boolean;
 }
 
 class Teams extends React.Component<
@@ -60,6 +68,7 @@ class Teams extends React.Component<
       currentPool: null,
       isEditPopupOpen: false,
       isConfirmModalOpen: false,
+      isCsvLoaderOpen: false,
     };
   }
 
@@ -75,7 +84,10 @@ class Teams extends React.Component<
   componentDidUpdate(PrevProps: Props) {
     const { isLoading, teams } = this.props;
 
-    if (PrevProps.isLoading !== isLoading) {
+    if (
+      PrevProps.isLoading !== isLoading ||
+      PrevProps.teams.length !== this.props.teams.length
+    ) {
       this.setState({ teams: teams });
     }
   }
@@ -147,6 +159,14 @@ class Teams extends React.Component<
       currentDivision: null,
     });
 
+  onImportFromCsv = () => {
+    this.setState({ isCsvLoaderOpen: true });
+  };
+
+  onCsvLoaderClose = () => {
+    this.setState({ isCsvLoaderOpen: false });
+  };
+
   onConfirmModalClose = () => {
     this.setState({ isConfirmModalOpen: false });
   };
@@ -178,6 +198,7 @@ class Teams extends React.Component<
             onCancelClick={this.onCancel}
             history={this.props.history}
             eventId={this.props.match.params.eventId}
+            onImportFromCsv={this.onImportFromCsv}
           />
           <div className={styles.headingWrapper}>
             <HeadingLevelTwo>Teams</HeadingLevelTwo>
@@ -210,6 +231,13 @@ class Teams extends React.Component<
           onExitClick={this.onCancelClick}
           onSaveClick={this.onSaveClick}
         />
+        <CsvLoader
+          isOpen={this.state.isCsvLoaderOpen}
+          onClose={this.onCsvLoaderClose}
+          type="teams"
+          onCreate={this.props.createTeamsCsv}
+          eventId={this.props.match.params.eventId}
+        />
       </>
     );
   }
@@ -225,5 +253,8 @@ export default connect(
     games: teams.games,
   }),
   (dispatch: Dispatch) =>
-    bindActionCreators({ loadTeamsData, loadPools, saveTeams }, dispatch)
+    bindActionCreators(
+      { loadTeamsData, loadPools, saveTeams, createTeamsCsv },
+      dispatch
+    )
 )(Teams);

@@ -106,6 +106,7 @@
 .popupBtnsWrapper {
   display: flex;
   justify-content: space-between;
-
-  width: 150px;
+  & > :first-child {
+    margin-right: 15px;
+  }
 }

@@ -251,12 +251,7 @@ export const deleteDivision: ActionCreator<ThunkAction<
   dispatch: Dispatch
 ) => {
   pools.forEach(pool => api.delete(`/pools?pool_id=${pool.pool_id}`));
-  teams.forEach(team =>
-    api.put(`/teams?team_id=${team.team_id}`, {
-      pool_id: null,
-      division_id: null,
-    })
-  );
+  teams.forEach(team => api.delete(`/teams?team_id=${team.team_id}`));
   const response = await api.delete(`/divisions?division_id=${divisionId}`);
 
   if (response?.errorType === 'Error') {
@@ -403,9 +398,9 @@ export const createDivisions: ActionCreator<ThunkAction<
     Toasts.successToast(successMsg);
     cb();
   } catch (err) {
-    const div = err.value[err.value.length - 1];
+    const invalidDivision = err.value[err.value.length - 1];
     const index = divisions.findIndex(
-      division => division.division_id === div.division_id
+      division => division.division_id === invalidDivision.division_id
     );
     const errMessage = `Record ${index + 1}: ${err.message}`;
     return Toasts.errorToast(errMessage);

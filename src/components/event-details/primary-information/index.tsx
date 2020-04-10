@@ -27,7 +27,6 @@ import {
 } from 'common/models';
 import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
 import { timeToDate, dateToTime } from 'helpers';
-import { getDays, getDay } from 'helpers/getDays';
 
 const CONTACT_TOOLTIP_MESSAGE =
   'Contact details will be included when printing schedules and fields by field datails';
@@ -124,10 +123,6 @@ const PrimaryInformationSection: React.FC<Props> = ({
       onChange('event_startdate', new Date(e).toISOString());
       if (event_enddate && new Date(e).toISOString() > event_enddate) {
         onEndDate(e);
-      }
-      if (eventData.event_type === 'League' && eventData.league_dates) {
-        const dayDates = getDays(getDay(eventData.league_dates), new Date(e));
-        onChange('league_dates', JSON.stringify(dayDates));
       }
     }
   };
