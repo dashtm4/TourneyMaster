@@ -8,7 +8,7 @@ import { ITableSortEntity } from '../../common';
 
 interface Props {
   facilities: IFacility[];
-  isSectionCollapse: boolean;
+  isSectionExpand: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
   onConfirmDeleteItem: BindingCbWithThree<
     IEntity,
@@ -19,7 +19,7 @@ interface Props {
 
 const Facilities = ({
   facilities,
-  isSectionCollapse,
+  isSectionExpand,
   changeSharedItem,
   onConfirmDeleteItem,
 }: Props) => {
@@ -49,7 +49,7 @@ const Facilities = ({
         id={MenuTitles.FACILITIES}
         type="section"
         panelDetailsType="flat"
-        expanded={isSectionCollapse}
+        expanded={isSectionExpand}
       >
         <span>{MenuTitles.FACILITIES}</span>
         <TableSort

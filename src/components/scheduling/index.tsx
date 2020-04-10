@@ -241,14 +241,14 @@ class Scheduling extends Component<IProps, IState> {
                 schedule={schedule}
                 event={event}
                 onChange={this.onChange}
-                isSectionsExpand={isSectionsExpand}
+                isSectionExpand={isSectionsExpand}
                 onViewEventMatrix={this.openViewMatrix}
               />
               {schedules.length > 0 && (
                 <>
                   <TournamentPlay
                     schedules={schedules}
-                    isSectionsExpand={isSectionsExpand}
+                    isSectionExpand={isSectionsExpand}
                     eventId={eventId}
                     onEditSchedule={this.onEditSchedule}
                     onPublish={(data: ISchedule) => this.onPublish(data, true)}
@@ -259,7 +259,7 @@ class Scheduling extends Component<IProps, IState> {
                   <Brackets
                     schedules={schedules}
                     eventId={eventId}
-                    isSectionsExpand={isSectionsExpand}
+                    isSectionExpand={isSectionsExpand}
                   />
                 </>
               )}
