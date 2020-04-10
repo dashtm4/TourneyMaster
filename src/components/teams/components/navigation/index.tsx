@@ -1,14 +1,9 @@
 import React from 'react';
-import Button from '../../../common/buttons/button';
-import { getIcon } from '../../../../helpers/get-icon.helper';
-import { Icons } from '../../../../common/enums/icons';
-import { BindingAction } from '../../../../common/models';
+import Button from 'components/common/buttons/button';
+import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 import { History } from 'history';
-
-const ICON_STYLES = {
-  marginRight: '5px',
-};
+import { ButtonVarian, ButtonColors } from 'common/enums';
 
 interface Props {
   onSaveClick: BindingAction;
@@ -33,44 +28,28 @@ const Navigation = ({
 
   return (
     <div className={styles.navWrapper}>
-      <p>
+      <Button
+        onClick={onCancelClick}
+        variant={ButtonVarian.TEXT}
+        color={ButtonColors.SECONDARY}
+        label="Cancel"
+      />
+      <span className={styles.btnWrapper}>
         <Button
-          icon={getIcon(Icons.GET_APP, ICON_STYLES)}
-          label="Load From Library"
-          variant="text"
-          color="secondary"
+          onClick={onSaveClick}
+          variant={ButtonVarian.CONTAINED}
+          color={ButtonColors.PRIMARY}
+          label="Save"
         />
+      </span>
+      <span className={styles.btnWrapper}>
         <Button
-          icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
-          label="Upload From File"
-          variant="text"
-          color="secondary"
+          onClick={onCreateTeam}
+          variant={ButtonVarian.CONTAINED}
+          color={ButtonColors.PRIMARY}
+          label="Create Team"
         />
-      </p>
-      <p>
-        <Button
-          onClick={onCancelClick}
-          label="Cancel"
-          variant="text"
-          color="secondary"
-        />
-        <span className={styles.btnWrapper}>
-          <Button
-            onClick={onSaveClick}
-            label="Save"
-            variant="contained"
-            color="primary"
-          />
-        </span>
-        <span className={styles.btnWrapper}>
-          <Button
-            label="Create Team"
-            variant="contained"
-            color="primary"
-            onClick={onCreateTeam}
-          />
-        </span>
-      </p>
+      </span>
     </div>
   );
 };
