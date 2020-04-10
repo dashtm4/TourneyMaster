@@ -1,4 +1,5 @@
-import Api from '../../api/api';
+import Api from 'api/api';
+import * as Yup from 'yup';
 import {
   getVarcharEight,
   removeObjKeysByEntryPoint,
@@ -16,6 +17,7 @@ import {
   ISchedule,
 } from 'common/models';
 import { IPoolWithTeams } from './common';
+import { facilitySchema, divisionSchema, scheduleSchema } from 'validations';
 
 const getLibraryallowedItems = (items: IEntity[]) => {
   const allowedItems = items.filter(it => Boolean(it.is_library_YN));
@@ -89,6 +91,15 @@ const checkAleadyExist = async (
       ) {
         throw new Error('The event already has such a facility');
       }
+
+      await Yup.array()
+        .of(facilitySchema)
+        .unique(
+          facility => facility.facilities_description,
+          'Oops. It looks like you already have facilities with the same name. The facility must have a unique name.'
+        )
+        .validate([...ownSharedItems, facility]);
+
       break;
     }
     case EntryPoints.DIVISIONS: {
@@ -101,6 +112,19 @@ const checkAleadyExist = async (
       ) {
         throw new Error('The event already has such a division');
       }
+
+      await Yup.array()
+        .of(divisionSchema)
+        .unique(
+          division => division.long_name,
+          'Oops. It looks like you already have division with the same long name. The division must have a unique long name.'
+        )
+        .unique(
+          division => division.short_name,
+          'Oops. It looks like you already have division with the same short name. The division must have a unique short name.'
+        )
+        .validate([...ownSharedItems, division]);
+
       break;
     }
     case EntryPoints.SCHEDULES: {
@@ -113,6 +137,15 @@ const checkAleadyExist = async (
       ) {
         throw new Error('The event already has such a schedule');
       }
+
+      await Yup.array()
+        .of(scheduleSchema)
+        .unique(
+          schedule => schedule.schedule_name,
+          'Oops. It looks like you already have schedule with the same name. The schedule must have a unique name.'
+        )
+        .validate([...ownSharedItems, schedule]);
+
       break;
     }
   }

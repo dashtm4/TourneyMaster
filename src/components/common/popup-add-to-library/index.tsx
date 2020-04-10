@@ -22,7 +22,10 @@ const PopupAddToLibrary = ({
   addEntityToLibrary,
 }: Props) => {
   const [activeOptionId, changeOption] = React.useState<string | null>(null);
+
   const selectOptions = getSelectOptions(entities, entryPoint);
+
+  const isAllowShare = entities.length > 0;
 
   const onChangeOption = (evt: IInputEvent) => {
     changeOption(evt.target.value);
@@ -45,7 +48,7 @@ const PopupAddToLibrary = ({
           <HeadingLevelTwo>Save to Library:</HeadingLevelTwo>
         </div>
         <div className={styles.SelectWrapper}>
-          {selectOptions?.length !== 0 ? (
+          {isAllowShare ? (
             <Select
               onChange={onChangeOption}
               value={activeOptionId || ''}
@@ -67,12 +70,14 @@ const PopupAddToLibrary = ({
             />
           </span>
           <span className={styles.btnWrapper}>
-            <Button
-              onClick={onSave}
-              variant={ButtonVarian.CONTAINED}
-              color={ButtonColors.PRIMARY}
-              label="Save"
-            />
+            {isAllowShare && (
+              <Button
+                onClick={onSave}
+                variant={ButtonVarian.CONTAINED}
+                color={ButtonColors.PRIMARY}
+                label="Save"
+              />
+            )}
           </span>
         </p>
       </section>

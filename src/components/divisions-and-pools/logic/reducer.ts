@@ -12,9 +12,13 @@ import {
   ALL_POOLS_FETCH_SUCCESS,
   SAVE_TEAMS_SUCCESS,
 } from './actionTypes';
+import {
+  ADD_ENTITY_TO_LIBRARY_SUCCESS,
+  AuthPageAction,
+} from 'components/authorized-page/authorized-page-event/logic/action-types';
 import { IPool, ITeam, IDivision } from 'common/models';
 import { sortByField } from 'helpers';
-import { SortByFilesTypes } from 'common/enums';
+import { SortByFilesTypes, EntryPoints } from 'common/enums';
 import { IRegistration } from 'common/models/registration';
 
 export interface IDivisionAndPoolsState {
@@ -39,7 +43,7 @@ const defaultState: IDivisionAndPoolsState = {
 
 export default (
   state = defaultState,
-  action: { type: string; payload?: any }
+  action: { type: string; payload?: any } | AuthPageAction
 ) => {
   switch (action.type) {
     case DIVISIONS_TEAMS_FETCH_START: {
@@ -137,6 +141,24 @@ export default (
         ...state,
         teams,
       };
+    }
+    case ADD_ENTITY_TO_LIBRARY_SUCCESS: {
+      const { entity, entryPoint } = action.payload;
+
+      if (entryPoint === EntryPoints.DIVISIONS) {
+        const updatedDivision = entity as IDivision;
+
+        return {
+          ...state,
+          data: state.data!.map(it =>
+            it.division_id === updatedDivision.division_id
+              ? updatedDivision
+              : it
+          ),
+        };
+      } else {
+        return state;
+      }
     }
     default:
       return state;
