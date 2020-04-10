@@ -283,6 +283,7 @@ export default class Scheduler {
       game =>
         game.timeSlotId !== undefined &&
         game.startTime &&
+        !game.isPlayoff &&
         (ignorePremier || game.isPremier === teamOne.isPremier) &&
         !game.awayTeam &&
         !game.homeTeam &&

@@ -85,6 +85,7 @@ import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/red
 import SchedulesLoader, { LoaderTypeEnum } from './loader';
 import { ISchedulesGame } from 'common/models/schedule/game';
 import SchedulesPaper from './paper';
+import { populateDefinedGamesWithPlayoffState } from './definePlayoffs';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -368,8 +369,9 @@ class Schedules extends Component<Props, State> {
       timeSlots,
       facilities,
       tournamentDays,
+      divisions: stateDivisions,
     } = this.state;
-    const { divisions, scheduleData } = this.props;
+    const { divisions, scheduleData, event } = this.props;
 
     if (
       !scheduleData ||
@@ -410,8 +412,21 @@ class Schedules extends Component<Props, State> {
     let teamcards: ITeamCard[] = [];
     let schedulerResult: Scheduler;
 
+    /* Truncate gameslots and timeslots for the last day by the number of playoff timeslots */
+
     tournamentDays.map(day => {
-      const result = new Scheduler(fields, teams, games, timeSlots, {
+      let definedGames = [...games];
+      if (tournamentDays[tournamentDays.length - 1] === day) {
+        definedGames = populateDefinedGamesWithPlayoffState(
+          games,
+          fields,
+          timeSlots,
+          stateDivisions!,
+          event!
+        );
+      }
+
+      const result = new Scheduler(fields, teams, definedGames, timeSlots, {
         ...tournamentBaseInfo,
         teamsInPlay,
       });

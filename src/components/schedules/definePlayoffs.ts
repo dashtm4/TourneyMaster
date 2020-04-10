@@ -1,10 +1,11 @@
-import { unionBy, orderBy } from 'lodash-es';
+import { unionBy, orderBy, findIndex } from 'lodash-es';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleDivision } from 'common/models/schedule/divisions';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from 'components/common/matrix-table/helper';
+import { IEventDetails, IDivision } from 'common/models';
 
 export default (
   fields: IField[],
@@ -48,24 +49,6 @@ export default (
       firstRoundTimeSlots: Math.ceil(item.games / (item.fields || item.games)),
     }));
 
-  const recursor = (
-    rounds: number,
-    timeSlots: number[],
-    games: number,
-    fields: number
-  ): any => {
-    if (timeSlots.length) {
-      timeSlots.push(Math.ceil(Math.ceil(games / 2) / fields));
-    } else {
-      timeSlots.push(Math.ceil(games / fields));
-    }
-
-    if (timeSlots.length === rounds) {
-      return timeSlots.reduce((a, b) => a + b, 0);
-    }
-    return recursor(rounds, timeSlots, games, fields);
-  };
-
   const topFacilityData = orderBy(data2, ['firstRoundTimeSlots'], 'desc')[0];
   recursor(rounds, [], topFacilityData.games, topFacilityData.fields!);
 
@@ -74,4 +57,61 @@ export default (
     timeSlots,
     divisions,
   };
+};
+
+const calculateRoundsNumber = (_numTeamsBracket: number) => {
+  return 3;
+};
+
+const recursor = (
+  rounds: number,
+  timeSlots: number[],
+  games: number,
+  fields: number
+): any => {
+  if (timeSlots.length) {
+    timeSlots.push(Math.ceil(Math.ceil(games / 2) / fields));
+  } else {
+    timeSlots.push(Math.ceil(games / fields));
+  }
+
+  if (timeSlots.length === rounds) {
+    return timeSlots.reduce((a, b) => a + b, 0);
+  }
+  return recursor(rounds, timeSlots, games, fields);
+};
+
+export const populateDefinedGamesWithPlayoffState = (
+  games: IGame[],
+  fields: IField[],
+  timeSlots: ITimeSlot[],
+  divisions: IScheduleDivision[] | IDivision[],
+  event: IEventDetails
+) => {
+  const { num_teams_bracket } = event;
+  const rounds = calculateRoundsNumber(num_teams_bracket!);
+  const timeSlotsLength = timeSlots.length;
+  const divisionsLength = divisions.length;
+  const fieldsLength = fields.length;
+  const divisionFirstRoundGames = 4;
+
+  const firstRoundGamesTotal = divisionsLength * divisionFirstRoundGames;
+  const timeSlotsRequired = recursor(
+    rounds,
+    [],
+    firstRoundGamesTotal,
+    fieldsLength
+  );
+
+  const requiredTimeSlotIds = timeSlots.slice(
+    timeSlotsLength - timeSlotsRequired,
+    timeSlotsLength
+  );
+
+  const populatedGames = games.map(item => ({
+    ...item,
+    isPlayoff: findIndex(requiredTimeSlotIds, { id: item.timeSlotId }) >= 0,
+  }));
+
+  return populatedGames;
 };
