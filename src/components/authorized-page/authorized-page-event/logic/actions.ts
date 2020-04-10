@@ -119,8 +119,6 @@ const addEntityToLibrary = (entity: IEntity, entryPoint: EntryPoints) => async (
       throw new Error('The item is already in the library.');
     }
 
-    console.log(entity);
-
     const updatedEntity: IEntity = {
       ...entity,
       is_library_YN: LibraryStates.TRUE,

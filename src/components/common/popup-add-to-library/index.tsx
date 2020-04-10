@@ -6,6 +6,10 @@ import { IEntity, IInputEvent } from 'common/types';
 import { getSelectOptions, getEntityByOption } from './helpers';
 import styles from './styles.module.scss';
 
+const BUTTON_STYLES = {
+  width: '115px',
+};
+
 interface Props {
   entities: IEntity[];
   entryPoint: EntryPoints;
@@ -21,7 +25,14 @@ const PopupAddToLibrary = ({
   onClose,
   addEntityToLibrary,
 }: Props) => {
+  const [isConfirm, toggleConfirm] = React.useState<boolean>(false);
   const [activeOptionId, changeOption] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    toggleConfirm(false);
+
+    changeOption(null);
+  }, [isOpen]);
 
   const selectOptions = getSelectOptions(entities, entryPoint);
 
@@ -30,6 +41,8 @@ const PopupAddToLibrary = ({
   const onChangeOption = (evt: IInputEvent) => {
     changeOption(evt.target.value);
   };
+
+  const onToggleConfirm = () => toggleConfirm(!isConfirm);
 
   const onSave = () => {
     if (activeOptionId) {
@@ -53,7 +66,7 @@ const PopupAddToLibrary = ({
               onChange={onChangeOption}
               value={activeOptionId || ''}
               options={selectOptions!}
-              label="Select event"
+              label="Select item"
               width="100%"
             />
           ) : (
@@ -66,20 +79,36 @@ const PopupAddToLibrary = ({
               onClick={onClose}
               variant={ButtonVarian.TEXT}
               color={ButtonColors.SECONDARY}
+              btnStyles={BUTTON_STYLES}
               label="Cancel"
             />
           </span>
           <span className={styles.btnWrapper}>
             {isAllowShare && (
               <Button
-                onClick={onSave}
+                onClick={onToggleConfirm}
                 variant={ButtonVarian.CONTAINED}
                 color={ButtonColors.PRIMARY}
+                btnStyles={BUTTON_STYLES}
                 label="Save"
               />
             )}
           </span>
         </p>
+        {isConfirm && (
+          <div className={styles.confirmWrapper}>
+            <p className={styles.confirmText}>Are you sure?</p>
+            <p className={styles.confirmBtns}>
+              <Button
+                onClick={onSave}
+                variant={ButtonVarian.CONTAINED}
+                color={ButtonColors.PRIMARY}
+                btnStyles={BUTTON_STYLES}
+                label="Sent"
+              />
+            </p>
+          </div>
+        )}
       </section>
     </Modal>
   );
