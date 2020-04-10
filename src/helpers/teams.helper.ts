@@ -213,8 +213,6 @@ const sortTeamByScored = (
 ) => {
   const parsedRankings = JSON.parse(rankings);
 
-  console.log(rankings);
-
   if (parsedRankings.length !== Object.keys(RankingFactorValues).length / 2) {
     return teams;
   }
