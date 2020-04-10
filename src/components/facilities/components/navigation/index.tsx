@@ -14,15 +14,22 @@ interface Props {
   onClick: BindingAction;
   onCancelClick: BindingAction;
   onCsvLoaderBtn: BindingAction;
+  toggleLibraryPopup: BindingAction;
 }
 
-const Navigation = ({ onClick, onCancelClick, onCsvLoaderBtn }: Props) => (
+const Navigation = ({
+  onClick,
+  onCancelClick,
+  onCsvLoaderBtn,
+  toggleLibraryPopup,
+}: Props) => (
   <p className={styles.wrapper}>
     <span className={styles.linkWrapper}>
       <Link className={styles.libraryBtn} to={Routes.LIBRARY_MANAGER}>
         {getIcon(Icons.GET_APP, ICON_STYLES)} Load From Library
       </Link>
       <Button
+        onClick={toggleLibraryPopup}
         icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
         variant={ButtonVarian.TEXT}
         color={ButtonColors.SECONDARY}

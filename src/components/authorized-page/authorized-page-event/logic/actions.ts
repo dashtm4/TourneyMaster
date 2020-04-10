@@ -8,12 +8,16 @@ import {
   CLEAR_AUTH_PAGE_DATA,
   PUBLISH_TOURNAMENT_SUCCESS,
   PUBLISH_TOURNAMENT_FAILURE,
+  ADD_ENTITY_TO_LIBRARY_SUCCESS,
+  ADD_ENTITY_TO_LIBRARY_FAILURE,
 } from './action-types';
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { Toasts } from 'components/common';
 import { IEventDetails, IRegistration, IFacility } from 'common/models';
-import { EventStatuses } from 'common/enums';
+import { EventStatuses, EntryPoints, MethodTypes } from 'common/enums';
+import { IEntity } from 'common/types';
+import { sentToServerByRoute, removeObjKeysByEntryPoint } from 'helpers';
 
 const loadAuthPageData: ActionCreator<ThunkAction<
   void,
@@ -102,4 +106,40 @@ const changeTournamentStatus = (status: EventStatuses) => async (
   }
 };
 
-export { loadAuthPageData, clearAuthPageData, changeTournamentStatus };
+const addEntityToLibrary = (entity: IEntity, entryPoint: EntryPoints) => async (
+  dispatch: Dispatch
+) => {
+  const updatedEntity: IEntity = {
+    ...entity,
+    is_library_YN: 1,
+  };
+
+  const clearEntity = removeObjKeysByEntryPoint(updatedEntity, entryPoint);
+
+  try {
+    await sentToServerByRoute(clearEntity, entryPoint, MethodTypes.PUT);
+
+    dispatch({
+      type: ADD_ENTITY_TO_LIBRARY_SUCCESS,
+      payload: {
+        entity: updatedEntity,
+        entryPoint,
+      },
+    });
+
+    Toasts.successToast('Changes successfully saved.');
+  } catch (err) {
+    Toasts.errorToast(err);
+
+    dispatch({
+      type: ADD_ENTITY_TO_LIBRARY_FAILURE,
+    });
+  }
+};
+
+export {
+  loadAuthPageData,
+  clearAuthPageData,
+  changeTournamentStatus,
+  addEntityToLibrary,
+};

@@ -1,5 +1,11 @@
 import { removeObjKeysByKeys } from 'helpers';
-import { IEventDetails } from 'common/models';
+import {
+  IEventDetails,
+  IRegistration,
+  IFacility,
+  IDivision,
+  ISchedule,
+} from 'common/models';
 import {
   EntryPoints,
   IRegistrationFields,
@@ -44,22 +50,37 @@ const mapGamesByField = (games: IGame[], fields: IField[]) =>
 const removeObjKeysByEntryPoint = (
   entity: IEntity,
   entryPoint: EntryPoints
-) => {
+): IEntity => {
   switch (entryPoint) {
     case EntryPoints.EVENTS: {
-      return removeObjKeysByKeys(entity, Object.values(IEventDetailsFields));
+      return removeObjKeysByKeys(
+        entity,
+        Object.values(IEventDetailsFields)
+      ) as IEventDetails;
     }
     case EntryPoints.REGISTRATIONS: {
-      return removeObjKeysByKeys(entity, Object.values(IRegistrationFields));
+      return removeObjKeysByKeys(
+        entity,
+        Object.values(IRegistrationFields)
+      ) as IRegistration;
     }
     case EntryPoints.FACILITIES: {
-      return removeObjKeysByKeys(entity, Object.values(IFacilityFields));
+      return removeObjKeysByKeys(
+        entity,
+        Object.values(IFacilityFields)
+      ) as IFacility;
     }
     case EntryPoints.DIVISIONS: {
-      return removeObjKeysByKeys(entity, Object.values(IDivisionFields));
+      return removeObjKeysByKeys(
+        entity,
+        Object.values(IDivisionFields)
+      ) as IDivision;
     }
     case EntryPoints.SCHEDULES: {
-      return removeObjKeysByKeys(entity, Object.values(IScheduleFields));
+      return removeObjKeysByKeys(
+        entity,
+        Object.values(IScheduleFields)
+      ) as ISchedule;
     }
   }
 

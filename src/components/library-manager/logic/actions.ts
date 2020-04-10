@@ -12,7 +12,11 @@ import {
 } from './action-types';
 import Api from 'api/api';
 import { Toasts } from 'components/common';
-import { mapArrWithEventName, removeObjKeysByEntryPoint } from 'helpers';
+import {
+  mapArrWithEventName,
+  removeObjKeysByEntryPoint,
+  sentToServerByRoute,
+} from 'helpers';
 import {
   IEventDetails,
   IRegistration,
@@ -20,7 +24,7 @@ import {
   IDivision,
   ISchedule,
 } from 'common/models';
-import { EntryPoints, EntryPointsWithId } from 'common/enums';
+import { EntryPoints, MethodTypes } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
   checkAleadyExist,
@@ -151,61 +155,13 @@ const deleteLibraryItem: ActionCreator<ThunkAction<
 ) => {
   const clearSharedItem = removeObjKeysByEntryPoint(sharedItem, entryPoint);
 
-  const updatedSharedItem = {
+  const updatedSharedItem: IEntity = {
     ...clearSharedItem,
     is_library_YN: 0,
   };
 
   try {
-    switch (entryPoint) {
-      case EntryPoints.EVENTS: {
-        const event = updatedSharedItem as IEventDetails;
-
-        await Api.put(`${EntryPointsWithId.EVENTS}${event.event_id}`, event);
-
-        break;
-      }
-      case EntryPoints.REGISTRATIONS: {
-        const registration = updatedSharedItem as IRegistration;
-
-        await Api.put(
-          `${EntryPointsWithId.REGISTRATIONS}${registration.registration_id}`,
-          registration
-        );
-
-        break;
-      }
-      case EntryPoints.FACILITIES: {
-        const facility = updatedSharedItem as IFacility;
-
-        await Api.put(
-          `${EntryPointsWithId.FACILITIES}${facility.facilities_id}`,
-          facility
-        );
-
-        break;
-      }
-      case EntryPoints.DIVISIONS: {
-        const division = updatedSharedItem as IDivision;
-
-        await Api.put(
-          `${EntryPointsWithId.DIVISIONS}${division.division_id}`,
-          division
-        );
-
-        break;
-      }
-      case EntryPoints.SCHEDULES: {
-        const schedule = updatedSharedItem as ISchedule;
-
-        await Api.put(
-          `${EntryPointsWithId.SCHEDULES}${schedule.schedule_id}`,
-          schedule
-        );
-
-        break;
-      }
-    }
+    await sentToServerByRoute(updatedSharedItem, entryPoint, MethodTypes.PUT);
 
     dispatch({
       type: DELETE_LIBRARY_ITEM_SUCCESS,

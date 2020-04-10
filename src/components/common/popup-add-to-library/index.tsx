@@ -1,9 +1,9 @@
 import React from 'react';
 import { Modal, HeadingLevelTwo, Select, Button } from 'components/common';
-import { BindingAction } from 'common/models';
+import { BindingAction, BindingCbWithTwo } from 'common/models';
 import { ButtonVarian, ButtonColors, EntryPoints } from 'common/enums';
 import { IEntity, IInputEvent } from 'common/types';
-import { getSelectOptions } from './helpers';
+import { getSelectOptions, getEntityByOption } from './helpers';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
   entryPoint: EntryPoints;
   isOpen: boolean;
   onClose: BindingAction;
-  onSave: BindingAction;
+  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
 const PopupAddToLibrary = ({
@@ -19,13 +19,21 @@ const PopupAddToLibrary = ({
   entryPoint,
   isOpen,
   onClose,
-  onSave,
+  addEntityToLibrary,
 }: Props) => {
-  const [activeOption, changeOption] = React.useState<string | null>(null);
+  const [activeOptionId, changeOption] = React.useState<string | null>(null);
   const selectOptions = getSelectOptions(entities, entryPoint);
 
   const onChangeOption = (evt: IInputEvent) => {
     changeOption(evt.target.value);
+  };
+
+  const onSave = () => {
+    if (activeOptionId) {
+      const entity = getEntityByOption(entities, activeOptionId, entryPoint);
+
+      addEntityToLibrary(entity!, entryPoint);
+    }
   };
 
   return (
@@ -38,7 +46,7 @@ const PopupAddToLibrary = ({
           {selectOptions?.length !== 0 ? (
             <Select
               onChange={onChangeOption}
-              value={activeOption || ''}
+              value={activeOptionId || ''}
               options={selectOptions!}
               label="Select event"
               width="100%"
