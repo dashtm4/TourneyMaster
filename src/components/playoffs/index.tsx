@@ -1,113 +1,241 @@
 import React, { Component } from 'react';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import { Button, Paper, Select, CardMessage } from 'components/common';
-import Brackets from './brackets';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { Button, Paper } from 'components/common';
 import styles from './styles.module.scss';
-import { CardMessageTypes } from 'components/common/card-message/types';
-import { getIcon } from 'helpers';
-import { Icons } from 'common/enums';
-import Seed from './dnd/seed';
+import BracketManager from './tabs/brackets';
+import ResourceMatrix from './tabs/resources';
+import { fetchSchedulesDetails } from 'components/schedules/logic/actions';
+import { getAllPools } from 'components/divisions-and-pools/logic/actions';
+import { IAppState } from 'reducers/root-reducer.types';
+import { ITournamentData } from 'common/models/tournament';
+import {
+  IEventSummary,
+  ISchedule,
+  IPool,
+  ISchedulesDetails,
+} from 'common/models';
+import { bindActionCreators } from 'redux';
+import { fetchEventSummary } from 'components/schedules/logic/actions';
+import {
+  fillSchedulesTable,
+  clearSchedulesTable,
+} from 'components/schedules/logic/schedules-table/actions';
+import { IBracket } from 'common/models/playoffs/bracket';
+import { getTimeValuesFromEventSchedule, calculateTimeSlots } from 'helpers';
+import {
+  sortFieldsByPremier,
+  defineGames,
+  IGame,
+} from 'components/common/matrix-table/helper';
+import {
+  mapFieldsData,
+  mapTeamsData,
+  mapFacilitiesData,
+} from 'components/schedules/mapTournamentData';
+import ITimeSlot from 'common/models/schedule/timeSlots';
+import { mapTeamsFromSchedulesDetails } from 'components/schedules/mapScheduleData';
+import { ITeamCard, ITeam } from 'common/models/schedule/teams';
+import { IField } from 'common/models/schedule/fields';
+import { IScheduleFacility } from 'common/models/schedule/facilities';
 
-class Playoffs extends Component {
-  dragType = 'seed';
+interface IMapStateToProps extends Partial<ITournamentData> {
+  eventSummary?: IEventSummary[];
+  bracket: IBracket | null;
+  schedule?: ISchedule;
+  pools?: IPool[];
+  schedulesTeamCards?: ITeamCard[];
+  schedulesDetails?: ISchedulesDetails[];
+}
+interface IMapDispatchToProps {
+  fetchEventSummary: (eventId: string) => void;
+  fetchSchedulesDetails: (scheduleId: string) => void;
+  getAllPools: (divisionIds: string[]) => void;
+  fillSchedulesTable: (teamCards: ITeamCard[]) => void;
+  clearSchedulesTable: () => void;
+}
+interface IProps extends IMapStateToProps, IMapDispatchToProps {
+  match: any;
+}
 
-  renderSeed = (item: any, index: number) => {
-    return (
-      <div className={styles.singleSeedWrapper}>
-        <span>{index + 1}.</span>
-        <Seed
-          key={item.id}
-          id={item.id}
-          name={item.name}
-          type={this.dragType}
-        />
-      </div>
-    );
+interface IState {
+  activeTab: PlayoffsTabsEnum;
+  games?: IGame[];
+  teams?: ITeam[];
+  timeSlots?: ITimeSlot[];
+  fields?: IField[];
+  facilities?: IScheduleFacility[];
+}
+
+enum PlayoffsTabsEnum {
+  ResourceMatrix = 1,
+  BracketManager = 2,
+}
+
+class Playoffs extends Component<IProps> {
+  state: IState = {
+    activeTab: PlayoffsTabsEnum.ResourceMatrix,
+  };
+
+  componentDidMount() {
+    const { event, match } = this.props;
+    const eventId = event?.event_id!;
+    const { scheduleId } = match.params;
+
+    this.props.clearSchedulesTable();
+    this.props.fetchEventSummary(eventId);
+    this.props.fetchSchedulesDetails(scheduleId);
+  }
+
+  componentDidUpdate() {
+    const { schedulesDetails, schedulesTeamCards } = this.props;
+    const { teams } = this.state;
+
+    if (!schedulesTeamCards && schedulesDetails && teams) {
+      const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
+      this.props.fillSchedulesTable(mappedTeams);
+    }
+
+    if (!this.state.games) {
+      this.calculateNeccessaryData();
+    }
+  }
+
+  calculateNeccessaryData = () => {
+    const {
+      event,
+      schedule,
+      fields,
+      teams,
+      divisions,
+      facilities,
+    } = this.props;
+
+    if (!event || !schedule || !fields || !teams || !divisions || !facilities)
+      return;
+
+    const timeValues = getTimeValuesFromEventSchedule(event, schedule);
+    const timeSlots = calculateTimeSlots(timeValues);
+
+    const mappedFields = mapFieldsData(fields);
+    const sortedFields = sortFieldsByPremier(mappedFields);
+
+    const { games } = defineGames(sortedFields, timeSlots!);
+    const mappedTeams = mapTeamsData(teams, divisions);
+
+    const mappedFacilities = mapFacilitiesData(facilities);
+
+    this.setState({
+      games,
+      timeSlots,
+      fields: sortedFields,
+      teams: mappedTeams,
+      facilities: mappedFacilities,
+    });
   };
 
   render() {
-    const divisionsOptions = [{ label: '2020', value: 'ADLN001' }];
-    const selectedDivision = divisionsOptions[0].value;
-    const seeds = [
-      { id: 1, name: 'Seed 1' },
-      { id: 2, name: 'Seed 2' },
-      { id: 3, name: 'Seed 3' },
-      { id: 4, name: 'Seed 4' },
-      { id: 5, name: 'Seed 5' },
-      { id: 6, name: 'Seed 6' },
-      { id: 7, name: 'Seed 7' },
-      { id: 8, name: 'Seed 8' },
-    ];
+    const { activeTab, games, timeSlots, fields, facilities } = this.state;
+
+    const {
+      bracket,
+      event,
+      divisions,
+      pools,
+      schedulesTeamCards,
+      eventSummary,
+      schedule,
+      schedulesDetails,
+    } = this.props;
 
     return (
       <div className={styles.container}>
         <div className={styles.paperWrapper}>
           <Paper>
             <div className={styles.paperContainer}>
-              <Button label="Close" variant="text" color="secondary" />
-              <Button label="Save" variant="contained" color="primary" />
+              <div className={styles.bracketName}>
+                <span>{bracket?.name}</span>
+              </div>
+              <div>
+                <Button label="Close" variant="text" color="secondary" />
+                <Button label="Save" variant="contained" color="primary" />
+              </div>
             </div>
           </Paper>
         </div>
 
-        <section className={styles.section}>
-          <DndProvider backend={HTML5Backend}>
-            <div className={styles.seedsContainer}>
-              <Select
-                label="Division"
-                options={divisionsOptions}
-                value={selectedDivision}
-              />
-
-              <div className={styles.seedsWrapper}>
-                <h4>Seeds</h4>
-                <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-                  Drag & drop to reorder
-                </CardMessage>
-                <div className={styles.seedsList}>
-                  {seeds.map((v, i) => this.renderSeed(v, i))}
-                </div>
-              </div>
+        <section className={styles.tabsContainer}>
+          <div className={styles.tabToggle}>
+            <div
+              className={activeTab === 1 ? styles.active : ''}
+              onClick={() => this.setState({ activeTab: 1 })}
+            >
+              Resource Matrix
             </div>
-
-            <div className={styles.bodyWrapper}>
-              <div className={styles.bracketActions}>
-                <div className={styles.cardMessage}>
-                  <CardMessage
-                    type={CardMessageTypes.EMODJI_OBJECTS}
-                    style={{ maxWidth: 400 }}
-                  >
-                    Drag, drop, and zoom to navigate the bracket
-                  </CardMessage>
-                </div>
-                <div className={styles.buttonsWrapper}>
-                  <Button
-                    label="Go to Bracket Setup"
-                    variant="text"
-                    color="secondary"
-                    icon={getIcon(Icons.EDIT)}
-                  />
-                  <Button
-                    label="See Team Lineup"
-                    variant="text"
-                    color="secondary"
-                    icon={getIcon(Icons.EYE)}
-                  />
-                  <Button
-                    label="Advance Division Teams to Brackets"
-                    variant="contained"
-                    color="primary"
-                  />
-                </div>
-              </div>
-              <Brackets seeds={seeds} />
+            <div
+              className={activeTab === 2 ? styles.active : ''}
+              onClick={() => this.setState({ activeTab: 2 })}
+            >
+              Bracket Manager
             </div>
-          </DndProvider>
+          </div>
+          {activeTab === PlayoffsTabsEnum.ResourceMatrix ? (
+            <ResourceMatrix
+              event={event}
+              divisions={divisions}
+              pools={pools}
+              teamCards={schedulesTeamCards}
+              games={games}
+              fields={fields}
+              timeSlots={timeSlots}
+              facilities={facilities}
+              scheduleData={schedule}
+              eventSummary={eventSummary}
+              schedulesDetails={schedulesDetails}
+              onTeamCardsUpdate={() => {}}
+              onTeamCardUpdate={() => {}}
+              onUndo={() => {}}
+            />
+          ) : (
+            <BracketManager />
+          )}
         </section>
       </div>
     );
   }
 }
 
-export default Playoffs;
+const mapStateToProps = ({
+  pageEvent,
+  schedules,
+  scheduling,
+  divisions,
+  schedulesTable,
+}: IAppState): IMapStateToProps => ({
+  event: pageEvent.tournamentData.event,
+  facilities: pageEvent.tournamentData.facilities,
+  divisions: pageEvent.tournamentData.divisions,
+  teams: pageEvent.tournamentData.teams,
+  fields: pageEvent.tournamentData.fields,
+  schedules: pageEvent.tournamentData.schedules,
+  eventSummary: schedules.eventSummary,
+  bracket: scheduling.bracket,
+  schedule: schedules.schedule,
+  pools: divisions?.pools,
+  schedulesTeamCards: schedulesTable.current,
+  schedulesDetails: schedules?.schedulesDetails,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
+  bindActionCreators(
+    {
+      fetchEventSummary,
+      fetchSchedulesDetails,
+      getAllPools,
+      fillSchedulesTable,
+      clearSchedulesTable,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchToProps)(Playoffs);

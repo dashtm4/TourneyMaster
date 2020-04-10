@@ -6,10 +6,13 @@ import {
   Input,
   Select,
   Checkbox,
+  Tooltip,
 } from 'components/common';
 import styles from './styles.module.scss';
 import { ISchedule } from 'common/models';
-import { getTimeFromString, timeToString } from 'helpers';
+import { getTimeFromString, timeToString, getIcon } from 'helpers';
+import { Icons } from 'common/enums';
+import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -94,6 +97,8 @@ const CreateNewBracket = (props: IProps) => {
     value: item.schedule_id,
   }));
 
+  schedulesOptions.unshift({ label: 'Select some', value: '' });
+
   const alignItemsOptions = [
     {
       label: 'Align Tourney Play games to the start of the Brackets',
@@ -108,6 +113,11 @@ const CreateNewBracket = (props: IProps) => {
       name: 'adjustTime',
     },
   ];
+
+  const alignItemsTooltip =
+    'Early morning TP games will be moved adjacent to brackets';
+  const adjustTimeTooltip =
+    'Provides a larger rest between games for advancing teams';
 
   return (
     <Modal isOpen={isOpen} onClose={onClosePressed}>
@@ -125,15 +135,33 @@ const CreateNewBracket = (props: IProps) => {
               placeholder="Brackets Version Name"
             />
             <Select
+              name="Name"
               width="220px"
+              placeholder="Select Schedule"
               options={schedulesOptions}
               value={selectedSchedule}
               onChange={onChangeSchedule}
             />
           </div>
-          <Checkbox options={alignItemsOptions} onChange={alignItemsChange} />
+          <div className={styles.checkboxWrapper}>
+            <Checkbox options={alignItemsOptions} onChange={alignItemsChange} />
+            <Tooltip title={alignItemsTooltip} type={TooltipMessageTypes.INFO}>
+              <div className={styles.tooltipIcon}>{getIcon(Icons.INFO)}</div>
+            </Tooltip>
+          </div>
           <div>
-            <Checkbox options={adjustTimeOptions} onChange={adjustTimeChange} />
+            <div className={styles.checkboxWrapper}>
+              <Checkbox
+                options={adjustTimeOptions}
+                onChange={adjustTimeChange}
+              />
+              <Tooltip
+                title={adjustTimeTooltip}
+                type={TooltipMessageTypes.INFO}
+              >
+                <div className={styles.tooltipIcon}>{getIcon(Icons.INFO)}</div>
+              </Tooltip>
+            </div>
             <Input
               onChange={onChangeTimeBtwnPeriods}
               value={

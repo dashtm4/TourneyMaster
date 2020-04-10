@@ -15,6 +15,21 @@
 
 .gameSlotContainer {
   background: transparent;
+
+  &.gameSlotPlayoff {
+    position: relative;
+
+    &:before {
+      content: '';
+      display: block;
+      width: 196px;
+      height: 69px;
+      background: #d0d0d0;
+      position: absolute;
+      z-index: 0;
+      margin-top: -8px;
+    }
+  }
 }
 
 .table {
@@ -38,9 +53,7 @@
   .timeSlotRow {
     th {
       min-width: 100px;
-
       padding-top: 17px;
-
       vertical-align: top;
       text-align: center;
       font-size: 14px;
@@ -55,12 +68,19 @@
 
     td:last-child {
       padding-right: 0;
+
+      &:before {
+        content: '';
+        width: 180px;
+      }
     }
   }
 
   .gameSlot {
     display: flex;
     flex-direction: column;
+    z-index: 1;
+    position: relative;
   }
 }
 .lockBtn {

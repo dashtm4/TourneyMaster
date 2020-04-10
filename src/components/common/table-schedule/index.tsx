@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import ListUnassigned from './components/list-unassigned';
@@ -45,6 +45,7 @@ import { CardMessageTypes } from '../card-message/types';
 import TeamsDiagnostics from 'components/schedules/diagnostics/teamsDiagnostics';
 import DivisionsDiagnostics from 'components/schedules/diagnostics/divisionsDiagnostics';
 import { IDiagnosticsInput } from 'components/schedules/diagnostics';
+import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -67,6 +68,7 @@ interface Props {
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
   onToggleFullScreen?: BindingAction;
+  playoffTimeSlots?: ITimeSlot[];
 }
 
 const TableSchedule = ({
@@ -90,6 +92,7 @@ const TableSchedule = ({
   divisionsDiagnostics,
   isFullScreen,
   onToggleFullScreen,
+  playoffTimeSlots,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -111,18 +114,38 @@ const TableSchedule = ({
   const [replacementWarning, onReplacementWarningChange] = useState<
     string | undefined
   >();
+  const [days, setDays] = useState(calculateDays(teamCards));
 
-  const days = calculateDays(teamCards);
+  const manageGamesData = useCallback(() => {
+    let definedGames = [...games];
+    const day = filterValues.selectedDay!;
 
-  const filledGames = settleTeamsPerGames(
-    games,
-    teamCards,
-    days,
-    filterValues.selectedDay!
-  );
-  const filteredGames = mapGamesByFilter([...filledGames], filterValues);
+    if (DayTypes[day] === days.length && playoffTimeSlots) {
+      definedGames = populateDefinedGamesWithPlayoffState(
+        games,
+        playoffTimeSlots
+      );
+    }
 
-  const updatedFields = mapUnusedFields(fields, filteredGames, filterValues);
+    const filledGames = settleTeamsPerGames(
+      definedGames,
+      teamCards,
+      days,
+      filterValues.selectedDay!
+    );
+    const filteredGames = mapGamesByFilter([...filledGames], filterValues);
+    return filteredGames;
+  }, [games, teamCards, days, filterValues, playoffTimeSlots]);
+
+  const [tableGames, setTableGames] = useState<IGame[]>(manageGamesData());
+
+  useEffect(() => {
+    setDays(calculateDays(teamCards));
+  }, [teamCards]);
+
+  useEffect(() => setTableGames(manageGamesData()), [manageGamesData]);
+
+  const updatedFields = mapUnusedFields(fields, tableGames, filterValues);
 
   const onFilterChange = (data: IScheduleFilter) => {
     const newData = mapFilterValues({ teamCards, pools }, data);
@@ -135,12 +158,14 @@ const TableSchedule = ({
     const day = filterValues.selectedDay!;
     const result = moveTeamCard(
       teamCards,
-      filledGames,
+      tableGames,
       dropParams,
       days?.length ? days[DayTypes[day] - 1] : undefined
     );
 
     switch (true) {
+      case result.playoffSlot:
+        return onReplacementWarningChange(moveCardMessages.playoffSlot);
       case result.timeSlotInUse:
         return onReplacementWarningChange(moveCardMessages.timeSlotInUse);
       case result.differentFacility: {
@@ -250,7 +275,7 @@ const TableSchedule = ({
             />
             <MatrixTable
               tableType={tableType}
-              games={filteredGames}
+              games={tableGames}
               fields={updatedFields}
               timeSlots={timeSlots}
               facilities={facilities}
@@ -288,7 +313,7 @@ const TableSchedule = ({
             />
             <PopupSaveReporting
               event={event}
-              games={mapGamesByField(filteredGames, updatedFields)}
+              games={mapGamesByField(tableGames, updatedFields)}
               fields={updatedFields}
               timeSlots={timeSlots}
               facilities={facilities}

@@ -265,7 +265,9 @@ export const mapUnusedFields = (
 };
 
 const moveCardMessages = {
-  timeSlotInUse: 'This team is already playing at this time',
+  playoffSlot:
+    'This game slot is located in the Playoffs section. Please choose another one.',
+  timeSlotInUse: 'This team is already playing at this time.',
   differentFacility:
     'This division is not playing at this facility on this day. Please confirm your intentions.',
   divisionUnmatch:

@@ -85,6 +85,11 @@ import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/red
 import SchedulesLoader, { LoaderTypeEnum } from './loader';
 import { ISchedulesGame } from 'common/models/schedule/game';
 import SchedulesPaper from './paper';
+import {
+  populateDefinedGamesWithPlayoffState,
+  predictPlayoffTimeSlots,
+  adjustPlayoffTimeOnLoad,
+} from './definePlayoffs';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -174,6 +179,7 @@ interface State {
   teamCardsAlreadyUpdated: boolean;
   loadingType: LoaderTypeEnum;
   tournamentDays: string[];
+  playoffTimeSlots: ITimeSlot[];
 }
 
 class Schedules extends Component<Props, State> {
@@ -185,6 +191,7 @@ class Schedules extends Component<Props, State> {
     teamCardsAlreadyUpdated: false,
     loadingType: LoaderTypeEnum.CALCULATION,
     tournamentDays: [],
+    playoffTimeSlots: [],
   };
 
   async componentDidMount() {
@@ -234,6 +241,7 @@ class Schedules extends Component<Props, State> {
       schedulesDetails,
       schedulesTeamCards,
       draftSaved,
+      event,
     } = this.props;
 
     const {
@@ -241,6 +249,10 @@ class Schedules extends Component<Props, State> {
       teams,
       neccessaryDataCalculated,
       teamCardsAlreadyUpdated,
+      fields,
+      timeSlots,
+      divisions,
+      tournamentDays,
     } = this.state;
 
     const localSchedule = this.getSchedule();
@@ -268,8 +280,18 @@ class Schedules extends Component<Props, State> {
       schedule &&
       !teamCardsAlreadyUpdated
     ) {
+      const lastDay = tournamentDays[tournamentDays.length - 1];
+      const playoffTimeSlots =
+        adjustPlayoffTimeOnLoad(
+          schedulesDetails!,
+          fields!,
+          timeSlots!,
+          divisions!,
+          event!,
+          lastDay
+        ) || [];
       this.calculateDiagnostics();
-      this.setState({ teamCardsAlreadyUpdated: true });
+      this.setState({ playoffTimeSlots, teamCardsAlreadyUpdated: true });
     }
   }
 
@@ -369,7 +391,7 @@ class Schedules extends Component<Props, State> {
       facilities,
       tournamentDays,
     } = this.state;
-    const { divisions, scheduleData } = this.props;
+    const { divisions, scheduleData, event } = this.props;
 
     if (
       !scheduleData ||
@@ -410,8 +432,25 @@ class Schedules extends Component<Props, State> {
     let teamcards: ITeamCard[] = [];
     let schedulerResult: Scheduler;
 
+    const playoffTimeSlots = predictPlayoffTimeSlots(
+      fields,
+      timeSlots,
+      divisions!,
+      event!
+    );
+
+    /* Truncate gameslots and timeslots for the last day by the number of playoff timeslots */
+
     tournamentDays.map(day => {
-      const result = new Scheduler(fields, teams, games, timeSlots, {
+      let definedGames = [...games];
+      if (tournamentDays[tournamentDays.length - 1] === day) {
+        definedGames = populateDefinedGamesWithPlayoffState(
+          games,
+          playoffTimeSlots
+        );
+      }
+
+      const result = new Scheduler(fields, teams, definedGames, timeSlots, {
         ...tournamentBaseInfo,
         teamsInPlay,
       });
@@ -439,6 +478,7 @@ class Schedules extends Component<Props, State> {
     });
 
     this.setState({
+      playoffTimeSlots,
       schedulerResult: schedulerResult!,
     });
 
@@ -695,6 +735,7 @@ class Schedules extends Component<Props, State> {
       divisionsDiagnostics,
       cancelConfirmationOpen,
       loadingType,
+      playoffTimeSlots,
     } = this.state;
 
     const loadCondition = !!(
@@ -753,6 +794,7 @@ class Schedules extends Component<Props, State> {
             onTeamCardUpdate={this.onScheduleCardUpdate}
             onUndo={onScheduleUndo}
             onToggleFullScreen={onToggleFullScreen}
+            playoffTimeSlots={playoffTimeSlots}
           />
         ) : (
           <div className={styles.loadingWrapper}>

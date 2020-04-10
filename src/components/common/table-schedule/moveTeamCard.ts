@@ -16,6 +16,7 @@ export default (
     poolUnmatch: false,
     timeSlotInUse: false,
     differentFacility: false,
+    playoffSlot: false,
   };
 
   const newTeamCards = [...teamCards].map(teamCard => {
@@ -45,6 +46,13 @@ export default (
 
     const teamTimeSlots = incomingTeamGames.map(item => item.timeSlotId);
     const teamFacilities = incomingTeamGames.map(item => item.facilityId);
+
+    if (gamePlace?.isPlayoff) {
+      result = {
+        ...result,
+        playoffSlot: true,
+      };
+    }
 
     /* When a team placed in used timeslot */
     if (gameId && position && teamTimeSlots.includes(timeSlot!)) {

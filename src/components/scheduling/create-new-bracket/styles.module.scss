@@ -12,6 +12,17 @@
       justify-content: space-between;
       margin-bottom: 10px;
     }
+
+    .checkboxWrapper {
+      display: flex;
+      align-items: center;
+
+      .tooltipIcon {
+        width: 24px;
+        height: 22px;
+        color: #c9c9c9;
+      }
+    }
   }
 
   .buttonsWrapper {

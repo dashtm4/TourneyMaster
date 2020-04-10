@@ -28,11 +28,14 @@ const RenderGameSlot = (props: Props) => {
     isEnterScores,
     teamCards,
   } = props;
-  const { awayTeam, homeTeam, gameDate } = game;
+  const { awayTeam, homeTeam, gameDate, isPlayoff } = game;
   const acceptType = 'teamdrop';
 
   return (
-    <td className={styles.gameSlotContainer}>
+    <td
+      className={`${styles.gameSlotContainer} ${isPlayoff &&
+        styles.gameSlotPlayoff}`}
+    >
       <div className={styles.gameSlot}>
         <DropContainer
           acceptType={acceptType}

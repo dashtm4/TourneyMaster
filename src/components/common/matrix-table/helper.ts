@@ -20,6 +20,7 @@ export interface IGame {
   fieldId: string;
   isPremier?: boolean;
   // added new
+  isPlayoff?: boolean;
   gameDate?: string;
   scheduleVersionId?: string;
   createDate?: string;
