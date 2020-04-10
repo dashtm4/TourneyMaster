@@ -5,7 +5,7 @@ import { IScheduleDivision } from 'common/models/schedule/divisions';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from 'components/common/matrix-table/helper';
-import { IEventDetails, IDivision } from 'common/models';
+import { IEventDetails, IDivision, ISchedulesDetails } from 'common/models';
 
 export default (
   fields: IField[],
@@ -81,8 +81,7 @@ const recursor = (
   return recursor(rounds, timeSlots, games, fields);
 };
 
-export const populateDefinedGamesWithPlayoffState = (
-  games: IGame[],
+export const predictPlayoffTimeSlots = (
   fields: IField[],
   timeSlots: ITimeSlot[],
   divisions: IScheduleDivision[] | IDivision[],
@@ -103,15 +102,55 @@ export const populateDefinedGamesWithPlayoffState = (
     fieldsLength
   );
 
-  const requiredTimeSlotIds = timeSlots.slice(
+  const playoffTimeSlots = timeSlots.slice(
     timeSlotsLength - timeSlotsRequired,
     timeSlotsLength
   );
 
+  return playoffTimeSlots;
+};
+
+export const populateDefinedGamesWithPlayoffState = (
+  games: IGame[],
+  playoffTimeSlots: ITimeSlot[]
+) => {
   const populatedGames = games.map(item => ({
     ...item,
-    isPlayoff: findIndex(requiredTimeSlotIds, { id: item.timeSlotId }) >= 0,
+    isPlayoff: findIndex(playoffTimeSlots, { id: item.timeSlotId }) >= 0,
   }));
 
   return populatedGames;
+};
+
+export const adjustPlayoffTimeOnLoad = (
+  schedulesDetails: ISchedulesDetails[],
+  fields: IField[],
+  timeSlots: ITimeSlot[],
+  divisions: IScheduleDivision[] | IDivision[],
+  event: IEventDetails,
+  day: string
+) => {
+  const sdStartTimes = schedulesDetails
+    .filter(
+      item => item.game_date === day && (item.home_team_id || item.away_team_id)
+    )
+    .map(item => item.game_time);
+  const lastStartTime = orderBy(sdStartTimes, 'desc')[0];
+
+  const lastGameTimeSlot = timeSlots.find(item => item.time === lastStartTime)
+    ?.id;
+
+  if (!lastGameTimeSlot) return;
+
+  const playoffTimeSlots = predictPlayoffTimeSlots(
+    fields,
+    timeSlots,
+    divisions,
+    event
+  );
+
+  const start = lastGameTimeSlot + 1;
+  const end = start + playoffTimeSlots.length;
+
+  return timeSlots.slice(start, end);
 };

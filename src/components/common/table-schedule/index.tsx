@@ -68,6 +68,7 @@ interface Props {
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
   onToggleFullScreen?: BindingAction;
+  playoffTimeSlots?: ITimeSlot[];
 }
 
 const TableSchedule = ({
@@ -91,6 +92,7 @@ const TableSchedule = ({
   divisionsDiagnostics,
   isFullScreen,
   onToggleFullScreen,
+  playoffTimeSlots,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -117,15 +119,14 @@ const TableSchedule = ({
   const manageGamesData = useCallback(() => {
     let definedGames = [...games];
     const day = filterValues.selectedDay!;
-    if (DayTypes[day] === days.length) {
+
+    if (DayTypes[day] === days.length && playoffTimeSlots) {
       definedGames = populateDefinedGamesWithPlayoffState(
         games,
-        fields,
-        timeSlots,
-        divisions,
-        event
+        playoffTimeSlots
       );
     }
+
     const filledGames = settleTeamsPerGames(
       definedGames,
       teamCards,
@@ -134,16 +135,7 @@ const TableSchedule = ({
     );
     const filteredGames = mapGamesByFilter([...filledGames], filterValues);
     return filteredGames;
-  }, [
-    games,
-    teamCards,
-    days,
-    filterValues,
-    fields,
-    timeSlots,
-    divisions,
-    event,
-  ]);
+  }, [games, teamCards, days, filterValues, playoffTimeSlots]);
 
   const [tableGames, setTableGames] = useState<IGame[]>(manageGamesData());
 
