@@ -8,7 +8,7 @@ import { ILibraryManagerRegistration, ITableSortEntity } from '../../common';
 
 interface Props {
   registrations: ILibraryManagerRegistration[];
-  isSectionCollapse: boolean;
+  isSectionExpand: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
   onConfirmDeleteItem: BindingCbWithThree<
     IEntity,
@@ -19,7 +19,7 @@ interface Props {
 
 const Registration = ({
   registrations,
-  isSectionCollapse,
+  isSectionExpand,
   changeSharedItem,
   onConfirmDeleteItem,
 }: Props) => {
@@ -55,7 +55,7 @@ const Registration = ({
         id={MenuTitles.REGISTRATION}
         type="section"
         panelDetailsType="flat"
-        expanded={isSectionCollapse}
+        expanded={isSectionExpand}
       >
         <span>{MenuTitles.REGISTRATION}</span>
         <TableSort

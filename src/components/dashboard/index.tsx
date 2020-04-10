@@ -14,7 +14,6 @@ import TournamentCard from './tournament-card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
 import { getEvents, getCalendarEvents } from './logic/actions';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { Loader } from 'components/common';
 import { notificationData } from './mockData';
 import {
@@ -23,9 +22,11 @@ import {
   BindingAction,
   ICalendarEvent,
   IOrganization,
+  IEventDetails,
 } from 'common/models';
 import OnboardingWizard from 'components/onboarding-wizard';
 import { loadOrganizations } from 'components/organizations-management/logic/actions';
+import { EventStatuses } from 'common/enums';
 
 interface IFieldWithEventId extends IField {
   event_id: string;
@@ -33,7 +34,7 @@ interface IFieldWithEventId extends IField {
 
 interface IDashboardProps {
   history: History;
-  events: EventDetailsDTO[];
+  events: IEventDetails[];
   teams: ITeam[];
   fields: IFieldWithEventId[];
   isLoading: boolean;
@@ -50,11 +51,6 @@ interface IDashboardState {
   order: number;
   filters: { status: string[]; historical: boolean };
   isOnboardingWizardOpen: boolean;
-}
-
-enum EventStatus {
-  PUBLISHED = 'Published',
-  DRAFT = 'Draft',
 }
 
 class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
@@ -108,11 +104,11 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   };
 
   onPublishedFilter = () => {
-    this.filterEvents(EventStatus.PUBLISHED);
+    this.filterEvents(EventStatuses.PUBLISHED);
   };
 
   onDraftFilter = () => {
-    this.filterEvents(EventStatus.DRAFT);
+    this.filterEvents(EventStatuses.DRAFT);
   };
 
   onHistoricalFilter = () => {
@@ -134,10 +130,10 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
         );
 
     const numOfPublished = this.props.events?.filter(
-      event => event.event_status === EventStatus.PUBLISHED
+      event => event.event_status === EventStatuses.PUBLISHED
     ).length;
     const numOfDraft = this.props.events?.filter(
-      event => event.event_status === EventStatus.DRAFT
+      event => event.event_status === EventStatuses.DRAFT
     ).length;
 
     const numOfHistorical = this.props.events?.filter(
@@ -200,7 +196,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
             </div>
           )}
           {filteredEvents?.length && !this.props.isLoading
-            ? filteredEvents.map((event: EventDetailsDTO) => (
+            ? filteredEvents.map((event: IEventDetails) => (
                 <TournamentCard
                   key={event.event_id}
                   event={event}
@@ -326,7 +322,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
 }
 interface IState {
   events: {
-    data: EventDetailsDTO[];
+    data: IEventDetails[];
     teams: ITeam[];
     fields: IFieldWithEventId[];
     calendarEvents: ICalendarEvent[];

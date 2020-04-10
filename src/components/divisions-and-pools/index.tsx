@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { History } from 'history';
-import { Loader, Paper, Button, HeadingLevelTwo } from 'components/common';
+import { Loader, Button, HeadingLevelTwo } from 'components/common';
 import {
   getDivisionsTeams,
   getPools,
@@ -15,6 +15,7 @@ import AddPool from './division/add-pool';
 import { BindingCbWithOne, BindingCbWithTwo } from 'common/models/callback';
 import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
+import Navigation from './navigation';
 import Division from './division';
 import styles from './styles.module.scss';
 import CsvLoader from 'components/common/csv-loader';
@@ -120,24 +121,10 @@ class DivisionsAndPools extends React.Component<
 
     return (
       <section className={styles.container}>
-        <Paper sticky={true}>
-          <div className={styles.mainMenu}>
-            <div className={styles.btnsWraper}>
-              <Button
-                label="Import from CSV"
-                color="secondary"
-                variant="text"
-                onClick={this.onCsvLoaderBtn}
-              />
-              <Button
-                label="+ Add Division"
-                variant="contained"
-                color="primary"
-                onClick={this.onAddDivision}
-              />
-            </div>
-          </div>
-        </Paper>
+        <Navigation
+          onCsvLoaderBtn={this.onCsvLoaderBtn}
+          onAddDivision={this.onAddDivision}
+        />
         <div className={styles.sectionContainer}>
           <div className={styles.headingContainer}>
             <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>

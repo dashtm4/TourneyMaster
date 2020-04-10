@@ -27,6 +27,8 @@ import DeletePopupConfrim from './delete-popup-confirm';
 import HazardList from './hazard-list';
 import Menu from './menu';
 import ScrollTopButton from './scroll-top-button';
+import PopupAddToLibrary from './popup-add-to-library';
+import CsvLoader from './csv-loader';
 import * as Toasts from './toastr/showToasts';
 
 export {
@@ -60,4 +62,6 @@ export {
   HazardList,
   Menu,
   ScrollTopButton,
+  PopupAddToLibrary,
+  CsvLoader,
 };

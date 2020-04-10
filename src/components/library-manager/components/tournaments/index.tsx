@@ -12,7 +12,7 @@ import { ITableSortEntity } from '../../common';
 
 interface Props {
   events: IEventDetails[];
-  isSectionCollapse: boolean;
+  isSectionExpand: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
   onConfirmDeleteItem: BindingCbWithThree<
     IEntity,
@@ -23,7 +23,7 @@ interface Props {
 
 const Tournaments = ({
   events,
-  isSectionCollapse,
+  isSectionExpand,
   changeSharedItem,
   onConfirmDeleteItem,
 }: Props) => {
@@ -51,7 +51,7 @@ const Tournaments = ({
         id={MenuTitles.TOURNAMENTS}
         type="section"
         panelDetailsType="flat"
-        expanded={isSectionCollapse}
+        expanded={isSectionExpand}
       >
         <span>{MenuTitles.TOURNAMENTS}</span>
         <TableSort

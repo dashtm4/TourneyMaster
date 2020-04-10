@@ -5,20 +5,21 @@ import { EventMenuTitles } from 'common/enums';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
 import { compareTime } from 'helpers';
+import { BindingAction } from 'common/models';
 
 interface IProps {
   schedules: ISchedulingSchedule[];
   eventId: string;
-  isSectionCollapse: boolean;
+  isSectionExpand: boolean;
   bracketCreationAllowed: boolean;
-  onCreateBracket: () => void;
+  onCreateBracket: BindingAction;
 }
 
 const Brackets = (props: IProps) => {
   const {
     schedules,
     eventId,
-    isSectionCollapse,
+    isSectionExpand,
     bracketCreationAllowed,
     onCreateBracket,
   } = props;
@@ -34,7 +35,7 @@ const Brackets = (props: IProps) => {
       type="section"
       isDefaultExpanded={true}
       useBorder={true}
-      expanded={isSectionCollapse}
+      expanded={isSectionExpand}
       id={EventMenuTitles.BRACKETS}
     >
       <>

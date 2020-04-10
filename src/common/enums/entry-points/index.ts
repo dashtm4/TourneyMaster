@@ -18,4 +18,9 @@ enum EntryPointsWithId {
   SCHEDULES = '/schedules?schedule_id=',
 }
 
-export { EntryPoints, EntryPointsWithId };
+enum MethodTypes {
+  POST = 'post',
+  PUT = 'put',
+}
+
+export { EntryPoints, EntryPointsWithId, MethodTypes };

@@ -13,7 +13,7 @@ import {
 
 import api from 'api/api';
 import { eventDetailsSchema } from 'validations';
-import { EventDetailsDTO, IIconFile } from './model';
+import { IIconFile } from './model';
 import history from 'browserhistory';
 import { Toasts } from 'components/common';
 import {
@@ -24,6 +24,7 @@ import {
   IPool,
   IField,
   BindingAction,
+  IEventDetails,
 } from 'common/models';
 
 export const eventDetailsFetchStart = () => ({
@@ -31,7 +32,7 @@ export const eventDetailsFetchStart = () => ({
 });
 
 export const eventDetailsFetchSuccess = (
-  payload: EventDetailsDTO[]
+  payload: IEventDetails[]
 ): EventDetailsAction => ({
   type: EVENT_DETAILS_FETCH_SUCCESS,
   payload,
@@ -63,7 +64,7 @@ export const saveEventDetails: ActionCreator<ThunkAction<
   {},
   null,
   EventDetailsAction
->> = (eventDetails: EventDetailsDTO) => async (dispatch: Dispatch) => {
+>> = (eventDetails: IEventDetails) => async (dispatch: Dispatch) => {
   try {
     await eventDetailsSchema.validate(eventDetails);
 
@@ -89,7 +90,7 @@ export const createEvent: ActionCreator<ThunkAction<
   {},
   null,
   EventDetailsAction
->> = (eventDetails: EventDetailsDTO) => async (dispatch: Dispatch) => {
+>> = (eventDetails: IEventDetails) => async (dispatch: Dispatch) => {
   try {
     const allEvents = await api.get('/events');
 
@@ -193,7 +194,7 @@ export const createEvents: ActionCreator<ThunkAction<
   {},
   null,
   EventDetailsAction
->> = (events: EventDetailsDTO[], cb: BindingAction) => async (
+>> = (events: IEventDetails[], cb: BindingAction) => async (
   dispatch: Dispatch
 ) => {
   try {

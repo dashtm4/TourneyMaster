@@ -56,3 +56,16 @@
     color: #878787;
   }
 }
+
+.loadBtsWrapper {
+  display: flex;
+}
+
+.libraryBtn {
+  display: flex;
+  align-items: center;
+
+  padding: 0 8px;
+
+  color: #00a3ea;
+}

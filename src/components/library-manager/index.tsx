@@ -40,6 +40,9 @@ import { IEntity } from 'common/types';
 import { ILibraryManagerRegistration, ITableSortEntity } from './common';
 import styles from './styles.module.scss';
 
+const DELETE_POPUP_MESSAGE =
+  'To confirm that you want to delete this item from your library, please confirm by re-typing its name.';
+
 interface Props {
   isLoading: boolean;
   isLoaded: boolean;
@@ -83,7 +86,7 @@ const LibraryManager = ({
     changeEntryPoint,
   ] = React.useState<EntryPoints | null>(null);
 
-  const [isSectionsCollapse, toggleSectionCollapse] = React.useState<boolean>(
+  const [isSectionsExpand, toggleSectionCollapse] = React.useState<boolean>(
     true
   );
 
@@ -150,7 +153,7 @@ const LibraryManager = ({
   };
 
   const onToggleSectionCollapse = () => {
-    toggleSectionCollapse(!isSectionsCollapse);
+    toggleSectionCollapse(!isSectionsExpand);
   };
 
   if (isLoading) {
@@ -166,37 +169,37 @@ const LibraryManager = ({
           onClick={onToggleSectionCollapse}
           variant={ButtonVarian.TEXT}
           color={ButtonColors.SECONDARY}
-          label={isSectionsCollapse ? 'Expand All' : 'Collapse All'}
+          label={isSectionsExpand ? 'Collapse All' : 'Expand All'}
         />
       </div>
       <ul className={styles.libraryList}>
         <Tournaments
           events={events}
-          isSectionCollapse={isSectionsCollapse}
+          isSectionExpand={isSectionsExpand}
           changeSharedItem={onSharedItem}
           onConfirmDeleteItem={onConfirmDeleteItem}
         />
         <Facilities
           facilities={facilities}
-          isSectionCollapse={isSectionsCollapse}
+          isSectionExpand={isSectionsExpand}
           changeSharedItem={onSharedItem}
           onConfirmDeleteItem={onConfirmDeleteItem}
         />
         <Registration
           registrations={registrations}
-          isSectionCollapse={isSectionsCollapse}
+          isSectionExpand={isSectionsExpand}
           changeSharedItem={onSharedItem}
           onConfirmDeleteItem={onConfirmDeleteItem}
         />
         <Divisions
           divisions={divisions}
-          isSectionCollapse={isSectionsCollapse}
+          isSectionExpand={isSectionsExpand}
           changeSharedItem={onSharedItem}
           onConfirmDeleteItem={onConfirmDeleteItem}
         />
         <Scheduling
           schedules={schedules}
-          isSectionCollapse={isSectionsCollapse}
+          isSectionExpand={isSectionsExpand}
           changeSharedItem={onSharedItem}
           onConfirmDeleteItem={onConfirmDeleteItem}
         />
@@ -212,6 +215,7 @@ const LibraryManager = ({
       <DeletePopupConfrim
         type="item"
         deleteTitle={tableEntity?.title || ''}
+        message={DELETE_POPUP_MESSAGE}
         isOpen={isCondfirmPopupOpen}
         onClose={onClosePopup}
         onDeleteClick={onDeleteLibraryItem}

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Modal, HeadingLevelTwo, Select, Button } from 'components/common';
 import { IEventDetails, BindingAction, BindingCbWithOne } from 'common/models';
-import styles from './styles.module.scss';
 import { ButtonVarian, ButtonColors } from 'common/enums';
+import styles from './styles.module.scss';
 
 interface Props {
   activeEvent: IEventDetails | null;
