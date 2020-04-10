@@ -26,6 +26,16 @@
     display: flex;
     justify-content: space-between;
   }
+  .sectionThirdRow {
+    display: flex;
+    justify-content: space-between;
+    .sectionItemSelect {
+      width: 48.5%;
+      & > :nth-child(2) {
+        width: 47.5%;
+      }
+    }
+  }
   .sectionRowColumn {
     display: flex;
     flex-direction: column;

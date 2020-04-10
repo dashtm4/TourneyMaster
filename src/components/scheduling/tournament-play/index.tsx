@@ -4,6 +4,7 @@ import {
   SectionDropdown,
   HeadingLevelThree,
   CardMessage,
+  Button,
 } from 'components/common';
 import { BindingCbWithOne, ISchedule } from 'common/models';
 import { EventMenuTitles } from 'common/enums';
@@ -16,10 +17,12 @@ interface IProps {
   schedules: ISchedulingSchedule[];
   eventId: string;
   savingInProgress?: boolean;
-  isSectionCollapse: boolean;
+  isSectionExpand: boolean;
+  isAllowCreate: boolean;
   onEditSchedule: BindingCbWithOne<ISchedulingSchedule>;
   onPublish: (schedule: ISchedule) => void;
   onUnpublish: (schedule: ISchedule) => void;
+  onCreatePressed: () => void;
 }
 
 export default (props: IProps) => {
@@ -29,8 +32,10 @@ export default (props: IProps) => {
     savingInProgress,
     schedules,
     eventId,
-    isSectionCollapse,
+    isSectionExpand,
     onEditSchedule,
+    onCreatePressed,
+    isAllowCreate,
   } = props;
 
   const sortedSchedules = orderBy(
@@ -60,15 +65,25 @@ export default (props: IProps) => {
     <SectionDropdown
       type="section"
       isDefaultExpanded={true}
-      expanded={isSectionCollapse}
+      expanded={isSectionExpand}
       useBorder={true}
       id={EventMenuTitles.TOURNAMENT_PLAY}
     >
-      <HeadingLevelThree>
-        <span className={styles.blockHeading}>
-          {EventMenuTitles.TOURNAMENT_PLAY}
-        </span>
-      </HeadingLevelThree>
+      <>
+        <HeadingLevelThree>
+          <span className={styles.blockHeading}>
+            {EventMenuTitles.TOURNAMENT_PLAY}
+          </span>
+        </HeadingLevelThree>
+        <Button
+          btnStyles={{ float: 'right' }}
+          label="Create New Schedule Version"
+          color="primary"
+          variant="contained"
+          onClick={onCreatePressed}
+          disabled={!isAllowCreate}
+        />
+      </>
       <ul className={styles.tournamentList}>
         <CardMessage
           style={{ marginBottom: 30, width: '100%' }}

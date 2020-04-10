@@ -1,3 +1,4 @@
+// ! If the interface changes, you must change the fields for the enum 'common/enums/_entity_'
 export interface IRegistration {
   registration_id: string;
   event_id: string;
@@ -35,7 +36,7 @@ export interface IRegistration {
   mobile_number: number;
   permission_to_text: number;
   is_active_YN: number;
-  is_library_YN: number;
+  is_library_YN: 0 | 1 | null;
   created_by: string;
   created_datetime: string;
   updated_by: string;

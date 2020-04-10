@@ -10,7 +10,7 @@ export interface IField {
   is_illuminated_YN: number | null;
   is_premier_YN: number | null;
   is_active_YN: number | null;
-  is_library_YN: number | null;
+  is_library_YN: 0 | 1 | null;
   created_by: string | null;
   created_datetime: string | null;
   updated_by: string | null;

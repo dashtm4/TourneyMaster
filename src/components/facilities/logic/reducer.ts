@@ -11,7 +11,12 @@ import {
   UPLOAD_FILE_MAP_SUCCESS,
   SAVE_FACILITIES_SUCCESS,
 } from './action-types';
-import { IFacility, IField } from '../../../common/models';
+import {
+  ADD_ENTITY_TO_LIBRARY_SUCCESS,
+  AuthPageAction,
+} from 'components/authorized-page/authorized-page-event/logic/action-types';
+import { IFacility, IField } from 'common/models';
+import { EntryPoints } from 'common/enums';
 
 export interface IFacilitiesState {
   isLoading: boolean;
@@ -29,7 +34,7 @@ const initialState = {
 
 const facilitiesReducer = (
   state: IFacilitiesState = initialState,
-  action: FacilitiesAction
+  action: FacilitiesAction | AuthPageAction
 ) => {
   switch (action.type) {
     case LOAD_FACILITIES_START: {
@@ -124,6 +129,24 @@ const facilitiesReducer = (
           ...facilities.filter(fac => !state.facilities.includes(fac)),
         ],
       };
+    }
+    case ADD_ENTITY_TO_LIBRARY_SUCCESS: {
+      const { entity, entryPoint } = action.payload;
+
+      if (entryPoint === EntryPoints.FACILITIES) {
+        const updatedFacility = entity as IFacility;
+
+        return {
+          ...state,
+          facilities: state.facilities.map(it =>
+            it.facilities_id === updatedFacility.facilities_id
+              ? updatedFacility
+              : it
+          ),
+        };
+      } else {
+        return state;
+      }
     }
     default:
       return state;

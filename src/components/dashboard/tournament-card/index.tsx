@@ -6,11 +6,11 @@ import Button from '../../common/buttons/button';
 import logo from '../../../assets/logo.png';
 import { getTournamentStatusColor } from '../../../helpers/getTournamentStatusColor';
 import moment from 'moment';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { IEventDetails } from 'common/models';
 
 interface ITournamentCardProps {
-  event: EventDetailsDTO;
+  event: IEventDetails;
   numOfTeams: number;
   numOfFields: number;
   isDetailLoading: boolean;

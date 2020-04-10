@@ -17,14 +17,16 @@ import { IPosition } from './map/autocomplete';
 import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
-import { EventDetailsDTO } from '../logic/model';
 
 import Map from './map';
 import PlacesAutocompleteInput from './map/autocomplete';
-import { BindingCbWithTwo, BindingCbWithOne } from 'common/models';
+import {
+  BindingCbWithTwo,
+  BindingCbWithOne,
+  IEventDetails,
+} from 'common/models';
 import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
 import { timeToDate, dateToTime } from 'helpers';
-import { getDays, getDay } from 'helpers/getDays';
 
 const CONTACT_TOOLTIP_MESSAGE =
   'Contact details will be included when printing schedules and fields by field datails';
@@ -32,7 +34,7 @@ const CONTACT_TOOLTIP_MESSAGE =
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
-  eventData: Partial<EventDetailsDTO>;
+  eventData: Partial<IEventDetails>;
   onChange: BindingCbWithTwo<string, string | number>;
   expanded: boolean;
   onToggleOne: BindingCbWithOne<number>;
@@ -121,10 +123,6 @@ const PrimaryInformationSection: React.FC<Props> = ({
       onChange('event_startdate', new Date(e).toISOString());
       if (event_enddate && new Date(e).toISOString() > event_enddate) {
         onEndDate(e);
-      }
-      if (eventData.event_type === 'League' && eventData.league_dates) {
-        const dayDates = getDays(getDay(eventData.league_dates), new Date(e));
-        onChange('league_dates', JSON.stringify(dayDates));
       }
     }
   };

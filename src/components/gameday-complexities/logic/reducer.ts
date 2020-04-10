@@ -1,4 +1,3 @@
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 import {
   EVENTS_FETCH_SUCCESS,
   FACILITIES_FETCH_SUCCESS,
@@ -8,11 +7,11 @@ import {
   DELETE_BACKUP_PLAN,
   UPDATE_BACKUP_PLAN,
 } from './actionTypes';
-import { IFacility, IField } from 'common/models';
+import { IFacility, IField, IEventDetails } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
 
 export interface IState {
-  data?: EventDetailsDTO[];
+  data?: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
   backupPlans: IBackupPlan[];
@@ -36,7 +35,7 @@ export default (
       return {
         ...state,
         data: action.payload.sort(
-          (a: EventDetailsDTO, b: EventDetailsDTO) =>
+          (a: IEventDetails, b: IEventDetails) =>
             +new Date(b.event_startdate) - +new Date(a.event_startdate)
         ),
       };

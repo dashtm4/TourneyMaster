@@ -16,6 +16,7 @@ interface IButtonProps {
   btnType?: 'button' | 'submit';
   btnStyles?: object;
   icon?: JSX.Element;
+  isIconRightSide?: boolean;
   disabled?: boolean;
   onClick?: (e: React.MouseEvent) => void;
 }
@@ -30,6 +31,7 @@ const Button: React.FC<IButtonProps> = ({
   disabled,
   btnStyles,
   btnType,
+  isIconRightSide,
 }) => (
   <MuiButton
     disabled={disabled}
@@ -44,10 +46,21 @@ const Button: React.FC<IButtonProps> = ({
     }}
     type={btnType}
   >
-    <div className={type === 'icon' ? styles.icon : icon && styles.iconWrapper}>
-      {icon}
-    </div>
+    {icon && !isIconRightSide && (
+      <div
+        className={type === 'icon' ? styles.icon : icon && styles.iconWrapper}
+      >
+        {icon}
+      </div>
+    )}
     {label}
+    {icon && isIconRightSide && (
+      <div
+        className={type === 'icon' ? styles.icon : icon && styles.iconWrapper}
+      >
+        {icon}
+      </div>
+    )}
   </MuiButton>
 );
 

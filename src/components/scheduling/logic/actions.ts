@@ -17,6 +17,7 @@ import {
   UPDATE_SCHEDULE_FAILURE,
   DELETE_SCHEDULE_SUCCESS,
   DELETE_SCHEDULE_FAILURE,
+  ADD_NEW_BRACKET,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
 import { scheduleSchema, updatedScheduleSchema } from 'validations';
@@ -33,6 +34,7 @@ import {
   getVarcharEight,
   getTimeValuesFromEventSchedule,
   calculateTimeSlots,
+  calculateTournamentDays,
 } from 'helpers';
 import { gameStartOnOptions, ISchedulingSchedule } from '../types';
 import {
@@ -42,7 +44,7 @@ import {
 import {
   sortFieldsByPremier,
   defineGames,
-  settleTeamsPerGames,
+  settleTeamsPerGamesDays,
 } from 'components/common/matrix-table/helper';
 import {
   mapTeamsFromSchedulesDetails,
@@ -51,6 +53,7 @@ import {
   mapSchedulingScheduleData,
 } from 'components/schedules/mapScheduleData';
 import { errorToast, successToast } from 'components/common/toastr/showToasts';
+import { ICreateBracketModalOutput } from '../create-new-bracket';
 
 type GetState = () => IAppState;
 
@@ -74,6 +77,11 @@ const scheduleFetchSuccess = (schedules: ISchedulingSchedule) => ({
 
 const scheduleFetchFailure = () => ({
   type: SCHEDULE_FETCH_FAILURE,
+});
+
+const addNewBracket = (payload: ICreateBracketModalOutput) => ({
+  type: ADD_NEW_BRACKET,
+  payload,
 });
 
 export const addNewSchedule = () => async (
@@ -294,7 +302,7 @@ const getSchedulesData = async (
     loadedSchedulesDetails,
     mappedTeams
   );
-  return { games, tableTeams };
+  return { games, tableTeams, schedulesDetails: loadedSchedulesDetails };
 };
 
 export const getSchedulesDetails = async (
@@ -302,24 +310,51 @@ export const getSchedulesDetails = async (
   isDraft: boolean,
   tournamentInfo: TournamentInfo
 ) => {
-  const { games, tableTeams } = await getSchedulesData(
+  const { games, tableTeams, schedulesDetails } = await getSchedulesData(
     schedule,
     tournamentInfo
   );
-  const tableGames = settleTeamsPerGames(games, tableTeams);
-  return mapSchedulesTeamCards(schedule, tableGames, isDraft);
+  const { event } = tournamentInfo;
+  const tournamentDays = calculateTournamentDays(event);
+
+  let schedulesTableGames = [];
+  for (const day of tournamentDays) {
+    schedulesTableGames.push(settleTeamsPerGamesDays(games, tableTeams, day));
+  }
+  schedulesTableGames = schedulesTableGames.flat();
+
+  return mapSchedulesTeamCards(
+    schedule,
+    schedulesTableGames,
+    isDraft,
+    schedulesDetails
+  );
 };
 
 const getSchedulesGames = async (
   schedule: ISchedule,
   tournamentInfo: TournamentInfo
 ) => {
+  const { schedule_id } = schedule;
   const { games, tableTeams } = await getSchedulesData(
     schedule,
     tournamentInfo
   );
-  const tableGames = settleTeamsPerGames(games, tableTeams);
-  return mapTeamCardsToSchedulesGames(schedule, tableGames);
+  const { event } = tournamentInfo;
+  const tournamentDays = calculateTournamentDays(event);
+  const publishedGames = await api.get('/games', { schedule_id });
+
+  let schedulesTableGames = [];
+  for (const day of tournamentDays) {
+    schedulesTableGames.push(settleTeamsPerGamesDays(games, tableTeams, day));
+  }
+  schedulesTableGames = schedulesTableGames.flat();
+
+  return mapTeamCardsToSchedulesGames(
+    schedule,
+    schedulesTableGames,
+    publishedGames
+  );
 };
 
 const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
@@ -410,4 +445,12 @@ export const unpublishSchedule = (scheduleId: string) => (
   dispatch: Dispatch
 ) => {
   dispatch<any>(updateScheduleStatus(scheduleId, true));
+};
+
+/* BRACKETS SECTION */
+
+export const createNewBracket = (bracketData: ICreateBracketModalOutput) => (
+  dispatch: Dispatch
+) => {
+  dispatch(addNewBracket(bracketData));
 };

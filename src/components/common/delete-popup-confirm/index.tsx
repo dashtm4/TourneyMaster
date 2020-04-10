@@ -39,6 +39,7 @@ const PopupDeleteConfirm = ({
             }
             value={inputValue}
             placeholder={`${capitalize(type)} name`}
+            autofocus
           />
         </div>
         <p className={styles.btnsWrapper}>

@@ -1,0 +1,36 @@
+.section {
+  width: 550px;
+  padding: 24px 32px 12px;
+}
+
+.titleWrapper {
+  margin: 0 0 25px;
+}
+
+.SelectWrapper {
+  margin-bottom: 40px;
+}
+
+.btnsWrapper {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-bottom: 15px;
+}
+
+.btnWrapper {
+  margin-left: 25px;
+}
+
+.confirmText {
+  margin: 0 0 25px;
+
+  font-size: 18px;
+  color: #6a6a6a;
+  font-weight: 600;
+}
+
+.confirmBtns {
+  display: flex;
+  justify-content: flex-end;
+}

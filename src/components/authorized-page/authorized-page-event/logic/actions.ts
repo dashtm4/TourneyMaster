@@ -8,12 +8,21 @@ import {
   CLEAR_AUTH_PAGE_DATA,
   PUBLISH_TOURNAMENT_SUCCESS,
   PUBLISH_TOURNAMENT_FAILURE,
+  ADD_ENTITY_TO_LIBRARY_SUCCESS,
+  ADD_ENTITY_TO_LIBRARY_FAILURE,
 } from './action-types';
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { Toasts } from 'components/common';
 import { IEventDetails, IRegistration, IFacility } from 'common/models';
-import { EventStatuses } from 'common/enums';
+import {
+  EventStatuses,
+  EntryPoints,
+  MethodTypes,
+  LibraryStates,
+} from 'common/enums';
+import { IEntity } from 'common/types';
+import { sentToServerByRoute, removeObjKeysByEntryPoint } from 'helpers';
 
 const loadAuthPageData: ActionCreator<ThunkAction<
   void,
@@ -62,7 +71,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
         },
       },
     });
-  } catch {
+  } catch (err) {
     dispatch({
       type: LOAD_AUTH_PAGE_DATA_FAILURE,
     });
@@ -102,4 +111,44 @@ const changeTournamentStatus = (status: EventStatuses) => async (
   }
 };
 
-export { loadAuthPageData, clearAuthPageData, changeTournamentStatus };
+const addEntityToLibrary = (entity: IEntity, entryPoint: EntryPoints) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    if (entity.is_library_YN === LibraryStates.TRUE) {
+      throw new Error('The item is already in the library.');
+    }
+
+    const updatedEntity: IEntity = {
+      ...entity,
+      is_library_YN: LibraryStates.TRUE,
+    };
+
+    const clearEntity = removeObjKeysByEntryPoint(updatedEntity, entryPoint);
+
+    await sentToServerByRoute(clearEntity, entryPoint, MethodTypes.PUT);
+
+    dispatch({
+      type: ADD_ENTITY_TO_LIBRARY_SUCCESS,
+      payload: {
+        entity: updatedEntity,
+        entryPoint,
+      },
+    });
+
+    Toasts.successToast('Changes successfully saved.');
+  } catch (err) {
+    dispatch({
+      type: ADD_ENTITY_TO_LIBRARY_FAILURE,
+    });
+
+    Toasts.errorToast(err.message);
+  }
+};
+
+export {
+  loadAuthPageData,
+  clearAuthPageData,
+  changeTournamentStatus,
+  addEntityToLibrary,
+};

@@ -3,7 +3,7 @@ import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Button from '../common/buttons/button';
 import SectionDropdown from '../common/section-dropdown';
 import styles from './styles.module.scss';
-import Paper from '../common/paper';
+import Navigation from './navigation';
 import PrimaryInformation from './primary-information';
 import TeamsAthletesInfo from './teams-athletes';
 import MainContact from './main-contact';
@@ -13,12 +13,19 @@ import {
   saveRegistration,
   getDivisions,
 } from './registration-edit/logic/actions';
+import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import RegistrationEdit from 'components/registration/registration-edit';
 import { IRegistration } from 'common/models/registration';
 import { BindingCbWithOne, BindingCbWithTwo, IDivision } from 'common/models';
-import { EventMenuRegistrationTitles } from 'common/enums';
+import {
+  EventMenuRegistrationTitles,
+  EntryPoints,
+  LibraryStates,
+  IRegistrationFields,
+} from 'common/enums';
 import { History } from 'history';
 import { Loader } from 'components/common';
+import { IEntity } from 'common/types';
 
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
@@ -31,6 +38,7 @@ interface IRegistrationProps {
   getRegistration: BindingCbWithOne<string>;
   saveRegistration: BindingCbWithTwo<string | undefined, string>;
   getDivisions: BindingCbWithOne<string>;
+  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
   registration: IRegistration;
   divisions: IDivision[];
   match: any;
@@ -112,6 +120,21 @@ class RegistrationView extends React.Component<
     return null;
   }
 
+  onAddToLibraryManager = () => {
+    const { registration } = this.state;
+
+    if (
+      ((registration as unknown) as IRegistration)?.is_library_YN ===
+      LibraryStates.FALSE
+    ) {
+      this.onChange(IRegistrationFields.IS_LIBRARY_YN, LibraryStates.TRUE);
+    }
+
+    if (registration) {
+      this.props.addEntityToLibrary(registration!, EntryPoints.REGISTRATIONS);
+    }
+  };
+
   renderView = () => {
     const { registration } = this.props;
     if (this.state.isEdit) {
@@ -127,16 +150,11 @@ class RegistrationView extends React.Component<
     } else {
       return (
         <section className={styles.container}>
-          <Paper sticky={true}>
-            <div className={styles.mainMenu}>
-              <Button
-                label={registration ? 'Edit' : 'Add'}
-                variant="contained"
-                color="primary"
-                onClick={this.onRegistrationEdit}
-              />
-            </div>
-          </Paper>
+          <Navigation
+            registration={registration}
+            onRegistrationEdit={this.onRegistrationEdit}
+            onAddToLibraryManager={this.onAddToLibraryManager}
+          />
           <div className={styles.sectionContainer}>
             <div className={styles.heading}>
               <HeadingLevelTwo>Registration</HeadingLevelTwo>
@@ -235,6 +253,7 @@ const mapDispatchToProps = {
   getRegistration,
   saveRegistration,
   getDivisions,
+  addEntityToLibrary,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(RegistrationView);

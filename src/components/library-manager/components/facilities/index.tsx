@@ -1,25 +1,40 @@
 import React from 'react';
 import TableSort from '../table-sort';
 import { SectionDropdown } from 'components/common';
-import { EventMenuTitles, EntryPoints } from 'common/enums';
-import { BindingCbWithTwo, IFacility } from 'common/models';
+import { MenuTitles, EntryPoints } from 'common/enums';
+import { BindingCbWithTwo, IFacility, BindingCbWithThree } from 'common/models';
 import { IEntity } from 'common/types';
+import { ITableSortEntity } from '../../common';
 
 interface Props {
   facilities: IFacility[];
-  isSectionCollapse: boolean;
+  isSectionExpand: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
+  onConfirmDeleteItem: BindingCbWithThree<
+    IEntity,
+    ITableSortEntity,
+    EntryPoints
+  >;
 }
 
 const Facilities = ({
   facilities,
-  isSectionCollapse,
+  isSectionExpand,
   changeSharedItem,
+  onConfirmDeleteItem,
 }: Props) => {
-  const onShareRegistr = (id: string) => {
-    const editedRegistration = facilities.find(it => it.facilities_id === id);
+  const onShareFacility = (id: string) => {
+    const editedFacility = facilities.find(it => it.facilities_id === id);
 
-    changeSharedItem(editedRegistration!, EntryPoints.FACILITIES);
+    changeSharedItem(editedFacility!, EntryPoints.FACILITIES);
+  };
+
+  const onConfirmDelete = (tableEntity: ITableSortEntity) => {
+    const currentFacility = facilities.find(
+      it => it.facilities_id === tableEntity.id
+    );
+
+    onConfirmDeleteItem(currentFacility!, tableEntity, EntryPoints.FACILITIES);
   };
 
   const rowForTable = facilities.map(it => ({
@@ -31,13 +46,17 @@ const Facilities = ({
   return (
     <li>
       <SectionDropdown
-        id={EventMenuTitles.FACILITIES}
+        id={MenuTitles.FACILITIES}
         type="section"
         panelDetailsType="flat"
-        expanded={isSectionCollapse}
+        expanded={isSectionExpand}
       >
-        <span>{EventMenuTitles.FACILITIES}</span>
-        <TableSort rows={rowForTable} onShare={onShareRegistr} />
+        <span>{MenuTitles.FACILITIES}</span>
+        <TableSort
+          rows={rowForTable}
+          onShare={onShareFacility}
+          onDelete={onConfirmDelete}
+        />
       </SectionDropdown>
     </li>
   );

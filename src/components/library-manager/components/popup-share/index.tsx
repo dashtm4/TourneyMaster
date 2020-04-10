@@ -1,8 +1,8 @@
 import React from 'react';
 import { Modal, HeadingLevelTwo, Select, Button } from 'components/common';
 import { IEventDetails, BindingAction, BindingCbWithOne } from 'common/models';
-import styles from './styles.module.scss';
 import { ButtonVarian, ButtonColors } from 'common/enums';
+import styles from './styles.module.scss';
 
 interface Props {
   activeEvent: IEventDetails | null;
@@ -21,7 +21,7 @@ const PopupShare = ({
   onSave,
   onChangeActiveEvent,
 }: Props) => {
-  const seletOptions = events.map(it => ({
+  const selectOptions = events.map(it => ({
     label: it.event_name,
     value: it.event_id,
   }));
@@ -44,7 +44,7 @@ const PopupShare = ({
           <Select
             onChange={onChange}
             value={activeEvent?.event_id || ''}
-            options={seletOptions}
+            options={selectOptions}
             label="Select event"
             width="100%"
           />

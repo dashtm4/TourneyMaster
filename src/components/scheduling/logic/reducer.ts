@@ -7,9 +7,16 @@ import {
   CHANGE_SCHEDULE,
   UPDATE_SCHEDULE_SUCCESS,
   DELETE_SCHEDULE_SUCCESS,
+  ADD_NEW_BRACKET,
 } from './actionTypes';
-import { IConfigurableSchedule } from 'common/models/schedule';
+import {
+  ADD_ENTITY_TO_LIBRARY_SUCCESS,
+  AuthPageAction,
+} from 'components/authorized-page/authorized-page-event/logic/action-types';
+import { IConfigurableSchedule, ISchedule } from 'common/models/schedule';
 import { ISchedulingSchedule } from '../types';
+import { IBracket } from 'common/models/playoffs/bracket';
+import { EntryPoints } from 'common/enums';
 
 export interface ISchedulingState {
   schedule: IConfigurableSchedule | null;
@@ -17,6 +24,7 @@ export interface ISchedulingState {
   isLoading: boolean;
   isLoaded: boolean;
   error: boolean;
+  bracket: IBracket | null;
 }
 
 const appState: ISchedulingState = {
@@ -25,9 +33,13 @@ const appState: ISchedulingState = {
   isLoading: false,
   isLoaded: false,
   error: false,
+  bracket: null,
 };
 
-export default (state = appState, action: ScheduleActionType) => {
+export default (
+  state = appState,
+  action: ScheduleActionType | AuthPageAction
+) => {
   switch (action.type) {
     case SCHEDULE_FETCH_IN_PROGRESS: {
       return {
@@ -90,6 +102,29 @@ export default (state = appState, action: ScheduleActionType) => {
           it => it.schedule_id !== schedule.schedule_id
         ),
       };
+    }
+    case ADD_NEW_BRACKET:
+      return {
+        ...state,
+        bracket: action.payload,
+      };
+    case ADD_ENTITY_TO_LIBRARY_SUCCESS: {
+      const { entity, entryPoint } = action.payload;
+
+      if (entryPoint === EntryPoints.SCHEDULES) {
+        const updatedSchedule = entity as ISchedule;
+
+        return {
+          ...state,
+          schedules: state.schedules.map(it =>
+            it.schedule_id === updatedSchedule.schedule_id
+              ? updatedSchedule
+              : it
+          ),
+        };
+      } else {
+        return state;
+      }
     }
     default:
       return state;

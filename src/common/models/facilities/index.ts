@@ -1,3 +1,4 @@
+// ! If the interface changes, you must change the fields for the enum 'common/enums/_entity_'
 export interface IFacility {
   facilities_id: string;
   event_id: string;
@@ -26,7 +27,7 @@ export interface IFacility {
   golf_carts_availabe: boolean | null;
   field_map_URL: string | null;
   is_active_YN: number | 1;
-  in_library_YN: string | null;
+  is_library_YN: 0 | 1 | null;
   created_by: string | null;
   created_datetime: string | null;
   updated_by: string | null;

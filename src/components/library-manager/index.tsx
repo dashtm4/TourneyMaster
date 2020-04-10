@@ -2,18 +2,33 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators } from 'redux';
-import { loadLibraryManagerData, saveSharedItem } from './logic/actions';
+import {
+  loadLibraryManagerData,
+  saveSharedItem,
+  deleteLibraryItem,
+} from './logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
 import Navigation from './components/navigation';
 import PopupShare from './components/popup-share';
+import Tournaments from './components/tournaments';
 import Registration from './components/registration';
 import Facilities from './components/facilities';
-import { HeadingLevelTwo, Loader, Button } from 'components/common';
+import Divisions from './components/divisions';
+import Scheduling from './components/scheduling';
+import {
+  HeadingLevelTwo,
+  Loader,
+  Button,
+  DeletePopupConfrim,
+} from 'components/common';
 import {
   BindingAction,
   IEventDetails,
   BindingCbWithThree,
   IFacility,
+  IDivision,
+  ISchedule,
+  BindingCbWithTwo,
 } from 'common/models';
 import {
   MenuTitles,
@@ -22,8 +37,11 @@ import {
   ButtonColors,
 } from 'common/enums';
 import { IEntity } from 'common/types';
-import { ILibraryManagerRegistration } from './common';
+import { ILibraryManagerRegistration, ITableSortEntity } from './common';
 import styles from './styles.module.scss';
+
+const DELETE_POPUP_MESSAGE =
+  'To confirm that you want to delete this item from your library, please confirm by re-typing its name.';
 
 interface Props {
   isLoading: boolean;
@@ -31,8 +49,11 @@ interface Props {
   events: IEventDetails[];
   registrations: ILibraryManagerRegistration[];
   facilities: IFacility[];
+  divisions: IDivision[];
+  schedules: ISchedule[];
   loadLibraryManagerData: BindingAction;
   saveSharedItem: BindingCbWithThree<IEventDetails, IEntity, EntryPoints>;
+  deleteLibraryItem: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
 const LibraryManager = ({
@@ -40,50 +61,99 @@ const LibraryManager = ({
   events,
   registrations,
   facilities,
+  divisions,
+  schedules,
   loadLibraryManagerData,
   saveSharedItem,
+  deleteLibraryItem,
 }: Props) => {
   React.useEffect(() => {
     loadLibraryManagerData();
   }, []);
-
   const [activeEvent, changeActiveEvent] = React.useState<IEventDetails | null>(
     null
   );
+
   const [sharedItem, changeSharedItem] = React.useState<IEntity | null>(null);
+
+  const [
+    tableEntity,
+    changeTableEntity,
+  ] = React.useState<ITableSortEntity | null>(null);
 
   const [
     currentEntryPoint,
     changeEntryPoint,
   ] = React.useState<EntryPoints | null>(null);
 
-  const [isSectionsCollapse, toggleSectionCollapse] = React.useState(true);
+  const [isSectionsExpand, toggleSectionCollapse] = React.useState<boolean>(
+    true
+  );
 
-  const onChangeActiveEvent = (event: IEventDetails) =>
+  const [isSharePopupOpen, toggleSharePopup] = React.useState<boolean>(false);
+
+  const [isCondfirmPopupOpen, toggleConfirmPopup] = React.useState<boolean>(
+    false
+  );
+
+  const onChangeActiveEvent = (event: IEventDetails) => {
     changeActiveEvent(event);
+  };
 
-  const onChangeSharedItem = (sharedItem: IEntity, entryPoint: EntryPoints) => {
+  const onSharedItem = (sharedItem: IEntity, entryPoint: EntryPoints) => {
     changeSharedItem(sharedItem);
 
     changeEntryPoint(entryPoint);
+
+    toggleSharePopup(true);
   };
 
-  const onClosePopupShare = () => {
+  const onConfirmDeleteItem = (
+    sharedItem: IEntity,
+    tableEntity: ITableSortEntity,
+    entryPoint: EntryPoints
+  ) => {
+    changeSharedItem(sharedItem);
+
+    changeTableEntity(tableEntity);
+
+    changeEntryPoint(entryPoint);
+
+    toggleConfirmPopup(true);
+  };
+
+  const onClosePopup = () => {
+    changeActiveEvent(null);
+
+    changeTableEntity(null);
+
     changeSharedItem(null);
 
-    changeActiveEvent(null);
+    changeEntryPoint(null);
+
+    toggleSharePopup(false);
+
+    toggleConfirmPopup(false);
   };
 
   const onSaveShatedItem = () => {
     if (activeEvent && sharedItem && currentEntryPoint) {
       saveSharedItem(activeEvent, sharedItem, currentEntryPoint);
 
-      onClosePopupShare();
+      onClosePopup();
+    }
+  };
+
+  const onDeleteLibraryItem = () => {
+    if (sharedItem && currentEntryPoint) {
+      deleteLibraryItem(sharedItem, currentEntryPoint);
+
+      onClosePopup();
     }
   };
 
   const onToggleSectionCollapse = () => {
-    toggleSectionCollapse(!isSectionsCollapse);
+    toggleSectionCollapse(!isSectionsExpand);
   };
 
   if (isLoading) {
@@ -99,28 +169,56 @@ const LibraryManager = ({
           onClick={onToggleSectionCollapse}
           variant={ButtonVarian.TEXT}
           color={ButtonColors.SECONDARY}
-          label={isSectionsCollapse ? 'Expand All' : 'Collapse All'}
+          label={isSectionsExpand ? 'Collapse All' : 'Expand All'}
         />
       </div>
       <ul className={styles.libraryList}>
+        <Tournaments
+          events={events}
+          isSectionExpand={isSectionsExpand}
+          changeSharedItem={onSharedItem}
+          onConfirmDeleteItem={onConfirmDeleteItem}
+        />
         <Facilities
           facilities={facilities}
-          isSectionCollapse={isSectionsCollapse}
-          changeSharedItem={onChangeSharedItem}
+          isSectionExpand={isSectionsExpand}
+          changeSharedItem={onSharedItem}
+          onConfirmDeleteItem={onConfirmDeleteItem}
         />
         <Registration
           registrations={registrations}
-          isSectionCollapse={isSectionsCollapse}
-          changeSharedItem={onChangeSharedItem}
+          isSectionExpand={isSectionsExpand}
+          changeSharedItem={onSharedItem}
+          onConfirmDeleteItem={onConfirmDeleteItem}
+        />
+        <Divisions
+          divisions={divisions}
+          isSectionExpand={isSectionsExpand}
+          changeSharedItem={onSharedItem}
+          onConfirmDeleteItem={onConfirmDeleteItem}
+        />
+        <Scheduling
+          schedules={schedules}
+          isSectionExpand={isSectionsExpand}
+          changeSharedItem={onSharedItem}
+          onConfirmDeleteItem={onConfirmDeleteItem}
         />
       </ul>
       <PopupShare
         activeEvent={activeEvent}
         events={events}
-        isOpen={Boolean(sharedItem)}
-        onClose={onClosePopupShare}
+        isOpen={isSharePopupOpen}
+        onClose={onClosePopup}
         onSave={onSaveShatedItem}
         onChangeActiveEvent={onChangeActiveEvent}
+      />
+      <DeletePopupConfrim
+        type="item"
+        deleteTitle={tableEntity?.title || ''}
+        message={DELETE_POPUP_MESSAGE}
+        isOpen={isCondfirmPopupOpen}
+        onClose={onClosePopup}
+        onDeleteClick={onDeleteLibraryItem}
       />
     </>
   );
@@ -133,7 +231,12 @@ export default connect(
     events: libraryManager.events,
     registrations: libraryManager.registrations,
     facilities: libraryManager.facilities,
+    divisions: libraryManager.divisions,
+    schedules: libraryManager.schedules,
   }),
   (dispatch: Dispatch) =>
-    bindActionCreators({ loadLibraryManagerData, saveSharedItem }, dispatch)
+    bindActionCreators(
+      { loadLibraryManagerData, saveSharedItem, deleteLibraryItem },
+      dispatch
+    )
 )(LibraryManager);
