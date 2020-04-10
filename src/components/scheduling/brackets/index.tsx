@@ -9,10 +9,10 @@ import { compareTime } from 'helpers';
 interface IProps {
   schedules: ISchedulingSchedule[];
   eventId: string;
-  isSectionCollapse: boolean;
+  isSectionsExpand: boolean;
 }
 
-const Brackets = ({ schedules, eventId, isSectionCollapse }: IProps) => {
+const Brackets = ({ schedules, eventId, isSectionsExpand }: IProps) => {
   const sortedScheduleByName = schedules.sort(
     (a, b) =>
       compareTime(a.updated_datetime, b.updated_datetime) ||
@@ -24,7 +24,7 @@ const Brackets = ({ schedules, eventId, isSectionCollapse }: IProps) => {
       type="section"
       isDefaultExpanded={true}
       useBorder={true}
-      expanded={isSectionCollapse}
+      expanded={isSectionsExpand}
       id={EventMenuTitles.BRACKETS}
     >
       <HeadingLevelThree>

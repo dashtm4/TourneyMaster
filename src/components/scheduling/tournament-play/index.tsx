@@ -16,7 +16,7 @@ interface IProps {
   schedules: ISchedulingSchedule[];
   eventId: string;
   savingInProgress?: boolean;
-  isSectionCollapse: boolean;
+  isSectionsExpand: boolean;
   onEditSchedule: BindingCbWithOne<ISchedulingSchedule>;
   onPublish: (schedule: ISchedule) => void;
   onUnpublish: (schedule: ISchedule) => void;
@@ -29,7 +29,7 @@ export default (props: IProps) => {
     savingInProgress,
     schedules,
     eventId,
-    isSectionCollapse,
+    isSectionsExpand,
     onEditSchedule,
   } = props;
 
@@ -60,7 +60,7 @@ export default (props: IProps) => {
     <SectionDropdown
       type="section"
       isDefaultExpanded={true}
-      expanded={isSectionCollapse}
+      expanded={isSectionsExpand}
       useBorder={true}
       id={EventMenuTitles.TOURNAMENT_PLAY}
     >

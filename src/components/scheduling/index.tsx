@@ -83,7 +83,7 @@ interface IState {
   confirmText?: string;
   confirmCondition?: { name: string; data: any };
   componentAction?: ComponentActionsEnum;
-  isSectionsCollapse: boolean;
+  isSectionsExpand: boolean;
 }
 
 class Scheduling extends Component<IProps, IState> {
@@ -95,7 +95,7 @@ class Scheduling extends Component<IProps, IState> {
     confirmText: '',
     confirmCondition: undefined,
     componentAction: undefined,
-    isSectionsCollapse: true,
+    isSectionsExpand: true,
   };
 
   componentDidMount() {
@@ -178,8 +178,8 @@ class Scheduling extends Component<IProps, IState> {
     });
   };
   toggleSectionCollapse = () =>
-    this.setState(({ isSectionsCollapse }) => ({
-      isSectionsCollapse: !isSectionsCollapse,
+    this.setState(({ isSectionsExpand }) => ({
+      isSectionsExpand: !isSectionsExpand,
     }));
 
   render() {
@@ -192,7 +192,7 @@ class Scheduling extends Component<IProps, IState> {
       updateSchedule,
       deleteSchedule,
       fields,
-      event
+      event,
     } = this.props;
     const {
       createModalOpen,
@@ -202,7 +202,7 @@ class Scheduling extends Component<IProps, IState> {
       confirmCondition,
       confirmationModalOpen,
       componentAction,
-      isSectionsCollapse,
+      isSectionsExpand,
     } = this.state;
     const { eventId } = this.props.match?.params;
     const isAllowCreate = incompleteMenuItems.length === 0;
@@ -234,21 +234,21 @@ class Scheduling extends Component<IProps, IState> {
                   onClick={this.toggleSectionCollapse}
                   variant={ButtonVarian.TEXT}
                   color={ButtonColors.SECONDARY}
-                  label={isSectionsCollapse ? 'Expand All' : 'Collapse All'}
+                  label={isSectionsExpand ? 'Collapse All' : 'Expand All'}
                 />
               </div>
               <TourneyArchitect
                 schedule={schedule}
                 event={event}
                 onChange={this.onChange}
-                isSectionCollapse={isSectionsCollapse}
+                isSectionsExpand={isSectionsExpand}
                 onViewEventMatrix={this.openViewMatrix}
               />
               {schedules.length > 0 && (
                 <>
                   <TournamentPlay
                     schedules={schedules}
-                    isSectionCollapse={isSectionsCollapse}
+                    isSectionsExpand={isSectionsExpand}
                     eventId={eventId}
                     onEditSchedule={this.onEditSchedule}
                     onPublish={(data: ISchedule) => this.onPublish(data, true)}
@@ -259,7 +259,7 @@ class Scheduling extends Component<IProps, IState> {
                   <Brackets
                     schedules={schedules}
                     eventId={eventId}
-                    isSectionCollapse={isSectionsCollapse}
+                    isSectionsExpand={isSectionsExpand}
                   />
                 </>
               )}
