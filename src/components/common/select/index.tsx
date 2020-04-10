@@ -16,6 +16,7 @@ interface ISelectProps {
   name?: string;
   disabled?: boolean;
   align?: string;
+  placeholder?: string;
 }
 
 const Select: React.FC<ISelectProps> = ({
@@ -27,9 +28,11 @@ const Select: React.FC<ISelectProps> = ({
   name,
   disabled,
   align,
+  placeholder,
 }) => (
   <div className={styles.container} style={{ alignItems: align || '' }}>
     <span className={styles.label}>{label}</span>
+    {!value ? <span className={styles.placeholder}>{placeholder}</span> : null}
     <MuiTextField
       id="select"
       style={{ width }}
