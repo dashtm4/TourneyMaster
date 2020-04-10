@@ -5,9 +5,9 @@ import { RankingFactorValues } from 'common/enums';
 const defaultRankingFactor = [
   { id: RankingFactorValues.WIN_PERCENTAGE, text: 'Win Percentage' },
   { id: RankingFactorValues.HEAD_TO_HEAD, text: 'Head to Head' },
-  { id: RankingFactorValues.GOAL_ALLOWED, text: 'Goals Allowed' },
   { id: RankingFactorValues.GOAL_DIFFERENCE, text: 'Goal Difference' },
   { id: RankingFactorValues.GOAL_SCORED, text: 'Goals Scored' },
+  { id: RankingFactorValues.GOAL_ALLOWED, text: 'Goals Allowed' },
 ];
 
 const DEFAULT_RANKING_VALUE = JSON.stringify(
