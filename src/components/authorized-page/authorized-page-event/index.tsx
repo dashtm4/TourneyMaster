@@ -26,11 +26,25 @@ import Footer from 'components/footer';
 import Schedules from 'components/schedules';
 import Reporting from 'components/reporting';
 import Playoffs from 'components/playoffs';
-import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
+import {
+  IMenuItem,
+  BindingAction,
+  ITournamentData,
+  ICalendarEvent,
+} from 'common/models';
 import { Routes, EventMenuTitles, EventStatuses } from 'common/enums';
 import { getIncompleteMenuItems } from '../helpers';
 import styles from '../styles.module.scss';
 import { closeFullscreen, openFullscreen } from 'helpers';
+import {
+  filterCalendarEvents,
+  checkIfRemind,
+} from 'components/calendar/logic/helper';
+
+import {
+  getCalendarEvents,
+  updateCalendarEvent,
+} from 'components/calendar/logic/actions';
 
 interface MatchParams {
   eventId?: string;
@@ -44,6 +58,9 @@ interface Props {
   loadAuthPageData: (eventId: string) => void;
   clearAuthPageData: BindingAction;
   changeTournamentStatus: (status: EventStatuses) => void;
+  getCalendarEvents: BindingAction;
+  calendarEvents: ICalendarEvent[] | null | undefined;
+  updateCalendarEvent: BindingAction;
 }
 
 export const EmptyPage: React.FC = () => {
@@ -58,6 +75,9 @@ const AuthorizedPageEvent = ({
   loadAuthPageData,
   clearAuthPageData,
   changeTournamentStatus,
+  getCalendarEvents,
+  calendarEvents,
+  updateCalendarEvent,
 }: Props & RouteComponentProps<MatchParams>) => {
   const [isFullScreen, toggleFullScreen] = React.useState<boolean>(false);
   const onToggleFullScreen = () => {
@@ -75,8 +95,19 @@ const AuthorizedPageEvent = ({
   };
 
   React.useEffect(() => {
+    if (calendarEvents) {
+      const filteredCalendarEvents = filterCalendarEvents(calendarEvents);
+      const interval = setInterval(() => {
+        checkIfRemind(filteredCalendarEvents, updateCalendarEvent);
+      }, 1000 * 60);
+      return () => clearInterval(interval);
+    }
+  });
+
+  React.useEffect(() => {
     if (eventId) {
       loadAuthPageData(eventId);
+      getCalendarEvents();
     }
 
     return () => clearAuthPageData();
@@ -200,15 +231,22 @@ const AuthorizedPageEvent = ({
 };
 
 export default connect(
-  ({ pageEvent }: IAppState) => ({
+  ({ pageEvent, calendar }: IAppState) => ({
     tournamentData: pageEvent.tournamentData,
     isLoading: pageEvent.isLoading,
     isLoaded: pageEvent.isLoaded,
     menuList: pageEvent.menuList,
+    calendarEvents: calendar.events,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadAuthPageData, clearAuthPageData, changeTournamentStatus },
+      {
+        loadAuthPageData,
+        clearAuthPageData,
+        changeTournamentStatus,
+        getCalendarEvents,
+        updateCalendarEvent,
+      },
       dispatch
     )
 )(AuthorizedPageEvent);

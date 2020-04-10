@@ -3,6 +3,8 @@ import ITag from 'common/models/calendar/tag';
 
 export const CALENDAR_EVENT_CREATE_SUCC = 'CALENDAR_EVENT_CREATE_SUCC';
 export const CALENDAR_EVENT_CREATE_FAIL = 'CALENDAR_EVENT_CREATE_FAIL';
+export const CALENDAR_EVENT_DELETE_SUCC = 'CALENDAR_EVENT_DELETE_SUCC';
+export const CALENDAR_EVENT_UPDATE_SUCC = 'CALENDAR_EVENT_UPDATE_SUCC';
 
 export const CALENDAR_EVENT_FETCH_MULT = 'CALENDAR_EVENT_FETCH_MULT';
 export const CALENDAR_EVENT_FETCH_SING = 'CALENDAR_EVENT_FETCH_SING';
@@ -16,6 +18,17 @@ export interface CalendarEventFetchMult {
 
 export interface CalendarEventCreateSucc {
   type: 'CALENDAR_EVENT_CREATE_SUCC';
+  payload: ICalendarEvent;
+}
+
+export interface CalendarEventUpdateSucc {
+  type: 'CALENDAR_EVENT_UPDATE_SUCC';
+  payload: ICalendarEvent;
+}
+
+export interface CalendarEventDeleteSucc {
+  type: 'CALENDAR_EVENT_DELETE_SUCC';
+  payload: string;
 }
 
 export interface GetTagsSuccess {
@@ -26,4 +39,6 @@ export interface GetTagsSuccess {
 export type CalendarEventActions =
   | CalendarEventFetchMult
   | CalendarEventCreateSucc
+  | CalendarEventUpdateSucc
+  | CalendarEventDeleteSucc
   | GetTagsSuccess;

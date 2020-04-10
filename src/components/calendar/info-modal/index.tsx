@@ -108,7 +108,7 @@ const InfoModal = ({
       case TaskStatus.Open || null:
         return (
           <Button
-            label="Complete"
+            label="Dismiss"
             variant="text"
             color="secondary"
             onClick={onTaskComplete}
@@ -117,7 +117,7 @@ const InfoModal = ({
       case TaskStatus.Close:
         return (
           <Button
-            label="Completed"
+            label="Dismissed"
             variant="text"
             color="secondary"
             disabled={true}
@@ -270,7 +270,8 @@ const InfoModal = ({
     <div className={styles.container}>
       <div className={styles.sectionTitle}>
         <div>{`${capitalize(clickedEvent.cal_event_type)} Details`}</div>{' '}
-        {clickedEvent.cal_event_type === 'task' &&
+        {(clickedEvent.cal_event_type === 'task' ||
+          clickedEvent.cal_event_type === 'reminder') &&
           renderCompleteBtn(clickedEvent.status_id)}
       </div>
       <div>

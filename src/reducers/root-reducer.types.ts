@@ -10,6 +10,7 @@ import { ILibraryManagerState } from 'components/library-manager/logic/reducer';
 import { IReportingState } from 'components/reporting/logic/reducer';
 import { ITeamsState } from 'components/teams/logic/reducer';
 import { IScoringState } from 'components/scoring/logic/reducer';
+import { ICalendarState } from 'components/calendar/logic/reducer';
 
 export interface IAppState {
   pageEvent: IPageEventState;
@@ -24,4 +25,5 @@ export interface IAppState {
   reporting: IReportingState;
   teams: ITeamsState;
   scoring: IScoringState;
+  calendar: ICalendarState;
 }
