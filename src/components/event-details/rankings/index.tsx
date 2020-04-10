@@ -9,11 +9,10 @@ import {
   Checkbox,
   Select,
 } from 'components/common';
-import { CardMessageTypes } from 'components/common/card-message/types';
-import { BindingCbWithOne } from 'common/models';
+import { BindingCbWithOne, IEventDetails } from 'common/models';
 import { EventMenuTitles } from 'common/enums';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import { IInputEvent } from 'common/types';
-import { EventDetailsDTO } from '../logic/model';
 import { defaultRankingFactor } from '../state';
 import styles from '../styles.module.scss';
 
@@ -33,7 +32,7 @@ enum rankingFactors {
 }
 
 interface Props {
-  eventData: Partial<EventDetailsDTO>;
+  eventData: Partial<IEventDetails>;
   onChange: any;
   expanded: boolean;
   onToggleOne: BindingCbWithOne<number>;

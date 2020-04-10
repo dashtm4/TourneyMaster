@@ -188,12 +188,12 @@ const sortTeamsByDifference = (
   return sortedTeams;
 };
 
-const sortTeamsByGoalAllowrd = (
+const sortTeamsByGoalAllowed = (
   a: ITeamWithResults,
   b: ITeamWithResults,
   _: unknown
 ) => {
-  const sortedTeams = b.goalsAllowed - a.goalsAllowed;
+  const sortedTeams = a.goalsAllowed - b.goalsAllowed;
 
   return sortedTeams;
 };
@@ -201,7 +201,7 @@ const sortTeamsByGoalAllowrd = (
 const SortTeamsBy = {
   [RankingFactorValues.WIN_PERCENTAGE]: sortTeamsByBestRecord,
   [RankingFactorValues.HEAD_TO_HEAD]: sortTeamsByHeadToHead,
-  [RankingFactorValues.GOAL_ALLOWED]: sortTeamsByGoalAllowrd,
+  [RankingFactorValues.GOAL_ALLOWED]: sortTeamsByGoalAllowed,
   [RankingFactorValues.GOAL_DIFFERENCE]: sortTeamsByDifference,
   [RankingFactorValues.GOAL_SCORED]: sortTeamsByGoalScored,
 };

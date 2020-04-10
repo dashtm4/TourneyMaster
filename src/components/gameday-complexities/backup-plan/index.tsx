@@ -2,16 +2,20 @@ import React from 'react';
 import styles from './styles.module.scss';
 import { SectionDropdown, Button } from 'components/common';
 import CreateIcon from '@material-ui/icons/Create';
-import { BindingCbWithOne, IFacility, IField } from 'common/models';
+import {
+  BindingCbWithOne,
+  IFacility,
+  IField,
+  IEventDetails,
+} from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Modal from 'components/common/modal';
 import EditBackupForm from '../edit-backup-form';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 interface Props {
-  events: EventDetailsDTO[];
+  events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
   data: IBackupPlan;

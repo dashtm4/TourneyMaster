@@ -38,7 +38,7 @@ const TournamentStatus = ({
           {percentOfCompleted === 100 && (
             <span className={styles.doneBtnWrapper}>
               <Button
-                onClick={() => changeTournamentStatus(EventStatuses.PUBLIHSED)}
+                onClick={() => changeTournamentStatus(EventStatuses.PUBLISHED)}
                 icon={getIcon(Icons.DONE)}
                 label="Publish Tournament"
                 color={ButtonColors.INHERIT}

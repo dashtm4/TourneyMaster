@@ -40,14 +40,14 @@ interface IProps {
   event?: IEventDetails | null;
   onChange: (name: string, value: any) => void;
   onViewEventMatrix: BindingAction;
-  isSectionCollapse: boolean;
+  isSectionExpand: boolean;
 }
 
 const TourneyArchitect = (props: IProps) => {
   const {
     schedule,
     event,
-    isSectionCollapse,
+    isSectionExpand,
     onChange,
     onViewEventMatrix,
   } = props;
@@ -85,7 +85,7 @@ const TourneyArchitect = (props: IProps) => {
   return (
     <SectionDropdown
       type="section"
-      expanded={isSectionCollapse}
+      expanded={isSectionExpand}
       useBorder={true}
       id={EventMenuTitles.TOURNEY_ARCHITECT}
     >

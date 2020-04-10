@@ -14,21 +14,29 @@ import {
   saveFacilities,
   createFacilities,
 } from './logic/actions';
+import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import Navigation from './components/navigation';
 import FacilityDetails from './components/facility-details';
-import { HeadingLevelTwo, Select, Loader } from '../common';
-import { IFacility, IField, IUploadFile } from '../../common/models';
 import {
+  HeadingLevelTwo,
+  Select,
+  Loader,
+  Button,
+  PopupExposure,
+  CsvLoader,
+  PopupAddToLibrary,
+} from 'components/common';
+import {
+  IFacility,
+  IField,
+  IUploadFile,
   BindingCbWithOne,
   BindingCbWithTwo,
-} from '../../common/models/callback';
+} from 'common/models';
 import styles from './styles.module.scss';
-import Button from 'components/common/buttons/button';
-import { PopupExposure } from 'components/common';
 import history from '../../browserhistory';
-import CsvLoader from 'components/common/csv-loader';
-
-const MOCKED_EVENT_ID = 'ABC123';
+import { EntryPoints } from 'common/enums';
+import { IEntity } from 'common/types';
 
 interface MatchParams {
   eventId?: string;
@@ -47,20 +55,32 @@ interface Props {
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
   createFacilities: (facilities: IFacility[]) => void;
+  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
+}
+
+interface State {
   expanded: boolean[];
   expandAll: boolean;
   isModalOpen: boolean;
+  isCsvLoaderOpen: boolean;
+  isLibraryPopupOpen: boolean;
 }
 
 class Facilities extends React.Component<
-  Props & RouteComponentProps<MatchParams>
+  Props & RouteComponentProps<MatchParams>,
+  State
 > {
-  state = {
-    expanded: [],
-    expandAll: false,
-    isModalOpen: false,
-    isCsvLoaderOpen: false,
-  };
+  constructor(props: Props & RouteComponentProps<MatchParams>) {
+    super(props);
+
+    this.state = {
+      expanded: [],
+      expandAll: false,
+      isModalOpen: false,
+      isCsvLoaderOpen: false,
+      isLibraryPopupOpen: false,
+    };
+  }
 
   componentDidMount() {
     const { loadFacilities } = this.props;
@@ -76,7 +96,7 @@ class Facilities extends React.Component<
     const eventId = this.props.match.params.eventId;
 
     if (evt.target.value > facilities.length) {
-      addEmptyFacility(eventId || MOCKED_EVENT_ID);
+      addEmptyFacility(eventId!);
     }
   };
 
@@ -138,6 +158,12 @@ class Facilities extends React.Component<
     this.setState({ isCsvLoaderOpen: false });
   };
 
+  toggleLibraryPopup = () => {
+    this.setState(({ isLibraryPopupOpen }) => ({
+      isLibraryPopupOpen: !isLibraryPopupOpen,
+    }));
+  };
+
   render() {
     const {
       isLoading,
@@ -150,6 +176,8 @@ class Facilities extends React.Component<
       uploadFileMap,
     } = this.props;
 
+    const { isLibraryPopupOpen } = this.state;
+
     if (isLoading) {
       return <Loader />;
     }
@@ -160,6 +188,7 @@ class Facilities extends React.Component<
           onClick={this.savingFacilities}
           onCancelClick={this.onCancelClick}
           onCsvLoaderBtn={this.onCsvLoaderBtn}
+          toggleLibraryPopup={this.toggleLibraryPopup}
         />
         <div className={styles.sectionWrapper}>
           <div className={styles.headingWrapper}>
@@ -245,6 +274,13 @@ class Facilities extends React.Component<
           onCreate={this.props.createFacilities}
           eventId={this.props.match.params.eventId}
         />
+        <PopupAddToLibrary
+          entities={facilities}
+          entryPoint={EntryPoints.FACILITIES}
+          isOpen={isLibraryPopupOpen}
+          onClose={this.toggleLibraryPopup}
+          addEntityToLibrary={this.props.addEntityToLibrary}
+        />
       </section>
     );
   }
@@ -268,6 +304,7 @@ export default connect(
         saveFacilities,
         uploadFileMap,
         createFacilities,
+        addEntityToLibrary,
       },
       dispatch
     )

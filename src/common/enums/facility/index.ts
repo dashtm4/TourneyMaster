@@ -26,7 +26,7 @@ enum IFacilityFields {
   GOLF_CARTS_AVAILABE = 'golf_carts_availabe',
   FIELD_MAP_URL = 'field_map_URL',
   IS_ACTIVE_YN = 'is_active_YN',
-  IN_LIBRARY_YN = 'in_library_YN',
+  IS_LIBRARY_YN = 'is_library_YN',
   CREATED_BY = 'created_by',
   CREATED_DATETIME = 'created_datetime',
   UPDATED_BY = 'updated_by',

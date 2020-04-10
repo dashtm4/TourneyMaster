@@ -8,11 +8,16 @@ import {
   CALENDAR_EVENTS_FETCH_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { Toasts } from 'components/common';
-import { IFacility, ITeam, IField, ICalendarEvent } from 'common/models';
+import {
+  IFacility,
+  ITeam,
+  IField,
+  ICalendarEvent,
+  IEventDetails,
+} from 'common/models';
 
 export const fetchStart = (): { type: string } => ({
   type: DASHBOARD_FETCH_START,
@@ -23,8 +28,8 @@ export const fetchCalendarEventsStart = (): { type: string } => ({
 });
 
 export const eventsFetchSuccess = (
-  payload: EventDetailsDTO[]
-): { type: string; payload: EventDetailsDTO[] } => ({
+  payload: IEventDetails[]
+): { type: string; payload: IEventDetails[] } => ({
   type: EVENTS_FETCH_SUCCESS,
   payload,
 });
