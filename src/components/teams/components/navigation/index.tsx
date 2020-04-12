@@ -31,26 +31,24 @@ const Navigation = ({
   return (
     <div className={styles.navWrapper}>
       <Button
-        onClick={onCancelClick}
+        onClick={onImportFromCsv}
         variant={ButtonVarian.TEXT}
         color={ButtonColors.SECONDARY}
-        label="Cancel"
+        label="Import from CSV"
       />
-      <span className={styles.btnWrapper}>
+      <span className={styles.btnsWrapper}>
+        <Button
+          onClick={onCancelClick}
+          variant={ButtonVarian.TEXT}
+          color={ButtonColors.SECONDARY}
+          label="Cancel"
+        />
         <Button
           onClick={onSaveClick}
           variant={ButtonVarian.CONTAINED}
           color={ButtonColors.PRIMARY}
           label="Save"
         />
-        <Button
-          onClick={onImportFromCsv}
-          variant={ButtonVarian.TEXT}
-          color={ButtonColors.SECONDARY}
-          label="Import from CSV"
-        />
-      </span>
-      <span className={styles.btnWrapper}>
         <Button
           onClick={onCreateTeam}
           variant={ButtonVarian.CONTAINED}

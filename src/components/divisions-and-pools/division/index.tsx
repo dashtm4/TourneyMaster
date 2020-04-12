@@ -57,7 +57,7 @@ class Division extends React.PureComponent<IDivisionProps> {
         onToggle={this.onSectionToggle}
       >
         <div className={styles.sectionTitle}>
-          <div>Division: {division.short_name}</div>
+          <div>Division: {division.long_name}</div>
           <div>
             <Button
               label="Edit Division Details"

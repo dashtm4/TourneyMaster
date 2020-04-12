@@ -37,7 +37,7 @@ export const getColumnOptions = (tableDetails: string) => {
 export const mapFieldForSaving = (fields: IField[]) => {
   return fields.map(field => {
     if (field.included) {
-      return field.mapId;
+      return field.map_id;
     } else {
       return '';
     }
@@ -51,14 +51,14 @@ export const parseMapping = (mapping: string, tableDetails: string) => {
     csvPosition: index,
     dataType: column.data_type,
     included: true,
-    mapId: column.map_id,
+    map_id: column.map_id,
   }));
 
   const parsedMapping = JSON.parse(mapping);
   const newFields = fields.map((field, index) => {
     if (parsedMapping[index]) {
-      const obj = fields.find(f => f.mapId === parsedMapping[index]);
-      return { ...field, value: obj!.value, mapId: obj!.mapId };
+      const obj = fields.find(f => f.map_id === parsedMapping[index]);
+      return { ...field, value: obj!.value, mapId: obj!.map_id };
     } else {
       return { ...field, value: '', mapId: '', dataType: '', included: false };
     }

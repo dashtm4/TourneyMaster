@@ -28,14 +28,6 @@ const Navigation = ({
   <Paper sticky={true}>
     <div className={styles.paperWrapper}>
       <div className={styles.loadBtnsWrapper}>
-        {isEventId && (
-          <Button
-            onClick={onCsvLoaderBtn}
-            color={ButtonColors.SECONDARY}
-            variant={ButtonVarian.TEXT}
-            label="Import from CSV"
-          />
-        )}
         <Link className={styles.libraryBtn} to={Routes.LIBRARY_MANAGER}>
           {getIcon(Icons.GET_APP, ICON_STYLES)} Load From Library
         </Link>
@@ -46,6 +38,14 @@ const Navigation = ({
           color={ButtonColors.SECONDARY}
           label="Save to Library"
         />
+        {isEventId && (
+          <Button
+            onClick={onCsvLoaderBtn}
+            color={ButtonColors.SECONDARY}
+            variant={ButtonVarian.TEXT}
+            label="Import from CSV"
+          />
+        )}
       </div>
       <div>
         <Button

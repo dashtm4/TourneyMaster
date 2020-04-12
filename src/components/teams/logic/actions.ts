@@ -212,7 +212,13 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
       return { ...team, division_id: divisionId };
     });
 
-    for (const team of data) {
+    for (const [index, team] of data.entries()) {
+      if (!team.division_id) {
+        return Toasts.errorToast(
+          `Record ${index +
+            1}: There is no division with such long name. Please, create a division first or choose another one.`
+        );
+      }
       const teamsInDivision = allTeams.filter(
         (t: ITeam) => t.division_id === team.division_id
       );
