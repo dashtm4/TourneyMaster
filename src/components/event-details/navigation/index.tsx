@@ -47,7 +47,7 @@ const Navigation = ({
           />
         )}
       </div>
-      <div>
+      <div className={styles.btnsWrapper}>
         <Button
           color={ButtonColors.SECONDARY}
           variant={ButtonVarian.TEXT}
