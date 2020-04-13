@@ -21,17 +21,12 @@ const useStyles = makeStyles({
     backgroundColor: '#ffffff',
   },
   tableCell: {
+    width: '25%',
     border: 0,
   },
   cellTitle: {
     width: '50%',
     color: '#00A3EA;',
-  },
-  cellDate: {
-    width: '25%',
-  },
-  cellAction: {
-    width: '25%',
   },
 });
 
@@ -48,7 +43,7 @@ const TableSort = ({ rows, onShare, onDelete }: Props) => {
   const classes = useStyles();
   const [order, setOrder] = React.useState<OrderTypes>(OrderTypes.ASC);
   const [orderBy, setOrderBy] = React.useState<TableSortRowTypes>(
-    TableSortRowTypes.TITLE
+    TableSortRowTypes.EVENT
   );
 
   const handleRequestSort = (property: TableSortRowTypes) => {
@@ -80,19 +75,12 @@ const TableSort = ({ rows, onShare, onDelete }: Props) => {
                 key={row.id}
                 hover
               >
-                <TableCell
-                  className={`${classes.cellTitle} ${classes.tableCell}`}
-                >
-                  {row.title}
-                </TableCell>
-                <TableCell
-                  className={`${classes.tableCell} ${classes.cellDate}`}
-                >
+                <TableCell className={classes.tableCell}>{row.event}</TableCell>
+                <TableCell className={classes.tableCell}>{row.name}</TableCell>
+                <TableCell className={classes.tableCell}>
                   {moment(row.lastModified).format('lll')}
                 </TableCell>
-                <TableCell
-                  className={`${classes.tableCell} ${classes.cellAction}`}
-                >
+                <TableCell className={classes.tableCell}>
                   <span className={styles.btnWrapper}>
                     <Button
                       onClick={() => onShare(row.id)}
