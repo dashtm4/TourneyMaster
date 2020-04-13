@@ -31,7 +31,7 @@ const getSelectOptions = (entities: IEntity[], entryPoint: EntryPoints) => {
   }
 };
 
-const getEntityByOption = (
+const getEntityByOptions = (
   entities: IEntity[],
   checkedValues: string[],
   entryPoint: EntryPoints
@@ -55,4 +55,4 @@ const getEntityByOption = (
   }
 };
 
-export { getSelectOptions, getEntityByOption };
+export { getSelectOptions, getEntityByOptions };

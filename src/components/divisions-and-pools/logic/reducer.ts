@@ -13,7 +13,7 @@ import {
   SAVE_TEAMS_SUCCESS,
 } from './actionTypes';
 import {
-  ADD_ENTITY_TO_LIBRARY_SUCCESS,
+  ADD_ENTITIES_TO_LIBRARY_SUCCESS,
   AuthPageAction,
 } from 'components/authorized-page/authorized-page-event/logic/action-types';
 import { IPool, ITeam, IDivision } from 'common/models';
@@ -142,19 +142,23 @@ export default (
         teams,
       };
     }
-    case ADD_ENTITY_TO_LIBRARY_SUCCESS: {
-      const { entity, entryPoint } = action.payload;
+    case ADD_ENTITIES_TO_LIBRARY_SUCCESS: {
+      const { entities, entryPoint } = action.payload;
 
       if (entryPoint === EntryPoints.DIVISIONS) {
-        const updatedDivision = entity as IDivision;
+        const updatedDivisions = entities as IDivision[];
+
+        const divisions = state.data?.map(division => {
+          const updatedDivision = updatedDivisions.find(
+            it => it.division_id === division.division_id
+          );
+
+          return updatedDivision ? updatedDivision : division;
+        });
 
         return {
           ...state,
-          data: state.data!.map(it =>
-            it.division_id === updatedDivision.division_id
-              ? updatedDivision
-              : it
-          ),
+          data: divisions,
         };
       } else {
         return state;

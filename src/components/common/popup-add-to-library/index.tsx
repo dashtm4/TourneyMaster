@@ -9,7 +9,7 @@ import {
 import { BindingAction, BindingCbWithTwo } from 'common/models';
 import { ButtonVarian, ButtonColors, EntryPoints } from 'common/enums';
 import { IEntity, IInputEvent } from 'common/types';
-import { getSelectOptions, getEntityByOption } from './helpers';
+import { getSelectOptions, getEntityByOptions } from './helpers';
 import styles from './styles.module.scss';
 
 const BUTTON_STYLES = {
@@ -21,7 +21,7 @@ interface Props {
   entryPoint: EntryPoints;
   isOpen: boolean;
   onClose: BindingAction;
-  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
+  addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
 }
 
 const PopupAddToLibrary = ({
@@ -29,7 +29,8 @@ const PopupAddToLibrary = ({
   entryPoint,
   isOpen,
   onClose,
-}: // addEntityToLibrary,
+  addEntitiesToLibrary
+}:
 Props) => {
   const [isConfirm, toggleConfirm] = React.useState<boolean>(false);
   const [checkedValues, changeOptions] = React.useState<string[] | null>(null);
@@ -55,11 +56,9 @@ Props) => {
 
   const onSave = () => {
     if (checkedValues) {
-      const entity = getEntityByOption(entities, checkedValues, entryPoint);
+      const entitiesByOptions = getEntityByOptions(entities, checkedValues, entryPoint);
 
-      console.log(entity);
-
-      // addEntityToLibrary(entity![0], entryPoint);
+      addEntitiesToLibrary(entitiesByOptions!, entryPoint);
 
       onClose();
     }

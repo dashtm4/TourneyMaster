@@ -15,7 +15,7 @@ import {
   saveDivisions,
   createDivisions,
 } from './logic/actions';
-import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
+import { addEntitiesToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import Modal from '../common/modal';
 import AddPool from './division/add-pool';
 import { BindingCbWithOne, BindingCbWithTwo } from 'common/models/callback';
@@ -42,7 +42,7 @@ interface IDivisionsAndPoolsProps {
   saveTeams: BindingCbWithOne<ITeam[]>;
   saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
   createDivisions: BindingCbWithOne<Partial<IDivision>[]>;
-  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
+  addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
 }
 
 interface IDivisionAndPoolsState {
@@ -222,7 +222,7 @@ class DivisionsAndPools extends React.Component<
           entryPoint={EntryPoints.DIVISIONS}
           isOpen={isLibraryPopupOpen}
           onClose={this.toggleLibraryPopup}
-          addEntityToLibrary={this.props.addEntityToLibrary}
+          addEntitiesToLibrary={this.props.addEntitiesToLibrary}
         />
       </section>
     );
@@ -254,7 +254,7 @@ const mapDispatchToProps = {
   saveTeams,
   saveDivisions,
   createDivisions,
-  addEntityToLibrary,
+  addEntitiesToLibrary,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DivisionsAndPools);
