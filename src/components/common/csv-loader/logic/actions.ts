@@ -10,6 +10,8 @@ import {
 import api from 'api/api';
 import { Toasts } from 'components/common';
 import { ITableColumns, IMapping } from 'common/models/table-columns';
+import { Auth } from 'aws-amplify';
+import { IMember } from 'common/models';
 
 export const getTableColumnsSuccess = (
   payload: ITableColumns
@@ -70,9 +72,18 @@ export const getMappings: ActionCreator<ThunkAction<
   null,
   TableColumnsAction
 >> = (table: string) => async (dispatch: Dispatch) => {
+  const currentSession = await Auth.currentSession();
+  const userEmail = currentSession.getIdToken().payload.email;
+  const members = await api.get(`/members?email_address=${userEmail}`);
+  const member: IMember = members.find(
+    (it: IMember) => it.email_address === userEmail
+  );
+
   const response = await api.get(`/data_import_history`);
   const filteredMapping = response.filter(
-    (mapping: any) => mapping.destination_table === table
+    (mapping: any) =>
+      mapping.destination_table === table &&
+      mapping.created_by === member.member_id
   );
 
   if (response) {
