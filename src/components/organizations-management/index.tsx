@@ -39,8 +39,9 @@ const OrganizationsManagement = ({
   deleteOrganization,
   loadOrganizations,
 }: Props) => {
-  const [expanded, setExpanded] = React.useState([true, true, true]);
-  const [expandAll, setExpandAll] = React.useState(false);
+  const [isSectionsExpand, toggleSectionCollapse] = React.useState<boolean>(
+    true
+  );
 
   React.useEffect(() => {
     loadOrganizations();
@@ -50,17 +51,8 @@ const OrganizationsManagement = ({
     return <Loader />;
   }
 
-  const onToggleAll = () => {
-    setExpanded(expanded.map(_e => expandAll));
-    setExpandAll(!expandAll);
-  };
-
-  const onToggleOne = (indexPanel: number) => {
-    setExpanded(
-      expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      )
-    );
+  const onToggleSectionCollapse = () => {
+    toggleSectionCollapse(!isSectionsExpand);
   };
 
   return (
@@ -68,30 +60,24 @@ const OrganizationsManagement = ({
       <div className={styles.heading}>
         <HeadingLevelTwo>Collaboration</HeadingLevelTwo>
         <Button
-          label={expandAll ? 'Expand All' : 'Collapse All'}
+          label={isSectionsExpand ? 'Collapse All' : 'Expand All'}
           variant="text"
           color="secondary"
-          onClick={onToggleAll}
+          onClick={onToggleSectionCollapse}
         />
       </div>
       <OrganizationsList
         organizations={organizations}
         deleteOrganization={deleteOrganization}
-        index={0}
-        expanded={expanded[0]}
-        onToggleOne={onToggleOne}
+        isSectionExpand={isSectionsExpand}
       />
       <CreateOrganization
         createOrganization={createOrganization}
-        index={1}
-        expanded={expanded[1]}
-        onToggleOne={onToggleOne}
+        isSectionExpand={isSectionsExpand}
       />
       <ApplyInvitation
         addUserToOrganization={addUserToOrganization}
-        index={2}
-        expanded={expanded[2]}
-        onToggleOne={onToggleOne}
+        isSectionExpand={isSectionsExpand}
       />
     </section>
   );

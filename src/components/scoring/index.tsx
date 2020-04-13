@@ -55,8 +55,7 @@ interface State {
   currentDivision: string | null;
   currentPool: string | null;
   isModalOpen: boolean;
-  expanded: boolean[];
-  expandAll: boolean;
+  isSectionsExpand: boolean;
 }
 
 class Sсoring extends React.Component<
@@ -71,8 +70,7 @@ class Sсoring extends React.Component<
       currentPool: null,
       changeableTeam: null,
       isModalOpen: false,
-      expanded: [],
-      expandAll: false,
+      isSectionsExpand: true,
     };
   }
 
@@ -138,25 +136,8 @@ class Sсoring extends React.Component<
       currentPool: null,
     });
 
-  componentDidUpdate(prevProps: any, prevState: any) {
-    if (prevProps.divisions.length && !prevState.expanded.length) {
-      this.setState({ expanded: this.props.divisions.map(_division => true) });
-    }
-  }
-
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
   render() {
@@ -201,15 +182,17 @@ class Sсoring extends React.Component<
             <HeadingLevelTwo>Scoring</HeadingLevelTwo>
             {divisions?.length ? (
               <Button
-                label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                label={
+                  this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+                }
                 variant="text"
                 color="secondary"
-                onClick={this.onToggleAll}
+                onClick={this.toggleSectionCollapse}
               />
             ) : null}
           </div>
           <ul className={styles.scoringList}>
-            {divisions.map((division, index) => (
+            {divisions.map(division => (
               <ScoringItem
                 event={event}
                 division={division}
@@ -221,9 +204,7 @@ class Sсoring extends React.Component<
                 loadPools={loadPools}
                 onOpenTeamDetails={this.onOpenTeamDetails}
                 key={division.division_id}
-                expanded={this.state.expanded[index]}
-                index={index}
-                onToggleOne={this.onToggleOne}
+                isSectionExpand={this.state.isSectionsExpand}
               />
             ))}
           </ul>

@@ -25,25 +25,11 @@ const TeamManagement = ({
   loadPools,
   onEditPopupOpen,
 }: Props) => {
-  const [expanded, setExpanded] = useState([
-    ...divisions.map(_division => true),
-    true,
-  ]);
-  const [expandAll, setExpandAll] = useState(false);
+  const [isSectionsExpand, toggleSectionCollapse] = useState<boolean>(true);
 
-  const onToggleAll = (e: React.MouseEvent) => {
+  const onToggleSectionCollapse = (e: React.MouseEvent) => {
     e.stopPropagation();
-
-    setExpanded(expanded.map(_e => expandAll));
-    setExpandAll(!expandAll);
-  };
-
-  const onToggleOne = (indexPanel: number) => {
-    setExpanded(
-      expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      )
-    );
+    toggleSectionCollapse(!isSectionsExpand);
   };
 
   return (
@@ -58,16 +44,16 @@ const TeamManagement = ({
           {divisions.length ? (
             <div className={styles.buttonContainer}>
               <Button
-                label={expandAll ? 'Expand All' : 'Collapse All'}
+                label={isSectionsExpand ? 'Collapse All' : 'Expand All'}
                 variant="text"
                 color="secondary"
-                onClick={onToggleAll}
+                onClick={onToggleSectionCollapse}
               />
             </div>
           ) : null}
         </div>
         <ul className={styles.divisionList}>
-          {divisions.map((division, index) => (
+          {divisions.map(division => (
             <DivisionItem
               division={division}
               pools={pools.filter(
@@ -77,9 +63,7 @@ const TeamManagement = ({
               loadPools={loadPools}
               onEditPopupOpen={onEditPopupOpen}
               key={division.division_id}
-              expanded={expanded[index]}
-              index={index}
-              onToggleOne={onToggleOne}
+              isSectionExpand={isSectionsExpand}
             />
           ))}
         </ul>

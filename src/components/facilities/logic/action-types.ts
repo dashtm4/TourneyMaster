@@ -25,6 +25,8 @@ export const SAVE_FACILITIES_FAILURE = 'FACILITIES:SAVE_FACILITIES_FAILURE';
 export const UPLOAD_FILE_MAP_SUCCESS = 'FACILITIES:UPLOAD_FILE_MAP_SUCCESS';
 export const UPLOAD_FILE_MAP_FAILURE = 'FACILITIES:UPLOAD_FILE_MAP_FAILURE';
 
+export const DELETE_FACILITY_SUCCESS = 'FACILITIES:DELETE_FACILITY_SUCCESS';
+
 export interface loadFacilitiesStart {
   type: 'FACILITIES:LOAD_FACILITIES_START';
 }
@@ -94,6 +96,13 @@ export interface uploadFileMapSuccess {
   };
 }
 
+export interface deleteFacilitySuccess {
+  type: 'FACILITIES:DELETE_FACILITY_SUCCESS';
+  payload: {
+    facilityId: string;
+  };
+}
+
 export type FacilitiesAction =
   | loadFacilitiesStart
   | loadFacilitiesSuccess
@@ -104,4 +113,5 @@ export type FacilitiesAction =
   | updateFacilities
   | updateField
   | saveFacilities
-  | uploadFileMapSuccess;
+  | uploadFileMapSuccess
+  | deleteFacilitySuccess;

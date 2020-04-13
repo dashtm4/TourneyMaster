@@ -10,6 +10,7 @@ import {
   UPDATE_FIELD,
   UPLOAD_FILE_MAP_SUCCESS,
   SAVE_FACILITIES_SUCCESS,
+  DELETE_FACILITY_SUCCESS,
 } from './action-types';
 import {
   ADD_ENTITY_TO_LIBRARY_SUCCESS,
@@ -148,6 +149,16 @@ const facilitiesReducer = (
         return state;
       }
     }
+    case DELETE_FACILITY_SUCCESS: {
+      const { facilityId } = action.payload;
+      return {
+        ...state,
+        facilities: state.facilities.filter(
+          facility => facility.facilities_id !== facilityId
+        ),
+      };
+    }
+
     default:
       return state;
   }

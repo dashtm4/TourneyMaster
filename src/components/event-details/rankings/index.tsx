@@ -9,7 +9,7 @@ import {
   Checkbox,
   Select,
 } from 'components/common';
-import { BindingCbWithOne, IEventDetails } from 'common/models';
+import { IEventDetails } from 'common/models';
 import { EventMenuTitles } from 'common/enums';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { IInputEvent } from 'common/types';
@@ -34,18 +34,10 @@ enum rankingFactors {
 interface Props {
   eventData: Partial<IEventDetails>;
   onChange: any;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
-  index: number;
+  isSectionExpand: boolean;
 }
 
-const Rankings = ({
-  eventData,
-  expanded,
-  onChange,
-  onToggleOne,
-  index,
-}: Props) => {
+const Rankings = ({ eventData, onChange, isSectionExpand }: Props) => {
   const {
     ranking_factor_divisions,
     ranking_factor_pools,
@@ -73,10 +65,6 @@ const Rankings = ({
     const rankingFactor = JSON.stringify(cards.map(card => card.id));
 
     onChange(rankingFactors[name], rankingFactor);
-  };
-
-  const onSectionToggle = () => {
-    onToggleOne(index);
   };
 
   const parseRankingFactor = (factor?: string) => {
@@ -108,10 +96,8 @@ const Rankings = ({
       id={EventMenuTitles.RANKINGS}
       type="section"
       panelDetailsType="flat"
-      isDefaultExpanded={true}
       useBorder={true}
-      expanded={expanded}
-      onToggle={onSectionToggle}
+      expanded={isSectionExpand}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>{EventMenuTitles.RANKINGS}</span>

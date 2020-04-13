@@ -73,10 +73,8 @@ class OnboardingWizard extends React.Component<Props> {
             <CreateOrganization
               type="wizard"
               createOrganization={this.props.createOrganization}
-              index={1}
-              expanded={true}
-              onToggleOne={() => {}}
               onCancelBtn={this.onPreviousStep}
+              isSectionExpand={true}
             />
           </div>
         );
@@ -86,10 +84,8 @@ class OnboardingWizard extends React.Component<Props> {
             <ApplyInvitation
               type="wizard"
               addUserToOrganization={this.props.addUserToOrganization}
-              index={1}
-              expanded={true}
-              onToggleOne={() => {}}
               onCancel={this.onPreviousStep}
+              isSectionExpand={true}
             />
           </div>
         );
