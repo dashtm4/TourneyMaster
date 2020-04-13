@@ -1,6 +1,6 @@
 .popupWrapper {
   width: 675px;
-  padding: 25px 35px;
+  padding: 25px 20px;
 }
 
 .headerWrapper {
@@ -88,10 +88,13 @@
 
 .fieldList {
   width: 50%;
+  max-height: 225px;
   margin: 0;
   padding: 0;
 
   list-style: none;
+
+  overflow-y: auto;
 }
 
 .gamesMessage {
