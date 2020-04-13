@@ -81,7 +81,7 @@ const TableSort = ({ rows, onShare, onDelete }: Props) => {
                   {moment(row.lastModified).format('lll')}
                 </TableCell>
                 <TableCell className={classes.tableCell}>
-                  <span className={styles.btnWrapper}>
+                  <p className={styles.btnsWrapper}>
                     <Button
                       onClick={() => onShare(row.id)}
                       variant={ButtonVarian.TEXT}
@@ -98,7 +98,7 @@ const TableSort = ({ rows, onShare, onDelete }: Props) => {
                         label="Delete"
                       />
                     </span>
-                  </span>
+                  </p>
                 </TableCell>
               </TableRow>
             ))}
