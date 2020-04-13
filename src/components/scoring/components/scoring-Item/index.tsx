@@ -50,7 +50,9 @@ const ScoringItem = ({
 
   const lastUpd = Math.max(
     ...games.map(it =>
-      it.updatedTime ? +new Date(it.updatedTime) : +new Date(it.createTime)
+      it.updatedTime
+        ? Number(new Date(it.updatedTime))
+        : Number(new Date(it.createTime))
     )
   );
 

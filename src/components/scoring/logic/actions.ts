@@ -27,9 +27,12 @@ import {
   ISchedule,
   ScheduleStatuses,
   ITeamWithResults,
+  IFacility,
+  IEventDetails,
 } from 'common/models';
 import { Toasts } from 'components/common';
 import { ITeamFields } from 'common/enums';
+import { getScoringSettings } from 'helpers/scoring';
 
 const loadScoringData: ActionCreator<ThunkAction<
   void,
@@ -42,6 +45,7 @@ const loadScoringData: ActionCreator<ThunkAction<
       type: LOAD_SCORING_DATA_START,
     });
 
+    const events = await Api.get(`events?event_id=${eventId}`);
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
     const schedules = await Api.get(`/schedules?event_id=${eventId}`);
     const publishedSchedule = schedules.find(
@@ -51,11 +55,28 @@ const loadScoringData: ActionCreator<ThunkAction<
     const schedulesGames = await Api.get(
       `/games?schedule_id=${publishedSchedule.schedule_id}`
     );
+    const facilities = await Api.get(`/facilities?event_id=${eventId}`);
+    const fields = (
+      await Promise.all(
+        facilities.map((it: IFacility) =>
+          Api.get(`/fields?facilities_id=${it.facilities_id}`)
+        )
+      )
+    ).flat();
+    const currentEvent: IEventDetails = events.find(
+      (it: IEventDetails) => it.event_id === eventId
+    );
 
-    const mappedTeams = getTeamsWithResults(teams, schedulesGames);
-    const mappedGames = await mapScheduleGamesWithNames(
-      eventId,
+    const scoringSettings = getScoringSettings(currentEvent);
+
+    const mappedTeams = getTeamsWithResults(
       teams,
+      schedulesGames,
+      scoringSettings
+    );
+    const mappedGames = mapScheduleGamesWithNames(
+      teams,
+      fields,
       schedulesGames
     );
 

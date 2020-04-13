@@ -9,12 +9,9 @@
 
   background-color: #ffffff;
 
-  thead {
-    font-weight: bold;
-  }
-
-  td {
-    width: 40px;
+  td,
+  th {
+    min-width: 40px;
     padding: 5px 10px;
 
     text-align: center;
@@ -22,7 +19,8 @@
     border: 2px solid #f4f4f4;
   }
 
-  tr td:first-child {
+  tr td:first-child,
+  tr th:first-child {
     width: 100%;
 
     text-align: left;
