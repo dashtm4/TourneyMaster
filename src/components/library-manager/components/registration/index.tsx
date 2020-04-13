@@ -46,7 +46,7 @@ const Registration = ({
   const rowForTable = registrations.map(it => ({
     id: it.registration_id,
     event: it.eventName,
-    name: 'Registration',
+    name: `Registration(${it.eventName})`,
     lastModified: it.updated_datetime || it.created_datetime,
   }));
 

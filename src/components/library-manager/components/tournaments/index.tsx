@@ -42,7 +42,7 @@ const Tournaments = ({
   const rowForTable = events.map(it => ({
     id: it.event_id,
     event: it.event_name,
-    name: 'Event',
+    name: `Event(${it.event_name})`,
     lastModified: it.updated_datetime || (it.created_datetime as string),
   }));
 
