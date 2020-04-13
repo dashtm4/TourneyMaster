@@ -61,8 +61,7 @@ interface Props {
 }
 
 interface State {
-  expanded: boolean[];
-  expandAll: boolean;
+  isSectionsExpand: boolean;
   isModalOpen: boolean;
   isCsvLoaderOpen: boolean;
   isLibraryPopupOpen: boolean;
@@ -76,8 +75,7 @@ class Facilities extends React.Component<
     super(props);
 
     this.state = {
-      expanded: [],
-      expandAll: false,
+      isSectionsExpand: true,
       isModalOpen: false,
       isCsvLoaderOpen: false,
       isLibraryPopupOpen: false,
@@ -110,32 +108,6 @@ class Facilities extends React.Component<
     this.setState({ isModalOpen: false });
   };
 
-  componentDidUpdate(prevProps: any, prevState: any) {
-    if (
-      (prevProps.facilities.length && !prevState.expanded.length) ||
-      prevProps.facilities !== this.props.facilities
-    ) {
-      this.setState({
-        expanded: this.props.facilities.map(_facility => true),
-      });
-    }
-  }
-
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
-  };
-
   onModalClose = () => {
     this.setState({ isModalOpen: false });
   };
@@ -164,6 +136,10 @@ class Facilities extends React.Component<
     this.setState(({ isLibraryPopupOpen }) => ({
       isLibraryPopupOpen: !isLibraryPopupOpen,
     }));
+  };
+
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
   render() {
@@ -213,10 +189,12 @@ class Facilities extends React.Component<
               />
               {facilities?.length ? (
                 <Button
-                  label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                  label={
+                    this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+                  }
                   variant="text"
                   color="secondary"
-                  onClick={this.onToggleAll}
+                  onClick={this.toggleSectionCollapse}
                 />
               ) : null}
             </div>
@@ -256,9 +234,7 @@ class Facilities extends React.Component<
                     updateFacilities={updateFacilities}
                     updateField={updateField}
                     uploadFileMap={uploadFileMap}
-                    expanded={this.state.expanded[idx]}
-                    index={idx}
-                    onToggleOne={this.onToggleOne}
+                    isSectionExpand={this.state.isSectionsExpand}
                     deleteFacility={deleteFacility}
                   />
                 </li>

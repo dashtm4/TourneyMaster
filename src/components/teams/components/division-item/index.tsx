@@ -1,7 +1,7 @@
 import React from 'react';
 import PoolItem from '../pool-item';
 import { SectionDropdown, Loader } from 'components/common';
-import { IDivision, IPool, ITeam, BindingCbWithOne } from 'common/models';
+import { IDivision, IPool, ITeam } from 'common/models';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -14,9 +14,7 @@ interface Props {
     divisionName: string,
     poolName: string
   ) => void;
-  expanded?: boolean;
-  onToggleOne?: BindingCbWithOne<number>;
-  index?: number;
+  isSectionExpand: boolean;
 }
 
 const DivisionItem = ({
@@ -25,9 +23,7 @@ const DivisionItem = ({
   teams,
   loadPools,
   onEditPopupOpen,
-  expanded,
-  index,
-  onToggleOne,
+  isSectionExpand,
 }: Props) => {
   if (!division.isPoolsLoading && !division.isPoolsLoaded) {
     loadPools(division.division_id);
@@ -37,10 +33,6 @@ const DivisionItem = ({
     return <Loader />;
   }
 
-  const onSectionToggle = () => {
-    onToggleOne && onToggleOne(index!);
-  };
-
   const teamsWithoutPool = teams.filter(
     team => team.division_id === division.division_id && !team.pool_id
   );
@@ -48,12 +40,10 @@ const DivisionItem = ({
   return (
     <li className={styles.divisionItem}>
       <SectionDropdown
-        isDefaultExpanded={true}
         type="section"
         panelDetailsType="flat"
         headingColor="#1C315F"
-        expanded={expanded !== undefined && expanded}
-        onToggle={onSectionToggle}
+        expanded={isSectionExpand}
       >
         <span>Division: {division.long_name}</span>
         <ul className={styles.poolList}>

@@ -13,7 +13,7 @@ import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
 import { getTimeFromString, timeToString } from 'helpers';
-import { BindingCbWithOne, IEventDetails } from 'common/models';
+import { IEventDetails } from 'common/models';
 import waiverHubLogo from 'assets/WaiverHubLogo.png';
 import MultipleDatesPicker from '@randex/material-ui-multiple-dates-picker';
 
@@ -42,18 +42,14 @@ interface Props {
   eventTypeOptions: string[];
   eventData: Partial<IEventDetails>;
   onChange: any;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
-  index: number;
+  isSectionExpand: boolean;
 }
 
 const EventStructureSection: React.FC<Props> = ({
   eventTypeOptions,
   eventData,
   onChange,
-  expanded,
-  index,
-  onToggleOne,
+  isSectionExpand,
 }: Props) => {
   const {
     show_goals_scored,
@@ -120,10 +116,6 @@ const EventStructureSection: React.FC<Props> = ({
     return onChange('time_btwn_periods', timeInString);
   };
 
-  const onSectionToggle = () => {
-    onToggleOne(index);
-  };
-
   const resultsDisplayOptions = [
     { label: 'Show Goals Scored', checked: Boolean(show_goals_scored) },
     { label: 'Show Goals Allowed', checked: Boolean(show_goals_allowed) },
@@ -161,10 +153,8 @@ const EventStructureSection: React.FC<Props> = ({
       id={EventMenuTitles.EVENT_STRUCTURE}
       type="section"
       panelDetailsType="flat"
-      isDefaultExpanded={true}
       useBorder={true}
-      expanded={expanded}
-      onToggle={onSectionToggle}
+      expanded={isSectionExpand}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Event Structure</span>

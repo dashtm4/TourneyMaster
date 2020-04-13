@@ -76,9 +76,7 @@ interface Props {
   updateField: BindingCbWithOne<IField>;
   updateFacilities: BindingCbWithOne<IFacility>;
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
-  index: number;
+  isSectionExpand: boolean;
   deleteFacility: BindingCbWithOne<string>;
 }
 
@@ -134,10 +132,6 @@ class FacilityDetails extends React.Component<Props, State> {
     );
   };
 
-  onSectionToggle = () => {
-    this.props.onToggleOne(this.props.index);
-  };
-
   onDeleteFacility = () => {
     this.props.deleteFacility(this.props.facility.facilities_id);
   };
@@ -179,12 +173,10 @@ class FacilityDetails extends React.Component<Props, State> {
 
     return (
       <SectionDropdown
-        isDefaultExpanded={true}
         id={facility.facilities_description}
         type="section"
         panelDetailsType="flat"
-        expanded={this.props.expanded !== undefined && this.props.expanded}
-        onToggle={this.onSectionToggle}
+        expanded={this.props.isSectionExpand}
       >
         <HeadingLevelThree>
           <span className={styles.detailsSubtitle}>

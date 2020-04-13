@@ -8,7 +8,7 @@ import {
   Tooltip,
 } from 'components/common';
 import PopupDeleteConfirm from 'components/common/delete-popup-confirm';
-import { IOrganization, BindingCbWithOne } from 'common/models';
+import { IOrganization } from 'common/models';
 import { Icons } from 'common/enums';
 import { getIcon } from 'helpers';
 import styles from './styles.module.scss';
@@ -21,9 +21,7 @@ const COPY_ICON_STYLES = {
 interface Props {
   organizations: IOrganization[];
   deleteOrganization: (organization: IOrganization) => void;
-  index: number;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
+  isSectionExpand: boolean;
 }
 
 const copyToClipboard = (id: string) => {
@@ -40,15 +38,9 @@ const copyToClipboard = (id: string) => {
 const OrganizationsList = ({
   organizations,
   deleteOrganization,
-  expanded,
-  onToggleOne,
-  index,
+  isSectionExpand,
 }: Props) => {
   const [configOrg, onDeletePopup] = React.useState<null | IOrganization>(null);
-
-  const onSectionToggle = () => {
-    onToggleOne(index);
-  };
 
   const renderDisabledBtn = () => {
     return (
@@ -79,10 +71,8 @@ const OrganizationsList = ({
       <SectionDropdown
         type="section"
         useBorder={true}
-        isDefaultExpanded={true}
         panelDetailsType="flat"
-        expanded={expanded}
-        onToggle={onSectionToggle}
+        expanded={isSectionExpand}
       >
         <HeadingLevelThree>
           <span>Organizations List</span>
