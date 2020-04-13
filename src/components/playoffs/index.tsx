@@ -38,6 +38,7 @@ import { mapTeamsFromSchedulesDetails } from 'components/schedules/mapScheduleDa
 import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
+import { bracketGames, IBracketGame } from './bracketGames';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
   eventSummary?: IEventSummary[];
@@ -47,6 +48,7 @@ interface IMapStateToProps extends Partial<ITournamentData> {
   schedulesTeamCards?: ITeamCard[];
   schedulesDetails?: ISchedulesDetails[];
 }
+
 interface IMapDispatchToProps {
   fetchEventSummary: (eventId: string) => void;
   fetchSchedulesDetails: (scheduleId: string) => void;
@@ -54,6 +56,7 @@ interface IMapDispatchToProps {
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
   clearSchedulesTable: () => void;
 }
+
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
   match: any;
 }
@@ -65,6 +68,7 @@ interface IState {
   timeSlots?: ITimeSlot[];
   fields?: IField[];
   facilities?: IScheduleFacility[];
+  bracketGames?: IBracketGame[];
 }
 
 enum PlayoffsTabsEnum {
@@ -85,6 +89,7 @@ class Playoffs extends Component<IProps> {
     this.props.clearSchedulesTable();
     this.props.fetchEventSummary(eventId);
     this.props.fetchSchedulesDetails(scheduleId);
+    this.createBracketGames();
   }
 
   componentDidUpdate() {
@@ -134,8 +139,22 @@ class Playoffs extends Component<IProps> {
     });
   };
 
+  createBracketGames = () => {
+    const games = bracketGames();
+    this.setState({
+      bracketGames: games,
+    });
+  };
+
   render() {
-    const { activeTab, games, timeSlots, fields, facilities } = this.state;
+    const {
+      activeTab,
+      games,
+      timeSlots,
+      fields,
+      facilities,
+      bracketGames,
+    } = this.state;
 
     const {
       bracket,
@@ -181,6 +200,7 @@ class Playoffs extends Component<IProps> {
           </div>
           {activeTab === PlayoffsTabsEnum.ResourceMatrix ? (
             <ResourceMatrix
+              bracketGames={bracketGames}
               event={event}
               divisions={divisions}
               pools={pools}

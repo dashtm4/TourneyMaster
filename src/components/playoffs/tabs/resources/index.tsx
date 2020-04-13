@@ -24,8 +24,14 @@ import {
   populateDefinedGamesWithPlayoffState,
   adjustPlayoffTimeOnLoad,
 } from 'components/schedules/definePlayoffs';
+import {
+  IBracketGame,
+  populateBracketGames,
+  getFacilityData,
+} from 'components/playoffs/bracketGames';
 
 interface IProps {
+  bracketGames?: IBracketGame[];
   event?: IEventDetails | null;
   divisions?: IDivision[];
   pools?: IPool[];
@@ -98,21 +104,37 @@ class ResourceMatrix extends Component<IProps> {
   };
 
   loadingTableData = () => {
-    const { teamCards, games, event } = this.props;
+    const { teamCards, games, event, bracketGames, divisions } = this.props;
     const { playoffTimeSlots } = this.state;
     const lastDay = event?.event_enddate;
 
-    if (games && teamCards && lastDay && playoffTimeSlots) {
+    if (
+      games &&
+      teamCards &&
+      lastDay &&
+      playoffTimeSlots &&
+      bracketGames &&
+      divisions
+    ) {
       const definedGames = populateDefinedGamesWithPlayoffState(
         games,
         playoffTimeSlots
       );
 
-      const tableGames = settleTeamsPerGamesDays(
+      const facilityData = getFacilityData(teamCards, games);
+      const mergedGames = populateBracketGames(
         definedGames,
+        bracketGames,
+        divisions,
+        facilityData
+      );
+
+      const tableGames = settleTeamsPerGamesDays(
+        mergedGames,
         teamCards,
         lastDay
       );
+
       this.setState({
         tableGames,
       });

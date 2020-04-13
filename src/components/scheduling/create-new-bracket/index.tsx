@@ -97,8 +97,6 @@ const CreateNewBracket = (props: IProps) => {
     value: item.schedule_id,
   }));
 
-  schedulesOptions.unshift({ label: 'Select some', value: '' });
-
   const alignItemsOptions = [
     {
       label: 'Align Tourney Play games to the start of the Brackets',
