@@ -1,5 +1,11 @@
 import React from 'react';
-import { Modal, HeadingLevelTwo, Select, Button } from 'components/common';
+import {
+  Modal,
+  HeadingLevelTwo,
+  SelectMultiple,
+  Button,
+  Checkbox,
+} from 'components/common';
 import { BindingAction, BindingCbWithTwo } from 'common/models';
 import { ButtonVarian, ButtonColors, EntryPoints } from 'common/enums';
 import { IEntity, IInputEvent } from 'common/types';
@@ -23,35 +29,57 @@ const PopupAddToLibrary = ({
   entryPoint,
   isOpen,
   onClose,
-  addEntityToLibrary,
-}: Props) => {
+}: // addEntityToLibrary,
+Props) => {
   const [isConfirm, toggleConfirm] = React.useState<boolean>(false);
-  const [activeOptionId, changeOption] = React.useState<string | null>(null);
+  const [checkedValues, changeOptions] = React.useState<string[] | null>(null);
+  const [isSelectedAll, toggleSelectAll] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     toggleConfirm(false);
 
-    changeOption(null);
+    changeOptions(null);
+
+    toggleSelectAll(false);
   }, [isOpen]);
 
   const selectOptions = getSelectOptions(entities, entryPoint);
 
   const isAllowShare = entities.length > 0;
 
-  const onChangeOption = (evt: IInputEvent) => {
-    changeOption(evt.target.value);
+  const onChangeOption = (checkedValues: string[] | null) => {
+    changeOptions(checkedValues);
   };
 
   const onToggleConfirm = () => toggleConfirm(!isConfirm);
 
   const onSave = () => {
-    if (activeOptionId) {
-      const entity = getEntityByOption(entities, activeOptionId, entryPoint);
+    if (checkedValues) {
+      const entity = getEntityByOption(entities, checkedValues, entryPoint);
 
-      addEntityToLibrary(entity!, entryPoint);
+      console.log(entity);
+
+      // addEntityToLibrary(entity![0], entryPoint);
 
       onClose();
     }
+  };
+
+  const onToggleSelectAll = ({ target }: IInputEvent) => {
+    if (target.checked) {
+      changeOptions(selectOptions!.map(it => it.value) as string[]);
+
+      toggleSelectAll(true);
+    } else {
+      changeOptions(null);
+
+      toggleSelectAll(false);
+    }
+  };
+
+  const checkboxOption = {
+    label: 'Select all',
+    checked: isSelectedAll,
   };
 
   return (
@@ -68,13 +96,21 @@ const PopupAddToLibrary = ({
                 library?
               </p>
             ) : (
-              <Select
-                onChange={onChangeOption}
-                value={activeOptionId || ''}
-                options={selectOptions!}
-                label="Select item"
-                width="100%"
-              />
+              <>
+                <SelectMultiple
+                  onChange={onChangeOption}
+                  value={checkedValues || []}
+                  options={selectOptions!}
+                  label="Select item"
+                  width="100%"
+                />
+                <div className={styles.checkobxWrapper}>
+                  <Checkbox
+                    onChange={onToggleSelectAll}
+                    options={[checkboxOption]}
+                  />
+                </div>
+              </>
             )
           ) : (
             <p>You don’t have items to share</p>

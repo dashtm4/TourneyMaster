@@ -29,6 +29,7 @@ import Menu from './menu';
 import ScrollTopButton from './scroll-top-button';
 import PopupAddToLibrary from './popup-add-to-library';
 import CsvLoader from './csv-loader';
+import SelectMultiple from './select-multiple';
 import * as Toasts from './toastr/showToasts';
 
 export {
@@ -64,4 +65,5 @@ export {
   ScrollTopButton,
   PopupAddToLibrary,
   CsvLoader,
+  SelectMultiple,
 };

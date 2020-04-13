@@ -33,24 +33,24 @@ const getSelectOptions = (entities: IEntity[], entryPoint: EntryPoints) => {
 
 const getEntityByOption = (
   entities: IEntity[],
-  activeOptionId: string,
+  checkedValues: string[],
   entryPoint: EntryPoints
 ) => {
   switch (entryPoint) {
     case EntryPoints.FACILITIES: {
       const facilities = entities as IFacility[];
 
-      return facilities.find(it => it.facilities_id === activeOptionId);
+      return facilities.filter(it => checkedValues.includes(it.facilities_id));
     }
     case EntryPoints.DIVISIONS: {
       const divisions = entities as IDivision[];
 
-      return divisions.find(it => it.division_id === activeOptionId);
+      return divisions.filter(it => checkedValues.includes(it.division_id));
     }
     case EntryPoints.SCHEDULES: {
       const schedules = entities as ISchedule[];
 
-      return schedules.find(it => it.schedule_id === activeOptionId);
+      return schedules.filter(it => checkedValues.includes(it.schedule_id));
     }
   }
 };
