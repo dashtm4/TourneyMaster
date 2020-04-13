@@ -10,6 +10,8 @@ import {
   PUBLISH_TOURNAMENT_FAILURE,
   ADD_ENTITY_TO_LIBRARY_SUCCESS,
   ADD_ENTITY_TO_LIBRARY_FAILURE,
+  ADD_ENTITIES_TO_LIBRARY_SUCCESS,
+  ADD_ENTITIES_TO_LIBRARY_FAILURE,
 } from './action-types';
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
@@ -146,9 +148,48 @@ const addEntityToLibrary = (entity: IEntity, entryPoint: EntryPoints) => async (
   }
 };
 
+const addEntitiesToLibrary = (
+  entities: IEntity[],
+  entryPoint: EntryPoints
+) => async (dispatch: Dispatch) => {
+  try {
+    const updatedEntities = entities.map(entity => ({
+      ...entity,
+      is_library_YN: LibraryStates.TRUE,
+    }));
+
+    const clearEntities = updatedEntities.map(entity =>
+      removeObjKeysByEntryPoint(entity, entryPoint)
+    );
+
+    await Promise.all(
+      clearEntities.map(entity =>
+        sentToServerByRoute(entity, entryPoint, MethodTypes.PUT)
+      )
+    );
+
+    dispatch({
+      type: ADD_ENTITIES_TO_LIBRARY_SUCCESS,
+      payload: {
+        entities: updatedEntities,
+        entryPoint,
+      },
+    });
+
+    Toasts.successToast('Changes successfully saved.');
+  } catch (err) {
+    dispatch({
+      type: ADD_ENTITIES_TO_LIBRARY_FAILURE,
+    });
+
+    Toasts.errorToast(err.message);
+  }
+};
+
 export {
   loadAuthPageData,
   clearAuthPageData,
   changeTournamentStatus,
   addEntityToLibrary,
+  addEntitiesToLibrary,
 };

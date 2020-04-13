@@ -60,15 +60,27 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
       allowedRegistrations,
       events
     );
+    const mappedFacilitiesWithEvent = mapArrWithEventName(
+      allowedFacilities,
+      events
+    );
+    const mappedDivisionsWithEvent = mapArrWithEventName(
+      allowedDivision,
+      events
+    );
+    const mappedShedulesWithEvent = mapArrWithEventName(
+      allowedSchedules,
+      events
+    );
 
     dispatch({
       type: LIBRARY_MANAGER_LOAD_DATA_SUCCESS,
       payload: {
         events: allowedEvents,
         registrations: mappedRegistrationWithEvent,
-        facilities: allowedFacilities,
-        divisions: allowedDivision,
-        schedules: allowedSchedules,
+        facilities: mappedFacilitiesWithEvent,
+        divisions: mappedDivisionsWithEvent,
+        schedules: mappedShedulesWithEvent,
       },
     });
   } catch {

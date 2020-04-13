@@ -14,6 +14,11 @@ export const PUBLISH_TOURNAMENT_FAILURE = 'PUBLISH_TOURNAMENT_FAILURE';
 export const ADD_ENTITY_TO_LIBRARY_SUCCESS = 'ADD_ENTITY_TO_LIBRARY_SUCCESS';
 export const ADD_ENTITY_TO_LIBRARY_FAILURE = 'ADD_ENTITY_TO_LIBRARY_FAILURE';
 
+export const ADD_ENTITIES_TO_LIBRARY_SUCCESS =
+  'ADD_ENTITIES_TO_LIBRARY_SUCCESS';
+export const ADD_ENTITIES_TO_LIBRARY_FAILURE =
+  'ADD_ENTITIES_TO_LIBRARY_FAILURE';
+
 export interface loadAuthPageDataStart {
   type: 'LOAD_AUTH_PAGE_DATA_START';
 }
@@ -44,9 +49,18 @@ export interface addEntityToLibrarySuccess {
   };
 }
 
+export interface addEntitiesToLibrarySuccess {
+  type: 'ADD_ENTITIES_TO_LIBRARY_SUCCESS';
+  payload: {
+    entities: IEntity[];
+    entryPoint: EntryPoints;
+  };
+}
+
 export type AuthPageAction =
   | loadAuthPageDataStart
   | loadAuthPageDataSuccess
   | cleatAuthPageData
   | publishTournamentSuccess
-  | addEntityToLibrarySuccess;
+  | addEntityToLibrarySuccess
+  | addEntitiesToLibrarySuccess;

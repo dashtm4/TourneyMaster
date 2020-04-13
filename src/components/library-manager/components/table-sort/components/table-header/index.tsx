@@ -20,7 +20,8 @@ const useStyles = makeStyles({
 });
 
 const defaultHeadCells: HeadCell[] = [
-  { id: TableSortRowTypes.TITLE, label: 'Title' },
+  { id: TableSortRowTypes.EVENT, label: 'Event' },
+  { id: TableSortRowTypes.NAME, label: 'Name' },
   { id: TableSortRowTypes.LAST_MODIFIED, label: 'Last Modified' },
 ];
 

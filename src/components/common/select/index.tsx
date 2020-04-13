@@ -1,11 +1,7 @@
 import React from 'react';
 import { TextField as MuiTextField, MenuItem } from '@material-ui/core';
+import { ISelectOption } from 'common/models';
 import styles from './style.module.scss';
-
-export interface ISelectOption {
-  label: string;
-  value: string | number;
-}
 
 interface ISelectProps {
   options: ISelectOption[];

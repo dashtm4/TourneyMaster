@@ -1,5 +1,10 @@
-import { ILibraryManagerRegistration } from '../common';
-import { IEventDetails, IFacility, IDivision, ISchedule } from 'common/models';
+import {
+  ILibraryManagerRegistration,
+  ILibraryManagerFacility,
+  ILibraryManagerDivision,
+  ILibraryManagerSchedule,
+} from '../common';
+import { IEventDetails } from 'common/models';
 import { IEntity } from 'common/types';
 import { EntryPoints } from 'common/enums';
 
@@ -22,9 +27,9 @@ interface LibraryManagerLoadDataSuccess {
   payload: {
     events: IEventDetails[];
     registrations: ILibraryManagerRegistration[];
-    facilities: IFacility[];
-    divisions: IDivision[];
-    schedules: ISchedule[];
+    facilities: ILibraryManagerFacility[];
+    divisions: ILibraryManagerDivision[];
+    schedules: ILibraryManagerSchedule[];
   };
 }
 

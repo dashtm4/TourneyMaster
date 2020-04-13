@@ -1,6 +1,7 @@
 export enum TableSortRowTypes {
   ID = 'id',
-  TITLE = 'title',
+  EVENT = 'event',
+  NAME = 'name',
   LAST_MODIFIED = 'lastModified',
 }
 

@@ -15,7 +15,7 @@ import {
   createFacilities,
   deleteFacility,
 } from './logic/actions';
-import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
+import { addEntitiesToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import Navigation from './components/navigation';
 import FacilityDetails from './components/facility-details';
 import {
@@ -56,7 +56,7 @@ interface Props {
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
   createFacilities: (facilities: IFacility[]) => void;
-  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
+  addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
   deleteFacility: (facilityId: string) => void;
 }
 
@@ -259,7 +259,7 @@ class Facilities extends React.Component<
           entryPoint={EntryPoints.FACILITIES}
           isOpen={isLibraryPopupOpen}
           onClose={this.toggleLibraryPopup}
-          addEntityToLibrary={this.props.addEntityToLibrary}
+          addEntitiesToLibrary={this.props.addEntitiesToLibrary}
         />
       </section>
     );
@@ -284,7 +284,7 @@ export default connect(
         saveFacilities,
         uploadFileMap,
         createFacilities,
-        addEntityToLibrary,
+        addEntitiesToLibrary,
         deleteFacility,
       },
       dispatch

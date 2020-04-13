@@ -4,7 +4,12 @@ import {
   LIBRARY_MANAGER_LOAD_DATA_SUCCESS,
   DELETE_LIBRARY_ITEM_SUCCESS,
 } from './action-types';
-import { ILibraryManagerRegistration } from '../common';
+import {
+  ILibraryManagerRegistration,
+  ILibraryManagerFacility,
+  ILibraryManagerDivision,
+  ILibraryManagerSchedule,
+} from '../common';
 import {
   IEventDetails,
   IFacility,
@@ -19,9 +24,9 @@ export interface ILibraryManagerState {
   isLoaded: boolean;
   events: IEventDetails[];
   registrations: ILibraryManagerRegistration[];
-  facilities: IFacility[];
-  divisions: IDivision[];
-  schedules: ISchedule[];
+  facilities: ILibraryManagerFacility[];
+  divisions: ILibraryManagerDivision[];
+  schedules: ILibraryManagerSchedule[];
 }
 
 const initialState = {
@@ -117,6 +122,8 @@ const libraryManagerReducer = (
             ),
           };
         }
+        default:
+          return state;
       }
     }
     default:

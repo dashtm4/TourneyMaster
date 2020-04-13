@@ -2,12 +2,12 @@ import React from 'react';
 import TableSort from '../table-sort';
 import { SectionDropdown } from 'components/common';
 import { MenuTitles, EntryPoints } from 'common/enums';
-import { BindingCbWithTwo, IDivision, BindingCbWithThree } from 'common/models';
+import { BindingCbWithTwo, BindingCbWithThree } from 'common/models';
 import { IEntity } from 'common/types';
-import { ITableSortEntity } from '../../common';
+import { ILibraryManagerDivision, ITableSortEntity } from '../../common';
 
 interface Props {
-  divisions: IDivision[];
+  divisions: ILibraryManagerDivision[];
   isSectionExpand: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
   onConfirmDeleteItem: BindingCbWithThree<
@@ -39,8 +39,9 @@ const Divisions = ({
 
   const rowForTable = divisions.map(it => ({
     id: it.division_id,
-    title: it.long_name,
-    lastModified: it.updated_datetime || (it.created_datetime as string),
+    event: it.eventName,
+    name: it.long_name,
+    lastModified: it.updated_datetime || it.created_datetime,
   }));
 
   return (
