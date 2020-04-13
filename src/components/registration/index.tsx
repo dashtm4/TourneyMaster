@@ -31,6 +31,7 @@ interface IRegistrationState {
   registration?: Partial<IRegistration>;
   isEdit: boolean;
   isSectionsExpand: boolean;
+  changesAreMade: boolean;
 }
 
 interface IRegistrationProps {
@@ -54,6 +55,7 @@ class RegistrationView extends React.Component<
     registration: undefined,
     isEdit: false,
     isSectionsExpand: true,
+    changesAreMade: false,
   };
 
   componentDidMount() {
@@ -80,6 +82,9 @@ class RegistrationView extends React.Component<
         [name]: value,
       },
     }));
+    if (!this.state.changesAreMade) {
+      this.setState({ changesAreMade: true });
+    }
   };
 
   onCancelClick = () => {
@@ -127,11 +132,11 @@ class RegistrationView extends React.Component<
     if (this.state.isEdit) {
       return (
         <RegistrationEdit
-          previousRegistration={this.props.registration}
           registration={this.state.registration}
           onChange={this.onChange}
           onCancel={this.onCancelClick}
           onSave={this.onSaveClick}
+          changesAreMade={this.state.changesAreMade}
         />
       );
     } else {
