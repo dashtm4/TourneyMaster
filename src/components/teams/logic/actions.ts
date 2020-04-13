@@ -211,6 +211,14 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
     );
     const allTeams = await Api.get(`/teams?event_id=${teams[0].event_id}`);
 
+    for (const [index, team] of teams.entries()) {
+      if (!team.division_id) {
+        return Toasts.errorToast(
+          `Record ${index + 1}: Division Name is required to fill!`
+        );
+      }
+    }
+
     const data = teams.map(team => {
       const divisionId = allDivisions.find(
         (div: IDivision) =>
@@ -220,7 +228,13 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
       return { ...team, division_id: divisionId };
     });
 
-    for (const team of data) {
+    for (const [index, team] of data.entries()) {
+      if (!team.division_id) {
+        return Toasts.errorToast(
+          `Record ${index +
+            1}: There is no division with such long name. Please, create a division first or choose another one.`
+        );
+      }
       const teamsInDivision = allTeams.filter(
         (t: ITeam) => t.division_id === team.division_id
       );
@@ -228,11 +242,11 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
         .of(teamSchema)
         .unique(
           t => t.long_name,
-          'You already have a division with the same long name. The division must have a unique long name.'
+          'You already have a team with the same long name. The team must have a unique long name.'
         )
         .unique(
           t => t.short_name,
-          'You already have division with the same short name. The division must have a unique short name.'
+          'You already have team with the same short name. The team must have a unique short name.'
         )
         .validate([...teamsInDivision, team]);
     }

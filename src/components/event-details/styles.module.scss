@@ -286,3 +286,9 @@ $sectionBodyPadding: 20px 0;
 .loadBtnsWrapper {
   display: flex;
 }
+
+.btnsWrapper {
+  &:first-child {
+    margin-right: 15px;
+  }
+}
