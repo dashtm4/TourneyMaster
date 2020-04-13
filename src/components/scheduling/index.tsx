@@ -50,7 +50,7 @@ import { ButtonVarian, ButtonColors, EntryPoints } from 'common/enums';
 import CreateNewBracket, {
   ICreateBracketModalOutput,
 } from './create-new-bracket';
-import { IEntity } from 'common/types';
+import { IEntity, IMouseEvent } from 'common/types';
 
 enum ComponentActionsEnum {
   SchedulePublish = 'schedulePublish',
@@ -128,9 +128,17 @@ class Scheduling extends Component<IProps, IState> {
     changeSchedule({ [name]: value });
   };
 
-  onCreatePressed = () => this.setState({ createModalOpen: true });
+  onCreatePressed = (evt: IMouseEvent) => {
+    evt.stopPropagation();
 
-  onCreateBracketPressed = () => this.setState({ createBracketOpen: true });
+    this.setState({ createModalOpen: true });
+  };
+
+  onCreateBracketPressed = (evt: IMouseEvent) => {
+    evt.stopPropagation();
+
+    this.setState({ createBracketOpen: true });
+  };
 
   onCreateClosed = () => this.setState({ createModalOpen: false });
 

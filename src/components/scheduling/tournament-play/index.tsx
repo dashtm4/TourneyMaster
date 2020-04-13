@@ -12,6 +12,7 @@ import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { orderBy } from 'lodash-es';
+import { IMouseEvent } from 'common/types';
 
 const CARD_MESSAGE_STYLES = {
   marginBottom: 30,
@@ -27,7 +28,7 @@ interface IProps {
   onEditSchedule: BindingCbWithOne<ISchedulingSchedule>;
   onPublish: (schedule: ISchedule) => void;
   onUnpublish: (schedule: ISchedule) => void;
-  onCreatePressed: () => void;
+  onCreatePressed: (evt: IMouseEvent) => void;
 }
 
 export default (props: IProps) => {

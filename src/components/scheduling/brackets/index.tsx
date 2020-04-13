@@ -7,11 +7,11 @@ import {
 } from 'components/common';
 import BraketsItem from '../brakets-item';
 import { compareTime } from 'helpers';
-import { BindingAction } from 'common/models';
 import { EventMenuTitles } from 'common/enums';
 import { ISchedulingSchedule } from '../types';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import styles from '../styles.module.scss';
+import { IMouseEvent } from 'common/types';
 
 const CARD_MESSAGE_STYLES = {
   marginBottom: 30,
@@ -23,7 +23,7 @@ interface IProps {
   eventId: string;
   isSectionExpand: boolean;
   bracketCreationAllowed: boolean;
-  onCreateBracket: BindingAction;
+  onCreateBracket: (evt: IMouseEvent) => void;
 }
 
 const Brackets = (props: IProps) => {
