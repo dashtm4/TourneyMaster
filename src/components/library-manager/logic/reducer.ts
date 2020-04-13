@@ -117,6 +117,8 @@ const libraryManagerReducer = (
             ),
           };
         }
+        default:
+          return state;
       }
     }
     default:
