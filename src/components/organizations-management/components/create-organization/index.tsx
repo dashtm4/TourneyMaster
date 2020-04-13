@@ -144,7 +144,6 @@ const CreateOrganization = ({
                   }
                   value={organization.org_name || ''}
                   fullWidth={true}
-                  autofocus={true}
                   label="Organization Name"
                 />
               </div>
