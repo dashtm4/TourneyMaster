@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { HeadingLevelThree, Button } from '../../common';
+import { orderBy } from 'lodash-es';
+import {
+  HeadingLevelThree,
+  Button,
+  DeletePopupConfrim,
+} from 'components/common';
 import FieldItem from './components/field-item';
-import { getIcon } from '../../../helpers/get-icon.helper';
-import { BindingAction } from '../../../common/models/callback';
-import { ITeam, ITeamWithResults } from '../../../common/models/teams';
-import { Icons } from '../../../common/enums/icons';
-import styles from './styles.module.scss';
-import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import { getIcon } from 'helpers';
+import { BindingAction } from 'common/models/callback';
+import { ITeam, ITeamWithResults } from 'common/models/teams';
+import { Icons } from 'common/enums/icons';
 import { ISchedulesGameWithNames } from 'common/models';
+import styles from './styles.module.scss';
 
 const EDIT_ICON_STYLES = {
   marginRight: '5px',
@@ -17,8 +21,6 @@ const DELETE_ICON_STYLES = {
   marginRight: '5px',
   fill: '#FF0F19',
 };
-
-const MAX_GAMES_COUNT = 3;
 
 enum FORM_FIELDS {
   LONG_NAME = 'long_name',
@@ -67,14 +69,15 @@ const TeamDetailsPopup = ({
     return null;
   }
 
-  const suitableGames = games
-    ? games
-        .filter(
-          it =>
-            it.homeTeamId === team?.team_id || it.awayTeamId === team?.team_id
-        )
-        .slice(0, MAX_GAMES_COUNT)
-    : games;
+  const teamOwnGames = games?.filter(
+    it => it.homeTeamId === team?.team_id || it.awayTeamId === team?.team_id
+  );
+
+  const sortedGames = orderBy(
+    teamOwnGames,
+    ({ gameDate, startTime }) => [gameDate, startTime],
+    ['asc', 'asc']
+  );
 
   return (
     <div className={styles.popupWrapper}>
@@ -249,9 +252,9 @@ const TeamDetailsPopup = ({
             </ul>
           </div>
           {games &&
-            (suitableGames && suitableGames?.length !== 0 ? (
+            (sortedGames && sortedGames?.length !== 0 ? (
               <ul className={styles.fieldList}>
-                {suitableGames.map(it => (
+                {sortedGames.map(it => (
                   <FieldItem game={it} key={it.id} />
                 ))}
               </ul>
