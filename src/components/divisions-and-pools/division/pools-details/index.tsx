@@ -237,7 +237,7 @@ const PoolsDetails = ({
               onSaveTeamClick={onSaveTeam}
               onDeleteTeamClick={onDeleteTeam}
               onCloseModal={onCloseModal}
-              games={[]}
+              games={null}
             />
           )}
         </>

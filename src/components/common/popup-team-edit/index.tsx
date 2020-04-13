@@ -41,7 +41,7 @@ interface Props {
   onChangeTeam: (evt: React.ChangeEvent<HTMLInputElement>) => void;
   onCloseModal: BindingAction;
   deleteMessage?: string;
-  games: ISchedulesGameWithNames[];
+  games: ISchedulesGameWithNames[] | null;
 }
 
 const TeamDetailsPopup = ({
@@ -68,10 +68,13 @@ const TeamDetailsPopup = ({
   }
 
   const suitableGames = games
-    .filter(
-      it => it.homeTeamId === team?.team_id || it.awayTeamId === team?.team_id
-    )
-    .slice(0, MAX_GAMES_COUNT);
+    ? games
+        .filter(
+          it =>
+            it.homeTeamId === team?.team_id || it.awayTeamId === team?.team_id
+        )
+        .slice(0, MAX_GAMES_COUNT)
+    : games;
 
   return (
     <div className={styles.popupWrapper}>
@@ -245,11 +248,18 @@ const TeamDetailsPopup = ({
               </li>
             </ul>
           </div>
-          <ul className={styles.fieldList}>
-            {suitableGames.map(it => (
-              <FieldItem game={it} key={it.id} />
+          {games &&
+            (suitableGames && suitableGames?.length !== 0 ? (
+              <ul className={styles.fieldList}>
+                {suitableGames.map(it => (
+                  <FieldItem game={it} key={it.id} />
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.gamesMessage}>
+                There is no published schedule yet.
+              </p>
             ))}
-          </ul>
         </div>
         <div className={styles.btnsWrapper}>
           <span className={styles.BtnDeleteWrapper}>

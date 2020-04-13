@@ -94,6 +94,18 @@
   list-style: none;
 }
 
+.gamesMessage {
+  display: flex;
+  align-items: center;
+
+  width: 50%;
+  margin: 0;
+
+  color: #6a6a6a;
+  font-size: 18px;
+  text-align: center;
+}
+
 .btnsWrapper {
   display: flex;
   justify-content: space-between;
