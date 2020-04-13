@@ -13,6 +13,7 @@ import {
   uploadFileMap,
   saveFacilities,
   createFacilities,
+  deleteFacility,
 } from './logic/actions';
 import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import Navigation from './components/navigation';
@@ -56,6 +57,7 @@ interface Props {
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
   createFacilities: (facilities: IFacility[]) => void;
   addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
+  deleteFacility: (facilityId: string) => void;
 }
 
 interface State {
@@ -174,6 +176,7 @@ class Facilities extends React.Component<
       updateFacilities,
       updateField,
       uploadFileMap,
+      deleteFacility,
     } = this.props;
 
     const { isLibraryPopupOpen } = this.state;
@@ -256,6 +259,7 @@ class Facilities extends React.Component<
                     expanded={this.state.expanded[idx]}
                     index={idx}
                     onToggleOne={this.onToggleOne}
+                    deleteFacility={deleteFacility}
                   />
                 </li>
               ))}
@@ -305,6 +309,7 @@ export default connect(
         uploadFileMap,
         createFacilities,
         addEntityToLibrary,
+        deleteFacility,
       },
       dispatch
     )

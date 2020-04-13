@@ -25,6 +25,8 @@ import {
 } from 'common/models';
 import { sortFields } from '../../helpers';
 import styles from './styles.module.scss';
+import DeleteIcon from '@material-ui/icons/Delete';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 const STYLES_FACILITIES_DESCRIPTION_CARD_MESSAGE = {
   marginTop: '10px',
@@ -62,6 +64,7 @@ interface State {
   isEdit: boolean;
   isRestRoomDetails: boolean;
   isParkingDetails: boolean;
+  isDeleteModalOpen: boolean;
 }
 
 interface Props {
@@ -76,6 +79,7 @@ interface Props {
   expanded: boolean;
   onToggleOne: BindingCbWithOne<number>;
   index: number;
+  deleteFacility: BindingCbWithOne<string>;
 }
 
 class FacilityDetails extends React.Component<Props, State> {
@@ -86,6 +90,7 @@ class FacilityDetails extends React.Component<Props, State> {
       isEdit: Boolean(props.facility.isNew),
       isRestRoomDetails: Boolean(props.facility.restroom_details),
       isParkingDetails: Boolean(props.facility.parking_details),
+      isDeleteModalOpen: false,
     };
   }
 
@@ -133,6 +138,18 @@ class FacilityDetails extends React.Component<Props, State> {
     this.props.onToggleOne(this.props.index);
   };
 
+  onDeleteFacility = () => {
+    this.props.deleteFacility(this.props.facility.facilities_id);
+  };
+
+  onDeleteClick = () => {
+    this.setState({ isDeleteModalOpen: true });
+  };
+
+  onDeleteModalClose = () => {
+    this.setState({ isDeleteModalOpen: false });
+  };
+
   render() {
     const {
       facility,
@@ -154,6 +171,11 @@ class FacilityDetails extends React.Component<Props, State> {
     const { facility_lat: lat, facility_long: lng } = this.props.facility;
 
     const sortedFields = sortFields(fields);
+
+    const deleteMessage = `You are about to delete this facility and this cannot be undone. Fields (${Number(
+      facility.num_fields
+    )}) of this facility will be deleted too.
+      Please, enter the name of the facility to continue.`;
 
     return (
       <SectionDropdown
@@ -271,13 +293,20 @@ class FacilityDetails extends React.Component<Props, State> {
                 }}
               />
             </div>
-            <div className={`${styles.section} ${styles.btnContainer}`}>
+            <div className={`${styles.section} ${styles.btnsContainer}`}>
               <Button
                 onClick={this.onEditClick}
                 label="Edit"
                 variant={isEdit ? 'contained' : 'text'}
+                color={isEdit ? 'primary' : 'secondary'}
+              />
+              <Button
+                label="Delete"
+                variant="text"
                 color="secondary"
-                type={isEdit ? 'danger' : undefined}
+                type="dangerLink"
+                icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
+                onClick={this.onDeleteClick}
               />
             </div>
           </div>
@@ -465,6 +494,14 @@ class FacilityDetails extends React.Component<Props, State> {
               onUpload={this.onMapFileUpload}
             />
           </fieldset>
+          <DeletePopupConfrim
+            type={'facility'}
+            deleteTitle={facility.facilities_description}
+            message={deleteMessage}
+            isOpen={this.state.isDeleteModalOpen}
+            onClose={this.onDeleteModalClose}
+            onDeleteClick={this.onDeleteFacility}
+          />
         </form>
       </SectionDropdown>
     );

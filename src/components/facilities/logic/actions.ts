@@ -19,6 +19,7 @@ import {
   FacilitiesAction,
   UPLOAD_FILE_MAP_SUCCESS,
   UPLOAD_FILE_MAP_FAILURE,
+  DELETE_FACILITY_SUCCESS,
 } from './action-types';
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
@@ -327,4 +328,29 @@ export const createFacilities: ActionCreator<ThunkAction<
     const errMessage = `Record ${index + 1}: ${err.message}`;
     return Toasts.errorToast(errMessage);
   }
+};
+
+export const deleteFacility: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (facilityId: string) => async (dispatch: Dispatch) => {
+  const fields = await Api.get(`/fields?facilities_id=${facilityId}`);
+  for (const field of fields) {
+    Api.delete(`/fields?field_id=${field.field_id}`);
+  }
+
+  const response = await Api.delete(`/facilities?facilities_id=${facilityId}`);
+
+  if (response?.errorType === 'Error') {
+    return Toasts.errorToast("Couldn't delete a facility");
+  }
+
+  dispatch({
+    type: DELETE_FACILITY_SUCCESS,
+    payload: { facilityId },
+  });
+
+  Toasts.successToast('Facility is successfully deleted');
 };
