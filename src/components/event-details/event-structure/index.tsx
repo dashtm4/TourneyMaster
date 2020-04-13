@@ -22,7 +22,7 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 enum esDetailsEnum {
   'Back to Back Game Warning' = 'back_to_back_warning',
   'Require Waivers' = 'waivers_required',
-  'Connect to WaiverHub' = 'waiverhub_utilized',
+  'Synchronize via WaiverHub data' = 'waiverhub_utilized',
 }
 
 enum timeDivisionEnum {
