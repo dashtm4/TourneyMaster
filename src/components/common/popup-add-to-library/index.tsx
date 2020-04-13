@@ -62,13 +62,20 @@ const PopupAddToLibrary = ({
         </div>
         <div className={styles.SelectWrapper}>
           {isAllowShare ? (
-            <Select
-              onChange={onChangeOption}
-              value={activeOptionId || ''}
-              options={selectOptions!}
-              label="Select item"
-              width="100%"
-            />
+            isConfirm ? (
+              <p className={styles.confirmText}>
+                Are you sure you want to continue and add the item to the
+                library?
+              </p>
+            ) : (
+              <Select
+                onChange={onChangeOption}
+                value={activeOptionId || ''}
+                options={selectOptions!}
+                label="Select item"
+                width="100%"
+              />
+            )
           ) : (
             <p>You don’t have items to share</p>
           )}
@@ -84,31 +91,26 @@ const PopupAddToLibrary = ({
             />
           </span>
           <span className={styles.btnWrapper}>
-            {isAllowShare && (
-              <Button
-                onClick={onToggleConfirm}
-                variant={ButtonVarian.CONTAINED}
-                color={ButtonColors.PRIMARY}
-                btnStyles={BUTTON_STYLES}
-                label="Save"
-              />
-            )}
+            {isAllowShare &&
+              (isConfirm ? (
+                <Button
+                  onClick={onSave}
+                  variant={ButtonVarian.CONTAINED}
+                  color={ButtonColors.PRIMARY}
+                  btnStyles={BUTTON_STYLES}
+                  label="Save"
+                />
+              ) : (
+                <Button
+                  onClick={onToggleConfirm}
+                  variant={ButtonVarian.CONTAINED}
+                  color={ButtonColors.PRIMARY}
+                  btnStyles={BUTTON_STYLES}
+                  label="Save"
+                />
+              ))}
           </span>
         </p>
-        {isConfirm && (
-          <div className={styles.confirmWrapper}>
-            <p className={styles.confirmText}>Are you sure?</p>
-            <p className={styles.confirmBtns}>
-              <Button
-                onClick={onSave}
-                variant={ButtonVarian.CONTAINED}
-                color={ButtonColors.PRIMARY}
-                btnStyles={BUTTON_STYLES}
-                label="Sent"
-              />
-            </p>
-          </div>
-        )}
       </section>
     </Modal>
   );
