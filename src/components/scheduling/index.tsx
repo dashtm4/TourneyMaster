@@ -275,29 +275,23 @@ class Scheduling extends Component<IProps, IState> {
                 isSectionExpand={isSectionsExpand}
                 onViewEventMatrix={this.openViewMatrix}
               />
-              {schedules.length > 0 && (
-                <>
-                  <TournamentPlay
-                    schedules={schedules}
-                    isSectionExpand={isSectionsExpand}
-                    isAllowCreate={isAllowCreate}
-                    eventId={eventId}
-                    onCreatePressed={this.onCreatePressed}
-                    onEditSchedule={this.onEditSchedule}
-                    onPublish={(data: ISchedule) => this.onPublish(data, true)}
-                    onUnpublish={(data: ISchedule) =>
-                      this.onPublish(data, false)
-                    }
-                  />
-                  <Brackets
-                    schedules={schedules}
-                    eventId={eventId}
-                    isSectionExpand={isSectionsExpand}
-                    bracketCreationAllowed={true}
-                    onCreateBracket={this.onCreateBracketPressed}
-                  />
-                </>
-              )}
+              <TournamentPlay
+                schedules={schedules}
+                isSectionExpand={isSectionsExpand}
+                isAllowCreate={isAllowCreate}
+                eventId={eventId}
+                onCreatePressed={this.onCreatePressed}
+                onEditSchedule={this.onEditSchedule}
+                onPublish={(data: ISchedule) => this.onPublish(data, true)}
+                onUnpublish={(data: ISchedule) => this.onPublish(data, false)}
+              />
+              <Brackets
+                schedules={schedules}
+                eventId={eventId}
+                isSectionExpand={isSectionsExpand}
+                bracketCreationAllowed={true}
+                onCreateBracket={this.onCreateBracketPressed}
+              />
             </>
           ) : (
             <HazardList
