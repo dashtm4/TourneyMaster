@@ -1,41 +1,31 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileExport, faFileUpload } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 import { Paper, Button } from 'components/common';
+import { getIcon } from 'helpers';
 import { BindingAction } from 'common/models';
+import { Routes, Icons, ButtonVarian, ButtonColors } from 'common/enums';
 import styles from './styles.module.scss';
 
+const ICON_STYLES = {
+  marginRight: '5px',
+};
+
 interface Props {
-  isAllowCreate: boolean;
-  onCreatePressed: BindingAction
+  toggleLibraryPopup: BindingAction;
 }
 
-const Navigation = ({ isAllowCreate, onCreatePressed }: Props) => (
+const Navigation = ({ toggleLibraryPopup }: Props) => (
   <section className={styles.paper}>
     <Paper>
-      <div>
-        <Button
-          icon={<FontAwesomeIcon icon={faFileExport} />}
-          label="Load From Library"
-          color="secondary"
-          variant="text"
-          disabled={!isAllowCreate}
-        />
-        &nbsp;
-        <Button
-          icon={<FontAwesomeIcon icon={faFileUpload} />}
-          label="Upload From File"
-          color="secondary"
-          variant="text"
-          disabled={!isAllowCreate}
-        />
-      </div>
+      <Link className={styles.libraryBtn} to={Routes.LIBRARY_MANAGER}>
+        {getIcon(Icons.GET_APP, ICON_STYLES)} Load From Library
+      </Link>
       <Button
-        label="Create New Version"
-        color="primary"
-        variant="contained"
-        onClick={onCreatePressed}
-        disabled={!isAllowCreate}
+        onClick={toggleLibraryPopup}
+        icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
+        variant={ButtonVarian.TEXT}
+        color={ButtonColors.SECONDARY}
+        label="Save to Library"
       />
     </Paper>
   </section>

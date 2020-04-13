@@ -3,8 +3,9 @@ import Input from '../../../common/input';
 import ColorPicker from '../../../common/color-picker';
 import Checkbox from '../../../common/buttons/checkbox';
 import styles from '../styles.module.scss';
-import { BindingCbWithThree, IDivision } from 'common/models';
+import { BindingCbWithThree, IDivision, IFacility } from 'common/models';
 import { IRegistration } from 'common/models/registration';
+import { Select } from 'components/common';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -13,10 +14,11 @@ interface IAddDivisionFormState {
   hasMessage: boolean;
 }
 interface IAddDivisionFormProps {
-  onChange: BindingCbWithThree<string, string, number>;
+  onChange: BindingCbWithThree<string, string | number, number>;
   index: number;
   division: Partial<IDivision>;
   registration?: IRegistration;
+  facilities: IFacility[];
 }
 
 class AddDivisionForm extends React.Component<
@@ -57,6 +59,18 @@ class AddDivisionForm extends React.Component<
       this.props.index
     );
 
+  onPlayAtSpecFacilityChange = (e: InputTargetValue) => {
+    this.props.onChange(
+      'plays_at_spec_facility',
+      e.target.checked ? 1 : 0,
+      this.props.index
+    );
+  };
+
+  onSpecFacilitySelect = (e: InputTargetValue) => {
+    this.props.onChange('spec_facilities_id', e.target.value, this.props.index);
+  };
+
   onHasMessageChange = () => {
     this.setState({
       hasMessage: !this.state.hasMessage,
@@ -79,8 +93,17 @@ class AddDivisionForm extends React.Component<
       max_num_teams,
       division_message,
       division_hex,
+      plays_at_spec_facility,
+      spec_facilities_id,
     } = this.props.division;
     const defaultDivisionColor = '#1C315F';
+
+    const facilitiesOptions = this.props.facilities
+      ? this.props.facilities.map(facility => ({
+          label: facility.facilities_description,
+          value: facility.facilities_id,
+        }))
+      : [];
 
     return (
       <div className={styles.sectionContainer}>
@@ -90,6 +113,7 @@ class AddDivisionForm extends React.Component<
               <Input
                 fullWidth={true}
                 label="Long Name"
+                autofocus={true}
                 value={long_name || ''}
                 onChange={this.onLongNameChange}
               />
@@ -148,8 +172,8 @@ class AddDivisionForm extends React.Component<
               />
             </div>
           </div>
-          <div className={styles.sectionRowColumn}>
-            <div>
+          <div className={styles.sectionThirdRow}>
+            <div className={styles.sectionItemLarge}>
               <Checkbox
                 formLabel=""
                 options={[
@@ -157,8 +181,6 @@ class AddDivisionForm extends React.Component<
                 ]}
                 onChange={this.onHasMessageChange}
               />
-            </div>
-            <div className={styles.sectionItemLarge}>
               {this.state.hasMessage && (
                 <Input
                   fullWidth={true}
@@ -168,6 +190,30 @@ class AddDivisionForm extends React.Component<
                   onChange={this.onDivisionMessageChange}
                 />
               )}
+            </div>
+            <div className={styles.sectionItemSelect}>
+              <Checkbox
+                formLabel=""
+                options={[
+                  {
+                    label: 'Plays at Specific Facility',
+                    checked: Boolean(plays_at_spec_facility),
+                  },
+                ]}
+                onChange={this.onPlayAtSpecFacilityChange}
+              />
+              {plays_at_spec_facility ? (
+                <Select
+                  options={facilitiesOptions}
+                  label=""
+                  value={
+                    facilitiesOptions.find(
+                      facility => facility.value === spec_facilities_id
+                    )?.value || ''
+                  }
+                  onChange={this.onSpecFacilitySelect}
+                />
+              ) : null}
             </div>
           </div>
           <div className={styles.sectionRow}>

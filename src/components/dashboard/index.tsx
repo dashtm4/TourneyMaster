@@ -14,10 +14,19 @@ import TournamentCard from './tournament-card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
 import { getEvents, getCalendarEvents } from './logic/actions';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { Loader } from 'components/common';
 import { notificationData } from './mockData';
-import { ITeam, IField, BindingAction, ICalendarEvent } from 'common/models';
+import {
+  ITeam,
+  IField,
+  BindingAction,
+  ICalendarEvent,
+  IOrganization,
+  IEventDetails,
+} from 'common/models';
+import OnboardingWizard from 'components/onboarding-wizard';
+import { loadOrganizations } from 'components/organizations-management/logic/actions';
+import { EventStatuses } from 'common/enums';
 
 interface IFieldWithEventId extends IField {
   event_id: string;
@@ -25,7 +34,7 @@ interface IFieldWithEventId extends IField {
 
 interface IDashboardProps {
   history: History;
-  events: EventDetailsDTO[];
+  events: IEventDetails[];
   teams: ITeam[];
   fields: IFieldWithEventId[];
   isLoading: boolean;
@@ -34,27 +43,38 @@ interface IDashboardProps {
   getEvents: () => void;
   getCalendarEvents: BindingAction;
   calendarEvents: ICalendarEvent[];
+  loadOrganizations: BindingAction;
+  organizations: IOrganization[];
 }
 
 interface IDashboardState {
   order: number;
   filters: { status: string[]; historical: boolean };
-}
-
-enum EventStatus {
-  PUBLISHED = 'Published',
-  DRAFT = 'Draft',
+  isOnboardingWizardOpen: boolean;
 }
 
 class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   state = {
     order: 1,
     filters: { status: ['Published', 'Draft'], historical: false },
+    isOnboardingWizardOpen: false,
   };
 
   componentDidMount() {
+    this.props.loadOrganizations();
     this.props.getEvents();
     this.props.getCalendarEvents();
+  }
+
+  componentDidUpdate(prevProps: IDashboardProps) {
+    if (
+      !prevProps.organizations.length &&
+      prevProps.organizations !== this.props.organizations
+    ) {
+      this.setState({
+        isOnboardingWizardOpen: !this.props.organizations.length,
+      });
+    }
   }
 
   onCreateTournament = () => {
@@ -84,11 +104,11 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   };
 
   onPublishedFilter = () => {
-    this.filterEvents(EventStatus.PUBLISHED);
+    this.filterEvents(EventStatuses.PUBLISHED);
   };
 
   onDraftFilter = () => {
-    this.filterEvents(EventStatus.DRAFT);
+    this.filterEvents(EventStatuses.DRAFT);
   };
 
   onHistoricalFilter = () => {
@@ -110,10 +130,10 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
         );
 
     const numOfPublished = this.props.events?.filter(
-      event => event.event_status === EventStatus.PUBLISHED
+      event => event.event_status === EventStatuses.PUBLISHED
     ).length;
     const numOfDraft = this.props.events?.filter(
-      event => event.event_status === EventStatus.DRAFT
+      event => event.event_status === EventStatuses.DRAFT
     ).length;
 
     const numOfHistorical = this.props.events?.filter(
@@ -176,7 +196,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
             </div>
           )}
           {filteredEvents?.length && !this.props.isLoading
-            ? filteredEvents.map((event: EventDetailsDTO) => (
+            ? filteredEvents.map((event: IEventDetails) => (
                 <TournamentCard
                   key={event.event_id}
                   event={event}
@@ -287,22 +307,22 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
             info={`${
               this.props.calendarEvents.filter(
                 event =>
-                  event.cal_event_type === 'task' &&
-                  new Date(event.cal_event_datetime) > new Date()
+                  event.cal_event_type === 'task' && event.status_id === 1
               ).length
-            } Pending Tasks`}
+            } Pending/Open Tasks`}
             order={3}
             changeOrder={this.onOrderChange}
           />
         </div>
         {this.renderDashbaordInOrder()}
+        <OnboardingWizard isOpen={this.state.isOnboardingWizardOpen} />
       </div>
     );
   }
 }
 interface IState {
   events: {
-    data: EventDetailsDTO[];
+    data: IEventDetails[];
     teams: ITeam[];
     fields: IFieldWithEventId[];
     calendarEvents: ICalendarEvent[];
@@ -310,6 +330,7 @@ interface IState {
     isDetailLoading: boolean;
     areCalendarEventsLoading: boolean;
   };
+  organizationsManagement: { organizations: IOrganization[] };
 }
 
 const mapStateToProps = (state: IState) => ({
@@ -320,11 +341,13 @@ const mapStateToProps = (state: IState) => ({
   isLoading: state.events.isLoading,
   isDetailLoading: state.events.isDetailLoading,
   areCalendarEventsLoading: state.events.areCalendarEventsLoading,
+  organizations: state.organizationsManagement.organizations,
 });
 
 const mapDispatchToProps = {
   getEvents,
   getCalendarEvents,
+  loadOrganizations,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

@@ -7,19 +7,18 @@ import {
   DELETE_BACKUP_PLAN,
   UPDATE_BACKUP_PLAN,
 } from './actionTypes';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import api from 'api/api';
 import { Toasts } from 'components/common';
-import { IFacility, IField } from 'common/models';
+import { IFacility, IField, IEventDetails } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
 import { getVarcharEight } from 'helpers';
 import { stringifyBackupPlan } from '../helper';
 
 export const eventsFetchSuccess = (
-  payload: EventDetailsDTO[]
-): { type: string; payload: EventDetailsDTO[] } => ({
+  payload: IEventDetails[]
+): { type: string; payload: IEventDetails[] } => ({
   type: EVENTS_FETCH_SUCCESS,
   payload,
 });

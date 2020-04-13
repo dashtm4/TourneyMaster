@@ -1,41 +1,40 @@
 import React from 'react';
 import moment from 'moment';
-import { SectionDropdown, Loader } from '../../../common';
+import { SectionDropdown, Loader } from 'components/common';
 import GroupItem from '../group-item';
 import styles from './styles.module.scss';
 import {
   IDivision,
   IPool,
-  ITeam,
-  BindingCbWithOne,
-} from '../../../../common/models';
+  ITeamWithResults,
+  IEventDetails,
+  ISchedulesGameWithNames,
+} from 'common/models';
 
 interface Props {
+  event: IEventDetails | null;
   division: IDivision;
   pools: IPool[];
-  teams: ITeam[];
+  teams: ITeamWithResults[];
+  games: ISchedulesGameWithNames[];
   loadPools: (divisionId: string) => void;
-  loadTeams: (poolId: string) => void;
   onOpenTeamDetails: (
-    team: ITeam,
+    team: ITeamWithResults,
     divisionName: string,
     poolName: string
   ) => void;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
-  index: number;
+  isSectionExpand: boolean;
 }
 
 const ScoringItem = ({
   division,
   pools,
   teams,
+  event,
+  games,
   loadPools,
-  loadTeams,
   onOpenTeamDetails,
-  expanded,
-  index,
-  onToggleOne,
+  isSectionExpand,
 }: Props) => {
   if (!division.isPoolsLoading && !division.isPoolsLoaded) {
     loadPools(division.division_id);
@@ -45,51 +44,44 @@ const ScoringItem = ({
     return <Loader />;
   }
 
-  const onSectionToggle = () => {
-    onToggleOne(index);
-  };
+  const completedGames = games.filter(
+    it => it.awayTeamScore !== null || it.homeTeamScore !== null
+  );
+
+  const lastUpd = Math.max(
+    ...games.map(it =>
+      it.updatedTime
+        ? Number(new Date(it.updatedTime))
+        : Number(new Date(it.createTime))
+    )
+  );
 
   return (
     <li>
-      <SectionDropdown
-        isDefaultExpanded={true}
-        headingColor={'#1C315F'}
-        expanded={expanded !== undefined && expanded}
-        onToggle={onSectionToggle}
-      >
-        <span>
-          {division.short_name} ({division.long_name})
-        </span>
+      <SectionDropdown headingColor={'#1C315F'} expanded={isSectionExpand}>
+        <span>{division.long_name}</span>
         <div>
           <ul className={styles.statisticList}>
             <li>
-              <b>Games Complete:</b> {`1`}/{`72`}
-            </li>
-            <li>
-              <b>Dates: </b>
-              {`02/08/20`} - {`02/09/20`}
-            </li>
-            <li>
-              <b>Scores Recorded:</b> {`1`}
+              <b>Games Complete:</b> {completedGames.length}/{games.length}
             </li>
             <li>
               <b>Last Web Publishing: </b>
-              <time dateTime={division.latest_web_publish}>
-                {division.latest_web_publish
-                  ? moment(division.latest_web_publish).format(
-                      'YYYY-MM-DD, hh:mm:ss A'
-                    )
-                  : 'Last Web Publishing: No scores published'}
+              <time dateTime={new Date(lastUpd).toString()}>
+                {lastUpd
+                  ? moment(lastUpd).format('LLLL')
+                  : 'No scores published'}
               </time>
             </li>
           </ul>
           <ul className={styles.groupList}>
             {pools.map(pool => (
               <GroupItem
+                event={event}
                 division={division}
                 pool={pool}
                 teams={teams.filter(it => it.pool_id === pool.pool_id)}
-                loadTeams={loadTeams}
+                games={games}
                 onOpenTeamDetails={onOpenTeamDetails}
                 key={pool.pool_id}
               />

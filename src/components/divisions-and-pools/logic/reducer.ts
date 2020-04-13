@@ -12,9 +12,13 @@ import {
   ALL_POOLS_FETCH_SUCCESS,
   SAVE_TEAMS_SUCCESS,
 } from './actionTypes';
+import {
+  ADD_ENTITIES_TO_LIBRARY_SUCCESS,
+  AuthPageAction,
+} from 'components/authorized-page/authorized-page-event/logic/action-types';
 import { IPool, ITeam, IDivision } from 'common/models';
 import { sortByField } from 'helpers';
-import { SortByFilesTypes } from 'common/enums';
+import { SortByFilesTypes, EntryPoints } from 'common/enums';
 import { IRegistration } from 'common/models/registration';
 
 export interface IDivisionAndPoolsState {
@@ -39,7 +43,7 @@ const defaultState: IDivisionAndPoolsState = {
 
 export default (
   state = defaultState,
-  action: { type: string; payload?: any }
+  action: { type: string; payload?: any } | AuthPageAction
 ) => {
   switch (action.type) {
     case DIVISIONS_TEAMS_FETCH_START: {
@@ -113,6 +117,7 @@ export default (
         ...state,
         pools: [...state.pools, ...action.payload],
         error: false,
+        areDetailsLoading: false,
       };
     }
     case ALL_POOLS_FETCH_SUCCESS:
@@ -136,6 +141,28 @@ export default (
         ...state,
         teams,
       };
+    }
+    case ADD_ENTITIES_TO_LIBRARY_SUCCESS: {
+      const { entities, entryPoint } = action.payload;
+
+      if (entryPoint === EntryPoints.DIVISIONS) {
+        const updatedDivisions = entities as IDivision[];
+
+        const divisions = state.data?.map(division => {
+          const updatedDivision = updatedDivisions.find(
+            it => it.division_id === division.division_id
+          );
+
+          return updatedDivision ? updatedDivision : division;
+        });
+
+        return {
+          ...state,
+          data: divisions,
+        };
+      } else {
+        return state;
+      }
     }
     default:
       return state;

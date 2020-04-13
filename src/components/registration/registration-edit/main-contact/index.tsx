@@ -78,7 +78,6 @@ const MainContact = ({ data, onChange }: IMainContactProps) => {
           <Input
             fullWidth={true}
             label="Mobile Number"
-            type="number"
             value={data ? data.mobile_number : ''}
             onChange={onMobileNumberChange}
           />

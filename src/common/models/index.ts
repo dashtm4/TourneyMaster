@@ -17,3 +17,6 @@ export * from './event-summary';
 export * from './location';
 export * from './schedule';
 export * from './schedule/schedules-details';
+export * from './schedule/game';
+export * from './select';
+export * from './scoring';

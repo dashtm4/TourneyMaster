@@ -5,7 +5,6 @@ import rain from '../../assets/rain.svg';
 import Modal from 'components/common/modal';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import CreateBackupModal from './create-backup-modal';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 import { connect } from 'react-redux';
 import {
   getEvents,
@@ -16,7 +15,12 @@ import {
   deleteBackupPlan,
   updateBackupPlan,
 } from './logic/actions';
-import { BindingAction, IFacility, BindingCbWithOne } from 'common/models';
+import {
+  BindingAction,
+  IFacility,
+  BindingCbWithOne,
+  IEventDetails,
+} from 'common/models';
 import { IField } from 'common/models';
 import BackupPlan from './backup-plan';
 import { IBackupPlan } from 'common/models/backup_plan';
@@ -30,7 +34,7 @@ interface Props {
   saveBackupPlans: BindingCbWithOne<Partial<IBackupPlan>[]>;
   deleteBackupPlan: BindingCbWithOne<string>;
   updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
-  events: EventDetailsDTO[];
+  events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
   backupPlans: IBackupPlan[];
@@ -39,15 +43,13 @@ interface Props {
 
 interface State {
   isModalOpen: boolean;
-  expanded: boolean[];
-  expandAll: boolean;
+  isSectionsExpand: boolean;
 }
 
 class GamedayComplexities extends React.Component<Props, State> {
   state = {
     isModalOpen: false,
-    expanded: [],
-    expandAll: false,
+    isSectionsExpand: true,
   };
 
   componentDidMount() {
@@ -57,25 +59,8 @@ class GamedayComplexities extends React.Component<Props, State> {
     this.props.getBackupPlans();
   }
 
-  componentDidUpdate(_prevProps: Props, _prevState: State) {
-    if (this.props.backupPlans !== _prevProps.backupPlans) {
-      this.setState({ expanded: this.props.backupPlans.map(_plan => true) });
-    }
-  }
-
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
   onCreatePlan = () => {
@@ -121,14 +106,14 @@ class GamedayComplexities extends React.Component<Props, State> {
         <div className={styles.headingContainer}>
           <HeadingLevelTwo>Event Day Complexities</HeadingLevelTwo>
           <Button
-            label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+            label={this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'}
             variant="text"
             color="secondary"
-            onClick={this.onToggleAll}
+            onClick={this.toggleSectionCollapse}
           />
         </div>
         {isLoading && <Loader />}
-        {backupPlans.length && !isLoading && this.state.expanded.length
+        {backupPlans.length && !isLoading
           ? backupPlans.map((plan, index) => {
               return (
                 plan.backup_plan_id && (
@@ -138,11 +123,9 @@ class GamedayComplexities extends React.Component<Props, State> {
                     facilities={this.props.facilities}
                     fields={this.props.fields}
                     data={plan}
-                    expanded={this.state.expanded[index]}
-                    index={index}
-                    onToggleOne={this.onToggleOne}
                     deleteBackupPlan={this.props.deleteBackupPlan}
                     updateBackupPlan={this.props.updateBackupPlan}
+                    isSectionExpand={this.state.isSectionsExpand}
                   />
                 )
               );
@@ -164,7 +147,7 @@ class GamedayComplexities extends React.Component<Props, State> {
 
 interface IState {
   complexities: {
-    data: EventDetailsDTO[];
+    data: IEventDetails[];
     facilities: IFacility[];
     fields: IField[];
     backupPlans: IBackupPlan[];

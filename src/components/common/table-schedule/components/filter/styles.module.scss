@@ -2,22 +2,26 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-
-  margin-bottom: 25px;
+  margin-bottom: 10px;
 }
 
 .buttonsWrapper {
-  display: none;
-  width: 290px;
-  // display: flex;
-  justify-content: space-between;
-  padding: 0 8px;
+  display: flex;
+  align-items: baseline;
+  flex-direction: row;
+  justify-content: flex-start;
+
+  > button {
+    margin-right: 15px;
+    width: 80px;
+  }
 }
 
 .selectsContainer {
   display: flex;
-  justify-content: center;
-  width: calc(100% - 160px);
+  justify-content: flex-start;
+  width: 100%;
+  margin-top: 28px;
 
   .selectWrapper {
     width: 190px;

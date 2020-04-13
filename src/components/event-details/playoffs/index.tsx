@@ -12,12 +12,8 @@ import { CardMessageTypes } from 'components/common/card-message/types';
 import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
-import { EventDetailsDTO } from '../logic/model';
 
-import Dnd from '../dnd';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import { BindingCbWithOne } from 'common/models';
+import { IEventDetails } from 'common/models';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -57,35 +53,15 @@ enum numTeamsBracketEnum {
 }
 
 interface Props {
-  eventData: Partial<EventDetailsDTO>;
+  eventData: Partial<IEventDetails>;
   onChange: any;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
-  index: number;
+  isSectionExpand: boolean;
 }
-
-const rankingFactorDivisions = [
-  { id: 1, text: 'Best record' },
-  { id: 2, text: 'Head to Head' },
-  { id: 3, text: 'Goal Difference' },
-  { id: 4, text: 'Goals Scored' },
-  { id: 5, text: 'Goals Allowed' },
-];
-
-const rankingFactorPools = [
-  { id: 1, text: 'Best record' },
-  { id: 2, text: 'Head to Head' },
-  { id: 3, text: 'Goal Difference' },
-  { id: 4, text: 'Goals Scored' },
-  { id: 5, text: 'Goals Allowed' },
-];
 
 const PlayoffsSection: React.FC<Props> = ({
   eventData,
   onChange,
-  expanded,
-  index,
-  onToggleOne,
+  isSectionExpand,
 }: Props) => {
   const {
     playoffs_exist,
@@ -125,23 +101,13 @@ const PlayoffsSection: React.FC<Props> = ({
       onChange('bracket_type', bracketTypesEnum['Single Elimination']);
   });
 
-  const onRankingFactorReorder = (name: string, cards: any) => {
-    console.log('cards:', name, cards);
-  };
-
-  const onSectionToggle = () => {
-    onToggleOne(index);
-  };
-
   return (
     <SectionDropdown
       id={EventMenuTitles.PLAYOFFS}
       type="section"
       panelDetailsType="flat"
-      isDefaultExpanded={true}
       useBorder={true}
-      expanded={expanded}
-      onToggle={onSectionToggle}
+      expanded={isSectionExpand}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Playoffs</span>
@@ -187,33 +153,6 @@ const PlayoffsSection: React.FC<Props> = ({
               />
             </div>
             <div className={styles.pdThird}>
-              <div className={styles.dndTitleWrapper}>
-                <span>Ranking Factors (in Divisions)</span>
-                <span>Ranking Factors (in Pools)</span>
-              </div>
-              <div className={styles.dndWrapper}>
-                <DndProvider backend={HTML5Backend}>
-                  <Dnd
-                    name="rankingFactorDivisions"
-                    cards={rankingFactorDivisions}
-                    onUpdate={onRankingFactorReorder.bind(
-                      undefined,
-                      'rankingFactorDivisions'
-                    )}
-                  />
-                  <Dnd
-                    name="rankingFactorPools"
-                    cards={rankingFactorPools}
-                    onUpdate={onRankingFactorReorder.bind(
-                      undefined,
-                      'rankingFactorPools'
-                    )}
-                  />
-                </DndProvider>
-              </div>
-              <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-                Drag and Drop to reorder Ranking Factors
-              </CardMessage>
               <Checkbox
                 options={bracketGameDurationOpts}
                 onChange={onBracketGameDuration}
@@ -222,7 +161,6 @@ const PlayoffsSection: React.FC<Props> = ({
             {Boolean(bracket_durations_vary) && (
               <div className={styles.pdFourth}>
                 <Input
-                  // width="170px"
                   fullWidth={true}
                   endAdornment="Minutes"
                   label="Pregame Warmup"
@@ -230,7 +168,6 @@ const PlayoffsSection: React.FC<Props> = ({
                 />
                 <span className={styles.innerSpanText}>&nbsp;+&nbsp;</span>
                 <Input
-                  // width="170px"
                   fullWidth={true}
                   endAdornment="Minutes"
                   label="Time Division Duration"
@@ -240,7 +177,6 @@ const PlayoffsSection: React.FC<Props> = ({
                   &nbsp;(0)&nbsp;+&nbsp;
                 </span>
                 <Input
-                  // width="170px"
                   fullWidth={true}
                   endAdornment="Minutes"
                   label="Time Between Periods"

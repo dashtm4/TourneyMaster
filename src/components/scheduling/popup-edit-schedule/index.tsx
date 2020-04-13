@@ -80,6 +80,7 @@ const PopupEditSchedule = ({
               value={editedSchedule.schedule_name || ''}
               name={ArchitectFormFields.SCHEDULE_NAME}
               label="Name"
+              autofocus={true}
               width="220px"
             />
             <Input
@@ -138,7 +139,7 @@ const PopupEditSchedule = ({
               </p>
               <Button
                 variant={ButtonVarian.CONTAINED}
-                color={ButtonColors.PRIMATY}
+                color={ButtonColors.PRIMARY}
                 btnType={ButtonFormTypes.SUBMIT}
                 label="Save"
               />

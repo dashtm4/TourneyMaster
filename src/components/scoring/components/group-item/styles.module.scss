@@ -1,21 +1,17 @@
 .groupItem {
-  width: 370px;
+  width: 45%;
 }
 
 .groupTable {
-  color: #6a6a6a;
+  width: 100%;
 
-  width: 350px;
-  margin: 0 -15px;
+  color: #6a6a6a;
 
   background-color: #ffffff;
 
-  thead {
-    font-weight: bold;
-  }
-
-  td {
-    width: 40px;
+  td,
+  th {
+    min-width: 40px;
     padding: 5px 10px;
 
     text-align: center;
@@ -23,8 +19,9 @@
     border: 2px solid #f4f4f4;
   }
 
-  tr td:first-child {
-    width: 165px;
+  tr td:first-child,
+  tr th:first-child {
+    width: 100%;
 
     text-align: left;
   }

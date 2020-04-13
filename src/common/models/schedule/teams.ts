@@ -44,6 +44,8 @@ export interface ITeamCard extends ITeam {
     id: number;
     teamPosition: TeamPositionEnum;
     isTeamLocked?: boolean;
+    teamScore?: string | number | null;
+    date?: string;
   }[];
   fieldId?: string;
   timeSlotId?: number;
@@ -52,4 +54,5 @@ export interface ITeamCard extends ITeam {
   //
   errors?: string[];
   isLocked?: boolean;
+  score?: string | number | null;
 }

@@ -10,7 +10,7 @@ import {
   PopupExposure,
 } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
-import { IConfigurableOrganization, BindingCbWithOne } from 'common/models';
+import { IConfigurableOrganization, BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 import history from 'browserhistory';
 
@@ -30,26 +30,22 @@ const EMPTY_ORGANIZATION = {
 
 interface Props {
   createOrganization: (organizationData: IConfigurableOrganization) => void;
-  index: number;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
+  type?: string;
+  onCancelBtn?: BindingAction;
+  isSectionExpand: boolean;
 }
 
 const CreateOrganization = ({
   createOrganization,
-  expanded,
-  onToggleOne,
-  index,
+  type,
+  onCancelBtn,
+  isSectionExpand,
 }: Props) => {
   const [organization, onChange] = React.useState<IConfigurableOrganization>(
     EMPTY_ORGANIZATION
   );
   const [isOpenConfirmPopup, onConfirmPopup] = React.useState(false);
   const [isModalOpen, onModalChange] = React.useState(false);
-
-  const onSectionToggle = () => {
-    onToggleOne(index);
-  };
 
   const onCreateClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -58,7 +54,14 @@ const CreateOrganization = ({
 
   const onCancelClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onModalChange(true);
+    if (onCancelBtn) {
+      return onCancelBtn();
+    }
+    if (organization !== EMPTY_ORGANIZATION) {
+      onModalChange(true);
+    } else {
+      onCancel();
+    }
   };
 
   const onModalClose = () => {
@@ -75,34 +78,38 @@ const CreateOrganization = ({
     onModalChange(false);
   };
 
+  const renderBtns = () => {
+    return (
+      <div className={styles.btnsGroup}>
+        <Button
+          label="Cancel"
+          variant="text"
+          color="secondary"
+          onClick={onCancelClick}
+        />
+        <Button
+          label="Create"
+          variant="contained"
+          color="primary"
+          onClick={onCreateClick}
+        />
+      </div>
+    );
+  };
+
   return (
     <>
       <SectionDropdown
         type="section"
         useBorder={true}
-        isDefaultExpanded={false}
         panelDetailsType="flat"
-        expanded={expanded}
-        onToggle={onSectionToggle}
+        expanded={isSectionExpand}
       >
         <div className={styles.headingContainer}>
           <HeadingLevelThree>
             <span>Create Organization</span>
           </HeadingLevelThree>
-          <div className={styles.btnsGroup}>
-            <Button
-              label="Cancel"
-              variant="text"
-              color="secondary"
-              onClick={onCancelClick}
-            />
-            <Button
-              label="Create"
-              variant="contained"
-              color="primary"
-              onClick={onCreateClick}
-            />
-          </div>
+          {type !== 'wizard' && renderBtns()}
         </div>
 
         <div className={styles.section}>
@@ -161,6 +168,9 @@ const CreateOrganization = ({
               </div>
             </div>
           </form>
+          {type === 'wizard' && (
+            <div className={styles.btnsWrapper}>{renderBtns()} </div>
+          )}
         </div>
       </SectionDropdown>
       <PopupConfirm

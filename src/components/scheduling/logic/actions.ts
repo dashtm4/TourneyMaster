@@ -1,5 +1,7 @@
 import { Dispatch } from 'redux';
 import { Auth } from 'aws-amplify';
+import { chunk } from 'lodash-es';
+import * as Yup from 'yup';
 import api from 'api/api';
 import { ISchedule, IConfigurableSchedule } from 'common/models/schedule';
 import { Toasts } from 'components/common';
@@ -15,14 +17,52 @@ import {
   UPDATE_SCHEDULE_FAILURE,
   DELETE_SCHEDULE_SUCCESS,
   DELETE_SCHEDULE_FAILURE,
+  ADD_NEW_BRACKET,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
 import { scheduleSchema, updatedScheduleSchema } from 'validations';
 import { IAppState } from 'reducers/root-reducer.types';
 import History from 'browserhistory';
-import { IMember } from 'common/models';
-import { getVarcharEight } from 'helpers';
+import {
+  IMember,
+  IEventDetails,
+  IField,
+  ITeam,
+  IDivision,
+} from 'common/models';
+import {
+  getVarcharEight,
+  getTimeValuesFromEventSchedule,
+  calculateTimeSlots,
+  calculateTournamentDays,
+} from 'helpers';
 import { gameStartOnOptions, ISchedulingSchedule } from '../types';
+import {
+  mapFieldsData,
+  mapTeamsData,
+} from 'components/schedules/mapTournamentData';
+import {
+  sortFieldsByPremier,
+  defineGames,
+  settleTeamsPerGamesDays,
+} from 'components/common/matrix-table/helper';
+import {
+  mapTeamsFromSchedulesDetails,
+  mapSchedulesTeamCards,
+  mapTeamCardsToSchedulesGames,
+  mapSchedulingScheduleData,
+} from 'components/schedules/mapScheduleData';
+import { errorToast, successToast } from 'components/common/toastr/showToasts';
+import { ICreateBracketModalOutput } from '../create-new-bracket';
+
+type GetState = () => IAppState;
+
+interface TournamentInfo {
+  event: IEventDetails;
+  fields: IField[];
+  teams: ITeam[];
+  divisions: IDivision[];
+}
 
 const scheduleFetchInProgress = () => ({
   type: SCHEDULE_FETCH_IN_PROGRESS,
@@ -37,6 +77,11 @@ const scheduleFetchSuccess = (schedules: ISchedulingSchedule) => ({
 
 const scheduleFetchFailure = () => ({
   type: SCHEDULE_FETCH_FAILURE,
+});
+
+const addNewBracket = (payload: ICreateBracketModalOutput) => ({
+  type: ADD_NEW_BRACKET,
+  payload,
 });
 
 export const addNewSchedule = () => async (
@@ -129,7 +174,17 @@ export const createNewSchedule = (schedule: IConfigurableSchedule) => async (
   dispatch: Dispatch
 ) => {
   try {
-    await scheduleSchema.validate(schedule);
+    const allSchedules = await api.get(
+      `/schedules?event_id=${schedule.event_id}`
+    );
+
+    await Yup.array()
+      .of(scheduleSchema)
+      .unique(
+        schedule => schedule.schedule_name,
+        'Oops. It looks like you already have schedule with the same name. The schedule must have a unique name.'
+      )
+      .validate([...allSchedules, schedule]);
 
     dispatch({
       type: CREATE_NEW_SCHEDULE_SUCCESS,
@@ -156,7 +211,17 @@ export const updateSchedule = (schedule: ISchedulingSchedule) => async (
     delete copiedSchedule.createdByName;
     delete copiedSchedule.updatedByName;
 
-    await updatedScheduleSchema.validate(copiedSchedule);
+    const allSchedules = await api.get(
+      `/schedules?event_id=${schedule.event_id}`
+    );
+
+    await Yup.array()
+      .of(updatedScheduleSchema)
+      .unique(
+        schedule => schedule.schedule_name,
+        'Oops. It looks like you already have schedule with the same name. The schedule must have a unique name.'
+      )
+      .validate([...allSchedules, copiedSchedule]);
 
     await api.put(
       `/schedules?schedule_id=${copiedSchedule.schedule_id}`,
@@ -201,4 +266,191 @@ export const deleteSchedule = (schedule: ISchedulingSchedule) => async (
       type: DELETE_SCHEDULE_FAILURE,
     });
   }
+};
+
+const callPostPut = (uri: string, data: any, update: boolean) =>
+  update ? api.put(uri, data) : api.post(uri, data);
+
+const getGamesByScheduleId = async (scheduleId: string) => {
+  const games = await api.get('/games', { schedule_id: scheduleId });
+  return games;
+};
+
+const showError = () => {
+  errorToast('Something happened during the saving process');
+};
+
+const getSchedulesData = async (
+  schedule: ISchedule,
+  tournamentInfo: TournamentInfo
+) => {
+  const { event, fields, teams, divisions } = tournamentInfo;
+  const timeValues = getTimeValuesFromEventSchedule(event, schedule);
+  const timeSlots = calculateTimeSlots(timeValues);
+
+  const mappedFields = mapFieldsData(fields);
+  const sortedFields = sortFieldsByPremier(mappedFields);
+
+  const { games } = defineGames(sortedFields, timeSlots!);
+
+  const loadedSchedulesDetails = await api.get('/schedules_details', {
+    schedule_id: schedule.schedule_id,
+  });
+
+  const mappedTeams = mapTeamsData(teams, divisions);
+  const tableTeams = mapTeamsFromSchedulesDetails(
+    loadedSchedulesDetails,
+    mappedTeams
+  );
+  return { games, tableTeams, schedulesDetails: loadedSchedulesDetails };
+};
+
+export const getSchedulesDetails = async (
+  schedule: ISchedule,
+  isDraft: boolean,
+  tournamentInfo: TournamentInfo
+) => {
+  const { games, tableTeams, schedulesDetails } = await getSchedulesData(
+    schedule,
+    tournamentInfo
+  );
+  const { event } = tournamentInfo;
+  const tournamentDays = calculateTournamentDays(event);
+
+  let schedulesTableGames = [];
+  for (const day of tournamentDays) {
+    schedulesTableGames.push(settleTeamsPerGamesDays(games, tableTeams, day));
+  }
+  schedulesTableGames = schedulesTableGames.flat();
+
+  return mapSchedulesTeamCards(
+    schedule,
+    schedulesTableGames,
+    isDraft,
+    schedulesDetails
+  );
+};
+
+const getSchedulesGames = async (
+  schedule: ISchedule,
+  tournamentInfo: TournamentInfo
+) => {
+  const { schedule_id } = schedule;
+  const { games, tableTeams } = await getSchedulesData(
+    schedule,
+    tournamentInfo
+  );
+  const { event } = tournamentInfo;
+  const tournamentDays = calculateTournamentDays(event);
+  const publishedGames = await api.get('/games', { schedule_id });
+
+  let schedulesTableGames = [];
+  for (const day of tournamentDays) {
+    schedulesTableGames.push(settleTeamsPerGamesDays(games, tableTeams, day));
+  }
+  schedulesTableGames = schedulesTableGames.flat();
+
+  return mapTeamCardsToSchedulesGames(
+    schedule,
+    schedulesTableGames,
+    publishedGames
+  );
+};
+
+const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
+  dispatch: Dispatch,
+  getState: GetState
+) => {
+  const { scheduling, pageEvent } = getState();
+  const { schedules } = scheduling;
+  const { tournamentData } = pageEvent;
+  const { event, fields, teams, divisions } = tournamentData;
+
+  const schedulingSchedule = schedules.find(
+    item => item.schedule_id === scheduleId
+  );
+
+  if (!event || !fields || !teams || !divisions || !schedulingSchedule)
+    return showError();
+
+  const schedule = mapSchedulingScheduleData(schedulingSchedule);
+
+  const scheduleGames = await getGamesByScheduleId(scheduleId);
+  const gamesExist = scheduleGames?.length;
+
+  /* PUT Schedule */
+  const updatedSchedule: ISchedule = {
+    ...schedule,
+    schedule_status: isDraft ? 'Draft' : 'Published',
+    last_web_publish: isDraft
+      ? schedule.last_web_publish
+      : new Date().toISOString(),
+  };
+
+  /* Get SchedulesDetails and SchedulesGames */
+  const schedulesDetails = await getSchedulesDetails(schedule, isDraft, {
+    event,
+    fields,
+    teams,
+    divisions,
+  });
+
+  const schedulesGames = await getSchedulesGames(schedule, {
+    event,
+    fields,
+    teams,
+    divisions,
+  });
+
+  /* Chunk SchedulesDetails and SchedulesGames to arrays */
+  const schedulesDetailsChunk = chunk(schedulesDetails, 50);
+  const schedulesGamesChunk = chunk(schedulesGames, 50);
+
+  /* Put SchedulesDetails and POST/PUT SchedulesGames */
+  const schedulesResp = await api.put('/schedules', updatedSchedule);
+
+  if (!schedulesResp) return showError();
+
+  const schedulesDetailsResp = await Promise.all(
+    schedulesDetailsChunk.map(
+      async arr => await api.put('/schedules_details', arr)
+    )
+  );
+
+  const schedulesGamesResp = await Promise.all(
+    schedulesGamesChunk.map(
+      async arr => await callPostPut('/games', arr, gamesExist)
+    )
+  );
+
+  if (
+    schedulesResp &&
+    schedulesDetailsResp.length &&
+    schedulesGamesResp.length
+  ) {
+    dispatch<any>(getScheduling(event.event_id));
+    dispatch<any>(addNewSchedule());
+    const name = isDraft ? 'unpublished' : 'published';
+    successToast(`Schedules was successfully ${name}`);
+  } else {
+    showError();
+  }
+};
+
+export const publishSchedule = (scheduleId: string) => (dispatch: Dispatch) => {
+  dispatch<any>(updateScheduleStatus(scheduleId, false));
+};
+
+export const unpublishSchedule = (scheduleId: string) => (
+  dispatch: Dispatch
+) => {
+  dispatch<any>(updateScheduleStatus(scheduleId, true));
+};
+
+/* BRACKETS SECTION */
+
+export const createNewBracket = (bracketData: ICreateBracketModalOutput) => (
+  dispatch: Dispatch
+) => {
+  dispatch(addNewBracket(bracketData));
 };

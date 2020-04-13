@@ -1,6 +1,6 @@
 .popupWrapper {
-  width: 575px;
-  padding: 25px 35px;
+  width: 675px;
+  padding: 25px 20px;
 }
 
 .headerWrapper {
@@ -88,10 +88,25 @@
 
 .fieldList {
   width: 50%;
+  max-height: 225px;
   margin: 0;
   padding: 0;
 
   list-style: none;
+
+  overflow-y: auto;
+}
+
+.gamesMessage {
+  display: flex;
+  align-items: center;
+
+  width: 50%;
+  margin: 0;
+
+  color: #6a6a6a;
+  font-size: 18px;
+  text-align: center;
 }
 
 .btnsWrapper {
@@ -106,6 +121,7 @@
 .popupBtnsWrapper {
   display: flex;
   justify-content: space-between;
-
-  width: 150px;
+  & > :first-child {
+    margin-right: 15px;
+  }
 }

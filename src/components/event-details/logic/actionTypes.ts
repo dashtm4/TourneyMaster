@@ -1,4 +1,4 @@
-import { EventDetailsDTO } from './model';
+import { IEventDetails } from 'common/models';
 
 export const EVENT_DETAILS_FETCH_START = 'EVENT_DETAILS_FETCH_START';
 export const EVENT_DETAILS_FETCH_SUCCESS = 'EVENT_DETAILS_FETCH_SUCCESS';
@@ -10,7 +10,7 @@ export interface EventDetailsFetchStart {
 
 export interface EventDetailsFetchSuccess {
   type: 'EVENT_DETAILS_FETCH_SUCCESS';
-  payload: EventDetailsDTO[];
+  payload: IEventDetails[];
 }
 
 export interface EventDetailsFetchFailure {

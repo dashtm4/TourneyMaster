@@ -19,6 +19,7 @@ import {
   FacilitiesAction,
   UPLOAD_FILE_MAP_SUCCESS,
   UPLOAD_FILE_MAP_FAILURE,
+  DELETE_FACILITY_SUCCESS,
 } from './action-types';
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
@@ -121,6 +122,7 @@ const addEmptyField = (
       field_name: `Field ${fieldsLength + 1}`,
       isNew: true,
       facilities_id: facilityId,
+      is_library_YN: 0,
     },
   },
 });
@@ -277,4 +279,78 @@ export {
   updateField,
   saveFacilities,
   uploadFileMap,
+};
+
+export const createFacilities: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  FacilitiesAction
+>> = (facilities: IFacility[], cb: () => void) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    const allFacilities = await Api.get(
+      `/facilities?event_id=${facilities[0].event_id}`
+    );
+
+    for (const facility of facilities) {
+      await Yup.array()
+        .of(facilitySchema)
+        .unique(
+          fac => fac.facilities_description,
+          'You already have a facility with the same name. Facility must have a unique name.'
+        )
+        .validate([...allFacilities, facility]);
+    }
+
+    for (const facility of facilities) {
+      delete facility.isNew;
+
+      await Api.post('/facilities', facility);
+    }
+
+    dispatch({
+      type: SAVE_FACILITIES_SUCCESS,
+      payload: {
+        facilities,
+      },
+    });
+
+    const successMsg = `Facilities are successfully created (${facilities.length})`;
+    Toasts.successToast(successMsg);
+    cb();
+  } catch (err) {
+    const fac = err.value[err.value.length - 1];
+    const index = facilities.findIndex(
+      facility => facility.facilities_id === fac.facilities_id
+    );
+    const errMessage = `Record ${index + 1}: ${err.message}`;
+    return Toasts.errorToast(errMessage);
+  }
+};
+
+export const deleteFacility: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (facilityId: string) => async (dispatch: Dispatch) => {
+  const fields = await Api.get(`/fields?facilities_id=${facilityId}`);
+  for (const field of fields) {
+    Api.delete(`/fields?field_id=${field.field_id}`);
+  }
+
+  const response = await Api.delete(`/facilities?facilities_id=${facilityId}`);
+
+  if (response?.errorType === 'Error') {
+    return Toasts.errorToast("Couldn't delete a facility");
+  }
+
+  dispatch({
+    type: DELETE_FACILITY_SUCCESS,
+    payload: { facilityId },
+  });
+
+  Toasts.successToast('Facility is successfully deleted');
 };

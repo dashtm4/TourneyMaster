@@ -27,7 +27,7 @@ const TournamentStatus = ({
         </p>
         {tournamentStatus === EventStatuses.DRAFT && (
           <p className={styles.progressBarComplete}>
-            <output>{`${percentOfCompleted}%`}</output>
+            <output>{`${percentOfCompleted}% `}</output>
             Complete
           </p>
         )}
@@ -38,7 +38,7 @@ const TournamentStatus = ({
           {percentOfCompleted === 100 && (
             <span className={styles.doneBtnWrapper}>
               <Button
-                onClick={() => changeTournamentStatus(EventStatuses.PUBLIHSED)}
+                onClick={() => changeTournamentStatus(EventStatuses.PUBLISHED)}
                 icon={getIcon(Icons.DONE)}
                 label="Publish Tournament"
                 color={ButtonColors.INHERIT}

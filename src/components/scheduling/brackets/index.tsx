@@ -1,65 +1,85 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faNetworkWired } from '@fortawesome/free-solid-svg-icons';
-
 import {
   SectionDropdown,
   HeadingLevelThree,
-  HeadingLevelFour,
   Button,
-  Paper,
+  CardMessage,
 } from 'components/common';
-import styles from '../styles.module.scss';
+import BraketsItem from '../brakets-item';
+import { compareTime } from 'helpers';
 import { EventMenuTitles } from 'common/enums';
-import { BindingAction } from 'common/models';
+import { ISchedulingSchedule } from '../types';
+import { CardMessageTypes } from 'components/common/card-message/types';
+import styles from '../styles.module.scss';
+import { IMouseEvent } from 'common/types';
+
+const CARD_MESSAGE_STYLES = {
+  marginBottom: 30,
+  width: '100%',
+};
 
 interface IProps {
-  onManageBrackets: BindingAction;
+  schedules: ISchedulingSchedule[];
+  eventId: string;
+  isSectionExpand: boolean;
+  bracketCreationAllowed: boolean;
+  onCreateBracket: (evt: IMouseEvent) => void;
 }
 
-export default (props: IProps) => {
-  const { onManageBrackets } = props;
+const Brackets = (props: IProps) => {
+  const {
+    schedules,
+    eventId,
+    isSectionExpand,
+    bracketCreationAllowed,
+    onCreateBracket,
+  } = props;
+
+  const sortedScheduleByName = schedules.sort(
+    (a, b) =>
+      compareTime(a.updated_datetime, b.updated_datetime) ||
+      compareTime(a.created_datetime, b.created_datetime)
+  );
 
   return (
     <SectionDropdown
       type="section"
       isDefaultExpanded={true}
       useBorder={true}
+      expanded={isSectionExpand}
       id={EventMenuTitles.BRACKETS}
     >
-      <HeadingLevelThree>
-        <span className={styles.blockHeading}>{EventMenuTitles.BRACKETS}</span>
-      </HeadingLevelThree>
-      <div className={styles.brackets}>
-        <Paper padding={20}>
-          <div className={styles.header}>
-            <HeadingLevelFour>
-              <span>Men's Spring Thaw (2020, 2021)</span>
-            </HeadingLevelFour>
-            <Button
-              icon={<FontAwesomeIcon icon={faNetworkWired} />}
-              label="Manage Bracket"
-              color="secondary"
-              variant="text"
-              onClick={onManageBrackets}
-            />
-          </div>
-          <div className={styles.tournamentName}>
-            <div className={styles.tnFirst}>
-              <div className={styles.sectionCellHor}>
-                <span>Teams:</span>
-                <p>24</p>
-              </div>
-            </div>
-            <div className={styles.tnSecond}>
-              <div className={styles.sectionCellHor}>
-                <span>Dates:</span>
-                <p>02/08/20 - 02/09/20</p>
-              </div>
-            </div>
-          </div>
-        </Paper>
-      </div>
+      <>
+        <HeadingLevelThree>
+          <span className={styles.blockHeading}>
+            {EventMenuTitles.BRACKETS}
+          </span>
+        </HeadingLevelThree>
+        <Button
+          btnStyles={{ float: 'right' }}
+          label="Create New Bracket Version"
+          color="primary"
+          variant="contained"
+          onClick={onCreateBracket}
+          disabled={!bracketCreationAllowed}
+        />
+      </>
+      {sortedScheduleByName.length !== 0 ? (
+        <ul className={styles.braketsList}>
+          {sortedScheduleByName.map(it => (
+            <BraketsItem schedule={it} eventId={eventId} key={it.schedule_id} />
+          ))}
+        </ul>
+      ) : (
+        <CardMessage
+          style={CARD_MESSAGE_STYLES}
+          type={CardMessageTypes.EMODJI_OBJECTS}
+        >
+          Please create the first braket by clicking on the button to
+          continue...
+        </CardMessage>
+      )}
     </SectionDropdown>
   );
 };
+export default Brackets;

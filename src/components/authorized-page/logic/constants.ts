@@ -12,13 +12,11 @@ export const MenuList = [
     icon: Icons.INSERT_DRIVE,
     link: Routes.LIBRARY_MANAGER,
     children: [
-      // 'Tournaments',
-      // 'Facilities',
+      MenuTitles.TOURNAMENTS,
+      MenuTitles.FACILITIES,
       MenuTitles.REGISTRATION,
-      // 'Divisions & Pools',
-      // 'Team Management',
-      // 'Scheduling',
-      // 'Messaging',
+      MenuTitles.DIVISIONS_AND_POOLS,
+      MenuTitles.SCHEDULING,
     ],
   },
   {
@@ -45,7 +43,7 @@ export const MenuList = [
     link: Routes.UTILITIES,
     children: [
       MenuTitles.USER_PROFILE,
-      MenuTitles.TOURNEY_IMPORT
+      MenuTitles.TOURNEY_IMPORT,
       // MenuTitles.EMAIL_SETUP
     ],
   },

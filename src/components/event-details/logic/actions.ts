@@ -2,6 +2,7 @@ import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
 import { Storage } from 'aws-amplify';
 // import uuidv4 from 'uuid/v4';
+import * as Yup from 'yup';
 
 import {
   EVENT_DETAILS_FETCH_START,
@@ -12,7 +13,7 @@ import {
 
 import api from 'api/api';
 import { eventDetailsSchema } from 'validations';
-import { EventDetailsDTO, IIconFile } from './model';
+import { IIconFile } from './model';
 import history from 'browserhistory';
 import { Toasts } from 'components/common';
 import {
@@ -22,6 +23,8 @@ import {
   IRegistration,
   IPool,
   IField,
+  BindingAction,
+  IEventDetails,
 } from 'common/models';
 
 export const eventDetailsFetchStart = () => ({
@@ -29,7 +32,7 @@ export const eventDetailsFetchStart = () => ({
 });
 
 export const eventDetailsFetchSuccess = (
-  payload: EventDetailsDTO[]
+  payload: IEventDetails[]
 ): EventDetailsAction => ({
   type: EVENT_DETAILS_FETCH_SUCCESS,
   payload,
@@ -61,7 +64,7 @@ export const saveEventDetails: ActionCreator<ThunkAction<
   {},
   null,
   EventDetailsAction
->> = (eventDetails: EventDetailsDTO) => async (dispatch: Dispatch) => {
+>> = (eventDetails: IEventDetails) => async (dispatch: Dispatch) => {
   try {
     await eventDetailsSchema.validate(eventDetails);
 
@@ -87,9 +90,17 @@ export const createEvent: ActionCreator<ThunkAction<
   {},
   null,
   EventDetailsAction
->> = (eventDetails: EventDetailsDTO) => async (dispatch: Dispatch) => {
+>> = (eventDetails: IEventDetails) => async (dispatch: Dispatch) => {
   try {
-    await eventDetailsSchema.validate(eventDetails);
+    const allEvents = await api.get('/events');
+
+    await Yup.array()
+      .of(eventDetailsSchema)
+      .unique(
+        e => e.event_name,
+        'You already have an event with the same name. Event must have a unique name.'
+      )
+      .validate([...allEvents, eventDetails]);
 
     const response = await api.post('/events', eventDetails);
 
@@ -176,4 +187,43 @@ export const deleteEvent: ActionCreator<ThunkAction<
 
   Toasts.successToast('Event is successfully deleted');
   history.push('/');
+};
+
+export const createEvents: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  EventDetailsAction
+>> = (events: IEventDetails[], cb: BindingAction) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    const allEvents = await api.get('/events');
+
+    for (const event of events) {
+      await Yup.array()
+        .of(eventDetailsSchema)
+        .unique(
+          e => e.event_name,
+          'You already have an event with the same name. Event must have a unique name.'
+        )
+        .validate([...allEvents, event]);
+    }
+
+    for (const event of events) {
+      await api.post('/events', event);
+    }
+    const lastEvent = events[events.length - 1];
+    const successMsg = `Events are successfully created (${events.length})`;
+    Toasts.successToast(successMsg);
+    cb();
+    history.replace(`/event/event-details/${lastEvent.event_id}`);
+
+    dispatch<any>(getEventDetails(lastEvent.event_id));
+  } catch (err) {
+    const e = err.value[err.value.length - 1];
+    const index = events.findIndex(event => event.event_id === e.event_id);
+    const errMessage = `Record ${index + 1}: ${err.message}`;
+    return Toasts.errorToast(errMessage);
+  }
 };

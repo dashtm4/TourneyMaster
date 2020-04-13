@@ -1,25 +1,32 @@
 import React from 'react';
+import moment from 'moment';
+import { formatTimeSlot } from 'helpers';
+import { ISchedulesGameWithNames } from 'common/models';
 import styles from './styles.module.scss';
 
-const FieldItem = () => (
+interface Props {
+  game: ISchedulesGameWithNames;
+}
+
+const FieldItem = ({ game }: Props) => (
   <li className={styles.fieldItem}>
     <p className={styles.fieldDates}>
-      <span>Field 1</span>
-      <time>02/08/20</time>
-      <time>08:00 AM</time>
+      <span>{game.fieldName}</span>
+      <time dateTime={game.gameDate}>{moment(game.gameDate).format('L')}</time>
+      <time dateTime={game.startTime}>{formatTimeSlot(game.startTime)}</time>
     </p>
     <table className={styles.fieldTable}>
       <tbody>
         <tr>
-          <td className={styles.fieldTeamTitle}>Big 4 HHH</td>
+          <td className={styles.fieldTeamTitle}>{game.awayTeamName}</td>
           <td>
-            <i>0</i>
+            <i>{game.awayTeamScore}</i>
           </td>
         </tr>
         <tr>
-          <td className={styles.fieldTeamTitle}>LaxWorld Club </td>
+          <td className={styles.fieldTeamTitle}>{game.homeTeamName}</td>
           <td>
-            <i>0</i>
+            <i>{game.homeTeamScore}</i>
           </td>
         </tr>
       </tbody>

@@ -23,7 +23,7 @@ import {
 } from 'helpers';
 
 import { EventMenuTitles, Icons } from 'common/enums';
-import { IConfigurableSchedule } from 'common/models';
+import { IConfigurableSchedule, IEventDetails } from 'common/models';
 import { BindingAction } from 'common/models';
 import { ArchitectFormFields, gameStartOnOptions } from '../types';
 import moment from 'moment';
@@ -37,12 +37,20 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface IProps {
   schedule: IConfigurableSchedule;
+  event?: IEventDetails | null;
   onChange: (name: string, value: any) => void;
   onViewEventMatrix: BindingAction;
+  isSectionExpand: boolean;
 }
 
-export default (props: IProps) => {
-  const { schedule, onChange, onViewEventMatrix } = props;
+const TourneyArchitect = (props: IProps) => {
+  const {
+    schedule,
+    event,
+    isSectionExpand,
+    onChange,
+    onViewEventMatrix,
+  } = props;
 
   const timeValues = getTimeValuesFromSchedule(schedule);
   const scheduleTimeSlots = calculateTimeSlots(timeValues);
@@ -77,7 +85,7 @@ export default (props: IProps) => {
   return (
     <SectionDropdown
       type="section"
-      isDefaultExpanded={true}
+      expanded={isSectionExpand}
       useBorder={true}
       id={EventMenuTitles.TOURNEY_ARCHITECT}
     >
@@ -120,7 +128,7 @@ export default (props: IProps) => {
             align="center"
           />
           <fieldset className={styles.numberGames}>
-            <legend>Min/Max # of Games</legend>
+            <legend>Min/Max # of Games/Day</legend>
             <div className={styles.numberGamesWrapper}>
               <Input
                 onChange={localChange}
@@ -177,7 +185,7 @@ export default (props: IProps) => {
             label="Time Between Periods"
           />
         </div>
-        <div className={styles.taThird}>
+        <div className={styles.results}>
           {renderSectionCell(
             'Game Runtime',
             `${schedule.periods_per_game *
@@ -188,13 +196,21 @@ export default (props: IProps) => {
                 'minutes'
               )} Minutes`
           )}
-          {renderSectionCell('Total Game Slots', `${totalGameSlots}`)}
+          {renderSectionCell('Game Slots/Day', `${totalGameSlots}`)}
           {renderSectionCell(
             'AVG # Games/Team',
             `${((totalGameSlots * 2) / schedule.num_teams).toFixed(1)}`
           )}
+          {event &&
+            renderSectionCell(
+              'Bracket Games Needed',
+              `${(Number(event.num_teams_bracket) - 1) *
+                schedule.num_divisions}`
+            )}
+        </div>
+        <div className={styles.resultsBtns}>
           <Button
-            label="View Matrix"
+            label="View Time Slots"
             icon={<FontAwesomeIcon icon={faEye} />}
             color="secondary"
             variant="text"
@@ -210,3 +226,5 @@ export default (props: IProps) => {
     </SectionDropdown>
   );
 };
+
+export default TourneyArchitect;

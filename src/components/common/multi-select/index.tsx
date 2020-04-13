@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useState, useEffect } from 'react';
 import { List, ListRowProps } from 'react-virtualized';
 import useOnclickOutside from 'react-cool-onclickoutside';
@@ -44,7 +45,7 @@ const MultiSelect = (props: IProps) => {
 
   useEffect(() => {
     const newOptions = options.filter(item =>
-      item.label.toLowerCase().includes(inputValue)
+      searchIncludes(item.label, inputValue)
     );
     setFilteredOptions(newOptions);
   }, [inputValue, options]);
@@ -71,6 +72,9 @@ const MultiSelect = (props: IProps) => {
 
   const updateInputValue = (e: any) => setInputValue(e.target.value);
 
+  const searchIncludes = (label: string, search: string) =>
+    label?.toLowerCase().includes(search?.toLowerCase());
+
   const onSelect = (event: any, checked: boolean) => {
     const name = event.target.name;
     const newOptions = options.map(item =>
@@ -83,7 +87,7 @@ const MultiSelect = (props: IProps) => {
   const onSetAll = () => {
     const newOptions = options.map(item => ({
       ...item,
-      checked: item.label.toLowerCase().includes(inputValue) && !all,
+      checked: searchIncludes(item.label, inputValue) && !all,
     }));
 
     setOptions(newOptions);
@@ -96,7 +100,7 @@ const MultiSelect = (props: IProps) => {
 
     const newOptions = options.map(item => ({
       ...item,
-      checked: item.label.toLowerCase().includes(inputValue),
+      checked: Boolean(searchIncludes(item.label, inputValue) && item.checked),
     }));
 
     if (filteredOptions.length) {
@@ -111,6 +115,19 @@ const MultiSelect = (props: IProps) => {
   const onKeyDown = (e: any) => {
     if (e.keyCode !== 13) return;
     onButtonClick(e);
+  };
+
+  const onClear = (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const newOptions = options.map(item => ({
+      ...item,
+      checked: true,
+    }));
+
+    setOptions(newOptions);
+    setFilteredOptions(newOptions);
   };
 
   const renderAllOption = ({ key, style }: ListRowProps) => (
@@ -154,6 +171,15 @@ const MultiSelect = (props: IProps) => {
 
   const rowCount = (inputValue ? filteredOptions?.length : options?.length) + 1;
 
+  const inputPlaceholder = options.every(item => item.checked)
+    ? 'All'
+    : options.some(item => item.checked)
+    ? options
+        .filter(item => item.checked)
+        .map(item => item.label)
+        .join(', ')
+    : placeholder;
+
   return (
     <div
       ref={ref}
@@ -165,11 +191,14 @@ const MultiSelect = (props: IProps) => {
         <Input
           label={label}
           value={inputValue}
-          placeholder={placeholder}
+          placeholder={inputPlaceholder}
           width="170px"
           onChange={updateInputValue}
         />
         <div className={styles.iconWrapper}>
+          <div className={styles.cancelButton} onClick={onClear}>
+            {getIcon(Icons.CLEAR)}
+          </div>
           {getIcon(listOpen ? Icons.DROPUP : Icons.DROPDOWN)}
         </div>
       </div>

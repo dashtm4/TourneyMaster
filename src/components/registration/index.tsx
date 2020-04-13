@@ -3,7 +3,7 @@ import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Button from '../common/buttons/button';
 import SectionDropdown from '../common/section-dropdown';
 import styles from './styles.module.scss';
-import Paper from '../common/paper';
+import Navigation from './navigation';
 import PrimaryInformation from './primary-information';
 import TeamsAthletesInfo from './teams-athletes';
 import MainContact from './main-contact';
@@ -13,24 +13,31 @@ import {
   saveRegistration,
   getDivisions,
 } from './registration-edit/logic/actions';
+import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import RegistrationEdit from 'components/registration/registration-edit';
 import { IRegistration } from 'common/models/registration';
 import { BindingCbWithOne, BindingCbWithTwo, IDivision } from 'common/models';
-import { EventMenuRegistrationTitles } from 'common/enums';
+import {
+  EventMenuRegistrationTitles,
+  EntryPoints,
+  LibraryStates,
+  IRegistrationFields,
+} from 'common/enums';
 import { History } from 'history';
 import { Loader } from 'components/common';
+import { IEntity } from 'common/types';
 
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
   isEdit: boolean;
-  expanded: boolean[];
-  expandAll: boolean;
+  isSectionsExpand: boolean;
 }
 
 interface IRegistrationProps {
   getRegistration: BindingCbWithOne<string>;
   saveRegistration: BindingCbWithTwo<string | undefined, string>;
   getDivisions: BindingCbWithOne<string>;
+  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
   registration: IRegistration;
   divisions: IDivision[];
   match: any;
@@ -46,8 +53,7 @@ class RegistrationView extends React.Component<
   state = {
     registration: undefined,
     isEdit: false,
-    expanded: [true, true, true],
-    expandAll: false,
+    isSectionsExpand: true,
   };
 
   componentDidMount() {
@@ -85,21 +91,6 @@ class RegistrationView extends React.Component<
     this.setState({ isEdit: false });
   };
 
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
-  };
-
   static getDerivedStateFromProps(
     nextProps: IRegistrationProps,
     prevState: IRegistrationState
@@ -112,11 +103,31 @@ class RegistrationView extends React.Component<
     return null;
   }
 
+  onAddToLibraryManager = () => {
+    const { registration } = this.state;
+
+    if (
+      ((registration as unknown) as IRegistration)?.is_library_YN ===
+      LibraryStates.FALSE
+    ) {
+      this.onChange(IRegistrationFields.IS_LIBRARY_YN, LibraryStates.TRUE);
+    }
+
+    if (registration) {
+      this.props.addEntityToLibrary(registration!, EntryPoints.REGISTRATIONS);
+    }
+  };
+
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
+  };
+
   renderView = () => {
     const { registration } = this.props;
     if (this.state.isEdit) {
       return (
         <RegistrationEdit
+          previousRegistration={this.props.registration}
           registration={this.state.registration}
           onChange={this.onChange}
           onCancel={this.onCancelClick}
@@ -126,25 +137,22 @@ class RegistrationView extends React.Component<
     } else {
       return (
         <section className={styles.container}>
-          <Paper sticky={true}>
-            <div className={styles.mainMenu}>
-              <Button
-                label={registration ? 'Edit' : 'Add'}
-                variant="contained"
-                color="primary"
-                onClick={this.onRegistrationEdit}
-              />
-            </div>
-          </Paper>
+          <Navigation
+            registration={registration}
+            onRegistrationEdit={this.onRegistrationEdit}
+            onAddToLibraryManager={this.onAddToLibraryManager}
+          />
           <div className={styles.sectionContainer}>
             <div className={styles.heading}>
               <HeadingLevelTwo>Registration</HeadingLevelTwo>
               {registration && (
                 <Button
-                  label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                  label={
+                    this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+                  }
                   variant="text"
                   color="secondary"
-                  onClick={this.onToggleAll}
+                  onClick={this.toggleSectionCollapse}
                 />
               )}
             </div>
@@ -156,9 +164,7 @@ class RegistrationView extends React.Component<
                     id={EventMenuRegistrationTitles.PRIMARY_INFORMATION}
                     type="section"
                     panelDetailsType="flat"
-                    isDefaultExpanded={true}
-                    expanded={this.state.expanded[0]}
-                    onToggle={() => this.onToggleOne(0)}
+                    expanded={this.state.isSectionsExpand}
                   >
                     <span>Primary Information</span>
                     <PrimaryInformation
@@ -176,9 +182,7 @@ class RegistrationView extends React.Component<
                     id={EventMenuRegistrationTitles.TEAMS_AND_ATHLETES}
                     type="section"
                     panelDetailsType="flat"
-                    isDefaultExpanded={true}
-                    expanded={this.state.expanded[1]}
-                    onToggle={() => this.onToggleOne(1)}
+                    expanded={this.state.isSectionsExpand}
                   >
                     <span>Teams & Athletes</span>
                     <TeamsAthletesInfo data={registration} />
@@ -189,9 +193,7 @@ class RegistrationView extends React.Component<
                     id={EventMenuRegistrationTitles.MAIN_CONTACT}
                     type="section"
                     panelDetailsType="flat"
-                    isDefaultExpanded={true}
-                    expanded={this.state.expanded[2]}
-                    onToggle={() => this.onToggleOne(2)}
+                    expanded={this.state.isSectionsExpand}
                   >
                     <span>Main Contact</span>
                     <MainContact data={registration} />
@@ -234,6 +236,7 @@ const mapDispatchToProps = {
   getRegistration,
   saveRegistration,
   getDivisions,
+  addEntityToLibrary,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(RegistrationView);

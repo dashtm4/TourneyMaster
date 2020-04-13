@@ -12,13 +12,14 @@ import {
   deleteDivision,
   getRegistration,
 } from '../logic/actions';
+import { loadFacilities } from 'components/facilities/logic/actions';
 import {
   BindingCbWithOne,
   BindingCbWithTwo,
   BindingCbWithThree,
 } from 'common/models/callback';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { IDivision, ITeam, IPool } from 'common/models';
+import { IDivision, ITeam, IPool, IFacility } from 'common/models';
 import { IRegistration } from 'common/models/registration';
 import { PopupExposure } from 'components/common';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
@@ -42,11 +43,13 @@ interface IDivisionProps {
   match: any;
   divisions: IDivision[];
   registration: IRegistration;
+  facilities: IFacility[];
   saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
   getDivision: BindingCbWithOne<string>;
   updateDivision: BindingCbWithOne<Partial<IDivision>>;
   deleteDivision: BindingCbWithThree<string, IPool[], ITeam[]>;
   getRegistration: BindingCbWithOne<string>;
+  loadFacilities: BindingCbWithOne<string>;
 }
 
 class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
@@ -67,6 +70,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
       this.setState({ divisions: [division[0]] });
     }
     this.props.getRegistration(this.eventId);
+    this.props.loadFacilities(this.eventId);
   }
 
   onChange = (name: string, value: string | number, index: number) => {
@@ -79,8 +83,25 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     }));
   };
 
+  checkIfChangesAreMade = () => {
+    if (this.divisionId) {
+      const oldDiv = this.props.divisions.find(
+        division => division.division_id === this.divisionId
+      );
+      return this.state.divisions[0] !== oldDiv;
+    } else {
+      return this.state.divisions.some(
+        division => Object.entries(division).length !== 0
+      );
+    }
+  };
+
   onCancel = () => {
-    this.setState({ isModalConfirmOpen: true });
+    if (this.checkIfChangesAreMade()) {
+      this.setState({ isModalConfirmOpen: true });
+    } else {
+      this.onExit();
+    }
   };
 
   onSave = () => {
@@ -152,13 +173,21 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     ) {
       this.setState({
         defaultDivision: {
-          entry_fee: this.props.registration.entry_fee,
-          max_num_teams: this.props.registration.max_teams_per_division,
+          ...(this.props.registration.entry_fee && {
+            entry_fee: this.props.registration.entry_fee,
+          }),
+          ...(this.props.registration.max_teams_per_division && {
+            max_num_teams: this.props.registration.max_teams_per_division,
+          }),
         },
         divisions: [
           {
-            entry_fee: this.props.registration.entry_fee,
-            max_num_teams: this.props.registration.max_teams_per_division,
+            ...(this.props.registration.entry_fee && {
+              entry_fee: this.props.registration.entry_fee,
+            }),
+            ...(this.props.registration.max_teams_per_division && {
+              max_num_teams: this.props.registration.max_teams_per_division,
+            }),
           },
         ],
       });
@@ -166,17 +195,16 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   }
 
   render() {
-    const { short_name }: Partial<IDivision> = this.state.divisions[0] || '';
+    const { long_name }: Partial<IDivision> = this.state.divisions[0] || '';
     const deleteMessage = `You are about to delete this division and this cannot be undone.
-    Deleting a division will also delete all pools (${this.props.location.state?.pools.length}) inside the division.
-    Teams (${this.props.location.state?.teams.length}) inside the division will be moved to unassigned.
+    Deleting a division will also delete all pools (${this.props.location.state?.pools.length}) and teams (${this.props.location.state?.teams.length}) inside the division.
     Please, enter the name of the division to continue.`;
 
     return (
       <section className={styles.container}>
         <Paper sticky={true}>
           <div className={styles.mainMenu}>
-            <div>
+            <div className={styles.btnsWrapper}>
               <Button
                 label="Cancel"
                 variant="text"
@@ -200,13 +228,14 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
             onChange={this.onChange}
             division={this.state.divisions[index] || {}}
             registration={this.props.registration}
+            facilities={this.props.facilities}
           />
         ))}
         {this.renderButton()}
         <DeletePopupConfrim
           type={'division'}
           message={deleteMessage}
-          deleteTitle={short_name || ''}
+          deleteTitle={long_name || ''}
           isOpen={this.state.isModalOpen}
           onClose={this.onModalClose}
           onDeleteClick={this.onDeleteDivision}
@@ -224,11 +253,13 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
 
 interface IState {
   divisions: { data: IDivision[]; registration: IRegistration };
+  facilities: { facilities: IFacility[] };
 }
 
 const mapStateToProps = (state: IState) => ({
   divisions: state.divisions.data,
   registration: state.divisions.registration,
+  facilities: state.facilities.facilities,
 });
 
 const mapDispatchToProps = {
@@ -236,6 +267,7 @@ const mapDispatchToProps = {
   updateDivision,
   deleteDivision,
   getRegistration,
+  loadFacilities,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddDivision);

@@ -1,23 +1,20 @@
 .form {
   display: flex;
   align-items: center;
+  padding-left: 4px;
 }
 
 .divisionsList {
   display: flex;
-
   margin: 0;
   padding: 7px 0 0;
-
   list-style: none;
 }
 
 .divisionItem {
   display: flex;
   align-items: center;
-
   margin-right: 6px;
-
   color: #6a6a6a;
   font-size: 16px;
   line-height: 22px;
@@ -30,9 +27,7 @@
 .divisionColor {
   display: block;
   margin-right: 6px;
-
   height: 16px;
   width: 16px;
-
   border-radius: 50%;
 }

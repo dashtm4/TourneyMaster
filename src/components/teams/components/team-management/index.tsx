@@ -10,14 +10,7 @@ interface Props {
   divisions: IDivision[];
   pools: IPool[];
   teams: ITeam[];
-  isEdit: boolean;
-  changePool: (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => void;
   loadPools: (divisionId: string) => void;
-  onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
     divisionName: string,
@@ -29,31 +22,14 @@ const TeamManagement = ({
   divisions,
   teams,
   pools,
-  isEdit,
-  changePool,
   loadPools,
-  onDeletePopupOpen,
   onEditPopupOpen,
 }: Props) => {
-  const [expanded, setExpanded] = useState([
-    ...divisions.map(_division => true),
-    true,
-  ]);
-  const [expandAll, setExpandAll] = useState(false);
+  const [isSectionsExpand, toggleSectionCollapse] = useState<boolean>(true);
 
-  const onToggleAll = (e: React.MouseEvent) => {
+  const onToggleSectionCollapse = (e: React.MouseEvent) => {
     e.stopPropagation();
-
-    setExpanded(expanded.map(_e => expandAll));
-    setExpandAll(!expandAll);
-  };
-
-  const onToggleOne = (indexPanel: number) => {
-    setExpanded(
-      expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      )
-    );
+    toggleSectionCollapse(!isSectionsExpand);
   };
 
   return (
@@ -68,47 +44,28 @@ const TeamManagement = ({
           {divisions.length ? (
             <div className={styles.buttonContainer}>
               <Button
-                label={expandAll ? 'Expand All' : 'Collapse All'}
+                label={isSectionsExpand ? 'Collapse All' : 'Expand All'}
                 variant="text"
                 color="secondary"
-                onClick={onToggleAll}
+                onClick={onToggleSectionCollapse}
               />
             </div>
           ) : null}
         </div>
         <ul className={styles.divisionList}>
-          {divisions.map((division, index) => (
+          {divisions.map(division => (
             <DivisionItem
               division={division}
               pools={pools.filter(
                 pool => pool.division_id === division.division_id
               )}
               teams={teams}
-              isEdit={isEdit}
-              isUnassigned={false}
-              changePool={changePool}
               loadPools={loadPools}
-              onDeletePopupOpen={onDeletePopupOpen}
               onEditPopupOpen={onEditPopupOpen}
               key={division.division_id}
-              expanded={expanded[index]}
-              index={index}
-              onToggleOne={onToggleOne}
+              isSectionExpand={isSectionsExpand}
             />
           ))}
-          <DivisionItem
-            teams={teams}
-            pools={[]}
-            isEdit={isEdit}
-            isUnassigned={true}
-            changePool={changePool}
-            loadPools={loadPools}
-            onDeletePopupOpen={onDeletePopupOpen}
-            onEditPopupOpen={onEditPopupOpen}
-            expanded={expanded[expanded.length - 1]}
-            index={expanded.length - 1}
-            onToggleOne={onToggleOne}
-          />
         </ul>
       </SectionDropdown>
     </li>

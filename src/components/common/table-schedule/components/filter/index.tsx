@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button, CardMessage } from 'components/common';
-import { CardMessageTypes } from 'components/common/card-message/types';
+import { Button } from 'components/common';
 import { ButtonTypes } from 'common/enums';
 import { DayTypes, IScheduleFilter } from '../../types';
 import styles from './styles.module.scss';
@@ -8,11 +7,8 @@ import MultiSelect, {
   IMultiSelectOption,
 } from 'components/common/multi-select';
 
-const CARD_MESSAGE_STYLES = {
-  maxWidth: '250px',
-};
-
 interface IProps {
+  days: number;
   filterValues: IScheduleFilter;
   onChangeFilterValue: (values: IScheduleFilter) => void;
 }
@@ -41,26 +37,30 @@ const ScoringFilter = (props: IProps) => {
     });
   };
 
+  const days = [...Array(props.days)].map((_v, i) => String(i + 1));
+
   return (
     <section>
       <h3 className="visually-hidden">Scoring filters</h3>
       <form className={styles.scoringForm}>
-        <div className={styles.buttonsWrapper}>
-          {Object.keys([]).map(day => (
-            <Button
-              onClick={() => onDaySelect(day)}
-              label={DayTypes[day]}
-              variant="contained"
-              color="primary"
-              type={
-                filterValues.selectedDay === DayTypes[day]
-                  ? ButtonTypes.SQUARED
-                  : ButtonTypes.SQUARED_OUTLINED
-              }
-              key={day}
-            />
-          ))}
-        </div>
+        {days?.length > 1 && (
+          <div className={styles.buttonsWrapper}>
+            {days.map(day => (
+              <Button
+                onClick={() => onDaySelect(day)}
+                label={DayTypes[day]}
+                variant="contained"
+                color="primary"
+                type={
+                  filterValues.selectedDay === DayTypes[day]
+                    ? ButtonTypes.SQUARED
+                    : ButtonTypes.SQUARED_OUTLINED
+                }
+                key={day}
+              />
+            ))}
+          </div>
+        )}
         <div className={styles.selectsContainer}>
           <fieldset className={styles.selectWrapper}>
             <legend className={styles.selectTitle}>Divisions</legend>
@@ -95,12 +95,6 @@ const ScoringFilter = (props: IProps) => {
             />
           </fieldset>
         </div>
-        <CardMessage
-          type={CardMessageTypes.EMODJI_OBJECTS}
-          style={CARD_MESSAGE_STYLES}
-        >
-          Drag, drop, and zoom to navigate the schedule
-        </CardMessage>
       </form>
     </section>
   );

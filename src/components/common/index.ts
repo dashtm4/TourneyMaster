@@ -21,10 +21,15 @@ import FileUpload from './file-upload';
 import ProgressBar from './progress-bar';
 import PopupExposure from './popup-exposure';
 import PopupConfirm from './popup-confirm';
-import SortTable from './sort-table';
 import MatrixTable from './matrix-table';
 import TableSchedule from './table-schedule';
 import DeletePopupConfrim from './delete-popup-confirm';
+import HazardList from './hazard-list';
+import Menu from './menu';
+import ScrollTopButton from './scroll-top-button';
+import PopupAddToLibrary from './popup-add-to-library';
+import CsvLoader from './csv-loader';
+import SelectMultiple from './select-multiple';
 import * as Toasts from './toastr/showToasts';
 
 export {
@@ -51,9 +56,14 @@ export {
   FileUpload,
   PopupExposure,
   PopupConfirm,
-  SortTable,
   ProgressBar,
   MatrixTable,
   TableSchedule,
   DeletePopupConfrim,
+  HazardList,
+  Menu,
+  ScrollTopButton,
+  PopupAddToLibrary,
+  CsvLoader,
+  SelectMultiple,
 };

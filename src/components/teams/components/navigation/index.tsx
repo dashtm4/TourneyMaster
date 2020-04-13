@@ -1,31 +1,24 @@
 import React from 'react';
-import Button from '../../../common/buttons/button';
-import { getIcon } from '../../../../helpers/get-icon.helper';
-import { Icons } from '../../../../common/enums/icons';
-import { BindingAction } from '../../../../common/models';
+import Button from 'components/common/buttons/button';
+import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 import { History } from 'history';
-
-const ICON_STYLES = {
-  marginRight: '5px',
-};
+import { ButtonVarian, ButtonColors } from 'common/enums';
 
 interface Props {
-  isEdit: boolean;
-  onEditClick: BindingAction;
   onSaveClick: BindingAction;
   onCancelClick: BindingAction;
   eventId: string | undefined;
   history: History;
+  onImportFromCsv: BindingAction;
 }
 
 const Navigation = ({
-  isEdit,
-  onEditClick,
   onSaveClick,
   onCancelClick,
   eventId,
   history,
+  onImportFromCsv,
 }: Props) => {
   const onCreateTeam = () => {
     const path = eventId
@@ -37,58 +30,32 @@ const Navigation = ({
 
   return (
     <div className={styles.navWrapper}>
-      <p>
+      <Button
+        onClick={onImportFromCsv}
+        variant={ButtonVarian.TEXT}
+        color={ButtonColors.SECONDARY}
+        label="Import from CSV"
+      />
+      <span className={styles.btnsWrapper}>
         <Button
-          icon={getIcon(Icons.GET_APP, ICON_STYLES)}
-          label="Load From Library"
-          variant="text"
-          color="secondary"
+          onClick={onCancelClick}
+          variant={ButtonVarian.TEXT}
+          color={ButtonColors.SECONDARY}
+          label="Cancel"
         />
         <Button
-          icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
-          label="Upload From File"
-          variant="text"
-          color="secondary"
+          onClick={onSaveClick}
+          variant={ButtonVarian.CONTAINED}
+          color={ButtonColors.PRIMARY}
+          label="Save"
         />
-      </p>
-      {isEdit ? (
-        <p>
-          <Button
-            onClick={onCancelClick}
-            label="Cancel"
-            variant="text"
-            color="secondary"
-          />
-          <span className={styles.btnWrapper}>
-            <Button
-              onClick={onSaveClick}
-              label="Save"
-              variant="contained"
-              color="primary"
-            />
-          </span>
-        </p>
-      ) : (
-        <p>
-          {false && (
-            <Button
-              onClick={onEditClick}
-              icon={getIcon(Icons.EDIT, ICON_STYLES)}
-              label="Arrange Teams"
-              variant="text"
-              color="secondary"
-            />
-          )}
-          <span className={styles.btnWrapper}>
-            <Button
-              label="Create Team"
-              variant="contained"
-              color="primary"
-              onClick={onCreateTeam}
-            />
-          </span>
-        </p>
-      )}
+        <Button
+          onClick={onCreateTeam}
+          variant={ButtonVarian.CONTAINED}
+          color={ButtonColors.PRIMARY}
+          label="Create Team"
+        />
+      </span>
     </div>
   );
 };

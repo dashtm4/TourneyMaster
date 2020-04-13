@@ -11,6 +11,7 @@ interface Props {
   onCanceClick: BindingAction;
   onYesClick: BindingAction;
   type?: string;
+  showYes?: boolean;
 }
 
 const PopupConfirm = ({
@@ -20,6 +21,7 @@ const PopupConfirm = ({
   onCanceClick,
   onYesClick,
   type,
+  showYes,
 }: Props) => (
   <Modal isOpen={isOpen} onClose={onClose}>
     <section className={styles.popupWrapper}>
@@ -41,12 +43,14 @@ const PopupConfirm = ({
             color="secondary"
           />
         </span>
-        <Button
-          onClick={onYesClick}
-          label="Yes"
-          variant="contained"
-          color="primary"
-        />
+        {showYes === false ? null : (
+          <Button
+            onClick={onYesClick}
+            label="Yes"
+            variant="contained"
+            color="primary"
+          />
+        )}
       </p>
     </section>
   </Modal>

@@ -2,7 +2,12 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
-import { loadDivisionsTeams, loadPools, saveTeams } from './logic/actions';
+import {
+  loadTeamsData,
+  loadPools,
+  saveTeams,
+  createTeamsCsv,
+} from './logic/actions';
 import Navigation from './components/navigation';
 import TeamManagement from './components/team-management';
 import {
@@ -12,10 +17,15 @@ import {
   Loader,
   PopupExposure,
 } from 'components/common';
-import { AppState } from './logic/reducer';
-import { IDivision, IPool, ITeam } from '../../common/models';
+import { IAppState } from 'reducers/root-reducer.types';
+import {
+  IDivision,
+  IPool,
+  ITeam,
+  ISchedulesGameWithNames,
+} from '../../common/models';
 import styles from './styles.module.scss';
-import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import CsvLoader from 'components/common/csv-loader';
 
 interface MatchParams {
   eventId?: string;
@@ -27,9 +37,11 @@ interface Props {
   divisions: IDivision[];
   pools: IPool[];
   teams: ITeam[];
-  loadDivisionsTeams: (eventId: string) => void;
+  games: ISchedulesGameWithNames[];
+  loadTeamsData: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
   saveTeams: (teams: ITeam[]) => void;
+  createTeamsCsv: (teams: ITeam[]) => void;
 }
 
 interface State {
@@ -37,10 +49,9 @@ interface State {
   configurableTeam: ITeam | null;
   currentDivision: string | null;
   currentPool: string | null;
-  isEdit: boolean;
   isEditPopupOpen: boolean;
-  isDeletePopupOpen: boolean;
   isConfirmModalOpen: boolean;
+  isCsvLoaderOpen: boolean;
 }
 
 class Teams extends React.Component<
@@ -55,50 +66,31 @@ class Teams extends React.Component<
       configurableTeam: null,
       currentDivision: null,
       currentPool: null,
-      isEdit: false,
       isEditPopupOpen: false,
-      isDeletePopupOpen: false,
       isConfirmModalOpen: false,
+      isCsvLoaderOpen: false,
     };
   }
 
   componentDidMount() {
-    const { loadDivisionsTeams } = this.props;
+    const { loadTeamsData } = this.props;
     const eventId = this.props.match.params.eventId;
 
     if (eventId) {
-      loadDivisionsTeams(eventId);
+      loadTeamsData(eventId);
     }
   }
 
   componentDidUpdate(PrevProps: Props) {
     const { isLoading, teams } = this.props;
 
-    if (PrevProps.isLoading !== isLoading) {
+    if (
+      PrevProps.isLoading !== isLoading ||
+      PrevProps.teams.length !== this.props.teams.length
+    ) {
       this.setState({ teams: teams });
     }
   }
-
-  changePool = (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => {
-    const changedTeam = {
-      ...team,
-      division_id: divisionId,
-      pool_id: poolId,
-      isChange: true,
-    };
-
-    this.setState(({ teams }) => ({
-      teams: teams.map(it =>
-        it.team_id === changedTeam.team_id ? changedTeam : it
-      ),
-    }));
-  };
-
-  onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
 
   onSaveClick = () => {
     const eventId = this.props.match.params.eventId;
@@ -108,17 +100,14 @@ class Teams extends React.Component<
     if (eventId) {
       saveTeams(teams);
     }
-    this.setState({ isConfirmModalOpen: false, isEdit: false });
+    this.setState({ isConfirmModalOpen: false });
   };
 
   onCancelClick = () => {
     const { teams } = this.props;
 
-    this.setState({ isEdit: false, teams, isConfirmModalOpen: false });
+    this.setState({ teams, isConfirmModalOpen: false });
   };
-
-  onDeletePopupOpen = (team: ITeam) =>
-    this.setState({ configurableTeam: team, isDeletePopupOpen: true });
 
   onDeleteTeam = (team: ITeam) => {
     this.setState(({ teams }) => ({
@@ -165,11 +154,18 @@ class Teams extends React.Component<
 
   onCloseModal = () =>
     this.setState({
-      isDeletePopupOpen: false,
       isEditPopupOpen: false,
       configurableTeam: null,
       currentDivision: null,
     });
+
+  onImportFromCsv = () => {
+    this.setState({ isCsvLoaderOpen: true });
+  };
+
+  onCsvLoaderClose = () => {
+    this.setState({ isCsvLoaderOpen: false });
+  };
 
   onConfirmModalClose = () => {
     this.setState({ isConfirmModalOpen: false });
@@ -180,20 +176,15 @@ class Teams extends React.Component<
   };
 
   render() {
-    const { isLoading, divisions, pools, loadPools } = this.props;
+    const { divisions, pools, games, isLoading, loadPools } = this.props;
 
     const {
       teams,
       configurableTeam,
       currentDivision,
       currentPool,
-      isEdit,
       isEditPopupOpen,
-      isDeletePopupOpen,
     } = this.state;
-
-    const deleteMessage = `You are about to delete this team and this cannot be undone.
-    Please, enter the name of the team to continue.`;
 
     if (isLoading) {
       return <Loader />;
@@ -203,86 +194,67 @@ class Teams extends React.Component<
       <>
         <section>
           <Navigation
-            isEdit={isEdit}
-            onEditClick={this.onEditClick}
             onSaveClick={this.onSaveClick}
             onCancelClick={this.onCancel}
             history={this.props.history}
             eventId={this.props.match.params.eventId}
+            onImportFromCsv={this.onImportFromCsv}
           />
           <div className={styles.headingWrapper}>
             <HeadingLevelTwo>Teams</HeadingLevelTwo>
           </div>
-          {false && (
-            <ul className={styles.teamsList}>
-              <TeamManagement
-                divisions={divisions}
-                pools={pools}
-                teams={teams.filter(it => !it.isDelete)}
-                isEdit={isEdit}
-                changePool={this.changePool}
-                loadPools={loadPools}
-                onDeletePopupOpen={this.onDeletePopupOpen}
-                onEditPopupOpen={this.onEditPopupOpen}
-              />
-            </ul>
-          )}
+          <ul className={styles.teamsList}>
+            <TeamManagement
+              divisions={divisions}
+              pools={pools}
+              teams={teams.filter(it => !it.isDelete)}
+              loadPools={loadPools}
+              onEditPopupOpen={this.onEditPopupOpen}
+            />
+          </ul>
         </section>
-        {false && (
-          <Modal
-            isOpen={isDeletePopupOpen || isEditPopupOpen}
-            onClose={this.onCloseModal}
-          >
-            <>
-              {isEditPopupOpen && (
-                <PopupTeamEdit
-                  team={configurableTeam}
-                  division={currentDivision}
-                  pool={currentPool}
-                  onChangeTeam={this.onChangeTeam}
-                  onSaveTeamClick={this.onSaveTeam}
-                  onDeleteTeamClick={this.onDeleteTeam}
-                  onCloseModal={this.onCloseModal}
-                />
-              )}
-              {isDeletePopupOpen && (
-                <DeletePopupConfrim
-                  type={'team'}
-                  message={deleteMessage}
-                  deleteTitle={configurableTeam?.long_name!}
-                  isOpen={isDeletePopupOpen}
-                  onClose={this.onCloseModal}
-                  onDeleteClick={() => this.onDeleteTeam(configurableTeam!)}
-                />
-              )}
-            </>
-          </Modal>
-        )}
-        {false && (
-          <PopupExposure
-            isOpen={this.state.isConfirmModalOpen}
-            onClose={this.onConfirmModalClose}
-            onExitClick={this.onCancelClick}
-            onSaveClick={this.onSaveClick}
+        <Modal isOpen={isEditPopupOpen} onClose={this.onCloseModal}>
+          <PopupTeamEdit
+            team={configurableTeam}
+            division={currentDivision}
+            pool={currentPool}
+            onChangeTeam={this.onChangeTeam}
+            onSaveTeamClick={this.onSaveTeam}
+            onDeleteTeamClick={this.onDeleteTeam}
+            onCloseModal={this.onCloseModal}
+            games={games}
           />
-        )}
+        </Modal>
+        <PopupExposure
+          isOpen={this.state.isConfirmModalOpen}
+          onClose={this.onConfirmModalClose}
+          onExitClick={this.onCancelClick}
+          onSaveClick={this.onSaveClick}
+        />
+        <CsvLoader
+          isOpen={this.state.isCsvLoaderOpen}
+          onClose={this.onCsvLoaderClose}
+          type="teams"
+          onCreate={this.props.createTeamsCsv}
+          eventId={this.props.match.params.eventId}
+        />
       </>
     );
   }
 }
 
-interface IRootState {
-  teams: AppState;
-}
-
 export default connect(
-  (state: IRootState) => ({
-    isLoading: state.teams.isLoading,
-    isLoaded: state.teams.isLoaded,
-    divisions: state.teams.divisions,
-    pools: state.teams.pools,
-    teams: state.teams.teams,
+  ({ teams }: IAppState) => ({
+    isLoading: teams.isLoading,
+    isLoaded: teams.isLoaded,
+    divisions: teams.divisions,
+    pools: teams.pools,
+    teams: teams.teams,
+    games: teams.games,
   }),
   (dispatch: Dispatch) =>
-    bindActionCreators({ loadDivisionsTeams, loadPools, saveTeams }, dispatch)
+    bindActionCreators(
+      { loadTeamsData, loadPools, saveTeams, createTeamsCsv },
+      dispatch
+    )
 )(Teams);

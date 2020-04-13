@@ -5,9 +5,19 @@ import {
   LOAD_SCORES_DATA_START,
   LOAD_SCORES_DATA_SUCCESS,
   LOAD_SCORES_DATA_FAILURE,
+  SAVE_GAME_SUCCESS,
+  SAVE_GAME_FAILURE,
 } from './action-types';
 import Api from 'api/api';
-import { IFacility, IEventDetails, ISchedule, IDivision } from 'common/models';
+import {
+  IFacility,
+  IEventDetails,
+  IDivision,
+  ISchedulesGame,
+  ISchedule,
+  ScheduleStatuses,
+} from 'common/models';
+import { Toasts } from 'components/common';
 
 const loadScoresData: ActionCreator<ThunkAction<
   void,
@@ -20,18 +30,11 @@ const loadScoresData: ActionCreator<ThunkAction<
       type: LOAD_SCORES_DATA_START,
     });
 
-    const MOCKED_SCHEDULE_ID = 'R6WH5SB0';
-
     const events = await Api.get(`/events?event_id=${eventId}`);
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
     const teams = await Api.get(`/teams?event_id=${eventId}`);
     const eventSummary = await Api.get(`/event_summary?event_id=${eventId}`);
-    const schedules = await Api.get(
-      `/schedules?schedule_id=${MOCKED_SCHEDULE_ID}`
-    );
-    const schedulesDetails = await Api.get(
-      `/schedules_details?schedule_id=${MOCKED_SCHEDULE_ID}`
-    );
+    const schedules = await Api.get(`/schedules?event_id=${eventId}`);
     const facilities = await Api.get(`/facilities?event_id=${eventId}`);
     const fields = (
       await Promise.all(
@@ -53,22 +56,26 @@ const loadScoresData: ActionCreator<ThunkAction<
       (it: IEventDetails) => it.event_id === eventId
     );
 
-    const currentSchedule = schedules.find(
-      (it: ISchedule) => it.schedule_id === MOCKED_SCHEDULE_ID
+    const activeSchedule = schedules.find(
+      (it: ISchedule) => it.schedule_status === ScheduleStatuses.PUBLISHED
+    );
+
+    const schedulesGames = await Api.get(
+      `/games?schedule_id=${activeSchedule.schedule_id}`
     );
 
     dispatch({
       type: LOAD_SCORES_DATA_SUCCESS,
       payload: {
         event: currentEvent,
-        schedule: currentSchedule,
+        schedule: activeSchedule || null,
         facilities,
         fields,
         divisions,
         teams,
         eventSummary,
-        schedulesDetails,
         pools,
+        schedulesGames,
       },
     });
   } catch {
@@ -78,4 +85,37 @@ const loadScoresData: ActionCreator<ThunkAction<
   }
 };
 
-export { loadScoresData };
+const saveGames: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  RecordScoresAction
+>> = (games: ISchedulesGame[]) => async (dispatch: Dispatch) => {
+  try {
+    const gamesResponses = await Promise.all(
+      games.map((it: ISchedulesGame) =>
+        Api.put(`/games?game_id=${it.game_id}`, it)
+      )
+    );
+
+    const gamesResponseSuccess = gamesResponses.every(item => item);
+
+    if (!gamesResponseSuccess) {
+      throw Error('Something happened during the saving process');
+    }
+
+    dispatch({
+      type: SAVE_GAME_SUCCESS,
+    });
+
+    Toasts.successToast('Schedules data successfully saved and published!');
+  } catch (err) {
+    Toasts.successToast(err);
+
+    dispatch({
+      type: SAVE_GAME_FAILURE,
+    });
+  }
+};
+
+export { loadScoresData, saveGames };

@@ -8,6 +8,7 @@ export const EventMenu = [
     children: [
       EventMenuTitles.PRIMARY_INFORMATION,
       EventMenuTitles.EVENT_STRUCTURE,
+      EventMenuTitles.RANKINGS,
       EventMenuTitles.PLAYOFFS,
       EventMenuTitles.MEDIA_ASSETS,
     ],
@@ -67,6 +68,7 @@ export const EventMenu = [
     icon: Icons.SCORING,
     children: [],
     isAllowEdit: false,
+    isCompleted: false,
   },
   {
     title: EventMenuTitles.REPORTING,

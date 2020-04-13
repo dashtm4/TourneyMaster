@@ -4,7 +4,12 @@
 .mainMenu {
   width: 100%;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  .btnsWraper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
 }
 
 .sectionContainer {
@@ -51,15 +56,16 @@
     color: #878787;
   }
 }
-.buttonContainer {
+
+.loadBtsWrapper {
   display: flex;
-  justify-content: flex-end;
 }
 
-.btnWrapper {
-  display: inline-block;
+.libraryBtn {
+  display: flex;
+  align-items: center;
 
-  margin-left: 15px;
+  padding: 0 8px;
 
-  vertical-align: middle;
+  color: #00a3ea;
 }

@@ -10,9 +10,9 @@ import {
 } from './logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
-import Menu from 'components/common/menu';
+import { Loader, Menu, ScrollTopButton } from 'components/common';
 import Facilities from 'components/facilities';
-import Sсoring from 'components/scoring';
+import Scoring from 'components/scoring';
 import RecordScores from 'components/scoring/pages/record-scores';
 import EventDetails from 'components/event-details';
 import Registration from 'components/registration';
@@ -22,19 +22,29 @@ import AddDivision from 'components/divisions-and-pools/add-division';
 import Scheduling from 'components/scheduling';
 import Teams from 'components/teams';
 import CreateTeam from 'components/teams/components/create-team';
-import { IMenuItem, BindingAction, ITournamentData } from 'common/models';
-import {
-  Routes,
-  RequiredMenuKeys,
-  EventMenuTitles,
-  EventStatuses,
-} from 'common/enums';
-import { Loader } from 'components/common';
-import styles from '../styles.module.scss';
 import Footer from 'components/footer';
 import Schedules from 'components/schedules';
-import ScrollTopButton from 'components/common/scroll-top-button';
 import Reporting from 'components/reporting';
+import Playoffs from 'components/playoffs';
+import {
+  IMenuItem,
+  BindingAction,
+  ITournamentData,
+  ICalendarEvent,
+} from 'common/models';
+import { Routes, EventMenuTitles, EventStatuses } from 'common/enums';
+import { getIncompleteMenuItems } from '../helpers';
+import styles from '../styles.module.scss';
+import { closeFullscreen, openFullscreen } from 'helpers';
+import {
+  filterCalendarEvents,
+  checkIfRemind,
+} from 'components/calendar/logic/helper';
+
+import {
+  getCalendarEvents,
+  updateCalendarEvent,
+} from 'components/calendar/logic/actions';
 
 interface MatchParams {
   eventId?: string;
@@ -48,6 +58,9 @@ interface Props {
   loadAuthPageData: (eventId: string) => void;
   clearAuthPageData: BindingAction;
   changeTournamentStatus: (status: EventStatuses) => void;
+  getCalendarEvents: BindingAction;
+  calendarEvents: ICalendarEvent[] | null | undefined;
+  updateCalendarEvent: BindingAction;
 }
 
 export const EmptyPage: React.FC = () => {
@@ -62,28 +75,67 @@ const AuthorizedPageEvent = ({
   loadAuthPageData,
   clearAuthPageData,
   changeTournamentStatus,
+  getCalendarEvents,
+  calendarEvents,
+  updateCalendarEvent,
 }: Props & RouteComponentProps<MatchParams>) => {
+  const [isFullScreen, toggleFullScreen] = React.useState<boolean>(false);
+  const onToggleFullScreen = () => {
+    toggleFullScreen(!isFullScreen);
+
+    isFullScreen ? closeFullscreen() : openFullscreen(document.documentElement);
+  };
   const eventId = match.params.eventId;
   const { event } = tournamentData;
+
+  const onFullScreen = () => {
+    if (!document.fullscreen) {
+      toggleFullScreen(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (calendarEvents) {
+      const filteredCalendarEvents = filterCalendarEvents(calendarEvents);
+      const interval = setInterval(() => {
+        checkIfRemind(filteredCalendarEvents, updateCalendarEvent);
+      }, 1000 * 60);
+      return () => clearInterval(interval);
+    }
+  });
+
   React.useEffect(() => {
     if (eventId) {
       loadAuthPageData(eventId);
+      getCalendarEvents();
     }
 
-    return () => {
-      clearAuthPageData();
-    };
+    return () => clearAuthPageData();
   }, [eventId]);
+
+  React.useEffect(() => {
+    isFullScreen
+      ? window.addEventListener('fullscreenchange', onFullScreen)
+      : window.removeEventListener('fullscreenchange', onFullScreen);
+
+    return () => window.removeEventListener('fullscreenchange', onFullScreen);
+  }, [isFullScreen]);
+
+  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
+  const schedulingIgnoreList = [
+    EventMenuTitles.SCHEDULING,
+    EventMenuTitles.SCORING,
+  ];
+  const scoringIgnoreList = [EventMenuTitles.SCORING];
+  const reportingIgnoreList = [EventMenuTitles.REPORTING];
 
   if (eventId && !isLoaded) {
     return <Loader />;
   }
 
-  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES];
-
   return (
     <div className={styles.container}>
-      <Header />
+      {!isFullScreen && <Header />}
       <div className={styles.page}>
         <Menu
           list={menuList}
@@ -94,7 +146,11 @@ const AuthorizedPageEvent = ({
           eventName={event?.event_name || ''}
           changeTournamentStatus={changeTournamentStatus}
         />
-        <main className={styles.content}>
+        <main
+          className={`${styles.content} ${
+            isFullScreen ? styles.contentFullScreen : ''
+          }`}
+        >
           <Switch>
             <Route path={Routes.EVENT_DETAILS_ID} component={EventDetails} />
             <Route path={Routes.FACILITIES_ID} component={Facilities} />
@@ -108,45 +164,89 @@ const AuthorizedPageEvent = ({
               render={props => (
                 <Scheduling
                   {...props}
-                  incompleteMenuItems={menuList.filter(
-                    it =>
-                      it.hasOwnProperty(RequiredMenuKeys.IS_COMPLETED) &&
-                      !it.isCompleted &&
-                      it.title !== EventMenuTitles.SCHEDULING
+                  incompleteMenuItems={getIncompleteMenuItems(
+                    menuList,
+                    schedulingIgnoreList
                   )}
                 />
               )}
             />
-            <Route path={Routes.SCHEDULES_ID} component={Schedules} />
+            <Route
+              path={Routes.SCHEDULES_ID}
+              render={props => (
+                <Schedules
+                  {...props}
+                  isFullScreen={isFullScreen}
+                  onToggleFullScreen={onToggleFullScreen}
+                />
+              )}
+            />
+            <Route path={Routes.PLAYOFFS_ID} component={Playoffs} />
             <Route path={Routes.TEAMS_ID} component={Teams} />
-            <Route path={Routes.SCORING_ID} component={Sсoring} />
-            <Route path={Routes.REPORTING_ID} component={Reporting} />
-
-            <Route path={Routes.RECORD_SCORES_ID} component={RecordScores} />
+            <Route
+              path={Routes.SCORING_ID}
+              render={props => (
+                <Scoring
+                  {...props}
+                  incompleteMenuItems={getIncompleteMenuItems(
+                    menuList,
+                    scoringIgnoreList
+                  )}
+                />
+              )}
+            />
+            <Route
+              path={Routes.REPORTING_ID}
+              render={props => (
+                <Reporting
+                  {...props}
+                  incompleteMenuItems={getIncompleteMenuItems(
+                    menuList,
+                    reportingIgnoreList
+                  )}
+                />
+              )}
+            />
+            <Route
+              path={Routes.RECORD_SCORES_ID}
+              render={props => (
+                <RecordScores
+                  {...props}
+                  isFullScreen={isFullScreen}
+                  onToggleFullScreen={onToggleFullScreen}
+                />
+              )}
+            />
             <Route path={Routes.ADD_DIVISION} component={AddDivision} />
             <Route path={Routes.EDIT_DIVISION} component={AddDivision} />
             <Route path={Routes.CREATE_TEAM} component={CreateTeam} />
-
             <Route path={Routes.DEFAULT} component={EventDetails} />
           </Switch>
           <ScrollTopButton />
         </main>
       </div>
-      <Footer />
+      {!isFullScreen && <Footer />}
     </div>
   );
 };
 
 export default connect(
-  ({ pageEvent }: IAppState) => ({
+  ({ pageEvent, calendar }: IAppState) => ({
     tournamentData: pageEvent.tournamentData,
     isLoading: pageEvent.isLoading,
     isLoaded: pageEvent.isLoaded,
     menuList: pageEvent.menuList,
+    calendarEvents: calendar.events,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadAuthPageData, clearAuthPageData, changeTournamentStatus },
+      {
+        loadAuthPageData,
+        clearAuthPageData,
+        changeTournamentStatus,
+        getCalendarEvents,
+        updateCalendarEvent,
+      },
       dispatch
     )
 )(AuthorizedPageEvent);

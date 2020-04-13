@@ -23,6 +23,7 @@ enum AcceptFileTypes {
   PNG = '.png',
   SVG = '.svg',
   PDF = '.pdf',
+  CSV = '.csv',
 }
 
 interface IProps {
@@ -32,6 +33,8 @@ interface IProps {
   acceptTypes: AcceptFileTypes[];
   onFileRemove?: (files: File[]) => void;
   logo?: string;
+  btnLabel?: string;
+  withoutRemoveBtn?: boolean;
 }
 
 const FileUpload: React.FC<IProps> = props => {
@@ -42,6 +45,8 @@ const FileUpload: React.FC<IProps> = props => {
     onUpload,
     onFileRemove,
     logo,
+    btnLabel,
+    withoutRemoveBtn,
   } = props;
   const [files, setFiles] = useState<File[] | null>(incomingFiles || null);
 
@@ -68,18 +73,26 @@ const FileUpload: React.FC<IProps> = props => {
     return files ? files.map(file => file.name).join(', ') : '';
   };
 
-  const renderFiles = () => (
-    <div className={styles.uploadedWrapper}>
-      <span className={styles.uploadedWrapperText}>Uploaded File: </span>
-      {showFiles()}
-      <Button
-        label="Remove"
-        variant="text"
-        color="secondary"
-        onClick={removeFiles}
-      />
-    </div>
-  );
+  const renderFiles = () => {
+    if (withoutRemoveBtn) {
+      return (
+        <div className={styles.withoutRemoveBtnUploader}>{showFiles()}</div>
+      );
+    } else {
+      return (
+        <div className={styles.uploadedWrapper}>
+          <span className={styles.uploadedWrapperText}>File: </span>
+          {showFiles()}
+          <Button
+            label="Remove"
+            variant="text"
+            color="secondary"
+            onClick={removeFiles}
+          />
+        </div>
+      );
+    }
+  };
 
   const renderWhileDragging = () => <span>Drop files here</span>;
 
@@ -92,6 +105,7 @@ const FileUpload: React.FC<IProps> = props => {
           <img
             src={`https://tourneymaster.s3.amazonaws.com/public/${logo}`}
             className={styles.logo}
+            alt="Event logo"
           />
         )}
         <span>Drag & Drop files here</span>
@@ -126,11 +140,17 @@ const FileUpload: React.FC<IProps> = props => {
         );
       case FileUploadTypes.BUTTON:
         return (
-          <div className={styles.btnWrapper}>
+          <div
+            className={
+              withoutRemoveBtn
+                ? styles.withoutRemoveBtnWrapper
+                : styles.btnWrapper
+            }
+          >
             <label className={styles.loadBtn}>
               <input {...getInputProps()} />
               {getIcon(Icons.PUBLISH, STYLES_PUBLISH_ICON)}
-              Upload Field Map
+              {btnLabel || 'Upload Field Map'}
             </label>
             {Boolean(files?.length) && renderFiles()}
           </div>

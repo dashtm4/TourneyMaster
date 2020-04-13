@@ -9,8 +9,15 @@ import {
   FacilitiesAction,
   UPDATE_FIELD,
   UPLOAD_FILE_MAP_SUCCESS,
+  SAVE_FACILITIES_SUCCESS,
+  DELETE_FACILITY_SUCCESS,
 } from './action-types';
-import { IFacility, IField } from '../../../common/models';
+import {
+  ADD_ENTITIES_TO_LIBRARY_SUCCESS,
+  AuthPageAction,
+} from 'components/authorized-page/authorized-page-event/logic/action-types';
+import { IFacility, IField } from 'common/models';
+import { EntryPoints } from 'common/enums';
 
 export interface IFacilitiesState {
   isLoading: boolean;
@@ -28,7 +35,7 @@ const initialState = {
 
 const facilitiesReducer = (
   state: IFacilitiesState = initialState,
-  action: FacilitiesAction
+  action: FacilitiesAction | AuthPageAction
 ) => {
   switch (action.type) {
     case LOAD_FACILITIES_START: {
@@ -113,6 +120,49 @@ const facilitiesReducer = (
         ),
       };
     }
+    case SAVE_FACILITIES_SUCCESS: {
+      const { facilities } = action.payload;
+
+      return {
+        ...state,
+        facilities: [
+          ...state.facilities,
+          ...facilities.filter(fac => !state.facilities.includes(fac)),
+        ],
+      };
+    }
+    case ADD_ENTITIES_TO_LIBRARY_SUCCESS: {
+      const { entities, entryPoint } = action.payload;
+
+      if (entryPoint === EntryPoints.FACILITIES) {
+        const updatedFacilities = entities as IFacility[];
+
+        const facilities = state.facilities.map(facility => {
+          const updatedFacility = updatedFacilities.find(
+            it => it.facilities_id === facility.facilities_id
+          );
+
+          return updatedFacility ? updatedFacility : facility;
+        });
+
+        return {
+          ...state,
+          facilities,
+        };
+      } else {
+        return state;
+      }
+    }
+    case DELETE_FACILITY_SUCCESS: {
+      const { facilityId } = action.payload;
+      return {
+        ...state,
+        facilities: state.facilities.filter(
+          facility => facility.facilities_id !== facilityId
+        ),
+      };
+    }
+
     default:
       return state;
   }

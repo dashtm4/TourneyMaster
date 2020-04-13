@@ -34,6 +34,11 @@ enum Icons {
   FLIP = 'flip',
   DROPDOWN = 'DROPDOWN',
   DROPUP = 'DROPUP',
+  CLEAR = 'CLEAR',
+  EYE = 'VISIBILITY',
+  FULL_SCREEN = 'fullScreen',
+  FULL_SCREEN_EXIT = 'fullScreenExit',
+  ARROW_RIGHT = 'arrowRight',
 }
 
 export { Icons };

@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { HeadingLevelThree, Button } from '../../common';
+import { orderBy } from 'lodash-es';
+import {
+  HeadingLevelThree,
+  Button,
+  DeletePopupConfrim,
+} from 'components/common';
 import FieldItem from './components/field-item';
-import { getIcon } from '../../../helpers/get-icon.helper';
-import { BindingAction } from '../../../common/models/callback';
-import { ITeam } from '../../../common/models/teams';
-import { Icons } from '../../../common/enums/icons';
+import { getIcon } from 'helpers';
+import { BindingAction } from 'common/models/callback';
+import { ITeam, ITeamWithResults } from 'common/models/teams';
+import { Icons } from 'common/enums/icons';
+import { ISchedulesGameWithNames } from 'common/models';
 import styles from './styles.module.scss';
-import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 const EDIT_ICON_STYLES = {
   marginRight: '5px',
@@ -30,20 +35,22 @@ enum FORM_FIELDS {
 }
 
 interface Props {
-  team: ITeam | null;
+  team: ITeam | ITeamWithResults | null;
   division: string | null;
   pool: string | null;
   onSaveTeamClick: BindingAction;
-  onDeleteTeamClick: (team: ITeam) => void;
+  onDeleteTeamClick: (team: ITeam | ITeamWithResults) => void;
   onChangeTeam: (evt: React.ChangeEvent<HTMLInputElement>) => void;
   onCloseModal: BindingAction;
   deleteMessage?: string;
+  games: ISchedulesGameWithNames[] | null;
 }
 
 const TeamDetailsPopup = ({
   team,
   division,
   pool,
+  games,
   onSaveTeamClick,
   onDeleteTeamClick,
   onChangeTeam,
@@ -61,6 +68,16 @@ const TeamDetailsPopup = ({
   if (!team) {
     return null;
   }
+
+  const teamOwnGames = games?.filter(
+    it => it.homeTeamId === team?.team_id || it.awayTeamId === team?.team_id
+  );
+
+  const sortedGames = orderBy(
+    teamOwnGames,
+    ({ gameDate, startTime }) => [gameDate, startTime],
+    ['asc', 'asc']
+  );
 
   return (
     <div className={styles.popupWrapper}>
@@ -98,6 +115,7 @@ const TeamDetailsPopup = ({
                       value={team.long_name || ''}
                       name={FORM_FIELDS.LONG_NAME}
                       type="text"
+                      autoFocus={true}
                     />
                     <span className="visually-hidden">Long Name</span>
                   </label>
@@ -233,9 +251,18 @@ const TeamDetailsPopup = ({
               </li>
             </ul>
           </div>
-          <ul className={styles.fieldList}>
-            <FieldItem />
-          </ul>
+          {games &&
+            (sortedGames && sortedGames?.length !== 0 ? (
+              <ul className={styles.fieldList}>
+                {sortedGames.map(it => (
+                  <FieldItem game={it} key={it.id} />
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.gamesMessage}>
+                There is no published schedule yet.
+              </p>
+            ))}
         </div>
         <div className={styles.btnsWrapper}>
           <span className={styles.BtnDeleteWrapper}>

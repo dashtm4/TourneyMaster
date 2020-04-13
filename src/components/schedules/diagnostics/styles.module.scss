@@ -7,8 +7,26 @@
 .container {
   max-height: 440px;
 
+  .sortButton svg {
+    opacity: 0.2;
+  }
+
+  .tableHeadCell {
+    width: 130px;
+
+    .cellText {
+      white-space: pre-wrap;
+      display: flex;
+      justify-content: center;
+      height: 70px;
+    }
+  }
+
   .tableCell {
+    width: 130px;
     min-width: 130px;
+    text-align: center;
+    height: 70px;
   }
 }
 

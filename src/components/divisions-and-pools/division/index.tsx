@@ -9,7 +9,7 @@ import styles from '../styles.module.scss';
 import history from '../../../browserhistory';
 
 interface IDivisionProps {
-  division?: IDivision;
+  division: IDivision;
   pools: IPool[];
   teams: ITeam[];
   getPools: BindingCbWithOne<string>;
@@ -17,31 +17,15 @@ interface IDivisionProps {
   areDetailsLoading: boolean;
   eventId: string;
   divisions: IDivision[];
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
-  index: number;
-  isArrange: boolean;
-  isUnassigned: boolean;
-  changePool: (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => void;
-  onDeletePopupOpen: (team: ITeam) => void;
-  onEditPopupOpen: (
-    team: ITeam,
-    divisionName: string,
-    poolName: string
-  ) => void;
+  isSectionExpand: boolean;
+  saveTeams: BindingCbWithOne<ITeam[]>;
 }
 
 class Division extends React.PureComponent<IDivisionProps> {
   componentDidMount() {
     const { division } = this.props;
 
-    if (division) {
-      this.props.getPools(division.division_id);
-    }
+    this.props.getPools(division.division_id);
   }
 
   onEditDivisionDetails = (divisionId: string) => (e: React.MouseEvent) => {
@@ -55,64 +39,40 @@ class Division extends React.PureComponent<IDivisionProps> {
     });
   };
 
-  onSectionToggle = () => {
-    this.props.onToggleOne(this.props.index);
-  };
-
   render() {
-    const {
-      division,
-      pools,
-      teams,
-      isUnassigned,
-      isArrange,
-      changePool,
-      onDeletePopupOpen,
-      onEditPopupOpen,
-    } = this.props;
+    const { division, pools, teams, saveTeams } = this.props;
 
     return (
       <SectionDropdown
-        isDefaultExpanded={true}
         id={division ? division.short_name : ''}
         panelDetailsType="flat"
-        expanded={this.props.expanded}
-        onToggle={this.onSectionToggle}
+        expanded={this.props.isSectionExpand}
       >
         <div className={styles.sectionTitle}>
+          <div>Division: {division.long_name}</div>
           <div>
-            {isUnassigned ? 'Unassigned' : `Division: ${division!.short_name}`}
-          </div>
-          <div>
-            {division && (
-              <Button
-                label="Edit Division Details"
-                variant="text"
-                color="secondary"
-                icon={<CreateIcon />}
-                onClick={this.onEditDivisionDetails(division.division_id)}
-              />
-            )}
+            <Button
+              label="Edit Division Details"
+              variant="text"
+              color="secondary"
+              icon={<CreateIcon />}
+              onClick={this.onEditDivisionDetails(division.division_id)}
+            />
           </div>
         </div>
         <div className={styles.sectionContent}>
-          {division && (
-            <DivisionDetails
-              data={division}
-              numOfPools={pools.length}
-              numOfTeams={teams.length}
-            />
-          )}
+          <DivisionDetails
+            data={division}
+            numOfPools={pools.length}
+            numOfTeams={teams.length}
+          />
           <PoolsDetails
             onAddPool={this.props.onAddPool}
             division={division}
             pools={pools}
             teams={teams}
             areDetailsLoading={this.props.areDetailsLoading}
-            isArrange={isArrange}
-            changePool={changePool}
-            onDeletePopupOpen={onDeletePopupOpen}
-            onEditPopupOpen={onEditPopupOpen}
+            saveTeams={saveTeams}
           />
         </div>
       </SectionDropdown>

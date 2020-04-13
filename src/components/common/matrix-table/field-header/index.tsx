@@ -30,24 +30,26 @@ const RenderFieldHeader = (props: IProps) => {
     .filter(game => game.fieldId === field.id)
     .map(game => game.id);
 
+  const currentDate = games.find(item => item.gameDate)?.gameDate;
+
   const isEveryTeamInFieldLocked = teamCards.every(team =>
     team.games
-      ?.filter(game => idsGamesForField.includes(game.id))
+      ?.filter(
+        game => idsGamesForField.includes(game.id) && currentDate === game.date
+      )
       .every(game => game.isTeamLocked)
   );
 
   const onLockClick = () => {
-    const updTeamCards = teamCards.map(team => {
-      return {
-        ...team,
-        games: team.games?.map(g =>
-          idsGamesForField.includes(g.id)
-            ? { ...g, isTeamLocked: !isEveryTeamInFieldLocked }
-            : g
-        ),
-      };
-    });
-    onTeamCardsUpdate(updTeamCards);
+    const updatedTeamCards = teamCards.map(teamCard => ({
+      ...teamCard,
+      games: teamCard.games?.map(item =>
+        idsGamesForField.includes(item.id) && currentDate === item.date
+          ? { ...item, isTeamLocked: !isEveryTeamInFieldLocked }
+          : item
+      ),
+    }));
+    onTeamCardsUpdate(updatedTeamCards);
   };
 
   return (

@@ -1,59 +1,61 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
-import { SectionDropdown, Loader } from '../../../common';
+import { SectionDropdown } from 'components/common';
+import GroupItemHeader from '../grop-item-header';
 import TeamItem from '../team-item';
-import { IPool, ITeam, IDivision } from '../../../../common/models';
+import { sortTeamByScored } from 'helpers';
+import {
+  IPool,
+  ITeamWithResults,
+  IDivision,
+  IEventDetails,
+  ISchedulesGameWithNames,
+} from 'common/models';
 import styles from './styles.module.scss';
+import { getScoringSettings } from 'helpers/scoring';
 
 interface Props {
+  event: IEventDetails | null;
   division: IDivision;
   pool: IPool;
-  teams: ITeam[];
-  loadTeams: (poolId: string) => void;
+  teams: ITeamWithResults[];
+  games: ISchedulesGameWithNames[];
   onOpenTeamDetails: (
-    team: ITeam,
+    team: ITeamWithResults,
     divisionName: string,
     poolName: string
   ) => void;
 }
 
 const GroupItem = ({
+  event,
   division,
   pool,
   teams,
-  loadTeams,
+  games,
   onOpenTeamDetails,
 }: Props) => {
-  if (!pool.isTeamsLoading && !pool.isTeamsLoaded) {
-    loadTeams(pool.pool_id);
-  }
+  const sortedTeams = event?.ranking_factor_pools
+    ? sortTeamByScored(teams, games, event.ranking_factor_pools)
+    : teams;
 
-  if (pool.isTeamsLoading) {
-    return <Loader />;
-  }
+  const scoringSettings = getScoringSettings(event!);
 
   return (
     <li className={styles.groupItem}>
       <SectionDropdown isDefaultExpanded={true} headingColor={'#1C315F'}>
         <span>{pool.pool_name}</span>
         <table className={styles.groupTable}>
-          <thead>
-            <tr>
-              <td>Team</td>
-              <td>W</td>
-              <td>L</td>
-              <td>GS</td>
-              <td>GA</td>
-            </tr>
-          </thead>
+          <GroupItemHeader scoringSettings={scoringSettings} />
           <tbody>
-            {teams.map(it => (
+            {sortedTeams.map(it => (
               <TeamItem
                 team={it}
                 divisionName={division.long_name}
                 poolName={pool.pool_name}
-                key={it.team_id}
+                scoringSettings={scoringSettings}
                 onOpenTeamDetails={onOpenTeamDetails}
+                key={it.team_id}
               />
             ))}
           </tbody>

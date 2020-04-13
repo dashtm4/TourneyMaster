@@ -12,21 +12,32 @@ import {
   updateField,
   uploadFileMap,
   saveFacilities,
+  createFacilities,
+  deleteFacility,
 } from './logic/actions';
+import { addEntitiesToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import Navigation from './components/navigation';
 import FacilityDetails from './components/facility-details';
-import { HeadingLevelTwo, Select, Loader } from '../common';
-import { IFacility, IField, IUploadFile } from '../../common/models';
 import {
+  HeadingLevelTwo,
+  Select,
+  Loader,
+  Button,
+  PopupExposure,
+  CsvLoader,
+  PopupAddToLibrary,
+} from 'components/common';
+import {
+  IFacility,
+  IField,
+  IUploadFile,
   BindingCbWithOne,
   BindingCbWithTwo,
-} from '../../common/models/callback';
+} from 'common/models';
 import styles from './styles.module.scss';
-import Button from 'components/common/buttons/button';
-import { PopupExposure } from 'components/common';
 import history from '../../browserhistory';
-
-const MOCKED_EVENT_ID = 'ABC123';
+import { EntryPoints } from 'common/enums';
+import { IEntity } from 'common/types';
 
 interface MatchParams {
   eventId?: string;
@@ -44,15 +55,32 @@ interface Props {
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
-  expanded: boolean[];
-  expandAll: boolean;
+  createFacilities: (facilities: IFacility[]) => void;
+  addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
+  deleteFacility: (facilityId: string) => void;
+}
+
+interface State {
+  isSectionsExpand: boolean;
   isModalOpen: boolean;
+  isCsvLoaderOpen: boolean;
+  isLibraryPopupOpen: boolean;
 }
 
 class Facilities extends React.Component<
-  Props & RouteComponentProps<MatchParams>
+  Props & RouteComponentProps<MatchParams>,
+  State
 > {
-  state = { expanded: [], expandAll: false, isModalOpen: false };
+  constructor(props: Props & RouteComponentProps<MatchParams>) {
+    super(props);
+
+    this.state = {
+      isSectionsExpand: true,
+      isModalOpen: false,
+      isCsvLoaderOpen: false,
+      isLibraryPopupOpen: false,
+    };
+  }
 
   componentDidMount() {
     const { loadFacilities } = this.props;
@@ -68,7 +96,7 @@ class Facilities extends React.Component<
     const eventId = this.props.match.params.eventId;
 
     if (evt.target.value > facilities.length) {
-      addEmptyFacility(eventId || MOCKED_EVENT_ID);
+      addEmptyFacility(eventId!);
     }
   };
 
@@ -80,42 +108,38 @@ class Facilities extends React.Component<
     this.setState({ isModalOpen: false });
   };
 
-  componentDidUpdate(prevProps: any, prevState: any) {
-    if (
-      (prevProps.facilities.length && !prevState.expanded.length) ||
-      prevProps.facilities !== this.props.facilities
-    ) {
-      this.setState({
-        expanded: this.props.facilities.map(_facility => true),
-      });
-    }
-  }
-
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
-  };
-
   onModalClose = () => {
     this.setState({ isModalOpen: false });
   };
 
   onCancelClick = () => {
-    this.setState({ isModalOpen: true });
+    if (this.props.facilities.length) {
+      this.setState({ isModalOpen: true });
+    } else {
+      this.onCancel();
+    }
   };
 
   onCancel = () => {
-    history.push('/');
+    history.push(`/event/event-details/${this.props.match.params.eventId}`);
+  };
+
+  onCsvLoaderBtn = () => {
+    this.setState({ isCsvLoaderOpen: true });
+  };
+
+  onCsvLoaderClose = () => {
+    this.setState({ isCsvLoaderOpen: false });
+  };
+
+  toggleLibraryPopup = () => {
+    this.setState(({ isLibraryPopupOpen }) => ({
+      isLibraryPopupOpen: !isLibraryPopupOpen,
+    }));
+  };
+
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
   render() {
@@ -128,7 +152,10 @@ class Facilities extends React.Component<
       updateFacilities,
       updateField,
       uploadFileMap,
+      deleteFacility,
     } = this.props;
+
+    const { isLibraryPopupOpen } = this.state;
 
     if (isLoading) {
       return <Loader />;
@@ -139,6 +166,8 @@ class Facilities extends React.Component<
         <Navigation
           onClick={this.savingFacilities}
           onCancelClick={this.onCancelClick}
+          onCsvLoaderBtn={this.onCsvLoaderBtn}
+          toggleLibraryPopup={this.toggleLibraryPopup}
         />
         <div className={styles.sectionWrapper}>
           <div className={styles.headingWrapper}>
@@ -160,10 +189,12 @@ class Facilities extends React.Component<
               />
               {facilities?.length ? (
                 <Button
-                  label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                  label={
+                    this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+                  }
                   variant="text"
                   color="secondary"
-                  onClick={this.onToggleAll}
+                  onClick={this.toggleSectionCollapse}
                 />
               ) : null}
             </div>
@@ -203,9 +234,8 @@ class Facilities extends React.Component<
                     updateFacilities={updateFacilities}
                     updateField={updateField}
                     uploadFileMap={uploadFileMap}
-                    expanded={this.state.expanded[idx]}
-                    index={idx}
-                    onToggleOne={this.onToggleOne}
+                    isSectionExpand={this.state.isSectionsExpand}
+                    deleteFacility={deleteFacility}
                   />
                 </li>
               ))}
@@ -216,6 +246,20 @@ class Facilities extends React.Component<
           onClose={this.onModalClose}
           onExitClick={this.onCancel}
           onSaveClick={this.savingFacilities}
+        />
+        <CsvLoader
+          isOpen={this.state.isCsvLoaderOpen}
+          onClose={this.onCsvLoaderClose}
+          type="facilities"
+          onCreate={this.props.createFacilities}
+          eventId={this.props.match.params.eventId}
+        />
+        <PopupAddToLibrary
+          entities={facilities}
+          entryPoint={EntryPoints.FACILITIES}
+          isOpen={isLibraryPopupOpen}
+          onClose={this.toggleLibraryPopup}
+          addEntitiesToLibrary={this.props.addEntitiesToLibrary}
         />
       </section>
     );
@@ -239,6 +283,9 @@ export default connect(
         updateField,
         saveFacilities,
         uploadFileMap,
+        createFacilities,
+        addEntitiesToLibrary,
+        deleteFacility,
       },
       dispatch
     )

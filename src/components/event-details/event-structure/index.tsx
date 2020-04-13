@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 
 import {
@@ -6,16 +7,15 @@ import {
   Input,
   Radio,
   Checkbox,
-  Select,
+  Button,
 } from 'components/common';
 import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
-import { EventDetailsDTO } from '../logic/model';
 import { getTimeFromString, timeToString } from 'helpers';
-import { BindingCbWithOne } from 'common/models';
+import { IEventDetails } from 'common/models';
 import waiverHubLogo from 'assets/WaiverHubLogo.png';
-import { getDays, getDay } from 'helpers/getDays';
+import MultipleDatesPicker from '@randex/material-ui-multiple-dates-picker';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -38,32 +38,18 @@ enum ResultsDisplayEnum {
   'Allow Ties' = 'tie_breaker_format_id',
 }
 
-enum DayOptions {
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-}
-
 interface Props {
   eventTypeOptions: string[];
-  eventData: Partial<EventDetailsDTO>;
+  eventData: Partial<IEventDetails>;
   onChange: any;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
-  index: number;
+  isSectionExpand: boolean;
 }
 
 const EventStructureSection: React.FC<Props> = ({
   eventTypeOptions,
   eventData,
   onChange,
-  expanded,
-  index,
-  onToggleOne,
+  isSectionExpand,
 }: Props) => {
   const {
     show_goals_scored,
@@ -79,26 +65,18 @@ const EventStructureSection: React.FC<Props> = ({
     min_num_of_games,
     waivers_required,
     waiverhub_utilized,
+    league_dates,
   } = eventData;
 
   useEffect(() => {
     if (!event_type) onChange('event_type', eventTypeOptions[0]);
 
     if (!periods_per_game) onChange('periods_per_game', 2);
-
-    if (eventData.league_dates)
-      onChangeDay(DayOptions[getDay(eventData.league_dates)]);
   });
 
-  const [day, onChangeDay] = useState(DayOptions[5]);
+  const [isDatePickerOpen, setDatePickerOpen] = useState(false);
 
   const onEventTypeChange = (e: InputTargetValue) => {
-    if (e.target.value === 'League') {
-      const dayDates = getDays(5, new Date(eventData.event_startdate!));
-      onChange('league_dates', JSON.stringify(dayDates));
-    } else {
-      onChange('league_dates', null);
-    }
     onChange('event_type', e.target.value);
   };
 
@@ -138,10 +116,6 @@ const EventStructureSection: React.FC<Props> = ({
     return onChange('time_btwn_periods', timeInString);
   };
 
-  const onSectionToggle = () => {
-    onToggleOne(index);
-  };
-
   const resultsDisplayOptions = [
     { label: 'Show Goals Scored', checked: Boolean(show_goals_scored) },
     { label: 'Show Goals Allowed', checked: Boolean(show_goals_allowed) },
@@ -162,34 +136,25 @@ const EventStructureSection: React.FC<Props> = ({
     },
   ];
 
-  const dayOptions = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ].map((d, indx) => ({ label: d, value: indx }));
-
-  const onLeagueDayChange = (e: InputTargetValue) => {
-    onChangeDay(DayOptions[e.target.value]);
-    const dayDates = getDays(
-      Number(e.target.value),
-      new Date(eventData.event_startdate!)
+  const onDatesSubmit = (dates: Date[]) => {
+    const parsedDates = JSON.stringify(
+      dates.map((date: Date) => date.toISOString())
     );
-    return onChange('league_dates', JSON.stringify(dayDates));
+    onChange('league_dates', parsedDates);
+    setDatePickerOpen(false);
   };
+
+  const leagueDates = league_dates
+    ? JSON.parse(league_dates).map((date: Date) => new Date(date))
+    : [];
 
   return (
     <SectionDropdown
       id={EventMenuTitles.EVENT_STRUCTURE}
       type="section"
       panelDetailsType="flat"
-      isDefaultExpanded={true}
       useBorder={true}
-      expanded={expanded}
-      onToggle={onSectionToggle}
+      expanded={isSectionExpand}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Event Structure</span>
@@ -203,6 +168,23 @@ const EventStructureSection: React.FC<Props> = ({
               onChange={onEventTypeChange}
               checked={event_type || ''}
             />
+            {event_type === 'League' ? (
+              <div>
+                <Button
+                  label="Select Dates"
+                  color="secondary"
+                  variant="text"
+                  onClick={() => setDatePickerOpen(!isDatePickerOpen)}
+                />
+                <MultipleDatesPicker
+                  open={isDatePickerOpen}
+                  selectedDates={leagueDates}
+                  onCancel={() => setDatePickerOpen(false)}
+                  onSubmit={onDatesSubmit}
+                  submitButtonText="Select"
+                />
+              </div>
+            ) : null}
           </div>
           <div className={styles.column}>
             <Radio
@@ -227,16 +209,6 @@ const EventStructureSection: React.FC<Props> = ({
               value={min_num_of_games || ''}
               onChange={onGameNumChange}
             />
-            {eventData.event_type === 'League' && (
-              <div className={styles.leagueDayContainer}>
-                <Select
-                  options={dayOptions}
-                  label="Game day for League"
-                  value={DayOptions[day]}
-                  onChange={onLeagueDayChange}
-                />
-              </div>
-            )}
           </div>
         </div>
         <div className={styles.esDetailsSecond}>
@@ -300,7 +272,11 @@ const EventStructureSection: React.FC<Props> = ({
               rel="noopener noreferrer"
               href="https://www.waiverhub.com/"
             >
-              <img src={waiverHubLogo} style={{ width: '150px' }} />
+              <img
+                src={waiverHubLogo}
+                style={{ width: '150px' }}
+                alt="Waiverhub logo"
+              />
             </a>
           </div>
         </div>

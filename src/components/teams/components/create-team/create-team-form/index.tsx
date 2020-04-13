@@ -104,6 +104,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
                 fullWidth={true}
                 label="Long Name"
                 value={long_name || ''}
+                autofocus={true}
                 onChange={this.onLongNameChange}
               />
             </div>
@@ -146,7 +147,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Select
                 label="Division"
-                options={[...divisionsOptions]}
+                options={divisionsOptions}
                 value={division_id || ''}
                 onChange={this.onDivisionChange}
               />
@@ -183,7 +184,6 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
               <Input
                 fullWidth={true}
                 label="Phone #"
-                type="number"
                 value={phone_num || ''}
                 onChange={this.onPhoneChange}
               />

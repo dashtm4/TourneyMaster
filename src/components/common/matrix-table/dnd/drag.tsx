@@ -1,17 +1,20 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
-import styles from './styles.module.scss';
+import { find } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 import { Tooltip } from 'components/common';
 import { getIcon } from 'helpers';
 import { Icons, TableScheduleTypes } from 'common/enums';
+import { IInputEvent } from 'common/types';
+import styles from './styles.module.scss';
 
 interface Props {
   tableType: TableScheduleTypes;
   type: string;
   teamCard: ITeamCard;
   originGameId?: number;
+  originGameDate?: string;
   isEnterScores?: boolean;
   showHeatmap?: boolean;
   onTeamCardUpdate?: (teamCard: ITeamCard) => void;
@@ -29,6 +32,7 @@ export default (props: Props) => {
     tableType,
     type,
     originGameId,
+    originGameDate,
     showHeatmap,
     teamCard,
     isEnterScores,
@@ -36,17 +40,11 @@ export default (props: Props) => {
     isDndMode,
   } = props;
 
-  const [scoreValue, onChange] = React.useState<string>('0');
-
-  const onChangeScoreValue = ({
-    target: { value },
-  }: React.ChangeEvent<HTMLInputElement>) => onChange(value);
-
-  const team = teamCard.games?.filter(game => game.id === originGameId)[0];
+  const game = find(teamCard.games, { id: originGameId, date: originGameDate });
 
   const [{ isDragging }, drag] = useDrag({
-    item: { id: teamCard.id, type, originGameId },
-    canDrag: !team?.isTeamLocked,
+    item: { id: teamCard.id, type, originGameId, originGameDate },
+    canDrag: !game?.isTeamLocked,
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -55,9 +53,20 @@ export default (props: Props) => {
   const onLockClick = () => {
     onTeamCardUpdate!({
       ...teamCard,
+      games: teamCard.games?.map(item =>
+        item.id === originGameId && item.date === originGameDate
+          ? { ...item, isTeamLocked: !item.isTeamLocked }
+          : item
+      ),
+    });
+  };
+
+  const onChangeScore = ({ target: { value } }: IInputEvent) => {
+    onTeamCardUpdate!({
+      ...teamCard,
       games: teamCard.games?.map(game =>
-        game.id === originGameId
-          ? { ...game, isTeamLocked: !game.isTeamLocked }
+        game.id === originGameId && game.date === originGameDate
+          ? { ...game, teamScore: value }
           : game
       ),
     });
@@ -96,9 +105,10 @@ export default (props: Props) => {
         {tableType === TableScheduleTypes.SCORES && (
           <label className={styles.scoresInputWrapper}>
             <input
-              onChange={onChangeScoreValue}
-              value={scoreValue}
+              onChange={onChangeScore}
+              value={game?.teamScore || ''}
               type="number"
+              min="0"
               style={{
                 color: isEnterScores
                   ? '#000000'
@@ -113,7 +123,7 @@ export default (props: Props) => {
         )}
         {tableType === TableScheduleTypes.SCHEDULES && originGameId && (
           <button className={styles.lockBtn} onClick={onLockClick}>
-            {getIcon(team?.isTeamLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+            {getIcon(game?.isTeamLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
               fill: showHeatmap ? '#ffffff' : '#00A3EA',
             })}
             <span className="visually-hidden">Unlock/Lock team</span>
@@ -127,7 +137,7 @@ export default (props: Props) => {
     <div
       ref={drag}
       className={`${styles.cardContainer} ${isDndMode &&
-        team?.isTeamLocked &&
+        game?.isTeamLocked &&
         styles.isLocked}`}
       style={{
         opacity: isDragging ? 0.8 : 1,

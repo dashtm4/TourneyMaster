@@ -5,6 +5,7 @@ import {
   IDivision,
   ITeam,
   IField,
+  ISchedule,
 } from 'common/models';
 
 export interface ITournamentData {
@@ -14,4 +15,5 @@ export interface ITournamentData {
   divisions: IDivision[];
   teams: ITeam[];
   fields: IField[];
+  schedules: ISchedule[];
 }

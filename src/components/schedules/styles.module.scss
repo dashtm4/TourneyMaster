@@ -1,17 +1,6 @@
 .container {
   height: 100%;
-  .paperWrapper {
-    margin-bottom: 20px;
-    .paperContainer {
-      display: flex;
-      justify-content: space-between;
-      .btnsGroup {
-        > button {
-          margin-left: 15px;
-        }
-      }
-    }
-  }
+
   .loadingWrapper {
     padding-top: 100px;
     display: flex;
@@ -20,13 +9,23 @@
   }
 }
 
+.containerFullScreen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .diagnosticsContainer {
+    margin: 0;
+  }
+}
+
 .diagnosticsContainer {
   margin-top: 20px;
   margin-bottom: 20px;
-  display: 'flex';
-  justify-content: 'space-between';
+  display: flex;
+  justify-content: flex-end;
 
   > button {
-    margin-right: 10px;
+    margin-right: 13px;
   }
 }

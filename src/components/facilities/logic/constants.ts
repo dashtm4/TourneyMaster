@@ -22,7 +22,7 @@ const EMPTY_FACILITY = {
   golf_carts_availabe: null,
   field_map_URL: null,
   is_active_YN: 0,
-  in_library_YN: null,
+  is_library_YN: 0,
 };
 
 const EMPTY_FIELD = {
@@ -33,7 +33,7 @@ const EMPTY_FIELD = {
   field_notes: null,
   field_sort: null,
   is_active_YN: null,
-  is_library_YN: null,
+  is_library_YN: 0,
   is_illuminated_YN: null,
   is_premier_YN: 0,
   created_by: null,

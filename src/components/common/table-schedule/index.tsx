@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import ListUnassigned from './components/list-unassigned';
@@ -6,28 +6,33 @@ import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
 import PopupSaveReporting from './components/popup-save-reporting';
-import { MatrixTable } from 'components/common';
+import { MatrixTable, CardMessage } from 'components/common';
 import {
   IDivision,
   IEventSummary,
   IEventDetails,
   ISchedule,
   IPool,
+  BindingAction,
 } from 'common/models';
-import { IScheduleFilter, OptimizeTypes } from './types';
-import { mapGamesByField } from './helpers';
-import { IGame, settleTeamsPerGames } from '../matrix-table/helper';
+import { IScheduleFilter, OptimizeTypes, DayTypes } from './types';
+import { mapGamesByField } from 'helpers';
+import {
+  IGame,
+  settleTeamsPerGames,
+  calculateDays,
+} from '../matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import PopupConfirm from 'components/common/popup-confirm';
 import styles from './styles.module.scss';
 
 import {
-  getUnassignedTeams,
   mapGamesByFilter,
   mapFilterValues,
   applyFilters,
   mapUnusedFields,
+  moveCardMessages,
 } from './helpers';
 
 import { IScheduleFacility } from 'common/models/schedule/facilities';
@@ -36,6 +41,11 @@ import { IDropParams } from '../matrix-table/dnd/drop';
 import moveTeamCard from './moveTeamCard';
 import { Button } from 'components/common';
 import { TableScheduleTypes } from 'common/enums';
+import { CardMessageTypes } from '../card-message/types';
+import TeamsDiagnostics from 'components/schedules/diagnostics/teamsDiagnostics';
+import DivisionsDiagnostics from 'components/schedules/diagnostics/divisionsDiagnostics';
+import { IDiagnosticsInput } from 'components/schedules/diagnostics';
+import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -51,9 +61,14 @@ interface Props {
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
   historyLength?: number;
+  teamsDiagnostics?: IDiagnosticsInput;
+  divisionsDiagnostics?: IDiagnosticsInput;
+  isFullScreen?: boolean;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
+  onToggleFullScreen?: BindingAction;
+  playoffTimeSlots?: ITimeSlot[];
 }
 
 const TableSchedule = ({
@@ -73,6 +88,11 @@ const TableSchedule = ({
   onTeamCardUpdate,
   onUndo,
   historyLength,
+  teamsDiagnostics,
+  divisionsDiagnostics,
+  isFullScreen,
+  onToggleFullScreen,
+  playoffTimeSlots,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -94,43 +114,81 @@ const TableSchedule = ({
   const [replacementWarning, onReplacementWarningChange] = useState<
     string | undefined
   >();
+  const [days, setDays] = useState(calculateDays(teamCards));
 
-  const filledGames = settleTeamsPerGames(games, teamCards);
-  const filteredGames = mapGamesByFilter([...filledGames], filterValues);
+  const manageGamesData = useCallback(() => {
+    let definedGames = [...games];
+    const day = filterValues.selectedDay!;
 
-  const updatedFields = mapUnusedFields(fields, filteredGames);
+    if (DayTypes[day] === days.length && playoffTimeSlots) {
+      definedGames = populateDefinedGamesWithPlayoffState(
+        games,
+        playoffTimeSlots
+      );
+    }
 
-  const unassignedTeams = getUnassignedTeams(teamCards, minGamesNum);
+    const filledGames = settleTeamsPerGames(
+      definedGames,
+      teamCards,
+      days,
+      filterValues.selectedDay!
+    );
+    const filteredGames = mapGamesByFilter([...filledGames], filterValues);
+    return filteredGames;
+  }, [games, teamCards, days, filterValues, playoffTimeSlots]);
 
-  const updatedFilterValues = mapFilterValues(
-    { teamCards, pools },
-    filterValues
-  );
+  const [tableGames, setTableGames] = useState<IGame[]>(manageGamesData());
+
+  useEffect(() => {
+    setDays(calculateDays(teamCards));
+  }, [teamCards]);
+
+  useEffect(() => setTableGames(manageGamesData()), [manageGamesData]);
+
+  const updatedFields = mapUnusedFields(fields, tableGames, filterValues);
 
   const onFilterChange = (data: IScheduleFilter) => {
-    changeFilterValues(data);
+    const newData = mapFilterValues({ teamCards, pools }, data);
+    changeFilterValues({ ...newData });
   };
 
   const toggleZooming = () => changeZoomingAction(!zoomingDisabled);
 
   const moveCard = (dropParams: IDropParams) => {
-    const result = moveTeamCard(teamCards, dropParams);
-    if (result.divisionUnmatch) {
-      onReplacementWarningChange(
-        'The divisions of the teams do not match. Are you sure you want to continue?'
-      );
-      replacementTeamCardsChange(result.teamCards);
-    } else if (result.poolUnmatch) {
-      onReplacementWarningChange(
-        'The pools of the teams do not match. Are you sure you want to continue?'
-      );
-      replacementTeamCardsChange(result.teamCards);
-    } else {
-      onTeamCardsUpdate(result.teamCards);
+    const day = filterValues.selectedDay!;
+    const result = moveTeamCard(
+      teamCards,
+      tableGames,
+      dropParams,
+      days?.length ? days[DayTypes[day] - 1] : undefined
+    );
+
+    switch (true) {
+      case result.playoffSlot:
+        return onReplacementWarningChange(moveCardMessages.playoffSlot);
+      case result.timeSlotInUse:
+        return onReplacementWarningChange(moveCardMessages.timeSlotInUse);
+      case result.differentFacility: {
+        onReplacementWarningChange(moveCardMessages.differentFacility);
+        return replacementTeamCardsChange(result.teamCards);
+      }
+      case result.divisionUnmatch: {
+        onReplacementWarningChange(moveCardMessages.divisionUnmatch);
+        return replacementTeamCardsChange(result.teamCards);
+      }
+      case result.poolUnmatch: {
+        onReplacementWarningChange(moveCardMessages.poolUnmatch);
+        return replacementTeamCardsChange(result.teamCards);
+      }
+      default:
+        onTeamCardsUpdate(result.teamCards);
     }
   };
 
-  const toggleReplacementWarning = () => onReplacementWarningChange(undefined);
+  const toggleReplacementWarning = () => {
+    replacementTeamCardsChange(undefined);
+    onReplacementWarningChange(undefined);
+  };
 
   const confirmReplacement = () => {
     if (replacementTeamCards) {
@@ -163,41 +221,61 @@ const TableSchedule = ({
       <h2 className="visually-hidden">Schedule table</h2>
       <div className={styles.scheduleTableWrapper}>
         {tableType === TableScheduleTypes.SCHEDULES && (
-          <div className={styles.topBtnsWrapper}>
-            <h3>Mode:</h3>
-            <Button
-              label="Zoom-n-Nav"
-              variant="contained"
-              color="primary"
-              type={zoomingDisabled ? 'squaredOutlined' : 'squared'}
-              onClick={toggleZooming}
-            />
-            <Button
-              label="Drag-n-Drop"
-              variant="contained"
-              color="primary"
-              type={zoomingDisabled ? 'squared' : 'squaredOutlined'}
-              onClick={toggleZooming}
-            />
+          <div className={styles.topAreaWrapper}>
+            <div className={styles.topBtnsWrapper}>
+              <h3>Mode:</h3>
+              <Button
+                label="Zoom-n-Nav"
+                variant="contained"
+                color="primary"
+                type={zoomingDisabled ? 'squaredOutlined' : 'squared'}
+                onClick={toggleZooming}
+              />
+              <Button
+                label="Drag-n-Drop"
+                variant="contained"
+                color="primary"
+                type={zoomingDisabled ? 'squared' : 'squaredOutlined'}
+                onClick={toggleZooming}
+              />
+            </div>
+            <CardMessage
+              type={CardMessageTypes.EMODJI_OBJECTS}
+              style={{ maxWidth: 400 }}
+            >
+              Drag, drop, and zoom to navigate the schedule
+            </CardMessage>
+            {teamsDiagnostics && divisionsDiagnostics && (
+              <div className={styles.diagnosticsWrapper}>
+                Diagnostics:
+                <TeamsDiagnostics teamsDiagnostics={teamsDiagnostics} />
+                <DivisionsDiagnostics
+                  divisionsDiagnostics={divisionsDiagnostics}
+                />
+              </div>
+            )}
           </div>
         )}
         <DndProvider backend={HTML5Backend}>
           {tableType === TableScheduleTypes.SCHEDULES && (
             <ListUnassigned
+              pools={pools}
               tableType={tableType}
-              teamCards={unassignedTeams}
+              teamCards={teamCards}
+              minGamesNum={minGamesNum}
               showHeatmap={showHeatmap}
               onDrop={moveCard}
             />
           )}
           <div className={styles.tableWrapper}>
             <Filter
-              filterValues={updatedFilterValues}
+              days={days.length}
+              filterValues={filterValues}
               onChangeFilterValue={onFilterChange}
             />
             <MatrixTable
               tableType={tableType}
-              games={filteredGames}
+              games={tableGames}
               fields={updatedFields}
               timeSlots={timeSlots}
               facilities={facilities}
@@ -208,6 +286,8 @@ const TableSchedule = ({
               onTeamCardUpdate={onTeamCardUpdate}
               onTeamCardsUpdate={onTeamCardsUpdate}
               teamCards={teamCards}
+              isFullScreen={isFullScreen}
+              onToggleFullScreen={onToggleFullScreen}
             />
           </div>
         </DndProvider>
@@ -233,7 +313,7 @@ const TableSchedule = ({
             />
             <PopupSaveReporting
               event={event}
-              games={mapGamesByField(filteredGames, updatedFields)}
+              games={mapGamesByField(tableGames, updatedFields)}
               fields={updatedFields}
               timeSlots={timeSlots}
               facilities={facilities}
@@ -244,6 +324,8 @@ const TableSchedule = ({
           </>
         )}
         <PopupConfirm
+          type="warning"
+          showYes={!!replacementTeamCards}
           isOpen={!!replacementWarning}
           message={replacementWarning || ''}
           onClose={toggleReplacementWarning}

@@ -1,8 +1,7 @@
 import React from 'react';
 import styles from '../create-backup-modal/styles.module.scss';
 import { Input, Select, Radio, Button } from 'components/common';
-import { BindingCbWithThree, IFacility } from 'common/models';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
+import { BindingCbWithThree, IFacility, IEventDetails } from 'common/models';
 import { IField } from 'common/models';
 import MultipleSearch from 'components/common/multiple-search-select';
 import {
@@ -22,7 +21,7 @@ interface Props {
   index: number;
   backupPlan: any;
   onChange: BindingCbWithThree<string, any, number>;
-  events: EventDetailsDTO[];
+  events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
 }
@@ -180,6 +179,7 @@ class CreateBackupForm extends React.Component<Props> {
               label="Name"
               onChange={this.onNameChange}
               value={backup_name || ''}
+              autofocus={true}
             />
           </div>
           <div className={styles.item}>

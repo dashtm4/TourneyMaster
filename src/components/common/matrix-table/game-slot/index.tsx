@@ -14,6 +14,7 @@ interface Props {
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   isDndMode: boolean;
   isEnterScores?: boolean;
+  teamCards: ITeamCard[];
 }
 
 const RenderGameSlot = (props: Props) => {
@@ -25,24 +26,30 @@ const RenderGameSlot = (props: Props) => {
     onTeamCardUpdate,
     isDndMode,
     isEnterScores,
+    teamCards,
   } = props;
-  const { awayTeam, homeTeam } = game;
+  const { awayTeam, homeTeam, gameDate, isPlayoff } = game;
   const acceptType = 'teamdrop';
 
   return (
-    <td className={styles.gameSlotContainer}>
+    <td
+      className={`${styles.gameSlotContainer} ${isPlayoff &&
+        styles.gameSlotPlayoff}`}
+    >
       <div className={styles.gameSlot}>
         <DropContainer
           acceptType={acceptType}
           gameId={game.id}
           position={1}
           onDrop={onDrop}
+          teamCards={teamCards}
         >
           {awayTeam && (
             <TeamDragCard
               tableType={tableType}
               type={acceptType}
               originGameId={game.id}
+              originGameDate={gameDate}
               showHeatmap={showHeatmap}
               teamCard={awayTeam}
               onTeamCardUpdate={onTeamCardUpdate}
@@ -56,12 +63,14 @@ const RenderGameSlot = (props: Props) => {
           gameId={game.id}
           position={2}
           onDrop={onDrop}
+          teamCards={teamCards}
         >
           {homeTeam && (
             <TeamDragCard
               tableType={tableType}
               type={acceptType}
               originGameId={game.id}
+              originGameDate={gameDate}
               showHeatmap={showHeatmap}
               teamCard={homeTeam}
               onTeamCardUpdate={onTeamCardUpdate}

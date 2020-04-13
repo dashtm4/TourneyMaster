@@ -1,41 +1,53 @@
 import {
   TeamsAction,
-  LOAD_DIVISIONS_TEAMS_START,
-  LOAD_DIVISIONS_TEAMS_SUCCESS,
+  LOAD_TEAMS_DATA_START,
+  LOAD_TEAMS_DATA_SUCCESS,
   LOAD_POOLS_START,
   LOAD_POOLS_SUCCESS,
   SAVE_TEAMS_SUCCESS,
+  CREATE_TEAMS_SUCCESS,
 } from './action-types';
-import { IDivision, IPool, ITeam } from '../../../common/models';
+import {
+  IDivision,
+  IPool,
+  ITeam,
+  ISchedulesGameWithNames,
+} from 'common/models';
+
+export interface ITeamsState {
+  divisions: IDivision[];
+  pools: IPool[];
+  teams: ITeam[];
+  games: ISchedulesGameWithNames[];
+  isLoading: boolean;
+  isLoaded: boolean;
+}
 
 const initialState = {
   divisions: [],
   pools: [],
   teams: [],
+  games: [],
   isLoading: false,
   isLoaded: false,
 };
 
-export interface AppState {
-  divisions: IDivision[];
-  pools: IPool[];
-  teams: ITeam[];
-  isLoading: boolean;
-  isLoaded: boolean;
-}
-
-const teamsReducer = (state: AppState = initialState, action: TeamsAction) => {
+const teamsReducer = (
+  state: ITeamsState = initialState,
+  action: TeamsAction
+) => {
   switch (action.type) {
-    case LOAD_DIVISIONS_TEAMS_START: {
+    case LOAD_TEAMS_DATA_START: {
       return { ...initialState, isLoading: true };
     }
-    case LOAD_DIVISIONS_TEAMS_SUCCESS: {
-      const { divisions, teams } = action.payload;
+    case LOAD_TEAMS_DATA_SUCCESS: {
+      const { divisions, teams, games } = action.payload;
 
       return {
         ...state,
-        divisions: divisions,
-        teams: teams,
+        divisions,
+        teams,
+        games,
         isLoading: false,
         isLoaded: true,
       };
@@ -67,7 +79,11 @@ const teamsReducer = (state: AppState = initialState, action: TeamsAction) => {
     case SAVE_TEAMS_SUCCESS: {
       const { teams } = action.payload;
 
-      return { ...state, teams: teams };
+      return { ...state, teams };
+    }
+    case CREATE_TEAMS_SUCCESS: {
+      const { data } = action.payload;
+      return { ...state, teams: [...state.teams, ...data] };
     }
     default:
       return state;

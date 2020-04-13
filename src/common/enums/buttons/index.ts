@@ -1,11 +1,12 @@
 enum ButtonTypes {
   SQUARED = 'squared',
   SQUARED_OUTLINED = 'squaredOutlined',
+  ICON = 'icon',
 }
 
 enum ButtonColors {
   INHERIT = 'inherit',
-  PRIMATY = 'primary',
+  PRIMARY = 'primary',
   SECONDARY = 'secondary',
   DEFAULT = 'default',
 }

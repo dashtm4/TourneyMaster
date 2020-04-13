@@ -9,29 +9,30 @@ import {
   Select,
   Button,
   DatePicker,
+  CardMessage,
 } from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 
 import { IPosition } from './map/autocomplete';
 import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
-import { EventDetailsDTO } from '../logic/model';
 
 import Map from './map';
 import PlacesAutocompleteInput from './map/autocomplete';
-import { BindingCbWithTwo, BindingCbWithOne } from 'common/models';
+import { BindingCbWithTwo, IEventDetails } from 'common/models';
 import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
 import { timeToDate, dateToTime } from 'helpers';
-import { getDays, getDay } from 'helpers/getDays';
+
+const CONTACT_TOOLTIP_MESSAGE =
+  'Contact details will be included when printing schedules and fields by field datails';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
-  eventData: Partial<EventDetailsDTO>;
+  eventData: Partial<IEventDetails>;
   onChange: BindingCbWithTwo<string, string | number>;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
-  index: number;
+  isSectionExpand: boolean;
 }
 
 enum sportsEnum {
@@ -69,9 +70,7 @@ const levelOptions = ['High School', 'Club', 'Youth', 'Other'];
 const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
   onChange,
-  expanded,
-  index,
-  onToggleOne,
+  isSectionExpand,
 }: Props) => {
   const {
     time_zone_utc,
@@ -117,10 +116,6 @@ const PrimaryInformationSection: React.FC<Props> = ({
       if (event_enddate && new Date(e).toISOString() > event_enddate) {
         onEndDate(e);
       }
-      if (eventData.event_type === 'League' && eventData.league_dates) {
-        const dayDates = getDays(getDay(eventData.league_dates), new Date(e));
-        onChange('league_dates', JSON.stringify(dayDates));
-      }
     }
   };
 
@@ -147,9 +142,14 @@ const PrimaryInformationSection: React.FC<Props> = ({
     onChange('primary_location_long', position.lng);
   };
 
-  const onSectionToggle = () => {
-    onToggleOne(index);
-  };
+  const onMainContactChange = (e: InputTargetValue) =>
+    onChange('main_contact', e.target.value);
+
+  const onMainContactMobieChange = (e: InputTargetValue) =>
+    onChange('main_contact_mobile', e.target.value);
+
+  const onMainContactEmailChange = (e: InputTargetValue) =>
+    onChange('main_contact_email', e.target.value);
 
   const { primary_location_lat: lat, primary_location_long: lng } = eventData;
 
@@ -158,10 +158,8 @@ const PrimaryInformationSection: React.FC<Props> = ({
       id={EventMenuTitles.PRIMARY_INFORMATION}
       type="section"
       panelDetailsType="flat"
-      isDefaultExpanded={true}
       useBorder={true}
-      expanded={expanded}
-      onToggle={onSectionToggle}
+      expanded={isSectionExpand}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Primary Information</span>
@@ -173,6 +171,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             label="Event Name"
             value={eventData.event_name || ''}
             onChange={onNameChange}
+            autofocus={eventData.event_name ? false : true}
           />
           <Input
             fullWidth={true}
@@ -198,6 +197,29 @@ const PrimaryInformationSection: React.FC<Props> = ({
             value={genderEnum[dropdownGenderValue]}
             onChange={onGenderChange}
           />
+        </div>
+        <div className={styles.piDetailsFirstContacts}>
+          <Input
+            fullWidth={true}
+            label="Main Contact"
+            value={eventData.main_contact || ''}
+            onChange={onMainContactChange}
+          />
+          <Input
+            fullWidth={true}
+            label="Main Contact Mobile"
+            value={eventData.main_contact_mobile || ''}
+            onChange={onMainContactMobieChange}
+          />
+          <Input
+            fullWidth={true}
+            label="Main Contact Email"
+            value={eventData.main_contact_email || ''}
+            onChange={onMainContactEmailChange}
+          />
+          <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+            {CONTACT_TOOLTIP_MESSAGE}
+          </CardMessage>
         </div>
         <div className={styles.piSectionContainer}>
           <div className={styles.piSection}>

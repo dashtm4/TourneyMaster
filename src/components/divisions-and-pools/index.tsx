@@ -1,34 +1,33 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { History } from 'history';
-import styles from './styles.module.scss';
-import Paper from '../common/paper';
-import Button from '../common/buttons/button';
-import HeadingLevelTwo from '../common/headings/heading-level-two';
+import {
+  Loader,
+  Button,
+  HeadingLevelTwo,
+  PopupAddToLibrary,
+} from 'components/common';
 import {
   getDivisionsTeams,
   getPools,
   savePool,
   saveTeams,
+  saveDivisions,
+  createDivisions,
 } from './logic/actions';
+import { addEntitiesToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import Modal from '../common/modal';
 import AddPool from './division/add-pool';
-import { BindingCbWithOne } from 'common/models/callback';
+import { BindingCbWithOne, BindingCbWithTwo } from 'common/models/callback';
 import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
-import { CircularProgress } from '@material-ui/core';
+import Navigation from './navigation';
 import Division from './division';
-import {
-  PopupTeamEdit,
-  PopupExposure,
-  DeletePopupConfrim,
-} from 'components/common';
-import { getIcon } from 'helpers';
-import { Icons } from 'common/enums';
+import styles from './styles.module.scss';
+import CsvLoader from 'components/common/csv-loader';
+import { EntryPoints } from 'common/enums';
+import { IEntity } from 'common/types';
 
-const ICON_STYLES = {
-  marginRight: '5px',
-};
 interface IDivisionsAndPoolsProps {
   divisions: IDivision[];
   pools: IPool[];
@@ -41,21 +40,17 @@ interface IDivisionsAndPoolsProps {
   getPools: BindingCbWithOne<string>;
   savePool: BindingCbWithOne<Partial<IPool>>;
   saveTeams: BindingCbWithOne<ITeam[]>;
+  saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
+  createDivisions: BindingCbWithOne<Partial<IDivision>[]>;
+  addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
 }
 
 interface IDivisionAndPoolsState {
   isModalOpen: boolean;
   selected: IDivision;
-  expanded: boolean[];
-  expandAll: boolean;
-  isArrange: boolean;
-  teams: ITeam[];
-  configurableTeam: ITeam | null;
-  currentDivision: string | null;
-  currentPool: string | null;
-  isDeletePopupOpen: boolean;
-  isEditPopupOpen: boolean;
-  isConfirmModalOpen: boolean;
+  isSectionsExpand: boolean;
+  isCsvLoaderOpen: boolean;
+  isLibraryPopupOpen: boolean;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -70,55 +65,15 @@ class DivisionsAndPools extends React.Component<
     this.state = {
       isModalOpen: false,
       selected: this.props.divisions[0],
-      expanded: [],
-      expandAll: false,
-      isArrange: false,
-      teams: [],
-      configurableTeam: null,
-      currentDivision: null,
-      currentPool: null,
-      isDeletePopupOpen: false,
-      isEditPopupOpen: false,
-      isConfirmModalOpen: false,
+      isSectionsExpand: true,
+      isCsvLoaderOpen: false,
+      isLibraryPopupOpen: false,
     };
   }
 
   componentDidMount() {
     this.props.getDivisionsTeams(this.eventId);
   }
-
-  componentDidUpdate(
-    prevProps: IDivisionsAndPoolsProps,
-    prevState: IDivisionAndPoolsState
-  ) {
-    const { isLoading, teams } = this.props;
-
-    if (prevProps.isLoading !== isLoading) {
-      this.setState({ teams });
-    }
-
-    if (
-      prevProps.divisions !== this.props.divisions &&
-      !prevState.expanded.length
-    ) {
-      this.setState({ expanded: this.props.divisions.map(_division => true) });
-    }
-  }
-
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
-  };
 
   onAddDivision = () => {
     const path = this.eventId
@@ -135,198 +90,54 @@ class DivisionsAndPools extends React.Component<
     this.setState({ isModalOpen: false });
   };
 
-  Loading = () => (
-    <div
-      style={{
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <CircularProgress />
-    </div>
-  );
-
-  onArrangeClick = () =>
-    this.setState(({ isArrange }) => ({ isArrange: !isArrange }));
-
-  onCancelClick = () => {
-    const { teams } = this.props;
-
-    this.setState({ isArrange: false, isConfirmModalOpen: false, teams });
+  onCsvLoaderBtn = () => {
+    this.setState({ isCsvLoaderOpen: true });
   };
 
-  onSaveClick = () => {
-    const eventId = this.props.match.params.eventId;
-    const { saveTeams } = this.props;
-    const { teams } = this.state;
-
-    if (eventId) {
-      saveTeams(teams);
-    }
-    this.setState({ isArrange: false, isConfirmModalOpen: false });
+  onCsvLoaderClose = () => {
+    this.setState({ isCsvLoaderOpen: false });
   };
 
-  changePool = (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => {
-    const changedTeam = {
-      ...team,
-      division_id: divisionId,
-      pool_id: poolId,
-      isChange: true,
-    };
-
-    this.setState(({ teams }) => ({
-      teams: teams.map(it =>
-        it.team_id === changedTeam.team_id ? changedTeam : it
-      ),
+  toggleLibraryPopup = () => {
+    this.setState(({ isLibraryPopupOpen }) => ({
+      isLibraryPopupOpen: !isLibraryPopupOpen,
     }));
   };
 
-  onEditPopupOpen = (team: ITeam, divisionName: string, poolName: string) =>
-    this.setState({
-      isEditPopupOpen: true,
-      configurableTeam: team,
-      currentDivision: divisionName,
-      currentPool: poolName,
-    });
-
-  onChangeTeam = ({
-    target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) =>
-    this.setState(({ configurableTeam }) => ({
-      configurableTeam: {
-        ...(configurableTeam as ITeam),
-        [name]: value,
-        isChange: true,
-      },
-    }));
-
-  onSaveTeam = () => {
-    const { configurableTeam } = this.state;
-
-    if (configurableTeam) {
-      this.setState(({ teams }) => ({
-        teams: teams.map(it =>
-          it.team_id === configurableTeam.team_id ? configurableTeam : it
-        ),
-      }));
-    }
-
-    this.onCloseModal();
-  };
-
-  onDeleteTeam = (team: ITeam) => {
-    this.setState(({ teams }) => ({
-      teams: teams.map(it =>
-        it.team_id === team.team_id ? { ...it, isDelete: true } : it
-      ),
-    }));
-
-    this.onCloseModal();
-  };
-
-  onDeletePopupOpen = (team: ITeam) =>
-    this.setState({ configurableTeam: team, isDeletePopupOpen: true });
-
-  onCloseModal = () =>
-    this.setState({
-      configurableTeam: null,
-      currentDivision: null,
-      isEditPopupOpen: false,
-      isDeletePopupOpen: false,
-    });
-
-  onConfirmModalClose = () => {
-    this.setState({ isConfirmModalOpen: false });
-  };
-
-  onCancel = () => {
-    this.setState({ isConfirmModalOpen: true });
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
   render() {
-    const { divisions, pools, isLoading } = this.props;
-    const {
-      teams,
-      configurableTeam,
-      currentDivision,
-      currentPool,
-      isArrange,
-      isEditPopupOpen,
-      isDeletePopupOpen,
-      isConfirmModalOpen,
-    } = this.state;
-
-    const notDeletedTeams = teams.filter((it: ITeam) => !it.isDelete);
-
-    const deleteMessage = `You are about to delete this team and this cannot be undone.
-    Please, enter the name of the team to continue.`;
+    const { divisions, pools, teams, isLoading, saveTeams } = this.props;
+    const { isLibraryPopupOpen } = this.state;
 
     return (
       <section className={styles.container}>
-        <Paper sticky={true}>
-          <div className={styles.mainMenu}>
-            {isArrange ? (
-              <p>
-                <Button
-                  onClick={this.onCancel}
-                  label="Cancel"
-                  variant="text"
-                  color="secondary"
-                />
-                <span className={styles.btnWrapper}>
-                  <Button
-                    onClick={this.onSaveClick}
-                    label="Save"
-                    variant="contained"
-                    color="primary"
-                  />
-                </span>
-              </p>
-            ) : (
-              <p>
-                <Button
-                  onClick={this.onArrangeClick}
-                  icon={getIcon(Icons.EDIT, ICON_STYLES)}
-                  label="Arrange Teams"
-                  variant="text"
-                  color="secondary"
-                />
-                <span className={styles.btnWrapper}>
-                  <Button
-                    label="+ Add Division"
-                    variant="contained"
-                    color="primary"
-                    onClick={this.onAddDivision}
-                  />
-                </span>
-              </p>
-            )}
-          </div>
-        </Paper>
+        <Navigation
+          onCsvLoaderBtn={this.onCsvLoaderBtn}
+          onAddDivision={this.onAddDivision}
+          toggleLibraryPopup={this.toggleLibraryPopup}
+        />
         <div className={styles.sectionContainer}>
           <div className={styles.headingContainer}>
             <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>
             {divisions?.length ? (
               <Button
-                label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                label={
+                  this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+                }
                 variant="text"
                 color="secondary"
-                onClick={this.onToggleAll}
+                onClick={this.toggleSectionCollapse}
               />
             ) : null}
           </div>
-          {isLoading && this.Loading()}
-          {divisions.length && !isLoading && this.state.expanded.length ? (
+          {isLoading && <Loader />}
+          {divisions.length && !isLoading ? (
             <>
               <ul className={styles.divisionsList}>
-                {divisions.map((division, index) => (
+                {divisions.map(division => (
                   <li key={division.division_id}>
                     <Division
                       eventId={this.eventId}
@@ -334,39 +145,18 @@ class DivisionsAndPools extends React.Component<
                       pools={pools.filter(
                         pool => pool.division_id === division.division_id
                       )}
-                      teams={notDeletedTeams}
+                      teams={teams.filter(
+                        team => team.division_id === division.division_id
+                      )}
                       onAddPool={this.onAddPool}
                       getPools={this.props.getPools}
                       areDetailsLoading={this.props.areDetailsLoading}
                       divisions={this.props.divisions}
-                      expanded={this.state.expanded[index]}
-                      index={index}
-                      onToggleOne={this.onToggleOne}
-                      isArrange={isArrange}
-                      isUnassigned={false}
-                      changePool={this.changePool}
-                      onDeletePopupOpen={this.onDeletePopupOpen}
-                      onEditPopupOpen={this.onEditPopupOpen}
+                      isSectionExpand={this.state.isSectionsExpand}
+                      saveTeams={saveTeams}
                     />
                   </li>
                 ))}
-                <Division
-                  eventId={this.eventId}
-                  pools={[]}
-                  teams={notDeletedTeams}
-                  onAddPool={this.onAddPool}
-                  getPools={this.props.getPools}
-                  areDetailsLoading={this.props.areDetailsLoading}
-                  divisions={this.props.divisions}
-                  expanded={this.state.expanded[this.state.expanded.length - 1]}
-                  index={this.state.expanded.length - 1}
-                  onToggleOne={this.onToggleOne}
-                  isArrange={isArrange}
-                  isUnassigned={true}
-                  changePool={this.changePool}
-                  onDeletePopupOpen={this.onDeletePopupOpen}
-                  onEditPopupOpen={this.onEditPopupOpen}
-                />
                 {this.state.selected && (
                   <Modal
                     isOpen={this.state.isModalOpen}
@@ -395,39 +185,19 @@ class DivisionsAndPools extends React.Component<
             )
           )}
         </div>
-        <Modal
-          isOpen={isDeletePopupOpen || isEditPopupOpen}
-          onClose={this.onCloseModal}
-        >
-          <>
-            {isEditPopupOpen && (
-              <PopupTeamEdit
-                team={configurableTeam}
-                division={currentDivision}
-                pool={currentPool}
-                onChangeTeam={this.onChangeTeam}
-                onSaveTeamClick={this.onSaveTeam}
-                onDeleteTeamClick={this.onDeleteTeam}
-                onCloseModal={this.onCloseModal}
-              />
-            )}
-            {isDeletePopupOpen && (
-              <DeletePopupConfrim
-                type={'team'}
-                message={deleteMessage}
-                deleteTitle={configurableTeam?.long_name!}
-                isOpen={isDeletePopupOpen}
-                onClose={this.onCloseModal}
-                onDeleteClick={() => this.onDeleteTeam(configurableTeam!)}
-              />
-            )}
-          </>
-        </Modal>
-        <PopupExposure
-          isOpen={isConfirmModalOpen}
-          onClose={this.onConfirmModalClose}
-          onExitClick={this.onCancelClick}
-          onSaveClick={this.onSaveClick}
+        <CsvLoader
+          isOpen={this.state.isCsvLoaderOpen}
+          onClose={this.onCsvLoaderClose}
+          type="divisions"
+          onCreate={this.props.createDivisions}
+          eventId={this.eventId}
+        />
+        <PopupAddToLibrary
+          entities={divisions}
+          entryPoint={EntryPoints.DIVISIONS}
+          isOpen={isLibraryPopupOpen}
+          onClose={this.toggleLibraryPopup}
+          addEntitiesToLibrary={this.props.addEntitiesToLibrary}
         />
       </section>
     );
@@ -457,6 +227,9 @@ const mapDispatchToProps = {
   getPools,
   savePool,
   saveTeams,
+  saveDivisions,
+  createDivisions,
+  addEntitiesToLibrary,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DivisionsAndPools);

@@ -1,4 +1,4 @@
-import { union, findKey, find, keys } from 'lodash-es';
+import { union, findKey, find, keys, unionBy } from 'lodash-es';
 import { getTimeFromString } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
@@ -44,6 +44,7 @@ interface ITournamentBaseInfo {
   facilities: IScheduleFacility[];
   divisions: IScheduleDivision[];
   gameOptions: IGameOptions;
+  teamsInPlay?: IKeyId;
 }
 
 export default class Scheduler {
@@ -71,7 +72,8 @@ export default class Scheduler {
     timeSlots: ITimeSlot[],
     tournamentBaseInfo: ITournamentBaseInfo
   ) {
-    const { facilities, divisions, gameOptions } = tournamentBaseInfo || {};
+    const { facilities, divisions, gameOptions, teamsInPlay } =
+      tournamentBaseInfo || {};
 
     this.fields = fields;
     this.teamCards = teamCards;
@@ -80,7 +82,7 @@ export default class Scheduler {
     this.facilities = facilities;
     this.divisions = divisions;
     this.updatedGames = [];
-    this.teamsInPlay = {};
+    this.teamsInPlay = teamsInPlay || {};
     this.facilityData = {};
     this.poolsData = {};
 
@@ -281,6 +283,7 @@ export default class Scheduler {
       game =>
         game.timeSlotId !== undefined &&
         game.startTime &&
+        !game.isPlayoff &&
         (ignorePremier || game.isPremier === teamOne.isPremier) &&
         !game.awayTeam &&
         !game.homeTeam &&
@@ -415,7 +418,15 @@ export default class Scheduler {
 
   saveUpdatedTeam = (updatedTeamCard: ITeamCard) => {
     this.teamCards = this.teamCards.map(teamCard =>
-      teamCard.id === updatedTeamCard.id ? updatedTeamCard : teamCard
+      teamCard.id === updatedTeamCard.id
+        ? {
+            ...teamCard,
+            games: unionBy(
+              [...(teamCard.games || []), ...updatedTeamCard.games],
+              'id'
+            ),
+          }
+        : teamCard
     );
   };
 

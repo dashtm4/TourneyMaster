@@ -1,40 +1,20 @@
 import React from 'react';
-import { useDrag, DragSourceMonitor } from 'react-dnd';
-import { ITeam } from '../../../../common/models';
-import Button from '../../../common/buttons/button';
-import { getIcon } from '../../../../helpers/get-icon.helper';
-import { Icons } from '../../../../common/enums/icons';
-import { DndItems } from '../../types';
+import Button from 'components/common/buttons/button';
+import { getIcon } from 'helpers/get-icon.helper';
+import { ITeam } from 'common/models';
+import { Icons, ButtonColors, ButtonVarian, ButtonTypes } from 'common/enums';
 import styles from './styles.module.scss';
-import moveIcon from 'assets/moveIcon.png';
 
 const EDIT_ICON_STYLES = {
   width: '21px',
-  margin: '0',
+  marginRight: '5px',
   fill: '#00a3ea',
-};
-
-const DELETE_ICON_STYLES = {
-  width: '21px',
-  margin: '0',
-  fill: '#ff0f19',
-};
-
-const BTN_STYLES = {
-  minWidth: 'unset',
 };
 
 interface Props {
   team: ITeam;
   divisionName: string;
   poolName?: string;
-  isEdit: boolean;
-  changePool: (
-    team: ITeam,
-    divisionId: string | null,
-    poolId: string | null
-  ) => void;
-  onDeletePopupOpen: (team: ITeam) => void;
   onEditPopupOpen: (
     team: ITeam,
     divisionName: string,
@@ -42,74 +22,26 @@ interface Props {
   ) => void;
 }
 
-const TeamItem = ({
-  team,
-  divisionName,
-  poolName,
-  isEdit,
-  changePool,
-  onDeletePopupOpen,
-  onEditPopupOpen,
-}: Props) => {
-  const item = { type: DndItems.TEAM };
-  const [, drag] = useDrag({
-    item,
-    end(_, monitor: DragSourceMonitor) {
-      const dropResult = monitor.getDropResult();
-
-      if (!dropResult) {
-        return;
-      }
-
-      const { poolId, divisionId } = dropResult;
-
-      if (poolId !== team.pool_id || divisionId !== team.division_id) {
-        changePool(team, divisionId, poolId);
-      }
-    },
-  });
+const TeamItem = ({ team, divisionName, poolName, onEditPopupOpen }: Props) => {
+  const onEdit = () => onEditPopupOpen(team, divisionName, poolName || '');
 
   return (
-    <li
-      ref={isEdit ? drag : null}
-      className={isEdit ? styles.teamEdit : styles.team}
-    >
-      <span>{team.short_name}</span>
-      {isEdit && (
-        <p className={styles.btnsWrapper}>
-          <Button
-            onClick={() => onDeletePopupOpen(team)}
-            icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
-            label={<span className="visually-hidden">Delete team</span>}
-            variant="text"
-            color="inherit"
-            type="icon"
-            btnStyles={BTN_STYLES}
-          />
-          <Button
-            onClick={() => onEditPopupOpen(team, divisionName, poolName || '')}
-            icon={getIcon(Icons.EDIT, EDIT_ICON_STYLES)}
-            label={<span className="visually-hidden">Edit team</span>}
-            variant="text"
-            color="secondary"
-            type="icon"
-            btnStyles={BTN_STYLES}
-          />
-          {isEdit && (
-            <div className={styles.iconWrapper}>
-              <img
-                src={moveIcon}
-                style={{
-                  width: '21px',
-                  height: '21px',
-                  alignSelf: 'center',
-                }}
-              />
-            </div>
-          )}
-        </p>
-      )}
-    </li>
+    <tr className={styles.team}>
+      <td className={styles.teamName}>{team.short_name}</td>
+      <td className={styles.contactName}>{`${team.contact_first_name ||
+        ''} ${team.contact_last_name || ''}`}</td>
+      <td className={styles.phone_num}>{team.phone_num || ''}</td>
+      <td className={styles.btnsWrapper}>
+        <Button
+          onClick={onEdit}
+          icon={getIcon(Icons.EDIT, EDIT_ICON_STYLES)}
+          variant={ButtonVarian.TEXT}
+          color={ButtonColors.SECONDARY}
+          type={ButtonTypes.ICON}
+          label="Edit team"
+        />
+      </td>
+    </tr>
   );
 };
 

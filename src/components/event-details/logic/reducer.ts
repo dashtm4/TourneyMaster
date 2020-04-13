@@ -4,10 +4,10 @@ import {
   EVENT_DETAILS_FETCH_FAILURE,
   EventDetailsAction,
 } from './actionTypes';
-import { EventDetailsDTO } from './model';
+import { IEventDetails } from 'common/models';
 
 export interface IEventState {
-  data?: EventDetailsDTO;
+  data?: IEventDetails;
   error: boolean;
   isEventLoading: boolean;
   isEventLoaded: boolean;

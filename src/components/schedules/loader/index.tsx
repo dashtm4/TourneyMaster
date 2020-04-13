@@ -1,8 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import { ProgressBar } from 'components/common';
+import { ProgressBar, Loader } from 'components/common';
+
+export enum LoaderTypeEnum {
+  CALCULATION = 1,
+  LOADING = 2,
+}
 
 interface IProps {
   time: number;
+  type: LoaderTypeEnum;
 }
 
 enum LoadingStepEnum {
@@ -16,42 +23,51 @@ enum LoadingStepEnum {
   'Returning Schedule Results...' = 8,
 }
 
-const SchedulesLoader = ({ time }: IProps) => {
+const SchedulesLoader = ({ time, type }: IProps) => {
   const [loadingStep, setLoadingStep] = useState(LoadingStepEnum[1]);
   const [completed, setCompleted] = useState(0);
 
   const loadSteps = () => {
-    let i = 1;
-    const stepsNum = 9;
+    let i = 0;
+    const stepsNum = 8;
     const updateTime = time / stepsNum;
 
     setTimeout(function load() {
       if (i < stepsNum) {
-        setLoadingStep(LoadingStepEnum[i++]);
+        i++;
+        setProgress((100 / stepsNum) * i);
+        setLoadingStep(LoadingStepEnum[i]);
         setTimeout(load, updateTime);
       }
     }, updateTime);
   };
 
-  const progress = () => {
-    setCompleted(oldCompleted => {
-      if (oldCompleted === 100) {
-        return 100;
-      }
-      return oldCompleted + 10;
-    });
-  };
+  const setProgress = (progress: number) =>
+    setCompleted(completed < 100 ? completed + progress : completed);
 
   useEffect(() => {
     loadSteps();
-    const timer = setInterval(progress, 400);
-    return () => clearInterval(timer);
   }, [time]);
 
-  return (
+  const renderCalculationProgress = () => (
     <>
       <ProgressBar completed={completed} type={'loader'} />
       <div style={{ marginTop: '10px', color: '#6a6a6a' }}>{loadingStep}</div>
+    </>
+  );
+
+  const renderLoadingProgress = () => (
+    <>
+      <Loader />
+      <span style={{ marginTop: '10px', color: '#6a6a6a' }}>Loading...</span>
+    </>
+  );
+
+  return (
+    <>
+      {type === LoaderTypeEnum.CALCULATION
+        ? renderCalculationProgress()
+        : renderLoadingProgress()}
     </>
   );
 };

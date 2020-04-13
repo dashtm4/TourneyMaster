@@ -3,13 +3,12 @@ import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dispatch, bindActionCreators } from 'redux';
 import {
-  loadDivision,
+  loadScoringData,
   loadPools,
-  loadTeams,
   editTeam,
   deleteTeam,
 } from './logic/actions';
-import { AppState } from './logic/reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import Navigation from './components/navigation';
 import ScoringItem from './components/scoring-Item';
 import {
@@ -17,13 +16,23 @@ import {
   Modal,
   Loader,
   PopupTeamEdit,
+  HazardList,
 } from 'components/common';
-import { IDivision, IPool, ITeam, BindingCbWithOne } from 'common/models';
+import {
+  IDivision,
+  IPool,
+  ITeamWithResults,
+  BindingCbWithOne,
+  ISchedulesGameWithNames,
+  IMenuItem,
+  ITeam,
+  IEventDetails,
+} from 'common/models';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 
 interface MatchParams {
-  eventId?: string;
+  eventId: string;
 }
 
 interface Props {
@@ -31,21 +40,22 @@ interface Props {
   isLoaded: boolean;
   divisions: IDivision[];
   pools: IPool[];
-  teams: ITeam[];
-  loadDivision: (eventId: string) => void;
+  teams: ITeamWithResults[];
+  games: ISchedulesGameWithNames[];
+  event: IEventDetails | null;
+  incompleteMenuItems: IMenuItem[];
+  loadScoringData: (eventId: string) => void;
   loadPools: (divisionId: string) => void;
-  loadTeams: (poolId: string) => void;
-  editTeam: BindingCbWithOne<ITeam>;
+  editTeam: BindingCbWithOne<ITeamWithResults>;
   deleteTeam: (teamId: string) => void;
 }
 
 interface State {
-  changeableTeam: ITeam | null;
+  changeableTeam: ITeamWithResults | null;
   currentDivision: string | null;
   currentPool: string | null;
   isModalOpen: boolean;
-  expanded: boolean[];
-  expandAll: boolean;
+  isSectionsExpand: boolean;
 }
 
 class Sсoring extends React.Component<
@@ -60,17 +70,16 @@ class Sсoring extends React.Component<
       currentPool: null,
       changeableTeam: null,
       isModalOpen: false,
-      expanded: [],
-      expandAll: false,
+      isSectionsExpand: true,
     };
   }
 
   componentDidMount() {
-    const { loadDivision } = this.props;
+    const { loadScoringData } = this.props;
     const eventId = this.props.match.params.eventId;
 
     if (eventId) {
-      loadDivision(eventId);
+      loadScoringData(eventId);
     }
   }
 
@@ -85,7 +94,7 @@ class Sсoring extends React.Component<
     this.onCloseModal();
   };
 
-  onDeleteTeam = (team: ITeam) => {
+  onDeleteTeam = (team: ITeamWithResults | ITeam) => {
     const { deleteTeam } = this.props;
 
     deleteTeam(team.team_id);
@@ -99,11 +108,18 @@ class Sсoring extends React.Component<
     } = evt;
 
     this.setState(({ changeableTeam }) => ({
-      changeableTeam: { ...(changeableTeam as ITeam), [name]: value },
+      changeableTeam: {
+        ...(changeableTeam as ITeamWithResults),
+        [name]: value,
+      },
     }));
   };
 
-  onOpenTeamDetails = (team: ITeam, divisionName: string, poolName: string) => {
+  onOpenTeamDetails = (
+    team: ITeamWithResults,
+    divisionName: string,
+    poolName: string
+  ) => {
     this.setState({
       isModalOpen: true,
       changeableTeam: team,
@@ -120,25 +136,8 @@ class Sсoring extends React.Component<
       currentPool: null,
     });
 
-  componentDidUpdate(prevProps: any, prevState: any) {
-    if (prevProps.divisions.length && !prevState.expanded.length) {
-      this.setState({ expanded: this.props.divisions.map(_division => true) });
-    }
-  }
-
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
   render() {
@@ -155,8 +154,21 @@ class Sсoring extends React.Component<
       teams,
       divisions,
       loadPools,
-      loadTeams,
+      games,
+      event,
+      incompleteMenuItems,
     } = this.props;
+
+    const isAllowViewPage = incompleteMenuItems.length === 0;
+
+    if (!isAllowViewPage) {
+      return (
+        <HazardList
+          incompleteMenuItems={incompleteMenuItems}
+          eventId={this.props.match.params.eventId}
+        />
+      );
+    }
 
     if (isLoading) {
       return <Loader />;
@@ -170,28 +182,29 @@ class Sсoring extends React.Component<
             <HeadingLevelTwo>Scoring</HeadingLevelTwo>
             {divisions?.length ? (
               <Button
-                label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                label={
+                  this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+                }
                 variant="text"
                 color="secondary"
-                onClick={this.onToggleAll}
+                onClick={this.toggleSectionCollapse}
               />
             ) : null}
           </div>
           <ul className={styles.scoringList}>
-            {divisions.map((division, index) => (
+            {divisions.map(division => (
               <ScoringItem
+                event={event}
                 division={division}
                 pools={pools.filter(
                   pool => pool.division_id === division.division_id
                 )}
                 teams={teams}
+                games={games}
                 loadPools={loadPools}
-                loadTeams={loadTeams}
                 onOpenTeamDetails={this.onOpenTeamDetails}
                 key={division.division_id}
-                expanded={this.state.expanded[index]}
-                index={index}
-                onToggleOne={this.onToggleOne}
+                isSectionExpand={this.state.isSectionsExpand}
               />
             ))}
           </ul>
@@ -205,6 +218,7 @@ class Sсoring extends React.Component<
             onDeleteTeamClick={this.onDeleteTeam}
             onChangeTeam={this.onChangeTeam}
             onCloseModal={this.onCloseModal}
+            games={games}
           />
         </Modal>
       </section>
@@ -212,21 +226,19 @@ class Sсoring extends React.Component<
   }
 }
 
-interface IRootState {
-  scoring: AppState;
-}
-
 export default connect(
-  (state: IRootState) => ({
-    isLoading: state.scoring.isLoading,
-    isLoaded: state.scoring.isLoaded,
-    divisions: state.scoring.divisions,
-    pools: state.scoring.pools,
-    teams: state.scoring.teams,
+  ({ scoring, pageEvent }: IAppState) => ({
+    isLoading: scoring.isLoading,
+    isLoaded: scoring.isLoaded,
+    divisions: scoring.divisions,
+    pools: scoring.pools,
+    teams: scoring.teams,
+    games: scoring.games,
+    event: pageEvent.tournamentData.event,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadDivision, loadPools, loadTeams, deleteTeam, editTeam },
+      { loadScoringData, loadPools, deleteTeam, editTeam },
       dispatch
     )
 )(Sсoring);

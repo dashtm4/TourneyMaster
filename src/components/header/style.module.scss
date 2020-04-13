@@ -51,6 +51,10 @@ $transition: 0.125s ease-in-out;
         padding-right: 10px;
         white-space: nowrap;
         transition: color $transition, text-shadow $transition;
+        a {
+          text-decoration: none;
+          color: #6a6a6a;
+        }
 
         &:hover {
           cursor: pointer;

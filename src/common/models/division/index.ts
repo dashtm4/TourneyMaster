@@ -1,3 +1,4 @@
+// ! If the interface changes, you must change the fields for the enum 'common/enums/_entity_'
 export interface IDivision {
   division_id: string;
   event_id: string;
@@ -17,9 +18,11 @@ export interface IDivision {
   game_duration_override: null;
   unique_bracket_game_duration: null;
   division_sort: null;
+  plays_at_spec_facility: number;
+  spec_facilities_id: string;
   latest_web_publish: string;
   is_active_YN: number;
-  is_library_YN: null;
+  is_library_YN: 0 | 1 | null;
   created_by: string;
   created_datetime: string;
   updated_by: null;

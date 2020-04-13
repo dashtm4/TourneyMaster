@@ -32,6 +32,8 @@ interface IProps {
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onTeamCardsUpdate: (teamCards: ITeamCard[]) => void;
   teamCards: ITeamCard[];
+  isFullScreen?: boolean;
+  onToggleFullScreen?: BindingAction;
 }
 
 interface IPinchProps {
@@ -53,6 +55,8 @@ const SchedulesMatrix = (props: IProps) => {
     onTeamCardUpdate,
     onTeamCardsUpdate,
     teamCards,
+    isFullScreen,
+    onToggleFullScreen,
   } = props;
 
   const takeFacilityByFieldId = (facilityId: string) =>
@@ -70,7 +74,12 @@ const SchedulesMatrix = (props: IProps) => {
         >
           {({ zoomIn, zoomOut }: IPinchProps) => (
             <>
-              <NavControls zoomIn={zoomIn} zoomOut={zoomOut} />
+              <NavControls
+                zoomIn={zoomIn}
+                zoomOut={zoomOut}
+                isFullScreen={isFullScreen}
+                onToggleFullScreen={onToggleFullScreen}
+              />
               <TransformComponent>
                 <table className={styles.table}>
                   <tbody>

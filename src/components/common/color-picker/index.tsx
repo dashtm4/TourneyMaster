@@ -35,7 +35,7 @@ const ColorPicker = ({
     <div className={styles.ColorPickerWrapper}>
       <button
         className={styles.ColorPickerBtn}
-        style={{ backgroundColor: value }}
+        style={{ backgroundColor: `#${value}` }}
         onClick={onClick}
       >
         <span className="visually-hidden">Select Color</span>

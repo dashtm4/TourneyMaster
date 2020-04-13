@@ -9,7 +9,8 @@ import Api from 'api/api';
 
 const TourneyImportWizard = () => {
   const [tournamentLoaded, SetTournamentLoaded] = React.useState(true);
-  const [idTournament, setIdTournament] = React.useState('');
+  const [historyLoaded, setHistoryLoaded] = React.useState(true);
+  const [idTournament, setIdTournament] = React.useState<string | number>('');
   const [jobStatus, setJobStatus] = React.useState<any[]>([]);
   const [events, setEvents] = React.useState<any[]>([]);
   const [games, setGames] = React.useState<any[]>([]);
@@ -37,6 +38,17 @@ const TourneyImportWizard = () => {
 
     SetTournamentLoaded(false);
     Api.post(`/tourneymachine?tid=${idTournament}`, null)
+      .then(res => {
+        getStatus(res.message.job_id);
+      })
+      .catch(err => {
+        console.log('[On job failed]', err);
+      })
+  }
+
+  function reRunHandler(tournamentid: string | number) {
+    setIdTournament(tournamentid);
+    Api.post(`/tourneymachine?tid=${tournamentid}`, null)
       .then(res => {
         getStatus(res.message.job_id);
       })
@@ -103,7 +115,11 @@ const TourneyImportWizard = () => {
     setIdTournament(tId);
   }
 
-  if (!tournamentLoaded) {
+  function historycalLoadHandler(value: boolean) {
+    setHistoryLoaded(value);
+  }
+
+  if (!tournamentLoaded || !historyLoaded) {
     return <Loader />;
   }
 
@@ -131,7 +147,7 @@ const TourneyImportWizard = () => {
           completed={completed}
         />
 
-        <History />
+        <History onDataLoaded={historycalLoadHandler} onRerun={reRunHandler} />
       </form>
     </section>
   );

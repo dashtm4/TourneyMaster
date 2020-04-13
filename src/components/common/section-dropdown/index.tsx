@@ -22,6 +22,7 @@ interface Props {
   panelDetailsType?: string;
   expanded?: boolean;
   onToggle?: BindingAction;
+  isToggleCollapse?: boolean;
 }
 
 const setStyleOnType = (type?: DropdownType) => {
@@ -68,43 +69,53 @@ const SectionDropdown = ({
   panelDetailsType,
   expanded,
   onToggle,
-}: Props) => (
-  <section className={styles.section} id={id ? stringToLink(id) : undefined}>
-    <ExpansionPanel
-      style={setStyleOnType(type)}
-      defaultExpanded={isDefaultExpanded}
-      expanded={expanded}
-    >
-      <ExpansionPanelSummary
-        style={{
-          ...setPanelSummaryStyle(type),
-          display: 'flex',
-          borderTop: useBorder ? '1px solid #d1d1d1' : 'none',
-        }}
-        expandIcon={setExpandIcon(type)}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-        onClick={onToggle}
+}: Props) => {
+  const [isExpanded, onChangeExpanded] = React.useState(expanded);
+
+  React.useEffect(() => {
+    onChangeExpanded(expanded);
+  }, [expanded]);
+
+  const defaulOnClick = () => onChangeExpanded(!isExpanded);
+
+  return (
+    <section className={styles.section} id={id ? stringToLink(id) : undefined}>
+      <ExpansionPanel
+        style={setStyleOnType(type)}
+        defaultExpanded={isDefaultExpanded}
+        expanded={isExpanded}
       >
-        <span style={{ width: '100%' }}>
-          <HeadeingLevelThree color={headingColor}>
-            {children[0]}
-          </HeadeingLevelThree>
-        </span>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails
-        style={
-          panelDetailsType
-            ? {
-                ...setPanelDetailsStyle(panelDetailsType),
-              }
-            : {}
-        }
-      >
-        {children[1]}
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-  </section>
-);
+        <ExpansionPanelSummary
+          style={{
+            ...setPanelSummaryStyle(type),
+            display: 'flex',
+            borderTop: useBorder ? '1px solid #d1d1d1' : 'none',
+          }}
+          expandIcon={setExpandIcon(type)}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+          onClick={onToggle || defaulOnClick}
+        >
+          <span style={{ width: '100%' }}>
+            <HeadeingLevelThree color={headingColor}>
+              {children[0]}
+            </HeadeingLevelThree>
+          </span>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails
+          style={
+            panelDetailsType
+              ? {
+                  ...setPanelDetailsStyle(panelDetailsType),
+                }
+              : {}
+          }
+        >
+          {children[1]}
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    </section>
+  );
+};
 
 export default SectionDropdown;

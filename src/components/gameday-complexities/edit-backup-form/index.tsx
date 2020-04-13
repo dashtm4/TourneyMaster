@@ -1,7 +1,11 @@
 import React from 'react';
 import { Input, Select, Radio, Button } from 'components/common';
-import { IFacility, BindingCbWithOne, BindingAction } from 'common/models';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
+import {
+  IFacility,
+  BindingCbWithOne,
+  BindingAction,
+  IEventDetails,
+} from 'common/models';
 import { IField } from 'common/models';
 import MultipleSearch from 'components/common/multiple-search-select';
 import styles from '../create-backup-modal/styles.module.scss';
@@ -27,7 +31,7 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
   backupPlan: IBackupPlan;
-  events: EventDetailsDTO[];
+  events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
   updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
@@ -223,6 +227,7 @@ class CreateBackupForm extends React.Component<Props, State> {
                 label="Name"
                 onChange={this.onNameChange}
                 value={backup_name || ''}
+                autofocus={true}
               />
             </div>
             <div className={styles.item}>

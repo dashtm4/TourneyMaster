@@ -3,49 +3,94 @@ import { ActionCreator, Dispatch } from 'redux';
 import * as Yup from 'yup';
 import {
   TeamsAction,
-  LOAD_DIVISION_START,
-  LOAD_DIVISION_SUCCESS,
-  LOAD_DIVISION_FAILURE,
+  LOAD_SCORING_DATA_START,
+  LOAD_SCORING_DATA_SUCCESS,
+  LOAD_SCORING_DATA_FAILURE,
   LOAD_POOLS_START,
   LOAD_POOLS_SUCCESS,
   LOAD_POOLS_FAILURE,
-  LOAD_TEAMS_START,
-  LOAD_TEAMS_SUCCESS,
-  LOAD_TEAMS_FAILURE,
   EDIT_TEAM_SUCCESS,
   EDIT_TEAM_FAILURE,
   DELETE_TEAM_SUCCESS,
   DELETE_TEAM_FAILURE,
 } from './action-types';
-import { AppState } from './reducer';
+import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { teamSchema } from 'validations';
-import { ITeam } from '../../../common/models';
+import {
+  mapScheduleGamesWithNames,
+  getTeamsWithResults,
+  removeObjKeysByKeys,
+} from 'helpers';
+import {
+  ITeam,
+  ISchedule,
+  ScheduleStatuses,
+  ITeamWithResults,
+  IFacility,
+  IEventDetails,
+} from 'common/models';
 import { Toasts } from 'components/common';
+import { ITeamFields } from 'common/enums';
+import { getScoringSettings } from 'helpers/scoring';
 
-type IAppState = {
-  scoring: AppState;
-};
-
-const loadDivision: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
-  eventId: string
-) => async (dispatch: Dispatch) => {
+const loadScoringData: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  TeamsAction
+>> = (eventId: string) => async (dispatch: Dispatch) => {
   try {
     dispatch({
-      type: LOAD_DIVISION_START,
+      type: LOAD_SCORING_DATA_START,
     });
 
+    const events = await Api.get(`events?event_id=${eventId}`);
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
+    const schedules = await Api.get(`/schedules?event_id=${eventId}`);
+    const publishedSchedule = schedules.find(
+      (it: ISchedule) => it.schedule_status === ScheduleStatuses.PUBLISHED
+    );
+    const teams = await Api.get(`/teams?event_id=${eventId}`);
+    const schedulesGames = await Api.get(
+      `/games?schedule_id=${publishedSchedule.schedule_id}`
+    );
+    const facilities = await Api.get(`/facilities?event_id=${eventId}`);
+    const fields = (
+      await Promise.all(
+        facilities.map((it: IFacility) =>
+          Api.get(`/fields?facilities_id=${it.facilities_id}`)
+        )
+      )
+    ).flat();
+    const currentEvent: IEventDetails = events.find(
+      (it: IEventDetails) => it.event_id === eventId
+    );
+
+    const scoringSettings = getScoringSettings(currentEvent);
+
+    const mappedTeams = getTeamsWithResults(
+      teams,
+      schedulesGames,
+      scoringSettings
+    );
+    const mappedGames = mapScheduleGamesWithNames(
+      teams,
+      fields,
+      schedulesGames
+    );
 
     dispatch({
-      type: LOAD_DIVISION_SUCCESS,
+      type: LOAD_SCORING_DATA_SUCCESS,
       payload: {
         divisions,
+        teams: mappedTeams,
+        games: mappedGames,
       },
     });
   } catch {
     dispatch({
-      type: LOAD_DIVISION_FAILURE,
+      type: LOAD_SCORING_DATA_FAILURE,
     });
   }
 };
@@ -77,41 +122,15 @@ const loadPools: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-const loadTeams: ActionCreator<ThunkAction<
-  void,
-  {},
-  null,
-  TeamsAction
->> = poolId => async (dispatch: Dispatch) => {
-  try {
-    dispatch({
-      type: LOAD_TEAMS_START,
-      payload: {
-        poolId,
-      },
-    });
-
-    const teams = await Api.get(`/teams?pool_id=${poolId}`);
-
-    dispatch({
-      type: LOAD_TEAMS_SUCCESS,
-      payload: {
-        poolId,
-        teams,
-      },
-    });
-  } catch {
-    dispatch({
-      type: LOAD_TEAMS_FAILURE,
-    });
-  }
-};
-
-const editTeam = (team: ITeam) => async (
+const editTeam = (team: ITeamWithResults) => async (
   dispatch: Dispatch,
   getState: () => IAppState
 ) => {
   try {
+    const clearTeam = removeObjKeysByKeys(
+      team,
+      Object.values(ITeamFields)
+    ) as ITeam;
     const { teams } = getState().scoring;
 
     await Yup.array()
@@ -127,19 +146,21 @@ const editTeam = (team: ITeam) => async (
       .validate(
         teams.reduce((acc, it) => {
           if (it.team_id === team.team_id) {
-            return [...acc, team];
+            return [...acc, clearTeam];
           }
 
           return it.division_id === team.division_id ? [...acc, it] : acc;
         }, [] as ITeam[])
       );
 
-    await Api.put(`/teams?team_id=${team.team_id}`, team);
+    await Api.put(`/teams?team_id=${team.team_id}`, clearTeam);
+
+    const updatedTeam = { ...team, ...clearTeam };
 
     dispatch({
       type: EDIT_TEAM_SUCCESS,
       payload: {
-        team,
+        team: updatedTeam,
       },
     });
 
@@ -172,4 +193,4 @@ const deleteTeam: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   }
 };
 
-export { loadDivision, loadPools, loadTeams, editTeam, deleteTeam };
+export { loadScoringData, loadPools, editTeam, deleteTeam };

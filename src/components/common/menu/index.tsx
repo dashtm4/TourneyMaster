@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import TournamentStatus from './components/tournament-status';
 import MenuItem from './components/menu-item';

@@ -33,8 +33,12 @@ import PanToolIcon from '@material-ui/icons/PanTool';
 import FlipToBackIcon from '@material-ui/icons/FlipToBack';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import { PinIcon } from './own-icons';
-import { Icons } from '../../common/enums/icons';
+import { Icons } from 'common/enums/icons';
 
 const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
   switch (icon) {
@@ -106,6 +110,16 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <ArrowDropDownIcon style={iconStyles} />;
     case Icons.DROPUP:
       return <ArrowDropUpIcon style={iconStyles} />;
+    case Icons.CLEAR:
+      return <ClearIcon style={iconStyles} />;
+    case Icons.EYE:
+      return <VisibilityIcon style={iconStyles} />;
+    case Icons.FULL_SCREEN:
+      return <FullscreenIcon style={iconStyles} />;
+    case Icons.FULL_SCREEN_EXIT:
+      return <FullscreenExitIcon style={iconStyles} />;
+    case Icons.ARROW_RIGHT:
+      return <ArrowRightAltIcon style={iconStyles} />;
   }
   return <ClearIcon />;
 };

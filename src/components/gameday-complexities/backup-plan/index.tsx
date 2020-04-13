@@ -2,24 +2,26 @@ import React from 'react';
 import styles from './styles.module.scss';
 import { SectionDropdown, Button } from 'components/common';
 import CreateIcon from '@material-ui/icons/Create';
-import { BindingCbWithOne, IFacility, IField } from 'common/models';
+import {
+  BindingCbWithOne,
+  IFacility,
+  IField,
+  IEventDetails,
+} from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
-import { EventDetailsDTO } from 'components/event-details/logic/model';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Modal from 'components/common/modal';
 import EditBackupForm from '../edit-backup-form';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 
 interface Props {
-  events: EventDetailsDTO[];
+  events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
   data: IBackupPlan;
-  expanded: boolean;
-  index: number;
-  onToggleOne: BindingCbWithOne<number>;
   deleteBackupPlan: BindingCbWithOne<string>;
   updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
+  isSectionExpand: boolean;
 }
 
 interface State {
@@ -35,9 +37,6 @@ enum TypeOptionsEnum {
 
 class BackupPlan extends React.Component<Props, State> {
   state = { isEditOpen: false, isDeleteOpen: false };
-  onSectionToggle = () => {
-    this.props.onToggleOne(this.props.index);
-  };
 
   renderFacilitiesAndFields = (
     facilities: { name: string; id: string }[],
@@ -111,11 +110,7 @@ class BackupPlan extends React.Component<Props, State> {
 
     return (
       <div className={styles.container}>
-        <SectionDropdown
-          isDefaultExpanded={true}
-          expanded={this.props.expanded !== undefined && this.props.expanded}
-          onToggle={this.onSectionToggle}
-        >
+        <SectionDropdown expanded={this.props.isSectionExpand}>
           <div className={styles.sectionTitle}>{backup_name || ''}</div>
           <div className={styles.sectionContent}>
             <div className={styles.info}>

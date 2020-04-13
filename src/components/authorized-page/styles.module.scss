@@ -1,4 +1,4 @@
-:local(.page) {
+.page {
   flex-grow: 1;
   flex-shrink: 0;
 
@@ -13,10 +13,20 @@
   scroll-behavior: smooth;
 }
 
-:local(.content) {
+.content {
   flex-grow: 1;
 
   padding-left: 30px;
+}
+
+.contentFullScreen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  padding: 0;
 }
 
 .container {

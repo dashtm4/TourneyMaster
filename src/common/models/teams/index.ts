@@ -14,14 +14,23 @@ export interface ITeam {
   contact_email: string | null;
   schedule_restrictions: number | null;
   is_active_YN: number | null;
-  is_library_YN: number | null;
+  is_library_YN: 0 | 1 | null;
   created_by: string | null;
   created_datetime: string | null;
   updated_by: string | null;
   updated_datetime: string | null;
-  division_id: string | null;
+  division_id: string;
   pool_id: string | null;
   //Optional
   isChange: boolean;
   isDelete: boolean;
+}
+
+export interface ITeamWithResults extends ITeam {
+  wins: number;
+  losses: number;
+  tie: number;
+  goalsScored: number;
+  goalsAllowed: number;
+  goalsDifferential: number;
 }

@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog } from '@material-ui/core';
 import { capitalize } from 'lodash-es';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { faAt, faAlignLeft } from '@fortawesome/free-solid-svg-icons';
 
+import SearchSelect from 'components/common/search-select';
 import { Input, DatePicker, Button, Checkbox } from 'components/common';
 import { buttonTypeEvent, ButtonTypeEvent } from '../calendar.helper';
 import { ICalendarEvent } from 'common/models/calendar';
@@ -14,7 +15,9 @@ import styles from './styles.module.scss';
 
 import { isCalendarEventValid } from '../logic/helper';
 import { getVarcharEight } from 'helpers';
-
+import { debounce } from 'lodash';
+import ITag from 'common/models/calendar/tag';
+import moment from 'moment';
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface IProps {
@@ -22,6 +25,8 @@ interface IProps {
   onDialogClose: () => void;
   onSave: (data: Partial<ICalendarEvent>) => void;
   dateSelect: IDateSelect;
+  getTags: (value: string) => void;
+  tags: ITag[];
 }
 
 const defaultCalendarEvent = (): Partial<ICalendarEvent> => ({
@@ -29,16 +34,29 @@ const defaultCalendarEvent = (): Partial<ICalendarEvent> => ({
   cal_event_title: '',
   cal_event_startdate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
   cal_event_enddate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
-  cal_event_datetime: new Date().toISOString(),
+  cal_event_datetime: new Date(new Date().setHours(8, 0, 0, 0)).toISOString(),
   cal_event_tag: '',
   cal_event_type: 'event',
   cal_event_desc: '',
-  has_reminder_YN: 0,
+  has_reminder_YN: 1,
+  status_id: 1,
 });
 
 export default (props: IProps) => {
-  const { dialogOpen, onDialogClose, onSave, dateSelect } = props;
+  const {
+    dialogOpen,
+    onDialogClose,
+    onSave,
+    dateSelect,
+    getTags,
+    tags,
+  } = props;
   const { left, top, date } = dateSelect;
+
+  const delayedQuery = useCallback(
+    debounce((value: string) => getTags(value), 600),
+    []
+  );
 
   useEffect(() => {
     if (!dialogOpen)
@@ -51,7 +69,10 @@ export default (props: IProps) => {
         ...calendarEvent,
         cal_event_startdate: date! || calendarEvent.cal_event_startdate,
         cal_event_enddate: date! || calendarEvent.cal_event_enddate,
-        cal_event_datetime: date! || calendarEvent.cal_event_datetime,
+        cal_event_datetime:
+          moment(new Date(date!))
+            .add('hours', 8)
+            .toISOString() || calendarEvent.cal_event_datetime,
       }),
     [dateSelect]
   );
@@ -81,6 +102,11 @@ export default (props: IProps) => {
   const onChange = (event: InputTargetValue) => {
     const { name, value } = event?.target;
     updateEvent(name, value);
+  };
+
+  const onTagInputChange = (_event: React.ChangeEvent<{}>, value: string) => {
+    delayedQuery(value);
+    updateEvent('cal_event_tag', value);
   };
 
   const onHasReminderChange = (event: InputTargetValue) => {
@@ -148,6 +174,12 @@ export default (props: IProps) => {
         type={buttonTypeEvent(el, calendarEvent.cal_event_type!)}
       />
     ));
+
+  const tagsOptions = tags.map(tag => ({
+    label: tag.search_term,
+    value: tag.tag_id,
+  }));
+
   return (
     <Dialog
       className={styles.container}
@@ -165,6 +197,7 @@ export default (props: IProps) => {
               onChange={onChange}
               value={calendarEvent.cal_event_title}
               placeholder="Title"
+              autofocus={true}
             />
             <div className={styles.withIconWrapper}>
               <FontAwesomeIcon icon={faCalendar} />
@@ -172,12 +205,16 @@ export default (props: IProps) => {
             </div>
             <div className={styles.withIconWrapper}>
               <FontAwesomeIcon icon={faAt} />
-              <Input
-                name="cal_event_tag"
+              <SearchSelect
                 width="257px"
-                onChange={onChange}
-                value={calendarEvent.cal_event_tag}
-                placeholder="Tag"
+                placeholder={
+                  calendarEvent.cal_event_type === 'event'
+                    ? 'Tag'
+                    : 'Assigned to'
+                }
+                options={tagsOptions}
+                onInputChange={onTagInputChange}
+                value={calendarEvent.cal_event_tag! || ''}
               />
             </div>
           </div>
@@ -196,17 +233,19 @@ export default (props: IProps) => {
                 placeholder="Description"
               />
             </div>
-            <div className={styles.checkboxWrapper}>
-              <Checkbox
-                options={[
-                  {
-                    label: 'Set Reminder',
-                    checked: Boolean(calendarEvent.has_reminder_YN),
-                  },
-                ]}
-                onChange={onHasReminderChange}
-              />
-            </div>
+            {calendarEvent.cal_event_type === 'task' && (
+              <div className={styles.checkboxWrapper}>
+                <Checkbox
+                  options={[
+                    {
+                      label: 'Set Reminder',
+                      checked: Boolean(calendarEvent.has_reminder_YN),
+                    },
+                  ]}
+                  onChange={onHasReminderChange}
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className={styles.controlWrapper}>
