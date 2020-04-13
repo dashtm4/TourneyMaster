@@ -27,6 +27,7 @@ import {
   ISchedule,
   ScheduleStatuses,
   ITeamWithResults,
+  IFacility,
 } from 'common/models';
 import { Toasts } from 'components/common';
 import { ITeamFields } from 'common/enums';
@@ -51,11 +52,19 @@ const loadScoringData: ActionCreator<ThunkAction<
     const schedulesGames = await Api.get(
       `/games?schedule_id=${publishedSchedule.schedule_id}`
     );
+    const facilities = await Api.get(`/facilities?event_id=${eventId}`);
+    const fields = (
+      await Promise.all(
+        facilities.map((it: IFacility) =>
+          Api.get(`/fields?facilities_id=${it.facilities_id}`)
+        )
+      )
+    ).flat();
 
     const mappedTeams = getTeamsWithResults(teams, schedulesGames);
-    const mappedGames = await mapScheduleGamesWithNames(
-      eventId,
+    const mappedGames = mapScheduleGamesWithNames(
       teams,
+      fields,
       schedulesGames
     );
 

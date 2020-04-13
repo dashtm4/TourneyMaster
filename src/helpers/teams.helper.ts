@@ -53,6 +53,20 @@ const countTie = (
   return tie;
 };
 
+const countGoalDifferential = (
+  prevValue: undefined | number,
+  teamOneScore: null | string | number,
+  teamTwoScore: null | string | number
+) => {
+  let scoreValue = prevValue === undefined ? 0 : prevValue;
+
+  const incrementCount = Number(teamOneScore) - Number(teamTwoScore);
+
+  scoreValue = scoreValue + incrementCount;
+
+  return scoreValue;
+};
+
 const getTeamsWithResults = (
   teams: ITeam[],
   games: ISchedulesGame[]
@@ -89,6 +103,11 @@ const getTeamsWithResults = (
           awayTeam.goalsAllowed,
           game.home_team_score
         ),
+        goalsDifferential: countGoalDifferential(
+          awayTeam.goalsDifferential,
+          game.away_team_score,
+          game.home_team_score
+        ),
       };
     }
 
@@ -111,6 +130,11 @@ const getTeamsWithResults = (
         goalsScored: countTeamScore(homeTeam.goalsScored, game.home_team_score),
         goalsAllowed: countTeamScore(
           homeTeam.goalsAllowed,
+          game.away_team_score
+        ),
+        goalsDifferential: countGoalDifferential(
+          homeTeam.goalsDifferential,
+          game.home_team_score,
           game.away_team_score
         ),
       };

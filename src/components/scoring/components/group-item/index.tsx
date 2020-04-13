@@ -50,6 +50,7 @@ const GroupItem = ({
               <td>T</td>
               <td>GS</td>
               <td>GA</td>
+              <td>GD</td>
             </tr>
           </thead>
           <tbody>

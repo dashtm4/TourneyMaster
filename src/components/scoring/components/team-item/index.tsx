@@ -33,6 +33,7 @@ const TeamItem = ({
     <td>{team.tie}</td>
     <td>{team.goalsScored}</td>
     <td>{team.goalsAllowed}</td>
+    <td>{team.goalsDifferential}</td>
   </tr>
 );
 
