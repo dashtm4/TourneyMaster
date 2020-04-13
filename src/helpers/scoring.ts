@@ -1,21 +1,15 @@
-import { IEventDetails } from 'common/models';
+import { IEventDetails, IScoringSetting } from 'common/models';
 
-interface IScoringSetting {
-  hasGoalsScored: boolean;
-  hasGoalsAllowed: boolean;
-  hasGoalsDifferential: boolean;
-  hasTies: boolean;
-}
-
-const getScoringSetting = (event: IEventDetails): IScoringSetting => {
+const getScoringSettings = (event: IEventDetails): IScoringSetting => {
   const scroingSetting = {
     hasGoalsScored: Boolean(event.show_goals_scored),
     hasGoalsAllowed: Boolean(event.show_goals_allowed),
-    hasGoalsDifferential: Boolean(event.max_goal_differential),
+    hasGoalsDifferential: Boolean(event.show_goals_diff),
     hasTies: Boolean(event.tie_breaker_format_id),
+    maxGoalDifferential: Number(event.max_goal_differential),
   };
 
   return scroingSetting;
 };
 
-export { getScoringSetting };
+export { getScoringSettings };

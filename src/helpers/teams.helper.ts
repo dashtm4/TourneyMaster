@@ -3,6 +3,7 @@ import {
   ISchedulesGame,
   ITeamWithResults,
   ISchedulesGameWithNames,
+  IScoringSetting,
 } from 'common/models';
 import { RankingFactorValues } from 'common/enums';
 
@@ -11,12 +12,12 @@ const countMatchScore = (
   teamOneScore: null | string | number,
   teamTwoScore: null | string | number
 ) => {
-  let score = prevValue === undefined ? 0 : prevValue;
+  let score = prevValue || 0;
   const scoreOne = Number(teamOneScore);
   const scoreTwo = Number(teamTwoScore);
 
   if (scoreOne > scoreTwo) {
-    score = score + 1;
+    score++;
   }
 
   return score;
@@ -26,11 +27,11 @@ const countTeamScore = (
   prevValue: undefined | number,
   teamScore: null | string | number
 ) => {
-  let scoreValue = prevValue === undefined ? 0 : prevValue;
+  let scoreValue = prevValue || 0;
 
   const score = Number(teamScore);
 
-  scoreValue = scoreValue + score;
+  scoreValue += score;
 
   return scoreValue;
 };
@@ -40,36 +41,52 @@ const countTie = (
   teamOneScore: null | string | number,
   teamTwoScore: null | string | number
 ) => {
-  let tie = prevValue === undefined ? 0 : prevValue;
+  let tie = prevValue || 0;
 
   if (
     Number(teamOneScore) > 0 &&
     Number(teamTwoScore) > 0 &&
     teamOneScore === teamTwoScore
   ) {
-    tie = tie + 1;
+    tie++;
   }
 
   return tie;
 };
 
 const countGoalDifferential = (
+  scoringSettings: IScoringSetting,
   prevValue: undefined | number,
   teamOneScore: null | string | number,
   teamTwoScore: null | string | number
 ) => {
   let scoreValue = prevValue === undefined ? 0 : prevValue;
 
-  const incrementCount = Number(teamOneScore) - Number(teamTwoScore);
+  const differentialScore = Number(teamOneScore) - Number(teamTwoScore);
 
-  scoreValue = scoreValue + incrementCount;
+  let increment = differentialScore;
+
+  if (
+    increment < 0 &&
+    Math.abs(increment) > scoringSettings.maxGoalDifferential
+  ) {
+    increment = -scoringSettings.maxGoalDifferential;
+  } else if (
+    increment >= 0 &&
+    increment > scoringSettings.maxGoalDifferential
+  ) {
+    increment = scoringSettings.maxGoalDifferential;
+  }
+
+  scoreValue = scoreValue + increment;
 
   return scoreValue;
 };
 
 const getTeamsWithResults = (
   teams: ITeam[],
-  games: ISchedulesGame[]
+  games: ISchedulesGame[],
+  scoringSettings: IScoringSetting
 ): ITeamWithResults[] => {
   const localTeams = [...teams] as ITeamWithResults[];
 
@@ -104,6 +121,7 @@ const getTeamsWithResults = (
           game.home_team_score
         ),
         goalsDifferential: countGoalDifferential(
+          scoringSettings,
           awayTeam.goalsDifferential,
           game.away_team_score,
           game.home_team_score
@@ -133,6 +151,7 @@ const getTeamsWithResults = (
           game.away_team_score
         ),
         goalsDifferential: countGoalDifferential(
+          scoringSettings,
           homeTeam.goalsDifferential,
           game.home_team_score,
           game.away_team_score
