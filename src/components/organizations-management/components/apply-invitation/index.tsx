@@ -6,30 +6,22 @@ import {
   Button,
 } from 'components/common';
 import styles from './styles.module.scss';
-import { BindingCbWithOne, BindingAction } from 'common/models';
+import { BindingAction } from 'common/models';
 
 interface Props {
   addUserToOrganization: (invCode: string) => void;
-  index: number;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
   type?: string;
   onCancel?: BindingAction;
+  isSectionExpand: boolean;
 }
 
 const ApplyInvitation = ({
   addUserToOrganization,
-  expanded,
-  onToggleOne,
-  index,
   type,
   onCancel,
+  isSectionExpand,
 }: Props) => {
   const [invCode, onChange] = React.useState('');
-
-  const onSectionToggle = () => {
-    onToggleOne(index);
-  };
 
   const onApplyInvitation = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -55,10 +47,8 @@ const ApplyInvitation = ({
     <SectionDropdown
       type="section"
       useBorder={true}
-      isDefaultExpanded={false}
       panelDetailsType="flat"
-      expanded={expanded}
-      onToggle={onSectionToggle}
+      expanded={isSectionExpand}
     >
       <div className={styles.headingContainer}>
         <HeadingLevelThree>

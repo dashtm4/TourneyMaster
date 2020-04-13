@@ -29,9 +29,8 @@ const PopupAddToLibrary = ({
   entryPoint,
   isOpen,
   onClose,
-  addEntitiesToLibrary
-}:
-Props) => {
+  addEntitiesToLibrary,
+}: Props) => {
   const [isConfirm, toggleConfirm] = React.useState<boolean>(false);
   const [checkedValues, changeOptions] = React.useState<string[] | null>(null);
   const [isSelectedAll, toggleSelectAll] = React.useState<boolean>(false);
@@ -56,7 +55,11 @@ Props) => {
 
   const onSave = () => {
     if (checkedValues) {
-      const entitiesByOptions = getEntityByOptions(entities, checkedValues, entryPoint);
+      const entitiesByOptions = getEntityByOptions(
+        entities,
+        checkedValues,
+        entryPoint
+      );
 
       addEntitiesToLibrary(entitiesByOptions!, entryPoint);
 

@@ -48,8 +48,7 @@ interface IDivisionsAndPoolsProps {
 interface IDivisionAndPoolsState {
   isModalOpen: boolean;
   selected: IDivision;
-  expanded: boolean[];
-  expandAll: boolean;
+  isSectionsExpand: boolean;
   isCsvLoaderOpen: boolean;
   isLibraryPopupOpen: boolean;
 }
@@ -66,8 +65,7 @@ class DivisionsAndPools extends React.Component<
     this.state = {
       isModalOpen: false,
       selected: this.props.divisions[0],
-      expanded: [],
-      expandAll: false,
+      isSectionsExpand: true,
       isCsvLoaderOpen: false,
       isLibraryPopupOpen: false,
     };
@@ -76,33 +74,6 @@ class DivisionsAndPools extends React.Component<
   componentDidMount() {
     this.props.getDivisionsTeams(this.eventId);
   }
-
-  componentDidUpdate(
-    prevProps: IDivisionsAndPoolsProps,
-    prevState: IDivisionAndPoolsState
-  ) {
-    if (
-      prevProps.divisions !== this.props.divisions &&
-      !prevState.expanded.length
-    ) {
-      this.setState({ expanded: this.props.divisions.map(_division => true) });
-    }
-  }
-
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
-  };
 
   onAddDivision = () => {
     const path = this.eventId
@@ -133,6 +104,10 @@ class DivisionsAndPools extends React.Component<
     }));
   };
 
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
+  };
+
   render() {
     const { divisions, pools, teams, isLoading, saveTeams } = this.props;
     const { isLibraryPopupOpen } = this.state;
@@ -149,18 +124,20 @@ class DivisionsAndPools extends React.Component<
             <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>
             {divisions?.length ? (
               <Button
-                label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                label={
+                  this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+                }
                 variant="text"
                 color="secondary"
-                onClick={this.onToggleAll}
+                onClick={this.toggleSectionCollapse}
               />
             ) : null}
           </div>
           {isLoading && <Loader />}
-          {divisions.length && !isLoading && this.state.expanded.length ? (
+          {divisions.length && !isLoading ? (
             <>
               <ul className={styles.divisionsList}>
-                {divisions.map((division, index) => (
+                {divisions.map(division => (
                   <li key={division.division_id}>
                     <Division
                       eventId={this.eventId}
@@ -175,9 +152,7 @@ class DivisionsAndPools extends React.Component<
                       getPools={this.props.getPools}
                       areDetailsLoading={this.props.areDetailsLoading}
                       divisions={this.props.divisions}
-                      expanded={this.state.expanded[index]}
-                      index={index}
-                      onToggleOne={this.onToggleOne}
+                      isSectionExpand={this.state.isSectionsExpand}
                       saveTeams={saveTeams}
                     />
                   </li>
