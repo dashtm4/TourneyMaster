@@ -194,6 +194,7 @@ class CsvLoader extends React.Component<Props, State> {
     });
 
     onCreate(dataToSave, this.onModalClose);
+    this.setState({ isConfirmModalOpen: false });
   };
 
   onFieldIncludeChange = (
@@ -235,7 +236,11 @@ class CsvLoader extends React.Component<Props, State> {
   };
 
   onCancelClick = () => {
-    this.setState({ isConfirmModalOpen: true });
+    if (this.state.data.length) {
+      this.setState({ isConfirmModalOpen: true });
+    } else {
+      this.onCancel();
+    }
   };
 
   onConfirmModalClose = () => {
