@@ -151,6 +151,26 @@ class Playoffs extends Component<IProps> {
     });
   };
 
+  addGame = () => {
+    // this.setState(({ seeds }) => ({
+    //   seeds: [
+    //     ...(seeds || []),
+    //     {
+    //       id: (seeds?.length || 0) + 1,
+    //       name: `Seed ${(seeds?.length || 0) + 1}`,
+    //     },
+    //   ],
+    // }));
+  };
+
+  onSeedsUsed = () => {
+    // this.setState(({ seeds }) => ({
+    //   seeds: [
+    //     ...seeds?.map(item => ({ ...item, hidden: seedIds.includes(item.id) })),
+    //   ],
+    // }));
+  };
+
   render() {
     const {
       activeTab,
