@@ -1,6 +1,7 @@
 import React from 'react';
 import DropContainer, { IDropParams } from '../dnd/drop';
 import TeamDragCard from '../dnd/drag';
+import SeedCard from '../dnd/seed';
 import styles from '../styles.module.scss';
 import { IGame } from '../helper';
 import { ITeamCard } from 'common/models/schedule/teams';
@@ -28,7 +29,20 @@ const RenderGameSlot = (props: Props) => {
     isEnterScores,
     teamCards,
   } = props;
-  const { awayTeam, homeTeam, gameDate, isPlayoff } = game;
+
+  const {
+    awayTeam,
+    homeTeam,
+    gameDate,
+    isPlayoff,
+    awaySeedId,
+    homeSeedId,
+    awayDisplayName,
+    homeDisplayName,
+    divisionName,
+    divisionHex,
+  } = game;
+
   const acceptType = 'teamdrop';
 
   return (
@@ -44,19 +58,30 @@ const RenderGameSlot = (props: Props) => {
           onDrop={onDrop}
           teamCards={teamCards}
         >
-          {awayTeam && (
-            <TeamDragCard
-              tableType={tableType}
-              type={acceptType}
-              originGameId={game.id}
-              originGameDate={gameDate}
-              showHeatmap={showHeatmap}
-              teamCard={awayTeam}
-              onTeamCardUpdate={onTeamCardUpdate}
-              isDndMode={isDndMode}
-              isEnterScores={isEnterScores}
-            />
-          )}
+          <>
+            {awayTeam && (
+              <TeamDragCard
+                tableType={tableType}
+                type={acceptType}
+                originGameId={game.id}
+                originGameDate={gameDate}
+                showHeatmap={showHeatmap}
+                teamCard={awayTeam}
+                onTeamCardUpdate={onTeamCardUpdate}
+                isDndMode={isDndMode}
+                isEnterScores={isEnterScores}
+              />
+            )}
+            {(awaySeedId || awayDisplayName) && (
+              <SeedCard
+                showHeatmap={true}
+                seedId={awaySeedId}
+                displayName={awayDisplayName}
+                divisionHex={divisionHex}
+                divisionName={divisionName}
+              />
+            )}
+          </>
         </DropContainer>
         <DropContainer
           acceptType={acceptType}
@@ -65,19 +90,30 @@ const RenderGameSlot = (props: Props) => {
           onDrop={onDrop}
           teamCards={teamCards}
         >
-          {homeTeam && (
-            <TeamDragCard
-              tableType={tableType}
-              type={acceptType}
-              originGameId={game.id}
-              originGameDate={gameDate}
-              showHeatmap={showHeatmap}
-              teamCard={homeTeam}
-              onTeamCardUpdate={onTeamCardUpdate}
-              isDndMode={isDndMode}
-              isEnterScores={isEnterScores}
-            />
-          )}
+          <>
+            {homeTeam && (
+              <TeamDragCard
+                tableType={tableType}
+                type={acceptType}
+                originGameId={game.id}
+                originGameDate={gameDate}
+                showHeatmap={showHeatmap}
+                teamCard={homeTeam}
+                onTeamCardUpdate={onTeamCardUpdate}
+                isDndMode={isDndMode}
+                isEnterScores={isEnterScores}
+              />
+            )}
+            {(homeSeedId || homeDisplayName) && (
+              <SeedCard
+                showHeatmap={true}
+                seedId={homeSeedId}
+                displayName={homeDisplayName}
+                divisionHex={divisionHex}
+                divisionName={divisionName}
+              />
+            )}
+          </>
         </DropContainer>
       </div>
     </td>

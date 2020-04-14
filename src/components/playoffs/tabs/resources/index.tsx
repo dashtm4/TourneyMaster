@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import styles from './styles.module.scss';
-import HTML5Backend from 'react-dnd-html5-backend';
 import { MatrixTable, Loader } from 'components/common';
 import {
   IEventDetails,
@@ -19,13 +18,10 @@ import {
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { TableScheduleTypes } from 'common/enums';
-import { DndProvider } from 'react-dnd';
-import {
-  populateDefinedGamesWithPlayoffState,
-  adjustPlayoffTimeOnLoad,
-} from 'components/schedules/definePlayoffs';
+import { IBracketGame } from 'components/playoffs/bracketGames';
 
 interface IProps {
+  bracketGames?: IBracketGame[];
   event?: IEventDetails | null;
   divisions?: IDivision[];
   pools?: IPool[];
@@ -44,14 +40,12 @@ interface IProps {
 
 interface IState {
   tableGames?: IGame[];
-  playoffTimeSlots?: ITimeSlot[];
 }
 
 class ResourceMatrix extends Component<IProps> {
   state: IState = {};
 
   componentDidMount() {
-    this.calculatePlayoffTimeSlots();
     this.loadingTableData();
   }
 
@@ -59,60 +53,16 @@ class ResourceMatrix extends Component<IProps> {
     const { tableGames } = this.state;
 
     if (!tableGames) {
-      this.calculatePlayoffTimeSlots();
       this.loadingTableData();
     }
   }
 
-  calculatePlayoffTimeSlots = () => {
-    const {
-      schedulesDetails,
-      fields,
-      timeSlots,
-      divisions,
-      event,
-    } = this.props;
-
-    const day = event?.event_enddate;
-
-    if (
-      !schedulesDetails ||
-      !fields ||
-      !timeSlots ||
-      !divisions ||
-      !event ||
-      !day
-    )
-      return;
-
-    const playoffTimeSlots = adjustPlayoffTimeOnLoad(
-      schedulesDetails,
-      fields,
-      timeSlots,
-      divisions,
-      event,
-      day
-    );
-
-    this.setState({ playoffTimeSlots });
-  };
-
   loadingTableData = () => {
-    const { teamCards, games, event } = this.props;
-    const { playoffTimeSlots } = this.state;
+    const { teamCards, games, event, bracketGames, divisions } = this.props;
     const lastDay = event?.event_enddate;
 
-    if (games && teamCards && lastDay && playoffTimeSlots) {
-      const definedGames = populateDefinedGamesWithPlayoffState(
-        games,
-        playoffTimeSlots
-      );
-
-      const tableGames = settleTeamsPerGamesDays(
-        definedGames,
-        teamCards,
-        lastDay
-      );
+    if (games && teamCards && lastDay && bracketGames && divisions) {
+      const tableGames = settleTeamsPerGamesDays(games, teamCards, lastDay);
       this.setState({
         tableGames,
       });
@@ -154,24 +104,22 @@ class ResourceMatrix extends Component<IProps> {
           scheduleData &&
           onTeamCardUpdate &&
           onUndo ? (
-            <DndProvider backend={HTML5Backend}>
-              <MatrixTable
-                tableType={TableScheduleTypes.BRACKETS}
-                games={tableGames}
-                fields={fields}
-                timeSlots={timeSlots}
-                facilities={facilities}
-                showHeatmap={true}
-                isEnterScores={false}
-                moveCard={() => {}}
-                disableZooming={false}
-                onTeamCardUpdate={onTeamCardUpdate}
-                onTeamCardsUpdate={onTeamCardsUpdate}
-                teamCards={teamCards}
-                isFullScreen={false}
-                onToggleFullScreen={() => {}}
-              />
-            </DndProvider>
+            <MatrixTable
+              tableType={TableScheduleTypes.BRACKETS}
+              games={tableGames}
+              fields={fields}
+              timeSlots={timeSlots}
+              facilities={facilities}
+              showHeatmap={true}
+              isEnterScores={false}
+              moveCard={() => {}}
+              disableZooming={false}
+              onTeamCardUpdate={onTeamCardUpdate}
+              onTeamCardsUpdate={onTeamCardsUpdate}
+              teamCards={teamCards}
+              isFullScreen={false}
+              onToggleFullScreen={() => {}}
+            />
           ) : (
             <Loader styles={{ height: '100%' }} />
           )}

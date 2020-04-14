@@ -137,3 +137,28 @@
     cursor: not-allowed;
   }
 }
+
+.seedContainer {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  color: #828282;
+  padding: 1px 0px 1px 5px;
+  font-size: 12px;
+  border-radius: 2px;
+
+  &.heatmap {
+    color: #ebebeb;
+    font-weight: 600;
+  }
+
+  &::before {
+    content: '';
+    flex-shrink: 0;
+    height: 14px;
+    width: 14px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+  }
+}

@@ -239,11 +239,9 @@ const TableSchedule = ({
                 onClick={toggleZooming}
               />
             </div>
-            <CardMessage
-              type={CardMessageTypes.EMODJI_OBJECTS}
-              style={{ maxWidth: 400 }}
-            >
-              Drag, drop, and zoom to navigate the schedule
+            <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+              Zoom-n-Nav" to navigate the schedule. Drag-n-Drop to move teams
+              within games.
             </CardMessage>
             {teamsDiagnostics && divisionsDiagnostics && (
               <div className={styles.diagnosticsWrapper}>
