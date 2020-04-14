@@ -7,6 +7,7 @@ export interface IBracketGame {
   index: number;
   round: number;
   divisionId: string;
+  divisionName?: string;
   // Seed
   awaySeedId?: number;
   homeSeedId?: number;
@@ -23,62 +24,128 @@ interface IFacilityData {
   facility: string;
 }
 
-export const bracketGames = () => {
-  const games = [
-    {
-      index: 1,
-      round: 1,
-      awaySeedId: 1,
-      homeSeedId: 8,
-      divisionId: 'ADRL2021',
-    },
-    {
-      index: 2,
-      round: 1,
-      awaySeedId: 2,
-      homeSeedId: 7,
-      divisionId: 'ADRL2021',
-    },
-    {
-      index: 3,
-      round: 1,
-      awaySeedId: 3,
-      homeSeedId: 6,
-      divisionId: 'ADRL2021',
-    },
-    {
-      index: 4,
-      round: 1,
-      awaySeedId: 4,
-      homeSeedId: 5,
-      divisionId: 'ADRL2021',
-    },
-    // round 2
-    {
-      index: 1,
-      round: 2,
-      awayDisplayName: 'Game Winner 1',
-      homeDisplayName: 'Game Winner 2',
-      divisionId: 'ADRL2021',
-    },
-    {
-      index: 2,
-      round: 2,
-      awayDisplayName: 'Game Winner 3',
-      homeDisplayName: 'Game Winner 4',
-      divisionId: 'ADRL2021',
-    },
-    // round 3
-    {
-      index: 1,
-      round: 3,
-      awayDisplayName: 'Game Winner 5',
-      homeDisplayName: 'Game Winner 6',
-      divisionId: 'ADRL2021',
-    },
-  ];
+const getRoundBy = (
+  index: number,
+  numberOfPreGames: number,
+  firstRoundGamesNum: number
+) => {
+  const rounds = [];
+  let roundCounter = 0;
+  if (numberOfPreGames) {
+    for (let i = 0; i < numberOfPreGames; i++) {
+      rounds.push(roundCounter);
+    }
+    roundCounter++;
+  }
+
+  const recursor = (games: number, counter: number): any => {
+    if (games < 1) {
+      return;
+    }
+    for (let i = 0; i < games; i++) {
+      rounds.push(counter);
+    }
+    return recursor(games / 2, ++counter);
+  };
+
+  recursor(firstRoundGamesNum, roundCounter);
+
+  return rounds[index] || 0;
+};
+
+export const rearrangeSeedForGames = (
+  bracketTeamsNum: number,
+  games: IBracketGame[]
+) => {
+  const maxPowerOfTwo = 2 ** Math.floor(Math.log2(bracketTeamsNum));
+  const numberOfPreGames = bracketTeamsNum - maxPowerOfTwo;
+  const firstRoundGamesNum = maxPowerOfTwo / 2;
+
+  const seedsNum = maxPowerOfTwo;
+  const preSeedsNum = bracketTeamsNum - maxPowerOfTwo;
+
+  const seeds = [...Array(seedsNum)].map((_, i) => ({
+    id: i + 1,
+    name: `Seed ${i + 1}`,
+  }));
+
+  const preSeeds = [...Array(preSeedsNum)].map((_, i) => ({
+    id: i + seedsNum + 1,
+    name: `Seed ${i + seedsNum + 1}`,
+  }));
+
+  /* Rearrange seeds for pre round games */
+  [...Array(numberOfPreGames)].forEach((_, i) => {
+    const first = seeds[seeds.length - (i + 1)];
+    const last = preSeeds[0];
+
+    const gameIndex = games.findIndex(
+      game => game.round === 0 && !game.awaySeedId && !game.homeSeedId
+    );
+
+    games[gameIndex].awaySeedId = first?.id;
+    games[gameIndex].homeSeedId = last?.id;
+
+    seeds[seeds.length - (i + 1)] = undefined!;
+    preSeeds.shift();
+  });
+
+  /* Rearrange seeds for regular first round */
+  [...Array(firstRoundGamesNum)].forEach(() => {
+    const first = seeds[0];
+    const last = seeds[seeds.length - 1];
+    const round = numberOfPreGames ? 1 : 0;
+
+    const gameIndex = games.findIndex(
+      game => game.round === round && !game.awaySeedId && !game.homeSeedId
+    );
+
+    games[gameIndex].awaySeedId = first?.id;
+    games[gameIndex].homeSeedId = last?.id;
+
+    seeds.shift();
+    seeds.pop();
+  });
+
+  let winnerIndex = 1;
+
+  games = games.map(game => ({
+    ...game,
+    awayDisplayName: `Winner Game ${!game.awaySeedId ? winnerIndex++ : ''} (${
+      game.divisionName
+    })`,
+    homeDisplayName: `Winner Game ${!game.homeSeedId ? winnerIndex++ : ''} (${
+      game.divisionName
+    })`,
+  }));
 
   return games;
+};
+
+export const bracketGames = (
+  divisions: IDivision[],
+  bracketTeamsNum: number
+) => {
+  const games: any[] = [];
+
+  divisions.forEach(division => {
+    const maxPowerOfTwo = 2 ** Math.floor(Math.log2(bracketTeamsNum));
+    const numberOfPreGames = bracketTeamsNum - maxPowerOfTwo;
+    const firstRoundGamesNum = maxPowerOfTwo / 2;
+
+    const localGames = [...Array(bracketTeamsNum - 1)].map((_, index) => ({
+      index: index + 1,
+      round: getRoundBy(index, numberOfPreGames, firstRoundGamesNum),
+      awayDisplayName: `Away ${division.short_name}`,
+      homeDisplayName: `Home ${division.short_name}`,
+      divisionName: division.short_name,
+      divisionId: division.division_id,
+    }));
+
+    games.push(rearrangeSeedForGames(bracketTeamsNum, localGames));
+  });
+
+  return games.flat();
 };
 
 export const getFacilityData = (teamCards: ITeamCard[], games: IGame[]) => {
@@ -102,35 +169,47 @@ export const populateBracketGames = (
   divisions: IDivision[],
   facilityData: IFacilityData[]
 ) => {
-  const _bracketGames = [...bracketGames];
+  const localBracketGames = [...bracketGames];
   const timeSlotRound = {};
 
-  return games.map(item => {
-    if (
-      item.isPlayoff &&
-      findIndex(facilityData, {
-        facility: item.facilityId,
-        division: _bracketGames[0]?.divisionId,
-      }) >= 0 &&
-      (!timeSlotRound[item.timeSlotId] ||
-        timeSlotRound[item.timeSlotId] === _bracketGames[0].round)
-    ) {
-      const _bracketGame = _bracketGames.shift();
-      const division = divisions.find(
-        v => v.division_id === _bracketGame?.divisionId
+  return games.map(game => {
+    if (game.isPlayoff) {
+      const index = [...localBracketGames].findIndex(
+        item =>
+          findIndex(facilityData, {
+            facility: game.facilityId,
+            division: item.divisionId,
+          }) >= 0 &&
+          (!timeSlotRound[item.divisionId] ||
+            timeSlotRound[item.divisionId][game.timeSlotId] === undefined ||
+            timeSlotRound[item.divisionId][game.timeSlotId] === item.round)
       );
-      timeSlotRound[item.timeSlotId] = _bracketGame?.round;
+      const bracketGame = [...localBracketGames][index];
+      const division = divisions.find(
+        v => v.division_id === bracketGame?.divisionId
+      );
+
+      if (index >= 0) {
+        localBracketGames.splice(index, 1);
+      }
+
+      timeSlotRound[bracketGame?.divisionId || 0] = {
+        ...(timeSlotRound[bracketGame?.divisionId || 0] || {}),
+        [game.timeSlotId]: bracketGame?.round,
+      };
+
       return {
-        ...item,
-        awaySeedId: _bracketGame?.awaySeedId,
-        homeSeedId: _bracketGame?.homeSeedId,
-        awayDisplayName: _bracketGame?.awayDisplayName,
-        homeDisplayName: _bracketGame?.homeDisplayName,
-        divisionId: _bracketGame?.divisionId,
+        ...game,
+        awaySeedId: bracketGame?.awaySeedId,
+        homeSeedId: bracketGame?.homeSeedId,
+        awayDisplayName: bracketGame?.awayDisplayName,
+        homeDisplayName: bracketGame?.homeDisplayName,
+        divisionId: bracketGame?.divisionId,
         divisionName: division?.short_name,
         divisionHex: division?.division_hex,
       };
     }
-    return item;
+
+    return game;
   });
 };

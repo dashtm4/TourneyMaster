@@ -140,7 +140,12 @@ class Playoffs extends Component<IProps> {
   };
 
   createBracketGames = () => {
-    const games = bracketGames();
+    const { event, divisions } = this.props;
+    const bracketTeamsNum = event?.num_teams_bracket;
+
+    if (!divisions) return;
+
+    const games = bracketGames(divisions, bracketTeamsNum || 0);
     this.setState({
       bracketGames: games,
     });
