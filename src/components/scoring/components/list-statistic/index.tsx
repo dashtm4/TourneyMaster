@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import { getGamesStatistics } from 'helpers';
 import { ISchedulesGameWithNames } from 'common/models';
 import styles from './styles.module.scss';
 
@@ -8,21 +9,7 @@ interface Props {
 }
 
 const ListStatistic = ({ games }: Props) => {
-  const gamesStatistics = games.reduce(
-    (acc, it) => {
-      return {
-        totalGames:
-          !it.homeTeamId || !it.homeTeamId
-            ? (acc.totalGames = acc.totalGames + 1)
-            : acc.totalGames,
-        completedGames:
-          it.awayTeamScore !== null || it.homeTeamScore !== null
-            ? (acc.completedGames = acc.completedGames + 1)
-            : acc.completedGames,
-      };
-    },
-    { totalGames: 0, completedGames: 0 }
-  );
+  const gamesStatistics = getGamesStatistics(games);
 
   const lastUpd = Math.max(
     ...games.map(it =>
