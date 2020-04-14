@@ -8,8 +8,20 @@ interface Props {
 }
 
 const ListStatistic = ({ games }: Props) => {
-  const completedGames = games.filter(
-    it => it.awayTeamScore !== null || it.homeTeamScore !== null
+  const gamesStatistics = games.reduce(
+    (acc, it) => {
+      return {
+        totalGames:
+          !it.homeTeamId || !it.homeTeamId
+            ? (acc.totalGames = acc.totalGames + 1)
+            : acc.totalGames,
+        completedGames:
+          it.awayTeamScore !== null || it.homeTeamScore !== null
+            ? (acc.completedGames = acc.completedGames + 1)
+            : acc.completedGames,
+      };
+    },
+    { totalGames: 0, completedGames: 0 }
   );
 
   const lastUpd = Math.max(
@@ -23,7 +35,8 @@ const ListStatistic = ({ games }: Props) => {
   return (
     <ul className={styles.statisticList}>
       <li>
-        <b>Games Complete:</b> {completedGames.length}/{games.length}
+        <b>Games Complete:</b> {gamesStatistics.completedGames}/
+        {gamesStatistics.totalGames}
       </li>
       <li>
         <b>Last Web Publishing: </b>
