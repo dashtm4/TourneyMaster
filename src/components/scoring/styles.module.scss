@@ -1,4 +1,8 @@
 .headingWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   margin-bottom: 25px;
 }
 
@@ -16,9 +20,4 @@
 .buttonContainer {
   display: flex;
   justify-content: flex-end;
-}
-.headerContainer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }

@@ -168,7 +168,8 @@ const sortTeamsByBestRecord = (
   b: ITeamWithResults,
   _: unknown
 ) => {
-  const sortedTeams = b.wins - a.wins;
+  const sortedTeams =
+    b.wins / (b.wins + b.tie + b.losses) - a.wins / (a.wins + a.tie + a.losses);
 
   return sortedTeams;
 };
