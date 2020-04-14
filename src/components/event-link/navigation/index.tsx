@@ -36,12 +36,14 @@ const Navigation = ({ onAddToLibraryManager }: Props) => (
           onClick={() => {}}
           label="Create Schedule Review"
         />
-        <Button
-          color={ButtonColors.PRIMARY}
-          variant={ButtonVarian.CONTAINED}
-          onClick={() => {}}
-          label="Create Message"
-        />
+        <Link to={Routes.CREATE_MESSAGE}>
+          <Button
+            color={ButtonColors.PRIMARY}
+            variant={ButtonVarian.CONTAINED}
+            onClick={() => {}}
+            label="Create Message"
+          />
+        </Link>
       </div>
     </div>
   </Paper>

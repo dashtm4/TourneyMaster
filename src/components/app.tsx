@@ -22,6 +22,7 @@ const App: React.FC = () => {
             Routes.DASHBOARD,
             Routes.LIBRARY_MANAGER,
             Routes.EVENT_LINK,
+            Routes.CREATE_MESSAGE,
             Routes.COLLABORATION,
             Routes.CALENDAR,
             Routes.UTILITIES,
