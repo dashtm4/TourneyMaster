@@ -10,6 +10,7 @@ import {
 } from './logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
 import Navigation from './components/navigation';
+import ListStatistic from './components/list-statistic';
 import ScoringItem from './components/scoring-Item';
 import {
   HeadingLevelTwo,
@@ -178,37 +179,37 @@ class Sсoring extends React.Component<
       <section>
         <Navigation eventId={this.props.match.params.eventId} />
         <div className={styles.headingWrapper}>
-          <div className={styles.headerContainer}>
-            <HeadingLevelTwo>Scoring</HeadingLevelTwo>
-            {divisions?.length ? (
-              <Button
-                label={
-                  this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
-                }
-                variant="text"
-                color="secondary"
-                onClick={this.toggleSectionCollapse}
-              />
-            ) : null}
-          </div>
-          <ul className={styles.scoringList}>
-            {divisions.map(division => (
-              <ScoringItem
-                event={event}
-                division={division}
-                pools={pools.filter(
-                  pool => pool.division_id === division.division_id
-                )}
-                teams={teams}
-                games={games}
-                loadPools={loadPools}
-                onOpenTeamDetails={this.onOpenTeamDetails}
-                key={division.division_id}
-                isSectionExpand={this.state.isSectionsExpand}
-              />
-            ))}
-          </ul>
+          <HeadingLevelTwo>Scoring</HeadingLevelTwo>
+          {divisions?.length ? (
+            <Button
+              label={
+                this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+              }
+              variant="text"
+              color="secondary"
+              onClick={this.toggleSectionCollapse}
+            />
+          ) : null}
         </div>
+        <ListStatistic games={games} />
+        <ul className={styles.scoringList}>
+          {divisions.map(division => (
+            <ScoringItem
+              event={event}
+              division={division}
+              pools={pools.filter(
+                pool => pool.division_id === division.division_id
+              )}
+              teams={teams}
+              games={games}
+              loadPools={loadPools}
+              onOpenTeamDetails={this.onOpenTeamDetails}
+              key={division.division_id}
+              isSectionExpand={this.state.isSectionsExpand}
+            />
+          ))}
+        </ul>
+
         <Modal isOpen={isModalOpen} onClose={this.onCloseModal}>
           <PopupTeamEdit
             team={changeableTeam}

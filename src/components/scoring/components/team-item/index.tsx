@@ -21,9 +21,10 @@ const TeamItem = ({
   onOpenTeamDetails,
   scoringSettings,
 }: Props) => (
-  <tr className={styles.teamItem}>
-    <td className={styles.teamItemTitle}>
+  <tr>
+    <td>
       <button
+      className={styles.teamBtn}
         onClick={() => onOpenTeamDetails(team, divisionName, poolName)}
         aria-label={`Press to show more about ${team.long_name} team"`}
       >
