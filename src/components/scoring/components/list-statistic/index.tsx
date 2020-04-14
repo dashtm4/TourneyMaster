@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import { getGamesStatistics } from 'helpers';
 import { ISchedulesGameWithNames } from 'common/models';
 import styles from './styles.module.scss';
 
@@ -8,9 +9,7 @@ interface Props {
 }
 
 const ListStatistic = ({ games }: Props) => {
-  const completedGames = games.filter(
-    it => it.awayTeamScore !== null || it.homeTeamScore !== null
-  );
+  const gamesStatistics = getGamesStatistics(games);
 
   const lastUpd = Math.max(
     ...games.map(it =>
@@ -23,7 +22,8 @@ const ListStatistic = ({ games }: Props) => {
   return (
     <ul className={styles.statisticList}>
       <li>
-        <b>Games Complete:</b> {completedGames.length}/{games.length}
+        <b>Games Complete:</b> {gamesStatistics.completedGames}/
+        {gamesStatistics.totalGames}
       </li>
       <li>
         <b>Last Web Publishing: </b>
