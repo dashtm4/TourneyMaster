@@ -33,6 +33,8 @@ export interface IEventDetails {
   waivers_required: number | null;
   waiverhub_utilized: null;
   back_to_back_warning: number | null;
+  require_wellness_statement: number | null;
+  wellness_via_waiverhub: number | null;
   tie_breaker_format_id: number | null;
   min_num_of_games: number | null;
   event_type: string | null;

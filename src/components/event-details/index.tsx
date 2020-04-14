@@ -38,6 +38,7 @@ import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 import CsvLoader from 'components/common/csv-loader';
 import { IEntity } from 'common/types';
 import { EntryPoints, LibraryStates } from 'common/enums';
+import WellnessStatement from './wellness-statement';
 
 interface IMapStateProps {
   event: IEventState;
@@ -246,6 +247,11 @@ class EventDetails extends Component<Props, State> {
         <EventStructureSection
           eventData={event}
           eventTypeOptions={eventTypeOptions}
+          onChange={this.onChange}
+          isSectionExpand={this.state.isSectionsExpand}
+        />
+        <WellnessStatement
+          eventData={event}
           onChange={this.onChange}
           isSectionExpand={this.state.isSectionsExpand}
         />

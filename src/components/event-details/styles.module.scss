@@ -33,6 +33,11 @@ $sectionBodyPadding: 20px 0;
   .column {
     display: flex;
     flex-direction: column;
+    &:last-of-type {
+      & > :first-child {
+        margin-bottom: 34px;
+      }
+    }
   }
 
   .innerSpanText {
@@ -151,17 +156,6 @@ $sectionBodyPadding: 20px 0;
       display: flex;
       justify-content: space-between;
       height: 120px;
-    }
-    .esDetailsThird {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      .waiverHubWrapper {
-        display: flex;
-        & > div {
-          display: block;
-        }
-      }
     }
   }
 
@@ -290,5 +284,18 @@ $sectionBodyPadding: 20px 0;
 .btnsWrapper {
   &:first-child {
     margin-right: 15px;
+  }
+}
+.esDetailsThird {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  .waiverHubWrapper {
+    display: flex;
+    & > div {
+      display: block;
+    }
   }
 }
