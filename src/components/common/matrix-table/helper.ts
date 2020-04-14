@@ -21,6 +21,7 @@ export interface IGame {
   isPremier?: boolean;
   // added new
   isPlayoff?: boolean;
+  playoffIndex?: number;
   awaySeedId?: number;
   homeSeedId?: number;
   awayDisplayName?: string;

@@ -1,6 +1,6 @@
 import { unionBy, findIndex } from 'lodash-es';
 import { IGame } from 'components/common/matrix-table/helper';
-import { IDivision } from 'common/models';
+import { IDivision, IField } from 'common/models';
 import { ITeamCard } from 'common/models/schedule/teams';
 
 export interface IBracketGame {
@@ -17,12 +17,29 @@ export interface IBracketGame {
   // Display Name
   awayDisplayName?: string;
   homeDisplayName?: string;
+  // venue time date
+  fieldId?: string;
+  fieldName?: string;
+  startTime?: string;
+  gameDate?: string;
+}
+
+export interface IBracketSeed {
+  id: number;
+  name: string;
 }
 
 interface IFacilityData {
   division: string;
   facility: string;
 }
+
+export const createSeeds = (bracketTeamsNum: number) => {
+  return [...Array(bracketTeamsNum)].map((_, i) => ({
+    id: i + 1,
+    name: `Seed ${i + 1}`,
+  }));
+};
 
 const getRoundBy = (
   index: number,
@@ -122,7 +139,7 @@ export const rearrangeSeedForGames = (
   return games;
 };
 
-export const bracketGames = (
+export const createBracketGames = (
   divisions: IDivision[],
   bracketTeamsNum: number
 ) => {
@@ -163,7 +180,7 @@ export const getFacilityData = (teamCards: ITeamCard[], games: IGame[]) => {
   return divisionsPerFacilities as IFacilityData[];
 };
 
-export const populateBracketGames = (
+export const populatePlayoffGames = (
   games: IGame[],
   bracketGames: IBracketGame[],
   divisions: IDivision[],
@@ -200,6 +217,7 @@ export const populateBracketGames = (
 
       return {
         ...game,
+        playoffIndex: bracketGame?.index,
         awaySeedId: bracketGame?.awaySeedId,
         homeSeedId: bracketGame?.homeSeedId,
         awayDisplayName: bracketGame?.awayDisplayName,
@@ -211,5 +229,25 @@ export const populateBracketGames = (
     }
 
     return game;
+  });
+};
+
+export const populateBracketGamesWithData = (
+  bracketGames: IBracketGame[],
+  games: IGame[],
+  fields: IField[],
+  gameDate?: string
+) => {
+  return bracketGames.map(game => {
+    const playoffGame = games.find(item => item.playoffIndex === game.index);
+    const field = fields.find(item => item.field_id === playoffGame?.fieldId);
+
+    return {
+      ...game,
+      fieldName: field?.field_name,
+      fieldId: playoffGame?.fieldId,
+      startTime: playoffGame?.startTime,
+      gameDate: playoffGame?.gameDate || gameDate,
+    };
   });
 };

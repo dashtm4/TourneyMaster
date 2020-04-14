@@ -47,7 +47,7 @@ const BracketConnector = (props: IProps) => {
         ))}
 
       {!hidden &&
-        [...Array(Math.round(step / 2))].map(() => (
+        [...Array(Math.floor(step / 2))].map(() => (
           <div key={Math.random()} className={styles.connector} />
         ))}
     </div>

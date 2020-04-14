@@ -1,8 +1,10 @@
 import React from 'react';
+import moment from 'moment';
 import styles from './styles.module.scss';
 import SeedDrop from '../dnd/drop';
-import { IBracketGame } from './index';
 import Seed from '../dnd/seed';
+import { IBracketGame } from '../bracketGames';
+import { formatTimeSlot } from 'helpers';
 
 interface IProps {
   game: IBracketGame;
@@ -12,23 +14,25 @@ interface IProps {
 
 const BracketGameSlot = (props: IProps) => {
   const { game, onDrop, seedRound } = props;
+  const time = formatTimeSlot(game.startTime || '');
+  const date = moment(game.gameDate).format('MM/DD/YYYY');
 
   return (
     <div
-      key={game.id}
-      className={`${styles.bracketGame} ${game.hidden && styles.hidden}`}
+      key={game.index}
+      className={`${styles.bracketGame} ${false && styles.hidden}`}
     >
       <SeedDrop
-        id={game.id}
+        id={game.index}
         position={1}
         type="seed"
         onDrop={onDrop}
         placeholder={!seedRound ? game.awayDisplayName : ''}
       >
-        {game.away ? (
+        {game.awaySeedId ? (
           <Seed
-            id={game.away.id!}
-            name={game.away.name}
+            id={game.awaySeedId}
+            name={String(game.awaySeedId)}
             type="seed"
             dropped={true}
           />
@@ -37,20 +41,20 @@ const BracketGameSlot = (props: IProps) => {
         )}
       </SeedDrop>
       <div className={styles.bracketGameDescription}>
-        <span>Game 1: Field 1, Main Stadium</span>
-        <span>10:00 AM, 02/09/20</span>
+        <span>{`Game ${game.index}:  ${game.fieldName}`}</span>
+        <span>{`${time}, ${date}`}</span>
       </div>
       <SeedDrop
-        id={game.id}
+        id={game.index}
         position={2}
         type="seed"
         onDrop={onDrop}
         placeholder={!seedRound ? game.homeDisplayName : ''}
       >
-        {game.home ? (
+        {game.homeSeedId ? (
           <Seed
-            id={game.home.id!}
-            name={game.home.name}
+            id={game.homeSeedId}
+            name={String(game.homeSeedId)}
             type="seed"
             dropped={true}
           />

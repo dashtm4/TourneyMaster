@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './styles.module.scss';
 import BracketGameSlot from './game-slot';
-import { IBracketGame } from '.';
+import { IBracketGame } from '../bracketGames';
 
 interface IProps {
   games: IBracketGame[];
@@ -12,13 +12,12 @@ interface IProps {
 
 const BracketRound = (props: IProps) => {
   const { games, onDrop, title, seedRound } = props;
-
   return (
     <div className={styles.bracketRound}>
       <span className={styles.roundTitle}>{title}</span>
       {games.map(game => (
         <BracketGameSlot
-          key={`${game.id}-round`}
+          key={`${game.index}-round`}
           seedRound={seedRound}
           game={game}
           onDrop={onDrop}
