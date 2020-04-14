@@ -113,7 +113,10 @@ class Facilities extends React.Component<
   };
 
   onCancelClick = () => {
-    if (this.props.facilities.length) {
+    const changesAreMade = this.props.facilities.some(
+      facility => facility.isChange
+    );
+    if (changesAreMade) {
       this.setState({ isModalOpen: true });
     } else {
       this.onCancel();

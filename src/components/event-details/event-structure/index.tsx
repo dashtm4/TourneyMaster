@@ -41,7 +41,7 @@ enum ResultsDisplayEnum {
 interface Props {
   eventTypeOptions: string[];
   eventData: Partial<IEventDetails>;
-  onChange: any;
+  onChange: (name: string, value: string | number, ignore?: boolean) => void;
   isSectionExpand: boolean;
 }
 
@@ -69,9 +69,9 @@ const EventStructureSection: React.FC<Props> = ({
   } = eventData;
 
   useEffect(() => {
-    if (!event_type) onChange('event_type', eventTypeOptions[0]);
+    if (!event_type) onChange('event_type', eventTypeOptions[0], true);
 
-    if (!periods_per_game) onChange('periods_per_game', 2);
+    if (!periods_per_game) onChange('periods_per_game', 2, true);
   });
 
   const [isDatePickerOpen, setDatePickerOpen] = useState(false);

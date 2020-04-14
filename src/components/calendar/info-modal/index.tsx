@@ -36,6 +36,7 @@ const InfoModal = ({
   const [editable, setEditable] = useState(false);
   const [isDeleteModalOpen, onDeleteModalChange] = useState(false);
   const [isModalConfirmOpen, onModalConfirmChange] = useState(false);
+  const [changesAreMade, toggleChangesAreMade] = useState(false);
 
   const onDeleteModalClose = () => {
     onDeleteModalChange(false);
@@ -46,7 +47,11 @@ const InfoModal = ({
   };
 
   const onCancelClick = () => {
-    onModalConfirmChange(true);
+    if (changesAreMade) {
+      onModalConfirmChange(true);
+    } else {
+      onClose();
+    }
   };
 
   const onModalConfirmClose = () => {
@@ -70,9 +75,12 @@ const InfoModal = ({
     onClose();
   };
 
-  const updateEvent = (name: string, value: any) =>
+  const updateEvent = (name: string, value: any) => {
     setClickedEvent({ ...clickedEvent, [name]: value });
-
+    if (!changesAreMade) {
+      toggleChangesAreMade(true);
+    }
+  };
   const onTitleChange = (event: InputTargetValue) =>
     updateEvent('cal_event_title', event.target.value);
 
@@ -128,7 +136,7 @@ const InfoModal = ({
 
   const renderButtons = () => {
     return !editable ? (
-      <div>
+      <div className={styles.buttonsGroup}>
         <Button
           label="Delete"
           variant="text"
@@ -146,7 +154,7 @@ const InfoModal = ({
         />
       </div>
     ) : (
-      <div>
+      <div className={styles.buttonsGroup}>
         <Button
           label="Cancel"
           variant="text"
@@ -306,7 +314,7 @@ const InfoModal = ({
           {renderDescription(editable)}
         </div>
       </div>
-      <div className={styles.buttonsGroup}>{renderButtons()}</div>
+      {renderButtons()}
       <DeletePopupConfrim
         type={''}
         message={deleteMessage}

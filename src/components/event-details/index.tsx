@@ -63,6 +63,7 @@ type State = {
   isDeleteModalOpen: boolean;
   isCsvLoaderOpen: boolean;
   isSectionsExpand: boolean;
+  changesAreMade: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
@@ -74,6 +75,7 @@ class EventDetails extends Component<Props, State> {
     isDeleteModalOpen: false,
     isCsvLoaderOpen: false,
     isSectionsExpand: true,
+    changesAreMade: false,
   };
 
   componentDidMount() {
@@ -107,13 +109,16 @@ class EventDetails extends Component<Props, State> {
     });
   };
 
-  onChange = (name: string, value: any) => {
+  onChange = (name: string, value: any, ignore?: boolean) => {
     this.setState(({ event }) => ({
       event: {
         ...event,
         [name]: value,
       },
     }));
+    if (!this.state.changesAreMade && !ignore) {
+      this.setState({ changesAreMade: true });
+    }
   };
 
   onFileUpload = async (files: IUploadFile[]) => {
@@ -157,7 +162,11 @@ class EventDetails extends Component<Props, State> {
   };
 
   onCancelClick = () => {
-    this.setState({ isModalOpen: true });
+    if (this.state.changesAreMade) {
+      this.setState({ isModalOpen: true });
+    } else {
+      this.onCancel();
+    }
   };
 
   onModalClose = () => {
