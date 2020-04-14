@@ -14,15 +14,12 @@ import { EventMenuTitles } from 'common/enums';
 import styles from '../styles.module.scss';
 import { getTimeFromString, timeToString } from 'helpers';
 import { IEventDetails } from 'common/models';
-import waiverHubLogo from 'assets/WaiverHubLogo.png';
 import MultipleDatesPicker from '@randex/material-ui-multiple-dates-picker';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 enum esDetailsEnum {
   'Back to Back Game Warning' = 'back_to_back_warning',
-  'Require Waivers' = 'waivers_required',
-  'Synchronize via WaiverHub data' = 'waiverhub_utilized',
 }
 
 enum timeDivisionEnum {
@@ -63,8 +60,6 @@ const EventStructureSection: React.FC<Props> = ({
     periods_per_game,
     event_type,
     min_num_of_games,
-    waivers_required,
-    waiverhub_utilized,
     league_dates,
   } = eventData;
 
@@ -92,7 +87,7 @@ const EventStructureSection: React.FC<Props> = ({
   const onChangePeriod = (e: InputTargetValue) =>
     onChange('periods_per_game', timeDivisionEnum[e.target.value]);
 
-  const onEsDetailsChange = (e: InputTargetValue) =>
+  const onBackToBackChange = (e: InputTargetValue) =>
     onChange(
       esDetailsEnum[e.target.value],
       eventData[esDetailsEnum[e.target.value]] ? 0 : 1
@@ -124,17 +119,6 @@ const EventStructureSection: React.FC<Props> = ({
   ];
 
   const timeDivisionOptions = ['Halves (2)', 'Periods (3)', 'Quarters (4)'];
-
-  const esDetailsOptions = [
-    {
-      label: 'Back to Back Game Warning',
-      checked: Boolean(back_to_back_warning),
-    },
-    {
-      label: 'Require Waivers',
-      checked: Boolean(waivers_required),
-    },
-  ];
 
   const onDatesSubmit = (dates: Date[]) => {
     const parsedDates = JSON.stringify(
@@ -209,6 +193,16 @@ const EventStructureSection: React.FC<Props> = ({
               value={min_num_of_games || ''}
               onChange={onGameNumChange}
             />
+            <Checkbox
+              options={[
+                {
+                  label: 'Back to Back Game Warning',
+                  checked: Boolean(back_to_back_warning),
+                },
+              ]}
+              formLabel=""
+              onChange={onBackToBackChange}
+            />
           </div>
         </div>
         <div className={styles.esDetailsSecond}>
@@ -249,36 +243,6 @@ const EventStructureSection: React.FC<Props> = ({
                 getTimeFromString(time_btwn_periods!, 'minutes')}
             &nbsp; Minutes Total Runtime
           </span>
-        </div>
-        <div className={styles.esDetailsThird}>
-          <Checkbox
-            options={esDetailsOptions}
-            formLabel=""
-            onChange={onEsDetailsChange}
-          />
-          <div className={styles.waiverHubWrapper}>
-            <Checkbox
-              options={[
-                {
-                  label: 'Connect to WaiverHub',
-                  checked: Boolean(waiverhub_utilized),
-                },
-              ]}
-              formLabel=""
-              onChange={onEsDetailsChange}
-            />
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://www.waiverhub.com/"
-            >
-              <img
-                src={waiverHubLogo}
-                style={{ width: '150px' }}
-                alt="Waiverhub logo"
-              />
-            </a>
-          </div>
         </div>
       </div>
     </SectionDropdown>
