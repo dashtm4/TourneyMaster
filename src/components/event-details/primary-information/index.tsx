@@ -20,11 +20,7 @@ import styles from '../styles.module.scss';
 
 import Map from './map';
 import PlacesAutocompleteInput from './map/autocomplete';
-import {
-  BindingCbWithTwo,
-  BindingCbWithOne,
-  IEventDetails,
-} from 'common/models';
+import { IEventDetails } from 'common/models';
 import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
 import { timeToDate, dateToTime } from 'helpers';
 
@@ -35,10 +31,8 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
   eventData: Partial<IEventDetails>;
-  onChange: BindingCbWithTwo<string, string | number>;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
-  index: number;
+  onChange: (name: string, value: string | number, ignore?: boolean) => void;
+  isSectionExpand: boolean;
 }
 
 enum sportsEnum {
@@ -76,9 +70,7 @@ const levelOptions = ['High School', 'Club', 'Youth', 'Other'];
 const PrimaryInformationSection: React.FC<Props> = ({
   eventData,
   onChange,
-  expanded,
-  index,
-  onToggleOne,
+  isSectionExpand,
 }: Props) => {
   const {
     time_zone_utc,
@@ -99,7 +91,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
 
   useEffect(() => {
     const calculatedSportId = getIdByGenderAndSport(genderId, sportId);
-    onChange('sport_id', calculatedSportId);
+    onChange('sport_id', calculatedSportId, true);
   }, [genderId, sportId]);
 
   const onNameChange = (e: InputTargetValue) =>
@@ -159,10 +151,6 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const onMainContactEmailChange = (e: InputTargetValue) =>
     onChange('main_contact_email', e.target.value);
 
-  const onSectionToggle = () => {
-    onToggleOne(index);
-  };
-
   const { primary_location_lat: lat, primary_location_long: lng } = eventData;
 
   return (
@@ -170,10 +158,8 @@ const PrimaryInformationSection: React.FC<Props> = ({
       id={EventMenuTitles.PRIMARY_INFORMATION}
       type="section"
       panelDetailsType="flat"
-      isDefaultExpanded={true}
       useBorder={true}
-      expanded={expanded}
-      onToggle={onSectionToggle}
+      expanded={isSectionExpand}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Primary Information</span>

@@ -1,4 +1,6 @@
 import React from 'react';
+import moment from 'moment';
+import { formatTimeSlot } from 'helpers';
 import { ISchedulesGameWithNames } from 'common/models';
 import styles from './styles.module.scss';
 
@@ -10,8 +12,8 @@ const FieldItem = ({ game }: Props) => (
   <li className={styles.fieldItem}>
     <p className={styles.fieldDates}>
       <span>{game.fieldName}</span>
-      <time dateTime={game.gameDate}>{game.gameDate}</time>
-      <time dateTime={game.startTime}>{game.startTime}</time>
+      <time dateTime={game.gameDate}>{moment(game.gameDate).format('L')}</time>
+      <time dateTime={game.startTime}>{formatTimeSlot(game.startTime)}</time>
     </p>
     <table className={styles.fieldTable}>
       <tbody>

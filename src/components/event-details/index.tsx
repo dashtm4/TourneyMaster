@@ -38,6 +38,7 @@ import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 import CsvLoader from 'components/common/csv-loader';
 import { IEntity } from 'common/types';
 import { EntryPoints, LibraryStates } from 'common/enums';
+import WellnessStatement from './wellness-statement';
 
 interface IMapStateProps {
   event: IEventState;
@@ -59,11 +60,11 @@ type State = {
   eventId: string | undefined;
   event?: Partial<IEventDetails>;
   error: boolean;
-  expanded: boolean[];
-  expandAll: boolean;
   isModalOpen: boolean;
   isDeleteModalOpen: boolean;
   isCsvLoaderOpen: boolean;
+  isSectionsExpand: boolean;
+  changesAreMade: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
@@ -71,11 +72,11 @@ class EventDetails extends Component<Props, State> {
     eventId: undefined,
     event: undefined,
     error: false,
-    expanded: [true, true, true, true],
-    expandAll: false,
     isModalOpen: false,
     isDeleteModalOpen: false,
     isCsvLoaderOpen: false,
+    isSectionsExpand: true,
+    changesAreMade: false,
   };
 
   componentDidMount() {
@@ -109,13 +110,16 @@ class EventDetails extends Component<Props, State> {
     });
   };
 
-  onChange = (name: string, value: any) => {
+  onChange = (name: string, value: any, ignore?: boolean) => {
     this.setState(({ event }) => ({
       event: {
         ...event,
         [name]: value,
       },
     }));
+    if (!this.state.changesAreMade && !ignore) {
+      this.setState({ changesAreMade: true });
+    }
   };
 
   onFileUpload = async (files: IUploadFile[]) => {
@@ -146,19 +150,8 @@ class EventDetails extends Component<Props, State> {
     this.props.createEvent(event);
   };
 
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
   onDeleteClick = () => {
@@ -170,7 +163,11 @@ class EventDetails extends Component<Props, State> {
   };
 
   onCancelClick = () => {
-    this.setState({ isModalOpen: true });
+    if (this.state.changesAreMade) {
+      this.setState({ isModalOpen: true });
+    } else {
+      this.onCancel();
+    }
   };
 
   onModalClose = () => {
@@ -233,48 +230,45 @@ class EventDetails extends Component<Props, State> {
               />
             )}
             <Button
-              label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+              label={
+                this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+              }
               variant="text"
               color="secondary"
-              onClick={this.onToggleAll}
+              onClick={this.toggleSectionCollapse}
             />
           </div>
         </div>
         <PrimaryInformationSection
           eventData={event}
           onChange={this.onChange}
-          index={0}
-          expanded={this.state.expanded[0]}
-          onToggleOne={this.onToggleOne}
+          isSectionExpand={this.state.isSectionsExpand}
         />
         <EventStructureSection
           eventData={event}
           eventTypeOptions={eventTypeOptions}
           onChange={this.onChange}
-          index={1}
-          expanded={this.state.expanded[1]}
-          onToggleOne={this.onToggleOne}
+          isSectionExpand={this.state.isSectionsExpand}
+        />
+        <WellnessStatement
+          eventData={event}
+          onChange={this.onChange}
+          isSectionExpand={this.state.isSectionsExpand}
         />
         <Rankings
           eventData={event}
           onChange={this.onChange}
-          index={2}
-          expanded={this.state.expanded[2]}
-          onToggleOne={this.onToggleOne}
+          isSectionExpand={this.state.isSectionsExpand}
         />
         <PlayoffsSection
           eventData={event}
           onChange={this.onChange}
-          index={3}
-          expanded={this.state.expanded[3]}
-          onToggleOne={this.onToggleOne}
+          isSectionExpand={this.state.isSectionsExpand}
         />
         <MediaAssetsSection
           onFileUpload={this.onFileUpload}
           onFileRemove={this.onFileRemove}
-          index={4}
-          expanded={this.state.expanded[4]}
-          onToggleOne={this.onToggleOne}
+          isSectionExpand={this.state.isSectionsExpand}
           logo={event.desktop_icon_URL}
         />
         <DeletePopupConfrim

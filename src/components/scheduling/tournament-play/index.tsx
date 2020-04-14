@@ -12,6 +12,12 @@ import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { orderBy } from 'lodash-es';
+import { IMouseEvent } from 'common/types';
+
+const CARD_MESSAGE_STYLES = {
+  marginBottom: 30,
+  width: '100%',
+};
 
 interface IProps {
   schedules: ISchedulingSchedule[];
@@ -22,7 +28,7 @@ interface IProps {
   onEditSchedule: BindingCbWithOne<ISchedulingSchedule>;
   onPublish: (schedule: ISchedule) => void;
   onUnpublish: (schedule: ISchedule) => void;
-  onCreatePressed: () => void;
+  onCreatePressed: (evt: IMouseEvent) => void;
 }
 
 export default (props: IProps) => {
@@ -84,29 +90,39 @@ export default (props: IProps) => {
           disabled={!isAllowCreate}
         />
       </>
-      <ul className={styles.tournamentList}>
+      {schedules.length !== 0 ? (
+        <ul className={styles.tournamentList}>
+          <CardMessage
+            style={CARD_MESSAGE_STYLES}
+            type={CardMessageTypes.EMODJI_OBJECTS}
+          >
+            Schedules are sorted first on Status then on Last Update Date
+          </CardMessage>
+          {sortedSchedules.map(it => (
+            <TournamentPlayItem
+              schedule={it}
+              eventId={eventId}
+              onEditSchedule={onEditSchedule}
+              key={it.schedule_id}
+              onPublish={onPublish}
+              onUnpublish={onUnpublish}
+              anotherSchedulePublished={isAnotherSchedulePublished(
+                it?.schedule_id
+              )}
+              schedulePublished={isSchedulePublished(it?.schedule_id)}
+              savingInProgress={savingInProgress}
+            />
+          ))}
+        </ul>
+      ) : (
         <CardMessage
-          style={{ marginBottom: 30, width: '100%' }}
+          style={CARD_MESSAGE_STYLES}
           type={CardMessageTypes.EMODJI_OBJECTS}
         >
-          Schedules are sorted first on Status then on Last Update Date
+          Please create the first schedule by clicking on the button to
+          continue...
         </CardMessage>
-        {sortedSchedules.map(it => (
-          <TournamentPlayItem
-            schedule={it}
-            eventId={eventId}
-            onEditSchedule={onEditSchedule}
-            key={it.schedule_id}
-            onPublish={onPublish}
-            onUnpublish={onUnpublish}
-            anotherSchedulePublished={isAnotherSchedulePublished(
-              it?.schedule_id
-            )}
-            schedulePublished={isSchedulePublished(it?.schedule_id)}
-            savingInProgress={savingInProgress}
-          />
-        ))}
-      </ul>
+      )}
     </SectionDropdown>
   );
 };

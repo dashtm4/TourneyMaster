@@ -26,6 +26,7 @@ import {
 } from '../../common/models';
 import styles from './styles.module.scss';
 import CsvLoader from 'components/common/csv-loader';
+import history from 'browserhistory';
 
 interface MatchParams {
   eventId?: string;
@@ -52,6 +53,7 @@ interface State {
   isEditPopupOpen: boolean;
   isConfirmModalOpen: boolean;
   isCsvLoaderOpen: boolean;
+  changesAreMade: boolean;
 }
 
 class Teams extends React.Component<
@@ -69,6 +71,7 @@ class Teams extends React.Component<
       isEditPopupOpen: false,
       isConfirmModalOpen: false,
       isCsvLoaderOpen: false,
+      changesAreMade: false,
     };
   }
 
@@ -107,6 +110,7 @@ class Teams extends React.Component<
     const { teams } = this.props;
 
     this.setState({ teams, isConfirmModalOpen: false });
+    history.push(`/event/event-details/${this.props.match.params.eventId}`);
   };
 
   onDeleteTeam = (team: ITeam) => {
@@ -129,7 +133,7 @@ class Teams extends React.Component<
 
   onChangeTeam = ({
     target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) =>
+  }: React.ChangeEvent<HTMLInputElement>) => {
     this.setState(({ configurableTeam }) => ({
       configurableTeam: {
         ...(configurableTeam as ITeam),
@@ -137,7 +141,10 @@ class Teams extends React.Component<
         isChange: true,
       },
     }));
-
+    if (!this.state.changesAreMade) {
+      this.setState({ changesAreMade: true });
+    }
+  };
   onSaveTeam = () => {
     const { configurableTeam } = this.state;
 
@@ -152,12 +159,13 @@ class Teams extends React.Component<
     this.onCloseModal();
   };
 
-  onCloseModal = () =>
+  onCloseModal = () => {
     this.setState({
       isEditPopupOpen: false,
       configurableTeam: null,
       currentDivision: null,
     });
+  };
 
   onImportFromCsv = () => {
     this.setState({ isCsvLoaderOpen: true });
@@ -172,7 +180,11 @@ class Teams extends React.Component<
   };
 
   onCancel = () => {
-    this.setState({ isConfirmModalOpen: true });
+    if (this.state.changesAreMade) {
+      this.setState({ isConfirmModalOpen: true });
+    } else {
+      this.onCancelClick();
+    }
   };
 
   render() {

@@ -13,8 +13,9 @@ import {
   uploadFileMap,
   saveFacilities,
   createFacilities,
+  deleteFacility,
 } from './logic/actions';
-import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
+import { addEntitiesToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import Navigation from './components/navigation';
 import FacilityDetails from './components/facility-details';
 import {
@@ -55,12 +56,12 @@ interface Props {
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
   createFacilities: (facilities: IFacility[]) => void;
-  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
+  addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
+  deleteFacility: (facilityId: string) => void;
 }
 
 interface State {
-  expanded: boolean[];
-  expandAll: boolean;
+  isSectionsExpand: boolean;
   isModalOpen: boolean;
   isCsvLoaderOpen: boolean;
   isLibraryPopupOpen: boolean;
@@ -74,8 +75,7 @@ class Facilities extends React.Component<
     super(props);
 
     this.state = {
-      expanded: [],
-      expandAll: false,
+      isSectionsExpand: true,
       isModalOpen: false,
       isCsvLoaderOpen: false,
       isLibraryPopupOpen: false,
@@ -108,38 +108,15 @@ class Facilities extends React.Component<
     this.setState({ isModalOpen: false });
   };
 
-  componentDidUpdate(prevProps: any, prevState: any) {
-    if (
-      (prevProps.facilities.length && !prevState.expanded.length) ||
-      prevProps.facilities !== this.props.facilities
-    ) {
-      this.setState({
-        expanded: this.props.facilities.map(_facility => true),
-      });
-    }
-  }
-
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
-  };
-
   onModalClose = () => {
     this.setState({ isModalOpen: false });
   };
 
   onCancelClick = () => {
-    if (this.props.facilities.length) {
+    const changesAreMade = this.props.facilities.some(
+      facility => facility.isChange
+    );
+    if (changesAreMade) {
       this.setState({ isModalOpen: true });
     } else {
       this.onCancel();
@@ -164,6 +141,10 @@ class Facilities extends React.Component<
     }));
   };
 
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
+  };
+
   render() {
     const {
       isLoading,
@@ -174,6 +155,7 @@ class Facilities extends React.Component<
       updateFacilities,
       updateField,
       uploadFileMap,
+      deleteFacility,
     } = this.props;
 
     const { isLibraryPopupOpen } = this.state;
@@ -210,10 +192,12 @@ class Facilities extends React.Component<
               />
               {facilities?.length ? (
                 <Button
-                  label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                  label={
+                    this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+                  }
                   variant="text"
                   color="secondary"
-                  onClick={this.onToggleAll}
+                  onClick={this.toggleSectionCollapse}
                 />
               ) : null}
             </div>
@@ -253,9 +237,8 @@ class Facilities extends React.Component<
                     updateFacilities={updateFacilities}
                     updateField={updateField}
                     uploadFileMap={uploadFileMap}
-                    expanded={this.state.expanded[idx]}
-                    index={idx}
-                    onToggleOne={this.onToggleOne}
+                    isSectionExpand={this.state.isSectionsExpand}
+                    deleteFacility={deleteFacility}
                   />
                 </li>
               ))}
@@ -279,7 +262,7 @@ class Facilities extends React.Component<
           entryPoint={EntryPoints.FACILITIES}
           isOpen={isLibraryPopupOpen}
           onClose={this.toggleLibraryPopup}
-          addEntityToLibrary={this.props.addEntityToLibrary}
+          addEntitiesToLibrary={this.props.addEntitiesToLibrary}
         />
       </section>
     );
@@ -304,7 +287,8 @@ export default connect(
         saveFacilities,
         uploadFileMap,
         createFacilities,
-        addEntityToLibrary,
+        addEntitiesToLibrary,
+        deleteFacility,
       },
       dispatch
     )

@@ -13,7 +13,7 @@ import {
   unpublishSchedule,
   createNewBracket,
 } from './logic/actions';
-import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
+import { addEntitiesToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import {
   HeadingLevelTwo,
   Loader,
@@ -50,7 +50,7 @@ import { ButtonVarian, ButtonColors, EntryPoints } from 'common/enums';
 import CreateNewBracket, {
   ICreateBracketModalOutput,
 } from './create-new-bracket';
-import { IEntity } from 'common/types';
+import { IEntity, IMouseEvent } from 'common/types';
 
 enum ComponentActionsEnum {
   SchedulePublish = 'schedulePublish',
@@ -77,7 +77,7 @@ interface IProps {
   publishSchedule: BindingCbWithOne<string>;
   unpublishSchedule: BindingCbWithOne<string>;
   createNewBracket: BindingCbWithOne<ICreateBracketModalOutput>;
-  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
+  addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
   divisions?: IDivision[];
   teams?: ITeam[];
   event?: IEventDetails | null;
@@ -128,9 +128,17 @@ class Scheduling extends Component<IProps, IState> {
     changeSchedule({ [name]: value });
   };
 
-  onCreatePressed = () => this.setState({ createModalOpen: true });
+  onCreatePressed = (evt: IMouseEvent) => {
+    evt.stopPropagation();
 
-  onCreateBracketPressed = () => this.setState({ createBracketOpen: true });
+    this.setState({ createModalOpen: true });
+  };
+
+  onCreateBracketPressed = (evt: IMouseEvent) => {
+    evt.stopPropagation();
+
+    this.setState({ createBracketOpen: true });
+  };
 
   onCreateClosed = () => this.setState({ createModalOpen: false });
 
@@ -275,29 +283,23 @@ class Scheduling extends Component<IProps, IState> {
                 isSectionExpand={isSectionsExpand}
                 onViewEventMatrix={this.openViewMatrix}
               />
-              {schedules.length > 0 && (
-                <>
-                  <TournamentPlay
-                    schedules={schedules}
-                    isSectionExpand={isSectionsExpand}
-                    isAllowCreate={isAllowCreate}
-                    eventId={eventId}
-                    onCreatePressed={this.onCreatePressed}
-                    onEditSchedule={this.onEditSchedule}
-                    onPublish={(data: ISchedule) => this.onPublish(data, true)}
-                    onUnpublish={(data: ISchedule) =>
-                      this.onPublish(data, false)
-                    }
-                  />
-                  <Brackets
-                    schedules={schedules}
-                    eventId={eventId}
-                    isSectionExpand={isSectionsExpand}
-                    bracketCreationAllowed={true}
-                    onCreateBracket={this.onCreateBracketPressed}
-                  />
-                </>
-              )}
+              <TournamentPlay
+                schedules={schedules}
+                isSectionExpand={isSectionsExpand}
+                isAllowCreate={isAllowCreate}
+                eventId={eventId}
+                onCreatePressed={this.onCreatePressed}
+                onEditSchedule={this.onEditSchedule}
+                onPublish={(data: ISchedule) => this.onPublish(data, true)}
+                onUnpublish={(data: ISchedule) => this.onPublish(data, false)}
+              />
+              <Brackets
+                schedules={schedules}
+                eventId={eventId}
+                isSectionExpand={isSectionsExpand}
+                bracketCreationAllowed={true}
+                onCreateBracket={this.onCreateBracketPressed}
+              />
             </>
           ) : (
             <HazardList
@@ -375,7 +377,7 @@ class Scheduling extends Component<IProps, IState> {
           entryPoint={EntryPoints.SCHEDULES}
           isOpen={isLibraryPopupOpen}
           onClose={this.toggleLibraryPopup}
-          addEntityToLibrary={this.props.addEntityToLibrary}
+          addEntitiesToLibrary={this.props.addEntitiesToLibrary}
         />
       </>
     );
@@ -407,7 +409,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       deleteSchedule,
       publishSchedule,
       unpublishSchedule,
-      addEntityToLibrary,
+      addEntitiesToLibrary,
     },
     dispatch
   );

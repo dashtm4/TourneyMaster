@@ -31,5 +31,5 @@ export interface IField {
   csvPosition: number;
   dataType: string;
   included: boolean;
-  mapId: string;
+  map_id: string;
 }

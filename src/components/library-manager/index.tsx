@@ -25,9 +25,6 @@ import {
   BindingAction,
   IEventDetails,
   BindingCbWithThree,
-  IFacility,
-  IDivision,
-  ISchedule,
   BindingCbWithTwo,
 } from 'common/models';
 import {
@@ -37,7 +34,13 @@ import {
   ButtonColors,
 } from 'common/enums';
 import { IEntity } from 'common/types';
-import { ILibraryManagerRegistration, ITableSortEntity } from './common';
+import {
+  ILibraryManagerRegistration,
+  ILibraryManagerFacility,
+  ILibraryManagerDivision,
+  ILibraryManagerSchedule,
+  ITableSortEntity,
+} from './common';
 import styles from './styles.module.scss';
 
 const DELETE_POPUP_MESSAGE =
@@ -48,9 +51,9 @@ interface Props {
   isLoaded: boolean;
   events: IEventDetails[];
   registrations: ILibraryManagerRegistration[];
-  facilities: IFacility[];
-  divisions: IDivision[];
-  schedules: ISchedule[];
+  facilities: ILibraryManagerFacility[];
+  divisions: ILibraryManagerDivision[];
+  schedules: ILibraryManagerSchedule[];
   loadLibraryManagerData: BindingAction;
   saveSharedItem: BindingCbWithThree<IEventDetails, IEntity, EntryPoints>;
   deleteLibraryItem: BindingCbWithTwo<IEntity, EntryPoints>;
@@ -214,7 +217,7 @@ const LibraryManager = ({
       />
       <DeletePopupConfrim
         type="item"
-        deleteTitle={tableEntity?.title || ''}
+        deleteTitle={tableEntity?.name || ''}
         message={DELETE_POPUP_MESSAGE}
         isOpen={isCondfirmPopupOpen}
         onClose={onClosePopup}

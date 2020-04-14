@@ -18,6 +18,7 @@ import { PopupExposure } from 'components/common';
 interface ICreateTeamState {
   teams: Partial<ITeam>[];
   isModalOpen: boolean;
+  changesAreMade: boolean;
 }
 
 interface ICreateTeamProps {
@@ -30,7 +31,7 @@ interface ICreateTeamProps {
 
 class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
   eventId = this.props.match.params.eventId;
-  state = { teams: [{}], isModalOpen: false };
+  state = { teams: [{}], isModalOpen: false, changesAreMade: false };
 
   onChange = (name: string, value: string | number, index: number) => {
     this.setState(({ teams }) => ({
@@ -38,14 +39,13 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
         team === teams[index] ? { ...team, [name]: value } : team
       ),
     }));
-  };
-
-  checkIfChangesAreMade = () => {
-    return this.state.teams.some(team => Object.entries(team).length !== 0);
+    if (!this.state.changesAreMade) {
+      this.setState({ changesAreMade: true });
+    }
   };
 
   onCancel = () => {
-    if (this.checkIfChangesAreMade()) {
+    if (this.state.changesAreMade) {
       this.setState({ isModalOpen: true });
     } else {
       this.onExit();

@@ -13,7 +13,7 @@ import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
 
-import { BindingCbWithOne, IEventDetails } from 'common/models';
+import { IEventDetails } from 'common/models';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -55,17 +55,13 @@ enum numTeamsBracketEnum {
 interface Props {
   eventData: Partial<IEventDetails>;
   onChange: any;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
-  index: number;
+  isSectionExpand: boolean;
 }
 
 const PlayoffsSection: React.FC<Props> = ({
   eventData,
   onChange,
-  expanded,
-  index,
-  onToggleOne,
+  isSectionExpand,
 }: Props) => {
   const {
     playoffs_exist,
@@ -105,19 +101,13 @@ const PlayoffsSection: React.FC<Props> = ({
       onChange('bracket_type', bracketTypesEnum['Single Elimination']);
   });
 
-  const onSectionToggle = () => {
-    onToggleOne(index);
-  };
-
   return (
     <SectionDropdown
       id={EventMenuTitles.PLAYOFFS}
       type="section"
       panelDetailsType="flat"
-      isDefaultExpanded={true}
       useBorder={true}
-      expanded={expanded}
-      onToggle={onSectionToggle}
+      expanded={isSectionExpand}
     >
       <HeadingLevelThree>
         <span className={styles.blockHeading}>Playoffs</span>

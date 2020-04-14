@@ -10,7 +10,7 @@ import {
   ADD_NEW_BRACKET,
 } from './actionTypes';
 import {
-  ADD_ENTITY_TO_LIBRARY_SUCCESS,
+  ADD_ENTITIES_TO_LIBRARY_SUCCESS,
   AuthPageAction,
 } from 'components/authorized-page/authorized-page-event/logic/action-types';
 import { IConfigurableSchedule, ISchedule } from 'common/models/schedule';
@@ -108,19 +108,23 @@ export default (
         ...state,
         bracket: action.payload,
       };
-    case ADD_ENTITY_TO_LIBRARY_SUCCESS: {
-      const { entity, entryPoint } = action.payload;
+    case ADD_ENTITIES_TO_LIBRARY_SUCCESS: {
+      const { entities, entryPoint } = action.payload;
 
       if (entryPoint === EntryPoints.SCHEDULES) {
-        const updatedSchedule = entity as ISchedule;
+        const updatedSchedules = entities as ISchedule[];
+
+        const schedules = state.schedules.map(schedule => {
+          const updatedSchedule = updatedSchedules.find(
+            it => it.schedule_id === schedule.schedule_id
+          );
+
+          return updatedSchedule ? updatedSchedule : schedule;
+        });
 
         return {
           ...state,
-          schedules: state.schedules.map(it =>
-            it.schedule_id === updatedSchedule.schedule_id
-              ? updatedSchedule
-              : it
-          ),
+          schedules,
         };
       } else {
         return state;

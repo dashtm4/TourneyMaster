@@ -1,9 +1,15 @@
 import React from 'react';
-import { Modal, HeadingLevelTwo, Select, Button } from 'components/common';
+import {
+  Modal,
+  HeadingLevelTwo,
+  SelectMultiple,
+  Button,
+  Checkbox,
+} from 'components/common';
 import { BindingAction, BindingCbWithTwo } from 'common/models';
 import { ButtonVarian, ButtonColors, EntryPoints } from 'common/enums';
 import { IEntity, IInputEvent } from 'common/types';
-import { getSelectOptions, getEntityByOption } from './helpers';
+import { getSelectOptions, getEntityByOptions } from './helpers';
 import styles from './styles.module.scss';
 
 const BUTTON_STYLES = {
@@ -15,7 +21,7 @@ interface Props {
   entryPoint: EntryPoints;
   isOpen: boolean;
   onClose: BindingAction;
-  addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
+  addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
 }
 
 const PopupAddToLibrary = ({
@@ -23,35 +29,59 @@ const PopupAddToLibrary = ({
   entryPoint,
   isOpen,
   onClose,
-  addEntityToLibrary,
+  addEntitiesToLibrary,
 }: Props) => {
   const [isConfirm, toggleConfirm] = React.useState<boolean>(false);
-  const [activeOptionId, changeOption] = React.useState<string | null>(null);
+  const [checkedValues, changeOptions] = React.useState<string[] | null>(null);
+  const [isSelectedAll, toggleSelectAll] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     toggleConfirm(false);
 
-    changeOption(null);
+    changeOptions(null);
+
+    toggleSelectAll(false);
   }, [isOpen]);
 
   const selectOptions = getSelectOptions(entities, entryPoint);
 
   const isAllowShare = entities.length > 0;
 
-  const onChangeOption = (evt: IInputEvent) => {
-    changeOption(evt.target.value);
+  const onChangeOption = (checkedValues: string[] | null) => {
+    changeOptions(checkedValues);
   };
 
   const onToggleConfirm = () => toggleConfirm(!isConfirm);
 
   const onSave = () => {
-    if (activeOptionId) {
-      const entity = getEntityByOption(entities, activeOptionId, entryPoint);
+    if (checkedValues) {
+      const entitiesByOptions = getEntityByOptions(
+        entities,
+        checkedValues,
+        entryPoint
+      );
 
-      addEntityToLibrary(entity!, entryPoint);
+      addEntitiesToLibrary(entitiesByOptions!, entryPoint);
 
       onClose();
     }
+  };
+
+  const onToggleSelectAll = ({ target }: IInputEvent) => {
+    if (target.checked) {
+      changeOptions(selectOptions!.map(it => it.value) as string[]);
+
+      toggleSelectAll(true);
+    } else {
+      changeOptions(null);
+
+      toggleSelectAll(false);
+    }
+  };
+
+  const checkboxOption = {
+    label: 'Select all',
+    checked: isSelectedAll,
   };
 
   return (
@@ -62,13 +92,28 @@ const PopupAddToLibrary = ({
         </div>
         <div className={styles.SelectWrapper}>
           {isAllowShare ? (
-            <Select
-              onChange={onChangeOption}
-              value={activeOptionId || ''}
-              options={selectOptions!}
-              label="Select item"
-              width="100%"
-            />
+            isConfirm ? (
+              <p className={styles.confirmText}>
+                Are you sure you want to continue and add the item to the
+                library?
+              </p>
+            ) : (
+              <>
+                <SelectMultiple
+                  onChange={onChangeOption}
+                  value={checkedValues || []}
+                  options={selectOptions!}
+                  label="Select item"
+                  width="100%"
+                />
+                <div className={styles.checkobxWrapper}>
+                  <Checkbox
+                    onChange={onToggleSelectAll}
+                    options={[checkboxOption]}
+                  />
+                </div>
+              </>
+            )
           ) : (
             <p>You don’t have items to share</p>
           )}
@@ -84,31 +129,26 @@ const PopupAddToLibrary = ({
             />
           </span>
           <span className={styles.btnWrapper}>
-            {isAllowShare && (
-              <Button
-                onClick={onToggleConfirm}
-                variant={ButtonVarian.CONTAINED}
-                color={ButtonColors.PRIMARY}
-                btnStyles={BUTTON_STYLES}
-                label="Save"
-              />
-            )}
+            {isAllowShare &&
+              (isConfirm ? (
+                <Button
+                  onClick={onSave}
+                  variant={ButtonVarian.CONTAINED}
+                  color={ButtonColors.PRIMARY}
+                  btnStyles={BUTTON_STYLES}
+                  label="Save"
+                />
+              ) : (
+                <Button
+                  onClick={onToggleConfirm}
+                  variant={ButtonVarian.CONTAINED}
+                  color={ButtonColors.PRIMARY}
+                  btnStyles={BUTTON_STYLES}
+                  label="Save"
+                />
+              ))}
           </span>
         </p>
-        {isConfirm && (
-          <div className={styles.confirmWrapper}>
-            <p className={styles.confirmText}>Are you sure?</p>
-            <p className={styles.confirmBtns}>
-              <Button
-                onClick={onSave}
-                variant={ButtonVarian.CONTAINED}
-                color={ButtonColors.PRIMARY}
-                btnStyles={BUTTON_STYLES}
-                label="Sent"
-              />
-            </p>
-          </div>
-        )}
       </section>
     </Modal>
   );

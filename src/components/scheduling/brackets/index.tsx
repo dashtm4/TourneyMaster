@@ -1,18 +1,29 @@
 import React from 'react';
-import { SectionDropdown, HeadingLevelThree, Button } from 'components/common';
+import {
+  SectionDropdown,
+  HeadingLevelThree,
+  Button,
+  CardMessage,
+} from 'components/common';
 import BraketsItem from '../brakets-item';
+import { compareTime } from 'helpers';
 import { EventMenuTitles } from 'common/enums';
 import { ISchedulingSchedule } from '../types';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import styles from '../styles.module.scss';
-import { compareTime } from 'helpers';
-import { BindingAction } from 'common/models';
+import { IMouseEvent } from 'common/types';
+
+const CARD_MESSAGE_STYLES = {
+  marginBottom: 30,
+  width: '100%',
+};
 
 interface IProps {
   schedules: ISchedulingSchedule[];
   eventId: string;
   isSectionExpand: boolean;
   bracketCreationAllowed: boolean;
-  onCreateBracket: BindingAction;
+  onCreateBracket: (evt: IMouseEvent) => void;
 }
 
 const Brackets = (props: IProps) => {
@@ -53,11 +64,21 @@ const Brackets = (props: IProps) => {
           disabled={!bracketCreationAllowed}
         />
       </>
-      <ul className={styles.braketsList}>
-        {sortedScheduleByName.map(it => (
-          <BraketsItem schedule={it} eventId={eventId} key={it.schedule_id} />
-        ))}
-      </ul>
+      {sortedScheduleByName.length !== 0 ? (
+        <ul className={styles.braketsList}>
+          {sortedScheduleByName.map(it => (
+            <BraketsItem schedule={it} eventId={eventId} key={it.schedule_id} />
+          ))}
+        </ul>
+      ) : (
+        <CardMessage
+          style={CARD_MESSAGE_STYLES}
+          type={CardMessageTypes.EMODJI_OBJECTS}
+        >
+          Please create the first braket by clicking on the button to
+          continue...
+        </CardMessage>
+      )}
     </SectionDropdown>
   );
 };

@@ -18,6 +18,8 @@ import { getVarcharEight } from 'helpers';
 import { debounce } from 'lodash';
 import ITag from 'common/models/calendar/tag';
 import moment from 'moment';
+import { PopupExposure } from 'components/common';
+
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface IProps {
@@ -80,6 +82,8 @@ export default (props: IProps) => {
   const [calendarEvent, setCalendarEvent] = useState<Partial<ICalendarEvent>>(
     defaultCalendarEvent()
   );
+  const [changesAreMade, toggleChangesAreMade] = useState(false);
+  const [isModalConfirmOpen, toggleModalConfirm] = useState(false);
 
   const buttonTypeEvents: ButtonTypeEvent[] = ['event', 'reminder', 'task'];
 
@@ -90,8 +94,12 @@ export default (props: IProps) => {
     });
   };
 
-  const updateEvent = (name: string, value: any) =>
+  const updateEvent = (name: string, value: any) => {
     setCalendarEvent({ ...calendarEvent, [name]: value });
+    if (!changesAreMade) {
+      toggleChangesAreMade(true);
+    }
+  };
 
   const onDateFromChange = (value: Date | string) =>
     updateEvent('cal_event_startdate', new Date(value).toISOString());
@@ -122,7 +130,29 @@ export default (props: IProps) => {
     });
   };
 
-  const onSaveClicked = () => onSave(calendarEvent);
+  const onSaveClicked = () => {
+    onSave(calendarEvent);
+    onModalConfirmClose();
+    toggleChangesAreMade(false);
+  };
+
+  const onCancelClick = () => {
+    if (changesAreMade) {
+      toggleModalConfirm(true);
+    } else {
+      onDialogClose();
+    }
+  };
+
+  const onExitClick = () => {
+    onModalConfirmClose();
+    onDialogClose();
+    toggleChangesAreMade(false);
+  };
+
+  const onModalConfirmClose = () => {
+    toggleModalConfirm(false);
+  };
 
   const renderDatePicker = (eventType: any) => {
     switch (eventType) {
@@ -250,7 +280,7 @@ export default (props: IProps) => {
         </div>
         <div className={styles.controlWrapper}>
           <Button
-            onClick={onDialogClose}
+            onClick={onCancelClick}
             label="Cancel"
             variant="text"
             color="secondary"
@@ -264,6 +294,12 @@ export default (props: IProps) => {
           />
         </div>
       </div>
+      <PopupExposure
+        isOpen={isModalConfirmOpen}
+        onClose={onModalConfirmClose}
+        onExitClick={onExitClick}
+        onSaveClick={onSaveClicked}
+      />
     </Dialog>
   );
 };

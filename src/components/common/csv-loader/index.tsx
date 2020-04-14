@@ -104,7 +104,7 @@ class CsvLoader extends React.Component<Props, State> {
           csvPosition: index,
           dataType: column.data_type,
           included: true,
-          mapId: column.map_id,
+          map_id: column.map_id,
         })),
       });
     }
@@ -172,7 +172,7 @@ class CsvLoader extends React.Component<Props, State> {
             ...field,
             data_type: old.dataType,
             value: old.value,
-            map_id: old.mapId,
+            map_id: old.map_id,
           };
         } else {
           return field;
@@ -194,6 +194,7 @@ class CsvLoader extends React.Component<Props, State> {
     });
 
     onCreate(dataToSave, this.onModalClose);
+    this.setState({ isConfirmModalOpen: false });
   };
 
   onFieldIncludeChange = (
@@ -235,7 +236,11 @@ class CsvLoader extends React.Component<Props, State> {
   };
 
   onCancelClick = () => {
-    this.setState({ isConfirmModalOpen: true });
+    if (this.state.data.length) {
+      this.setState({ isConfirmModalOpen: true });
+    } else {
+      this.onCancel();
+    }
   };
 
   onConfirmModalClose = () => {

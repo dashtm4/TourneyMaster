@@ -2,12 +2,12 @@ import React from 'react';
 import TableSort from '../table-sort';
 import { SectionDropdown } from 'components/common';
 import { MenuTitles, EntryPoints } from 'common/enums';
-import { BindingCbWithTwo, ISchedule, BindingCbWithThree } from 'common/models';
+import { BindingCbWithTwo, BindingCbWithThree } from 'common/models';
 import { IEntity } from 'common/types';
-import { ITableSortEntity } from '../../common';
+import { ILibraryManagerSchedule, ITableSortEntity } from '../../common';
 
 interface Props {
-  schedules: ISchedule[];
+  schedules: ILibraryManagerSchedule[];
   isSectionExpand: boolean;
   changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
   onConfirmDeleteItem: BindingCbWithThree<
@@ -39,7 +39,8 @@ const Scheduling = ({
 
   const rowForTable = schedules.map(it => ({
     id: it.schedule_id,
-    title: it.schedule_name,
+    event: it.eventName,
+    name: it.schedule_name,
     lastModified: it.updated_datetime || it.created_datetime,
   }));
 

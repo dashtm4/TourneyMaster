@@ -30,8 +30,8 @@ import { IEntity } from 'common/types';
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
   isEdit: boolean;
-  expanded: boolean[];
-  expandAll: boolean;
+  isSectionsExpand: boolean;
+  changesAreMade: boolean;
 }
 
 interface IRegistrationProps {
@@ -54,8 +54,8 @@ class RegistrationView extends React.Component<
   state = {
     registration: undefined,
     isEdit: false,
-    expanded: [true, true, true],
-    expandAll: false,
+    isSectionsExpand: true,
+    changesAreMade: false,
   };
 
   componentDidMount() {
@@ -82,6 +82,9 @@ class RegistrationView extends React.Component<
         [name]: value,
       },
     }));
+    if (!this.state.changesAreMade) {
+      this.setState({ changesAreMade: true });
+    }
   };
 
   onCancelClick = () => {
@@ -91,21 +94,6 @@ class RegistrationView extends React.Component<
   onSaveClick = () => {
     this.props.saveRegistration(this.state.registration, this.eventId);
     this.setState({ isEdit: false });
-  };
-
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
   };
 
   static getDerivedStateFromProps(
@@ -135,16 +123,20 @@ class RegistrationView extends React.Component<
     }
   };
 
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
+  };
+
   renderView = () => {
     const { registration } = this.props;
     if (this.state.isEdit) {
       return (
         <RegistrationEdit
-          previousRegistration={this.props.registration}
           registration={this.state.registration}
           onChange={this.onChange}
           onCancel={this.onCancelClick}
           onSave={this.onSaveClick}
+          changesAreMade={this.state.changesAreMade}
         />
       );
     } else {
@@ -160,10 +152,12 @@ class RegistrationView extends React.Component<
               <HeadingLevelTwo>Registration</HeadingLevelTwo>
               {registration && (
                 <Button
-                  label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+                  label={
+                    this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+                  }
                   variant="text"
                   color="secondary"
-                  onClick={this.onToggleAll}
+                  onClick={this.toggleSectionCollapse}
                 />
               )}
             </div>
@@ -175,9 +169,7 @@ class RegistrationView extends React.Component<
                     id={EventMenuRegistrationTitles.PRIMARY_INFORMATION}
                     type="section"
                     panelDetailsType="flat"
-                    isDefaultExpanded={true}
-                    expanded={this.state.expanded[0]}
-                    onToggle={() => this.onToggleOne(0)}
+                    expanded={this.state.isSectionsExpand}
                   >
                     <span>Primary Information</span>
                     <PrimaryInformation
@@ -195,9 +187,7 @@ class RegistrationView extends React.Component<
                     id={EventMenuRegistrationTitles.TEAMS_AND_ATHLETES}
                     type="section"
                     panelDetailsType="flat"
-                    isDefaultExpanded={true}
-                    expanded={this.state.expanded[1]}
-                    onToggle={() => this.onToggleOne(1)}
+                    expanded={this.state.isSectionsExpand}
                   >
                     <span>Teams & Athletes</span>
                     <TeamsAthletesInfo data={registration} />
@@ -208,9 +198,7 @@ class RegistrationView extends React.Component<
                     id={EventMenuRegistrationTitles.MAIN_CONTACT}
                     type="section"
                     panelDetailsType="flat"
-                    isDefaultExpanded={true}
-                    expanded={this.state.expanded[2]}
-                    onToggle={() => this.onToggleOne(2)}
+                    expanded={this.state.isSectionsExpand}
                   >
                     <span>Main Contact</span>
                     <MainContact data={registration} />

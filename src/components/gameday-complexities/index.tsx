@@ -43,15 +43,13 @@ interface Props {
 
 interface State {
   isModalOpen: boolean;
-  expanded: boolean[];
-  expandAll: boolean;
+  isSectionsExpand: boolean;
 }
 
 class GamedayComplexities extends React.Component<Props, State> {
   state = {
     isModalOpen: false,
-    expanded: [],
-    expandAll: false,
+    isSectionsExpand: true,
   };
 
   componentDidMount() {
@@ -61,25 +59,8 @@ class GamedayComplexities extends React.Component<Props, State> {
     this.props.getBackupPlans();
   }
 
-  componentDidUpdate(_prevProps: Props, _prevState: State) {
-    if (this.props.backupPlans !== _prevProps.backupPlans) {
-      this.setState({ expanded: this.props.backupPlans.map(_plan => true) });
-    }
-  }
-
-  onToggleAll = () => {
-    this.setState({
-      expanded: this.state.expanded.map(_e => this.state.expandAll),
-      expandAll: !this.state.expandAll,
-    });
-  };
-
-  onToggleOne = (indexPanel: number) => {
-    this.setState({
-      expanded: this.state.expanded.map((e: boolean, index: number) =>
-        index === indexPanel ? !e : e
-      ),
-    });
+  toggleSectionCollapse = () => {
+    this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
   onCreatePlan = () => {
@@ -125,14 +106,14 @@ class GamedayComplexities extends React.Component<Props, State> {
         <div className={styles.headingContainer}>
           <HeadingLevelTwo>Event Day Complexities</HeadingLevelTwo>
           <Button
-            label={this.state.expandAll ? 'Expand All' : 'Collapse All'}
+            label={this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'}
             variant="text"
             color="secondary"
-            onClick={this.onToggleAll}
+            onClick={this.toggleSectionCollapse}
           />
         </div>
         {isLoading && <Loader />}
-        {backupPlans.length && !isLoading && this.state.expanded.length
+        {backupPlans.length && !isLoading
           ? backupPlans.map((plan, index) => {
               return (
                 plan.backup_plan_id && (
@@ -142,11 +123,9 @@ class GamedayComplexities extends React.Component<Props, State> {
                     facilities={this.props.facilities}
                     fields={this.props.fields}
                     data={plan}
-                    expanded={this.state.expanded[index]}
-                    index={index}
-                    onToggleOne={this.onToggleOne}
                     deleteBackupPlan={this.props.deleteBackupPlan}
                     updateBackupPlan={this.props.updateBackupPlan}
+                    isSectionExpand={this.state.isSectionsExpand}
                   />
                 )
               );

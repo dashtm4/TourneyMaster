@@ -7,7 +7,6 @@ import {
   IDivision,
   IPool,
   ITeamWithResults,
-  BindingCbWithOne,
   IEventDetails,
   ISchedulesGameWithNames,
 } from 'common/models';
@@ -24,9 +23,7 @@ interface Props {
     divisionName: string,
     poolName: string
   ) => void;
-  expanded: boolean;
-  onToggleOne: BindingCbWithOne<number>;
-  index: number;
+  isSectionExpand: boolean;
 }
 
 const ScoringItem = ({
@@ -37,9 +34,7 @@ const ScoringItem = ({
   games,
   loadPools,
   onOpenTeamDetails,
-  expanded,
-  index,
-  onToggleOne,
+  isSectionExpand,
 }: Props) => {
   if (!division.isPoolsLoading && !division.isPoolsLoaded) {
     loadPools(division.division_id);
@@ -49,28 +44,21 @@ const ScoringItem = ({
     return <Loader />;
   }
 
-  const onSectionToggle = () => {
-    onToggleOne(index);
-  };
-
   const completedGames = games.filter(
     it => it.awayTeamScore !== null || it.homeTeamScore !== null
   );
 
   const lastUpd = Math.max(
     ...games.map(it =>
-      it.updatedTime ? +new Date(it.updatedTime) : +new Date(it.createTime)
+      it.updatedTime
+        ? Number(new Date(it.updatedTime))
+        : Number(new Date(it.createTime))
     )
   );
 
   return (
     <li>
-      <SectionDropdown
-        isDefaultExpanded={true}
-        headingColor={'#1C315F'}
-        expanded={expanded !== undefined && expanded}
-        onToggle={onSectionToggle}
-      >
+      <SectionDropdown headingColor={'#1C315F'} expanded={isSectionExpand}>
         <span>{division.long_name}</span>
         <div>
           <ul className={styles.statisticList}>

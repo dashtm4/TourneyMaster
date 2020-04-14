@@ -35,6 +35,7 @@ interface IAddDivisionState {
   divisions: Partial<IDivision>[];
   isModalOpen: boolean;
   isModalConfirmOpen: boolean;
+  changesAreMade: boolean;
 }
 
 interface IDivisionProps {
@@ -60,6 +61,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     divisions: [{}],
     isModalOpen: false,
     isModalConfirmOpen: false,
+    changesAreMade: false,
   };
 
   componentDidMount() {
@@ -81,23 +83,13 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
           : division
       ),
     }));
-  };
-
-  checkIfChangesAreMade = () => {
-    if (this.divisionId) {
-      const oldDiv = this.props.divisions.find(
-        division => division.division_id === this.divisionId
-      );
-      return this.state.divisions[0] !== oldDiv;
-    } else {
-      return this.state.divisions.some(
-        division => Object.entries(division).length !== 0
-      );
+    if (!this.state.changesAreMade) {
+      this.setState({ changesAreMade: true });
     }
   };
 
   onCancel = () => {
-    if (this.checkIfChangesAreMade()) {
+    if (this.state.changesAreMade) {
       this.setState({ isModalConfirmOpen: true });
     } else {
       this.onExit();
@@ -195,7 +187,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   }
 
   render() {
-    const { short_name }: Partial<IDivision> = this.state.divisions[0] || '';
+    const { long_name }: Partial<IDivision> = this.state.divisions[0] || '';
     const deleteMessage = `You are about to delete this division and this cannot be undone.
     Deleting a division will also delete all pools (${this.props.location.state?.pools.length}) and teams (${this.props.location.state?.teams.length}) inside the division.
     Please, enter the name of the division to continue.`;
@@ -235,7 +227,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
         <DeletePopupConfrim
           type={'division'}
           message={deleteMessage}
-          deleteTitle={short_name || ''}
+          deleteTitle={long_name || ''}
           isOpen={this.state.isModalOpen}
           onClose={this.onModalClose}
           onDeleteClick={this.onDeleteDivision}
