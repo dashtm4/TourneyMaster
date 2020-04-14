@@ -11,6 +11,8 @@ enum MenuTitles {
   TOURNEY_IMPORT_TITLE = 'Import New Tournament',
   TOURNEY_HISTORY_TITLE = 'Historical Imports',
   EMAIL_SETUP = 'Email Setup',
+  MESSAGING = 'Messaging',
+  SCHEDULE_REVIEW = 'Schedule Review',
 }
 
 enum EventMenuTitles {
