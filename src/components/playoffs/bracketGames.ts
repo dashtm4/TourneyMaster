@@ -24,6 +24,7 @@ export interface IBracketGame {
   gameDate?: string;
   //
   hidden?: boolean;
+  createDate: string;
 }
 
 export interface IBracketSeed {
@@ -159,6 +160,7 @@ export const createBracketGames = (
       homeDisplayName: `Home ${division.short_name}`,
       divisionName: division.short_name,
       divisionId: division.division_id,
+      createDate: new Date().toISOString(),
     }));
 
     games.push(rearrangeSeedForGames(bracketTeamsNum, localGames));

@@ -10,22 +10,33 @@ import {
   Tooltip,
 } from 'components/common';
 import styles from './styles.module.scss';
-import { ISchedule } from 'common/models';
-import { getTimeFromString, timeToString, getIcon } from 'helpers';
+import { ISchedule, IEventDetails } from 'common/models';
+import {
+  getTimeFromString,
+  timeToString,
+  getIcon,
+  getVarcharEight,
+} from 'helpers';
 import { Icons } from 'common/enums';
 import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
+import { errorToast } from 'components/common/toastr/showToasts';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 export interface ICreateBracketModalOutput {
+  id: string;
   name: string;
   scheduleId: string;
   alignItems: boolean;
   adjustTime: boolean;
   warmup: string;
+  eventId: string;
+  bracketDate: string;
+  createDate: string;
 }
 
 interface IProps {
+  event?: IEventDetails;
   isOpen: boolean;
   schedules: ISchedule[];
   onClose: () => void;
@@ -83,12 +94,26 @@ const CreateNewBracket = (props: IProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const scheduleData = {
+    const { event } = props;
+
+    if (!event)
+      return errorToast(
+        "Couldn't process the Bracket data. Please, try again."
+      );
+
+    const eventId = event.event_id;
+    const bracketDate = event.event_enddate;
+
+    const scheduleData: ICreateBracketModalOutput = {
+      id: getVarcharEight(),
       name: bracketName,
       scheduleId: selectedSchedule,
       alignItems,
       adjustTime,
+      bracketDate,
+      eventId,
       warmup: localWarmup || '00:00:00',
+      createDate: new Date().toISOString(),
     };
     onCreateBracket(scheduleData);
   };

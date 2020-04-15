@@ -316,6 +316,7 @@ class Scheduling extends Component<IProps, IState> {
           onChange={this.onChange}
         />
         <CreateNewBracket
+          event={event!}
           schedules={schedules}
           isOpen={createBracketOpen}
           onCreateBracket={this.onCreateBracket}

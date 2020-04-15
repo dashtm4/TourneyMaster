@@ -4,6 +4,7 @@ import { Dispatch, bindActionCreators } from 'redux';
 import moment from 'moment';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import { History } from 'history';
 import { Button, Paper } from 'components/common';
 import styles from './styles.module.scss';
 import BracketManager from './tabs/brackets';
@@ -53,6 +54,7 @@ import {
   populateDefinedGamesWithPlayoffState,
   adjustPlayoffTimeOnLoad,
 } from 'components/schedules/definePlayoffs';
+import { createPlayoff, savePlayoff } from './logic/actions';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
   eventSummary?: IEventSummary[];
@@ -61,6 +63,7 @@ interface IMapStateToProps extends Partial<ITournamentData> {
   pools?: IPool[];
   schedulesTeamCards?: ITeamCard[];
   schedulesDetails?: ISchedulesDetails[];
+  playoffSaved?: boolean;
 }
 
 interface IMapDispatchToProps {
@@ -69,10 +72,13 @@ interface IMapDispatchToProps {
   getAllPools: (divisionIds: string[]) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
   clearSchedulesTable: () => void;
+  createPlayoff: (bracketGames: IBracketGame[]) => void;
+  savePlayoff: (bracketGames: IBracketGame[]) => void;
 }
 
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
   match: any;
+  history: History;
 }
 
 interface IState {
@@ -108,7 +114,7 @@ class Playoffs extends Component<IProps> {
     this.props.fetchSchedulesDetails(scheduleId);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: IProps) {
     const { schedulesDetails, schedulesTeamCards } = this.props;
     const { teams } = this.state;
 
@@ -128,7 +134,18 @@ class Playoffs extends Component<IProps> {
     if (!this.state.mergedGames) {
       this.createBracketGames();
     }
+
+    if (this.props.playoffSaved && !prevProps.playoffSaved) {
+      this.updateUrlWithBracketId();
+    }
   }
+
+  updateUrlWithBracketId = () => {
+    const { match, bracket } = this.props;
+    const { eventId, scheduleId } = match.params;
+    const bracketId = bracket?.id;
+    this.props.history.push(`/playoffs/${eventId}/${scheduleId}/${bracketId}`);
+  };
 
   calculateNeccessaryData = () => {
     const {
@@ -242,6 +259,17 @@ class Playoffs extends Component<IProps> {
 
   onSeedsUsed = () => {};
 
+  onSavePressed = () => {
+    const { bracketGames } = this.state;
+    const { match } = this.props;
+    const { bracketId } = match.params;
+    if (bracketId) {
+      this.props.savePlayoff(bracketGames!);
+    } else {
+      this.props.createPlayoff(bracketGames!);
+    }
+  };
+
   render() {
     const {
       activeTab,
@@ -264,6 +292,8 @@ class Playoffs extends Component<IProps> {
       schedulesDetails,
     } = this.props;
 
+    const saveButtonCondition = bracket && bracketGames;
+
     return (
       <div className={styles.container}>
         <DndProvider backend={HTML5Backend}>
@@ -279,7 +309,8 @@ class Playoffs extends Component<IProps> {
                     label="Save"
                     variant="contained"
                     color="primary"
-                    disabled={true}
+                    disabled={!saveButtonCondition}
+                    onClick={this.onSavePressed}
                   />
                 </div>
               </div>
@@ -339,6 +370,7 @@ const mapStateToProps = ({
   scheduling,
   divisions,
   schedulesTable,
+  playoffs,
 }: IAppState): IMapStateToProps => ({
   event: pageEvent.tournamentData.event,
   facilities: pageEvent.tournamentData.facilities,
@@ -352,6 +384,7 @@ const mapStateToProps = ({
   pools: divisions?.pools,
   schedulesTeamCards: schedulesTable.current,
   schedulesDetails: schedules?.schedulesDetails,
+  playoffSaved: playoffs?.playoffSaved,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
@@ -362,6 +395,8 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       getAllPools,
       fillSchedulesTable,
       clearSchedulesTable,
+      createPlayoff,
+      savePlayoff,
     },
     dispatch
   );

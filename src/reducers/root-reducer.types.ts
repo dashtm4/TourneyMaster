@@ -11,6 +11,7 @@ import { IReportingState } from 'components/reporting/logic/reducer';
 import { ITeamsState } from 'components/teams/logic/reducer';
 import { IScoringState } from 'components/scoring/logic/reducer';
 import { ICalendarState } from 'components/calendar/logic/reducer';
+import { IPlayoffState } from 'components/playoffs/logic/reducer';
 
 export interface IAppState {
   pageEvent: IPageEventState;
@@ -26,4 +27,5 @@ export interface IAppState {
   teams: ITeamsState;
   scoring: IScoringState;
   calendar: ICalendarState;
+  playoffs: IPlayoffState;
 }
