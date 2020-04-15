@@ -18,6 +18,7 @@ import {
   ScheduleStatuses,
 } from 'common/models';
 import { Toasts } from 'components/common';
+import { chunk } from 'lodash-es';
 
 const loadScoresData: ActionCreator<ThunkAction<
   void,
@@ -92,10 +93,9 @@ const saveGames: ActionCreator<ThunkAction<
   RecordScoresAction
 >> = (games: ISchedulesGame[]) => async (dispatch: Dispatch) => {
   try {
+    const schedulesGamesChunk = chunk(games, 50);
     const gamesResponses = await Promise.all(
-      games.map((it: ISchedulesGame) =>
-        Api.put(`/games?game_id=${it.game_id}`, it)
-      )
+      schedulesGamesChunk.map(arr => Api.put('/games', arr))
     );
 
     const gamesResponseSuccess = gamesResponses.every(item => item);
