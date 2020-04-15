@@ -1,5 +1,5 @@
 import React from 'react';
-import DropContainer, { IDropParams } from '../dnd/drop';
+import DropContainer, { IDropParams, MatrixTableDropEnum } from '../dnd/drop';
 import TeamDragCard from '../dnd/drag';
 import SeedCard from '../dnd/seed';
 import styles from '../styles.module.scss';
@@ -43,7 +43,11 @@ const RenderGameSlot = (props: Props) => {
     divisionHex,
   } = game;
 
-  const acceptType = 'teamdrop';
+  const acceptType = [MatrixTableDropEnum.TeamDrop];
+
+  if (isPlayoff) {
+    acceptType.push(MatrixTableDropEnum.BracketDrop);
+  }
 
   return (
     <td
@@ -62,7 +66,7 @@ const RenderGameSlot = (props: Props) => {
             {awayTeam && (
               <TeamDragCard
                 tableType={tableType}
-                type={acceptType}
+                type={MatrixTableDropEnum.TeamDrop}
                 originGameId={game.id}
                 originGameDate={gameDate}
                 showHeatmap={showHeatmap}
@@ -94,7 +98,7 @@ const RenderGameSlot = (props: Props) => {
             {homeTeam && (
               <TeamDragCard
                 tableType={tableType}
-                type={acceptType}
+                type={MatrixTableDropEnum.TeamDrop}
                 originGameId={game.id}
                 originGameDate={gameDate}
                 showHeatmap={showHeatmap}

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { orderBy } from 'lodash-es';
 import styles from './styles.module.scss';
 import { MatrixTable, Loader } from 'components/common';
 import {
@@ -11,14 +12,16 @@ import {
 } from 'common/models';
 import { IField } from 'common/models/schedule/fields';
 import { ITeamCard } from 'common/models/schedule/teams';
-import {
-  IGame,
-  settleTeamsPerGamesDays,
-} from 'components/common/matrix-table/helper';
+import { IGame } from 'components/common/matrix-table/helper';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { TableScheduleTypes } from 'common/enums';
 import { IBracketGame } from 'components/playoffs/bracketGames';
+import BracketGameCard from 'components/playoffs/dnd/bracket-game';
+import {
+  MatrixTableDropEnum,
+  IDropParams,
+} from 'components/common/matrix-table/dnd/drop';
 
 interface IProps {
   bracketGames?: IBracketGame[];
@@ -36,6 +39,7 @@ interface IProps {
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
+  updateGame: (game: IGame, withGame?: IGame) => void;
 }
 
 interface IState {
@@ -45,28 +49,20 @@ interface IState {
 class ResourceMatrix extends Component<IProps> {
   state: IState = {};
 
-  componentDidMount() {
-    this.loadingTableData();
-  }
+  renderGame = (game: IGame) => {
+    return (
+      <BracketGameCard game={game} type={MatrixTableDropEnum.BracketDrop} />
+    );
+  };
 
-  componentDidUpdate() {
-    const { tableGames } = this.state;
+  onMoveCard = (dropParams: IDropParams) => {
+    const { teamId, gameId } = dropParams;
+    const { games } = this.props;
+    const dragGame = games!.find(item => +item.id === +teamId)!;
+    const dropGame = games!.find(item => item.id === gameId)!;
 
-    if (!tableGames) {
-      this.loadingTableData();
-    }
-  }
-
-  loadingTableData = () => {
-    const { teamCards, games, event, bracketGames, divisions } = this.props;
-    const lastDay = event?.event_enddate;
-
-    if (games && teamCards && lastDay && bracketGames && divisions) {
-      const tableGames = settleTeamsPerGamesDays(games, teamCards, lastDay);
-      this.setState({
-        tableGames,
-      });
-    }
+    this.props.updateGame(dragGame);
+    this.props.updateGame(dropGame, dragGame);
   };
 
   render() {
@@ -83,19 +79,29 @@ class ResourceMatrix extends Component<IProps> {
       onTeamCardsUpdate,
       onTeamCardUpdate,
       onUndo,
+      games,
     } = this.props;
 
-    const { tableGames } = this.state;
+    const tableBracketGames = games?.filter(
+      v =>
+        v.isPlayoff &&
+        v.divisionId &&
+        v.playoffIndex &&
+        (v.awaySeedId || v.homeSeedId || v.awayDisplayName || v.homeDisplayName)
+    );
+    const orderedGames = orderBy(tableBracketGames, 'divisionId');
 
     return (
       <section className={styles.container}>
-        <div className={styles.leftColumn}></div>
+        <div className={styles.leftColumn}>
+          {orderedGames?.map(v => this.renderGame(v))}
+        </div>
         <div className={styles.rightColumn}>
           {event &&
           divisions &&
           pools &&
           teamCards &&
-          tableGames &&
+          games &&
           fields &&
           timeSlots &&
           facilities &&
@@ -106,13 +112,13 @@ class ResourceMatrix extends Component<IProps> {
           onUndo ? (
             <MatrixTable
               tableType={TableScheduleTypes.BRACKETS}
-              games={tableGames}
+              games={games}
               fields={fields}
               timeSlots={timeSlots}
               facilities={facilities}
               showHeatmap={true}
               isEnterScores={false}
-              moveCard={() => {}}
+              moveCard={this.onMoveCard}
               disableZooming={false}
               onTeamCardUpdate={onTeamCardUpdate}
               onTeamCardsUpdate={onTeamCardsUpdate}

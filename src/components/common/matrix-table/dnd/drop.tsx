@@ -3,6 +3,11 @@ import { useDrop } from 'react-dnd';
 import styles from './styles.module.scss';
 import { ITeamCard } from 'common/models/schedule/teams';
 
+export enum MatrixTableDropEnum {
+  TeamDrop = 'teamdrop',
+  BracketDrop = 'bracketdrop',
+}
+
 export interface IDropParams {
   teamId: string;
   position: number | undefined;
@@ -12,7 +17,7 @@ export interface IDropParams {
 }
 
 interface IProps {
-  acceptType: string;
+  acceptType: MatrixTableDropEnum[];
   gameId: number;
   position: 1 | 2;
   children?: React.ReactElement;

@@ -30,6 +30,7 @@ import {
   sortFieldsByPremier,
   defineGames,
   IGame,
+  settleTeamsPerGamesDays,
 } from 'components/common/matrix-table/helper';
 import {
   mapFieldsData,
@@ -55,6 +56,7 @@ import {
   adjustPlayoffTimeOnLoad,
 } from 'components/schedules/definePlayoffs';
 import { createPlayoff, savePlayoff } from './logic/actions';
+import { updateGameBracketInfo } from './helper';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
   eventSummary?: IEventSummary[];
@@ -91,7 +93,7 @@ interface IState {
   bracketGames?: IBracketGame[];
   bracketSeeds?: IBracketSeed[];
   playoffTimeSlots?: ITimeSlot[];
-  mergedGames?: IGame[];
+  tableGames?: IGame[];
 }
 
 enum PlayoffsTabsEnum {
@@ -131,7 +133,7 @@ class Playoffs extends Component<IProps> {
       this.calculatePlayoffTimeSlots();
     }
 
-    if (!this.state.mergedGames) {
+    if (!this.state.tableGames) {
       this.createBracketGames();
     }
 
@@ -240,6 +242,12 @@ class Playoffs extends Component<IProps> {
       facilityData
     );
 
+    const tableGames = settleTeamsPerGamesDays(
+      mergedGames,
+      schedulesTeamCards,
+      gameDate
+    );
+
     const populatedBracketGames = populateBracketGamesWithData(
       bracketGames,
       mergedGames,
@@ -249,9 +257,32 @@ class Playoffs extends Component<IProps> {
 
     const seeds = createSeeds(bracketTeamsNum);
     this.setState({
-      mergedGames,
+      tableGames,
       bracketGames: populatedBracketGames,
       bracketSeeds: seeds,
+    });
+  };
+
+  updateMergedGames = (game: IGame, withGame?: IGame) => {
+    const { tableGames, bracketGames } = this.state;
+
+    const updatedGame = updateGameBracketInfo(game, withGame);
+    const newTableGames = tableGames?.map(item =>
+      item.id === game.id ? updatedGame : item
+    );
+
+    const newBracketGames = bracketGames?.map(item =>
+      item.index === game.playoffIndex && item.divisionId === game.divisionId
+        ? {
+            ...item,
+            hidden: !!withGame?.playoffIndex,
+          }
+        : item
+    );
+
+    this.setState({
+      tableGames: newTableGames,
+      bracketGames: newBracketGames,
     });
   };
 
@@ -278,7 +309,7 @@ class Playoffs extends Component<IProps> {
       facilities,
       bracketGames,
       bracketSeeds,
-      mergedGames,
+      tableGames,
     } = this.state;
 
     const {
@@ -339,7 +370,7 @@ class Playoffs extends Component<IProps> {
                 divisions={divisions}
                 pools={pools}
                 teamCards={schedulesTeamCards}
-                games={mergedGames}
+                games={tableGames}
                 fields={fields}
                 timeSlots={timeSlots}
                 facilities={facilities}
@@ -349,6 +380,7 @@ class Playoffs extends Component<IProps> {
                 onTeamCardsUpdate={() => {}}
                 onTeamCardUpdate={() => {}}
                 onUndo={() => {}}
+                updateGame={this.updateMergedGames}
               />
             ) : (
               <BracketManager

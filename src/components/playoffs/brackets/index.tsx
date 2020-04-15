@@ -59,13 +59,14 @@ const Brackets = (props: IProps) => {
   }, [games]);
 
   useEffect(() => {
-    const hiddenConnectors = setHiddenConnectors();
-    setHidden(hiddenConnectors);
+    if (inPlayRound) {
+      const hiddenConnectors = setHiddenConnectors(inPlayRound[0]);
+      setHidden(hiddenConnectors);
+    }
   }, [inPlayRound]);
 
-  const setHiddenConnectors = () => {
-    if (!inPlayRound) return;
-    const round = inPlayRound[0];
+  const setHiddenConnectors = (round: any[]) => {
+    if (!round) return;
     const arr = [];
 
     for (let i = 0; i < round?.length; i += 2) {
@@ -122,7 +123,14 @@ const Brackets = (props: IProps) => {
                     gameRounds![roundKey]?.length
                   )}
                 />
-                <BracketConnector step={gameRounds![roundKey]?.length} />
+                <BracketConnector
+                  hidden={
+                    gameRounds![roundKey].some(v => v.hidden)
+                      ? setHiddenConnectors(gameRounds![roundKey])
+                      : undefined
+                  }
+                  step={gameRounds![roundKey]?.length}
+                />
               </Fragment>
             ))}
           </div>
