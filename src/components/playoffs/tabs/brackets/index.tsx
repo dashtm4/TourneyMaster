@@ -46,7 +46,6 @@ class BracketManager extends Component<IProps> {
       const divisionGames = bracketGames?.filter(
         game => game.divisionId === selectedDivision
       );
-      console.log('divisionGames:', divisionGames);
       this.setState({ divisionGames });
     }
   }
@@ -72,9 +71,8 @@ class BracketManager extends Component<IProps> {
   };
 
   render() {
-    const { seeds, bracketGames } = this.props;
+    const { seeds } = this.props;
     const { divisionGames, divisionsOptions, selectedDivision } = this.state;
-    console.log('bracketGames:', bracketGames);
 
     return (
       <section className={styles.container}>

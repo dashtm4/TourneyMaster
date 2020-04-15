@@ -22,6 +22,8 @@ export interface IBracketGame {
   fieldName?: string;
   startTime?: string;
   gameDate?: string;
+  //
+  hidden?: boolean;
 }
 
 export interface IBracketSeed {
