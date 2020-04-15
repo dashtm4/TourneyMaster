@@ -21,11 +21,11 @@ const ListStatistic = ({ games }: Props) => {
 
   return (
     <ul className={styles.statisticList}>
-      <li>
+      <li className={styles.statisticItem}>
         <b>Games Complete:</b> {gamesStatistics.completedGames}/
         {gamesStatistics.totalGames}
       </li>
-      <li>
+      <li className={styles.statisticItem}>
         <b>Last Web Publishing: </b>
         <time dateTime={new Date(lastUpd).toString()}>
           {lastUpd ? moment(lastUpd).format('LLLL') : 'No scores published'}
