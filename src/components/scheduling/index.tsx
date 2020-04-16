@@ -248,6 +248,7 @@ class Scheduling extends Component<IProps, IState> {
       fields,
       event,
       brackets,
+      divisions,
     } = this.props;
 
     const {
@@ -336,6 +337,9 @@ class Scheduling extends Component<IProps, IState> {
           onChange={this.onChange}
         />
         <CreateNewBracket
+          timeSlots={timeSlots!}
+          fields={fields!}
+          divisions={divisions!}
           event={event!}
           schedules={schedules}
           isOpen={createBracketOpen}

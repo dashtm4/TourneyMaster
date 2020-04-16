@@ -64,7 +64,6 @@ import {
   fetchBracketGames,
 } from './logic/actions';
 import { updateGameBracketInfo } from './helper';
-import api from 'api/api';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
   eventSummary?: IEventSummary[];

@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from 'components/common';
 import styles from './styles.module.scss';
-import { ISchedule, IEventDetails } from 'common/models';
+import { ISchedule, IEventDetails, IField, IDivision } from 'common/models';
 import {
   getTimeFromString,
   timeToString,
@@ -20,6 +20,8 @@ import {
 import { Icons } from 'common/enums';
 import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 import { errorToast } from 'components/common/toastr/showToasts';
+import ITimeSlot from 'common/models/schedule/timeSlots';
+import { predictPlayoffTimeSlots } from 'components/schedules/definePlayoffs';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -33,9 +35,14 @@ export interface ICreateBracketModalOutput {
   eventId: string;
   bracketDate: string;
   createDate: string;
+  startTimeSlot: string;
+  endTimeSlot: string;
 }
 
 interface IProps {
+  fields: IField[];
+  timeSlots: ITimeSlot[];
+  divisions: IDivision[];
   event?: IEventDetails;
   isOpen: boolean;
   schedules: ISchedule[];
@@ -53,7 +60,24 @@ const getWarmupFromSchedule = (
 };
 
 const CreateNewBracket = (props: IProps) => {
-  const { isOpen, onClose, schedules, onCreateBracket } = props;
+  const {
+    isOpen,
+    onClose,
+    schedules,
+    onCreateBracket,
+    fields,
+    timeSlots,
+    divisions,
+    event,
+  } = props;
+
+  const playoffTimeSlots = predictPlayoffTimeSlots(
+    fields,
+    timeSlots,
+    divisions,
+    event!
+  );
+
   const [bracketName, setBracketName] = useState('');
   const [selectedSchedule, setSelectedSchedule] = useState('');
   const [alignItems, setAlignItems] = useState(false);
@@ -61,6 +85,8 @@ const CreateNewBracket = (props: IProps) => {
   const [localWarmup, setLocalWarmup] = useState(
     getWarmupFromSchedule(schedules, selectedSchedule)
   );
+  const [overrideTimeSlots, setOverrideTimeSlots] = useState(false);
+  const [selectedTimeSlotsNum, selectTimeSlotsNum] = useState('0');
 
   useEffect(() => {
     const data = getWarmupFromSchedule(schedules, selectedSchedule);
@@ -112,11 +138,20 @@ const CreateNewBracket = (props: IProps) => {
       adjustTime,
       bracketDate,
       eventId,
+      startTimeSlot: String(playoffTimeSlots[0].id),
+      endTimeSlot: String(
+        playoffTimeSlots[playoffTimeSlots.length - 1].id + +selectedTimeSlotsNum
+      ),
       warmup: localWarmup || '00:00:00',
       createDate: new Date().toISOString(),
     };
     onCreateBracket(scheduleData);
   };
+
+  const selectTimeSlotsNumChange = (e: InputTargetValue) =>
+    selectTimeSlotsNum(e.target.value);
+
+  const overrideTimeSlotsChange = () => setOverrideTimeSlots(v => !v);
 
   const schedulesOptions = schedules.map(item => ({
     label: item.schedule_name!,
@@ -137,6 +172,18 @@ const CreateNewBracket = (props: IProps) => {
       name: 'adjustTime',
     },
   ];
+  const timeSlotsOverrideOptions = [
+    {
+      label: 'Manually select # of Time Slots for Brackets',
+      checked: overrideTimeSlots,
+      name: 'overrideTimeSlots',
+    },
+  ];
+
+  const overrideTimeSlotsOptions = [...Array(4)].map((_, i) => ({
+    label: `${i + playoffTimeSlots.length} Time Slots`,
+    value: String(i),
+  }));
 
   const alignItemsTooltip =
     'Early morning TP games will be moved adjacent to brackets';
@@ -195,6 +242,19 @@ const CreateNewBracket = (props: IProps) => {
               minWidth="50px"
               type="number"
               disabled={!(adjustTime && localWarmup)}
+            />
+            <Checkbox
+              options={timeSlotsOverrideOptions}
+              onChange={overrideTimeSlotsChange}
+            />
+            <Select
+              name="Name"
+              width="220px"
+              placeholder="Select # of Time Slots"
+              disabled={!overrideTimeSlots}
+              options={overrideTimeSlotsOptions}
+              value={selectedTimeSlotsNum}
+              onChange={selectTimeSlotsNumChange}
             />
           </div>
         </div>
