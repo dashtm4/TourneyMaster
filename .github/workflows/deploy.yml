@@ -24,6 +24,8 @@ jobs:
           GENERATE_SOURCEMAP: 'false'
           REACT_APP_REDIRECT_URL: 'https://staging.tourneymaster.org/'
           REACT_APP_AWS_IDENTITY_POOL_ID: ${{ secrets.REACT_APP_AWS_IDENTITY_POOL_ID }}
+          REACT_APP_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          REACT_APP_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           CI: 'false'
       - name: Enable Amazon
         uses: chrislennon/action-aws-cli@v1.1
