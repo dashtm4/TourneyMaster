@@ -189,6 +189,8 @@ const CreateNewBracket = (props: IProps) => {
     'Early morning TP games will be moved adjacent to brackets';
   const adjustTimeTooltip =
     'Provides a larger rest between games for advancing teams';
+  const overrideTimeSlotsTooltip =
+    'Increases the number of time slots used by Brackets Games';
 
   return (
     <Modal isOpen={isOpen} onClose={onClosePressed}>
@@ -199,7 +201,7 @@ const CreateNewBracket = (props: IProps) => {
         <div className={styles.mainBody}>
           <div className={styles.inputsWrapper}>
             <Input
-              width="220px"
+              width="230px"
               onChange={onChange}
               value={bracketName}
               autofocus={true}
@@ -207,7 +209,7 @@ const CreateNewBracket = (props: IProps) => {
             />
             <Select
               name="Name"
-              width="220px"
+              width="230px"
               placeholder="Select Schedule"
               options={schedulesOptions}
               value={selectedSchedule}
@@ -238,15 +240,24 @@ const CreateNewBracket = (props: IProps) => {
               value={
                 localWarmup ? getTimeFromString(localWarmup, 'minutes') : 0
               }
-              width="70px"
+              width="150px"
               minWidth="50px"
               type="number"
               disabled={!(adjustTime && localWarmup)}
+              endAdornment="Minutes"
             />
-            <Checkbox
-              options={timeSlotsOverrideOptions}
-              onChange={overrideTimeSlotsChange}
-            />
+            <div className={styles.checkboxWrapper}>
+              <Checkbox
+                options={timeSlotsOverrideOptions}
+                onChange={overrideTimeSlotsChange}
+              />
+              <Tooltip
+                title={overrideTimeSlotsTooltip}
+                type={TooltipMessageTypes.INFO}
+              >
+                <div className={styles.tooltipIcon}>{getIcon(Icons.INFO)}</div>
+              </Tooltip>
+            </div>
             <Select
               name="Name"
               width="220px"

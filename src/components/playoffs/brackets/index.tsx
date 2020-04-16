@@ -39,7 +39,7 @@ const Brackets = (props: IProps) => {
     { [key: string]: IBracketGame[] } | undefined
   >(undefined);
 
-  const [inPlayRound, setInPlayRound] = useState<
+  const [playInRound, setPlayInRound] = useState<
     { [key: string]: IBracketGame[] } | undefined
   >();
 
@@ -49,7 +49,7 @@ const Brackets = (props: IProps) => {
     const gameRounds = groupBy(games, 'round');
 
     if (gameRounds[0]?.length < gameRounds[1]?.length * 2) {
-      setInPlayRound({ 0: setInPlayGames(gameRounds[0], gameRounds[1]) });
+      setPlayInRound({ 0: setInPlayGames(gameRounds[0], gameRounds[1]) });
       delete gameRounds[0];
       setGameRounds(gameRounds);
       return;
@@ -59,11 +59,11 @@ const Brackets = (props: IProps) => {
   }, [games]);
 
   useEffect(() => {
-    if (inPlayRound) {
-      const hiddenConnectors = setHiddenConnectors(inPlayRound[0]);
+    if (playInRound) {
+      const hiddenConnectors = setHiddenConnectors(playInRound[0]);
       setHidden(hiddenConnectors);
     }
-  }, [inPlayRound]);
+  }, [playInRound]);
 
   const setHiddenConnectors = (round: any[]) => {
     if (!round) return;
@@ -100,21 +100,21 @@ const Brackets = (props: IProps) => {
       >
         <TransformComponent>
           <div className={styles.bracketContainer}>
-            {keys(inPlayRound)?.map(roundKey => (
-              <>
+            {keys(playInRound)?.map(roundKey => (
+              <Fragment key={`${roundKey}-playInRound`}>
                 <BracketRound
-                  games={inPlayRound![roundKey]}
+                  games={playInRound![roundKey]}
                   onDrop={() => {}}
                   title="Play-In Games"
                 />
                 <BracketConnector
                   hidden={hidden}
-                  step={inPlayRound![roundKey]?.length}
+                  step={playInRound![roundKey]?.length}
                 />
-              </>
+              </Fragment>
             ))}
             {keys(gameRounds).map((roundKey, index) => (
-              <Fragment key={index}>
+              <Fragment key={`${index}-keyRound`}>
                 <BracketRound
                   games={gameRounds![roundKey]}
                   onDrop={() => {}}

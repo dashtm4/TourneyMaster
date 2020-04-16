@@ -58,7 +58,7 @@ class BracketManager extends Component<IProps> {
 
   renderSeed = (item: any, index: number) => {
     return (
-      <div className={styles.singleSeedWrapper}>
+      <div key={`${index}-renderSeed`} className={styles.singleSeedWrapper}>
         <span>{index + 1}.</span>
         <Seed
           key={item.id}
