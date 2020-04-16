@@ -1,6 +1,7 @@
 import { ISchedule } from 'common/models/schedule';
 import { ISchedulingSchedule } from '../types';
 import { ICreateBracketModalOutput } from '../create-new-bracket';
+import { IBracket } from 'common/models/playoffs/bracket';
 
 export const SCHEDULE_FETCH_IN_PROGRESS = 'SCHEDULE_FETCH_IN_PROGRESS';
 export const SCHEDULE_FETCH_SUCCESS = 'SCHEDULE_FETCH_SUCCESS';
@@ -20,6 +21,7 @@ export const DELETE_SCHEDULE_SUCCESS = 'DELETE_SCHEDULE_SUCCESS';
 export const DELETE_SCHEDULE_FAILURE = 'DELETE_SCHEDULE_FAILURE';
 
 export const ADD_NEW_BRACKET = 'ADD_NEW_BRACKET';
+export const FETCH_EVENT_BRACKETS = 'FETCH_EVENT_BRACKETS';
 
 interface IScheduleFetchInProgress {
   type: 'SCHEDULE_FETCH_IN_PROGRESS';
@@ -69,6 +71,11 @@ interface IAddNewBracket {
   payload: ICreateBracketModalOutput;
 }
 
+interface IFetchEventBrackets {
+  type: 'FETCH_EVENT_BRACKETS';
+  payload: IBracket[];
+}
+
 export type ScheduleActionType =
   | IScheduleFetchInProgress
   | IScheduleFetchSuccess
@@ -77,4 +84,5 @@ export type ScheduleActionType =
   | IScheduleChangeSchedule
   | ISIScheduleUpdateSchedule
   | ISIScheduleDeleteSchedule
-  | IAddNewBracket;
+  | IAddNewBracket
+  | IFetchEventBrackets;

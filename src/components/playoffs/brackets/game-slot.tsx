@@ -14,25 +14,25 @@ interface IProps {
 
 const BracketGameSlot = (props: IProps) => {
   const { game, onDrop, seedRound } = props;
-  const time = formatTimeSlot(game.startTime || '');
-  const date = moment(game.gameDate).format('MM/DD/YYYY');
+  const time = formatTimeSlot(game?.startTime || '');
+  const date = moment(game?.gameDate).format('MM/DD/YYYY');
 
   return (
     <div
-      key={game.index}
-      className={`${styles.bracketGame} ${false && styles.hidden}`}
+      key={game?.index}
+      className={`${styles.bracketGame} ${game?.hidden && styles.hidden}`}
     >
       <SeedDrop
-        id={game.index}
+        id={game?.index}
         position={1}
         type="seed"
         onDrop={onDrop}
-        placeholder={!seedRound ? game.awayDisplayName : ''}
+        placeholder={!seedRound ? game?.awayDisplayName : ''}
       >
-        {game.awaySeedId ? (
+        {game?.awaySeedId ? (
           <Seed
-            id={game.awaySeedId}
-            name={String(game.awaySeedId)}
+            id={game?.awaySeedId}
+            name={String(game?.awaySeedId)}
             type="seed"
             dropped={true}
           />
@@ -41,20 +41,20 @@ const BracketGameSlot = (props: IProps) => {
         )}
       </SeedDrop>
       <div className={styles.bracketGameDescription}>
-        <span>{`Game ${game.index}:  ${game.fieldName}`}</span>
+        <span>{`Game ${game?.index}:  ${game?.fieldName}`}</span>
         <span>{`${time}, ${date}`}</span>
       </div>
       <SeedDrop
-        id={game.index}
+        id={game?.index}
         position={2}
         type="seed"
         onDrop={onDrop}
-        placeholder={!seedRound ? game.homeDisplayName : ''}
+        placeholder={!seedRound ? game?.homeDisplayName : ''}
       >
-        {game.homeSeedId ? (
+        {game?.homeSeedId ? (
           <Seed
-            id={game.homeSeedId}
-            name={String(game.homeSeedId)}
+            id={game?.homeSeedId}
+            name={String(game?.homeSeedId)}
             type="seed"
             dropped={true}
           />

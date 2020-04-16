@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './styles.module.scss';
 
 interface Props {
+  position: 1 | 2;
   seedId?: number;
   displayName?: string;
   showHeatmap: boolean;
@@ -10,11 +11,20 @@ interface Props {
 }
 
 export default (props: Props) => {
-  const { seedId, displayName, showHeatmap, divisionHex, divisionName } = props;
+  const {
+    position,
+    seedId,
+    displayName,
+    showHeatmap,
+    divisionHex,
+    divisionName,
+  } = props;
 
   return (
     <div
-      className={`${styles.seedContainer} ${showHeatmap && styles.heatmap}`}
+      className={`${styles.seedContainer} ${
+        position === 1 ? styles.seedContainerTop : styles.seedContainerBottom
+      } ${showHeatmap && styles.heatmap}`}
       style={(showHeatmap && { background: `#${divisionHex}` }) || {}}
     >
       {seedId ? `Seed ${seedId} (${divisionName})` : displayName}

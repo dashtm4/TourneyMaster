@@ -9,9 +9,14 @@
 
   .leftColumn {
     background-color: #dadada;
-    width: 300px;
+    width: 277px;
     height: 450px;
-    display: none;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0 0 10px;
+    border-radius: 3px;
   }
 
   .rightColumn {

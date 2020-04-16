@@ -1,17 +1,18 @@
 import React from 'react';
+import { orderBy } from 'lodash-es';
 import {
   SectionDropdown,
   HeadingLevelThree,
   Button,
   CardMessage,
 } from 'components/common';
-import BraketsItem from '../brakets-item';
-import { compareTime } from 'helpers';
+import BracketsItem from '../brakets-item';
 import { EventMenuTitles } from 'common/enums';
 import { ISchedulingSchedule } from '../types';
-import { CardMessageTypes } from 'components/common/card-message/types';
 import styles from '../styles.module.scss';
 import { IMouseEvent } from 'common/types';
+import { ISchedulingBracket } from 'common/models/playoffs/bracket';
+import { CardMessageTypes } from 'components/common/card-message/types';
 
 const CARD_MESSAGE_STYLES = {
   marginBottom: 30,
@@ -19,27 +20,34 @@ const CARD_MESSAGE_STYLES = {
 };
 
 interface IProps {
+  brackets: ISchedulingBracket[];
   schedules: ISchedulingSchedule[];
   eventId: string;
   isSectionExpand: boolean;
   bracketCreationAllowed: boolean;
   onCreateBracket: (evt: IMouseEvent) => void;
+  onEditBracket: (bracketId: string) => void;
 }
 
 const Brackets = (props: IProps) => {
   const {
     schedules,
+    brackets,
     eventId,
     isSectionExpand,
     bracketCreationAllowed,
     onCreateBracket,
+    onEditBracket,
   } = props;
 
-  const sortedScheduleByName = schedules.sort(
-    (a, b) =>
-      compareTime(a.updated_datetime, b.updated_datetime) ||
-      compareTime(a.created_datetime, b.created_datetime)
+  const orderedBrackets = orderBy(
+    brackets,
+    ({ status, updateDate, createDate }) => [status, updateDate, createDate],
+    ['desc', 'desc', 'desc']
   );
+
+  const scheduleForBracket = (scheduleId: string) =>
+    schedules.find(v => v.schedule_id === scheduleId);
 
   return (
     <SectionDropdown
@@ -64,10 +72,27 @@ const Brackets = (props: IProps) => {
           disabled={!bracketCreationAllowed}
         />
       </>
-      {sortedScheduleByName.length !== 0 ? (
-        <ul className={styles.braketsList}>
-          {sortedScheduleByName.map(it => (
-            <BraketsItem schedule={it} eventId={eventId} key={it.schedule_id} />
+      {orderedBrackets ? (
+        <ul className={styles.bracketsList}>
+          <CardMessage
+            style={CARD_MESSAGE_STYLES}
+            type={CardMessageTypes.EMODJI_OBJECTS}
+          >
+            Brackets are sorted first on Status then on Last Update Date
+          </CardMessage>
+          {orderedBrackets.map(item => (
+            <BracketsItem
+              schedule={scheduleForBracket(item.scheduleId)!}
+              bracket={item}
+              eventId={eventId}
+              key={Math.random()}
+              bracketPublished={false}
+              savingInProgress={false}
+              anotherBracketPublished={false}
+              onUnpublish={() => {}}
+              onPublish={() => {}}
+              onEditBracket={onEditBracket}
+            />
           ))}
         </ul>
       ) : (

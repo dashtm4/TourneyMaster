@@ -17,7 +17,7 @@ const BracketRound = (props: IProps) => {
       <span className={styles.roundTitle}>{title}</span>
       {games.map(game => (
         <BracketGameSlot
-          key={`${game.index}-round`}
+          key={`${game?.index}-round`}
           seedRound={seedRound}
           game={game}
           onDrop={onDrop}

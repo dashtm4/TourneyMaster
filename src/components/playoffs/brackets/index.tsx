@@ -19,7 +19,10 @@ interface IProps {
 const Brackets = (props: IProps) => {
   const { games } = props;
 
-  const getRoundTitle = (gamesLength: number) => {
+  const getRoundTitle = (round: number, gamesLength: number) => {
+    if (gameRounds && gamesLength <= gameRounds[round + 1]?.length)
+      return 'In-Play Games';
+
     switch (gamesLength) {
       case 8:
         return 'Sweet 16';
@@ -36,10 +39,56 @@ const Brackets = (props: IProps) => {
     { [key: string]: IBracketGame[] } | undefined
   >(undefined);
 
+  const [inPlayRound, setInPlayRound] = useState<
+    { [key: string]: IBracketGame[] } | undefined
+  >();
+
+  const [hidden, setHidden] = useState<any>();
+
   useEffect(() => {
     const gameRounds = groupBy(games, 'round');
+
+    if (gameRounds[0]?.length < gameRounds[1]?.length * 2) {
+      setInPlayRound({ 0: setInPlayGames(gameRounds[0], gameRounds[1]) });
+      delete gameRounds[0];
+      setGameRounds(gameRounds);
+      return;
+    }
+
     setGameRounds(gameRounds);
   }, [games]);
+
+  useEffect(() => {
+    if (inPlayRound) {
+      const hiddenConnectors = setHiddenConnectors(inPlayRound[0]);
+      setHidden(hiddenConnectors);
+    }
+  }, [inPlayRound]);
+
+  const setHiddenConnectors = (round: any[]) => {
+    if (!round) return;
+    const arr = [];
+
+    for (let i = 0; i < round?.length; i += 2) {
+      arr.push({
+        hiddenTop: round[i]?.hidden,
+        hiddenBottom: round[i + 1]?.hidden,
+      });
+    }
+
+    return arr;
+  };
+
+  const setInPlayGames = (games: IBracketGame[], nextGames: IBracketGame[]) => {
+    const arr = [...Array(nextGames.length * 2)];
+    const order = [1, 3, 5, 7, 6, 4, 2];
+    order.forEach((v, i) => (arr[v] = games[i]));
+
+    return arr.map((item, ind) => ({
+      ...item,
+      hidden: ind === 0 || !item,
+    }));
+  };
 
   return (
     <div className={styles.container}>
@@ -51,14 +100,37 @@ const Brackets = (props: IProps) => {
       >
         <TransformComponent>
           <div className={styles.bracketContainer}>
+            {keys(inPlayRound)?.map(roundKey => (
+              <>
+                <BracketRound
+                  games={inPlayRound![roundKey]}
+                  onDrop={() => {}}
+                  title="In-Play"
+                />
+                <BracketConnector
+                  hidden={hidden}
+                  step={inPlayRound![roundKey]?.length}
+                />
+              </>
+            ))}
             {keys(gameRounds).map((roundKey, index) => (
               <Fragment key={index}>
                 <BracketRound
                   games={gameRounds![roundKey]}
                   onDrop={() => {}}
-                  title={getRoundTitle(gameRounds![roundKey]?.length)}
+                  title={getRoundTitle(
+                    Number(roundKey),
+                    gameRounds![roundKey]?.length
+                  )}
                 />
-                <BracketConnector step={gameRounds![roundKey]?.length} />
+                <BracketConnector
+                  hidden={
+                    gameRounds![roundKey].some(v => v.hidden)
+                      ? setHiddenConnectors(gameRounds![roundKey])
+                      : undefined
+                  }
+                  step={gameRounds![roundKey]?.length}
+                />
               </Fragment>
             ))}
           </div>

@@ -22,6 +22,9 @@ export interface IBracketGame {
   fieldName?: string;
   startTime?: string;
   gameDate?: string;
+  //
+  hidden?: boolean;
+  createDate: string;
 }
 
 export interface IBracketSeed {
@@ -157,6 +160,7 @@ export const createBracketGames = (
       homeDisplayName: `Home ${division.short_name}`,
       divisionName: division.short_name,
       divisionId: division.division_id,
+      createDate: new Date().toISOString(),
     }));
 
     games.push(rearrangeSeedForGames(bracketTeamsNum, localGames));
@@ -218,6 +222,7 @@ export const populatePlayoffGames = (
       return {
         ...game,
         playoffIndex: bracketGame?.index,
+        playoffRound: bracketGame?.round,
         awaySeedId: bracketGame?.awaySeedId,
         homeSeedId: bracketGame?.homeSeedId,
         awayDisplayName: bracketGame?.awayDisplayName,
