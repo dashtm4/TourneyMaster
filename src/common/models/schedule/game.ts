@@ -25,13 +25,12 @@ export interface ISchedulesGame {
 export interface ISchedulesGameWithNames {
   id: string;
   fieldId: string;
-  divisionId: string;
   fieldName: string;
-  awayTeamId: string;
-  awayTeamName: string;
+  awayTeamId: string | null;
+  awayTeamName: string | null;
   awayTeamScore: string | number | null;
-  homeTeamId: string;
-  homeTeamName: string;
+  homeTeamId: string | null;
+  homeTeamName: string | null;
   homeTeamScore: string | number | null;
   gameDate: string;
   startTime: string;

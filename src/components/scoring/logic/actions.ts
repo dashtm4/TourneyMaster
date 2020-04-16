@@ -88,7 +88,9 @@ const loadScoringData: ActionCreator<ThunkAction<
         games: mappedGames,
       },
     });
-  } catch {
+  } catch (err) {
+    console.log(err);
+
     dispatch({
       type: LOAD_SCORING_DATA_FAILURE,
     });
