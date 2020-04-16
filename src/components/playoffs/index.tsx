@@ -5,7 +5,7 @@ import moment from 'moment';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { History } from 'history';
-import { Button, Paper } from 'components/common';
+import { Button, Paper, PopupExposure } from 'components/common';
 import styles from './styles.module.scss';
 import BracketManager from './tabs/brackets';
 import ResourceMatrix from './tabs/resources';
@@ -106,6 +106,7 @@ interface IState {
   bracketSeeds?: IBracketSeed[];
   playoffTimeSlots?: ITimeSlot[];
   tableGames?: IGame[];
+  cancelConfirmationOpen: boolean;
 }
 
 enum PlayoffsTabsEnum {
@@ -116,6 +117,7 @@ enum PlayoffsTabsEnum {
 class Playoffs extends Component<IProps> {
   state: IState = {
     activeTab: PlayoffsTabsEnum.ResourceMatrix,
+    cancelConfirmationOpen: false,
   };
 
   componentDidMount() {
@@ -324,18 +326,43 @@ class Playoffs extends Component<IProps> {
     });
   };
 
+  openCancelConfirmation = () =>
+    this.setState({ cancelConfirmationOpen: true });
+
+  closeCancelConfirmation = () =>
+    this.setState({ cancelConfirmationOpen: false });
+
+  onGoBack = () => {
+    // if (condition) {
+    this.openCancelConfirmation();
+    // } else {
+    // this.onExit();
+    // }
+  };
+
+  onExit = () => {
+    const { eventId } = this.props.match.params;
+    this.props.history.push(`/event/scheduling/${eventId}`);
+  };
+
   addGame = () => {};
 
   onSeedsUsed = () => {};
 
   onSavePressed = () => {
-    const { bracketGames } = this.state;
+    const { bracketGames, cancelConfirmationOpen } = this.state;
     const { match } = this.props;
     const { bracketId } = match.params;
+
     if (bracketId) {
       this.props.savePlayoff(bracketGames!);
     } else {
       this.props.createPlayoff(bracketGames!);
+    }
+
+    if (cancelConfirmationOpen) {
+      this.closeCancelConfirmation();
+      this.onExit();
     }
   };
 
@@ -348,6 +375,7 @@ class Playoffs extends Component<IProps> {
       bracketGames,
       bracketSeeds,
       tableGames,
+      cancelConfirmationOpen,
     } = this.state;
 
     const {
@@ -373,7 +401,12 @@ class Playoffs extends Component<IProps> {
                   <span>{bracket?.name}</span>
                 </div>
                 <div>
-                  <Button label="Close" variant="text" color="secondary" />
+                  <Button
+                    label="Close"
+                    variant="text"
+                    color="secondary"
+                    onClick={this.onGoBack}
+                  />
                   <Button
                     label="Save"
                     variant="contained"
@@ -429,6 +462,12 @@ class Playoffs extends Component<IProps> {
             )}
           </section>
         </DndProvider>
+        <PopupExposure
+          isOpen={cancelConfirmationOpen}
+          onClose={this.closeCancelConfirmation}
+          onExitClick={this.onExit}
+          onSaveClick={this.onSavePressed}
+        />
       </div>
     );
   }
