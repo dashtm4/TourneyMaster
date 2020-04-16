@@ -26,7 +26,7 @@ interface IProps {
 }
 
 const DropContainer = (props: IProps) => {
-  const { acceptType, onDrop, children, gameId, teamCards } = props;
+  const { acceptType, position, onDrop, children, gameId, teamCards } = props;
 
   const isTeamLocked = teamCards
     .map(team => team.games)
@@ -60,7 +60,13 @@ const DropContainer = (props: IProps) => {
   return (
     <div
       ref={drop}
-      className={styles.dropContainer}
+      className={`${styles.dropContainer} ${
+        acceptType.includes(MatrixTableDropEnum.BracketDrop)
+          ? styles.bracketContainer
+          : ''
+      } ${
+        position === 1 ? styles.dropContainerTop : styles.dropContainerBottom
+      }`}
       style={{ opacity: isOver && !isTeamLocked ? 0.5 : 1 }}
     >
       {children}

@@ -78,6 +78,7 @@ const RenderGameSlot = (props: Props) => {
             )}
             {(awaySeedId || awayDisplayName) && (
               <SeedCard
+                position={1}
                 showHeatmap={true}
                 seedId={awaySeedId}
                 displayName={awayDisplayName}
@@ -110,6 +111,7 @@ const RenderGameSlot = (props: Props) => {
             )}
             {(homeSeedId || homeDisplayName) && (
               <SeedCard
+                position={2}
                 showHeatmap={true}
                 seedId={homeSeedId}
                 displayName={homeDisplayName}
