@@ -250,6 +250,12 @@ const SortTeamsBy = {
   [RankingFactorValues.GOAL_SCORED]: sortTeamsByGoalScored,
 };
 
+const sortByZeroTeam = (a: ITeamWithResults, _b: ITeamWithResults) => {
+  const isZeroTeam = a.wins + a.losses + a.tie === 0;
+
+  return isZeroTeam ? 1 : 0;
+};
+
 const sortTeamByScored = (
   teams: ITeamWithResults[],
   games: ISchedulesGameWithNames[],
@@ -265,6 +271,7 @@ const sortTeamByScored = (
 
   return localTeams.sort(
     (a, b) =>
+      sortByZeroTeam(a, b) ||
       SortTeamsBy[parsedRankings[0]](a, b, games) ||
       SortTeamsBy[parsedRankings[1]](a, b, games) ||
       SortTeamsBy[parsedRankings[2]](a, b, games) ||
