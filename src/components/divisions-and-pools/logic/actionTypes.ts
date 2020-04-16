@@ -1,4 +1,4 @@
-import { IDivision, ITeam } from 'common/models';
+import { IDivision, ITeam, IPool } from 'common/models';
 
 export const DIVISIONS_TEAMS_FETCH_START = 'DIVISIONS_TEAMS_FETCH_START';
 export const DIVISIONS_TEAMS_FETCH_SUCCESS = 'DIVISIONS_TEAMS_FETCH_SUCCESS';
@@ -17,6 +17,9 @@ export const DIVISION_SAVE_SUCCESS = 'DIVISION_SAVE_SUCCESS';
 
 export const SAVE_TEAMS_SUCCESS = 'DIVISION_AND_POOLS:SAVE_TEAMS_SUCCESS';
 export const SAVE_TEAMS_FAILURE = 'DIVISION_AND_POOLS:SAVE_TEAMS_FAILURE';
+
+export const EDIT_POOL_SUCCESS = 'DIVISION_AND_POOLS:EDIT_POOL_SUCCESS';
+export const EDIT_POOL_FAILURE = 'DIVISION_AND_POOLS:EDIT_POOL_FAILURE';
 
 export interface loadDivisionsTeamsSuccess {
   type: 'DIVISIONS_TEAMS_FETCH_SUCCESS';
@@ -38,7 +41,15 @@ export interface ISaveTeamSuccess {
   };
 }
 
+export interface IEditPoolSuccess {
+  type: 'DIVISION_AND_POOLS:EDIT_POOL_SUCCESS';
+  payload: {
+    pool: IPool;
+  };
+}
+
 export type DivisionsPoolsAction =
   | loadDivisionsTeamsSuccess
   | saveDivisionsSuccess
-  | ISaveTeamSuccess;
+  | ISaveTeamSuccess
+  | IEditPoolSuccess;

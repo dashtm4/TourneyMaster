@@ -11,6 +11,8 @@ import {
   REGISTRATION_FETCH_SUCCESS,
   ALL_POOLS_FETCH_SUCCESS,
   SAVE_TEAMS_SUCCESS,
+  EDIT_POOL_SUCCESS,
+  DivisionsPoolsAction,
 } from './actionTypes';
 import {
   ADD_ENTITIES_TO_LIBRARY_SUCCESS,
@@ -43,7 +45,10 @@ const defaultState: IDivisionAndPoolsState = {
 
 export default (
   state = defaultState,
-  action: { type: string; payload?: any } | AuthPageAction
+  action:
+    | { type: string; payload?: any }
+    | AuthPageAction
+    | DivisionsPoolsAction
 ) => {
   switch (action.type) {
     case DIVISIONS_TEAMS_FETCH_START: {
@@ -163,6 +168,14 @@ export default (
       } else {
         return state;
       }
+    }
+    case EDIT_POOL_SUCCESS: {
+      const { pool } = action.payload;
+
+      return {
+        ...state,
+        pools: state.pools.map(it => (it.pool_id === pool.pool_id ? pool : it)),
+      };
     }
     default:
       return state;

@@ -16,6 +16,8 @@ import {
   ALL_POOLS_FETCH_SUCCESS,
   SAVE_TEAMS_SUCCESS,
   SAVE_TEAMS_FAILURE,
+  EDIT_POOL_SUCCESS,
+  EDIT_POOL_FAILURE,
 } from './actionTypes';
 import api from 'api/api';
 import history from 'browserhistory';
@@ -24,6 +26,7 @@ import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
 import { IPool, ITeam, IDivision, BindingAction } from 'common/models';
 import { IAppState } from 'reducers/root-reducer.types';
+import { EntryPointsWithId } from 'common/enums';
 
 export const divisionsTeamsFetchStart = (): { type: string } => ({
   type: DIVISIONS_TEAMS_FETCH_START,
@@ -297,6 +300,46 @@ export const savePool: ActionCreator<ThunkAction<
     Toasts.successToast('Pool is successfully added');
   } catch (err) {
     Toasts.errorToast(err.message);
+  }
+};
+
+export const editPool: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (editedPool: IPool, pools: IPool[]) => async (dispatch: Dispatch) => {
+  try {
+    await Yup.array()
+      .of(poolSchema)
+      .unique(
+        pool => pool.pool_name,
+        'Oops. It looks like you already have pool with the same name. The pool must have a unique name.'
+      )
+      .validate([...pools, editedPool]);
+
+    await api.put(
+      `${EntryPointsWithId.POOLS}${editedPool.pool_id}`,
+      editedPool
+    );
+
+    dispatch({
+      type: EDIT_POOL_SUCCESS,
+      payload: {
+        pool: editedPool,
+      },
+    });
+
+    Toasts.successToast('Pool is successfully changed');
+  } catch (err) {
+    dispatch({
+      type: EDIT_POOL_FAILURE,
+      payload: {
+        pool: editedPool,
+      },
+    });
+
+    Toasts.successToast(err.message);
   }
 };
 

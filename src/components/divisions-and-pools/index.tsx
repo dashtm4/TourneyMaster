@@ -14,6 +14,7 @@ import {
   saveTeams,
   saveDivisions,
   createDivisions,
+  editPool,
 } from './logic/actions';
 import { addEntitiesToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import Modal from '../common/modal';
@@ -43,6 +44,7 @@ interface IDivisionsAndPoolsProps {
   saveDivisions: BindingCbWithTwo<Partial<IDivision>[], string>;
   createDivisions: BindingCbWithOne<Partial<IDivision>[]>;
   addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
+  editPool: BindingCbWithTwo<IPool, IPool[]>;
 }
 
 interface IDivisionAndPoolsState {
@@ -154,6 +156,7 @@ class DivisionsAndPools extends React.Component<
                       divisions={this.props.divisions}
                       isSectionExpand={this.state.isSectionsExpand}
                       saveTeams={saveTeams}
+                      editPool={this.props.editPool}
                     />
                   </li>
                 ))}
@@ -230,6 +233,7 @@ const mapDispatchToProps = {
   saveDivisions,
   createDivisions,
   addEntitiesToLibrary,
+  editPool,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DivisionsAndPools);

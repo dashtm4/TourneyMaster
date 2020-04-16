@@ -6,19 +6,20 @@ import {
   Input,
   Button,
 } from 'components/common';
-import { BindingAction, IPool } from 'common/models';
+import { BindingAction, IPool, BindingCbWithOne } from 'common/models';
 import { ButtonVarian, ButtonColors, IPoolFields } from 'common/enums';
+import { IInputEvent } from 'common/types';
 import { getPoolOptions } from './helpers';
 import styles from './styles.module.scss';
-import { IInputEvent } from 'common/types';
 
 interface Props {
   pools: IPool[];
   isOpen: boolean;
   onClose: BindingAction;
+  onEdit: BindingCbWithOne<IPool>;
 }
 
-const PopupEditPool = ({ pools, isOpen, onClose }: Props) => {
+const PopupEditPool = ({ pools, isOpen, onClose, onEdit }: Props) => {
   const [activePool, changeActivePool] = React.useState<IPool | null>(null);
 
   React.useEffect(() => {
@@ -37,6 +38,14 @@ const PopupEditPool = ({ pools, isOpen, onClose }: Props) => {
     changeActivePool({ ...activePool, [name]: value } as IPool);
   };
 
+  const onSave = () => {
+    if (activePool) {
+      onEdit(activePool);
+
+      onClose();
+    }
+  };
+
   const options = getPoolOptions(pools);
 
   return (
@@ -50,6 +59,7 @@ const PopupEditPool = ({ pools, isOpen, onClose }: Props) => {
             onChange={onChangeActivePool}
             value={activePool?.pool_id || ''}
             options={options}
+            label="Select pool"
           />
         </div>
         <fieldset className={styles.inputsWrapper}>
@@ -85,6 +95,8 @@ const PopupEditPool = ({ pools, isOpen, onClose }: Props) => {
           />
           <span className={styles.btnWrapper}>
             <Button
+              onClick={onSave}
+              disabled={!activePool}
               variant={ButtonVarian.CONTAINED}
               color={ButtonColors.PRIMARY}
               label="Save"

@@ -4,7 +4,13 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import PopupPoolEdit from '../popup-pool-edit';
 import PoolsDetailsNav from './pools-details-nav';
 import Pool from './pool';
-import { IPool, ITeam, BindingCbWithOne, IDivision } from 'common/models';
+import {
+  IPool,
+  ITeam,
+  BindingCbWithOne,
+  IDivision,
+  BindingCbWithTwo,
+} from 'common/models';
 import {
   Loader,
   Modal,
@@ -23,6 +29,7 @@ interface IPoolsDetailsProps {
   teams: ITeam[];
   areDetailsLoading: boolean;
   saveTeams: BindingCbWithOne<ITeam[]>;
+  editPool: BindingCbWithTwo<IPool, IPool[]>;
 }
 
 const PoolsDetails = ({
@@ -32,6 +39,7 @@ const PoolsDetails = ({
   areDetailsLoading,
   onAddPool,
   saveTeams,
+  editPool,
 }: IPoolsDetailsProps) => {
   const [localTeams, changeLocalTeams] = React.useState<ITeam[]>(teams);
   const [configurableTeam, configutationTeam] = React.useState<ITeam | null>(
@@ -171,6 +179,10 @@ const PoolsDetails = ({
     toggleEditPoolPoup(!isEditPoolPoupOpen);
   };
 
+  const onEditPool = (pool: IPool) => {
+    editPool(pool, pools);
+  };
+
   const notDeletedTeams = localTeams.filter((it: ITeam) => !it.isDelete);
 
   const unassignedTeams = notDeletedTeams.filter(it => !it.pool_id);
@@ -261,6 +273,7 @@ const PoolsDetails = ({
         pools={pools}
         isOpen={isEditPoolPoupOpen}
         onClose={onToggleEditPoolPoup}
+        onEdit={onEditPool}
       />
     </>
   );
