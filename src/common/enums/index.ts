@@ -13,3 +13,4 @@ export * from './ranking-factor';
 export * from './division';
 export * from './schedule';
 export * from './library';
+export * from './pool';
