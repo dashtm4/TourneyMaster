@@ -14,7 +14,7 @@
 .btnsGroup {
   display: flex;
   align-items: flex-start;
-  & > :first-child {
+  & > * {
     margin-right: 100px;
   }
 }
@@ -24,7 +24,15 @@
   & > :first-child {
     width: 70%;
   }
-  .recipientsCheckboxWrapper {
-    width: 25%;
+}
+.recipientsCheckboxWrapper {
+  .title {
+    color: #6a6a6a;
+    font-weight: 600;
+  }
+
+  .additionalInfo {
+    font-weight: 400;
+    font-size: 14px;
   }
 }
