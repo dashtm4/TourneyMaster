@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from 'components/common';
-import CreateIcon from '@material-ui/icons/Create';
 import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 import { getIcon } from 'helpers';
@@ -16,6 +15,7 @@ interface Props {
   onArrange: BindingAction;
   onCancel: BindingAction;
   onSave: BindingAction;
+  onEdit: BindingAction;
 }
 
 const PoolsDetailsNav = ({
@@ -24,6 +24,7 @@ const PoolsDetailsNav = ({
   onArrange,
   onCancel,
   onSave,
+  onEdit,
 }: Props) => (
   <div className={styles.wrapper}>
     <div className={styles.poolsBtns}>
@@ -34,10 +35,10 @@ const PoolsDetailsNav = ({
         label="+ Add Pool"
       />
       <Button
+        onClick={onEdit}
+        icon={getIcon(Icons.EDIT)}
         variant={ButtonVarian.TEXT}
         color={ButtonColors.SECONDARY}
-        icon={<CreateIcon />}
-        disabled={true}
         label="Edit Pool Details"
       />
     </div>

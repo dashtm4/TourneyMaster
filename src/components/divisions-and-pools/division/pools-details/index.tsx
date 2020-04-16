@@ -1,5 +1,7 @@
 import React from 'react';
-import styles from './styles.module.scss';
+import { DndProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import PopupPoolEdit from '../popup-pool-edit';
 import PoolsDetailsNav from './pools-details-nav';
 import Pool from './pool';
 import { IPool, ITeam, BindingCbWithOne, IDivision } from 'common/models';
@@ -10,8 +12,7 @@ import {
   PopupExposure,
   PopupTeamEdit,
 } from 'components/common';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import styles from './styles.module.scss';
 
 const deleteMessage =
   'You are about to delete this team and this cannot be undone. Please, enter the name of the team to continue.';
@@ -47,6 +48,9 @@ const PoolsDetails = ({
     false
   );
   const [changesAreMade, toggleChangesAreMade] = React.useState<boolean>(false);
+  const [isEditPoolPoupOpen, toggleEditPoolPoup] = React.useState<boolean>(
+    false
+  );
 
   const onCloseModal = () => {
     configutationTeam(null);
@@ -163,6 +167,10 @@ const PoolsDetails = ({
     onCloseModal();
   };
 
+  const onToggleEditPoolPoup = () => {
+    toggleEditPoolPoup(!isEditPoolPoupOpen);
+  };
+
   const notDeletedTeams = localTeams.filter((it: ITeam) => !it.isDelete);
 
   const unassignedTeams = notDeletedTeams.filter(it => !it.pool_id);
@@ -175,6 +183,7 @@ const PoolsDetails = ({
           <PoolsDetailsNav
             isArrange={isArrange}
             onAdd={onAdd}
+            onEdit={onToggleEditPoolPoup}
             onArrange={onToggleArrange}
             onCancel={onToggleConfirmPopup}
             onSave={onSaveClick}
@@ -247,6 +256,10 @@ const PoolsDetails = ({
         onClose={onToggleConfirmPopup}
         onExitClick={onCancelClick}
         onSaveClick={onSaveClick}
+      />
+      <PopupPoolEdit
+        isOpen={isEditPoolPoupOpen}
+        onClose={onToggleEditPoolPoup}
       />
     </>
   );
