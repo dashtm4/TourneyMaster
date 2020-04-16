@@ -10,7 +10,7 @@ interface IProps {
 }
 
 const Seed = (props: IProps) => {
-  const { id, name, type, dropped } = props;
+  const { id, type, dropped } = props;
 
   const [{ isDragging }, drag] = useDrag({
     item: { id, type },
@@ -25,7 +25,7 @@ const Seed = (props: IProps) => {
       style={{ opacity: isDragging ? 0.8 : 1 }}
       className={`${styles.container} ${dropped ? styles.dropped : ''}`}
     >
-      {name}
+      Seed {id}
     </div>
   );
 };

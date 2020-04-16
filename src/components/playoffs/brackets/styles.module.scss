@@ -24,6 +24,12 @@ $height: 400px;
       width: 200px;
       height: 90px;
       margin-bottom: 20px;
+      transform: rotateY(0deg);
+      transition: transform 0.2s ease-in-out;
+
+      &.hidden {
+        transform: rotateY(90deg);
+      }
 
       .seedDrop {
         // background: white;
@@ -68,6 +74,34 @@ $height: 400px;
         border: 2px solid #1c315f;
         border-left: none;
         position: relative;
+
+        &.hidden {
+          opacity: 0;
+        }
+
+        &.hiddenTop {
+          &:before {
+            content: '';
+            width: 40px;
+            height: calc(50% + 3px);
+            display: block;
+            background: #f4f4f4;
+            margin-top: -3px;
+            margin-left: -1px;
+          }
+        }
+
+        &.hiddenBottom {
+          &:before {
+            content: '';
+            width: 40px;
+            height: calc(50% + 3px);
+            display: block;
+            background: #f4f4f4;
+            margin-top: 55px;
+            margin-left: -1px;
+          }
+        }
 
         &:last-of-type {
           margin-bottom: 0px;

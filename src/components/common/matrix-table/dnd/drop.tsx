@@ -3,6 +3,11 @@ import { useDrop } from 'react-dnd';
 import styles from './styles.module.scss';
 import { ITeamCard } from 'common/models/schedule/teams';
 
+export enum MatrixTableDropEnum {
+  TeamDrop = 'teamdrop',
+  BracketDrop = 'bracketdrop',
+}
+
 export interface IDropParams {
   teamId: string;
   position: number | undefined;
@@ -12,7 +17,7 @@ export interface IDropParams {
 }
 
 interface IProps {
-  acceptType: string;
+  acceptType: MatrixTableDropEnum[];
   gameId: number;
   position: 1 | 2;
   children?: React.ReactElement;
@@ -21,7 +26,7 @@ interface IProps {
 }
 
 const DropContainer = (props: IProps) => {
-  const { acceptType, onDrop, children, gameId, teamCards } = props;
+  const { acceptType, position, onDrop, children, gameId, teamCards } = props;
 
   const isTeamLocked = teamCards
     .map(team => team.games)
@@ -55,7 +60,13 @@ const DropContainer = (props: IProps) => {
   return (
     <div
       ref={drop}
-      className={styles.dropContainer}
+      className={`${styles.dropContainer} ${
+        acceptType.includes(MatrixTableDropEnum.BracketDrop)
+          ? styles.bracketContainer
+          : ''
+      } ${
+        position === 1 ? styles.dropContainerTop : styles.dropContainerBottom
+      }`}
       style={{ opacity: isOver && !isTeamLocked ? 0.5 : 1 }}
     >
       {children}

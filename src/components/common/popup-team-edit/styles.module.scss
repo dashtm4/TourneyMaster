@@ -1,5 +1,5 @@
 .popupWrapper {
-  width: 675px;
+  width: 700px;
   padding: 25px 20px;
 }
 
@@ -18,12 +18,14 @@
 
 .popupFormWrapper {
   display: flex;
+
+  margin: 0 0 25px;
 }
 
 .mainInfo {
-  width: 50%;
+  width: 40%;
 
-  padding-right: 20px;
+  padding-right: 15px;
 }
 
 .infoList,
@@ -87,10 +89,10 @@
 }
 
 .fieldList {
-  width: 50%;
+  width: 60%;
   max-height: 225px;
   margin: 0;
-  padding: 0;
+  padding: 0 20px 0 0;
 
   list-style: none;
 

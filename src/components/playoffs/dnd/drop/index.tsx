@@ -12,13 +12,13 @@ interface IProps {
   id: number;
   type: string;
   position: 1 | 2;
-  usePlaceholder?: boolean;
+  placeholder?: string;
   children?: React.ReactElement;
   onDrop: (dropParams: IBracketDrop) => void;
 }
 
 const SeedDrop = (props: IProps) => {
-  const { id, type, onDrop, position, children, usePlaceholder } = props;
+  const { id, type, onDrop, position, children, placeholder } = props;
 
   const [{ isOver }, drop] = useDrop({
     accept: type,
@@ -41,7 +41,7 @@ const SeedDrop = (props: IProps) => {
       className={styles.container}
     >
       {children ||
-        (usePlaceholder && <p className={styles.placeholder}>Game Winner</p>)}
+        (placeholder && <p className={styles.placeholder}>{placeholder}</p>)}
     </div>
   );
 };

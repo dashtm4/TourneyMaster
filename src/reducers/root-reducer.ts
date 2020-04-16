@@ -21,6 +21,7 @@ import schedulesTable from 'components/schedules/logic/schedules-table/schedules
 import tableColumns from 'components/common/csv-loader/logic/reducer';
 import reporting from 'components/reporting/logic/reducer';
 import eventLink from 'components/event-link/logic/reducer';
+import playoffs from 'components/playoffs/logic/reducer';
 
 const rootReducer = combineReducers({
   router: connectRouter(history),
@@ -44,6 +45,7 @@ const rootReducer = combineReducers({
   tableColumns,
   reporting,
   eventLink,
+  playoffs,
 });
 
 export default rootReducer;

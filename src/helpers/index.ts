@@ -15,3 +15,4 @@ export * from './map-schedules-games.helper';
 export * from './full-screen.helper';
 export * from './teams.helper';
 export * from './sent-to-server-by-route';
+export * from './scoring';
