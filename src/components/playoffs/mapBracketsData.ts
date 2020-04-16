@@ -39,7 +39,7 @@ export const mapBracketData = async (bracket: IBracket, isDraft: boolean) => {
     created_datetime: bracket.createDate || new Date().toISOString(),
     updated_by: memberId,
     updated_datetime: new Date().toISOString(),
-  };
+  } as IFetchedBracket;
 };
 
 export const mapBracketGames = async (
@@ -88,8 +88,12 @@ export const mapFetchedBracket = (
     adjustTime: !!bracketData.adjust_columns,
     warmup: bracketData.custom_warmup,
     bracketDate: bracketData.bracket_date,
-    createDate: bracketData.created_datetime,
     eventId,
+    status: bracketData.bracket_status,
+    createdBy: bracketData.created_by,
+    createDate: bracketData.created_datetime,
+    updatedBy: bracketData.updated_by,
+    updateDate: bracketData.updated_datetime,
   } as IBracket;
 };
 

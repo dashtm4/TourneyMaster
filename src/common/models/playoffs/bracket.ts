@@ -25,6 +25,15 @@ export interface IBracket {
   adjustTime: boolean;
   warmup: string;
   bracketDate: string;
-  createDate: string;
   eventId: string;
+  status: string;
+  createdBy: string;
+  createDate: string;
+  updatedBy: string | null;
+  updateDate: string | null;
+}
+
+export interface ISchedulingBracket extends IBracket {
+  createdByName: string | null;
+  updatedByName: string | null;
 }

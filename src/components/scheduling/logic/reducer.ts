@@ -8,6 +8,7 @@ import {
   UPDATE_SCHEDULE_SUCCESS,
   DELETE_SCHEDULE_SUCCESS,
   ADD_NEW_BRACKET,
+  FETCH_EVENT_BRACKETS,
 } from './actionTypes';
 import {
   ADD_ENTITIES_TO_LIBRARY_SUCCESS,
@@ -15,7 +16,7 @@ import {
 } from 'components/authorized-page/authorized-page-event/logic/action-types';
 import { IConfigurableSchedule, ISchedule } from 'common/models/schedule';
 import { ISchedulingSchedule } from '../types';
-import { IBracket } from 'common/models/playoffs/bracket';
+import { IBracket, ISchedulingBracket } from 'common/models/playoffs/bracket';
 import { EntryPoints } from 'common/enums';
 
 export interface ISchedulingState {
@@ -25,6 +26,7 @@ export interface ISchedulingState {
   isLoaded: boolean;
   error: boolean;
   bracket: IBracket | null;
+  brackets: ISchedulingBracket[] | null;
 }
 
 const appState: ISchedulingState = {
@@ -34,6 +36,7 @@ const appState: ISchedulingState = {
   isLoaded: false,
   error: false,
   bracket: null,
+  brackets: null,
 };
 
 export default (
@@ -107,6 +110,11 @@ export default (
       return {
         ...state,
         bracket: action.payload,
+      };
+    case FETCH_EVENT_BRACKETS:
+      return {
+        ...state,
+        brackets: action.payload,
       };
     case ADD_ENTITIES_TO_LIBRARY_SUCCESS: {
       const { entities, entryPoint } = action.payload;

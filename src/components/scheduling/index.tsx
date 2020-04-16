@@ -12,6 +12,9 @@ import {
   publishSchedule,
   unpublishSchedule,
   createNewBracket,
+  getEventBrackets,
+  updateBracket,
+  deleteBracket,
 } from './logic/actions';
 import { addEntitiesToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import {
@@ -51,6 +54,8 @@ import CreateNewBracket, {
   ICreateBracketModalOutput,
 } from './create-new-bracket';
 import { IEntity, IMouseEvent } from 'common/types';
+import { ISchedulingBracket } from 'common/models/playoffs/bracket';
+import PopupEditBracket from './popup-edit-bracket';
 
 enum ComponentActionsEnum {
   SchedulePublish = 'schedulePublish',
@@ -78,11 +83,15 @@ interface IProps {
   unpublishSchedule: BindingCbWithOne<string>;
   createNewBracket: BindingCbWithOne<ICreateBracketModalOutput>;
   addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
+  getEventBrackets: BindingAction;
+  updateBracket: (bracket: ISchedulingBracket) => void;
+  deleteBracket: (bracketId: string) => void;
   divisions?: IDivision[];
   teams?: ITeam[];
   event?: IEventDetails | null;
   schedulesPublished?: boolean;
   gamesAlreadyExist?: boolean;
+  brackets: ISchedulingBracket[] | null;
 }
 
 interface IState {
@@ -96,6 +105,7 @@ interface IState {
   isSectionsExpand: boolean;
   createBracketOpen: boolean;
   isLibraryPopupOpen: boolean;
+  editBracketId?: string;
 }
 
 class Scheduling extends Component<IProps, IState> {
@@ -110,6 +120,7 @@ class Scheduling extends Component<IProps, IState> {
     isSectionsExpand: true,
     createBracketOpen: false,
     isLibraryPopupOpen: false,
+    editBracketId: undefined,
   };
 
   componentDidMount() {
@@ -119,6 +130,7 @@ class Scheduling extends Component<IProps, IState> {
     if (eventId) {
       getScheduling(eventId);
       addNewSchedule();
+      this.props.getEventBrackets();
     }
   }
 
@@ -155,6 +167,10 @@ class Scheduling extends Component<IProps, IState> {
 
   onEditSchedule = (schedule: ISchedulingSchedule) =>
     this.setState({ editedSchedule: schedule });
+
+  onEditBracket = (bracketId: string) => {
+    this.setState({ editBracketId: bracketId });
+  };
 
   onCloseEditSchedule = () => this.setState({ editedSchedule: null });
 
@@ -231,6 +247,7 @@ class Scheduling extends Component<IProps, IState> {
       deleteSchedule,
       fields,
       event,
+      brackets,
     } = this.props;
 
     const {
@@ -244,6 +261,7 @@ class Scheduling extends Component<IProps, IState> {
       isSectionsExpand,
       createBracketOpen,
       isLibraryPopupOpen,
+      editBracketId,
     } = this.state;
 
     const { eventId } = this.props.match?.params;
@@ -294,11 +312,13 @@ class Scheduling extends Component<IProps, IState> {
                 onUnpublish={(data: ISchedule) => this.onPublish(data, false)}
               />
               <Brackets
+                brackets={brackets!}
                 schedules={schedules}
                 eventId={eventId}
                 isSectionExpand={isSectionsExpand}
                 bracketCreationAllowed={true}
                 onCreateBracket={this.onCreateBracketPressed}
+                onEditBracket={this.onEditBracket}
               />
             </>
           ) : (
@@ -335,6 +355,14 @@ class Scheduling extends Component<IProps, IState> {
             onClose={this.onCloseEditSchedule}
             onSubmit={updateSchedule}
             onDelete={deleteSchedule}
+          />
+        )}
+        {editBracketId && (
+          <PopupEditBracket
+            bracket={brackets?.find(v => v.id === editBracketId)!}
+            onClose={() => this.setState({ editBracketId: undefined })}
+            onSubmit={this.props.updateBracket}
+            onDelete={this.props.deleteBracket}
           />
         )}
 
@@ -396,6 +424,7 @@ const mapStateToProps = ({ scheduling, pageEvent, schedules }: IAppState) => ({
   event: pageEvent?.tournamentData?.event,
   schedulesPublished: schedules?.schedulesPublished,
   gamesAlreadyExist: schedules?.gamesAlreadyExist,
+  brackets: scheduling?.brackets,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
@@ -411,6 +440,9 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       publishSchedule,
       unpublishSchedule,
       addEntitiesToLibrary,
+      getEventBrackets,
+      updateBracket,
+      deleteBracket,
     },
     dispatch
   );

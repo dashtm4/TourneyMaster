@@ -18,6 +18,7 @@ import {
   DELETE_SCHEDULE_SUCCESS,
   DELETE_SCHEDULE_FAILURE,
   ADD_NEW_BRACKET,
+  FETCH_EVENT_BRACKETS,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
 import { scheduleSchema, updatedScheduleSchema } from 'validations';
@@ -54,6 +55,11 @@ import {
 } from 'components/schedules/mapScheduleData';
 import { errorToast, successToast } from 'components/common/toastr/showToasts';
 import { ICreateBracketModalOutput } from '../create-new-bracket';
+import {
+  mapFetchedBracket,
+  mapBracketData,
+} from 'components/playoffs/mapBracketsData';
+import { IBracket, ISchedulingBracket } from 'common/models/playoffs/bracket';
 
 type GetState = () => IAppState;
 
@@ -77,6 +83,11 @@ const scheduleFetchSuccess = (schedules: ISchedulingSchedule) => ({
 
 const scheduleFetchFailure = () => ({
   type: SCHEDULE_FETCH_FAILURE,
+});
+
+const fetchEventBrackets = (payload: ISchedulingBracket[]) => ({
+  type: FETCH_EVENT_BRACKETS,
+  payload,
 });
 
 export const addNewBracket = (payload: ICreateBracketModalOutput) => ({
@@ -449,8 +460,97 @@ export const unpublishSchedule = (scheduleId: string) => (
 
 /* BRACKETS SECTION */
 
+const mapToSchedulingBracket = (
+  item: IBracket,
+  members: IMember[]
+): ISchedulingBracket => {
+  const createdBy = members.find(
+    (member: IMember) => member.member_id === item.createdBy
+  );
+  const updatedBy = members.find(
+    (member: IMember) => member.member_id === item.updatedBy
+  );
+
+  const createdByName = createdBy
+    ? `${createdBy.first_name} ${createdBy.last_name}`
+    : null;
+  const updatedByName = updatedBy
+    ? `${updatedBy.first_name} ${updatedBy.last_name}`
+    : null;
+
+  return {
+    ...item,
+    createdByName,
+    updatedByName,
+  };
+};
+
 export const createNewBracket = (bracketData: ICreateBracketModalOutput) => (
   dispatch: Dispatch
 ) => {
   dispatch(addNewBracket(bracketData));
+};
+
+export const getEventBrackets = () => async (dispatch: Dispatch) => {
+  const members = await api.get(`/members`);
+  const response = await api.get('/brackets_details');
+
+  if (response?.length) {
+    const mappedBrackets = response.map(mapFetchedBracket);
+    const mappedBrackets2 = mappedBrackets.map((item: IBracket) =>
+      mapToSchedulingBracket(item, members)
+    );
+
+    dispatch(fetchEventBrackets(mappedBrackets2));
+  }
+};
+
+export const updateBracket = (bracket: ISchedulingBracket) => async (
+  dispatch: Dispatch,
+  getState: GetState
+) => {
+  const members = await api.get(`/members`);
+  const mappedBracket = await mapBracketData(
+    bracket,
+    bracket.status === 'Draft'
+  );
+  const response = await api.put('/brackets_details', mappedBracket);
+
+  const eventId = getState().pageEvent.tournamentData.event?.event_id;
+  const brackets = getState().scheduling.brackets;
+
+  if (response) {
+    const updatedBracket = await mapFetchedBracket(mappedBracket, eventId!);
+    const updatedBrackets = brackets?.map(item =>
+      item.id === updatedBracket.id ? updatedBracket : item
+    );
+    if (updatedBrackets) {
+      const mappedBrackets = updatedBrackets.map(item =>
+        mapToSchedulingBracket(item, members)
+      );
+      dispatch(fetchEventBrackets(mappedBrackets));
+    }
+    successToast('Bracket was successfully updated!');
+    return;
+  }
+
+  errorToast("Couldn't update the brackets");
+};
+
+export const deleteBracket = (bracketId: string) => async (
+  dispatch: Dispatch,
+  getState: GetState
+) => {
+  const response = await api.delete('/brackets_details', {
+    bracket_id: bracketId,
+  });
+  const brackets = getState().scheduling.brackets;
+
+  if (response) {
+    const updatedBrackets = brackets?.filter(item => item.id !== bracketId)!;
+    dispatch(fetchEventBrackets(updatedBrackets));
+    successToast('Bracket was successfully removed!');
+    return;
+  }
+  errorToast("Couldn't remove the bracket");
 };
