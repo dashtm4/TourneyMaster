@@ -18,7 +18,7 @@ import {
   SAVE_TEAMS_FAILURE,
 } from './actionTypes';
 import api from 'api/api';
-import history from '../../../browserhistory';
+import history from 'browserhistory';
 import { divisionSchema, poolSchema, teamSchema } from 'validations';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
