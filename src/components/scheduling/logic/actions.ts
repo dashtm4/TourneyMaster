@@ -79,7 +79,7 @@ const scheduleFetchFailure = () => ({
   type: SCHEDULE_FETCH_FAILURE,
 });
 
-const addNewBracket = (payload: ICreateBracketModalOutput) => ({
+export const addNewBracket = (payload: ICreateBracketModalOutput) => ({
   type: ADD_NEW_BRACKET,
   payload,
 });

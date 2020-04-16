@@ -45,17 +45,24 @@ import { IScheduleFacility } from 'common/models/schedule/facilities';
 import {
   IBracketGame,
   IBracketSeed,
-  createBracketGames,
   getFacilityData,
   populateBracketGamesWithData,
   populatePlayoffGames,
   createSeeds,
+  createBracketGames,
 } from './bracketGames';
 import {
   populateDefinedGamesWithPlayoffState,
   adjustPlayoffTimeOnLoad,
 } from 'components/schedules/definePlayoffs';
-import { createPlayoff, savePlayoff } from './logic/actions';
+import {
+  createPlayoff,
+  savePlayoff,
+  retrieveBracketsGames,
+  retrieveBrackets,
+  clearBracketGames,
+  fetchBracketGames,
+} from './logic/actions';
 import { updateGameBracketInfo } from './helper';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
@@ -66,6 +73,7 @@ interface IMapStateToProps extends Partial<ITournamentData> {
   schedulesTeamCards?: ITeamCard[];
   schedulesDetails?: ISchedulesDetails[];
   playoffSaved?: boolean;
+  bracketGames: IBracketGame[] | null;
 }
 
 interface IMapDispatchToProps {
@@ -76,6 +84,10 @@ interface IMapDispatchToProps {
   clearSchedulesTable: () => void;
   createPlayoff: (bracketGames: IBracketGame[]) => void;
   savePlayoff: (bracketGames: IBracketGame[]) => void;
+  retrieveBracketsGames: (bracketId: string) => void;
+  retrieveBrackets: (bracketId: string) => void;
+  clearBracketGames: () => void;
+  fetchBracketGames: (bracketGames: IBracketGame[]) => void;
 }
 
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
@@ -109,11 +121,18 @@ class Playoffs extends Component<IProps> {
   componentDidMount() {
     const { event, match } = this.props;
     const eventId = event?.event_id!;
-    const { scheduleId } = match.params;
+    const { scheduleId, bracketId } = match.params;
 
+    this.props.clearBracketGames();
     this.props.clearSchedulesTable();
     this.props.fetchEventSummary(eventId);
     this.props.fetchSchedulesDetails(scheduleId);
+
+    if (bracketId) {
+      this.retrieveBracketsData();
+    } else {
+      this.createBracketGames();
+    }
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -134,7 +153,7 @@ class Playoffs extends Component<IProps> {
     }
 
     if (!this.state.tableGames) {
-      this.createBracketGames();
+      this.calculateBracketGames();
     }
 
     if (this.props.playoffSaved && !prevProps.playoffSaved) {
@@ -182,6 +201,20 @@ class Playoffs extends Component<IProps> {
     });
   };
 
+  createBracketGames = () => {
+    const { event, divisions } = this.props;
+    const bracketTeamsNum = event?.num_teams_bracket || 0;
+    const bracketGames = createBracketGames(divisions!, bracketTeamsNum);
+    this.props.fetchBracketGames(bracketGames);
+  };
+
+  retrieveBracketsData = () => {
+    const { match } = this.props;
+    const { bracketId } = match.params;
+    this.props.retrieveBracketsGames(bracketId);
+    this.props.retrieveBrackets(bracketId);
+  };
+
   calculatePlayoffTimeSlots = () => {
     const { schedulesDetails, divisions, event } = this.props;
     const { timeSlots, fields } = this.state;
@@ -212,8 +245,14 @@ class Playoffs extends Component<IProps> {
     }
   };
 
-  createBracketGames = () => {
-    const { event, divisions, schedulesTeamCards, fields } = this.props;
+  calculateBracketGames = () => {
+    const {
+      event,
+      divisions,
+      schedulesTeamCards,
+      fields,
+      bracketGames,
+    } = this.props;
     const { games, playoffTimeSlots } = this.state;
     const bracketTeamsNum = event?.num_teams_bracket || 0;
     const gameDate = moment(event?.event_enddate).toISOString();
@@ -223,11 +262,10 @@ class Playoffs extends Component<IProps> {
       !games ||
       !playoffTimeSlots ||
       !schedulesTeamCards ||
+      !bracketGames ||
       !fields
     )
       return;
-
-    const bracketGames = createBracketGames(divisions, bracketTeamsNum);
 
     const definedGames = populateDefinedGamesWithPlayoffState(
       games,
@@ -417,6 +455,7 @@ const mapStateToProps = ({
   schedulesTeamCards: schedulesTable.current,
   schedulesDetails: schedules?.schedulesDetails,
   playoffSaved: playoffs?.playoffSaved,
+  bracketGames: playoffs?.bracketGames,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
@@ -429,6 +468,10 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       clearSchedulesTable,
       createPlayoff,
       savePlayoff,
+      retrieveBracketsGames,
+      retrieveBrackets,
+      clearBracketGames,
+      fetchBracketGames,
     },
     dispatch
   );

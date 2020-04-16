@@ -1,9 +1,10 @@
 import { Auth } from 'aws-amplify';
 import api from 'api/api';
-import { IBracket } from 'common/models/playoffs/bracket';
+import { IBracket, IFetchedBracket } from 'common/models/playoffs/bracket';
 import { getVarcharEight } from 'helpers';
 import { IMember } from 'common/models';
 import { IBracketGame } from './bracketGames';
+import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
 
 const YN = (v: boolean) => (!!v ? 1 : 0);
 
@@ -48,28 +49,69 @@ export const mapBracketGames = async (
   const member = await getMember();
   const memberId = member.member_id;
 
-  return bracketGames.map(game => ({
-    game_id: getVarcharEight(),
-    bracket_id: bracket.id,
-    event_id: bracket.eventId,
-    division_id: game.divisionId,
-    bracket_year: game.divisionName,
-    round_id: game.round,
-    field_id: game.fieldId,
-    game_date: game.gameDate,
-    game_num: game.index,
-    start_time: game.startTime,
-    results_order: null,
-    seed_num_away: game.awaySeedId,
-    seed_num_home: game.homeSeedId,
-    away_team_id: game.awayTeamId || null,
-    home_team_id: game.homeTeamId || null,
-    away_team_score: null,
-    home_team_score: null,
-    is_active_YN: 1,
-    created_by: memberId,
-    created_datetime: game.createDate || new Date().toISOString(),
-    updated_by: memberId,
-    updated_datetime: new Date().toISOString(),
-  }));
+  return bracketGames.map(
+    (game): IPlayoffGame => ({
+      game_id: getVarcharEight(),
+      bracket_id: bracket.id,
+      event_id: bracket.eventId,
+      division_id: game.divisionId,
+      bracket_year: game.divisionName || null,
+      round_num: game.round,
+      field_id: game.fieldId || null,
+      game_date: game.gameDate!,
+      game_num: game.index,
+      start_time: game.startTime!,
+      seed_num_away: game.awaySeedId || null,
+      seed_num_home: game.homeSeedId || null,
+      away_team_id: game.awayTeamId || null,
+      home_team_id: game.homeTeamId || null,
+      away_team_score: null,
+      home_team_score: null,
+      is_active_YN: 1,
+      created_by: memberId,
+      created_datetime: game.createDate || new Date().toISOString(),
+      updated_by: memberId,
+      updated_datetime: new Date().toISOString(),
+    })
+  );
+};
+
+export const mapFetchedBracket = (
+  bracketData: IFetchedBracket,
+  eventId: string
+) => {
+  return {
+    id: bracketData.bracket_id,
+    name: bracketData.bracket_name,
+    scheduleId: bracketData.schedule_id,
+    alignItems: !!bracketData.align_games,
+    adjustTime: !!bracketData.adjust_columns,
+    warmup: bracketData.custom_warmup,
+    bracketDate: bracketData.bracket_date,
+    createDate: bracketData.created_datetime,
+    eventId,
+  } as IBracket;
+};
+
+export const mapFetchedBracketGames = (bracketGames: IPlayoffGame[]) => {
+  return bracketGames.map(
+    (game): IBracketGame => ({
+      index: game.game_num,
+      round: game.round_num,
+      divisionId: game.division_id,
+      divisionName: game.bracket_year || undefined,
+      awaySeedId: game.seed_num_away || undefined,
+      homeSeedId: game.seed_num_home || undefined,
+      awayTeamId: game.away_team_id || undefined,
+      homeTeamId: game.home_team_id || undefined,
+      awayDisplayName: '',
+      homeDisplayName: '',
+      fieldId: game.field_id || undefined,
+      fieldName: '',
+      startTime: game.start_time || undefined,
+      gameDate: game.game_date.toString(),
+      hidden: !game.is_active_YN,
+      createDate: game.created_datetime,
+    })
+  );
 };
