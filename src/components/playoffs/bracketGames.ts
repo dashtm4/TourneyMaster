@@ -2,8 +2,10 @@ import { unionBy, findIndex } from 'lodash-es';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IDivision, IField } from 'common/models';
 import { ITeamCard } from 'common/models/schedule/teams';
+import { getVarcharEight } from 'helpers';
 
 export interface IBracketGame {
+  id: string;
   index: number;
   round: number;
   divisionId: string;
@@ -154,6 +156,7 @@ export const createBracketGames = (
     const firstRoundGamesNum = maxPowerOfTwo / 2;
 
     const localGames = [...Array(bracketTeamsNum - 1)].map((_, index) => ({
+      id: getVarcharEight(),
       index: index + 1,
       round: getRoundBy(index, numberOfPreGames, firstRoundGamesNum),
       awayDisplayName: `Away ${division.short_name}`,

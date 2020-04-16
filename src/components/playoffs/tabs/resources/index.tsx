@@ -49,9 +49,13 @@ interface IState {
 class ResourceMatrix extends Component<IProps> {
   state: IState = {};
 
-  renderGame = (game: IGame) => {
+  renderGame = (game: IGame, index: number) => {
     return (
-      <BracketGameCard game={game} type={MatrixTableDropEnum.BracketDrop} />
+      <BracketGameCard
+        key={`${index}-renderGame`}
+        game={game}
+        type={MatrixTableDropEnum.BracketDrop}
+      />
     );
   };
 
@@ -94,7 +98,8 @@ class ResourceMatrix extends Component<IProps> {
     return (
       <section className={styles.container}>
         <div className={styles.leftColumn}>
-          {orderedGames?.map(v => this.renderGame(v))}
+          <div className={styles.gamesTitle}>Bracket Games</div>
+          {orderedGames?.map((v, i) => this.renderGame(v, i))}
         </div>
         <div className={styles.rightColumn}>
           {event &&
