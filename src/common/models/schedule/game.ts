@@ -25,6 +25,7 @@ export interface ISchedulesGame {
 export interface ISchedulesGameWithNames {
   id: string;
   fieldId: string;
+  divisionId: string;
   fieldName: string;
   awayTeamId: string;
   awayTeamName: string;
