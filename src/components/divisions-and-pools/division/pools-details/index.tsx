@@ -1,8 +1,16 @@
 import React from 'react';
-import styles from './styles.module.scss';
+import { DndProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import PopupPoolEdit from '../popup-pool-edit';
 import PoolsDetailsNav from './pools-details-nav';
 import Pool from './pool';
-import { IPool, ITeam, BindingCbWithOne, IDivision } from 'common/models';
+import {
+  IPool,
+  ITeam,
+  BindingCbWithOne,
+  IDivision,
+  BindingCbWithTwo,
+} from 'common/models';
 import {
   Loader,
   Modal,
@@ -10,8 +18,7 @@ import {
   PopupExposure,
   PopupTeamEdit,
 } from 'components/common';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import styles from './styles.module.scss';
 
 const deleteMessage =
   'You are about to delete this team and this cannot be undone. Please, enter the name of the team to continue.';
@@ -22,6 +29,7 @@ interface IPoolsDetailsProps {
   teams: ITeam[];
   areDetailsLoading: boolean;
   saveTeams: BindingCbWithOne<ITeam[]>;
+  editPool: BindingCbWithTwo<IPool, IPool[]>;
 }
 
 const PoolsDetails = ({
@@ -31,6 +39,7 @@ const PoolsDetails = ({
   areDetailsLoading,
   onAddPool,
   saveTeams,
+  editPool,
 }: IPoolsDetailsProps) => {
   const [localTeams, changeLocalTeams] = React.useState<ITeam[]>(teams);
   const [configurableTeam, configutationTeam] = React.useState<ITeam | null>(
@@ -47,6 +56,9 @@ const PoolsDetails = ({
     false
   );
   const [changesAreMade, toggleChangesAreMade] = React.useState<boolean>(false);
+  const [isEditPoolPoupOpen, toggleEditPoolPoup] = React.useState<boolean>(
+    false
+  );
 
   const onCloseModal = () => {
     configutationTeam(null);
@@ -163,6 +175,14 @@ const PoolsDetails = ({
     onCloseModal();
   };
 
+  const onToggleEditPoolPoup = () => {
+    toggleEditPoolPoup(!isEditPoolPoupOpen);
+  };
+
+  const onEditPool = (pool: IPool) => {
+    editPool(pool, pools);
+  };
+
   const notDeletedTeams = localTeams.filter((it: ITeam) => !it.isDelete);
 
   const unassignedTeams = notDeletedTeams.filter(it => !it.pool_id);
@@ -175,6 +195,7 @@ const PoolsDetails = ({
           <PoolsDetailsNav
             isArrange={isArrange}
             onAdd={onAdd}
+            onEdit={onToggleEditPoolPoup}
             onArrange={onToggleArrange}
             onCancel={onToggleConfirmPopup}
             onSave={onSaveClick}
@@ -247,6 +268,12 @@ const PoolsDetails = ({
         onClose={onToggleConfirmPopup}
         onExitClick={onCancelClick}
         onSaveClick={onSaveClick}
+      />
+      <PopupPoolEdit
+        pools={pools}
+        isOpen={isEditPoolPoupOpen}
+        onClose={onToggleEditPoolPoup}
+        onEdit={onEditPool}
       />
     </>
   );
