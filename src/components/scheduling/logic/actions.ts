@@ -491,9 +491,13 @@ export const createNewBracket = (bracketData: ICreateBracketModalOutput) => (
   dispatch(addNewBracket(bracketData));
 };
 
-export const getEventBrackets = () => async (dispatch: Dispatch) => {
+export const getEventBrackets = () => async (
+  dispatch: Dispatch,
+  getState: GetState
+) => {
+  const { event_id } = getState().pageEvent.tournamentData.event || {};
   const members = await api.get(`/members`);
-  const response = await api.get('/brackets_details');
+  const response = await api.get('/brackets_details', { event_id });
 
   if (response?.length) {
     const mappedBrackets = response.map(mapFetchedBracket);
@@ -516,11 +520,10 @@ export const updateBracket = (bracket: ISchedulingBracket) => async (
   );
   const response = await api.put('/brackets_details', mappedBracket);
 
-  const eventId = getState().pageEvent.tournamentData.event?.event_id;
   const brackets = getState().scheduling.brackets;
 
   if (response) {
-    const updatedBracket = await mapFetchedBracket(mappedBracket, eventId!);
+    const updatedBracket = await mapFetchedBracket(mappedBracket);
     const updatedBrackets = brackets?.map(item =>
       item.id === updatedBracket.id ? updatedBracket : item
     );

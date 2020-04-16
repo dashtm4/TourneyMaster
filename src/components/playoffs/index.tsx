@@ -64,6 +64,7 @@ import {
   fetchBracketGames,
 } from './logic/actions';
 import { updateGameBracketInfo } from './helper';
+import api from 'api/api';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
   eventSummary?: IEventSummary[];
@@ -120,7 +121,7 @@ class Playoffs extends Component<IProps> {
     cancelConfirmationOpen: false,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { event, match } = this.props;
     const eventId = event?.event_id!;
     const { scheduleId, bracketId } = match.params;
@@ -350,8 +351,8 @@ class Playoffs extends Component<IProps> {
   onSeedsUsed = () => {};
 
   onSavePressed = () => {
-    const { bracketGames, cancelConfirmationOpen } = this.state;
     const { match } = this.props;
+    const { bracketGames, cancelConfirmationOpen } = this.state;
     const { bracketId } = match.params;
 
     if (bracketId) {

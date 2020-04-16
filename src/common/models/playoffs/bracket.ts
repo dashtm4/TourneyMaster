@@ -1,6 +1,7 @@
 export interface IFetchedBracket {
   bracket_id: string;
   schedule_id: string;
+  event_id: string;
   bracket_name: string;
   bracket_date: Date | string | null;
   bracket_status: string | null;

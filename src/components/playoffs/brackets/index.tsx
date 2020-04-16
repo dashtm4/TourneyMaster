@@ -21,7 +21,7 @@ const Brackets = (props: IProps) => {
 
   const getRoundTitle = (round: number, gamesLength: number) => {
     if (gameRounds && gamesLength <= gameRounds[round + 1]?.length)
-      return 'In-Play Games';
+      return 'Play-In Games';
 
     switch (gamesLength) {
       case 8:
@@ -105,7 +105,7 @@ const Brackets = (props: IProps) => {
                 <BracketRound
                   games={inPlayRound![roundKey]}
                   onDrop={() => {}}
-                  title="In-Play"
+                  title="Play-In Games"
                 />
                 <BracketConnector
                   hidden={hidden}
