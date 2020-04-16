@@ -258,6 +258,7 @@ const PoolsDetails = ({
         onSaveClick={onSaveClick}
       />
       <PopupPoolEdit
+        pools={pools}
         isOpen={isEditPoolPoupOpen}
         onClose={onToggleEditPoolPoup}
       />

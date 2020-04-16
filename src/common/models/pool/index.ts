@@ -1,3 +1,4 @@
+// ! If the interface changes, you must change the fields for the enum 'common/enums/_entity_'
 export interface IPool {
   pool_id: string;
   division_id: string;
