@@ -785,7 +785,7 @@ class Schedules extends Component<Props, State> {
             facilities={facilities!}
             teamCards={schedulesTeamCards!}
             eventSummary={eventSummary!}
-            scheduleData={scheduleData!}
+            scheduleData={scheduleData || schedule!}
             historyLength={schedulesHistoryLength}
             teamsDiagnostics={teamsDiagnostics}
             divisionsDiagnostics={divisionsDiagnostics}
