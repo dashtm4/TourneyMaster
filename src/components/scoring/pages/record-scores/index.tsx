@@ -94,6 +94,7 @@ interface State {
   isExposurePopupOpen: boolean;
   isEnterScores: boolean;
   neccessaryDataCalculated: boolean;
+  changesAreMade: boolean;
 }
 
 class RecordScores extends React.Component<
@@ -107,6 +108,7 @@ class RecordScores extends React.Component<
       isExposurePopupOpen: false,
       isEnterScores: false,
       neccessaryDataCalculated: false,
+      changesAreMade: false,
     };
   }
 
@@ -243,12 +245,26 @@ class RecordScores extends React.Component<
     History.push(`${Routes.SCORING}/${eventId || ''}`);
   };
 
-  onLeavePage = () => this.setState({ isExposurePopupOpen: true });
+  onLeavePage = () => {
+    if (this.state.changesAreMade) {
+      this.setState({ isExposurePopupOpen: true });
+    } else {
+      this.leavePage();
+    }
+  };
+
+  onSaveExit = () => {
+    this.saveDraft();
+    this.leavePage();
+  };
 
   onClosePopup = () => this.setState({ isExposurePopupOpen: false });
 
   onScheduleCardUpdate = (teamCard: ITeamCard) => {
     this.props.updateSchedulesTable(teamCard);
+    if (!this.state.changesAreMade) {
+      this.setState({ changesAreMade: true });
+    }
   };
 
   render() {
@@ -324,7 +340,7 @@ class RecordScores extends React.Component<
           isOpen={isExposurePopupOpen}
           onClose={this.onClosePopup}
           onExitClick={this.leavePage}
-          onSaveClick={this.saveDraft}
+          onSaveClick={this.onSaveExit}
         />
       </div>
     );

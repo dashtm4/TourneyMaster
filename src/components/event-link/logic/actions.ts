@@ -37,7 +37,7 @@ export const sendMessage: ActionCreator<ThunkAction<
   if (!data.message) {
     return Toasts.errorToast('Please, provide a message');
   }
-  const response = await api.post('/messaging', data);
+  const response = await api.post('/event-link', data);
 
   if (!response || response.status === 500) {
     return Toasts.errorToast(response.message);
