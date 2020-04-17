@@ -47,6 +47,7 @@ import {
   getTimeValuesFromEventSchedule,
   calculateTotalGameTime,
   calculateTournamentDays,
+  getTimeValuesFromSchedule,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IDiagnosticsInput } from './diagnostics';
@@ -331,12 +332,13 @@ class Schedules extends Component<Props, State> {
       teams,
       divisions,
       facilities,
+      match,
     } = this.props;
 
-    const localSchedule = scheduleData || schedule;
+    const { scheduleId } = match.params;
 
     if (
-      !localSchedule ||
+      !(scheduleId ? schedule : scheduleData) ||
       !event ||
       !fields ||
       !teams ||
@@ -349,7 +351,11 @@ class Schedules extends Component<Props, State> {
     const divisionIds = divisions.map(item => item.division_id);
     this.props.getAllPools(divisionIds);
 
-    const timeValues = getTimeValuesFromEventSchedule(event, localSchedule);
+    const timeValues =
+      scheduleId && schedule
+        ? getTimeValuesFromEventSchedule(event, schedule)
+        : getTimeValuesFromSchedule(scheduleData!);
+
     const timeSlots = calculateTimeSlots(timeValues);
 
     const mappedFields = mapFieldsData(fields);
@@ -556,8 +562,13 @@ class Schedules extends Component<Props, State> {
   };
 
   getSchedule = () => {
-    const { schedule, scheduleData } = this.props;
-    return scheduleData ? mapScheduleData(scheduleData) : schedule;
+    const { schedule, scheduleData, match } = this.props;
+    const { scheduleId } = match.params;
+    return scheduleId ? schedule : mapScheduleData(scheduleData!);
+  };
+
+  getConfigurableSchedule = () => {
+    return this.props.scheduleData;
   };
 
   retrieveSchedulesDetails = async (isDraft: boolean, type: 'POST' | 'PUT') => {

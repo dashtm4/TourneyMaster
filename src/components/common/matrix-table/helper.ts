@@ -20,6 +20,8 @@ export interface IGame {
   fieldId: string;
   isPremier?: boolean;
   // added new
+  awayDependsUpon?: number;
+  homeDependsUpon?: number;
   isPlayoff?: boolean;
   playoffRound?: number;
   playoffIndex?: number;

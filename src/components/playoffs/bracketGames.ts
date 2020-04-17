@@ -8,6 +8,7 @@ export interface IBracketGame {
   id: string;
   index: number;
   round: number;
+  gridNum: number;
   divisionId: string;
   divisionName?: string;
   // Seed
@@ -19,6 +20,9 @@ export interface IBracketGame {
   // Display Name
   awayDisplayName?: string;
   homeDisplayName?: string;
+  //
+  awayDependsUpon?: number;
+  homeDependsUpon?: number;
   // venue time date
   fieldId?: string;
   fieldName?: string;
@@ -52,7 +56,7 @@ const getRoundBy = (
   firstRoundGamesNum: number
 ) => {
   const rounds = [];
-  let roundCounter = 0;
+  let roundCounter = 1;
   if (numberOfPreGames) {
     for (let i = 0; i < numberOfPreGames; i++) {
       rounds.push(roundCounter);
@@ -102,7 +106,7 @@ export const rearrangeSeedForGames = (
     const last = preSeeds[0];
 
     const gameIndex = games.findIndex(
-      game => game.round === 0 && !game.awaySeedId && !game.homeSeedId
+      game => game.round === 1 && !game.awaySeedId && !game.homeSeedId
     );
 
     games[gameIndex].awaySeedId = first?.id;
@@ -116,7 +120,7 @@ export const rearrangeSeedForGames = (
   [...Array(firstRoundGamesNum)].forEach(() => {
     const first = seeds[0];
     const last = seeds[seeds.length - 1];
-    const round = numberOfPreGames ? 1 : 0;
+    const round = numberOfPreGames ? 2 : 1;
 
     const gameIndex = games.findIndex(
       game => game.round === round && !game.awaySeedId && !game.homeSeedId
@@ -131,15 +135,16 @@ export const rearrangeSeedForGames = (
 
   let winnerIndex = 1;
 
-  games = games.map(game => ({
-    ...game,
-    awayDisplayName: `Winner Game ${!game.awaySeedId ? winnerIndex++ : ''} (${
-      game.divisionName
-    })`,
-    homeDisplayName: `Winner Game ${!game.homeSeedId ? winnerIndex++ : ''} (${
-      game.divisionName
-    })`,
-  }));
+  games = games.map(game => {
+    const awayDependsUpon = !game.awaySeedId ? winnerIndex++ : undefined;
+    const homeDependsUpon = !game.homeSeedId ? winnerIndex++ : undefined;
+
+    return {
+      ...game,
+      awayDependsUpon,
+      homeDependsUpon,
+    };
+  });
 
   return games;
 };
@@ -158,6 +163,7 @@ export const createBracketGames = (
     const localGames = [...Array(bracketTeamsNum - 1)].map((_, index) => ({
       id: getVarcharEight(),
       index: index + 1,
+      gridNum: 1,
       round: getRoundBy(index, numberOfPreGames, firstRoundGamesNum),
       awayDisplayName: `Away ${division.short_name}`,
       homeDisplayName: `Home ${division.short_name}`,
@@ -228,6 +234,8 @@ export const populatePlayoffGames = (
         playoffRound: bracketGame?.round,
         awaySeedId: bracketGame?.awaySeedId,
         homeSeedId: bracketGame?.homeSeedId,
+        awayDependsUpon: bracketGame?.awayDependsUpon,
+        homeDependsUpon: bracketGame?.homeDependsUpon,
         awayDisplayName: bracketGame?.awayDisplayName,
         homeDisplayName: bracketGame?.homeDisplayName,
         divisionId: bracketGame?.divisionId,
@@ -247,7 +255,10 @@ export const populateBracketGamesWithData = (
   gameDate?: string
 ) => {
   return bracketGames.map(game => {
-    const playoffGame = games.find(item => item.playoffIndex === game.index);
+    const playoffGame = games.find(
+      item =>
+        item.playoffIndex === game.index && item.divisionId === game.divisionId
+    );
     const field = fields.find(item => item.field_id === playoffGame?.fieldId);
 
     return {

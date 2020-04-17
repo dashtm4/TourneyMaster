@@ -91,7 +91,12 @@ class ResourceMatrix extends Component<IProps> {
         v.isPlayoff &&
         v.divisionId &&
         v.playoffIndex &&
-        (v.awaySeedId || v.homeSeedId || v.awayDisplayName || v.homeDisplayName)
+        (v.awaySeedId ||
+          v.homeSeedId ||
+          v.awayDisplayName ||
+          v.homeDisplayName ||
+          v.awayDependsUpon ||
+          v.homeDependsUpon)
     );
     const orderedGames = orderBy(tableBracketGames, 'divisionId');
 

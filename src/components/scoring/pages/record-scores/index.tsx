@@ -50,6 +50,7 @@ import {
 import {
   fillSchedulesTable,
   updateSchedulesTable,
+  clearSchedulesTable,
 } from 'components/schedules/logic/schedules-table/actions';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
@@ -82,6 +83,7 @@ interface Props {
   updateSchedulesTable: BindingCbWithOne<ITeamCard>;
   saveGames: BindingCbWithOne<ISchedulesGame[]>;
   onToggleFullScreen: BindingAction;
+  clearSchedulesTable: () => void;
 }
 
 interface State {
@@ -113,6 +115,7 @@ class RecordScores extends React.Component<
   componentDidMount() {
     const { loadScoresData } = this.props;
     const eventId = this.props.match.params.eventId;
+    this.props.clearSchedulesTable();
 
     if (eventId) {
       loadScoresData(eventId);
@@ -348,7 +351,13 @@ export default connect(
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadScoresData, fillSchedulesTable, updateSchedulesTable, saveGames },
+      {
+        loadScoresData,
+        fillSchedulesTable,
+        updateSchedulesTable,
+        saveGames,
+        clearSchedulesTable,
+      },
       dispatch
     )
 )(RecordScores);
