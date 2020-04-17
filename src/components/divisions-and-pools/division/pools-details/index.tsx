@@ -18,6 +18,10 @@ import {
   PopupExposure,
   PopupTeamEdit,
 } from 'components/common';
+import {
+  mapTeamWithUnassignedTeams,
+  getUnassignedTeamsByPool,
+} from '../../helpers';
 import styles from './styles.module.scss';
 
 const deleteMessage =
@@ -30,6 +34,7 @@ interface IPoolsDetailsProps {
   areDetailsLoading: boolean;
   saveTeams: BindingCbWithOne<ITeam[]>;
   editPool: BindingCbWithTwo<IPool, IPool[]>;
+  deletePool: BindingCbWithTwo<IPool, ITeam[]>;
 }
 
 const PoolsDetails = ({
@@ -40,6 +45,7 @@ const PoolsDetails = ({
   onAddPool,
   saveTeams,
   editPool,
+  deletePool,
 }: IPoolsDetailsProps) => {
   const [localTeams, changeLocalTeams] = React.useState<ITeam[]>(teams);
   const [configurableTeam, configutationTeam] = React.useState<ITeam | null>(
@@ -180,7 +186,20 @@ const PoolsDetails = ({
   };
 
   const onEditPool = (pool: IPool) => {
-    editPool(pool, pools);
+    const poolWithSameDivision = pools.filter(
+      it => it.division_id === pool.division_id
+    );
+
+    editPool(pool, poolWithSameDivision);
+  };
+
+  const onDeletePool = (pool: IPool) => {
+    const unassignedTeams = getUnassignedTeamsByPool(pool, teams);
+    const mappedTeam = mapTeamWithUnassignedTeams(localTeams, unassignedTeams);
+
+    deletePool(pool, unassignedTeams);
+
+    changeLocalTeams(mappedTeam);
   };
 
   const notDeletedTeams = localTeams.filter((it: ITeam) => !it.isDelete);
@@ -274,6 +293,7 @@ const PoolsDetails = ({
         isOpen={isEditPoolPoupOpen}
         onClose={onToggleEditPoolPoup}
         onEdit={onEditPool}
+        onDelete={onDeletePool}
       />
     </>
   );

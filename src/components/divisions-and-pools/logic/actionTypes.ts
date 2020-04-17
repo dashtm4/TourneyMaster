@@ -21,6 +21,9 @@ export const SAVE_TEAMS_FAILURE = 'DIVISION_AND_POOLS:SAVE_TEAMS_FAILURE';
 export const EDIT_POOL_SUCCESS = 'DIVISION_AND_POOLS:EDIT_POOL_SUCCESS';
 export const EDIT_POOL_FAILURE = 'DIVISION_AND_POOLS:EDIT_POOL_FAILURE';
 
+export const DELETE_POOL_SUCCESS = 'DIVISION_AND_POOLS:DELETE_POOL_SUCCESS';
+export const DELETE_POOL_FAILURE = 'DIVISION_AND_POOLS:DELETE_POOL_FAILURE';
+
 export interface loadDivisionsTeamsSuccess {
   type: 'DIVISIONS_TEAMS_FETCH_SUCCESS';
   payload: {
@@ -48,8 +51,17 @@ export interface IEditPoolSuccess {
   };
 }
 
+export interface IDeletePoolSuccess {
+  type: 'DIVISION_AND_POOLS:EDIT_POOL_SUCCESS';
+  payload: {
+    deletedPool: IPool;
+    unassignedTeams: ITeam[];
+  };
+}
+
 export type DivisionsPoolsAction =
   | loadDivisionsTeamsSuccess
   | saveDivisionsSuccess
   | ISaveTeamSuccess
-  | IEditPoolSuccess;
+  | IEditPoolSuccess
+  | IDeletePoolSuccess;
