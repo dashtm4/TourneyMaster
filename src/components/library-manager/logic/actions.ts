@@ -168,9 +168,11 @@ const saveClonedItem: ActionCreator<ThunkAction<
   dispatch: Dispatch
 ) => {
   try {
-    const clearSharedItem = getClearClonedItem(clonedItem, newName, entryPoint);
+    const clearClonedItem = getClearClonedItem(clonedItem, newName, entryPoint);
 
-    await checkClonedItem(clearSharedItem, entryPoint);
+    await checkClonedItem(clearClonedItem, entryPoint);
+
+    await sentToServerByRoute(clearClonedItem, entryPoint, MethodTypes.POST);
 
     dispatch({
       type: SAVE_CLONED_ITEM_SUCCESS,
