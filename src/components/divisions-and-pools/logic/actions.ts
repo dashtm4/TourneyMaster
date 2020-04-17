@@ -351,15 +351,17 @@ export const deletePool: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (deletedPool: IPool, teams: ITeam[]) => async (dispatch: Dispatch) => {
+>> = (deletedPool: IPool, unassignedTeams: ITeam[]) => async (
+  dispatch: Dispatch
+) => {
   try {
-    const unassignedTeams = teams.map(it => ({
-      ...it,
-      pool_id: null,
-    }));
+    await api.delete(`${EntryPointsWithId.POOLS}${deletedPool.pool_id}`);
 
-    // await api.delete(`${EntryPointsWithId.POOLS}${deletedPool.pool_id}`)
-    // await Promise.all(unassignedTeams.map(it => api.put(`${EntryPointsWithId.TEAMS}${it.team_id}`, it)))
+    await Promise.all(
+      unassignedTeams.map(it =>
+        api.put(`${EntryPointsWithId.TEAMS}${it.team_id}`, it)
+      )
+    );
 
     dispatch({
       type: DELETE_POOL_SUCCESS,

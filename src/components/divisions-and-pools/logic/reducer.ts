@@ -185,15 +185,9 @@ export default (
         unassignedTeams
       );
 
-      console.log(
-        deletedPool,
-        state.pools,
-        state.pools.filter(it => it.pool_id !== deletedPool.pool_id)
-      );
-
       return {
         ...state,
-        pool: state.pools.filter(it => it.pool_id !== deletedPool.pool_id),
+        pools: state.pools.filter(it => it.pool_id !== deletedPool.pool_id),
         teams: mappedTeam,
       };
     }

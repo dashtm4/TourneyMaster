@@ -1,4 +1,4 @@
-import { ITeam } from 'common/models';
+import { ITeam, IPool } from 'common/models';
 
 const mapTeamWithUnassignedTeams = (
   team: ITeam[],
@@ -15,4 +15,20 @@ const mapTeamWithUnassignedTeams = (
   return mappedTeams;
 };
 
-export { mapTeamWithUnassignedTeams };
+const getUnassignedTeamsByPool = (pool: IPool, teams: ITeam[]) => {
+  const unassignedTeam = teams.reduce((acc, it) => {
+    return it.pool_id === pool.pool_id
+      ? [
+          ...acc,
+          {
+            ...it,
+            pool_id: null,
+          },
+        ]
+      : [...acc, it];
+  }, [] as ITeam[]);
+
+  return unassignedTeam;
+};
+
+export { mapTeamWithUnassignedTeams, getUnassignedTeamsByPool };

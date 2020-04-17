@@ -18,6 +18,10 @@ import {
   PopupExposure,
   PopupTeamEdit,
 } from 'components/common';
+import {
+  mapTeamWithUnassignedTeams,
+  getUnassignedTeamsByPool,
+} from '../../helpers';
 import styles from './styles.module.scss';
 
 const deleteMessage =
@@ -190,9 +194,12 @@ const PoolsDetails = ({
   };
 
   const onDeletePool = (pool: IPool) => {
-    const currentTeams = teams.filter(it => it.pool_id === pool.pool_id);
+    const unassignedTeams = getUnassignedTeamsByPool(pool, teams);
+    const mappedTeam = mapTeamWithUnassignedTeams(localTeams, unassignedTeams);
 
-    deletePool(pool, currentTeams);
+    deletePool(pool, unassignedTeams);
+
+    changeLocalTeams(mappedTeam);
   };
 
   const notDeletedTeams = localTeams.filter((it: ITeam) => !it.isDelete);
