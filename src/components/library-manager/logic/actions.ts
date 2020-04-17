@@ -176,6 +176,10 @@ const saveClonedItem: ActionCreator<ThunkAction<
 
     dispatch({
       type: SAVE_CLONED_ITEM_SUCCESS,
+      payload: {
+        entity: clearClonedItem,
+        entryPoint,
+      },
     });
 
     Toasts.successToast('Changes successfully saved.');

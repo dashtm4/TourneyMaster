@@ -48,11 +48,20 @@ interface DeleteLibraryItemSuccess {
   };
 }
 
+interface SaveClonedItemSuccess {
+  type: 'SAVE_CLONED_ITEM_SUCCESS';
+  payload: {
+    entity: IEntity;
+    entryPoint: EntryPoints;
+  };
+}
+
 export type LibraryManagerAction =
   | LibraryManagerLoadDataStart
   | LibraryManagerLoadDataSuccess
   | SaveSharedItemSuccess
-  | DeleteLibraryItemSuccess;
+  | DeleteLibraryItemSuccess
+  | SaveClonedItemSuccess;
 
 export {
   LIBRARY_MANAGER_LOAD_DATA_START,

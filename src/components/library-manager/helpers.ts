@@ -3,8 +3,9 @@ import {
   getVarcharEight,
   removeObjKeysByEntryPoint,
   generateEntityId,
+  setLibraryState,
 } from 'helpers';
-import { EntryPoints, IEventDetailsFields } from 'common/enums';
+import { EntryPoints, IEventDetailsFields, LibraryStates } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
   IRegistration,
@@ -43,7 +44,7 @@ const getClearScharedItem = (
   const mappedSharedItem = {
     ...sharedItem,
     event_id: event.event_id,
-    is_library_YN: 0,
+    is_library_YN: LibraryStates.FALSE,
   } as IEntity;
 
   const sharedItemWithNewId = generateEntityId(mappedSharedItem, entryPoint);
@@ -67,7 +68,15 @@ const getClearClonedItem = (
     entryPoint
   ) as IEntity;
 
-  const clonedItemWithNewId = generateEntityId(clonedItemWithName, entryPoint);
+  const clearLibraryClonedItem = setLibraryState(
+    clonedItemWithName,
+    LibraryStates.FALSE
+  );
+
+  const clonedItemWithNewId = generateEntityId(
+    clearLibraryClonedItem,
+    entryPoint
+  );
 
   const clearClonedItem = removeObjKeysByEntryPoint(
     clonedItemWithNewId,
