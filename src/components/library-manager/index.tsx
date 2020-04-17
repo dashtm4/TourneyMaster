@@ -5,6 +5,7 @@ import { Dispatch, bindActionCreators } from 'redux';
 import {
   loadLibraryManagerData,
   saveSharedItem,
+  saveClonedItem,
   deleteLibraryItem,
 } from './logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
@@ -57,6 +58,7 @@ interface Props {
   schedules: ILibraryManagerSchedule[];
   loadLibraryManagerData: BindingAction;
   saveSharedItem: BindingCbWithThree<IEventDetails, IEntity, EntryPoints>;
+  saveClonedItem: BindingCbWithThree<string, IEntity, EntryPoints>;
   deleteLibraryItem: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
@@ -69,6 +71,7 @@ const LibraryManager = ({
   schedules,
   loadLibraryManagerData,
   saveSharedItem,
+  saveClonedItem,
   deleteLibraryItem,
 }: Props) => {
   React.useEffect(() => {
@@ -168,7 +171,9 @@ const LibraryManager = ({
   };
 
   const onSaveClonedItem = (newName: string) => {
-    console.log(newName);
+    if (newName && clonedItem && currentEntryPoint) {
+      saveClonedItem(newName, clonedItem, currentEntryPoint);
+    }
   };
 
   const onDeleteLibraryItem = () => {
@@ -268,7 +273,12 @@ export default connect(
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadLibraryManagerData, saveSharedItem, deleteLibraryItem },
+      {
+        loadLibraryManagerData,
+        saveSharedItem,
+        saveClonedItem,
+        deleteLibraryItem,
+      },
       dispatch
     )
 )(LibraryManager);

@@ -19,11 +19,9 @@ const PopupClone = ({ isOpen, onClose, onSave }: Props) => {
   };
 
   const onSaveCloneItem = () => {
-    if (newName.trim().length !== 0) {
-      onSave(newName);
+    onSave(newName);
 
-      onClose();
-    }
+    onClose();
   };
 
   return (

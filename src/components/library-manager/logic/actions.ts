@@ -7,6 +7,8 @@ import {
   LIBRARY_MANAGER_LOAD_DATA_FAILURE,
   SAVE_SHARED_ITEM_SUCCESS,
   SAVE_SHARED_ITEM_FAILURE,
+  SAVE_CLONED_ITEM_SUCCESS,
+  SAVE_CLONED_ITEM_FAILURE,
   DELETE_LIBRARY_ITEM_SUCCESS,
   DELETE_LIBRARY_ITEM_FAILURE,
 } from './action-types';
@@ -27,11 +29,12 @@ import {
 import { EntryPoints, MethodTypes, LibraryStates } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
-  checkAleadyExist,
-  SetFormLibraryManager,
+  SetFromLibraryManager,
   getClearScharedItem,
+  getClearClonedItem,
   getLibraryallowedItems,
 } from '../helpers';
+import { checkSharedItem, checkClonedItem } from '../helpers.validation';
 
 const loadLibraryManagerData: ActionCreator<ThunkAction<
   void,
@@ -100,20 +103,20 @@ const saveSharedItem: ActionCreator<ThunkAction<
   entryPoint: EntryPoints
 ) => async (dispatch: Dispatch) => {
   try {
-    await checkAleadyExist(sharedItem, event, entryPoint);
+    await checkSharedItem(sharedItem, event, entryPoint);
 
     const clearSharedItem = getClearScharedItem(sharedItem, event, entryPoint);
 
     switch (entryPoint) {
       case EntryPoints.EVENTS: {
-        await SetFormLibraryManager.setEventFromLibrary(
+        await SetFromLibraryManager.setEventFromLibrary(
           event as IEventDetails,
           clearSharedItem as IEventDetails
         );
         break;
       }
       case EntryPoints.REGISTRATIONS: {
-        await SetFormLibraryManager.setRegistrationFromLibrary(
+        await SetFromLibraryManager.setRegistrationFromLibrary(
           sharedItem as IRegistration,
           clearSharedItem as IRegistration,
           event
@@ -121,21 +124,21 @@ const saveSharedItem: ActionCreator<ThunkAction<
         break;
       }
       case EntryPoints.FACILITIES: {
-        await SetFormLibraryManager.setFacilityFromLibrary(
+        await SetFromLibraryManager.setFacilityFromLibrary(
           sharedItem as IFacility,
           clearSharedItem as IFacility
         );
         break;
       }
       case EntryPoints.DIVISIONS: {
-        await SetFormLibraryManager.setDivisionFromLibrary(
+        await SetFromLibraryManager.setDivisionFromLibrary(
           sharedItem as IDivision,
           clearSharedItem as IDivision
         );
         break;
       }
       case EntryPoints.SCHEDULES: {
-        await SetFormLibraryManager.setScheduleFromLibrary(
+        await SetFromLibraryManager.setScheduleFromLibrary(
           clearSharedItem as ISchedule
         );
         break;
@@ -150,6 +153,33 @@ const saveSharedItem: ActionCreator<ThunkAction<
   } catch (err) {
     dispatch({
       type: SAVE_SHARED_ITEM_FAILURE,
+    });
+
+    Toasts.errorToast(err.message);
+  }
+};
+
+const saveClonedItem: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  LibraryManagerAction
+>> = (newName: string, clonedItem: IEntity, entryPoint: EntryPoints) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    const clearSharedItem = getClearClonedItem(clonedItem, newName, entryPoint);
+
+    await checkClonedItem(clearSharedItem, entryPoint);
+
+    dispatch({
+      type: SAVE_CLONED_ITEM_SUCCESS,
+    });
+
+    Toasts.successToast('Changes successfully saved.');
+  } catch (err) {
+    dispatch({
+      type: SAVE_CLONED_ITEM_FAILURE,
     });
 
     Toasts.errorToast(err.message);
@@ -190,4 +220,9 @@ const deleteLibraryItem: ActionCreator<ThunkAction<
   }
 };
 
-export { loadLibraryManagerData, saveSharedItem, deleteLibraryItem };
+export {
+  loadLibraryManagerData,
+  saveSharedItem,
+  saveClonedItem,
+  deleteLibraryItem,
+};
