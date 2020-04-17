@@ -10,7 +10,7 @@ import {
 import { IAppState } from 'reducers/root-reducer.types';
 import Navigation from './components/navigation';
 import PopupShare from './components/popup-share';
-import Tournaments from './components/tournaments';
+import Events from './components/events';
 import Registration from './components/registration';
 import Facilities from './components/facilities';
 import Divisions from './components/divisions';
@@ -176,7 +176,7 @@ const LibraryManager = ({
         />
       </div>
       <ul className={styles.libraryList}>
-        <Tournaments
+        <Events
           events={events}
           isSectionExpand={isSectionsExpand}
           changeSharedItem={onSharedItem}

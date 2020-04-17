@@ -50,7 +50,6 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
     const divisions = await Api.get(EntryPoints.DIVISIONS);
     const schedules = await Api.get(EntryPoints.SCHEDULES);
 
-    const allowedEvents = getLibraryallowedItems(events);
     const allowedRegistrations = getLibraryallowedItems(registrations);
     const allowedFacilities = getLibraryallowedItems(facilities);
     const allowedDivision = getLibraryallowedItems(divisions);
@@ -76,7 +75,7 @@ const loadLibraryManagerData: ActionCreator<ThunkAction<
     dispatch({
       type: LIBRARY_MANAGER_LOAD_DATA_SUCCESS,
       payload: {
-        events: allowedEvents,
+        events,
         registrations: mappedRegistrationWithEvent,
         facilities: mappedFacilitiesWithEvent,
         divisions: mappedDivisionsWithEvent,

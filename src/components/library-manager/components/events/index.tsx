@@ -9,6 +9,7 @@ import {
 } from 'common/models';
 import { IEntity } from 'common/types';
 import { ITableSortEntity } from '../../common';
+import { getLibraryallowedItems } from 'components/library-manager/helpers';
 
 interface Props {
   events: IEventDetails[];
@@ -21,13 +22,13 @@ interface Props {
   >;
 }
 
-const Tournaments = ({
+const Events = ({
   events,
   isSectionExpand,
   changeSharedItem,
   onConfirmDeleteItem,
 }: Props) => {
-  const onShareTournament = (id: string) => {
+  const onCloneEvent = (id: string) => {
     const editedTournament = events.find(it => it.event_id === id);
 
     changeSharedItem(editedTournament!, EntryPoints.EVENTS);
@@ -39,7 +40,9 @@ const Tournaments = ({
     onConfirmDeleteItem(currentTournament!, tableEntity, EntryPoints.EVENTS);
   };
 
-  const rowForTable = events.map(it => ({
+  const allowedEvents = getLibraryallowedItems(events) as IEventDetails[];
+
+  const rowForTable = allowedEvents.map(it => ({
     id: it.event_id,
     event: it.event_name,
     name: `Event(${it.event_name})`,
@@ -49,20 +52,20 @@ const Tournaments = ({
   return (
     <li>
       <SectionDropdown
-        id={MenuTitles.TOURNAMENTS}
+        id={MenuTitles.EVENTS}
         type="section"
         panelDetailsType="flat"
         expanded={isSectionExpand}
       >
-        <span>{MenuTitles.TOURNAMENTS}</span>
+        <span>{MenuTitles.EVENTS}</span>
         <TableSort
           rows={rowForTable}
-          onShare={onShareTournament}
           onDelete={onConfirmDelete}
+          onClone={onCloneEvent}
         />
       </SectionDropdown>
     </li>
   );
 };
 
-export default Tournaments;
+export default Events;
