@@ -8,6 +8,7 @@ export interface IBracketGame {
   id: string;
   index: number;
   round: number;
+  gridNum: number;
   divisionId: string;
   divisionName?: string;
   // Seed
@@ -105,7 +106,7 @@ export const rearrangeSeedForGames = (
     const last = preSeeds[0];
 
     const gameIndex = games.findIndex(
-      game => game.round === 0 && !game.awaySeedId && !game.homeSeedId
+      game => game.round === 1 && !game.awaySeedId && !game.homeSeedId
     );
 
     games[gameIndex].awaySeedId = first?.id;
@@ -162,6 +163,7 @@ export const createBracketGames = (
     const localGames = [...Array(bracketTeamsNum - 1)].map((_, index) => ({
       id: getVarcharEight(),
       index: index + 1,
+      gridNum: 1,
       round: getRoundBy(index, numberOfPreGames, firstRoundGamesNum),
       awayDisplayName: `Away ${division.short_name}`,
       homeDisplayName: `Home ${division.short_name}`,

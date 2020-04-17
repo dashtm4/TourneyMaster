@@ -367,6 +367,7 @@ class Playoffs extends Component<IProps> {
       id: getVarcharEight(),
       index: divisionGames.length + 1,
       round: 0,
+      gridNum: data.gridNum,
       divisionId: selectedDivision,
       divisionName: divisionGames[0].divisionName,
       awaySeedId: undefined,

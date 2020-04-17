@@ -4,16 +4,19 @@ import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
 import { IBracketGame } from '../bracketGames';
+import { maxBy } from 'lodash-es';
 
 export interface IOnAddGame {
   awayDependsUpon: string;
   homeDependsUpon: string;
+  gridNum: number;
 }
 
 interface Props {
   isOpen: boolean;
-  onClose: BindingAction;
+  playInGamesExist: boolean;
   bracketGames: IBracketGame[];
+  onClose: BindingAction;
   onAddGame: (data: IOnAddGame) => void;
 }
 
@@ -22,6 +25,7 @@ const PopupDeleteConfirm = ({
   onClose,
   bracketGames,
   onAddGame,
+  playInGamesExist,
 }: Props) => {
   const [awaySourceOptions, setAwaySourceOptions] = React.useState<
     { label: string; value: number }[] | []
@@ -68,9 +72,36 @@ const PopupDeleteConfirm = ({
     setHomeSourceSelected(e.target.value);
 
   const addGame = () => {
+    const maxGridNum = maxBy(bracketGames, 'gridNum')?.gridNum;
+
+    const awaySource = bracketGames.find(
+      item => item.index === +awaySourceSelected
+    );
+    const homeSource = bracketGames.find(
+      item => item.index === +homeSourceSelected
+    );
+
+    const awaySourceGrid = awaySource?.gridNum;
+    const homeSourceGrid = homeSource?.gridNum;
+    const awaySourceRound = awaySource?.round;
+    const homeSourceRound = homeSource?.round;
+
+    console.log('awaySourceGrid', awaySourceGrid);
+    console.log('homeSourceGrid', homeSourceGrid);
+    console.log('maxGridNum', maxGridNum);
+
+    const gridNum =
+      awaySourceGrid === homeSourceGrid &&
+      awaySourceRound === homeSourceRound &&
+      awaySourceRound === 1 &&
+      !playInGamesExist
+        ? awaySourceGrid!
+        : (maxGridNum || 1) + 1;
+
     onAddGame({
       awayDependsUpon: awaySourceSelected,
       homeDependsUpon: homeSourceSelected,
+      gridNum,
     });
   };
 

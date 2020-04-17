@@ -89,13 +89,19 @@ class BracketManager extends Component<IProps> {
   };
 
   render() {
-    const { seeds, bracketGames } = this.props;
+    const { seeds } = this.props;
     const {
       divisionGames,
       divisionsOptions,
       selectedDivision,
       addGameModalOpen,
     } = this.state;
+
+    const seedsLength = seeds?.length || 0;
+    const playInGamesExist = !!(
+      seedsLength -
+      2 ** Math.floor(Math.log2(seedsLength))
+    );
 
     return (
       <section className={styles.container}>
@@ -159,11 +165,8 @@ class BracketManager extends Component<IProps> {
           {addGameModalOpen && (
             <AddGameModal
               isOpen={addGameModalOpen}
-              bracketGames={
-                bracketGames?.filter(
-                  item => item.divisionId === selectedDivision
-                )!
-              }
+              bracketGames={divisionGames!}
+              playInGamesExist={playInGamesExist}
               onClose={() => this.setState({ addGameModalOpen: false })}
               onAddGame={(data: IOnAddGame) =>
                 this.props.addGame(selectedDivision!, data)

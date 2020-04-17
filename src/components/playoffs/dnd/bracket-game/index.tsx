@@ -1,6 +1,9 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
-import { IGame } from 'components/common/matrix-table/helper';
+import {
+  IGame,
+  getContrastingColor,
+} from 'components/common/matrix-table/helper';
 import styles from './styles.module.scss';
 
 interface IProps {
@@ -43,7 +46,7 @@ const BracketGameCard = (props: IProps) => {
       style={{ opacity: isDragging ? 0.8 : 1, background: `#${divisionHex}` }}
       className={styles.container}
     >
-      <span>
+      <span style={{ color: getContrastingColor(divisionHex) }}>
         {divisionName}&nbsp;G{playoffIndex}
         <i>:</i>&nbsp;R{(playoffRound || 0) + 1}
         <i>,</i>&nbsp;

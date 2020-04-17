@@ -103,6 +103,7 @@ export const mapFetchedBracketGames = (bracketGames: IPlayoffGame[]) => {
       id: game.game_id,
       index: game.game_num,
       round: game.round_num,
+      gridNum: 1,
       divisionId: game.division_id,
       divisionName: game.bracket_year || undefined,
       awaySeedId: game.seed_num_away || undefined,
