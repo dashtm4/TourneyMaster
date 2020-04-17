@@ -14,6 +14,12 @@ interface Props {
 const PopupClone = ({ isOpen, onClose, onSave }: Props) => {
   const [newName, changeName] = React.useState<string>('');
 
+  React.useEffect(() => {
+    return () => {
+      changeName('');
+    };
+  }, [isOpen]);
+
   const onChangeName = ({ target }: IInputEvent) => {
     changeName(target.value);
   };
