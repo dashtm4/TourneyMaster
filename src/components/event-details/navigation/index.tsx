@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Paper } from 'components/common';
 import { getIcon } from 'helpers';
-import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
+import { ButtonColors, ButtonVarian, Icons, Routes } from 'common/enums';
 import { BindingAction } from 'common/models';
 import styles from '../styles.module.scss';
 
@@ -37,12 +38,17 @@ const Navigation = ({
           />
         )}
         {!isEventId && (
-          <Button
-            onClick={onCsvLoaderBtn}
-            color={ButtonColors.SECONDARY}
-            variant={ButtonVarian.TEXT}
-            label="Import from CSV"
-          />
+          <>
+            <Link className={styles.libraryBtn} to={Routes.LIBRARY_MANAGER}>
+              {getIcon(Icons.GET_APP, ICON_STYLES)} Load From Library
+            </Link>
+            <Button
+              onClick={onCsvLoaderBtn}
+              color={ButtonColors.SECONDARY}
+              variant={ButtonVarian.TEXT}
+              label="Import from CSV"
+            />
+          </>
         )}
       </div>
       <div className={styles.btnsWrapper}>
