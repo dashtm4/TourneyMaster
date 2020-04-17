@@ -10,7 +10,7 @@ import {
 } from 'components/common';
 import styles from './styles.module.scss';
 import history from 'browserhistory';
-import { getData, sendMessage } from '../logic/actions';
+import { getData, sendMessage, saveMessage } from '../logic/actions';
 import { BindingAction, BindingCbWithOne, IEventDetails } from 'common/models';
 import Filter from './filter';
 import { IScheduleFilter } from './filter';
@@ -26,6 +26,7 @@ export interface IMessage {
 interface Props {
   sendMessage: BindingCbWithOne<IMessage>;
   getData: BindingAction;
+  saveMessage: any;
   events: any;
   divisions: any;
   pools: any;
@@ -36,6 +37,7 @@ interface Props {
 const CreateMessage = ({
   getData,
   sendMessage,
+  saveMessage,
   events,
   divisions,
   pools,
@@ -106,10 +108,13 @@ const CreateMessage = ({
     if (recipientType === 'Many') {
       const recipients = mapTeamsByFilter([...teams], filterValues, data.type);
       setMessage({ ...data, recipients });
-      sendMessage({ ...data, recipients });
+      // sendMessage({ ...data, recipients });
+      saveMessage({ ...data, recipients });
     } else {
-      sendMessage(data);
+      // sendMessage(data);
+      saveMessage(data);
     }
+    console.log(sendMessage);
   };
 
   const onFilterChange = (data: IScheduleFilter) => {
@@ -236,6 +241,7 @@ const mapStateToProps = (state: any) => {
 const mapDispatchToProps = {
   getData,
   sendMessage,
+  saveMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateMessage);

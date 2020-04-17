@@ -5,6 +5,9 @@ import { DATA_FETCH_SUCCESS } from './actionTypes';
 import { Toasts } from 'components/common';
 import { IMessage } from '../create-message';
 import history from 'browserhistory';
+import { getVarcharEight } from 'helpers';
+import { Auth } from 'aws-amplify';
+import { IMember } from 'common/models';
 
 export const getDataSuccess = (
   payload: any
@@ -44,4 +47,30 @@ export const sendMessage: ActionCreator<ThunkAction<
   }
   history.push('/event-link');
   return Toasts.successToast(response.message);
+};
+
+export const saveMessage: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (data: IMessage) => async () => {
+  const currentSession = await Auth.currentSession();
+  const userEmail = currentSession.getIdToken().payload.email;
+  const members = await api.get(`/members?email_address=${userEmail}`);
+  const member = members.find((it: IMember) => it.email_address === userEmail);
+
+  const message = {
+    message_id: getVarcharEight(),
+    member_id: member.member_id,
+    message_type: data.type,
+    recipient_details: JSON.stringify(data.recipients),
+    message_title: data.title,
+    message_body: data.message,
+    send_datetime: new Date().toISOString(),
+  };
+  console.log(message);
+
+  const response = await api.post('/messaging', message);
+  console.log(response);
 };
