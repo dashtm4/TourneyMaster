@@ -2,6 +2,9 @@ import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import api from 'api/api';
 import { DATA_FETCH_SUCCESS } from './actionTypes';
+import { Toasts } from 'components/common';
+import { IMessage } from '../create-message';
+import history from 'browserhistory';
 
 export const getDataSuccess = (
   payload: any
@@ -23,4 +26,22 @@ export const getData: ActionCreator<ThunkAction<
   const teams = await api.get('/teams');
 
   dispatch(getDataSuccess({ events, divisions, pools, fields, teams }));
+};
+
+export const sendMessage: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (data: IMessage) => async () => {
+  if (!data.message) {
+    return Toasts.errorToast('Please, provide a message');
+  }
+  const response = await api.post('/messaging', data);
+
+  if (!response || response.status === 500) {
+    return Toasts.errorToast(response.message);
+  }
+  history.push('/event-link');
+  return Toasts.successToast(response.message);
 };
