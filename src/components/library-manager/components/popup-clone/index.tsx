@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, HeadingLevelTwo, Select, Button } from 'components/common';
+import { Modal, HeadingLevelTwo, Input, Button } from 'components/common';
 import { IEventDetails, BindingAction, BindingCbWithOne } from 'common/models';
 import { ButtonVarian, ButtonColors } from 'common/enums';
 import styles from './styles.module.scss';
@@ -14,39 +14,24 @@ interface Props {
   onChangeActiveEvent: BindingCbWithOne<IEventDetails>;
 }
 
-const PopupShare = ({
-  activeEvent,
-  events,
-  isOpen,
-  onClose,
-  onSave,
-  onChangeActiveEvent,
-}: Props) => {
-  const selectOptions = events.map(it => ({
-    label: it.event_name,
-    value: it.event_id,
-  }));
+const PopupCLone = ({ isOpen, onClose, onSave }: Props) => {
+  const [newName, changeName] = React.useState<string>('');
 
-  const onChange = ({
-    target: { value },
-  }: IInputEvent) => {
-    const currentEvent = events.find(it => it.event_id === value);
-
-    onChangeActiveEvent(currentEvent!);
+  const onChangeName = ({ target }: IInputEvent) => {
+    changeName(target.value);
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.section}>
         <div className={styles.titleWrapper}>
-          <HeadingLevelTwo>Share with event</HeadingLevelTwo>
+          <HeadingLevelTwo>Clone from library</HeadingLevelTwo>
         </div>
-        <div className={styles.SelectWrapper}>
-          <Select
-            onChange={onChange}
-            value={activeEvent?.event_id || ''}
-            options={selectOptions}
-            label="Select event"
+        <div className={styles.inputWrapper}>
+          <Input
+            onChange={onChangeName}
+            value={newName}
+            label="Enter name"
             width="100%"
           />
         </div>
@@ -73,4 +58,4 @@ const PopupShare = ({
   );
 };
 
-export default PopupShare;
+export default PopupCLone;
