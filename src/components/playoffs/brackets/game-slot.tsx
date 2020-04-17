@@ -17,6 +17,12 @@ const BracketGameSlot = (props: IProps) => {
   const time = formatTimeSlot(game?.startTime || '');
   const date = moment(game?.gameDate).format('MM/DD/YYYY');
 
+  const getDisplayName = (round?: number, depends?: number) => {
+    if (!round || !depends) return;
+    const key = round >= 0 ? 'Winner' : 'Loser';
+    return `${key} Game ${depends}`;
+  };
+
   return (
     <div
       key={game?.index}
@@ -27,7 +33,9 @@ const BracketGameSlot = (props: IProps) => {
         position={1}
         type="seed"
         onDrop={onDrop}
-        placeholder={!seedRound ? game?.awayDisplayName : ''}
+        placeholder={
+          !seedRound ? getDisplayName(game.round, game.awayDependsUpon) : ''
+        }
       >
         {game?.awaySeedId ? (
           <Seed
@@ -49,7 +57,9 @@ const BracketGameSlot = (props: IProps) => {
         position={2}
         type="seed"
         onDrop={onDrop}
-        placeholder={!seedRound ? game?.homeDisplayName : ''}
+        placeholder={
+          !seedRound ? getDisplayName(game.round, game.homeDependsUpon) : ''
+        }
       >
         {game?.homeSeedId ? (
           <Seed

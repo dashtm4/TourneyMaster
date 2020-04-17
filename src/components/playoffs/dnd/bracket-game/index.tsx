@@ -19,8 +19,8 @@ const BracketGameCard = (props: IProps) => {
     divisionName,
     awaySeedId,
     homeSeedId,
-    awayDisplayName,
-    homeDisplayName,
+    awayDependsUpon,
+    homeDependsUpon,
     divisionHex,
   } = game;
 
@@ -31,14 +31,10 @@ const BracketGameCard = (props: IProps) => {
     }),
   });
 
-  const handleDisplayName = (displayName?: string) => {
-    if (!displayName) return displayName;
-    const splitText = displayName.split(' ');
-    const isWinner = splitText.map(v => v.toLowerCase()).includes('winner');
-    if (isWinner) {
-      const winnerGame = splitText.find(v => Number(v));
-      return `W${winnerGame}`;
-    }
+  const handleDisplayName = (round?: number, depends?: number) => {
+    if (!round || !depends) return;
+    const key = round >= 0 ? 'WG' : 'LG';
+    return `${key}${depends}`;
   };
 
   return (
@@ -51,9 +47,13 @@ const BracketGameCard = (props: IProps) => {
         {divisionName}&nbsp;G{playoffIndex}
         <i>:</i>&nbsp;R{(playoffRound || 0) + 1}
         <i>,</i>&nbsp;
-        {awaySeedId ? `S${awaySeedId}` : handleDisplayName(awayDisplayName)}
+        {awaySeedId
+          ? `S${awaySeedId}`
+          : handleDisplayName(playoffRound, awayDependsUpon)}
         <i>:</i>
-        {homeSeedId ? `S${homeSeedId}` : handleDisplayName(homeDisplayName)}
+        {homeSeedId
+          ? `S${homeSeedId}`
+          : handleDisplayName(playoffRound, homeDependsUpon)}
       </span>
     </div>
   );

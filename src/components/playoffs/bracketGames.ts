@@ -19,6 +19,9 @@ export interface IBracketGame {
   // Display Name
   awayDisplayName?: string;
   homeDisplayName?: string;
+  //
+  awayDependsUpon?: number;
+  homeDependsUpon?: number;
   // venue time date
   fieldId?: string;
   fieldName?: string;
@@ -131,15 +134,16 @@ export const rearrangeSeedForGames = (
 
   let winnerIndex = 1;
 
-  games = games.map(game => ({
-    ...game,
-    awayDisplayName: `Winner Game ${!game.awaySeedId ? winnerIndex++ : ''} (${
-      game.divisionName
-    })`,
-    homeDisplayName: `Winner Game ${!game.homeSeedId ? winnerIndex++ : ''} (${
-      game.divisionName
-    })`,
-  }));
+  games = games.map(game => {
+    const awayDependsUpon = !game.awaySeedId ? winnerIndex++ : undefined;
+    const homeDependsUpon = !game.homeSeedId ? winnerIndex++ : undefined;
+
+    return {
+      ...game,
+      awayDependsUpon,
+      homeDependsUpon,
+    };
+  });
 
   return games;
 };
@@ -228,6 +232,8 @@ export const populatePlayoffGames = (
         playoffRound: bracketGame?.round,
         awaySeedId: bracketGame?.awaySeedId,
         homeSeedId: bracketGame?.homeSeedId,
+        awayDependsUpon: bracketGame?.awayDependsUpon,
+        homeDependsUpon: bracketGame?.homeDependsUpon,
         awayDisplayName: bracketGame?.awayDisplayName,
         homeDisplayName: bracketGame?.homeDisplayName,
         divisionId: bracketGame?.divisionId,
@@ -247,7 +253,10 @@ export const populateBracketGamesWithData = (
   gameDate?: string
 ) => {
   return bracketGames.map(game => {
-    const playoffGame = games.find(item => item.playoffIndex === game.index);
+    const playoffGame = games.find(
+      item =>
+        item.playoffIndex === game.index && item.divisionId === game.divisionId
+    );
     const field = fields.find(item => item.field_id === playoffGame?.fieldId);
 
     return {

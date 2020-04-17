@@ -37,10 +37,11 @@ const RenderGameSlot = (props: Props) => {
     isPlayoff,
     awaySeedId,
     homeSeedId,
-    awayDisplayName,
-    homeDisplayName,
+    playoffRound,
     divisionName,
     divisionHex,
+    awayDependsUpon,
+    homeDependsUpon,
   } = game;
 
   const acceptType = [MatrixTableDropEnum.TeamDrop];
@@ -76,12 +77,13 @@ const RenderGameSlot = (props: Props) => {
                 isEnterScores={isEnterScores}
               />
             )}
-            {(awaySeedId || awayDisplayName) && (
+            {(awaySeedId || awayDependsUpon) && (
               <SeedCard
                 position={1}
+                round={playoffRound}
                 showHeatmap={true}
                 seedId={awaySeedId}
-                displayName={awayDisplayName}
+                dependsUpon={awayDependsUpon}
                 divisionHex={divisionHex}
                 divisionName={divisionName}
               />
@@ -109,12 +111,13 @@ const RenderGameSlot = (props: Props) => {
                 isEnterScores={isEnterScores}
               />
             )}
-            {(homeSeedId || homeDisplayName) && (
+            {(homeSeedId || homeDependsUpon) && (
               <SeedCard
                 position={2}
+                round={playoffRound}
+                dependsUpon={homeDependsUpon}
                 showHeatmap={true}
                 seedId={homeSeedId}
-                displayName={homeDisplayName}
                 divisionHex={divisionHex}
                 divisionName={divisionName}
               />
