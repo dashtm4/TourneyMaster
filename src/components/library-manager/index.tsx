@@ -5,12 +5,14 @@ import { Dispatch, bindActionCreators } from 'redux';
 import {
   loadLibraryManagerData,
   saveSharedItem,
+  saveClonedItem,
   deleteLibraryItem,
 } from './logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
 import Navigation from './components/navigation';
 import PopupShare from './components/popup-share';
-import Tournaments from './components/tournaments';
+import PopupClone from './components/popup-clone';
+import Events from './components/events';
 import Registration from './components/registration';
 import Facilities from './components/facilities';
 import Divisions from './components/divisions';
@@ -56,6 +58,7 @@ interface Props {
   schedules: ILibraryManagerSchedule[];
   loadLibraryManagerData: BindingAction;
   saveSharedItem: BindingCbWithThree<IEventDetails, IEntity, EntryPoints>;
+  saveClonedItem: BindingCbWithThree<string, IEntity, EntryPoints>;
   deleteLibraryItem: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
@@ -68,6 +71,7 @@ const LibraryManager = ({
   schedules,
   loadLibraryManagerData,
   saveSharedItem,
+  saveClonedItem,
   deleteLibraryItem,
 }: Props) => {
   React.useEffect(() => {
@@ -78,6 +82,7 @@ const LibraryManager = ({
   );
 
   const [sharedItem, changeSharedItem] = React.useState<IEntity | null>(null);
+  const [clonedItem, changeClonedItem] = React.useState<IEntity | null>(null);
 
   const [
     tableEntity,
@@ -111,6 +116,12 @@ const LibraryManager = ({
     toggleSharePopup(true);
   };
 
+  const onClonedItem = (clonedItem: IEntity, entryPoint: EntryPoints) => {
+    changeClonedItem(clonedItem);
+
+    changeEntryPoint(entryPoint);
+  };
+
   const onConfirmDeleteItem = (
     sharedItem: IEntity,
     tableEntity: ITableSortEntity,
@@ -125,16 +136,28 @@ const LibraryManager = ({
     toggleConfirmPopup(true);
   };
 
-  const onClosePopup = () => {
+  const onCloseSharePopup = () => {
     changeActiveEvent(null);
-
-    changeTableEntity(null);
 
     changeSharedItem(null);
 
     changeEntryPoint(null);
 
     toggleSharePopup(false);
+  };
+
+  const onClosePopupClone = () => {
+    changeClonedItem(null);
+
+    changeEntryPoint(null);
+  };
+
+  const onCloseConfirmPopup = () => {
+    changeSharedItem(null);
+
+    changeTableEntity(null);
+
+    changeEntryPoint(null);
 
     toggleConfirmPopup(false);
   };
@@ -143,7 +166,13 @@ const LibraryManager = ({
     if (activeEvent && sharedItem && currentEntryPoint) {
       saveSharedItem(activeEvent, sharedItem, currentEntryPoint);
 
-      onClosePopup();
+      onCloseSharePopup();
+    }
+  };
+
+  const onSaveClonedItem = (newName: string) => {
+    if (newName && clonedItem && currentEntryPoint) {
+      saveClonedItem(newName, clonedItem, currentEntryPoint);
     }
   };
 
@@ -151,7 +180,7 @@ const LibraryManager = ({
     if (sharedItem && currentEntryPoint) {
       deleteLibraryItem(sharedItem, currentEntryPoint);
 
-      onClosePopup();
+      onCloseConfirmPopup();
     }
   };
 
@@ -176,10 +205,10 @@ const LibraryManager = ({
         />
       </div>
       <ul className={styles.libraryList}>
-        <Tournaments
+        <Events
           events={events}
           isSectionExpand={isSectionsExpand}
-          changeSharedItem={onSharedItem}
+          onClonedItem={onClonedItem}
           onConfirmDeleteItem={onConfirmDeleteItem}
         />
         <Facilities
@@ -211,16 +240,21 @@ const LibraryManager = ({
         activeEvent={activeEvent}
         events={events}
         isOpen={isSharePopupOpen}
-        onClose={onClosePopup}
+        onClose={onCloseSharePopup}
         onSave={onSaveShatedItem}
         onChangeActiveEvent={onChangeActiveEvent}
+      />
+      <PopupClone
+        isOpen={Boolean(clonedItem)}
+        onClose={onClosePopupClone}
+        onSave={onSaveClonedItem}
       />
       <DeletePopupConfrim
         type="item"
         deleteTitle={tableEntity?.name || ''}
         message={DELETE_POPUP_MESSAGE}
         isOpen={isCondfirmPopupOpen}
-        onClose={onClosePopup}
+        onClose={onCloseConfirmPopup}
         onDeleteClick={onDeleteLibraryItem}
       />
     </>
@@ -239,7 +273,12 @@ export default connect(
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadLibraryManagerData, saveSharedItem, deleteLibraryItem },
+      {
+        loadLibraryManagerData,
+        saveSharedItem,
+        saveClonedItem,
+        deleteLibraryItem,
+      },
       dispatch
     )
 )(LibraryManager);

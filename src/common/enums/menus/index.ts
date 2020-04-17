@@ -1,5 +1,5 @@
 enum MenuTitles {
-  TOURNAMENTS = 'Tournaments',
+  EVENTS = 'Events',
   LIBRARY_MANAGER = 'Library Manager',
   FACILITIES = 'Facilities',
   REGISTRATION = 'Registration',

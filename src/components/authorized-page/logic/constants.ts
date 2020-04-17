@@ -12,7 +12,7 @@ export const MenuList = [
     icon: Icons.INSERT_DRIVE,
     link: Routes.LIBRARY_MANAGER,
     children: [
-      MenuTitles.TOURNAMENTS,
+      MenuTitles.EVENTS,
       MenuTitles.FACILITIES,
       MenuTitles.REGISTRATION,
       MenuTitles.DIVISIONS_AND_POOLS,
