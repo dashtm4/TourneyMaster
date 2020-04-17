@@ -14,7 +14,7 @@ import { getLibraryallowedItems } from 'components/library-manager/helpers';
 interface Props {
   events: IEventDetails[];
   isSectionExpand: boolean;
-  changeSharedItem: BindingCbWithTwo<IEntity, EntryPoints>;
+  onClonedItem: BindingCbWithTwo<IEntity, EntryPoints>;
   onConfirmDeleteItem: BindingCbWithThree<
     IEntity,
     ITableSortEntity,
@@ -25,13 +25,13 @@ interface Props {
 const Events = ({
   events,
   isSectionExpand,
-  changeSharedItem,
+  onClonedItem,
   onConfirmDeleteItem,
 }: Props) => {
   const onCloneEvent = (id: string) => {
     const editedTournament = events.find(it => it.event_id === id);
 
-    changeSharedItem(editedTournament!, EntryPoints.EVENTS);
+    onClonedItem(editedTournament!, EntryPoints.EVENTS);
   };
 
   const onConfirmDelete = (tableEntity: ITableSortEntity) => {

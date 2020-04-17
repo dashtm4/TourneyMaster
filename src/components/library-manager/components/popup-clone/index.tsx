@@ -1,24 +1,29 @@
 import React from 'react';
 import { Modal, HeadingLevelTwo, Input, Button } from 'components/common';
-import { IEventDetails, BindingAction, BindingCbWithOne } from 'common/models';
+import { BindingAction } from 'common/models';
 import { ButtonVarian, ButtonColors } from 'common/enums';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
 
 interface Props {
-  activeEvent: IEventDetails | null;
-  events: IEventDetails[];
   isOpen: boolean;
   onClose: BindingAction;
-  onSave: BindingAction;
-  onChangeActiveEvent: BindingCbWithOne<IEventDetails>;
+  onSave: (newName: string) => void;
 }
 
-const PopupCLone = ({ isOpen, onClose, onSave }: Props) => {
+const PopupClone = ({ isOpen, onClose, onSave }: Props) => {
   const [newName, changeName] = React.useState<string>('');
 
   const onChangeName = ({ target }: IInputEvent) => {
     changeName(target.value);
+  };
+
+  const onSaveCloneItem = () => {
+    if (newName.trim().length !== 0) {
+      onSave(newName);
+
+      onClose();
+    }
   };
 
   return (
@@ -46,7 +51,7 @@ const PopupCLone = ({ isOpen, onClose, onSave }: Props) => {
           </span>
           <span className={styles.btnWrapper}>
             <Button
-              onClick={onSave}
+              onClick={onSaveCloneItem}
               variant={ButtonVarian.CONTAINED}
               color={ButtonColors.PRIMARY}
               label="Save"
@@ -58,4 +63,4 @@ const PopupCLone = ({ isOpen, onClose, onSave }: Props) => {
   );
 };
 
-export default PopupCLone;
+export default PopupClone;
