@@ -42,6 +42,7 @@ const PopupClone = ({ isOpen, onClose, onSave }: Props) => {
             value={newName}
             label="Enter name"
             width="100%"
+            autofocus
           />
         </div>
         <p className={styles.btnsWrapper}>
