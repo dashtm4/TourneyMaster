@@ -18,8 +18,8 @@ const BracketGameSlot = (props: IProps) => {
   const date = moment(game?.gameDate).format('MM/DD/YYYY');
 
   const getDisplayName = (round?: number, depends?: number) => {
-    if (!round || !depends) return;
-    const key = round >= 0 ? 'Winner' : 'Loser';
+    if (round === undefined || !depends) return;
+    const key = round > 0 ? 'Winner' : 'Loser';
     return `${key} Game ${depends}`;
   };
 

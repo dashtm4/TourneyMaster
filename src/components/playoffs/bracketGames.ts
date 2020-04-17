@@ -55,7 +55,7 @@ const getRoundBy = (
   firstRoundGamesNum: number
 ) => {
   const rounds = [];
-  let roundCounter = 0;
+  let roundCounter = 1;
   if (numberOfPreGames) {
     for (let i = 0; i < numberOfPreGames; i++) {
       rounds.push(roundCounter);
@@ -119,7 +119,7 @@ export const rearrangeSeedForGames = (
   [...Array(firstRoundGamesNum)].forEach(() => {
     const first = seeds[0];
     const last = seeds[seeds.length - 1];
-    const round = numberOfPreGames ? 1 : 0;
+    const round = numberOfPreGames ? 2 : 1;
 
     const gameIndex = games.findIndex(
       game => game.round === round && !game.awaySeedId && !game.homeSeedId
