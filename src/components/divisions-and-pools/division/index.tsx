@@ -26,6 +26,7 @@ interface IDivisionProps {
   isSectionExpand: boolean;
   saveTeams: BindingCbWithOne<ITeam[]>;
   editPool: BindingCbWithTwo<IPool, IPool[]>;
+  deletePool: BindingCbWithTwo<IPool, ITeam[]>;
 }
 
 class Division extends React.PureComponent<IDivisionProps> {
@@ -81,6 +82,7 @@ class Division extends React.PureComponent<IDivisionProps> {
             areDetailsLoading={this.props.areDetailsLoading}
             saveTeams={saveTeams}
             editPool={this.props.editPool}
+            deletePool={this.props.deletePool}
           />
         </div>
       </SectionDropdown>

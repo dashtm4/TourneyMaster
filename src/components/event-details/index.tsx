@@ -210,7 +210,7 @@ class EventDetails extends Component<Props, State> {
     return (
       <div className={styles.container}>
         <Navigation
-          isEventId={!this.props.match?.params.eventId}
+          isEventId={this.props.match?.params.eventId}
           onCancelClick={this.onCancelClick}
           onCsvLoaderBtn={this.onCsvLoaderBtn}
           onAddToLibraryManager={this.onAddToLibraryManager}

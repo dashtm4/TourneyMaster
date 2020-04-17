@@ -15,6 +15,9 @@ const LIBRARY_MANAGER_LOAD_DATA_FAILURE = 'LIBRARY_MANAGER_LOAD_DATA_FAILURE';
 const SAVE_SHARED_ITEM_SUCCESS = 'SAVE_SHARED_ITEM_SUCCESS';
 const SAVE_SHARED_ITEM_FAILURE = 'SAVE_SHARED_ITEM_FAILURE';
 
+const SAVE_CLONED_ITEM_SUCCESS = 'SAVE_CLONED_ITEM_SUCCESS';
+const SAVE_CLONED_ITEM_FAILURE = 'SAVE_CLONED_ITEM_FAILURE';
+
 const DELETE_LIBRARY_ITEM_SUCCESS = 'DELETE_LIBRARY_ITEM_SUCCESS';
 const DELETE_LIBRARY_ITEM_FAILURE = 'DELETE_LIBRARY_ITEM_FAILURE';
 
@@ -45,11 +48,20 @@ interface DeleteLibraryItemSuccess {
   };
 }
 
+interface SaveClonedItemSuccess {
+  type: 'SAVE_CLONED_ITEM_SUCCESS';
+  payload: {
+    entity: IEntity;
+    entryPoint: EntryPoints;
+  };
+}
+
 export type LibraryManagerAction =
   | LibraryManagerLoadDataStart
   | LibraryManagerLoadDataSuccess
   | SaveSharedItemSuccess
-  | DeleteLibraryItemSuccess;
+  | DeleteLibraryItemSuccess
+  | SaveClonedItemSuccess;
 
 export {
   LIBRARY_MANAGER_LOAD_DATA_START,
@@ -57,6 +69,8 @@ export {
   LIBRARY_MANAGER_LOAD_DATA_FAILURE,
   SAVE_SHARED_ITEM_SUCCESS,
   SAVE_SHARED_ITEM_FAILURE,
+  SAVE_CLONED_ITEM_SUCCESS,
+  SAVE_CLONED_ITEM_FAILURE,
   DELETE_LIBRARY_ITEM_SUCCESS,
   DELETE_LIBRARY_ITEM_FAILURE,
 };

@@ -94,6 +94,7 @@ const changeTournamentStatus = (status: EventStatuses) => async (
     const updatedEvent = {
       ...tournamentData.event,
       event_status: status,
+      is_published_YN: status === EventStatuses.PUBLISHED ? 1 : 0,
     } as IEventDetails;
 
     await Api.put(`/events?event_id=${updatedEvent.event_id}`, updatedEvent);
