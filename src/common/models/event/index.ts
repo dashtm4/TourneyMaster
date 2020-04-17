@@ -57,6 +57,7 @@ export interface IEventDetails {
   desktop_icon_URL: string;
   is_active_YN: number | null;
   is_library_YN: 0 | 1 | null;
+  is_published_YN: number;
   num_games_completed: number | null;
   last_web_published: string | null;
   max_goal_differential: string | null;
