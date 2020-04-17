@@ -34,7 +34,11 @@
 
 .btnsWrapper {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+}
+
+.btnDeleteWrapper {
+  color: #ff0f19;
 }
 
 .btnWrapper {

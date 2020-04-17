@@ -5,26 +5,38 @@ import {
   Select,
   Input,
   Button,
+  DeletePopupConfrim,
 } from 'components/common';
+import { getIcon } from 'helpers';
 import { BindingAction, IPool, BindingCbWithOne } from 'common/models';
-import { ButtonVarian, ButtonColors, IPoolFields } from 'common/enums';
+import { ButtonVarian, ButtonColors, IPoolFields, Icons } from 'common/enums';
 import { IInputEvent } from 'common/types';
 import { getPoolOptions } from './helpers';
 import styles from './styles.module.scss';
+
+const DELETE_ICON_STYLES = {
+  marginRight: '5px',
+};
+
+const DELETE_POPUP_MESSAGE =
+  'To confirm that you want to delete this pool, please confirm by re-typing its name.';
 
 interface Props {
   pools: IPool[];
   isOpen: boolean;
   onClose: BindingAction;
   onEdit: BindingCbWithOne<IPool>;
+  onDelete: BindingCbWithOne<IPool>;
 }
 
-const PopupEditPool = ({ pools, isOpen, onClose, onEdit }: Props) => {
+const PopupEditPool = ({ pools, isOpen, onClose, onEdit, onDelete }: Props) => {
   const [activePool, changeActivePool] = React.useState<IPool | null>(null);
+  const [isDeletePool, toggleDeletePool] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     return () => {
       changeActivePool(null);
+      toggleDeletePool(false);
     };
   }, [isOpen]);
 
@@ -38,6 +50,10 @@ const PopupEditPool = ({ pools, isOpen, onClose, onEdit }: Props) => {
     changeActivePool({ ...activePool, [name]: value } as IPool);
   };
 
+  const onDeletePopup = () => {
+    toggleDeletePool(true);
+  };
+
   const onSave = () => {
     if (activePool) {
       onEdit(activePool);
@@ -46,9 +62,26 @@ const PopupEditPool = ({ pools, isOpen, onClose, onEdit }: Props) => {
     }
   };
 
+  const onDeleteClick = () => {
+    if (activePool) {
+      onDelete(activePool);
+
+      onClose();
+    }
+  };
+
   const options = getPoolOptions(pools);
 
-  return (
+  return isDeletePool ? (
+    <DeletePopupConfrim
+      type="pool"
+      deleteTitle={activePool?.pool_name || ''}
+      message={DELETE_POPUP_MESSAGE}
+      isOpen={isDeletePool}
+      onClose={onClose}
+      onDeleteClick={onDeleteClick}
+    />
+  ) : (
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.section}>
         <div className={styles.titleWrapper}>
@@ -86,23 +119,35 @@ const PopupEditPool = ({ pools, isOpen, onClose, onEdit }: Props) => {
             </li>
           </ul>
         </fieldset>
-        <p className={styles.btnsWrapper}>
-          <Button
-            onClick={onClose}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Cancel"
-          />
-          <span className={styles.btnWrapper}>
+        <div className={styles.btnsWrapper}>
+          <span className={styles.btnDeleteWrapper}>
             <Button
-              onClick={onSave}
+              onClick={onDeletePopup}
               disabled={!activePool}
-              variant={ButtonVarian.CONTAINED}
-              color={ButtonColors.PRIMARY}
-              label="Save"
+              icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.INHERIT}
+              label="Delete Pool"
             />
           </span>
-        </p>
+          <p>
+            <Button
+              onClick={onClose}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Cancel"
+            />
+            <span className={styles.btnWrapper}>
+              <Button
+                onClick={onSave}
+                disabled={!activePool}
+                variant={ButtonVarian.CONTAINED}
+                color={ButtonColors.PRIMARY}
+                label="Save"
+              />
+            </span>
+          </p>
+        </div>
       </section>
     </Modal>
   );

@@ -12,16 +12,17 @@ import {
   ALL_POOLS_FETCH_SUCCESS,
   SAVE_TEAMS_SUCCESS,
   EDIT_POOL_SUCCESS,
+  DELETE_POOL_SUCCESS,
   DivisionsPoolsAction,
 } from './actionTypes';
 import {
   ADD_ENTITIES_TO_LIBRARY_SUCCESS,
   AuthPageAction,
 } from 'components/authorized-page/authorized-page-event/logic/action-types';
-import { IPool, ITeam, IDivision } from 'common/models';
 import { sortByField } from 'helpers';
+import { IPool, ITeam, IDivision, IRegistration } from 'common/models';
 import { SortByFilesTypes, EntryPoints } from 'common/enums';
-import { IRegistration } from 'common/models/registration';
+import { mapTeamWithUnassignedTeams } from '../helpers';
 
 export interface IDivisionAndPoolsState {
   data?: Partial<IDivision>[];
@@ -175,6 +176,25 @@ export default (
       return {
         ...state,
         pools: state.pools.map(it => (it.pool_id === pool.pool_id ? pool : it)),
+      };
+    }
+    case DELETE_POOL_SUCCESS: {
+      const { deletedPool, unassignedTeams } = action.payload;
+      const mappedTeam = mapTeamWithUnassignedTeams(
+        state.teams,
+        unassignedTeams
+      );
+
+      console.log(
+        deletedPool,
+        state.pools,
+        state.pools.filter(it => it.pool_id !== deletedPool.pool_id)
+      );
+
+      return {
+        ...state,
+        pool: state.pools.filter(it => it.pool_id !== deletedPool.pool_id),
+        teams: mappedTeam,
       };
     }
     default:

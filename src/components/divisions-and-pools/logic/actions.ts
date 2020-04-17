@@ -18,6 +18,8 @@ import {
   SAVE_TEAMS_FAILURE,
   EDIT_POOL_SUCCESS,
   EDIT_POOL_FAILURE,
+  DELETE_POOL_SUCCESS,
+  DELETE_POOL_FAILURE,
 } from './actionTypes';
 import api from 'api/api';
 import history from 'browserhistory';
@@ -310,13 +312,17 @@ export const editPool: ActionCreator<ThunkAction<
   { type: string }
 >> = (editedPool: IPool, pools: IPool[]) => async (dispatch: Dispatch) => {
   try {
+    const mappedPools = pools.map(it =>
+      it.pool_id === editedPool.pool_id ? editedPool : it
+    );
+
     await Yup.array()
       .of(poolSchema)
       .unique(
         pool => pool.pool_name,
         'Oops. It looks like you already have pool with the same name. The pool must have a unique name.'
       )
-      .validate([...pools, editedPool]);
+      .validate(mappedPools);
 
     await api.put(
       `${EntryPointsWithId.POOLS}${editedPool.pool_id}`,
@@ -334,9 +340,39 @@ export const editPool: ActionCreator<ThunkAction<
   } catch (err) {
     dispatch({
       type: EDIT_POOL_FAILURE,
+    });
+
+    Toasts.successToast(err.message);
+  }
+};
+
+export const deletePool: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (deletedPool: IPool, teams: ITeam[]) => async (dispatch: Dispatch) => {
+  try {
+    const unassignedTeams = teams.map(it => ({
+      ...it,
+      pool_id: null,
+    }));
+
+    // await api.delete(`${EntryPointsWithId.POOLS}${deletedPool.pool_id}`)
+    // await Promise.all(unassignedTeams.map(it => api.put(`${EntryPointsWithId.TEAMS}${it.team_id}`, it)))
+
+    dispatch({
+      type: DELETE_POOL_SUCCESS,
       payload: {
-        pool: editedPool,
+        deletedPool,
+        unassignedTeams,
       },
+    });
+
+    Toasts.successToast('Pool is successfully deleted');
+  } catch (err) {
+    dispatch({
+      type: DELETE_POOL_FAILURE,
     });
 
     Toasts.successToast(err.message);
