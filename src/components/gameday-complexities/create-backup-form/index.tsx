@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '../create-backup-modal/styles.module.scss';
-import { Input, Select, Radio, Button } from 'components/common';
+import { Input, Select, Radio, Button, CardMessage } from 'components/common';
 import { BindingCbWithThree, IFacility, IEventDetails } from 'common/models';
 import { IField } from 'common/models';
 import MultipleSearch from 'components/common/multiple-search-select';
@@ -8,6 +8,7 @@ import {
   getFacilitiesOptionsForEvent,
   getFieldsOptionsForFacilities,
 } from '../helper';
+import { CardMessageTypes } from 'components/common/card-message/types';
 
 const options = [{ value: '05:00 PM', label: '05:00 PM' }];
 const optionsTimeslots = [
@@ -172,6 +173,11 @@ class CreateBackupForm extends React.Component<Props> {
 
     return (
       <div className={styles.formContainer}>
+        <div style={{ paddingTop: '15px' }}>
+          <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+            Modifications only apply to the Published Schedules for each event.
+          </CardMessage>
+        </div>
         <div className={styles.row}>
           <div className={styles.item}>
             <Input
