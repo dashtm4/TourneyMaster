@@ -242,18 +242,27 @@ const sortTeamsByGoalAllowed = (
   return sortedTeams;
 };
 
+const getFiltredTeamByResults = (teams: ITeamWithResults[]) => {
+  const filtredTeamByResults = teams.reduce(
+    (acc, teams) =>
+      teams.wins > 0 || teams.losses > 0 || teams.tie > 0
+        ? { ...acc, teamWithResults: [...acc.teamWithResults, teams] }
+        : { ...acc, teamWithoutResults: [...acc.teamWithoutResults, teams] },
+    {
+      teamWithResults: [] as ITeamWithResults[],
+      teamWithoutResults: [] as ITeamWithResults[],
+    }
+  );
+
+  return filtredTeamByResults;
+};
+
 const SortTeamsBy = {
   [RankingFactorValues.WIN_PERCENTAGE]: sortTeamsByBestRecord,
   [RankingFactorValues.HEAD_TO_HEAD]: sortTeamsByHeadToHead,
   [RankingFactorValues.GOAL_ALLOWED]: sortTeamsByGoalAllowed,
   [RankingFactorValues.GOAL_DIFFERENCE]: sortTeamsByDifference,
   [RankingFactorValues.GOAL_SCORED]: sortTeamsByGoalScored,
-};
-
-const sortByZeroTeam = (a: ITeamWithResults, _b: ITeamWithResults) => {
-  const isZeroTeam = a.wins + a.losses + a.tie === 0;
-
-  return isZeroTeam ? 1 : 0;
 };
 
 const sortTeamByScored = (
@@ -267,17 +276,18 @@ const sortTeamByScored = (
     return teams;
   }
 
-  const localTeams = [...teams];
+  const filtredTeamsByResults = getFiltredTeamByResults(teams);
 
-  return localTeams.sort(
+  const sortedTeams = filtredTeamsByResults.teamWithResults.sort(
     (a, b) =>
-      sortByZeroTeam(a, b) ||
       SortTeamsBy[parsedRankings[0]](a, b, games) ||
       SortTeamsBy[parsedRankings[1]](a, b, games) ||
       SortTeamsBy[parsedRankings[2]](a, b, games) ||
       SortTeamsBy[parsedRankings[3]](a, b, games) ||
       SortTeamsBy[parsedRankings[4]](a, b, games)
   );
+
+  return [...sortedTeams, ...filtredTeamsByResults.teamWithoutResults];
 };
 
 export { getTeamsWithResults, sortTeamByScored };
