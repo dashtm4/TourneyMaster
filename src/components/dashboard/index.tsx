@@ -15,7 +15,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
 import { getEvents, getCalendarEvents } from './logic/actions';
 import { Loader } from 'components/common';
-import { notificationData } from './mockData';
 import {
   ITeam,
   IField,
@@ -227,7 +226,15 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   renderNotifications = () => {
     return (
       <div className={styles.notificationsContainer} key={2}>
-        <NotificationsCard data={notificationData} />
+        <NotificationsCard
+          data={this.props.calendarEvents.filter(
+            event =>
+              event.cal_event_type === 'reminder' &&
+              event.status_id === 1 &&
+              new Date(event.cal_event_datetime) > new Date()
+          )}
+          areCalendarEventsLoading={this.props.areCalendarEventsLoading}
+        />
       </div>
     );
   };
@@ -298,7 +305,14 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
           />
           <InfoCard
             icon={<NotificationsIcon fontSize="large" />}
-            info="0 New Notifications"
+            info={`${
+              this.props.calendarEvents.filter(
+                event =>
+                  event.cal_event_type === 'reminder' &&
+                  event.status_id === 1 &&
+                  new Date(event.cal_event_datetime) > new Date()
+              ).length
+            } Pending Reminders`}
             order={2}
             changeOrder={this.onOrderChange}
           />
