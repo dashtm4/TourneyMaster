@@ -1,9 +1,9 @@
 import React from 'react';
 import styles from '../styles.module.scss';
-import { Input, Checkbox, CardMessage } from 'components/common';
-import { CardMessageTypes } from 'components/common/card-message/types';
+import { Input, Checkbox } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
 import { IRegistration } from 'common/models/registration';
+import { Tooltip } from 'components/common';
 
 interface IMainContactProps {
   data?: IRegistration;
@@ -30,15 +30,6 @@ const MainContact = ({ data, onChange }: IMainContactProps) => {
 
   return (
     <div className={styles.section}>
-      <div className={styles.sectionTooltipRow}>
-        <div className={styles.sectionItem} style={{ width: '51.5%' }} />
-        <CardMessage
-          type={CardMessageTypes.EMODJI_OBJECTS}
-          style={{ fontSize: '10xp' }}
-        >
-          Admin, Tourney Director, Boys Lead, etc.
-        </CardMessage>
-      </div>
       <div className={styles.sectionFirstRow}>
         <div className={styles.sectionItem}>
           <Input
@@ -56,14 +47,15 @@ const MainContact = ({ data, onChange }: IMainContactProps) => {
             onChange={onLastNameChange}
           />
         </div>
-        <div className={styles.sectionItem}>
-          <Input
-            label="Role"
-            value={data ? data.role : ''}
-            onChange={onRoleChange}
-          />
-          <span className={styles.tournamentStatus} />
-        </div>
+        <Tooltip title="Admin, Tourney Director, Boys Lead, etc." type="info">
+          <div className={styles.sectionItem}>
+            <Input
+              label="Role"
+              value={data ? data.role : ''}
+              onChange={onRoleChange}
+            />
+          </div>
+        </Tooltip>
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
