@@ -134,12 +134,23 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const onDescriptionChange = (e: InputTargetValue) =>
     onChange('event_description', e.target.value);
 
-  const onPrimaryLocation = (address: string) =>
+  const onPrimaryLocation = (address: string) => {
     onChange('primary_location_desc', address);
+  };
 
-  const onGeneralLocationSelect = (position: IPosition) => {
+  const onGeneralLocationSelect = ({
+    position,
+    state,
+    city,
+  }: {
+    position: IPosition;
+    state: string;
+    city: string;
+  }) => {
     onChange('primary_location_lat', position.lat);
     onChange('primary_location_long', position.lng);
+    onChange('primary_location_state', state);
+    onChange('primary_location_city', city);
   };
 
   const onMainContactChange = (e: InputTargetValue) =>

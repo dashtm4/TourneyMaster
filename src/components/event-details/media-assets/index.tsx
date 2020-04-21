@@ -16,10 +16,17 @@ interface IProps {
   onFileRemove: (files: IIconFile[]) => void;
   isSectionExpand: boolean;
   logo?: string;
+  mobileLogo?: string;
 }
 
 const MediaAssetsSection: React.FC<IProps> = props => {
-  const { onFileUpload, onFileRemove, isSectionExpand, logo } = props;
+  const {
+    onFileUpload,
+    onFileRemove,
+    isSectionExpand,
+    logo,
+    mobileLogo,
+  } = props;
 
   const populateFileObj = (
     files: File[],
@@ -78,6 +85,7 @@ const MediaAssetsSection: React.FC<IProps> = props => {
               ]}
               onUpload={onMobileFileUpload}
               onFileRemove={onMobileFileRemove}
+              logo={mobileLogo}
             />
           </div>
         </div>

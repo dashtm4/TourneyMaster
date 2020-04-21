@@ -97,9 +97,10 @@ export default (props: Props) => {
           <span
             className={styles.cardTextWrapper}
             style={{
-              color: showHeatmap
-                ? getContrastingColor(teamCard.divisionHex)
-                : 'gray',
+              color:
+                showHeatmap && teamCard.divisionHex
+                  ? getContrastingColor(teamCard.divisionHex)
+                  : 'gray',
             }}
           >
             {teamCard.name}&nbsp;({teamCard.divisionShortName})
@@ -129,7 +130,7 @@ export default (props: Props) => {
         {tableType === TableScheduleTypes.SCHEDULES && originGameId && (
           <button className={styles.lockBtn} onClick={onLockClick}>
             {getIcon(game?.isTeamLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
-              fill: showHeatmap ? '#ffffff' : '#00A3EA',
+              fill: showHeatmap && teamCard.divisionHex ? '#ffffff' : '#00A3EA',
             })}
             <span className="visually-hidden">Unlock/Lock team</span>
           </button>

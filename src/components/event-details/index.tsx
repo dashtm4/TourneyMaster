@@ -270,6 +270,7 @@ class EventDetails extends Component<Props, State> {
           onFileRemove={this.onFileRemove}
           isSectionExpand={this.state.isSectionsExpand}
           logo={event.desktop_icon_URL}
+          mobileLogo={event.mobile_icon_URL}
         />
         <DeletePopupConfrim
           type={'event'}
