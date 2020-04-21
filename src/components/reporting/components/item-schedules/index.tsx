@@ -2,13 +2,15 @@ import React from 'react';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
 import { HeadingLevelThree, Button } from 'components/common';
-import { onPDFSave, mapGamesByField, onXLSXSave } from 'helpers';
+import { onPDFSave, onXLSXSave } from 'helpers';
 import { ButtonVarian, ButtonColors } from 'common/enums';
 import { IEventDetails, ISchedule, IPool } from 'common/models';
 import { getScheduleTableXLSX } from '../../helpers';
 import {
   IGame,
   settleTeamsPerGames,
+  calculateDays,
+  // calculateDays,
 } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
@@ -35,16 +37,20 @@ const ItemSchedules = ({
   fields,
   schedule,
   teamCards,
-  pools
+  pools,
 }: Props) => {
-  const filledGames = settleTeamsPerGames(games, teamCards);
-  const mappedGames = mapGamesByField(filledGames, fields);
+  const eventDays = calculateDays(teamCards);
+  const filledGames = eventDays
+    .map((_, idx) =>
+      settleTeamsPerGames(games, teamCards, eventDays, `Day ${idx + 1}`)
+    )
+    .flat();
 
   const onScheduleTableSave = async () =>
     onPDFSave(
       <PDFTableSchedule
         event={event}
-        games={mappedGames}
+        games={filledGames}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
@@ -57,7 +63,7 @@ const ItemSchedules = ({
     onPDFSave(
       <PDFTableSchedule
         event={event}
-        games={mappedGames}
+        games={filledGames}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
@@ -73,7 +79,7 @@ const ItemSchedules = ({
     onPDFSave(
       <PDFTableFieldsSchedule
         event={event}
-        games={mappedGames}
+        games={filledGames}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
