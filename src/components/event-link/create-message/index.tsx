@@ -6,28 +6,27 @@ import {
   HeadingLevelTwo,
   Radio,
   Input,
-  // DatePicker,
-  // Select,
+  Select,
 } from 'components/common';
 import styles from './styles.module.scss';
 import history from 'browserhistory';
-import { getData } from '../logic/actions';
-import { BindingAction } from 'common/models';
-import AWS from 'aws-sdk';
-// import Filter from 'components/common/table-schedule/components/filter';
-// import { IScheduleFilter } from 'components/common/table-schedule/types';
-// import { applyFilters, mapFilterValues } from '../helpers';
-import { Toasts } from 'components/common';
+import { getData, sendMessage, saveMessage } from '../logic/actions';
+import { BindingAction, BindingCbWithOne, IEventDetails } from 'common/models';
+import Filter from './filter';
+import { IScheduleFilter } from './filter';
+import { applyFilters, mapFilterValues, mapTeamsByFilter } from '../helpers';
 
-interface IMessage {
+export interface IMessage {
   type: string;
   title: string;
-  content: string;
+  message: string;
   recipients: any[];
 }
 
 interface Props {
+  sendMessage: BindingCbWithOne<IMessage>;
   getData: BindingAction;
+  saveMessage: any;
   events: any;
   divisions: any;
   pools: any;
@@ -37,190 +36,142 @@ interface Props {
 
 const CreateMessage = ({
   getData,
-}: // events,
-// divisions,
-// pools,
-// teams,
-// fields,
-Props) => {
+  sendMessage,
+  // saveMessage,
+  events,
+  divisions,
+  pools,
+  teams,
+}: Props) => {
   useEffect(() => {
     getData();
   }, []);
 
-  const [message, setMessage] = useState<IMessage>({
+  const [data, setMessage] = useState<IMessage>({
     type: 'Text',
     title: '',
-    content: '',
+    message: '',
     recipients: [''],
   });
 
+  const eventOptions = events.length
+    ? events.map((event: IEventDetails) => ({
+        label: event.event_name,
+        value: event.event_id,
+      }))
+    : [];
+
   const typeOptions = ['Text', 'Email'];
-  // const deliveryOptions = ['Send Now', 'Schedule'];
+  const recipientOptions = ['One', 'Many'];
 
-  // const [delivery, setDelivery] = useState(deliveryOptions[0]);
+  const [event, setEvent] = useState();
 
-  // const [event, setEvent] = useState();
+  const [recipientType, setRecipientType] = useState('One');
 
-  // const [filterValues, changeFilterValues] = useState<IScheduleFilter>(
-  //   applyFilters({ divisions, pools, teams, fields })
-  // );
+  const [filterValues, changeFilterValues] = useState<IScheduleFilter>(
+    applyFilters({ divisions, pools, teams })
+  );
 
-  // useEffect(() => {
-  //   changeFilterValues(
-  //     applyFilters({ divisions, pools, teams, fields }, event)
-  //   );
-  // }, [event]);
+  useEffect(() => {
+    changeFilterValues(applyFilters({ divisions, pools, teams }, event));
+  }, [event]);
 
   const onCancelClick = () => {
     history.push('/event-link');
   };
 
   const onTypeChange = (e: any) => {
-    setMessage({ ...message, recipients: [''], type: e.target.value });
+    setMessage({ ...data, recipients: [''], type: e.target.value });
   };
 
   const onTitleChange = (e: any) => {
-    setMessage({ ...message, title: e.target.value });
+    setMessage({ ...data, title: e.target.value });
   };
 
   const onContentChange = (e: any) => {
-    setMessage({ ...message, content: e.target.value });
+    setMessage({ ...data, message: e.target.value });
   };
 
-  // const onDeliveryChange = (e: any) => {
-  //   setDelivery(e.target.value);
-  // };
-
-  // const onDeliveryDateChange = () => {};
-
-  // const onEventSelect = (e: any) => {
-  //   setEvent(e.target.value);
-  // };
-
-  // const eventOptions = events.length
-  //   ? events.map((event: IEventDetails) => ({
-  //       label: event.event_name,
-  //       value: event.event_id,
-  //     }))
-  //   : [];
-
-  // const onSave = () => {};
-
-  const onEmailSend = async (
-    title: string,
-    messageContent: string,
-    emailAdresses: string[]
-  ) => {
-    const credentials = {
-      accessKeyId: process.env.REACT_APP_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.REACT_APP_SECRET_ACCESS_KEY!,
-    };
-    AWS.config.update({
-      credentials,
-      region: process.env.REACT_APP_AWS_REGION,
-    });
-
-    try {
-      const params = {
-        Destination: {
-          CcAddresses: [],
-          ToAddresses: emailAdresses,
-        },
-        Message: {
-          Body: {
-            Html: {
-              Charset: 'UTF-8',
-              Data: messageContent,
-            },
-            Text: {
-              Charset: 'UTF-8',
-              Data: messageContent,
-            },
-          },
-          Subject: {
-            Charset: 'UTF-8',
-            Data: title || 'TourneyMaster',
-          },
-        },
-        Source: 'rostyslav.khanas@binary-studio.com',
-        ReplyToAddresses: [],
-      };
-
-      const sendEmailResponse = await new AWS.SES({ apiVersion: '2010-12-01' })
-        .sendEmail(params)
-        .promise();
-      console.log(
-        `Message is successfully send. MessageId: ${sendEmailResponse.MessageId}`
-      );
-      if (sendEmailResponse.MessageId) {
-        Toasts.successToast('Email is successfully sent.');
-      }
-    } catch (e) {
-      Toasts.errorToast("Couldn't send an email.");
-    }
+  const onEventSelect = (e: any) => {
+    setEvent(e.target.value);
   };
 
-  const onSmsSend = async (messageContent: string, phoneNumbers: string[]) => {
-    const credentials = {
-      accessKeyId: process.env.REACT_APP_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.REACT_APP_SECRET_ACCESS_KEY!,
-    };
-    AWS.config.update({
-      credentials,
-      region: process.env.REACT_APP_AWS_REGION,
-    });
-
-    // const topicArn =
-    //   'arn:aws:sns:us-east-1:564748484972:TourneyMasterEventLink';
-
-    try {
-      const params = {
-        Message: messageContent,
-        PhoneNumber: phoneNumbers[0],
-        MessageAttributes: {
-          'AWS.SNS.SMS.SenderID': {
-            DataType: 'String',
-            StringValue: 'Tourney',
-          },
-        },
-      };
-
-      const publishTextResponse = await new AWS.SNS({
-        apiVersion: '2010-03-31',
-      })
-        .publish(params)
-        .promise();
-
-      if (publishTextResponse) {
-        Toasts.successToast('Message is successfully sent.');
-      }
-    } catch (e) {
-      Toasts.errorToast("Couldn't send a text.");
-    }
+  const onRecipientTypeChange = (e: any) => {
+    setRecipientType(e.target.value);
   };
 
   const onRecipientChange = (e: any) => {
-    setMessage({ ...message, recipients: [e.target.value] });
+    setMessage({ ...data, recipients: [e.target.value] });
   };
 
   const onSend = () => {
-    if (message.type === 'Text') {
-      onSmsSend(message.content, message.recipients);
-    } else if (message.type === 'Email') {
-      onEmailSend(message.title, message.content, message.recipients);
+    if (recipientType === 'Many') {
+      const recipients = mapTeamsByFilter([...teams], filterValues, data.type);
+      setMessage({ ...data, recipients });
+      sendMessage({ ...data, recipients });
+    } else {
+      sendMessage(data);
     }
-    setMessage({
-      type: 'Text',
-      title: '',
-      content: '',
-      recipients: [''],
-    });
   };
 
-  // const onFilterChange = (data: IScheduleFilter) => {
-  //   const newData = mapFilterValues({ teams, pools }, data);
-  //   changeFilterValues({ ...newData });
-  // };
+  const onSave = () => {
+    // if (recipientType === 'Many') {
+    //   const recipients = mapTeamsByFilter([...teams], filterValues, data.type);
+    //   setMessage({ ...data, recipients });
+    //   saveMessage({ ...data, recipients });
+    // } else {
+    //   saveMessage(data);
+    // }
+  };
+
+  const onFilterChange = (data: IScheduleFilter) => {
+    const newData = mapFilterValues({ teams, pools }, data);
+    changeFilterValues({ ...newData });
+  };
+
+  const renderOneRecipientInput = () => {
+    return (
+      <div className={styles.recipientWrapper}>
+        <span className={styles.title}>
+          {data.type === 'Text' ? 'Number:' : 'Email:'}{' '}
+        </span>
+        <Input
+          width="250px"
+          placeholder={
+            data.type === 'Text' ? '+11234567890' : 'example@example.com'
+          }
+          onChange={onRecipientChange}
+          value={data.recipients[0] || ''}
+        />
+        <span className={styles.additionalInfo}>
+          {data.type === 'Text' &&
+            'Format: [+][country code][subscriber number including area code]'}
+        </span>
+      </div>
+    );
+  };
+
+  const renderRecipientFilter = () => {
+    return (
+      <div className={styles.recipientsFilterWrapper}>
+        <div className={styles.selectContainer}>
+          <Select
+            label="Event"
+            width={'168px'}
+            options={eventOptions}
+            onChange={onEventSelect}
+            value={event || ''}
+          />
+        </div>
+        {event && (
+          <Filter
+            filterValues={filterValues}
+            onChangeFilterValue={onFilterChange}
+          />
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className={styles.container}>
@@ -232,12 +183,12 @@ Props) => {
             onClick={onCancelClick}
             label="Cancel"
           />
-          {/* <Button
-            color="secondary"
-            variant="text"
+          <Button
+            color="primary"
+            variant="contained"
             onClick={onSave}
             label="Save"
-          /> */}
+          />
           <Button
             color="primary"
             variant="contained"
@@ -252,78 +203,48 @@ Props) => {
           options={typeOptions}
           formLabel="Type"
           onChange={onTypeChange}
-          checked={message.type}
+          checked={data.type}
         />
-        {/* <Radio
-          options={deliveryOptions}
-          formLabel="Delivery"
-          onChange={onDeliveryChange}
-          checked={delivery}
+        <Radio
+          options={recipientOptions}
+          formLabel="Recipient"
+          onChange={onRecipientTypeChange}
+          checked={recipientType}
         />
-        {delivery === 'Schedule' && (
-          <DatePicker
-            width="257px"
-            label="Schedule Date &amp; Time"
-            type="date-time"
-            viewType="input"
-            value={new Date().toISOString()}
-            onChange={onDeliveryDateChange}
-          />
-        )} */}
-      </div>
-      <div
-        className={styles.recipientsCheckboxWrapper}
-        style={{ marginTop: '15px' }}
-      >
-        <div className={styles.title}>
-          Recipient:{' '}
+        {data.type === 'Text' && (
           <Input
-            width="250px"
-            placeholder={
-              message.type === 'Text' ? '+11234567890' : 'example@example.com'
-            }
-            onChange={onRecipientChange}
-            value={message.recipients[0]}
+            label="Message Name"
+            fullWidth={true}
+            onChange={onTitleChange}
+            value={data.title}
           />
-          <span className={styles.additionalInfo}>
-            {message.type === 'Text' &&
-              'Format: [+][country code][subscriber number including area code]'}
-          </span>
-        </div>
-        {/* <Select
-            options={eventOptions}
-            placeholder="Select Event"
-            onChange={onEventSelect}
-            value={event || ''}
-          /> */}
+        )}
+      </div>
+      <div className={styles.recipientsWrapper}>
+        {recipientType === 'One'
+          ? renderOneRecipientInput()
+          : renderRecipientFilter()}
       </div>
       <div className={styles.inputGroup}>
-        <div style={{ marginTop: '15px' }}>
-          {message.type === 'Email' && (
+        <div>
+          {data.type === 'Email' && (
             <Input
               label="Title"
               fullWidth={true}
               onChange={onTitleChange}
-              value={message.title}
+              value={data.title}
             />
           )}
-          <div style={{ marginTop: '15px' }}>
-            <Input
-              label="Message"
-              placeholder=""
-              multiline={true}
-              rows="10"
-              onChange={onContentChange}
-              value={message.content}
-            />
-          </div>
+          <Input
+            label="Message"
+            placeholder=""
+            multiline={true}
+            rows="10"
+            onChange={onContentChange}
+            value={data.message}
+          />
         </div>
       </div>
-      {/* <Filter
-        days={2}
-        filterValues={filterValues}
-        onChangeFilterValue={onFilterChange}
-      /> */}
     </div>
   );
 };
@@ -340,6 +261,8 @@ const mapStateToProps = (state: any) => {
 
 const mapDispatchToProps = {
   getData,
+  sendMessage,
+  saveMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateMessage);

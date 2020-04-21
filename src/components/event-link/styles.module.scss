@@ -98,6 +98,8 @@
   display: flex;
   font-size: 20px;
   font-weight: normal;
+  align-items: baseline;
+  justify-content: space-between;
   .msTitle {
     font-weight: 600;
     padding-right: 20px;
