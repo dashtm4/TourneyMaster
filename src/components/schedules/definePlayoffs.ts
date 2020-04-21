@@ -1,14 +1,19 @@
 import { unionBy, orderBy, findIndex } from 'lodash-es';
-import { IField } from 'common/models/schedule/fields';
+import { IField as IScheduleField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleDivision } from 'common/models/schedule/divisions';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from 'components/common/matrix-table/helper';
-import { IEventDetails, IDivision, ISchedulesDetails } from 'common/models';
+import {
+  IEventDetails,
+  IDivision,
+  ISchedulesDetails,
+  IField,
+} from 'common/models';
 
 export default (
-  fields: IField[],
+  fields: IScheduleField[],
   timeSlots: ITimeSlot[],
   divisions: IScheduleDivision[],
   facilities: IScheduleFacility[],
@@ -82,7 +87,7 @@ const recursor = (
 };
 
 export const predictPlayoffTimeSlots = (
-  fields: IField[],
+  fields: IField[] | IScheduleField[],
   timeSlots: ITimeSlot[],
   divisions: IScheduleDivision[] | IDivision[],
   event: IEventDetails
@@ -124,7 +129,7 @@ export const populateDefinedGamesWithPlayoffState = (
 
 export const adjustPlayoffTimeOnLoad = (
   schedulesDetails: ISchedulesDetails[],
-  fields: IField[],
+  fields: IScheduleField[],
   timeSlots: ITimeSlot[],
   divisions: IScheduleDivision[] | IDivision[],
   event: IEventDetails,

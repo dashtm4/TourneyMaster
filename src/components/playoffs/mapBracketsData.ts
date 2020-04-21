@@ -25,14 +25,15 @@ export const mapBracketData = async (bracket: IBracket, isDraft: boolean) => {
   return {
     bracket_id: bracket.id,
     schedule_id: bracket.scheduleId,
+    event_id: bracket.eventId,
     bracket_name: bracket.name,
     bracket_date: bracket.bracketDate,
     bracket_status: isDraft ? 'Draft' : 'Published',
     align_games: YN(bracket.alignItems),
     adjust_columns: YN(bracket.adjustTime),
-    start_timeslot: null,
+    start_timeslot: bracket.startTimeSlot,
     custom_warmup: bracket.warmup,
-    end_timeslot: null,
+    end_timeslot: bracket.endTimeSlot,
     fields_excluded: null,
     is_active_YN: 1,
     created_by: memberId,
@@ -51,7 +52,7 @@ export const mapBracketGames = async (
 
   return bracketGames.map(
     (game): IPlayoffGame => ({
-      game_id: getVarcharEight(),
+      game_id: game.id || getVarcharEight(),
       bracket_id: bracket.id,
       event_id: bracket.eventId,
       division_id: game.divisionId,
@@ -60,6 +61,8 @@ export const mapBracketGames = async (
       field_id: game.fieldId || null,
       game_date: game.gameDate!,
       game_num: game.index,
+      away_depends_upon: game.awayDependsUpon || null,
+      home_depends_upon: game.homeDependsUpon || null,
       start_time: game.startTime!,
       seed_num_away: game.awaySeedId || null,
       seed_num_home: game.homeSeedId || null,
@@ -76,10 +79,7 @@ export const mapBracketGames = async (
   );
 };
 
-export const mapFetchedBracket = (
-  bracketData: IFetchedBracket,
-  eventId: string
-) => {
+export const mapFetchedBracket = (bracketData: IFetchedBracket) => {
   return {
     id: bracketData.bracket_id,
     name: bracketData.bracket_name,
@@ -88,7 +88,7 @@ export const mapFetchedBracket = (
     adjustTime: !!bracketData.adjust_columns,
     warmup: bracketData.custom_warmup,
     bracketDate: bracketData.bracket_date,
-    eventId,
+    eventId: bracketData.event_id,
     status: bracketData.bracket_status,
     createdBy: bracketData.created_by,
     createDate: bracketData.created_datetime,
@@ -100,14 +100,18 @@ export const mapFetchedBracket = (
 export const mapFetchedBracketGames = (bracketGames: IPlayoffGame[]) => {
   return bracketGames.map(
     (game): IBracketGame => ({
+      id: game.game_id,
       index: game.game_num,
       round: game.round_num,
+      gridNum: 1,
       divisionId: game.division_id,
       divisionName: game.bracket_year || undefined,
       awaySeedId: game.seed_num_away || undefined,
       homeSeedId: game.seed_num_home || undefined,
       awayTeamId: game.away_team_id || undefined,
       homeTeamId: game.home_team_id || undefined,
+      awayDependsUpon: game.away_depends_upon || undefined,
+      homeDependsUpon: game.home_depends_upon || undefined,
       awayDisplayName: '',
       homeDisplayName: '',
       fieldId: game.field_id || undefined,

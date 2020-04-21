@@ -9,6 +9,8 @@ export interface IPlayoffGame {
   game_date: Date | string;
   game_num: number;
   start_time: string | null;
+  away_depends_upon: number | null;
+  home_depends_upon: number | null;
   seed_num_away: number | null;
   seed_num_home: number | null;
   away_team_id: string | null;

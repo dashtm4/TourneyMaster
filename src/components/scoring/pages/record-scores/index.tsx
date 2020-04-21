@@ -50,6 +50,7 @@ import {
 import {
   fillSchedulesTable,
   updateSchedulesTable,
+  clearSchedulesTable,
 } from 'components/schedules/logic/schedules-table/actions';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
@@ -82,6 +83,7 @@ interface Props {
   updateSchedulesTable: BindingCbWithOne<ITeamCard>;
   saveGames: BindingCbWithOne<ISchedulesGame[]>;
   onToggleFullScreen: BindingAction;
+  clearSchedulesTable: () => void;
 }
 
 interface State {
@@ -115,6 +117,7 @@ class RecordScores extends React.Component<
   componentDidMount() {
     const { loadScoresData } = this.props;
     const eventId = this.props.match.params.eventId;
+    this.props.clearSchedulesTable();
 
     if (eventId) {
       loadScoresData(eventId);
@@ -234,7 +237,7 @@ class RecordScores extends React.Component<
 
     this.props.saveGames(schedulesGames);
 
-    this.setState({ isExposurePopupOpen: false });
+    this.setState({ isExposurePopupOpen: false, changesAreMade: false });
   };
 
   onChangeView = (flag: boolean) => this.setState({ isEnterScores: flag });
@@ -245,17 +248,17 @@ class RecordScores extends React.Component<
     History.push(`${Routes.SCORING}/${eventId || ''}`);
   };
 
+  saveOnExit = () => {
+    this.saveDraft();
+    this.leavePage();
+  };
+
   onLeavePage = () => {
     if (this.state.changesAreMade) {
       this.setState({ isExposurePopupOpen: true });
     } else {
       this.leavePage();
     }
-  };
-
-  onSaveExit = () => {
-    this.saveDraft();
-    this.leavePage();
   };
 
   onClosePopup = () => this.setState({ isExposurePopupOpen: false });
@@ -340,7 +343,7 @@ class RecordScores extends React.Component<
           isOpen={isExposurePopupOpen}
           onClose={this.onClosePopup}
           onExitClick={this.leavePage}
-          onSaveClick={this.onSaveExit}
+          onSaveClick={this.saveOnExit}
         />
       </div>
     );
@@ -364,7 +367,13 @@ export default connect(
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadScoresData, fillSchedulesTable, updateSchedulesTable, saveGames },
+      {
+        loadScoresData,
+        fillSchedulesTable,
+        updateSchedulesTable,
+        saveGames,
+        clearSchedulesTable,
+      },
       dispatch
     )
 )(RecordScores);

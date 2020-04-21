@@ -13,6 +13,7 @@ import { ButtonColors, ButtonVarian } from 'common/enums';
 import { OrderTypes, TableSortRowTypes } from './common';
 import { ITableSortEntity } from '../../common';
 import styles from './styles.module.scss';
+import { BindingCbWithOne } from 'common/models';
 const useStyles = makeStyles({
   tableRowEven: {
     backgroundColor: '#F7F7F7',
@@ -35,11 +36,12 @@ const BTN_STYLES = {
 };
 interface Props {
   rows: ITableSortEntity[];
-  onShare: (id: string) => void;
-  onDelete: (entity: ITableSortEntity) => void;
+  onDelete: BindingCbWithOne<ITableSortEntity>;
+  onShare?: (id: string) => void;
+  onClone?: (id: string) => void;
 }
 
-const TableSort = ({ rows, onShare, onDelete }: Props) => {
+const TableSort = ({ rows, onShare, onDelete, onClone }: Props) => {
   const classes = useStyles();
   const [order, setOrder] = React.useState<OrderTypes>(OrderTypes.ASC);
   const [orderBy, setOrderBy] = React.useState<TableSortRowTypes>(
@@ -82,13 +84,24 @@ const TableSort = ({ rows, onShare, onDelete }: Props) => {
                 </TableCell>
                 <TableCell className={classes.tableCell}>
                   <p className={styles.btnsWrapper}>
-                    <Button
-                      onClick={() => onShare(row.id)}
-                      variant={ButtonVarian.TEXT}
-                      color={ButtonColors.SECONDARY}
-                      btnStyles={BTN_STYLES}
-                      label="Apply to…"
-                    />
+                    {onShare && (
+                      <Button
+                        onClick={() => onShare(row.id)}
+                        variant={ButtonVarian.TEXT}
+                        color={ButtonColors.SECONDARY}
+                        btnStyles={BTN_STYLES}
+                        label="Apply to…"
+                      />
+                    )}
+                    {onClone && (
+                      <Button
+                        onClick={() => onClone(row.id)}
+                        variant={ButtonVarian.TEXT}
+                        color={ButtonColors.SECONDARY}
+                        btnStyles={BTN_STYLES}
+                        label="Clone"
+                      />
+                    )}
                     <span className={styles.deleteBtnWrapper}>
                       <Button
                         onClick={() => onDelete(row)}

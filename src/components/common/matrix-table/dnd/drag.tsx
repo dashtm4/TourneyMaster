@@ -8,6 +8,7 @@ import { getIcon } from 'helpers';
 import { Icons, TableScheduleTypes } from 'common/enums';
 import { IInputEvent } from 'common/types';
 import styles from './styles.module.scss';
+import { getContrastingColor } from '../helper';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -95,7 +96,11 @@ export default (props: Props) => {
         <p className={styles.cardNameWrapper}>
           <span
             className={styles.cardTextWrapper}
-            style={{ color: showHeatmap ? '#f8f8f8' : 'gray' }}
+            style={{
+              color: showHeatmap
+                ? getContrastingColor(teamCard.divisionHex)
+                : 'gray',
+            }}
           >
             {teamCard.name}&nbsp;({teamCard.divisionShortName})
           </span>

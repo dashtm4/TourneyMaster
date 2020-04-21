@@ -279,13 +279,13 @@ export const deleteSchedule = (schedule: ISchedulingSchedule) => async (
   }
 };
 
-const callPostPut = (uri: string, data: any, update: boolean) =>
-  update ? api.put(uri, data) : api.post(uri, data);
+const callPostDelete = (uri: string, data: any, isDraft: boolean) =>
+  isDraft ? api.delete(uri, data) : api.post(uri, data);
 
-const getGamesByScheduleId = async (scheduleId: string) => {
-  const games = await api.get('/games', { schedule_id: scheduleId });
-  return games;
-};
+// const getGamesByScheduleId = async (scheduleId: string) => {
+//   const games = await api.get('/games', { schedule_id: scheduleId });
+//   return games;
+// };
 
 const showError = () => {
   errorToast('Something happened during the saving process');
@@ -386,8 +386,8 @@ const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
 
   const schedule = mapSchedulingScheduleData(schedulingSchedule);
 
-  const scheduleGames = await getGamesByScheduleId(scheduleId);
-  const gamesExist = scheduleGames?.length;
+  // const scheduleGames = await getGamesByScheduleId(scheduleId);
+  // const gamesExist = scheduleGames?.length;
 
   /* PUT Schedule */
   const updatedSchedule: ISchedule = {
@@ -430,7 +430,7 @@ const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
 
   const schedulesGamesResp = await Promise.all(
     schedulesGamesChunk.map(
-      async arr => await callPostPut('/games', arr, gamesExist)
+      async arr => await callPostDelete('/games', arr, isDraft)
     )
   );
 
@@ -491,9 +491,13 @@ export const createNewBracket = (bracketData: ICreateBracketModalOutput) => (
   dispatch(addNewBracket(bracketData));
 };
 
-export const getEventBrackets = () => async (dispatch: Dispatch) => {
+export const getEventBrackets = () => async (
+  dispatch: Dispatch,
+  getState: GetState
+) => {
+  const { event_id } = getState().pageEvent.tournamentData.event || {};
   const members = await api.get(`/members`);
-  const response = await api.get('/brackets_details');
+  const response = await api.get('/brackets_details', { event_id });
 
   if (response?.length) {
     const mappedBrackets = response.map(mapFetchedBracket);
@@ -516,11 +520,10 @@ export const updateBracket = (bracket: ISchedulingBracket) => async (
   );
   const response = await api.put('/brackets_details', mappedBracket);
 
-  const eventId = getState().pageEvent.tournamentData.event?.event_id;
   const brackets = getState().scheduling.brackets;
 
   if (response) {
-    const updatedBracket = await mapFetchedBracket(mappedBracket, eventId!);
+    const updatedBracket = await mapFetchedBracket(mappedBracket);
     const updatedBrackets = brackets?.map(item =>
       item.id === updatedBracket.id ? updatedBracket : item
     );

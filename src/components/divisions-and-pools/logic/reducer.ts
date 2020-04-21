@@ -11,15 +11,18 @@ import {
   REGISTRATION_FETCH_SUCCESS,
   ALL_POOLS_FETCH_SUCCESS,
   SAVE_TEAMS_SUCCESS,
+  EDIT_POOL_SUCCESS,
+  DELETE_POOL_SUCCESS,
+  DivisionsPoolsAction,
 } from './actionTypes';
 import {
   ADD_ENTITIES_TO_LIBRARY_SUCCESS,
   AuthPageAction,
 } from 'components/authorized-page/authorized-page-event/logic/action-types';
-import { IPool, ITeam, IDivision } from 'common/models';
 import { sortByField } from 'helpers';
+import { IPool, ITeam, IDivision, IRegistration } from 'common/models';
 import { SortByFilesTypes, EntryPoints } from 'common/enums';
-import { IRegistration } from 'common/models/registration';
+import { mapTeamWithUnassignedTeams } from '../helpers';
 
 export interface IDivisionAndPoolsState {
   data?: Partial<IDivision>[];
@@ -43,7 +46,10 @@ const defaultState: IDivisionAndPoolsState = {
 
 export default (
   state = defaultState,
-  action: { type: string; payload?: any } | AuthPageAction
+  action:
+    | { type: string; payload?: any }
+    | AuthPageAction
+    | DivisionsPoolsAction
 ) => {
   switch (action.type) {
     case DIVISIONS_TEAMS_FETCH_START: {
@@ -163,6 +169,27 @@ export default (
       } else {
         return state;
       }
+    }
+    case EDIT_POOL_SUCCESS: {
+      const { pool } = action.payload;
+
+      return {
+        ...state,
+        pools: state.pools.map(it => (it.pool_id === pool.pool_id ? pool : it)),
+      };
+    }
+    case DELETE_POOL_SUCCESS: {
+      const { deletedPool, unassignedTeams } = action.payload;
+      const mappedTeam = mapTeamWithUnassignedTeams(
+        state.teams,
+        unassignedTeams
+      );
+
+      return {
+        ...state,
+        pools: state.pools.filter(it => it.pool_id !== deletedPool.pool_id),
+        teams: mappedTeam,
+      };
     }
     default:
       return state;

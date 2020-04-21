@@ -25,7 +25,11 @@ import {
   clearSchedulesTable,
 } from 'components/schedules/logic/schedules-table/actions';
 import { IBracket } from 'common/models/playoffs/bracket';
-import { getTimeValuesFromEventSchedule, calculateTimeSlots } from 'helpers';
+import {
+  getTimeValuesFromEventSchedule,
+  calculateTimeSlots,
+  getVarcharEight,
+} from 'helpers';
 import {
   sortFieldsByPremier,
   defineGames,
@@ -64,6 +68,7 @@ import {
   fetchBracketGames,
 } from './logic/actions';
 import { updateGameBracketInfo } from './helper';
+import { IOnAddGame } from './add-game-modal';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
   eventSummary?: IEventSummary[];
@@ -120,7 +125,7 @@ class Playoffs extends Component<IProps> {
     cancelConfirmationOpen: false,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { event, match } = this.props;
     const eventId = event?.event_id!;
     const { scheduleId, bracketId } = match.params;
@@ -345,13 +350,54 @@ class Playoffs extends Component<IProps> {
     this.props.history.push(`/event/scheduling/${eventId}`);
   };
 
-  addGame = () => {};
+  addGame = (selectedDivision: string, data: IOnAddGame) => {
+    const { bracketGames } = this.state;
+
+    if (bracketGames) {
+      console.log('bracketGames', bracketGames);
+    }
+
+    const divisionGames = bracketGames?.filter(
+      v => v.divisionId === selectedDivision
+    );
+
+    if (!divisionGames?.length) return console.log('error 358');
+
+    const bracketGame = {
+      id: getVarcharEight(),
+      index: divisionGames.length + 1,
+      round: 0,
+      gridNum: data.gridNum,
+      divisionId: selectedDivision,
+      divisionName: divisionGames[0].divisionName,
+      awaySeedId: undefined,
+      homeSeedId: undefined,
+      awayTeamId: undefined,
+      homeTeamId: undefined,
+      awayDisplayName: 'Away',
+      homeDisplayName: 'Home',
+      awayDependsUpon: data.awayDependsUpon,
+      homeDependsUpon: data.homeDependsUpon,
+      fieldId: undefined,
+      fieldName: undefined,
+      startTime: undefined,
+      gameDate: divisionGames[0].gameDate,
+      hidden: false,
+      createDate: new Date().toISOString(),
+    };
+
+    const newBracketGames = [...bracketGames, bracketGame];
+
+    this.setState({
+      bracketGames: newBracketGames,
+    });
+  };
 
   onSeedsUsed = () => {};
 
   onSavePressed = () => {
-    const { bracketGames, cancelConfirmationOpen } = this.state;
     const { match } = this.props;
+    const { bracketGames, cancelConfirmationOpen } = this.state;
     const { bracketId } = match.params;
 
     if (bracketId) {
@@ -377,6 +423,8 @@ class Playoffs extends Component<IProps> {
       tableGames,
       cancelConfirmationOpen,
     } = this.state;
+
+    console.log('this.state.bracketGames', bracketGames);
 
     const {
       bracket,
@@ -458,6 +506,7 @@ class Playoffs extends Component<IProps> {
                 divisions={divisions!}
                 seeds={bracketSeeds}
                 bracketGames={bracketGames}
+                addGame={this.addGame}
               />
             )}
           </section>

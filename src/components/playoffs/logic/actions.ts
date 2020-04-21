@@ -84,26 +84,21 @@ export const createPlayoff = (bracketGames: IBracketGame[]) => (
   dispatch<any>(managePlayoffSaving(bracketGames, true));
 };
 
-export const savePlayoff = (bracketGames: IBracketGame[]) => () => (
+export const savePlayoff = (bracketGames: IBracketGame[]) => (
   dispatch: Dispatch
 ) => {
   dispatch<any>(managePlayoffSaving(bracketGames, false));
 };
 
 export const retrieveBrackets = (bracketId: string) => async (
-  dispatch: Dispatch,
-  getState: IGetState
+  dispatch: Dispatch
 ) => {
-  const { pageEvent } = getState();
-  const { event } = pageEvent.tournamentData;
-  const eventId = event?.event_id!;
-
   const response = await api.get('/brackets_details', {
     bracket_id: bracketId,
   });
 
   if (response?.length) {
-    const bracketData = mapFetchedBracket(response[0], eventId);
+    const bracketData = mapFetchedBracket(response[0]);
     dispatch(addNewBracket(bracketData));
   }
 };

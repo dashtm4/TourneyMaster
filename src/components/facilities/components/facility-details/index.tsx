@@ -43,7 +43,7 @@ enum FormFields {
   LAST_GAME_END = 'last_game_end',
   PARKING_AVAILABLE = 'parking_available',
   PARKING_PROXIMITY = 'parking_proximity',
-  GOLF_CARTS_AVAILABE = 'golf_carts_availabe',
+  GOLF_CARTS_AVAILABLE = 'golf_carts_available',
   PARKING_DETAILS = 'parking_details',
 }
 
@@ -427,14 +427,14 @@ class FacilityDetails extends React.Component<Props, State> {
               <Checkbox
                 onChange={() =>
                   this.onChangeFacility(
-                    FormFields.GOLF_CARTS_AVAILABE,
-                    facility.golf_carts_availabe ? 0 : 1
+                    FormFields.GOLF_CARTS_AVAILABLE,
+                    facility.golf_carts_available ? 0 : 1
                   )
                 }
                 options={[
                   {
                     label: 'Golf Carts Available',
-                    checked: Boolean(facility.golf_carts_availabe),
+                    checked: Boolean(facility.golf_carts_available),
                     disabled: !isEdit,
                   },
                 ]}

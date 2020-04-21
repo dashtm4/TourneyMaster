@@ -3,6 +3,8 @@ import { Modal, HeadingLevelTwo, Select, Button } from 'components/common';
 import { IEventDetails, BindingAction, BindingCbWithOne } from 'common/models';
 import { ButtonVarian, ButtonColors } from 'common/enums';
 import styles from './styles.module.scss';
+import { IInputEvent } from 'common/types';
+import { orderBy } from 'lodash-es';
 
 interface Props {
   activeEvent: IEventDetails | null;
@@ -26,9 +28,9 @@ const PopupShare = ({
     value: it.event_id,
   }));
 
-  const onChange = ({
-    target: { value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
+  const sortedSelecOptions = orderBy(selectOptions, 'label', 'asc');
+
+  const onChange = ({ target: { value } }: IInputEvent) => {
     const currentEvent = events.find(it => it.event_id === value);
 
     onChangeActiveEvent(currentEvent!);
@@ -44,7 +46,7 @@ const PopupShare = ({
           <Select
             onChange={onChange}
             value={activeEvent?.event_id || ''}
-            options={selectOptions}
+            options={sortedSelecOptions}
             label="Select event"
             width="100%"
           />

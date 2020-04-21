@@ -208,7 +208,7 @@ class RegistrationView extends React.Component<
             ) : (
               !this.props.isLoading && (
                 <div className={styles.noFoundWrapper}>
-                  <span>There is no registration yet.</span>
+                  <span>There are currently no registrations. Start with the above "Add" button.</span>
                 </div>
               )
             )}

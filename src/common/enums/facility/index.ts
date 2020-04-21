@@ -23,7 +23,7 @@ enum IFacilityFields {
   PARKING_AVAILABLE = 'parking_available',
   PARKING_DETAILS = 'parking_details',
   PARKING_PROXIMITY = 'parking_proximity',
-  GOLF_CARTS_AVAILABE = 'golf_carts_availabe',
+  GOLF_CARTS_AVAILABLE = 'golf_carts_available',
   FIELD_MAP_URL = 'field_map_URL',
   IS_ACTIVE_YN = 'is_active_YN',
   IS_LIBRARY_YN = 'is_library_YN',

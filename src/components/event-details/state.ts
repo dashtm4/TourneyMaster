@@ -44,6 +44,7 @@ const eventState = () => ({
   ranking_factor_divisions: DEFAULT_RANKING_VALUE,
   ranking_factor_pools: DEFAULT_RANKING_VALUE,
   is_active_YN: 0,
+  is_published_YN: 0,
 });
 
 enum UploadLogoTypes {

@@ -7,6 +7,7 @@ import { IGame } from 'components/common/matrix-table/helper';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { DEFAUL_COLUMNS_COUNT } from '../../common';
 import { styles } from './styles';
+import { getContrastingColor } from '../../../../components/common/matrix-table/helper';
 
 const EVEN_COLOR = '#DCDCDC';
 
@@ -29,7 +30,7 @@ const RowTimeSlot = ({
 }: Props) => {
   const getTeamColorStyles = (team: ITeamCard) => ({
     backgroundColor: isHeatMap ? team.divisionHex : '',
-    color: isHeatMap ? '#ffffff' : '#000000',
+    color: isHeatMap ? getContrastingColor(team.divisionHex) : '#000000',
   });
 
   const getTeam = (team: ITeamCard) => (

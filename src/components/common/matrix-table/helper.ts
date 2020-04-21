@@ -20,6 +20,8 @@ export interface IGame {
   fieldId: string;
   isPremier?: boolean;
   // added new
+  awayDependsUpon?: number;
+  homeDependsUpon?: number;
   isPlayoff?: boolean;
   playoffRound?: number;
   playoffIndex?: number;
@@ -189,4 +191,29 @@ export const calculateDays = (teamCards: ITeamCard[]) => {
   const sortedUniqueDates = orderBy(uniqueDates, [], 'asc');
 
   return sortedUniqueDates;
+};
+
+const hexToRgb = (hex?: string) => {
+  if (!hex) {
+    return null;
+  }
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
+};
+
+export const getContrastingColor = (color?: string) => {
+  const colorRGB = hexToRgb(color);
+  if (colorRGB) {
+    const luminance =
+      // Original: 0.299 + 0.587 + 0.114.
+      colorRGB.r * 0.29 + colorRGB.g * 0.58 + colorRGB.b * 0.1;
+    return luminance >= 123 ? '#000' : '#FFF';
+  }
+  return '#FFF';
 };

@@ -9,7 +9,7 @@ const mockedFacilities = [
     parking_available: 'AmAmAmple',
     parking_details: 'parking_details',
     parking_proximity: 300,
-    golf_carts_availabe: true,
+    golf_carts_available: true,
   },
   {
     facilities_id: '2',
@@ -21,7 +21,7 @@ const mockedFacilities = [
     parking_available: null,
     parking_details: null,
     parking_proximity: null,
-    golf_carts_availabe: false,
+    golf_carts_available: false,
   },
 ];
 
