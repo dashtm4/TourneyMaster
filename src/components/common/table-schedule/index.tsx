@@ -16,7 +16,7 @@ import {
   BindingAction,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes, DayTypes } from './types';
-import { mapGamesByField } from 'helpers';
+import { getAllGamesByTeamCards } from 'helpers';
 import {
   IGame,
   settleTeamsPerGames,
@@ -216,6 +216,8 @@ const TableSchedule = ({
 
   const togglePopupSaveReport = () => onPopupSaveReport(!isPopupSaveReportOpen);
 
+  const allGamesByTeamCards = getAllGamesByTeamCards(teamCards, games);
+
   return (
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
@@ -311,7 +313,7 @@ const TableSchedule = ({
             />
             <PopupSaveReporting
               event={event}
-              games={mapGamesByField(tableGames, updatedFields)}
+              games={allGamesByTeamCards}
               fields={updatedFields}
               timeSlots={timeSlots}
               facilities={facilities}
