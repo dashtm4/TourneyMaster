@@ -21,14 +21,22 @@ class NotificationsCard extends React.Component<
   INotificationCardProps,
   INotificationCardState
 > {
-  state = { currentData: [] };
+  state = { currentData: [], loaded: true };
 
   componentDidUpdate(
-    _prevProps: INotificationCardProps,
+    prevProps: INotificationCardProps,
     prevState: INotificationCardState
   ) {
-    if (this.props.data.length && !prevState.currentData.length) {
-      this.setState({ currentData: this.props.data.slice(0, 5) });
+    if (
+      (this.props.data.length && !prevState.currentData.length) ||
+      this.props.data !== prevProps.data
+    ) {
+      this.setState({
+        currentData:
+          this.state.currentData.length > 5
+            ? this.props.data.slice(0, 10)
+            : this.props.data.slice(0, 5),
+      });
     }
   }
 
@@ -89,7 +97,7 @@ class NotificationsCard extends React.Component<
                       <div>{notification.cal_event_title}</div>
                       <div className={styles.additionalMessage}>
                         {moment(notification.cal_event_datetime).format(
-                          'MM.DD.YYYY'
+                          'MM.DD.YYYY, HH:mm'
                         )}
                       </div>
                     </div>
