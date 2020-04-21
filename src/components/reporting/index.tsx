@@ -21,6 +21,7 @@ import {
   ISchedulesDetails,
   IMenuItem,
   IPool,
+  BindingAction,
 } from 'common/models';
 import { EventMenuTitles } from 'common/enums';
 import { IAppState } from 'reducers/root-reducer.types';
@@ -41,7 +42,10 @@ import {
   ITeamCard,
 } from 'common/models/schedule/teams';
 import { mapTeamsFromSchedulesDetails } from 'components/schedules/mapScheduleData';
-import { fillSchedulesTable } from 'components/schedules/logic/schedules-table/actions';
+import {
+  fillSchedulesTable,
+  clearSchedulesTable,
+} from 'components/schedules/logic/schedules-table/actions';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IScheduleDivision } from 'common/models/schedule/divisions';
@@ -65,6 +69,7 @@ interface Props {
   schedulesTeamCards?: ITeamCard[];
   loadReportingData: (eventId: string) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
+  clearSchedulesTable: BindingAction;
 }
 
 interface State {
@@ -91,6 +96,7 @@ class Reporting extends React.Component<
 
   componentDidMount() {
     const eventId = this.props.match.params.eventId;
+    this.props.clearSchedulesTable();
 
     this.props.loadReportingData(eventId);
   }
@@ -233,5 +239,8 @@ export default connect(
     pools: reporting.pools,
   }),
   (dispatch: Dispatch) =>
-    bindActionCreators({ loadReportingData, fillSchedulesTable }, dispatch)
+    bindActionCreators(
+      { loadReportingData, fillSchedulesTable, clearSchedulesTable },
+      dispatch
+    )
 )(Reporting);

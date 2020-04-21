@@ -2,6 +2,7 @@ import {
   LibraryManagerAction,
   LIBRARY_MANAGER_LOAD_DATA_START,
   LIBRARY_MANAGER_LOAD_DATA_SUCCESS,
+  SAVE_CLONED_ITEM_SUCCESS,
   DELETE_LIBRARY_ITEM_SUCCESS,
 } from './action-types';
 import {
@@ -120,6 +121,22 @@ const libraryManagerReducer = (
             schedules: state.schedules.filter(
               it => it.schedule_id !== schedule.schedule_id
             ),
+          };
+        }
+        default:
+          return state;
+      }
+    }
+    case SAVE_CLONED_ITEM_SUCCESS: {
+      const { entity, entryPoint } = action.payload;
+
+      switch (entryPoint) {
+        case EntryPoints.EVENTS: {
+          const event = entity as IEventDetails;
+
+          return {
+            ...state,
+            events: [...state.events, event],
           };
         }
         default:

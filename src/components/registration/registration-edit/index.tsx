@@ -16,7 +16,7 @@ interface IRegistrationEditProps {
   onSave: BindingAction;
   registration?: IRegistration;
   onChange: BindingCbWithTwo<string, any>;
-  previousRegistration: IRegistration;
+  changesAreMade: boolean;
 }
 
 interface IRegistrationEditState {
@@ -34,7 +34,7 @@ class RegistrationEdit extends React.Component<
   };
 
   onCancelClick = () => {
-    if (this.props.previousRegistration !== this.props.registration) {
+    if (this.props.changesAreMade) {
       this.setState({ isExposurePopupOpen: true });
     } else {
       this.props.onCancel();

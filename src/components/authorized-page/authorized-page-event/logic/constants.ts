@@ -8,6 +8,7 @@ export const EventMenu = [
     children: [
       EventMenuTitles.PRIMARY_INFORMATION,
       EventMenuTitles.EVENT_STRUCTURE,
+      EventMenuTitles.WELLNESS,
       EventMenuTitles.RANKINGS,
       EventMenuTitles.PLAYOFFS,
       EventMenuTitles.MEDIA_ASSETS,

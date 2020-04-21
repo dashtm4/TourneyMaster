@@ -168,7 +168,8 @@ const sortTeamsByBestRecord = (
   b: ITeamWithResults,
   _: unknown
 ) => {
-  const sortedTeams = b.wins - a.wins;
+  const sortedTeams =
+    b.wins / (b.wins + b.tie + b.losses) - a.wins / (a.wins + a.tie + a.losses);
 
   return sortedTeams;
 };
@@ -241,6 +242,21 @@ const sortTeamsByGoalAllowed = (
   return sortedTeams;
 };
 
+const getFiltredTeamByResults = (teams: ITeamWithResults[]) => {
+  const filtredTeamByResults = teams.reduce(
+    (acc, teams) =>
+      teams.wins > 0 || teams.losses > 0 || teams.tie > 0
+        ? { ...acc, teamWithResults: [...acc.teamWithResults, teams] }
+        : { ...acc, teamWithoutResults: [...acc.teamWithoutResults, teams] },
+    {
+      teamWithResults: [] as ITeamWithResults[],
+      teamWithoutResults: [] as ITeamWithResults[],
+    }
+  );
+
+  return filtredTeamByResults;
+};
+
 const SortTeamsBy = {
   [RankingFactorValues.WIN_PERCENTAGE]: sortTeamsByBestRecord,
   [RankingFactorValues.HEAD_TO_HEAD]: sortTeamsByHeadToHead,
@@ -260,9 +276,9 @@ const sortTeamByScored = (
     return teams;
   }
 
-  const localTeams = [...teams];
+  const filtredTeamsByResults = getFiltredTeamByResults(teams);
 
-  return localTeams.sort(
+  const sortedTeams = filtredTeamsByResults.teamWithResults.sort(
     (a, b) =>
       SortTeamsBy[parsedRankings[0]](a, b, games) ||
       SortTeamsBy[parsedRankings[1]](a, b, games) ||
@@ -270,6 +286,8 @@ const sortTeamByScored = (
       SortTeamsBy[parsedRankings[3]](a, b, games) ||
       SortTeamsBy[parsedRankings[4]](a, b, games)
   );
+
+  return [...sortedTeams, ...filtredTeamsByResults.teamWithoutResults];
 };
 
 export { getTeamsWithResults, sortTeamByScored };

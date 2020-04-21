@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { Button, Paper } from 'components/common';
+import { Dispatch, bindActionCreators } from 'redux';
+import moment from 'moment';
+import { DndProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import { History } from 'history';
+import { Button, Paper, PopupExposure } from 'components/common';
 import styles from './styles.module.scss';
 import BracketManager from './tabs/brackets';
 import ResourceMatrix from './tabs/resources';
@@ -15,18 +19,22 @@ import {
   IPool,
   ISchedulesDetails,
 } from 'common/models';
-import { bindActionCreators } from 'redux';
 import { fetchEventSummary } from 'components/schedules/logic/actions';
 import {
   fillSchedulesTable,
   clearSchedulesTable,
 } from 'components/schedules/logic/schedules-table/actions';
 import { IBracket } from 'common/models/playoffs/bracket';
-import { getTimeValuesFromEventSchedule, calculateTimeSlots } from 'helpers';
+import {
+  getTimeValuesFromEventSchedule,
+  calculateTimeSlots,
+  getVarcharEight,
+} from 'helpers';
 import {
   sortFieldsByPremier,
   defineGames,
   IGame,
+  settleTeamsPerGamesDays,
 } from 'components/common/matrix-table/helper';
 import {
   mapFieldsData,
@@ -38,6 +46,29 @@ import { mapTeamsFromSchedulesDetails } from 'components/schedules/mapScheduleDa
 import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
+import {
+  IBracketGame,
+  IBracketSeed,
+  getFacilityData,
+  populateBracketGamesWithData,
+  populatePlayoffGames,
+  createSeeds,
+  createBracketGames,
+} from './bracketGames';
+import {
+  populateDefinedGamesWithPlayoffState,
+  adjustPlayoffTimeOnLoad,
+} from 'components/schedules/definePlayoffs';
+import {
+  createPlayoff,
+  savePlayoff,
+  retrieveBracketsGames,
+  retrieveBrackets,
+  clearBracketGames,
+  fetchBracketGames,
+} from './logic/actions';
+import { updateGameBracketInfo } from './helper';
+import { IOnAddGame } from './add-game-modal';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
   eventSummary?: IEventSummary[];
@@ -46,16 +77,27 @@ interface IMapStateToProps extends Partial<ITournamentData> {
   pools?: IPool[];
   schedulesTeamCards?: ITeamCard[];
   schedulesDetails?: ISchedulesDetails[];
+  playoffSaved?: boolean;
+  bracketGames: IBracketGame[] | null;
 }
+
 interface IMapDispatchToProps {
   fetchEventSummary: (eventId: string) => void;
   fetchSchedulesDetails: (scheduleId: string) => void;
   getAllPools: (divisionIds: string[]) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
   clearSchedulesTable: () => void;
+  createPlayoff: (bracketGames: IBracketGame[]) => void;
+  savePlayoff: (bracketGames: IBracketGame[]) => void;
+  retrieveBracketsGames: (bracketId: string) => void;
+  retrieveBrackets: (bracketId: string) => void;
+  clearBracketGames: () => void;
+  fetchBracketGames: (bracketGames: IBracketGame[]) => void;
 }
+
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
   match: any;
+  history: History;
 }
 
 interface IState {
@@ -65,6 +107,11 @@ interface IState {
   timeSlots?: ITimeSlot[];
   fields?: IField[];
   facilities?: IScheduleFacility[];
+  bracketGames?: IBracketGame[];
+  bracketSeeds?: IBracketSeed[];
+  playoffTimeSlots?: ITimeSlot[];
+  tableGames?: IGame[];
+  cancelConfirmationOpen: boolean;
 }
 
 enum PlayoffsTabsEnum {
@@ -75,19 +122,27 @@ enum PlayoffsTabsEnum {
 class Playoffs extends Component<IProps> {
   state: IState = {
     activeTab: PlayoffsTabsEnum.ResourceMatrix,
+    cancelConfirmationOpen: false,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { event, match } = this.props;
     const eventId = event?.event_id!;
-    const { scheduleId } = match.params;
+    const { scheduleId, bracketId } = match.params;
 
+    this.props.clearBracketGames();
     this.props.clearSchedulesTable();
     this.props.fetchEventSummary(eventId);
     this.props.fetchSchedulesDetails(scheduleId);
+
+    if (bracketId) {
+      this.retrieveBracketsData();
+    } else {
+      this.createBracketGames();
+    }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: IProps) {
     const { schedulesDetails, schedulesTeamCards } = this.props;
     const { teams } = this.state;
 
@@ -99,7 +154,26 @@ class Playoffs extends Component<IProps> {
     if (!this.state.games) {
       this.calculateNeccessaryData();
     }
+
+    if (!this.state.playoffTimeSlots) {
+      this.calculatePlayoffTimeSlots();
+    }
+
+    if (!this.state.tableGames) {
+      this.calculateBracketGames();
+    }
+
+    if (this.props.playoffSaved && !prevProps.playoffSaved) {
+      this.updateUrlWithBracketId();
+    }
   }
+
+  updateUrlWithBracketId = () => {
+    const { match, bracket } = this.props;
+    const { eventId, scheduleId } = match.params;
+    const bracketId = bracket?.id;
+    this.props.history.push(`/playoffs/${eventId}/${scheduleId}/${bracketId}`);
+  };
 
   calculateNeccessaryData = () => {
     const {
@@ -134,8 +208,223 @@ class Playoffs extends Component<IProps> {
     });
   };
 
+  createBracketGames = () => {
+    const { event, divisions } = this.props;
+    const bracketTeamsNum = event?.num_teams_bracket || 0;
+    const bracketGames = createBracketGames(divisions!, bracketTeamsNum);
+    this.props.fetchBracketGames(bracketGames);
+  };
+
+  retrieveBracketsData = () => {
+    const { match } = this.props;
+    const { bracketId } = match.params;
+    this.props.retrieveBracketsGames(bracketId);
+    this.props.retrieveBrackets(bracketId);
+  };
+
+  calculatePlayoffTimeSlots = () => {
+    const { schedulesDetails, divisions, event } = this.props;
+    const { timeSlots, fields } = this.state;
+
+    const day = event?.event_enddate;
+
+    if (
+      !schedulesDetails ||
+      !fields ||
+      !timeSlots ||
+      !divisions ||
+      !event ||
+      !day
+    )
+      return;
+
+    const playoffTimeSlots = adjustPlayoffTimeOnLoad(
+      schedulesDetails,
+      fields,
+      timeSlots,
+      divisions,
+      event,
+      day
+    );
+
+    if (playoffTimeSlots) {
+      this.setState({ playoffTimeSlots });
+    }
+  };
+
+  calculateBracketGames = () => {
+    const {
+      event,
+      divisions,
+      schedulesTeamCards,
+      fields,
+      bracketGames,
+    } = this.props;
+    const { games, playoffTimeSlots } = this.state;
+    const bracketTeamsNum = event?.num_teams_bracket || 0;
+    const gameDate = moment(event?.event_enddate).toISOString();
+
+    if (
+      !divisions ||
+      !games ||
+      !playoffTimeSlots ||
+      !schedulesTeamCards ||
+      !bracketGames ||
+      !fields
+    )
+      return;
+
+    const definedGames = populateDefinedGamesWithPlayoffState(
+      games,
+      playoffTimeSlots
+    );
+
+    const facilityData = getFacilityData(schedulesTeamCards, games);
+    const mergedGames = populatePlayoffGames(
+      definedGames,
+      bracketGames,
+      divisions,
+      facilityData
+    );
+
+    const tableGames = settleTeamsPerGamesDays(
+      mergedGames,
+      schedulesTeamCards,
+      gameDate
+    );
+
+    const populatedBracketGames = populateBracketGamesWithData(
+      bracketGames,
+      mergedGames,
+      fields,
+      gameDate
+    );
+
+    const seeds = createSeeds(bracketTeamsNum);
+    this.setState({
+      tableGames,
+      bracketGames: populatedBracketGames,
+      bracketSeeds: seeds,
+    });
+  };
+
+  updateMergedGames = (game: IGame, withGame?: IGame) => {
+    const { tableGames, bracketGames } = this.state;
+
+    const updatedGame = updateGameBracketInfo(game, withGame);
+    const newTableGames = tableGames?.map(item =>
+      item.id === game.id ? updatedGame : item
+    );
+
+    const newBracketGames = bracketGames?.map(item =>
+      item.index === game.playoffIndex && item.divisionId === game.divisionId
+        ? {
+            ...item,
+            hidden: !!withGame?.playoffIndex,
+          }
+        : item
+    );
+
+    this.setState({
+      tableGames: newTableGames,
+      bracketGames: newBracketGames,
+    });
+  };
+
+  openCancelConfirmation = () =>
+    this.setState({ cancelConfirmationOpen: true });
+
+  closeCancelConfirmation = () =>
+    this.setState({ cancelConfirmationOpen: false });
+
+  onGoBack = () => {
+    // if (condition) {
+    this.openCancelConfirmation();
+    // } else {
+    // this.onExit();
+    // }
+  };
+
+  onExit = () => {
+    const { eventId } = this.props.match.params;
+    this.props.history.push(`/event/scheduling/${eventId}`);
+  };
+
+  addGame = (selectedDivision: string, data: IOnAddGame) => {
+    const { bracketGames } = this.state;
+
+    if (bracketGames) {
+      console.log('bracketGames', bracketGames);
+    }
+
+    const divisionGames = bracketGames?.filter(
+      v => v.divisionId === selectedDivision
+    );
+
+    if (!divisionGames?.length) return console.log('error 358');
+
+    const bracketGame = {
+      id: getVarcharEight(),
+      index: divisionGames.length + 1,
+      round: 0,
+      gridNum: data.gridNum,
+      divisionId: selectedDivision,
+      divisionName: divisionGames[0].divisionName,
+      awaySeedId: undefined,
+      homeSeedId: undefined,
+      awayTeamId: undefined,
+      homeTeamId: undefined,
+      awayDisplayName: 'Away',
+      homeDisplayName: 'Home',
+      awayDependsUpon: data.awayDependsUpon,
+      homeDependsUpon: data.homeDependsUpon,
+      fieldId: undefined,
+      fieldName: undefined,
+      startTime: undefined,
+      gameDate: divisionGames[0].gameDate,
+      hidden: false,
+      createDate: new Date().toISOString(),
+    };
+
+    const newBracketGames = [...bracketGames, bracketGame];
+
+    this.setState({
+      bracketGames: newBracketGames,
+    });
+  };
+
+  onSeedsUsed = () => {};
+
+  onSavePressed = () => {
+    const { match } = this.props;
+    const { bracketGames, cancelConfirmationOpen } = this.state;
+    const { bracketId } = match.params;
+
+    if (bracketId) {
+      this.props.savePlayoff(bracketGames!);
+    } else {
+      this.props.createPlayoff(bracketGames!);
+    }
+
+    if (cancelConfirmationOpen) {
+      this.closeCancelConfirmation();
+      this.onExit();
+    }
+  };
+
   render() {
-    const { activeTab, games, timeSlots, fields, facilities } = this.state;
+    const {
+      activeTab,
+      timeSlots,
+      fields,
+      facilities,
+      bracketGames,
+      bracketSeeds,
+      tableGames,
+      cancelConfirmationOpen,
+    } = this.state;
+
+    console.log('this.state.bracketGames', bracketGames);
 
     const {
       bracket,
@@ -148,58 +437,86 @@ class Playoffs extends Component<IProps> {
       schedulesDetails,
     } = this.props;
 
+    const saveButtonCondition = bracket && bracketGames;
+
     return (
       <div className={styles.container}>
-        <div className={styles.paperWrapper}>
-          <Paper>
-            <div className={styles.paperContainer}>
-              <div className={styles.bracketName}>
-                <span>{bracket?.name}</span>
+        <DndProvider backend={HTML5Backend}>
+          <div className={styles.paperWrapper}>
+            <Paper>
+              <div className={styles.paperContainer}>
+                <div className={styles.bracketName}>
+                  <span>{bracket?.name}</span>
+                </div>
+                <div>
+                  <Button
+                    label="Close"
+                    variant="text"
+                    color="secondary"
+                    onClick={this.onGoBack}
+                  />
+                  <Button
+                    label="Save"
+                    variant="contained"
+                    color="primary"
+                    disabled={!saveButtonCondition}
+                    onClick={this.onSavePressed}
+                  />
+                </div>
               </div>
-              <div>
-                <Button label="Close" variant="text" color="secondary" />
-                <Button label="Save" variant="contained" color="primary" />
-              </div>
-            </div>
-          </Paper>
-        </div>
-
-        <section className={styles.tabsContainer}>
-          <div className={styles.tabToggle}>
-            <div
-              className={activeTab === 1 ? styles.active : ''}
-              onClick={() => this.setState({ activeTab: 1 })}
-            >
-              Resource Matrix
-            </div>
-            <div
-              className={activeTab === 2 ? styles.active : ''}
-              onClick={() => this.setState({ activeTab: 2 })}
-            >
-              Bracket Manager
-            </div>
+            </Paper>
           </div>
-          {activeTab === PlayoffsTabsEnum.ResourceMatrix ? (
-            <ResourceMatrix
-              event={event}
-              divisions={divisions}
-              pools={pools}
-              teamCards={schedulesTeamCards}
-              games={games}
-              fields={fields}
-              timeSlots={timeSlots}
-              facilities={facilities}
-              scheduleData={schedule}
-              eventSummary={eventSummary}
-              schedulesDetails={schedulesDetails}
-              onTeamCardsUpdate={() => {}}
-              onTeamCardUpdate={() => {}}
-              onUndo={() => {}}
-            />
-          ) : (
-            <BracketManager />
-          )}
-        </section>
+
+          <section className={styles.tabsContainer}>
+            <div className={styles.tabToggle}>
+              <div
+                className={activeTab === 1 ? styles.active : ''}
+                onClick={() => this.setState({ activeTab: 1 })}
+              >
+                Resource Matrix
+              </div>
+              <div
+                className={activeTab === 2 ? styles.active : ''}
+                onClick={() => this.setState({ activeTab: 2 })}
+              >
+                Bracket Manager
+              </div>
+            </div>
+            {activeTab === PlayoffsTabsEnum.ResourceMatrix ? (
+              <ResourceMatrix
+                bracketGames={bracketGames}
+                event={event}
+                divisions={divisions}
+                pools={pools}
+                teamCards={schedulesTeamCards}
+                games={tableGames}
+                fields={fields}
+                timeSlots={timeSlots}
+                facilities={facilities}
+                scheduleData={schedule}
+                eventSummary={eventSummary}
+                schedulesDetails={schedulesDetails}
+                onTeamCardsUpdate={() => {}}
+                onTeamCardUpdate={() => {}}
+                onUndo={() => {}}
+                updateGame={this.updateMergedGames}
+              />
+            ) : (
+              <BracketManager
+                divisions={divisions!}
+                seeds={bracketSeeds}
+                bracketGames={bracketGames}
+                addGame={this.addGame}
+              />
+            )}
+          </section>
+        </DndProvider>
+        <PopupExposure
+          isOpen={cancelConfirmationOpen}
+          onClose={this.closeCancelConfirmation}
+          onExitClick={this.onExit}
+          onSaveClick={this.onSavePressed}
+        />
       </div>
     );
   }
@@ -211,6 +528,7 @@ const mapStateToProps = ({
   scheduling,
   divisions,
   schedulesTable,
+  playoffs,
 }: IAppState): IMapStateToProps => ({
   event: pageEvent.tournamentData.event,
   facilities: pageEvent.tournamentData.facilities,
@@ -224,6 +542,8 @@ const mapStateToProps = ({
   pools: divisions?.pools,
   schedulesTeamCards: schedulesTable.current,
   schedulesDetails: schedules?.schedulesDetails,
+  playoffSaved: playoffs?.playoffSaved,
+  bracketGames: playoffs?.bracketGames,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
@@ -234,6 +554,12 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       getAllPools,
       fillSchedulesTable,
       clearSchedulesTable,
+      createPlayoff,
+      savePlayoff,
+      retrieveBracketsGames,
+      retrieveBrackets,
+      clearBracketGames,
+      fetchBracketGames,
     },
     dispatch
   );

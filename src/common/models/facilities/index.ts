@@ -24,7 +24,7 @@ export interface IFacility {
   parking_available: string | null;
   parking_details: string | null;
   parking_proximity: number | null;
-  golf_carts_availabe: boolean | null;
+  golf_carts_available: boolean | null;
   field_map_URL: string | null;
   is_active_YN: number | 1;
   is_library_YN: 0 | 1 | null;

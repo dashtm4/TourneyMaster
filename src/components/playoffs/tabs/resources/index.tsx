@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import { orderBy } from 'lodash-es';
 import styles from './styles.module.scss';
-import HTML5Backend from 'react-dnd-html5-backend';
 import { MatrixTable, Loader } from 'components/common';
 import {
   IEventDetails,
@@ -12,20 +12,19 @@ import {
 } from 'common/models';
 import { IField } from 'common/models/schedule/fields';
 import { ITeamCard } from 'common/models/schedule/teams';
-import {
-  IGame,
-  settleTeamsPerGamesDays,
-} from 'components/common/matrix-table/helper';
+import { IGame } from 'components/common/matrix-table/helper';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { TableScheduleTypes } from 'common/enums';
-import { DndProvider } from 'react-dnd';
+import { IBracketGame } from 'components/playoffs/bracketGames';
+import BracketGameCard from 'components/playoffs/dnd/bracket-game';
 import {
-  populateDefinedGamesWithPlayoffState,
-  adjustPlayoffTimeOnLoad,
-} from 'components/schedules/definePlayoffs';
+  MatrixTableDropEnum,
+  IDropParams,
+} from 'components/common/matrix-table/dnd/drop';
 
 interface IProps {
+  bracketGames?: IBracketGame[];
   event?: IEventDetails | null;
   divisions?: IDivision[];
   pools?: IPool[];
@@ -40,83 +39,34 @@ interface IProps {
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
+  updateGame: (game: IGame, withGame?: IGame) => void;
 }
 
 interface IState {
   tableGames?: IGame[];
-  playoffTimeSlots?: ITimeSlot[];
 }
 
 class ResourceMatrix extends Component<IProps> {
   state: IState = {};
 
-  componentDidMount() {
-    this.calculatePlayoffTimeSlots();
-    this.loadingTableData();
-  }
-
-  componentDidUpdate() {
-    const { tableGames } = this.state;
-
-    if (!tableGames) {
-      this.calculatePlayoffTimeSlots();
-      this.loadingTableData();
-    }
-  }
-
-  calculatePlayoffTimeSlots = () => {
-    const {
-      schedulesDetails,
-      fields,
-      timeSlots,
-      divisions,
-      event,
-    } = this.props;
-
-    const day = event?.event_enddate;
-
-    if (
-      !schedulesDetails ||
-      !fields ||
-      !timeSlots ||
-      !divisions ||
-      !event ||
-      !day
-    )
-      return;
-
-    const playoffTimeSlots = adjustPlayoffTimeOnLoad(
-      schedulesDetails,
-      fields,
-      timeSlots,
-      divisions,
-      event,
-      day
+  renderGame = (game: IGame, index: number) => {
+    return (
+      <BracketGameCard
+        key={`${index}-renderGame`}
+        game={game}
+        type={MatrixTableDropEnum.BracketDrop}
+      />
     );
-
-    this.setState({ playoffTimeSlots });
   };
 
-  loadingTableData = () => {
-    const { teamCards, games, event } = this.props;
-    const { playoffTimeSlots } = this.state;
-    const lastDay = event?.event_enddate;
+  onMoveCard = (dropParams: IDropParams) => {
+    const { teamId, gameId } = dropParams;
+    const { games } = this.props;
+    const dragGame = games!.find(item => +item.id === +teamId)!;
+    const dropGame = games!.find(item => item.id === gameId)!;
 
-    if (games && teamCards && lastDay && playoffTimeSlots) {
-      const definedGames = populateDefinedGamesWithPlayoffState(
-        games,
-        playoffTimeSlots
-      );
-
-      const tableGames = settleTeamsPerGamesDays(
-        definedGames,
-        teamCards,
-        lastDay
-      );
-      this.setState({
-        tableGames,
-      });
-    }
+    this.props.updateGame(dragGame);
+    this.props.updateGame(dropGame, dragGame);
   };
 
   render() {
@@ -133,19 +83,35 @@ class ResourceMatrix extends Component<IProps> {
       onTeamCardsUpdate,
       onTeamCardUpdate,
       onUndo,
+      games,
     } = this.props;
 
-    const { tableGames } = this.state;
+    const tableBracketGames = games?.filter(
+      v =>
+        v.isPlayoff &&
+        v.divisionId &&
+        v.playoffIndex &&
+        (v.awaySeedId ||
+          v.homeSeedId ||
+          v.awayDisplayName ||
+          v.homeDisplayName ||
+          v.awayDependsUpon ||
+          v.homeDependsUpon)
+    );
+    const orderedGames = orderBy(tableBracketGames, 'divisionId');
 
     return (
       <section className={styles.container}>
-        <div className={styles.leftColumn}></div>
+        <div className={styles.leftColumn}>
+          <div className={styles.gamesTitle}>Bracket Games</div>
+          {orderedGames?.map((v, i) => this.renderGame(v, i))}
+        </div>
         <div className={styles.rightColumn}>
           {event &&
           divisions &&
           pools &&
           teamCards &&
-          tableGames &&
+          games &&
           fields &&
           timeSlots &&
           facilities &&
@@ -154,24 +120,22 @@ class ResourceMatrix extends Component<IProps> {
           scheduleData &&
           onTeamCardUpdate &&
           onUndo ? (
-            <DndProvider backend={HTML5Backend}>
-              <MatrixTable
-                tableType={TableScheduleTypes.BRACKETS}
-                games={tableGames}
-                fields={fields}
-                timeSlots={timeSlots}
-                facilities={facilities}
-                showHeatmap={true}
-                isEnterScores={false}
-                moveCard={() => {}}
-                disableZooming={false}
-                onTeamCardUpdate={onTeamCardUpdate}
-                onTeamCardsUpdate={onTeamCardsUpdate}
-                teamCards={teamCards}
-                isFullScreen={false}
-                onToggleFullScreen={() => {}}
-              />
-            </DndProvider>
+            <MatrixTable
+              tableType={TableScheduleTypes.BRACKETS}
+              games={games}
+              fields={fields}
+              timeSlots={timeSlots}
+              facilities={facilities}
+              showHeatmap={true}
+              isEnterScores={false}
+              moveCard={this.onMoveCard}
+              disableZooming={false}
+              onTeamCardUpdate={onTeamCardUpdate}
+              onTeamCardsUpdate={onTeamCardsUpdate}
+              teamCards={teamCards}
+              isFullScreen={false}
+              onToggleFullScreen={() => {}}
+            />
           ) : (
             <Loader styles={{ height: '100%' }} />
           )}

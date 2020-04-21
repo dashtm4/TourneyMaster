@@ -38,6 +38,7 @@ import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 import CsvLoader from 'components/common/csv-loader';
 import { IEntity } from 'common/types';
 import { EntryPoints, LibraryStates } from 'common/enums';
+import WellnessStatement from './wellness-statement';
 
 interface IMapStateProps {
   event: IEventState;
@@ -63,6 +64,7 @@ type State = {
   isDeleteModalOpen: boolean;
   isCsvLoaderOpen: boolean;
   isSectionsExpand: boolean;
+  changesAreMade: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
@@ -74,6 +76,7 @@ class EventDetails extends Component<Props, State> {
     isDeleteModalOpen: false,
     isCsvLoaderOpen: false,
     isSectionsExpand: true,
+    changesAreMade: false,
   };
 
   componentDidMount() {
@@ -107,13 +110,16 @@ class EventDetails extends Component<Props, State> {
     });
   };
 
-  onChange = (name: string, value: any) => {
+  onChange = (name: string, value: any, ignore?: boolean) => {
     this.setState(({ event }) => ({
       event: {
         ...event,
         [name]: value,
       },
     }));
+    if (!this.state.changesAreMade && !ignore) {
+      this.setState({ changesAreMade: true });
+    }
   };
 
   onFileUpload = async (files: IUploadFile[]) => {
@@ -157,7 +163,11 @@ class EventDetails extends Component<Props, State> {
   };
 
   onCancelClick = () => {
-    this.setState({ isModalOpen: true });
+    if (this.state.changesAreMade) {
+      this.setState({ isModalOpen: true });
+    } else {
+      this.onCancel();
+    }
   };
 
   onModalClose = () => {
@@ -200,7 +210,7 @@ class EventDetails extends Component<Props, State> {
     return (
       <div className={styles.container}>
         <Navigation
-          isEventId={!this.props.match?.params.eventId}
+          isEventId={this.props.match?.params.eventId}
           onCancelClick={this.onCancelClick}
           onCsvLoaderBtn={this.onCsvLoaderBtn}
           onAddToLibraryManager={this.onAddToLibraryManager}
@@ -240,6 +250,11 @@ class EventDetails extends Component<Props, State> {
           onChange={this.onChange}
           isSectionExpand={this.state.isSectionsExpand}
         />
+        <WellnessStatement
+          eventData={event}
+          onChange={this.onChange}
+          isSectionExpand={this.state.isSectionsExpand}
+        />
         <Rankings
           eventData={event}
           onChange={this.onChange}
@@ -255,6 +270,7 @@ class EventDetails extends Component<Props, State> {
           onFileRemove={this.onFileRemove}
           isSectionExpand={this.state.isSectionsExpand}
           logo={event.desktop_icon_URL}
+          mobileLogo={event.mobile_icon_URL}
         />
         <DeletePopupConfrim
           type={'event'}

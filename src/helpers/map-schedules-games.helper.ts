@@ -26,11 +26,15 @@ const mapScheduleGamesWithNames = (
         id: game.game_id,
         fieldId: game.field_id,
         fieldName: currentField?.field_name || 'Field',
-        awayTeamId: game.away_team_id!,
-        awayTeamName: findTeam(game.away_team_id!, teams)?.short_name!,
+        awayTeamId: game.away_team_id,
+        awayTeamName: game.away_team_id
+          ? findTeam(game.away_team_id, teams)!.short_name
+          : null,
         awayTeamScore: game.away_team_score,
-        homeTeamId: game.home_team_id!,
-        homeTeamName: findTeam(game.home_team_id!, teams)?.short_name!,
+        homeTeamId: game.home_team_id,
+        homeTeamName: game.home_team_id
+          ? findTeam(game.home_team_id, teams)!.short_name
+          : null,
         homeTeamScore: game.home_team_score,
         gameDate: game.game_date,
         startTime: game.start_time!,

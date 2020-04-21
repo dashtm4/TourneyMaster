@@ -20,7 +20,7 @@ import styles from '../styles.module.scss';
 
 import Map from './map';
 import PlacesAutocompleteInput from './map/autocomplete';
-import { BindingCbWithTwo, IEventDetails } from 'common/models';
+import { IEventDetails } from 'common/models';
 import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
 import { timeToDate, dateToTime } from 'helpers';
 
@@ -31,7 +31,7 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
   eventData: Partial<IEventDetails>;
-  onChange: BindingCbWithTwo<string, string | number>;
+  onChange: (name: string, value: string | number, ignore?: boolean) => void;
   isSectionExpand: boolean;
 }
 
@@ -91,7 +91,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
 
   useEffect(() => {
     const calculatedSportId = getIdByGenderAndSport(genderId, sportId);
-    onChange('sport_id', calculatedSportId);
+    onChange('sport_id', calculatedSportId, true);
   }, [genderId, sportId]);
 
   const onNameChange = (e: InputTargetValue) =>
@@ -134,12 +134,23 @@ const PrimaryInformationSection: React.FC<Props> = ({
   const onDescriptionChange = (e: InputTargetValue) =>
     onChange('event_description', e.target.value);
 
-  const onPrimaryLocation = (address: string) =>
+  const onPrimaryLocation = (address: string) => {
     onChange('primary_location_desc', address);
+  };
 
-  const onGeneralLocationSelect = (position: IPosition) => {
+  const onGeneralLocationSelect = ({
+    position,
+    state,
+    city,
+  }: {
+    position: IPosition;
+    state: string;
+    city: string;
+  }) => {
     onChange('primary_location_lat', position.lat);
     onChange('primary_location_long', position.lng);
+    onChange('primary_location_state', state);
+    onChange('primary_location_city', city);
   };
 
   const onMainContactChange = (e: InputTargetValue) =>

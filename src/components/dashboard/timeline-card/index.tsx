@@ -39,7 +39,11 @@ class TimelineCard extends React.Component<
       (this.props.data.length && !prevState.currentData.length) ||
       this.props.data !== prevProps.data
     )
-      this.setState({ currentData: this.props.data.slice(0, 5) });
+      this.setState({
+        currentData: this.props.data.slice(0, 5),
+        firstElement: 1,
+        lastElement: 5,
+      });
   }
 
   onForwardClick = () => {

@@ -50,6 +50,7 @@ import {
 import {
   fillSchedulesTable,
   updateSchedulesTable,
+  clearSchedulesTable,
 } from 'components/schedules/logic/schedules-table/actions';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
@@ -82,6 +83,7 @@ interface Props {
   updateSchedulesTable: BindingCbWithOne<ITeamCard>;
   saveGames: BindingCbWithOne<ISchedulesGame[]>;
   onToggleFullScreen: BindingAction;
+  clearSchedulesTable: () => void;
 }
 
 interface State {
@@ -94,6 +96,7 @@ interface State {
   isExposurePopupOpen: boolean;
   isEnterScores: boolean;
   neccessaryDataCalculated: boolean;
+  changesAreMade: boolean;
 }
 
 class RecordScores extends React.Component<
@@ -107,12 +110,14 @@ class RecordScores extends React.Component<
       isExposurePopupOpen: false,
       isEnterScores: false,
       neccessaryDataCalculated: false,
+      changesAreMade: false,
     };
   }
 
   componentDidMount() {
     const { loadScoresData } = this.props;
     const eventId = this.props.match.params.eventId;
+    this.props.clearSchedulesTable();
 
     if (eventId) {
       loadScoresData(eventId);
@@ -232,7 +237,7 @@ class RecordScores extends React.Component<
 
     this.props.saveGames(schedulesGames);
 
-    this.setState({ isExposurePopupOpen: false });
+    this.setState({ isExposurePopupOpen: false, changesAreMade: false });
   };
 
   onChangeView = (flag: boolean) => this.setState({ isEnterScores: flag });
@@ -243,12 +248,26 @@ class RecordScores extends React.Component<
     History.push(`${Routes.SCORING}/${eventId || ''}`);
   };
 
-  onLeavePage = () => this.setState({ isExposurePopupOpen: true });
+  saveOnExit = () => {
+    this.saveDraft();
+    this.leavePage();
+  };
+
+  onLeavePage = () => {
+    if (this.state.changesAreMade) {
+      this.setState({ isExposurePopupOpen: true });
+    } else {
+      this.leavePage();
+    }
+  };
 
   onClosePopup = () => this.setState({ isExposurePopupOpen: false });
 
   onScheduleCardUpdate = (teamCard: ITeamCard) => {
     this.props.updateSchedulesTable(teamCard);
+    if (!this.state.changesAreMade) {
+      this.setState({ changesAreMade: true });
+    }
   };
 
   render() {
@@ -324,7 +343,7 @@ class RecordScores extends React.Component<
           isOpen={isExposurePopupOpen}
           onClose={this.onClosePopup}
           onExitClick={this.leavePage}
-          onSaveClick={this.saveDraft}
+          onSaveClick={this.saveOnExit}
         />
       </div>
     );
@@ -348,7 +367,13 @@ export default connect(
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
-      { loadScoresData, fillSchedulesTable, updateSchedulesTable, saveGames },
+      {
+        loadScoresData,
+        fillSchedulesTable,
+        updateSchedulesTable,
+        saveGames,
+        clearSchedulesTable,
+      },
       dispatch
     )
 )(RecordScores);

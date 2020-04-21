@@ -1,5 +1,5 @@
 enum MenuTitles {
-  TOURNAMENTS = 'Tournaments',
+  EVENTS = 'Events',
   LIBRARY_MANAGER = 'Library Manager',
   FACILITIES = 'Facilities',
   REGISTRATION = 'Registration',
@@ -11,6 +11,8 @@ enum MenuTitles {
   TOURNEY_IMPORT_TITLE = 'Import New Tournament',
   TOURNEY_HISTORY_TITLE = 'Historical Imports',
   EMAIL_SETUP = 'Email Setup',
+  MESSAGING = 'Messaging',
+  SCHEDULE_REVIEW = 'Schedule Review',
 }
 
 enum EventMenuTitles {
@@ -19,6 +21,7 @@ enum EventMenuTitles {
   EVENT_STRUCTURE = 'Event Structure',
   PLAYOFFS = 'Playoffs',
   MEDIA_ASSETS = 'Media Assets',
+  WELLNESS = 'Wellness Statement',
   RANKINGS = 'Rankings',
   ADVANCED_SETTINGS = 'Advanced Settings',
   FACILITIES = 'Facilities',

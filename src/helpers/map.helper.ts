@@ -15,8 +15,6 @@ import {
   IScheduleFields,
 } from 'common/enums';
 import { IEntity } from 'common/types';
-import { IGame } from 'components/common/matrix-table/helper';
-import { IField } from 'common/models/schedule/fields';
 
 const arrToMap = <T>(arr: T[], field: string): Object => {
   return arr.reduce((acc, item) => {
@@ -38,13 +36,6 @@ const mapArrWithEventName = <T extends IEntity>(
     const currentEvent = events.find(event => event.event_id === it.event_id);
 
     return { ...it, eventName: currentEvent?.event_name };
-  });
-
-const mapGamesByField = (games: IGame[], fields: IField[]) =>
-  games.map(game => {
-    const currentField = fields.find(field => field.id === game.fieldId);
-
-    return { ...game, facilityId: currentField?.facilityId };
   });
 
 const removeObjKeysByEntryPoint = (
@@ -87,10 +78,4 @@ const removeObjKeysByEntryPoint = (
   return entity;
 };
 
-export {
-  arrToMap,
-  mapToArr,
-  mapArrWithEventName,
-  removeObjKeysByEntryPoint,
-  mapGamesByField,
-};
+export { arrToMap, mapToArr, mapArrWithEventName, removeObjKeysByEntryPoint };

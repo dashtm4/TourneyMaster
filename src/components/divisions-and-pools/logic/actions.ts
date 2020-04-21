@@ -16,14 +16,19 @@ import {
   ALL_POOLS_FETCH_SUCCESS,
   SAVE_TEAMS_SUCCESS,
   SAVE_TEAMS_FAILURE,
+  EDIT_POOL_SUCCESS,
+  EDIT_POOL_FAILURE,
+  DELETE_POOL_SUCCESS,
+  DELETE_POOL_FAILURE,
 } from './actionTypes';
 import api from 'api/api';
-import history from '../../../browserhistory';
+import history from 'browserhistory';
 import { divisionSchema, poolSchema, teamSchema } from 'validations';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
 import { IPool, ITeam, IDivision, BindingAction } from 'common/models';
 import { IAppState } from 'reducers/root-reducer.types';
+import { EntryPointsWithId } from 'common/enums';
 
 export const divisionsTeamsFetchStart = (): { type: string } => ({
   type: DIVISIONS_TEAMS_FETCH_START,
@@ -297,6 +302,82 @@ export const savePool: ActionCreator<ThunkAction<
     Toasts.successToast('Pool is successfully added');
   } catch (err) {
     Toasts.errorToast(err.message);
+  }
+};
+
+export const editPool: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (editedPool: IPool, pools: IPool[]) => async (dispatch: Dispatch) => {
+  try {
+    const mappedPools = pools.map(it =>
+      it.pool_id === editedPool.pool_id ? editedPool : it
+    );
+
+    await Yup.array()
+      .of(poolSchema)
+      .unique(
+        pool => pool.pool_name,
+        'Oops. It looks like you already have pool with the same name. The pool must have a unique name.'
+      )
+      .validate(mappedPools);
+
+    await api.put(
+      `${EntryPointsWithId.POOLS}${editedPool.pool_id}`,
+      editedPool
+    );
+
+    dispatch({
+      type: EDIT_POOL_SUCCESS,
+      payload: {
+        pool: editedPool,
+      },
+    });
+
+    Toasts.successToast('Pool is successfully changed');
+  } catch (err) {
+    dispatch({
+      type: EDIT_POOL_FAILURE,
+    });
+
+    Toasts.successToast(err.message);
+  }
+};
+
+export const deletePool: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (deletedPool: IPool, unassignedTeams: ITeam[]) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    await api.delete(`${EntryPointsWithId.POOLS}${deletedPool.pool_id}`);
+
+    await Promise.all(
+      unassignedTeams.map(it =>
+        api.put(`${EntryPointsWithId.TEAMS}${it.team_id}`, it)
+      )
+    );
+
+    dispatch({
+      type: DELETE_POOL_SUCCESS,
+      payload: {
+        deletedPool,
+        unassignedTeams,
+      },
+    });
+
+    Toasts.successToast('Pool is successfully deleted');
+  } catch (err) {
+    dispatch({
+      type: DELETE_POOL_FAILURE,
+    });
+
+    Toasts.successToast(err.message);
   }
 };
 

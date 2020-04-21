@@ -25,6 +25,7 @@ import {
   checkIfRemind,
 } from 'components/calendar/logic/helper';
 import { BindingAction, ICalendarEvent } from 'common/models';
+import CreateMessage from 'components/event-link/create-message';
 
 interface Props {
   getCalendarEvents: BindingAction;
@@ -60,6 +61,7 @@ const AuthorizedPage = ({
           <Switch>
             <Route path={Routes.DASHBOARD} component={Dashboard} />
             <Route path={Routes.LIBRARY_MANAGER} component={LibraryManager} />
+            <Route path={Routes.CREATE_MESSAGE} component={CreateMessage} />
             <Route path={Routes.EVENT_LINK} component={EventLink} />
             <Route
               path={Routes.COLLABORATION}

@@ -97,7 +97,7 @@ const PopupSaveReporting = ({
                 />
               </li>
               <li className={styles.dowloadLinkWrapper}>
-                <b>Schedule table(with Heatmap)</b>
+                <b>Schedule table (with Heatmap)</b>
                 <Button
                   onClick={onHeatmapScheduleTableSave}
                   variant={ButtonVarian.TEXT}

@@ -1,4 +1,8 @@
-import { IEventDetails, IScoringSetting } from 'common/models';
+import {
+  IEventDetails,
+  IScoringSetting,
+  ISchedulesGameWithNames,
+} from 'common/models';
 
 const getScoringSettings = (event: IEventDetails): IScoringSetting => {
   const scroingSetting = {
@@ -12,4 +16,24 @@ const getScoringSettings = (event: IEventDetails): IScoringSetting => {
   return scroingSetting;
 };
 
-export { getScoringSettings };
+const getGamesStatistics = (games: ISchedulesGameWithNames[]) => {
+  const gamesStatistic = games.reduce(
+    (acc, it) => {
+      return {
+        totalGames:
+          !it.awayTeamId || !it.homeTeamId
+            ? (acc.totalGames = acc.totalGames + 1)
+            : acc.totalGames,
+        completedGames:
+          it.awayTeamScore !== null || it.homeTeamScore !== null
+            ? (acc.completedGames = acc.completedGames + 1)
+            : acc.completedGames,
+      };
+    },
+    { totalGames: 0, completedGames: 0 }
+  );
+
+  return gamesStatistic;
+};
+
+export { getScoringSettings, getGamesStatistics };

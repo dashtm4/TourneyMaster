@@ -4,7 +4,13 @@ import DivisionDetails from './division-details';
 import PoolsDetails from './pools-details';
 import CreateIcon from '@material-ui/icons/Create';
 import Button from '../../common/buttons/button';
-import { IDivision, IPool, ITeam, BindingCbWithOne } from 'common/models';
+import {
+  IDivision,
+  IPool,
+  ITeam,
+  BindingCbWithOne,
+  BindingCbWithTwo,
+} from 'common/models';
 import styles from '../styles.module.scss';
 import history from '../../../browserhistory';
 
@@ -19,6 +25,8 @@ interface IDivisionProps {
   divisions: IDivision[];
   isSectionExpand: boolean;
   saveTeams: BindingCbWithOne<ITeam[]>;
+  editPool: BindingCbWithTwo<IPool, IPool[]>;
+  deletePool: BindingCbWithTwo<IPool, ITeam[]>;
 }
 
 class Division extends React.PureComponent<IDivisionProps> {
@@ -73,6 +81,8 @@ class Division extends React.PureComponent<IDivisionProps> {
             teams={teams}
             areDetailsLoading={this.props.areDetailsLoading}
             saveTeams={saveTeams}
+            editPool={this.props.editPool}
+            deletePool={this.props.deletePool}
           />
         </div>
       </SectionDropdown>

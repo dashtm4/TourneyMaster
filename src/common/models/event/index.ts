@@ -33,6 +33,8 @@ export interface IEventDetails {
   waivers_required: number | null;
   waiverhub_utilized: null;
   back_to_back_warning: number | null;
+  require_wellness_statement: number | null;
+  wellness_via_waiverhub: number | null;
   tie_breaker_format_id: number | null;
   min_num_of_games: number | null;
   event_type: string | null;
@@ -51,10 +53,11 @@ export interface IEventDetails {
   show_goals_diff: string | null;
   assoc_docs_URL: string | null;
   event_logo_path: string | null;
-  mobile_icon_URL: number | null;
+  mobile_icon_URL: string;
   desktop_icon_URL: string;
   is_active_YN: number | null;
   is_library_YN: 0 | 1 | null;
+  is_published_YN: number;
   num_games_completed: number | null;
   last_web_published: string | null;
   max_goal_differential: string | null;

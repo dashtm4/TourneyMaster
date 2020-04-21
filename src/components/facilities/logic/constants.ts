@@ -19,7 +19,7 @@ const EMPTY_FACILITY = {
   parking_available: null,
   parking_details: null,
   parking_proximity: null,
-  golf_carts_availabe: null,
+  golf_carts_available: null,
   field_map_URL: null,
   is_active_YN: 0,
   is_library_YN: 0,
