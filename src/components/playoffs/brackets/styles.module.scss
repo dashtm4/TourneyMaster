@@ -76,6 +76,11 @@ $height: 400px;
         border-left: none;
         position: relative;
 
+        &.negativeConnector {
+          transform: rotate(180deg);
+          margin-left: 15px;
+        }
+
         &.hidden {
           opacity: 0;
         }

@@ -25,11 +25,7 @@ import {
   clearSchedulesTable,
 } from 'components/schedules/logic/schedules-table/actions';
 import { IBracket } from 'common/models/playoffs/bracket';
-import {
-  getTimeValuesFromEventSchedule,
-  calculateTimeSlots,
-  getVarcharEight,
-} from 'helpers';
+import { getTimeValuesFromEventSchedule, calculateTimeSlots } from 'helpers';
 import {
   sortFieldsByPremier,
   defineGames,
@@ -67,7 +63,7 @@ import {
   clearBracketGames,
   fetchBracketGames,
 } from './logic/actions';
-import { updateGameBracketInfo } from './helper';
+import { updateGameBracketInfo, addGameToExistingBracketGames } from './helper';
 import { IOnAddGame } from './add-game-modal';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
@@ -352,45 +348,15 @@ class Playoffs extends Component<IProps> {
 
   addGame = (selectedDivision: string, data: IOnAddGame) => {
     const { bracketGames } = this.state;
+    if (!bracketGames?.length) return;
 
-    if (bracketGames) {
-      console.log('bracketGames', bracketGames);
-    }
-
-    const divisionGames = bracketGames?.filter(
-      v => v.divisionId === selectedDivision
+    const newBracketGames = addGameToExistingBracketGames(
+      data,
+      bracketGames,
+      selectedDivision
     );
 
-    if (!divisionGames?.length) return console.log('error 358');
-
-    const bracketGame = {
-      id: getVarcharEight(),
-      index: divisionGames.length + 1,
-      round: 0,
-      gridNum: data.gridNum,
-      divisionId: selectedDivision,
-      divisionName: divisionGames[0].divisionName,
-      awaySeedId: undefined,
-      homeSeedId: undefined,
-      awayTeamId: undefined,
-      homeTeamId: undefined,
-      awayDisplayName: 'Away',
-      homeDisplayName: 'Home',
-      awayDependsUpon: data.awayDependsUpon,
-      homeDependsUpon: data.homeDependsUpon,
-      fieldId: undefined,
-      fieldName: undefined,
-      startTime: undefined,
-      gameDate: divisionGames[0].gameDate,
-      hidden: false,
-      createDate: new Date().toISOString(),
-    };
-
-    const newBracketGames = [...bracketGames, bracketGame];
-
-    this.setState({
-      bracketGames: newBracketGames,
-    });
+    this.setState({ bracketGames: newBracketGames });
   };
 
   onSeedsUsed = () => {};
