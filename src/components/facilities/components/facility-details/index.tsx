@@ -14,7 +14,9 @@ import {
 } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { FileUploadTypes, AcceptFileTypes } from '../../../common/file-upload';
-import PlacesAutocompleteInput from '../../../event-details/primary-information/map/autocomplete';
+import PlacesAutocompleteInput, {
+  IPosition,
+} from '../../../event-details/primary-information/map/autocomplete';
 import Map from '../../../event-details/primary-information/map';
 import { timeToDate, dateToTime } from 'helpers';
 import {
@@ -98,12 +100,22 @@ class FacilityDetails extends React.Component<Props, State> {
     updateFacilities({ ...facility, [name]: value });
   };
 
-  onAdressSelect = (position: any) => {
+  onAdressSelect = ({
+    position,
+    state,
+    city,
+  }: {
+    position: IPosition;
+    state: string;
+    city: string;
+  }) => {
     const { facility, updateFacilities } = this.props;
     updateFacilities({
       ...facility,
       facility_lat: position.lat,
       facility_long: position.lng,
+      state,
+      city,
     });
   };
 
@@ -142,6 +154,10 @@ class FacilityDetails extends React.Component<Props, State> {
 
   onDeleteModalClose = () => {
     this.setState({ isDeleteModalOpen: false });
+  };
+
+  onLocationChange = (address: string) => {
+    this.onChangeFacility(FormFields.ADDRESS_ONE, address);
   };
 
   render() {
@@ -214,9 +230,7 @@ class FacilityDetails extends React.Component<Props, State> {
               <fieldset className={`${styles.filedset} ${styles.filedsetName}`}>
                 <PlacesAutocompleteInput
                   onSelect={this.onAdressSelect}
-                  onChange={(address: string) =>
-                    this.onChangeFacility(FormFields.ADDRESS_ONE, address)
-                  }
+                  onChange={this.onLocationChange}
                   address={facility.address1 || ''}
                   disabled={!isEdit}
                   label={'Facility Address'}
