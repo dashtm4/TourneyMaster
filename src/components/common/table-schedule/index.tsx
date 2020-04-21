@@ -240,7 +240,7 @@ const TableSchedule = ({
               />
             </div>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Zoom-n-Nav" to navigate the schedule. Drag-n-Drop to move teams
+              Zoom-n-Nav to navigate the schedule. Drag-n-Drop to move teams
               within games.
             </CardMessage>
             {teamsDiagnostics && divisionsDiagnostics && (
