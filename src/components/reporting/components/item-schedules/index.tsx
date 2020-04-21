@@ -2,16 +2,11 @@ import React from 'react';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
 import { HeadingLevelThree, Button } from 'components/common';
-import { onPDFSave, onXLSXSave } from 'helpers';
+import { onPDFSave, onXLSXSave, getAllGamesByTeamCards } from 'helpers';
 import { ButtonVarian, ButtonColors } from 'common/enums';
 import { IEventDetails, ISchedule, IPool } from 'common/models';
 import { getScheduleTableXLSX } from '../../helpers';
-import {
-  IGame,
-  settleTeamsPerGames,
-  calculateDays,
-  // calculateDays,
-} from 'components/common/matrix-table/helper';
+import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
@@ -39,18 +34,13 @@ const ItemSchedules = ({
   teamCards,
   pools,
 }: Props) => {
-  const eventDays = calculateDays(teamCards);
-  const filledGames = eventDays
-    .map((_, idx) =>
-      settleTeamsPerGames(games, teamCards, eventDays, `Day ${idx + 1}`)
-    )
-    .flat();
+  const allGamesByTeamCards = getAllGamesByTeamCards(teamCards, games);
 
   const onScheduleTableSave = async () =>
     onPDFSave(
       <PDFTableSchedule
         event={event}
-        games={filledGames}
+        games={allGamesByTeamCards}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
@@ -63,7 +53,7 @@ const ItemSchedules = ({
     onPDFSave(
       <PDFTableSchedule
         event={event}
-        games={filledGames}
+        games={allGamesByTeamCards}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
@@ -79,7 +69,7 @@ const ItemSchedules = ({
     onPDFSave(
       <PDFTableFieldsSchedule
         event={event}
-        games={filledGames}
+        games={allGamesByTeamCards}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
