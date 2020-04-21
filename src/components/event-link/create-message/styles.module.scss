@@ -20,14 +20,19 @@
 }
 .inputGroup {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   & > :first-child {
     width: 70%;
+    & > div {
+      margin-bottom: 10px;
+    }
   }
 }
-.recipientsCheckboxWrapper {
+.recipientWrapper {
+  margin-bottom: 10px;
+  color: #6a6a6a;
   .title {
-    color: #6a6a6a;
     font-weight: 600;
   }
 
@@ -35,4 +40,16 @@
     font-weight: 400;
     font-size: 14px;
   }
+}
+
+.selectContainer {
+  width: 190px;
+
+  div > div {
+    border: 0;
+  }
+}
+.recipientsFilterWrapper {
+  display: flex;
+  margin-bottom: 10px;
 }

@@ -8,4 +8,16 @@ const getFieldsByFacilityId = (fields: IField[], facility: IScheduleFacility) =>
 const getGamesByFieldId = (games: IGame[], field: IField) =>
   games.filter(game => game.fieldId === field.id);
 
-export { getFieldsByFacilityId, getGamesByFieldId };
+const getGamesByDays = (games: IGame[]) => {
+  const gamesByDays = games.reduce((acc, game) => {
+    const day = game.gameDate;
+
+    acc[day!] = acc[day!] ? [...acc[day!], game] : [game];
+
+    return acc;
+  }, {});
+
+  return gamesByDays;
+};
+
+export { getFieldsByFacilityId, getGamesByFieldId, getGamesByDays };

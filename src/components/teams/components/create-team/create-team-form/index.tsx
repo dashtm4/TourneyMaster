@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Select } from 'components/common/';
+import { Input, Select, Tooltip } from 'components/common/';
 import Checkbox from 'components/common/buttons/checkbox';
 import styles from '../styles.module.scss';
 import { sortByField } from 'helpers';
@@ -180,14 +180,19 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
                 onChange={this.onLastNameChange}
               />
             </div>
-            <div className={styles.sectionItem}>
-              <Input
-                fullWidth={true}
-                label="Phone #"
-                value={phone_num || ''}
-                onChange={this.onPhoneChange}
-              />
-            </div>
+            <Tooltip
+              type="info"
+              title="Shoud be in E.164 format. Example: +14155552671"
+            >
+              <div className={styles.sectionItem}>
+                <Input
+                  fullWidth={true}
+                  label="Phone #"
+                  value={phone_num || ''}
+                  onChange={this.onPhoneChange}
+                />
+              </div>
+            </Tooltip>
             <div className={styles.sectionItemLarge}>
               <Input
                 fullWidth={true}

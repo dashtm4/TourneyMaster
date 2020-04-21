@@ -1,4 +1,4 @@
-import { IField, IPool, IDivision, ITeam } from 'common/models';
+import { IPool, IDivision, ITeam } from 'common/models';
 import { IMultiSelectOption } from 'components/common/multi-select';
 import { findIndex, find } from 'lodash-es';
 
@@ -23,15 +23,8 @@ const mapTeamsToOptions = (values: ITeam[], checked = true) =>
     checked,
   }));
 
-const mapFieldsTopOptions = (values: IField[], checked = true) =>
-  values.map(item => ({
-    label: item.field_name,
-    value: item.field_id,
-    checked,
-  }));
-
 export const applyFilters = (params: any, event?: string) => {
-  const { divisions, pools, teams, fields } = params;
+  const { divisions, pools, teams } = params;
 
   const filteredDivisions = divisions.filter(
     (division: IDivision) => division.event_id === event
@@ -43,22 +36,17 @@ export const applyFilters = (params: any, event?: string) => {
     filteredDivisionsIds.includes(pool.division_id)
   );
   const filteredTeams = teams.filter((team: ITeam) => team.event_id === event);
-  const filteredFields = fields;
 
   const divisionsOptions: IMultiSelectOption[] = mapDivisionsToOptions(
     filteredDivisions
   );
   const poolsOptions: IMultiSelectOption[] = mapPoolsToOptions(filteredPools);
   const teamsOptions: IMultiSelectOption[] = mapTeamsToOptions(filteredTeams);
-  const fieldsOptions: IMultiSelectOption[] = mapFieldsTopOptions(
-    filteredFields
-  );
 
   return {
     divisionsOptions,
     poolsOptions,
     teamsOptions,
-    fieldsOptions,
   };
 };
 
@@ -153,4 +141,47 @@ export const mapFilterValues = (
     poolsOptions: filteredPoolsOptions,
     teamsOptions: filteredTeamsOptions,
   };
+};
+
+export const mapTeamsByFilter = (
+  teams: ITeam[],
+  filterValues: any,
+  type: string
+) => {
+  const { divisionsOptions, poolsOptions, teamsOptions } = filterValues;
+
+  const divisionIds = mapCheckedValues(divisionsOptions);
+  const poolIds = mapCheckedValues(poolsOptions);
+  const teamIds = mapCheckedValues(teamsOptions);
+
+  const filteredTeams = teams.filter(
+    team =>
+      checkDivisions(team, divisionIds) &&
+      checkPools(team, poolIds) &&
+      checkTeams(team, teamIds)
+  );
+
+  if (filteredTeams.length && type === 'Text') {
+    return filteredTeams
+      .filter(team => team.phone_num)
+      .map(team => team.phone_num);
+  } else if (filteredTeams.length && type === 'Email') {
+    return filteredTeams
+      .filter(team => team.contact_email)
+      .map(team => team.contact_email);
+  } else {
+    return [];
+  }
+};
+
+const checkDivisions = (team: ITeam, divisionIds: string[]) => {
+  return divisionIds.includes(team.division_id);
+};
+
+const checkPools = (team: ITeam, poolIds: string[]) => {
+  return poolIds.includes(team.pool_id!);
+};
+
+const checkTeams = (team: ITeam, teamIds: string[]) => {
+  return teamIds.includes(team.team_id);
 };

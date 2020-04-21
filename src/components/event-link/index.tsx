@@ -1,16 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { HeadingLevelTwo, Button } from 'components/common';
 import styles from './styles.module.scss';
 import Navigation from './navigation';
 import Messaging from './messaging';
 import ScheduleReview from './schedule-review';
+import { getMessages, sendSavedMessage } from './logic/actions';
+import { BindingAction, BindingCbWithOne } from 'common/models';
+import { IMessage } from 'common/models/event-link';
 
-const EventLink = () => {
+interface IProps {
+  getMessages: BindingAction;
+  sendSavedMessage: BindingCbWithOne<any>;
+  messages: IMessage[];
+  messagesAreLoading: boolean;
+}
+
+const EventLink = ({
+  getMessages,
+  messages,
+  messagesAreLoading,
+  sendSavedMessage,
+}: IProps) => {
+  useEffect(() => {
+    getMessages();
+  }, []);
+
   const [isSectionsExpand, toggleSectionCollapse] = useState<boolean>(true);
 
   const onToggleSectionCollapse = () => {
     toggleSectionCollapse(!isSectionsExpand);
   };
+
   return (
     <section className={styles.container}>
       <Navigation onAddToLibraryManager={() => {}} />
@@ -24,11 +45,28 @@ const EventLink = () => {
         />
       </div>
       <ul className={styles.libraryList}>
-        <Messaging isSectionExpand={isSectionsExpand} />
+        <Messaging
+          isSectionExpand={isSectionsExpand}
+          data={messages}
+          messagesAreLoading={messagesAreLoading}
+          sendMessage={sendSavedMessage}
+        />
         <ScheduleReview isSectionExpand={isSectionsExpand} />
       </ul>
     </section>
   );
 };
 
-export default EventLink;
+const mapStateToProps = (state: any) => {
+  return {
+    messages: state.eventLink.messages,
+    messagesAreLoading: state.eventLink.messagesAreLoading,
+  };
+};
+
+const mapDispatchToProps = {
+  getMessages,
+  sendSavedMessage,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(EventLink);
