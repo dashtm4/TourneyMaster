@@ -53,7 +53,7 @@ export interface IEventDetails {
   show_goals_diff: string | null;
   assoc_docs_URL: string | null;
   event_logo_path: string | null;
-  mobile_icon_URL: number | null;
+  mobile_icon_URL: string;
   desktop_icon_URL: string;
   is_active_YN: number | null;
   is_library_YN: 0 | 1 | null;
