@@ -427,8 +427,8 @@ class FacilityDetails extends React.Component<Props, State> {
               <Checkbox
                 onChange={() =>
                   this.onChangeFacility(
-                    FormFields.GOLF_CARTS_AVAILABE,
-                    facility.golf_carts_availabe ? 0 : 1
+                    FormFields.GOLF_CARTS_AVAILABLE,
+                    facility.golf_carts_available ? 0 : 1
                   )
                 }
                 options={[

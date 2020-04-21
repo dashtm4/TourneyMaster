@@ -1,4 +1,4 @@
-import { union, findKey, find, keys, unionBy } from 'lodash-es';
+import { union, findKey, find, keys, unionBy, orderBy } from 'lodash-es';
 import { getTimeFromString } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
@@ -22,6 +22,7 @@ export interface IGameOptions {
 interface IFindGameOptions {
   ignorePremier?: boolean;
   includeBackToBack?: boolean;
+  reverse?: boolean;
 }
 
 interface IKeyId {
@@ -169,7 +170,7 @@ export default class Scheduler {
       isPremier: false,
       gamesNum: recursor,
     });
-    this.settleMinGameTeams(unsatisfiedTeams);
+    this.settleMinGameTeams(orderBy(unsatisfiedTeams, 'games'));
 
     // settle unsatisfied regular teams on regular fields with back-to-back
     const unsatisfiedTeamsStill = this.getUnsatisfiedTeams({
@@ -193,11 +194,21 @@ export default class Scheduler {
     this.handleRegularGames();
   };
 
-  rearrangeTeamsByConstraints = (teamCards?: ITeamCard[]) => {
+  rearrangeTeamsByConstraints = (
+    teamCards?: ITeamCard[],
+    options?: { reverse: boolean }
+  ) => {
+    const { reverse } = options || {};
     const teamCardsArr = teamCards || this.teamCards;
     const teams = {};
+    let thisTeamCards = [...this.teamCards];
+
+    if (reverse) {
+      thisTeamCards = thisTeamCards.reverse();
+    }
+
     teamCardsArr.forEach(teamCard => {
-      teams[teamCard.id] = this.teamCards.find(
+      teams[teamCard.id] = orderBy(thisTeamCards, 'games').find(
         tc =>
           teamCard.id !== tc.id &&
           teamCard.isPremier === tc.isPremier &&
@@ -546,7 +557,9 @@ export default class Scheduler {
   };
 
   settleMinGameTeams = (teams: ITeamCard[], options?: IFindGameOptions) => {
-    const rearrangedTeams = this.rearrangeTeamsByConstraints(teams);
+    const rearrangedTeams = this.rearrangeTeamsByConstraints(teams, {
+      reverse: !!options?.reverse,
+    });
     const foundGames = this.manageGamesByTeamSets(rearrangedTeams, options);
     return foundGames;
   };
