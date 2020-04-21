@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProgressBar, Button } from 'components/common';
+import { ProgressBar, Button, Tooltip } from 'components/common';
 import { getIcon } from 'helpers';
 import { ButtonColors, ButtonVarian, EventStatuses, Icons } from 'common/enums';
 import styles from './styles.module.scss';
@@ -36,15 +36,22 @@ const TournamentStatus = ({
         <>
           <ProgressBar completed={percentOfCompleted} />
           {percentOfCompleted === 100 && (
-            <span className={styles.doneBtnWrapper}>
-              <Button
-                onClick={() => changeTournamentStatus(EventStatuses.PUBLISHED)}
-                icon={getIcon(Icons.DONE)}
-                label="Publish Tournament"
-                color={ButtonColors.INHERIT}
-                variant={ButtonVarian.CONTAINED}
-              />
-            </span>
+            <Tooltip
+              title="Only click publish when this checklist is 100% complete"
+              type="info"
+            >
+              <span className={styles.doneBtnWrapper}>
+                <Button
+                  onClick={() =>
+                    changeTournamentStatus(EventStatuses.PUBLISHED)
+                  }
+                  icon={getIcon(Icons.DONE)}
+                  label="Publish Tournament"
+                  color={ButtonColors.INHERIT}
+                  variant={ButtonVarian.CONTAINED}
+                />
+              </span>
+            </Tooltip>
           )}
         </>
       ) : (
