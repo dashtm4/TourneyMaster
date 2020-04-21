@@ -98,7 +98,8 @@ export default (props: Props) => {
             className={styles.cardTextWrapper}
             style={{
               color: showHeatmap
-                ? getContrastingColor(teamCard.divisionHex)
+                ? teamCard.divisionHex &&
+                  getContrastingColor(teamCard.divisionHex)
                 : 'gray',
             }}
           >
