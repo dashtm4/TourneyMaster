@@ -37,7 +37,7 @@ interface Props {
 const CreateMessage = ({
   getData,
   sendMessage,
-  saveMessage,
+  // saveMessage,
   events,
   divisions,
   pools,
@@ -108,13 +108,20 @@ const CreateMessage = ({
     if (recipientType === 'Many') {
       const recipients = mapTeamsByFilter([...teams], filterValues, data.type);
       setMessage({ ...data, recipients });
-      // sendMessage({ ...data, recipients });
-      saveMessage({ ...data, recipients });
+      sendMessage({ ...data, recipients });
     } else {
-      // sendMessage(data);
-      saveMessage(data);
+      sendMessage(data);
     }
-    console.log(sendMessage);
+  };
+
+  const onSave = () => {
+    // if (recipientType === 'Many') {
+    //   const recipients = mapTeamsByFilter([...teams], filterValues, data.type);
+    //   setMessage({ ...data, recipients });
+    //   saveMessage({ ...data, recipients });
+    // } else {
+    //   saveMessage(data);
+    // }
   };
 
   const onFilterChange = (data: IScheduleFilter) => {
@@ -179,6 +186,12 @@ const CreateMessage = ({
           <Button
             color="primary"
             variant="contained"
+            onClick={onSave}
+            label="Save"
+          />
+          <Button
+            color="primary"
+            variant="contained"
             onClick={onSend}
             label="Send"
           />
@@ -198,6 +211,14 @@ const CreateMessage = ({
           onChange={onRecipientTypeChange}
           checked={recipientType}
         />
+        {data.type === 'Text' && (
+          <Input
+            label="Message Name"
+            fullWidth={true}
+            onChange={onTitleChange}
+            value={data.title}
+          />
+        )}
       </div>
       <div className={styles.recipientsWrapper}>
         {recipientType === 'One'

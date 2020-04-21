@@ -1,7 +1,7 @@
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import api from 'api/api';
-import { DATA_FETCH_SUCCESS } from './actionTypes';
+import { DATA_FETCH_SUCCESS, MESSAGES_FETCH_SUCCESS } from './actionTypes';
 import { Toasts } from 'components/common';
 import { IMessage } from '../create-message';
 import history from 'browserhistory';
@@ -13,6 +13,13 @@ export const getDataSuccess = (
   payload: any
 ): { type: string; payload: any } => ({
   type: DATA_FETCH_SUCCESS,
+  payload,
+});
+
+export const getMessagesSuccess = (
+  payload: any
+): { type: string; payload: any } => ({
+  type: MESSAGES_FETCH_SUCCESS,
   payload,
 });
 
@@ -45,7 +52,11 @@ export const sendMessage: ActionCreator<ThunkAction<
   if (!response || response.status === 500) {
     return Toasts.errorToast(response.message);
   }
+
+  saveMessage({ ...data, status: 1, send_datetime: new Date().toISOString() });
+
   history.push('/event-link');
+
   return Toasts.successToast(response.message);
 };
 
@@ -67,10 +78,56 @@ export const saveMessage: ActionCreator<ThunkAction<
     recipient_details: JSON.stringify(data.recipients),
     message_title: data.title,
     message_body: data.message,
-    send_datetime: new Date().toISOString(),
+    status: 0,
   };
-  console.log(message);
 
   const response = await api.post('/messaging', message);
-  console.log(response);
+
+  if (!response) {
+    return Toasts.errorToast("Couldn't save a message");
+  }
+
+  history.push('/event-link');
+
+  return (
+    message.status === 0 && Toasts.successToast('Message is successfully saved')
+  );
+};
+
+export const getMessages: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = () => async (dispatch: Dispatch) => {
+  const messages = await api.get('/messaging');
+
+  dispatch(getMessagesSuccess(messages));
+};
+
+export const sendSavedMessage: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (message: any) => async () => {
+  // const data = {
+  //   type: message.message_type,
+  //   title: message.message_title,
+  //   message: message.message_body,
+  //   recipients: JSON.parse(message.recipient_details),
+  // };
+
+  // const response = await api.post('/event-link', data);
+
+  // if (!response || response.status === 500) {
+  //   return Toasts.errorToast(response.message);
+  // }
+
+  await api.put(`/messaging?message_id=${message.message_id}`, {
+    status: 1,
+    send_datetime: new Date().toISOString(),
+  });
+
+  return Toasts.successToast('Message is successfully saved');
 };
