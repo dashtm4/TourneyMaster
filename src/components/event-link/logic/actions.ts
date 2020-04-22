@@ -112,10 +112,16 @@ export const sendMessages: ActionCreator<ThunkAction<
 
   console.log(messagesToSave);
 
-  const res = await api.post('/messaging', messagesToSave);
+  const messagesToSaveChunk = chunk(messagesToSave, 50);
 
-  if (!res) {
-    return Toasts.errorToast("Couldn't save messages");
+  try {
+    await Promise.all(
+      messagesToSaveChunk.map(async chunkOfMessages => {
+        await api.post('/messaging', chunkOfMessages);
+      })
+    );
+  } catch (e) {
+    Toasts.errorToast("Couldn't save messages");
   }
 
   history.push('/event-link');
@@ -205,10 +211,16 @@ export const sendSavedMessages: ActionCreator<ThunkAction<
 
   console.log(messagesToUpdate);
 
-  const res = await api.put('/messaging', messagesToUpdate);
+  const messagesToUpdateChunk = chunk(messagesToUpdate, 50);
 
-  if (!res) {
-    return Toasts.errorToast("Couldn't save messages");
+  try {
+    await Promise.all(
+      messagesToUpdateChunk.map(async chunkOfMessages => {
+        await api.put('/messaging', chunkOfMessages);
+      })
+    );
+  } catch (e) {
+    Toasts.errorToast("Couldn't save messages");
   }
 
   dispatch(sendSavedMessagesSuccess(messagesToUpdate));
