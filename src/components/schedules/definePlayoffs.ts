@@ -140,7 +140,7 @@ export const adjustPlayoffTimeOnLoad = (
       item => item.game_date === day && (item.home_team_id || item.away_team_id)
     )
     .map(item => item.game_time);
-  const lastStartTime = orderBy(sdStartTimes, 'desc')[0];
+  const lastStartTime = orderBy(sdStartTimes, [], 'desc')[0];
 
   const lastGameTimeSlot = timeSlots.find(item => item.time === lastStartTime)
     ?.id;

@@ -48,7 +48,7 @@ const BracketGameCard = (props: IProps) => {
     >
       <span style={{ color: getContrastingColor(divisionHex) }}>
         {divisionName}&nbsp;G{playoffIndex}
-        <i>:</i>&nbsp;R{(playoffRound || 0) + 1}
+        <i>:</i>&nbsp;R{Math.abs(playoffRound || 0)}
         <i>,</i>&nbsp;
         {awaySeedId
           ? `S${awaySeedId}`

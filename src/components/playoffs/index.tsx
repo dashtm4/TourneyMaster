@@ -155,7 +155,10 @@ class Playoffs extends Component<IProps> {
       this.calculatePlayoffTimeSlots();
     }
 
-    if (!this.state.tableGames) {
+    if (
+      !this.state.tableGames ||
+      prevProps.bracketGames !== this.props.bracketGames
+    ) {
       this.calculateBracketGames();
     }
 
@@ -356,7 +359,9 @@ class Playoffs extends Component<IProps> {
       selectedDivision
     );
 
-    this.setState({ bracketGames: newBracketGames });
+    this.setState({ bracketGames: newBracketGames }, () => {
+      this.props.fetchBracketGames(newBracketGames);
+    });
   };
 
   onSeedsUsed = () => {};
@@ -389,8 +394,6 @@ class Playoffs extends Component<IProps> {
       tableGames,
       cancelConfirmationOpen,
     } = this.state;
-
-    console.log('this.state.bracketGames', bracketGames);
 
     const {
       bracket,
