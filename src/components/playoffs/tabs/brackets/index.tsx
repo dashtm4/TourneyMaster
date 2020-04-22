@@ -58,14 +58,14 @@ class BracketManager extends Component<IProps> {
     }
   }
 
-  addGame = () => {
-    // const { selectedDivision } = this.state;
+  addGamePressed = () => {
+    this.setState({ addGameModalOpen: true });
+  };
 
-    this.setState({
-      addGameModalOpen: true,
-    });
-
-    // this.props.addGame(selectedDivision!);
+  onAddGame = (game: IOnAddGame) => {
+    const { selectedDivision } = this.state;
+    this.props.addGame(selectedDivision!, game);
+    this.setState({ addGameModalOpen: false });
   };
 
   onChangeSelect = (e: any) => {
@@ -139,7 +139,7 @@ class BracketManager extends Component<IProps> {
                 label="+ Add Game"
                 variant="text"
                 color="secondary"
-                onClick={this.addGame}
+                onClick={this.addGamePressed}
               />
             </div>
             <div className={styles.buttonsWrapper}>
@@ -168,9 +168,7 @@ class BracketManager extends Component<IProps> {
               bracketGames={divisionGames!}
               playInGamesExist={playInGamesExist}
               onClose={() => this.setState({ addGameModalOpen: false })}
-              onAddGame={(data: IOnAddGame) =>
-                this.props.addGame(selectedDivision!, data)
-              }
+              onAddGame={this.onAddGame}
             />
           )}
           {seeds && divisionGames && (

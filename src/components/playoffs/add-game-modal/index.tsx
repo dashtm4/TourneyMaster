@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react';
+import { maxBy } from 'lodash-es';
 import { Button, Modal, Select } from 'components/common';
 import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
 import { IBracketGame } from '../bracketGames';
-import { maxBy } from 'lodash-es';
 
 export interface IOnAddGame {
   awayDependsUpon: string;
   homeDependsUpon: string;
   gridNum: number;
+  isWinner: boolean;
 }
 
 interface Props {
@@ -48,7 +49,7 @@ const PopupDeleteConfirm = ({
 
     const source = bracketGames.map(item => ({
       label: `Loser ${item.index}`,
-      value: item.index,
+      value: -item.index,
     }));
 
     if (negativeRounds?.length) {
@@ -72,23 +73,22 @@ const PopupDeleteConfirm = ({
     setHomeSourceSelected(e.target.value);
 
   const addGame = () => {
+    const awaySourceSelectedNum = Number(awaySourceSelected);
+    const homeSourceSelectedNum = Number(homeSourceSelected);
+
     const maxGridNum = maxBy(bracketGames, 'gridNum')?.gridNum;
 
     const awaySource = bracketGames.find(
-      item => item.index === +awaySourceSelected
+      item => item.index === awaySourceSelectedNum
     );
     const homeSource = bracketGames.find(
-      item => item.index === +homeSourceSelected
+      item => item.index === homeSourceSelectedNum
     );
 
     const awaySourceGrid = awaySource?.gridNum;
     const homeSourceGrid = homeSource?.gridNum;
     const awaySourceRound = awaySource?.round;
     const homeSourceRound = homeSource?.round;
-
-    console.log('awaySourceGrid', awaySourceGrid);
-    console.log('homeSourceGrid', homeSourceGrid);
-    console.log('maxGridNum', maxGridNum);
 
     const gridNum =
       awaySourceGrid === homeSourceGrid &&
@@ -98,10 +98,13 @@ const PopupDeleteConfirm = ({
         ? awaySourceGrid!
         : (maxGridNum || 1) + 1;
 
+    const isWinner = awaySourceSelectedNum > 0 && homeSourceSelectedNum > 0;
+
     onAddGame({
-      awayDependsUpon: awaySourceSelected,
-      homeDependsUpon: homeSourceSelected,
+      awayDependsUpon: String(Math.abs(awaySourceSelectedNum)),
+      homeDependsUpon: String(Math.abs(homeSourceSelectedNum)),
       gridNum,
+      isWinner,
     });
   };
 

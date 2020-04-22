@@ -23,7 +23,8 @@ const Brackets = (props: IProps) => {
     if (grid !== '1') return;
     if (
       grids![grid][round]?.length <
-      grids![grid][Number(round) + 1]?.length * 2
+        grids![grid][Number(round) + 1]?.length * 2 ||
+      Number(round) <= 0
     ) {
       return '';
     }
@@ -123,32 +124,38 @@ const Brackets = (props: IProps) => {
                         title="Play-In Games"
                       />
                       <BracketConnector
+                        round={Number(roundKey)}
                         hidden={hidden}
                         step={playInRound![roundKey]?.length}
                       />
                     </Fragment>
                   ))}
-                {keys(grids[gridKey]).map(roundKey => (
-                  <Fragment key={`${roundKey}-playInRound`}>
-                    <BracketRound
-                      games={grids[gridKey][roundKey]}
-                      onDrop={() => {}}
-                      title={getRoundTitle(
-                        gridKey,
-                        roundKey,
-                        grids[gridKey][roundKey].length
-                      )}
-                    />
-                    <BracketConnector
-                      hidden={
-                        grids[gridKey][roundKey].some(v => v.hidden)
-                          ? setHiddenConnectors(grids[gridKey][roundKey])
-                          : undefined
-                      }
-                      step={grids[gridKey][roundKey]?.length}
-                    />
-                  </Fragment>
-                ))}
+                {keys(grids[gridKey])
+                  .sort((a, b) => Number(a) - Number(b))
+                  .map((roundKey, index, arr) => (
+                    <Fragment key={`${roundKey}-playInRound`}>
+                      <BracketRound
+                        games={grids[gridKey][roundKey]}
+                        onDrop={() => {}}
+                        title={getRoundTitle(
+                          gridKey,
+                          roundKey,
+                          grids[gridKey][roundKey].length
+                        )}
+                      />
+                      {index < arr.length - 1 ? (
+                        <BracketConnector
+                          round={Number(arr[index + 1])}
+                          hidden={
+                            grids[gridKey][roundKey].some(v => v.hidden)
+                              ? setHiddenConnectors(grids[gridKey][roundKey])
+                              : undefined
+                          }
+                          step={grids[gridKey][roundKey]?.length}
+                        />
+                      ) : null}
+                    </Fragment>
+                  ))}
               </div>
             ))}
         </TransformComponent>
