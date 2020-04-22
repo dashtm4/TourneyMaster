@@ -182,9 +182,12 @@ export const getScheduling = (eventId: string) => async (
 };
 
 export const createNewSchedule = (schedule: IConfigurableSchedule) => async (
-  dispatch: Dispatch
+  dispatch: Dispatch,
+  getState: GetState
 ) => {
   try {
+    const { event } = getState().pageEvent.tournamentData;
+
     const allSchedules = await api.get(
       `/schedules?event_id=${schedule.event_id}`
     );
@@ -197,10 +200,16 @@ export const createNewSchedule = (schedule: IConfigurableSchedule) => async (
       )
       .validate([...allSchedules, schedule]);
 
+    const updatedSchedule = {
+      ...schedule,
+      first_game_start: event?.first_game_time,
+      last_game_end: event?.last_game_end,
+    };
+
     dispatch({
       type: CREATE_NEW_SCHEDULE_SUCCESS,
       payload: {
-        schedule,
+        schedule: updatedSchedule,
       },
     });
 

@@ -1,10 +1,19 @@
-import { findIndex, find } from 'lodash-es';
+import { findIndex, find, groupBy, max } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from '../matrix-table/helper';
-import { IDivision, IEventSummary, IPool } from 'common/models';
+import {
+  IDivision,
+  IEventSummary,
+  IPool,
+  IEventDetails,
+  ISchedule,
+} from 'common/models';
 import { IField } from 'common/models/schedule/fields';
 import { IMultiSelectOption } from '../multi-select';
 import { DayTypes } from './types';
+import { IModalItem } from '../interactive-tooltip';
+import { ScheduleWarningsEnum } from 'common/enums';
+import { IDiagnosticsInput } from 'components/schedules/diagnostics';
 
 interface IApplyFilterParams {
   divisions: IDivision[];
@@ -276,4 +285,74 @@ const moveCardMessages = {
     'The pools of the teams do not match. Are you sure you want to continue?',
 };
 
-export { getUnsatisfiedTeams, getSatisfiedTeams, moveCardMessages };
+const getScheduleWarning = (
+  schedule: ISchedule,
+  event: IEventDetails,
+  teamCards: ITeamCard[],
+  teamsDiagnostics: IDiagnosticsInput
+): IModalItem[] => {
+  const items: IModalItem[] = [];
+
+  // If the game times are inconsistent with the event setup
+  if (
+    schedule.first_game_time !== event.first_game_time ||
+    schedule.last_game_end_time !== event.last_game_end
+  ) {
+    items.push({
+      type: 'WARN',
+      title: ScheduleWarningsEnum.GameTimesDiffer,
+    });
+  }
+
+  // If the minimum # of games is not met due to the the number of teams in a pool
+  const groupedPools = groupBy(teamCards, 'poolId');
+  const poolsLengthArr = Object.keys(groupedPools).map(
+    key => groupedPools[key].length
+  );
+  const avgPoolLength =
+    poolsLengthArr.reduce((a, b) => a + b, 0) / poolsLengthArr.length;
+
+  if (Number(schedule.min_num_games) > avgPoolLength) {
+    items.push({
+      type: 'WARN',
+      title: ScheduleWarningsEnum.MinGamesNumExceedsPoolLength,
+    });
+  }
+
+  // If the maximum # of games per day is exceeded
+  const gamesLength = teamCards.map(item => item.games?.length || 0);
+  const maxGamesLength = max(gamesLength);
+
+  if ((maxGamesLength || 0) > Number(schedule.max_num_games)) {
+    items.push({
+      type: 'WARN',
+      title: ScheduleWarningsEnum.MaxGamesNumExceededPerDay,
+    });
+  }
+
+  // If there are back to back games
+  const backToBackIndex =
+    teamsDiagnostics.header.findIndex(item =>
+      item.toLowerCase().includes('back-to-back')
+    ) || 5;
+  const backToBackValues = teamsDiagnostics.body.map(
+    item => item[backToBackIndex]
+  );
+  const backToBackExist = backToBackValues.filter(v => Number(v) > 0).length;
+
+  if (backToBackExist) {
+    items.push({
+      type: 'INFO',
+      title: ScheduleWarningsEnum.BackToBackGamesExist,
+    });
+  }
+
+  return items;
+};
+
+export {
+  getUnsatisfiedTeams,
+  getSatisfiedTeams,
+  getScheduleWarning,
+  moveCardMessages,
+};

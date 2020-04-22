@@ -9,6 +9,8 @@ export interface ISchedule {
   event_id: string;
   member_id: string;
   schedule_name: string;
+  first_game_time: string | null;
+  last_game_end_time: string | null;
   schedule_tag: string | null;
   num_divisions: number;
   num_teams: number;
