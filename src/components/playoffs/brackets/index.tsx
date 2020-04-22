@@ -53,12 +53,9 @@ const Brackets = (props: IProps) => {
 
   useEffect(() => {
     const grids = groupBy(games, 'gridNum');
-    console.log('grids', JSON.parse(JSON.stringify(grids)), hidden);
 
     let newGrids = {};
     keys(grids).forEach(key => (newGrids[key] = groupBy(grids[key], 'round')));
-
-    console.log('newGrids', JSON.parse(JSON.stringify(newGrids)));
 
     if (newGrids[1][1].length < newGrids[1][2].length) {
       setPlayInRound({
@@ -72,7 +69,6 @@ const Brackets = (props: IProps) => {
 
   useEffect(() => {
     if (playInRound) {
-      console.log('playInRound', JSON.parse(JSON.stringify(playInRound)));
       const hiddenConnectors = setHiddenConnectors(playInRound[1]);
       setHidden(hiddenConnectors);
     }

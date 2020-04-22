@@ -47,12 +47,20 @@ export const addGameToExistingBracketGames = (
   // Create a new grid or merge existing
   if (bothOriginAreNotFromMainGrid) {
     gridNum = Math.min(awayDependent?.gridNum, homeDependent?.gridNum);
+    const dependentRoundMax = Math.max(
+      Math.abs(awayDependent.round),
+      Math.abs(homeDependent.round)
+    );
+    const dependentRound =
+      awayDependent.round < 0 ? -dependentRoundMax : dependentRoundMax;
     awayDependent = {
       ...awayDependent,
+      round: dependentRound,
       gridNum,
     };
     homeDependent = {
       ...homeDependent,
+      round: dependentRound,
       gridNum,
     };
   }

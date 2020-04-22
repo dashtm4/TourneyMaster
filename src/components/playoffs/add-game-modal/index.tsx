@@ -79,10 +79,10 @@ const PopupDeleteConfirm = ({
     const maxGridNum = maxBy(bracketGames, 'gridNum')?.gridNum;
 
     const awaySource = bracketGames.find(
-      item => item.index === awaySourceSelectedNum
+      item => item.index === Math.abs(awaySourceSelectedNum)
     );
     const homeSource = bracketGames.find(
-      item => item.index === homeSourceSelectedNum
+      item => item.index === Math.abs(homeSourceSelectedNum)
     );
 
     const awaySourceGrid = awaySource?.gridNum;
@@ -93,7 +93,8 @@ const PopupDeleteConfirm = ({
     const gridNum =
       awaySourceGrid === homeSourceGrid &&
       awaySourceRound === homeSourceRound &&
-      awaySourceRound === 1 &&
+      (awaySourceRound || 0) <= 1 &&
+      !(awaySourceGrid === 1 && awaySourceSelectedNum > 0) &&
       !playInGamesExist
         ? awaySourceGrid!
         : (maxGridNum || 1) + 1;

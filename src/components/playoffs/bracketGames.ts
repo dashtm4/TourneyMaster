@@ -1,4 +1,4 @@
-import { unionBy, findIndex } from 'lodash-es';
+import { unionBy, findIndex, orderBy } from 'lodash-es';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IDivision, IField } from 'common/models';
 import { ITeamCard } from 'common/models/schedule/teams';
@@ -199,7 +199,10 @@ export const populatePlayoffGames = (
   divisions: IDivision[],
   facilityData: IFacilityData[]
 ) => {
-  const localBracketGames = [...bracketGames];
+  const localBracketGames = orderBy(
+    bracketGames,
+    ({ divisionId, round, index }) => [divisionId, Math.abs(round), index]
+  );
   const timeSlotRound = {};
 
   return games.map(game => {
@@ -212,7 +215,8 @@ export const populatePlayoffGames = (
           }) >= 0 &&
           (!timeSlotRound[item.divisionId] ||
             timeSlotRound[item.divisionId][game.timeSlotId] === undefined ||
-            timeSlotRound[item.divisionId][game.timeSlotId] === item.round)
+            timeSlotRound[item.divisionId][game.timeSlotId] ===
+              Math.abs(item.round))
       );
       const bracketGame = [...localBracketGames][index];
       const division = divisions.find(
@@ -225,7 +229,7 @@ export const populatePlayoffGames = (
 
       timeSlotRound[bracketGame?.divisionId || 0] = {
         ...(timeSlotRound[bracketGame?.divisionId || 0] || {}),
-        [game.timeSlotId]: bracketGame?.round,
+        [game.timeSlotId]: Math.abs(bracketGame?.round),
       };
 
       return {
