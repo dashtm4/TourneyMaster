@@ -14,8 +14,18 @@
 .btnsGroup {
   display: flex;
   align-items: flex-start;
-  & > * {
-    margin-right: 100px;
+  width: 70%;
+  & > :first-child {
+    width: 50%;
+  }
+  & > :last-child {
+    width: 50%;
+  }
+  .radioBtns {
+    display: flex;
+    & > :first-child {
+      margin-right: 90px;
+    }
   }
 }
 .inputGroup {
