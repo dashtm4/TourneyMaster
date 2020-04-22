@@ -33,6 +33,7 @@ import {
   applyFilters,
   mapUnusedFields,
   moveCardMessages,
+  getScheduleWarning,
 } from './helpers';
 
 import { IScheduleFacility } from 'common/models/schedule/facilities';
@@ -94,6 +95,7 @@ const TableSchedule = ({
   onToggleFullScreen,
   playoffTimeSlots,
 }: Props) => {
+  console.log(teamsDiagnostics);
   const minGamesNum = event.min_num_of_games;
 
   const [filterValues, changeFilterValues] = useState<IScheduleFilter>(
@@ -218,6 +220,13 @@ const TableSchedule = ({
 
   const allGamesByTeamCards = getAllGamesByTeamCards(teamCards, games);
 
+  const warnings = getScheduleWarning(
+    scheduleData,
+    event,
+    teamCards,
+    teamsDiagnostics!
+  );
+
   return (
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
@@ -269,6 +278,7 @@ const TableSchedule = ({
           )}
           <div className={styles.tableWrapper}>
             <Filter
+              warnings={warnings}
               days={days.length}
               filterValues={filterValues}
               onChangeFilterValue={onFilterChange}

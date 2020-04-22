@@ -6,7 +6,7 @@ import {
   CardMessage,
   Button,
 } from 'components/common';
-import { BindingCbWithOne, ISchedule } from 'common/models';
+import { BindingCbWithOne, ISchedule, IEventDetails } from 'common/models';
 import { EventMenuTitles } from 'common/enums';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
@@ -20,6 +20,7 @@ const CARD_MESSAGE_STYLES = {
 };
 
 interface IProps {
+  event: IEventDetails;
   schedules: ISchedulingSchedule[];
   eventId: string;
   savingInProgress?: boolean;
@@ -42,6 +43,7 @@ export default (props: IProps) => {
     onEditSchedule,
     onCreatePressed,
     isAllowCreate,
+    event,
   } = props;
 
   const sortedSchedules = orderBy(
@@ -100,6 +102,7 @@ export default (props: IProps) => {
           </CardMessage>
           {sortedSchedules.map(it => (
             <TournamentPlayItem
+              event={event}
               schedule={it}
               eventId={eventId}
               onEditSchedule={onEditSchedule}

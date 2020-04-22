@@ -5,7 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { HeadingLevelFour, Tooltip, Button, Paper } from 'components/common';
-import { BindingCbWithOne, ISchedule } from 'common/models';
+import InteractiveTooltip from 'components/common/interactive-tooltip';
+import { BindingCbWithOne, ISchedule, IEventDetails } from 'common/models';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
 import { Routes } from 'common/enums';
@@ -16,6 +17,7 @@ const DEFAULT_UPDATED_VALUE = 'Not updated yet.';
 
 interface IProps {
   schedule: ISchedulingSchedule;
+  event: IEventDetails;
   eventId: string;
   anotherSchedulePublished?: boolean;
   savingInProgress?: boolean;
@@ -27,6 +29,7 @@ interface IProps {
 
 const TournamentPlayItem = ({
   schedule,
+  event,
   eventId,
   onEditSchedule,
   onPublish,
@@ -37,12 +40,32 @@ const TournamentPlayItem = ({
 }: IProps) => {
   const localOnEditSchedule = () => onEditSchedule(schedule);
 
+  const warnings = [];
+  if (
+    schedule.first_game_time !== event.first_game_time ||
+    schedule.last_game_end_time !== event.last_game_end
+  ) {
+    warnings.push({
+      type: 'WARN',
+      title:
+        'Schedule First Game Start and Last Game End options do not match the Event Details options. Your Schedule data may be corrupted.',
+    });
+  }
+
   return (
     <li className={styles.tournamentPlay}>
       <Paper padding={20}>
         <div className={styles.header}>
           <HeadingLevelFour>
-            <span>{schedule.schedule_name}</span>
+            <div className={styles.heading}>
+              <span>{schedule.schedule_name}</span>
+              {warnings.length ? (
+                <InteractiveTooltip
+                  title="Scheduling Warning"
+                  items={warnings}
+                />
+              ) : null}
+            </div>
           </HeadingLevelFour>
           <Tooltip
             disabled={!anotherSchedulePublished}
