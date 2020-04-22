@@ -1,5 +1,6 @@
 export interface IMessage {
   message_id: string;
+  request_id: string;
   sns_unique_id: string | null;
   member_id: string;
   message_type: string;

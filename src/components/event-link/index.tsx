@@ -5,13 +5,31 @@ import styles from './styles.module.scss';
 import Navigation from './navigation';
 import Messaging from './messaging';
 import ScheduleReview from './schedule-review';
-import { getMessages, sendSavedMessage } from './logic/actions';
+import {
+  getMessages,
+  sendSavedMessages,
+  deleteMessages,
+} from './logic/actions';
 import { BindingAction, BindingCbWithOne } from 'common/models';
 import { IMessage } from 'common/models/event-link';
+import { groupBy } from 'lodash';
+import { orderBy } from 'lodash-es';
+
+export interface IGroupedMessages {
+  message_title: string;
+  message_type: string;
+  message_body: string;
+  message_ids: string[];
+  uniqueIds: (string | null)[];
+  recipients: string[];
+  sendDatetime: string;
+  status: number;
+}
 
 interface IProps {
   getMessages: BindingAction;
-  sendSavedMessage: BindingCbWithOne<any>;
+  sendSavedMessages: BindingCbWithOne<IGroupedMessages>;
+  deleteMessages: BindingCbWithOne<string[]>;
   messages: IMessage[];
   messagesAreLoading: boolean;
 }
@@ -20,7 +38,8 @@ const EventLink = ({
   getMessages,
   messages,
   messagesAreLoading,
-  sendSavedMessage,
+  sendSavedMessages,
+  deleteMessages,
 }: IProps) => {
   useEffect(() => {
     getMessages();
@@ -30,6 +49,25 @@ const EventLink = ({
 
   const onToggleSectionCollapse = () => {
     toggleSectionCollapse(!isSectionsExpand);
+  };
+
+  const groupMessages = () => {
+    const data = messages.filter(message => message.message_id);
+    const groupedMessages = groupBy(data, 'request_id');
+    const res = Object.entries(groupedMessages).map(([_key, value]) => {
+      return {
+        message_title: value[0].message_title,
+        message_type: value[0].message_type,
+        message_body: value[0].message_body,
+        message_ids: value.map(mes => mes.message_id),
+        uniqueIds: value.map(mes => mes.sns_unique_id),
+        recipients: value.map(mes => mes.recipient_details),
+        sendDatetime: value[0].send_datetime,
+        status: value[0].status,
+      };
+    });
+
+    return orderBy(res, ['sendDatetime'], ['desc']);
   };
 
   return (
@@ -47,9 +85,10 @@ const EventLink = ({
       <ul className={styles.libraryList}>
         <Messaging
           isSectionExpand={isSectionsExpand}
-          data={messages}
+          data={groupMessages()}
           messagesAreLoading={messagesAreLoading}
-          sendMessage={sendSavedMessage}
+          sendMessages={sendSavedMessages}
+          deleteMessages={deleteMessages}
         />
         <ScheduleReview isSectionExpand={isSectionsExpand} />
       </ul>
@@ -57,7 +96,9 @@ const EventLink = ({
   );
 };
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: {
+  eventLink: { messages: IMessage[]; messagesAreLoading: boolean };
+}) => {
   return {
     messages: state.eventLink.messages,
     messagesAreLoading: state.eventLink.messagesAreLoading,
@@ -66,7 +107,8 @@ const mapStateToProps = (state: any) => {
 
 const mapDispatchToProps = {
   getMessages,
-  sendSavedMessage,
+  sendSavedMessages,
+  deleteMessages,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EventLink);
