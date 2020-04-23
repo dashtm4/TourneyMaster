@@ -63,7 +63,11 @@ import {
   clearBracketGames,
   fetchBracketGames,
 } from './logic/actions';
-import { updateGameBracketInfo, addGameToExistingBracketGames } from './helper';
+import {
+  updateGameBracketInfo,
+  addGameToExistingBracketGames,
+  removeGameFromBracketGames,
+} from './helper';
 import { IOnAddGame } from './add-game-modal';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
@@ -368,8 +372,10 @@ class Playoffs extends Component<IProps> {
     const { bracketGames } = this.state;
     if (!bracketGames?.length) return;
 
-    const newBracketGames = bracketGames.filter(
-      item => item.divisionId !== selectedDivision || item.index !== gameIndex
+    const newBracketGames = removeGameFromBracketGames(
+      gameIndex,
+      bracketGames,
+      selectedDivision
     );
 
     this.setState({ bracketGames: newBracketGames }, () =>

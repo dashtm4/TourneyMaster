@@ -181,7 +181,7 @@ class BracketManager extends Component<IProps> {
           {addGameModalOpen && (
             <AddGameModal
               isOpen={addGameModalOpen}
-              bracketGames={divisionGames!}
+              bracketGames={divisionGames?.filter(item => !item.hidden)!}
               playInGamesExist={playInGamesExist}
               onClose={() => this.setState({ addGameModalOpen: false })}
               onAddGame={this.onAddGame}

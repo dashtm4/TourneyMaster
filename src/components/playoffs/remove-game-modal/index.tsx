@@ -30,8 +30,9 @@ const RemoveGameModal = ({
       <section className={styles.popupWrapper}>
         <h2 className={styles.title}>Remove Game {gameIndex}</h2>
         <div className={styles.bodyWrapper}>
-          <span>Enter Game Number to proceed</span>
+          <span>Enter "Game {gameIndex}" to delete the game</span>
           <Input
+            autofocus={true}
             value={gameNum}
             onChange={(e: any) => setGameNum(e.target.value)}
           />
@@ -48,7 +49,7 @@ const RemoveGameModal = ({
             variant="contained"
             color="primary"
             onClick={onRemoveGame}
-            disabled={Number(gameNum) !== gameIndex}
+            disabled={gameNum !== `Game ${gameIndex}`}
           />
         </div>
       </section>

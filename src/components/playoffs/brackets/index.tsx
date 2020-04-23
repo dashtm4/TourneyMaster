@@ -91,7 +91,7 @@ const Brackets = (props: IProps) => {
             const games = [...thisRound].filter((v: any) => !v?.hidden);
             newGrids[gridKey][key] = [];
 
-            [...Array(nextRound.length / 2)].map((_, i) =>
+            [...Array(Math.round(nextRound.length / 2))].map((_, i) =>
               newGrids[gridKey][key].push(
                 getPosByIndex(i, games) || { hidden: true }
               )

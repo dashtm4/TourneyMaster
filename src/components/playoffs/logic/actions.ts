@@ -68,6 +68,8 @@ const managePlayoffSaving = (
   const newGames: IBracketGame[] = [];
 
   const existingGameIds = loadedGames.map(item => item.game_id);
+  const removedGames = bracketGames.filter(item => item.hidden);
+  bracketGames = bracketGames.filter(item => !item.hidden);
 
   bracketGames.forEach(item =>
     existingGameIds.includes(item.id)
@@ -90,6 +92,16 @@ const managePlayoffSaving = (
   const newBracketGamesResp = await Promise.all(
     newBracketGamesChunk.map(
       async arr => await api.post('/games_brackets', arr)
+    )
+  );
+
+  // Delete games that were removed in the component
+  const mappedRemovedGames = await mapBracketGames(removedGames, bracket);
+  const mappedRemovedGamesChunk = chunk(mappedRemovedGames, 50);
+
+  await Promise.all(
+    mappedRemovedGamesChunk.map(
+      async arr => await api.delete('/games_brackets', arr)
     )
   );
 
