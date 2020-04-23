@@ -77,7 +77,7 @@ const PrimaryInformation = ({
       </div>
     </div>
     <div className={styles.piSectionThirddRow}>
-      <div className={styles.sectionItem}>
+      <div>
         <Checkbox
           options={[
             {
@@ -85,6 +85,15 @@ const PrimaryInformation = ({
               checked: Boolean(
                 data ? data.upcharge_fees_on_registrations : false
               ),
+              disabled: true,
+            },
+          ]}
+        />
+        <Checkbox
+          options={[
+            {
+              label: 'Division Fees Vary',
+              checked: Boolean(data ? data.fees_vary_by_division_YN : false),
               disabled: true,
             },
           ]}

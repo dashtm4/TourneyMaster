@@ -45,8 +45,40 @@
     height: 450px;
     margin-left: 20px;
 
+    .filterWrapper {
+      display: flex;
+      justify-content: space-between;
+      height: 80px;
+      background: #f4f4f4;
+
+      .selectWrapper {
+        width: 190px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+
+        .selectTitle {
+          color: #6a6a6a;
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 19px;
+        }
+      }
+
+      .dndToggleWrapper {
+        height: 50px;
+        margin-top: 20px;
+        color: gray;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 320px;
+      }
+    }
+
     section {
-      height: 450px;
+      height: 370px;
     }
   }
 }

@@ -22,6 +22,7 @@ export interface IRegistration {
   contact3_name_requested_YN: number;
   contact3_name_required_YN: number;
   max_teams_per_division: number;
+  max_players_per_division: number;
   min_players_per_roster: number;
   max_players_per_roster: number;
   request_athlete_birthdate: number;
@@ -42,4 +43,5 @@ export interface IRegistration {
   updated_by: string;
   updated_datetime: string;
   upcharge_fees_on_registrations: number;
+  fees_vary_by_division_YN: number;
 }

@@ -124,7 +124,7 @@ const PopupEditSchedule = ({
                 variant={ButtonVarian.TEXT}
                 color={ButtonColors.INHERIT}
                 btnType={ButtonFormTypes.BUTTON}
-                label="Delete Schedule &amp; Bracket"
+                label="Delete Schedule &amp; Associated Brackets"
               />
             </p>
             <div className={styles.navBtnWrapper}>
