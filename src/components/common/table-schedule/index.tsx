@@ -218,7 +218,7 @@ const TableSchedule = ({
 
   const togglePopupSaveReport = () => onPopupSaveReport(!isPopupSaveReportOpen);
 
-  const allGamesByTeamCards = getAllGamesByTeamCards(teamCards, games);
+  const allGamesByTeamCards = getAllGamesByTeamCards(teamCards, games, days);
 
   const warnings = getScheduleWarning(
     scheduleData,
@@ -328,6 +328,7 @@ const TableSchedule = ({
               timeSlots={timeSlots}
               facilities={facilities}
               schedule={scheduleData}
+              eventDays={days}
               isOpen={isPopupSaveReportOpen}
               onClose={togglePopupSaveReport}
             />

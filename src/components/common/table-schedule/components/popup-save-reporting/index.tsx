@@ -1,10 +1,11 @@
 import React from 'react';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
-import { Modal, HeadingLevelTwo, Button } from 'components/common';
-import { onPDFSave } from 'helpers';
+import { Modal, HeadingLevelTwo, Button, Select } from 'components/common';
+import { onPDFSave, getSelectDayOptions } from 'helpers';
 import { BindingAction } from 'common/models';
-import { ButtonColors, ButtonVarian } from 'common/enums';
+import { ButtonColors, ButtonVarian, DefaultSelectValues } from 'common/enums';
+import { IInputEvent } from 'common/types';
 import { IEventDetails, ISchedule } from 'common/models';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
@@ -19,6 +20,7 @@ interface Props {
   games: IGame[];
   fields: IField[];
   schedule: ISchedule;
+  eventDays: string[];
   isOpen: boolean;
   onClose: BindingAction;
 }
@@ -30,14 +32,29 @@ const PopupSaveReporting = ({
   games,
   fields,
   schedule,
+  eventDays,
   isOpen,
   onClose,
 }: Props) => {
+  const [activeDay, changeActiveDay] = React.useState<string>(
+    DefaultSelectValues.ALL
+  );
+
+  const gamesByDay = games.filter(
+    it => it.gameDate === activeDay || activeDay === DefaultSelectValues.ALL
+  );
+
+  const selectDayOptions = getSelectDayOptions(eventDays);
+
+  const onChangeActiveDay = ({ target }: IInputEvent) => {
+    changeActiveDay(target.value);
+  };
+
   const onScheduleTableSave = async () =>
     onPDFSave(
       <PDFTableSchedule
         event={event}
-        games={games}
+        games={gamesByDay}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
@@ -50,7 +67,7 @@ const PopupSaveReporting = ({
     onPDFSave(
       <PDFTableSchedule
         event={event}
-        games={games}
+        games={gamesByDay}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
@@ -66,7 +83,7 @@ const PopupSaveReporting = ({
     onPDFSave(
       <PDFTableFieldsSchedule
         event={event}
-        games={games}
+        games={gamesByDay}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
@@ -80,9 +97,18 @@ const PopupSaveReporting = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.section}>
-        <div className={styles.titleWrapper}>
-          <HeadingLevelTwo>Save as:</HeadingLevelTwo>
-        </div>
+        <header className={styles.headerWrapper}>
+          <div className={styles.titleWrapper}>
+            <HeadingLevelTwo>Save as:</HeadingLevelTwo>
+          </div>
+          <Select
+            onChange={onChangeActiveDay}
+            value={activeDay}
+            options={selectDayOptions}
+            label="Days"
+            width="200px"
+          />
+        </header>
         <ul className={styles.linkList}>
           <li className={styles.link}>
             <h3>Schedule:</h3>

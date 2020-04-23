@@ -9,7 +9,11 @@ import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
-import { getFieldsByFacilityId, getGamesByDays } from '../helpers';
+import {
+  getFieldsByFacility,
+  getGamesByDays,
+  getGamesByFacility,
+} from '../helpers';
 import { DEFAUL_COLUMNS_COUNT } from './common';
 import { styles } from './styles';
 
@@ -40,7 +44,8 @@ const PDFScheduleTable = ({
         const gamesByDay = gamesByDays[day];
 
         return facilities.map(facility => {
-          const fieldsByFacility = getFieldsByFacilityId(fields, facility);
+          const fieldsByFacility = getFieldsByFacility(fields, facility);
+          const gamesByFacility = getGamesByFacility(gamesByDay, facility);
 
           return fieldsByFacility.reduce((acc, field, idx) => {
             let splitIdx = 0;
@@ -73,9 +78,8 @@ const PDFScheduleTable = ({
                         splitIdx={splitIdx}
                       />
                       <TableTbody
-                        facility={facility}
                         timeSlots={timeSlots}
-                        games={gamesByDay}
+                        games={gamesByFacility}
                         splitIdx={splitIdx}
                         isHeatMap={isHeatMap}
                       />
