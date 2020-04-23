@@ -94,7 +94,10 @@ const toggleTournamentStatus = () => async (
 
     const updatedEvent = {
       ...event,
-      is_published_YN: event?.is_published_YN === EventStatuses.Draft ? 1 : 0,
+      is_published_YN:
+        event?.is_published_YN === EventStatuses.Draft
+          ? EventStatuses.Published
+          : EventStatuses.Draft,
     } as IEventDetails;
 
     await Api.put(`/events?event_id=${updatedEvent.event_id}`, updatedEvent);
