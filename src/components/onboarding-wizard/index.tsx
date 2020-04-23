@@ -9,6 +9,8 @@ import {
   createOrganization,
   addUserToOrganization,
 } from 'components/organizations-management/logic/actions';
+import { Routes } from 'common/enums';
+import history from 'browserhistory';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -107,7 +109,18 @@ class OnboardingWizard extends React.Component<Props> {
     return (
       <Modal isOpen={this.props.isOpen} onClose={() => {}}>
         <div className={styles.container}>
-          <HeadingLevelTwo>Onboarding Wizard</HeadingLevelTwo>
+          <div className={styles.headerWrapper}>
+            <HeadingLevelTwo>Onboarding Wizard</HeadingLevelTwo>
+            <Button
+              label="Sign Out"
+              color="secondary"
+              variant="text"
+              onClick={() => {
+                localStorage.clear();
+                history.replace(Routes.LOGIN);
+              }}
+            />
+          </div>
           {this.renderWizard(this.state.step)}
         </div>
       </Modal>
