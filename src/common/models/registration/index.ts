@@ -44,5 +44,4 @@ export interface IRegistration {
   updated_datetime: string;
   upcharge_fees_on_registrations: number;
   fees_vary_by_division_YN: number;
-  division_fees: string;
 }
