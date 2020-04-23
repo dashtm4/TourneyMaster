@@ -269,6 +269,12 @@ export const deleteSchedule = (schedule: ISchedulingSchedule) => async (
   dispatch: Dispatch
 ) => {
   try {
+    const brackets = await api.get(
+      `/brackets_details?schedule_id=${schedule.schedule_id}`
+    );
+
+    await api.delete('/brackets_details', brackets);
+
     await api.delete(`/schedules?schedule_id=${schedule.schedule_id}`);
 
     dispatch({
