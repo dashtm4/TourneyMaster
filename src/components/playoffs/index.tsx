@@ -112,6 +112,7 @@ interface IState {
   playoffTimeSlots?: ITimeSlot[];
   tableGames?: IGame[];
   cancelConfirmationOpen: boolean;
+  dataChanged: boolean;
 }
 
 enum PlayoffsTabsEnum {
@@ -123,6 +124,7 @@ class Playoffs extends Component<IProps> {
   state: IState = {
     activeTab: PlayoffsTabsEnum.ResourceMatrix,
     cancelConfirmationOpen: false,
+    dataChanged: false,
   };
 
   async componentDidMount() {
@@ -304,8 +306,10 @@ class Playoffs extends Component<IProps> {
     );
 
     const seeds = createSeeds(bracketTeamsNum);
+
     this.setState({
       tableGames,
+      dataChanged: !!this.state.bracketGames,
       bracketGames: populatedBracketGames,
       bracketSeeds: seeds,
     });
@@ -341,11 +345,13 @@ class Playoffs extends Component<IProps> {
     this.setState({ cancelConfirmationOpen: false });
 
   onGoBack = () => {
-    // if (condition) {
-    this.openCancelConfirmation();
-    // } else {
-    // this.onExit();
-    // }
+    const { dataChanged } = this.state;
+
+    if (dataChanged) {
+      this.openCancelConfirmation();
+    } else {
+      this.onExit();
+    }
   };
 
   onExit = () => {
