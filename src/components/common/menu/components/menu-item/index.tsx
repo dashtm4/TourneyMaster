@@ -62,7 +62,7 @@ const MenuItem = ({
           >
             {menuItem.title}
             {!isCollapsed &&
-              tournamentStatus === EventStatuses.DRAFT &&
+              tournamentStatus === EventStatuses.Draft &&
               menuItem.hasOwnProperty(RequiredMenuKeys.IS_COMPLETED) &&
               (menuItem.isCompleted
                 ? getIcon(Icons.CHECK_CIRCLE, {

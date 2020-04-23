@@ -84,17 +84,20 @@ const clearAuthPageData = () => ({
   type: CLEAR_AUTH_PAGE_DATA,
 });
 
-const changeTournamentStatus = (status: EventStatuses) => async (
+const toggleTournamentStatus = () => async (
   dispatch: Dispatch,
   getState: () => IAppState
 ) => {
   try {
     const { tournamentData } = getState().pageEvent;
+    const { event } = tournamentData;
 
     const updatedEvent = {
-      ...tournamentData.event,
-      event_status: status,
-      is_published_YN: status === EventStatuses.PUBLISHED ? 1 : 0,
+      ...event,
+      is_published_YN:
+        event?.is_published_YN === EventStatuses.Draft
+          ? EventStatuses.Published
+          : EventStatuses.Draft,
     } as IEventDetails;
 
     await Api.put(`/events?event_id=${updatedEvent.event_id}`, updatedEvent);
@@ -190,7 +193,7 @@ const addEntitiesToLibrary = (
 export {
   loadAuthPageData,
   clearAuthPageData,
-  changeTournamentStatus,
+  toggleTournamentStatus,
   addEntityToLibrary,
   addEntitiesToLibrary,
 };
