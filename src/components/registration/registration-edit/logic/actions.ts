@@ -4,6 +4,7 @@ import {
   REGISTRATION_UPDATE_SUCCESS,
   REGISTRATION_FETCH_START,
   DIVISIONS_FETCH_SUCCESS,
+  EVENT_FETCH_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
 import { ActionCreator, Dispatch } from 'redux';
@@ -43,7 +44,12 @@ export const getRegistration: ActionCreator<ThunkAction<
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   dispatch(registrationFetchStart());
   const data = await api.get(`/registrations?event_id=${eventId}`);
+  const event = await api.get(`/events?event_id=${eventId}`);
   dispatch(registrationFetchSuccess(data));
+  dispatch({
+    type: EVENT_FETCH_SUCCESS,
+    payload: event,
+  });
 };
 
 export const saveRegistration: ActionCreator<ThunkAction<

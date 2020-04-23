@@ -41,9 +41,6 @@
     display: flex;
     justify-content: space-between;
   }
-  .sectionTooltipRow {
-    display: flex;
-  }
   .sectionItem {
     flex-grow: 0;
     width: 22%;
@@ -63,5 +60,16 @@
   .divisionLink {
     color: #11a8ea;
     text-decoration: none;
+  }
+}
+.sectionThirdRow {
+  width: 300px;
+}
+.sectionFourthRow {
+  display: flex;
+  flex-wrap: wrap;
+  & > * {
+    margin-right: 10px;
+    width: 100px;
   }
 }

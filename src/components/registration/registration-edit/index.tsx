@@ -8,7 +8,7 @@ import PrimaryInformation from './primary-information';
 import TeamsAthletesInfo from './teams-athletes';
 import MainContact from './main-contact';
 import { IRegistration } from 'common/models/registration';
-import { BindingAction, BindingCbWithTwo } from 'common/models';
+import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
 import { PopupExposure } from 'components/common';
 
 interface IRegistrationEditProps {
@@ -17,6 +17,7 @@ interface IRegistrationEditProps {
   registration?: IRegistration;
   onChange: BindingCbWithTwo<string, any>;
   changesAreMade: boolean;
+  divisions: IDivision[];
 }
 
 interface IRegistrationEditState {
@@ -77,6 +78,7 @@ class RegistrationEdit extends React.Component<
                 <PrimaryInformation
                   data={this.props.registration}
                   onChange={this.props.onChange}
+                  divisions={this.props.divisions}
                 />
               </SectionDropdown>
             </li>
