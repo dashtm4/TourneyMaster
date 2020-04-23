@@ -332,10 +332,10 @@ const getScheduleWarning = (
 
   // If there are back to back games
   const backToBackIndex =
-    teamsDiagnostics.header.findIndex(item =>
+    teamsDiagnostics?.header?.findIndex(item =>
       item.toLowerCase().includes('back-to-back')
     ) || 5;
-  const backToBackValues = teamsDiagnostics.body.map(
+  const backToBackValues = teamsDiagnostics?.body?.map(
     item => item[backToBackIndex]
   );
   const backToBackExist = backToBackValues.filter(v => Number(v) > 0).length;

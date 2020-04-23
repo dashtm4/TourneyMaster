@@ -219,12 +219,10 @@ const TableSchedule = ({
 
   const allGamesByTeamCards = getAllGamesByTeamCards(teamCards, games, days);
 
-  const warnings = getScheduleWarning(
-    scheduleData,
-    event,
-    teamCards,
-    teamsDiagnostics!
-  );
+  const warnings =
+    tableType === TableScheduleTypes.SCORES
+      ? undefined
+      : getScheduleWarning(scheduleData, event, teamCards, teamsDiagnostics!);
 
   return (
     <section className={styles.section}>
