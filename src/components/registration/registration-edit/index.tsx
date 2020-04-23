@@ -79,7 +79,6 @@ class RegistrationEdit extends React.Component<
                 <PrimaryInformation
                   data={this.props.registration}
                   onChange={this.props.onChange}
-                  divisions={this.props.divisions}
                 />
               </SectionDropdown>
             </li>

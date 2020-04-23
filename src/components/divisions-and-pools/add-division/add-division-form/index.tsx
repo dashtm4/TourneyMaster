@@ -5,7 +5,7 @@ import Checkbox from '../../../common/buttons/checkbox';
 import styles from '../styles.module.scss';
 import { BindingCbWithThree, IDivision, IFacility } from 'common/models';
 import { IRegistration } from 'common/models/registration';
-import { Select } from 'components/common';
+import { Select, Tooltip } from 'components/common';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -83,12 +83,25 @@ class AddDivisionForm extends React.Component<
     });
   };
 
+  renderEntryFee = () => {
+    return (
+      <Input
+        fullWidth={true}
+        label="Entry Fee"
+        startAdornment="$"
+        type="number"
+        value={this.props.division.entry_fee || ''}
+        onChange={this.onEntryFeeChange}
+        disabled={!this.props.registration?.fees_vary_by_division_YN}
+      />
+    );
+  };
+
   render() {
     const {
       long_name,
       short_name,
       division_tag,
-      entry_fee,
       division_description,
       max_num_teams,
       division_message,
@@ -138,14 +151,16 @@ class AddDivisionForm extends React.Component<
           </div>
           <div className={styles.sectionRow}>
             <div className={styles.sectionItem}>
-              <Input
-                fullWidth={true}
-                label="Entry Fee"
-                startAdornment="$"
-                type="number"
-                value={entry_fee || ''}
-                onChange={this.onEntryFeeChange}
-              />
+              {!this.props.registration?.fees_vary_by_division_YN ? (
+                <Tooltip
+                  type="info"
+                  title="Entry Fee is set in the Registartion section. To be able to chage it, go to the 'Registration' and toggle 'Division Fees Vary' checkbox."
+                >
+                  <div>{this.renderEntryFee()}</div>
+                </Tooltip>
+              ) : (
+                this.renderEntryFee()
+              )}
             </div>
             <div className={styles.sectionItem}>
               <Input
