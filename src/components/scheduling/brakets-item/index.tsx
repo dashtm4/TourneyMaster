@@ -88,6 +88,9 @@ const BraketsItem = ({
         />
       </p>
       <p className={styles.textWrapper}>
+        <b>Schedule:</b> <span>{schedule.schedule_name || ''}</span>
+      </p>
+      <p className={styles.textWrapper}>
         <b>Created by:</b>
         <span className={styles.textNameWrapper}>
           <span>{bracket.createdByName}</span>

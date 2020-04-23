@@ -104,6 +104,9 @@ export default (
         schedules: state.schedules.filter(
           it => it.schedule_id !== schedule.schedule_id
         ),
+        brackets: state.brackets?.filter(
+          it => it.scheduleId !== schedule.schedule_id
+        ),
       };
     }
     case ADD_NEW_BRACKET:
