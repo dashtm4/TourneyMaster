@@ -10,8 +10,8 @@ import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import {
-  getFieldsByFacilityId,
-  getGamesByFieldId,
+  getFieldsByFacility,
+  getGamesByField,
   getGamesByDays,
 } from '../helpers';
 import { styles } from './styles';
@@ -41,7 +41,7 @@ const PDFScheduleTable = ({
         const gamesByDay = gamesByDays[day];
 
         return facilities.map(facility => {
-          const fieldsByFacility = getFieldsByFacilityId(fields, facility);
+          const fieldsByFacility = getFieldsByFacility(fields, facility);
 
           return fieldsByFacility.map(field => (
             <Page
@@ -62,7 +62,7 @@ const PDFScheduleTable = ({
                 <TableThead field={field} />
                 <TableTbody
                   timeSlots={timeSlots}
-                  games={getGamesByFieldId(gamesByDay, field)}
+                  games={getGamesByField(gamesByDay, field)}
                 />
               </View>
               <PrintedDate />
