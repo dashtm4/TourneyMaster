@@ -328,9 +328,9 @@ class Playoffs extends Component<IProps> {
     const newBracketGames = bracketGames?.map(item =>
       item.index === game.playoffIndex && item.divisionId === game.divisionId
         ? {
-          ...item,
-          hidden: !!withGame?.playoffIndex,
-        }
+            ...item,
+            hidden: !!withGame?.playoffIndex,
+          }
         : item
     );
 
@@ -391,7 +391,7 @@ class Playoffs extends Component<IProps> {
     );
   };
 
-  onSeedsUsed = () => { };
+  onSeedsUsed = () => {};
 
   onSavePressed = () => {
     const { match, bracketGames } = this.props;
@@ -498,22 +498,22 @@ class Playoffs extends Component<IProps> {
                 scheduleData={schedule}
                 eventSummary={eventSummary}
                 schedulesDetails={schedulesDetails}
-                onTeamCardsUpdate={() => { }}
-                onTeamCardUpdate={() => { }}
-                onUndo={() => { }}
+                onTeamCardsUpdate={() => {}}
+                onTeamCardUpdate={() => {}}
+                onUndo={() => {}}
                 updateGame={this.updateMergedGames}
                 setHighlightedGame={this.setHighlightedGame}
                 highlightedGameId={this.state.highlightedGameId}
               />
             ) : (
-                <BracketManager
-                  divisions={divisions!}
-                  seeds={bracketSeeds}
-                  bracketGames={bracketGames}
-                  addGame={this.addGame}
-                  removeGame={this.removeGame}
-                />
-              )}
+              <BracketManager
+                divisions={divisions!}
+                seeds={bracketSeeds}
+                bracketGames={bracketGames}
+                addGame={this.addGame}
+                removeGame={this.removeGame}
+              />
+            )}
           </section>
         </DndProvider>
         <PopupExposure

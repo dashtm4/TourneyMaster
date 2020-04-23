@@ -100,7 +100,7 @@ const Brackets = (props: IProps) => {
         })
     );
 
-    if (newGrids[1][1].length < newGrids[1][2].length) {
+    if (newGrids[1][1]?.length < newGrids[1][2]?.length) {
       setPlayInRound({
         1: setInPlayGames(newGrids[1][1], newGrids[1][2]),
       });

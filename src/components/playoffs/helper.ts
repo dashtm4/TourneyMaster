@@ -144,9 +144,7 @@ export const removeGameFromBracketGames = (
     )
     .map((item, index) => ({ ...item, index: index + 1 }));
 
-  const otherGames = games.filter(
-    item => !newFound.includes(item.index) && item.divisionId !== divisionId
-  );
+  const otherGames = games.filter(item => item.divisionId !== divisionId);
 
   const allGames = orderBy(
     [...otherGames, ...updatedDivisionGames],
