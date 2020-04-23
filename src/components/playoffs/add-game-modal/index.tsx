@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react';
+import { maxBy } from 'lodash-es';
 import { Button, Modal, Select } from 'components/common';
 import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
 import { IBracketGame } from '../bracketGames';
-import { maxBy } from 'lodash-es';
 
 export interface IOnAddGame {
   awayDependsUpon: string;
   homeDependsUpon: string;
   gridNum: number;
+  isWinner: boolean;
 }
 
 interface Props {
@@ -20,7 +21,7 @@ interface Props {
   onAddGame: (data: IOnAddGame) => void;
 }
 
-const PopupDeleteConfirm = ({
+const AddGameModal = ({
   isOpen,
   onClose,
   bracketGames,
@@ -47,8 +48,8 @@ const PopupDeleteConfirm = ({
       .filter(item => item <= 0);
 
     const source = bracketGames.map(item => ({
-      label: `Loser ${item.index}`,
-      value: item.index,
+      label: `Loser Game ${item.index}, Round ${Math.abs(item.round)}`,
+      value: -item.index,
     }));
 
     if (negativeRounds?.length) {
@@ -56,7 +57,7 @@ const PopupDeleteConfirm = ({
         ...bracketGames
           .filter(item => item.round <= 0)
           .map(item => ({
-            label: `Winner ${item.index}`,
+            label: `Winner Game ${item.index}, Round ${Math.abs(item.round)}`,
             value: item.index,
           }))
       );
@@ -72,13 +73,16 @@ const PopupDeleteConfirm = ({
     setHomeSourceSelected(e.target.value);
 
   const addGame = () => {
+    const awaySourceSelectedNum = Number(awaySourceSelected);
+    const homeSourceSelectedNum = Number(homeSourceSelected);
+
     const maxGridNum = maxBy(bracketGames, 'gridNum')?.gridNum;
 
     const awaySource = bracketGames.find(
-      item => item.index === +awaySourceSelected
+      item => item.index === Math.abs(awaySourceSelectedNum)
     );
     const homeSource = bracketGames.find(
-      item => item.index === +homeSourceSelected
+      item => item.index === Math.abs(homeSourceSelectedNum)
     );
 
     const awaySourceGrid = awaySource?.gridNum;
@@ -86,22 +90,22 @@ const PopupDeleteConfirm = ({
     const awaySourceRound = awaySource?.round;
     const homeSourceRound = homeSource?.round;
 
-    console.log('awaySourceGrid', awaySourceGrid);
-    console.log('homeSourceGrid', homeSourceGrid);
-    console.log('maxGridNum', maxGridNum);
-
     const gridNum =
       awaySourceGrid === homeSourceGrid &&
       awaySourceRound === homeSourceRound &&
-      awaySourceRound === 1 &&
+      (awaySourceRound || 0) <= 1 &&
+      !(awaySourceGrid === 1 && awaySourceSelectedNum > 0) &&
       !playInGamesExist
         ? awaySourceGrid!
         : (maxGridNum || 1) + 1;
 
+    const isWinner = awaySourceSelectedNum > 0 && homeSourceSelectedNum > 0;
+
     onAddGame({
-      awayDependsUpon: awaySourceSelected,
-      homeDependsUpon: homeSourceSelected,
+      awayDependsUpon: String(Math.abs(awaySourceSelectedNum)),
+      homeDependsUpon: String(Math.abs(homeSourceSelectedNum)),
       gridNum,
+      isWinner,
     });
   };
 
@@ -109,31 +113,40 @@ const PopupDeleteConfirm = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.popupWrapper}>
         <h2 className={styles.title}>Add Game</h2>
-        <div>
+        <div className={styles.bodyWrapper}>
           <Select
             options={awaySourceOptions}
             value={awaySourceSelected}
             placeholder="Select"
-            label="Select Away Source"
+            label="Select First Game Source"
             onChange={onAwaySourceChange}
           />
           <Select
             options={homeSourceOptions}
             value={homeSourceSelected}
             placeholder="Select"
-            label="Select Home Source"
+            label="Select Second Game Source"
             onChange={onHomeSourceChange}
           />
         </div>
-        <Button
-          label="Add"
-          variant="contained"
-          color="primary"
-          onClick={addGame}
-        />
+        <div className={styles.btnsWrapper}>
+          <Button
+            label="Cancel"
+            variant="text"
+            color="secondary"
+            onClick={onClose}
+          />
+          <Button
+            label="+ Add"
+            variant="contained"
+            color="primary"
+            onClick={addGame}
+            disabled={!awaySourceSelected || !homeSourceSelected}
+          />
+        </div>
       </section>
     </Modal>
   );
 };
 
-export default PopupDeleteConfirm;
+export default AddGameModal;

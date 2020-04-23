@@ -13,11 +13,12 @@ import { unionWith, isEqual } from 'lodash-es';
 export const mapScheduleData = (
   scheduleData: IConfigurableSchedule
 ): ISchedule => {
-  const data = { ...scheduleData };
+  const data = {
+    ...scheduleData,
+  };
+
   delete data?.num_fields;
   delete data?.periods_per_game;
-  delete data?.first_game_start;
-  delete data?.last_game_end;
   delete data?.isManualScheduling;
   return data;
 };

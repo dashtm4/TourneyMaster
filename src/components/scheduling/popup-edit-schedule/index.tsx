@@ -64,7 +64,7 @@ const PopupEditSchedule = ({
     onClose();
   };
 
-  const deleteMessage = `You are about to delete this schedule and this cannot be undone.
+  const deleteMessage = `You are about to delete this schedule and this cannot be undone. Deleting this schedule will also delete any brackets that use it.
   Please, enter the name of the schedule to continue.`;
 
   return (

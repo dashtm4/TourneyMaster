@@ -1,6 +1,6 @@
 enum EventStatuses {
-  PUBLISHED = 'Published',
-  DRAFT = 'Draft',
+  'Draft' = 0,
+  'Published' = 1,
 }
 
 enum IEventDetailsFields {
@@ -18,7 +18,6 @@ enum IEventDetailsFields {
   EVENT_LEVEL = 'event_level',
   EVENT_TAG = 'event_tag',
   EVENT_FORMAT_ID = 'event_format_id',
-  EVENT_STATUS = 'event_status',
   FIRST_GAME_TIME = 'first_game_time',
   LAST_GAME_END = 'last_game_end',
   NUM_OF_LOCATIONS = 'num_of_locations',
@@ -57,6 +56,7 @@ enum IEventDetailsFields {
   DESKTOP_ICON_URL = 'desktop_icon_URL',
   IS_ACTIVE_YN = 'is_active_YN',
   IS_LIBRARY_YN = 'is_library_YN',
+  is_published_YN = 'is_published_YN',
   NUM_GAMES_COMPLETED = 'num_games_completed',
   LAST_WEB_PUBLISHED = 'last_web_published',
   CREATED_BY = 'created_by',

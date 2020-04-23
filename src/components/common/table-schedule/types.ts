@@ -1,9 +1,5 @@
 import { IMultiSelectOption } from '../multi-select';
 
-export enum DefaultSelectValues {
-  ALL = 'all',
-}
-
 export enum DayTypes {
   'Day 1' = 1,
   'Day 2' = 2,

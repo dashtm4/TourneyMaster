@@ -10,6 +10,7 @@ interface IProps {
   type: string;
   game: IGame;
   dropped?: boolean;
+  setHighlightedGame?: (id: number) => void;
 }
 
 const BracketGameCard = (props: IProps) => {
@@ -40,15 +41,21 @@ const BracketGameCard = (props: IProps) => {
     return `${key}${depends}`;
   };
 
+  const highlightGame = () => {
+    if (!props.setHighlightedGame) return;
+    props.setHighlightedGame(game.id);
+  };
+
   return (
     <div
       ref={drag}
       style={{ opacity: isDragging ? 0.8 : 1, background: `#${divisionHex}` }}
       className={styles.container}
+      onClick={highlightGame}
     >
       <span style={{ color: getContrastingColor(divisionHex) }}>
         {divisionName}&nbsp;G{playoffIndex}
-        <i>:</i>&nbsp;R{(playoffRound || 0) + 1}
+        <i>:</i>&nbsp;R{Math.abs(playoffRound || 0)}
         <i>,</i>&nbsp;
         {awaySeedId
           ? `S${awaySeedId}`

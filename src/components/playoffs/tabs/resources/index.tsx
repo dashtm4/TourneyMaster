@@ -40,6 +40,8 @@ interface IProps {
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
   updateGame: (game: IGame, withGame?: IGame) => void;
+  setHighlightedGame?: (id: number) => void;
+  highlightedGameId?: number;
 }
 
 interface IState {
@@ -55,6 +57,7 @@ class ResourceMatrix extends Component<IProps> {
         key={`${index}-renderGame`}
         game={game}
         type={MatrixTableDropEnum.BracketDrop}
+        setHighlightedGame={this.props.setHighlightedGame}
       />
     );
   };
@@ -84,6 +87,7 @@ class ResourceMatrix extends Component<IProps> {
       onTeamCardUpdate,
       onUndo,
       games,
+      highlightedGameId,
     } = this.props;
 
     const tableBracketGames = games?.filter(
@@ -108,37 +112,38 @@ class ResourceMatrix extends Component<IProps> {
         </div>
         <div className={styles.rightColumn}>
           {event &&
-          divisions &&
-          pools &&
-          teamCards &&
-          games &&
-          fields &&
-          timeSlots &&
-          facilities &&
-          eventSummary &&
-          onTeamCardsUpdate &&
-          scheduleData &&
-          onTeamCardUpdate &&
-          onUndo ? (
-            <MatrixTable
-              tableType={TableScheduleTypes.BRACKETS}
-              games={games}
-              fields={fields}
-              timeSlots={timeSlots}
-              facilities={facilities}
-              showHeatmap={true}
-              isEnterScores={false}
-              moveCard={this.onMoveCard}
-              disableZooming={false}
-              onTeamCardUpdate={onTeamCardUpdate}
-              onTeamCardsUpdate={onTeamCardsUpdate}
-              teamCards={teamCards}
-              isFullScreen={false}
-              onToggleFullScreen={() => {}}
-            />
-          ) : (
-            <Loader styles={{ height: '100%' }} />
-          )}
+            divisions &&
+            pools &&
+            teamCards &&
+            games &&
+            fields &&
+            timeSlots &&
+            facilities &&
+            eventSummary &&
+            onTeamCardsUpdate &&
+            scheduleData &&
+            onTeamCardUpdate &&
+            onUndo ? (
+              <MatrixTable
+                tableType={TableScheduleTypes.BRACKETS}
+                games={games}
+                fields={fields}
+                timeSlots={timeSlots}
+                facilities={facilities}
+                showHeatmap={true}
+                isEnterScores={false}
+                moveCard={this.onMoveCard}
+                disableZooming={false}
+                onTeamCardUpdate={onTeamCardUpdate}
+                onTeamCardsUpdate={onTeamCardsUpdate}
+                teamCards={teamCards}
+                isFullScreen={false}
+                onToggleFullScreen={() => { }}
+                highlightedGameId={highlightedGameId}
+              />
+            ) : (
+              <Loader styles={{ height: '100%' }} />
+            )}
         </div>
       </section>
     );

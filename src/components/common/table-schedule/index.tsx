@@ -33,6 +33,7 @@ import {
   applyFilters,
   mapUnusedFields,
   moveCardMessages,
+  getScheduleWarning,
 } from './helpers';
 
 import { IScheduleFacility } from 'common/models/schedule/facilities';
@@ -216,7 +217,14 @@ const TableSchedule = ({
 
   const togglePopupSaveReport = () => onPopupSaveReport(!isPopupSaveReportOpen);
 
-  const allGamesByTeamCards = getAllGamesByTeamCards(teamCards, games);
+  const allGamesByTeamCards = getAllGamesByTeamCards(teamCards, games, days);
+
+  const warnings = getScheduleWarning(
+    scheduleData,
+    event,
+    teamCards,
+    teamsDiagnostics!
+  );
 
   return (
     <section className={styles.section}>
@@ -269,6 +277,7 @@ const TableSchedule = ({
           )}
           <div className={styles.tableWrapper}>
             <Filter
+              warnings={warnings}
               days={days.length}
               filterValues={filterValues}
               onChangeFilterValue={onFilterChange}
@@ -318,6 +327,7 @@ const TableSchedule = ({
               timeSlots={timeSlots}
               facilities={facilities}
               schedule={scheduleData}
+              eventDays={days}
               isOpen={isPopupSaveReportOpen}
               onClose={togglePopupSaveReport}
             />

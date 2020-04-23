@@ -9,6 +9,8 @@ export interface ISchedule {
   event_id: string;
   member_id: string;
   schedule_name: string;
+  first_game_time: string | null;
+  last_game_end_time: string | null;
   schedule_tag: string | null;
   num_divisions: number;
   num_teams: number;
@@ -32,7 +34,5 @@ export interface ISchedule {
 export interface IConfigurableSchedule extends ISchedule {
   num_fields: number;
   periods_per_game: number;
-  first_game_start: string;
-  last_game_end: string;
   isManualScheduling?: boolean;
 }

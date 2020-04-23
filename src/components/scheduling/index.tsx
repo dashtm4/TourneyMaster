@@ -303,6 +303,7 @@ class Scheduling extends Component<IProps, IState> {
                 onViewEventMatrix={this.openViewMatrix}
               />
               <TournamentPlay
+                event={event!}
                 schedules={schedules}
                 isSectionExpand={isSectionsExpand}
                 isAllowCreate={isAllowCreate}

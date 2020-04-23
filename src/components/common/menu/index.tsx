@@ -8,6 +8,7 @@ import { RequiredMenuKeys, EventStatuses, Routes } from 'common/enums';
 import { IMenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 import { useLocation } from 'react-router-dom';
+import { BindingAction } from 'common/models';
 
 enum MenuCollapsedTypes {
   PIN = 'Pin',
@@ -19,7 +20,7 @@ interface Props {
   isAllowEdit: boolean;
   eventId?: string;
   tournamentStatus?: EventStatuses;
-  changeTournamentStatus?: (status: EventStatuses) => void;
+  toggleTournamentStatus?: BindingAction;
   eventName?: string;
   hideOnList?: Routes[];
 }
@@ -30,7 +31,7 @@ const Menu = ({
   eventName,
   isAllowEdit,
   tournamentStatus,
-  changeTournamentStatus,
+  toggleTournamentStatus,
   hideOnList,
 }: Props) => {
   const location = useLocation();
@@ -74,11 +75,11 @@ const Menu = ({
           />
         ))}
       </ul>
-      {!isCollapsed && tournamentStatus && (
+      {!isCollapsed && tournamentStatus !== undefined && (
         <TournamentStatus
           tournamentStatus={tournamentStatus}
           percentOfCompleted={percentOfCompleted}
-          changeTournamentStatus={changeTournamentStatus}
+          toggleTournamentStatus={toggleTournamentStatus}
         />
       )}
       <button

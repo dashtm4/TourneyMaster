@@ -8,6 +8,7 @@ import Brackets from 'components/playoffs/brackets';
 import { IBracketGame, IBracketSeed } from 'components/playoffs/bracketGames';
 import { IDivision } from 'common/models';
 import AddGameModal, { IOnAddGame } from '../../add-game-modal';
+import RemoveGameModal from '../../remove-game-modal';
 import styles from './styles.module.scss';
 
 interface IProps {
@@ -15,6 +16,7 @@ interface IProps {
   seeds?: IBracketSeed[];
   bracketGames?: IBracketGame[];
   addGame: (selectedDivision: string, data: IOnAddGame) => void;
+  removeGame: (selectedDivision: string, data: number) => void;
 }
 
 interface IState {
@@ -22,12 +24,14 @@ interface IState {
   divisionsOptions?: { label: string; value: string }[];
   divisionGames?: IBracketGame[];
   addGameModalOpen: boolean;
+  removeGameIndex: number | null;
 }
 
 class BracketManager extends Component<IProps> {
   dragType = 'seed';
   state: IState = {
     addGameModalOpen: false,
+    removeGameIndex: null,
   };
 
   componentDidMount() {
@@ -58,14 +62,25 @@ class BracketManager extends Component<IProps> {
     }
   }
 
-  addGame = () => {
-    // const { selectedDivision } = this.state;
+  addGamePressed = () => {
+    this.setState({ addGameModalOpen: true });
+  };
 
-    this.setState({
-      addGameModalOpen: true,
-    });
+  onAddGame = (game: IOnAddGame) => {
+    const { selectedDivision } = this.state;
+    this.props.addGame(selectedDivision!, game);
+    this.setState({ addGameModalOpen: false });
+  };
 
-    // this.props.addGame(selectedDivision!);
+  removeGamePressed = (gameIndex: number) => {
+    this.setState({ removeGameIndex: gameIndex });
+  };
+
+  onRemoveGame = () => {
+    const { removeGameIndex, selectedDivision } = this.state;
+    if (!removeGameIndex || !selectedDivision) return;
+    this.props.removeGame(selectedDivision, removeGameIndex);
+    this.setState({ removeGameIndex: null });
   };
 
   onChangeSelect = (e: any) => {
@@ -95,6 +110,7 @@ class BracketManager extends Component<IProps> {
       divisionsOptions,
       selectedDivision,
       addGameModalOpen,
+      removeGameIndex,
     } = this.state;
 
     const seedsLength = seeds?.length || 0;
@@ -139,7 +155,7 @@ class BracketManager extends Component<IProps> {
                 label="+ Add Game"
                 variant="text"
                 color="secondary"
-                onClick={this.addGame}
+                onClick={this.addGamePressed}
               />
             </div>
             <div className={styles.buttonsWrapper}>
@@ -165,16 +181,26 @@ class BracketManager extends Component<IProps> {
           {addGameModalOpen && (
             <AddGameModal
               isOpen={addGameModalOpen}
-              bracketGames={divisionGames!}
+              bracketGames={divisionGames?.filter(item => !item.hidden)!}
               playInGamesExist={playInGamesExist}
               onClose={() => this.setState({ addGameModalOpen: false })}
-              onAddGame={(data: IOnAddGame) =>
-                this.props.addGame(selectedDivision!, data)
-              }
+              onAddGame={this.onAddGame}
+            />
+          )}
+          {removeGameIndex && (
+            <RemoveGameModal
+              isOpen={!!removeGameIndex}
+              gameIndex={removeGameIndex}
+              onClose={() => this.setState({ removeGameIndex: null })}
+              onRemoveGame={this.onRemoveGame}
             />
           )}
           {seeds && divisionGames && (
-            <Brackets games={divisionGames} seeds={seeds} />
+            <Brackets
+              games={divisionGames}
+              seeds={seeds}
+              onRemove={this.removeGamePressed}
+            />
           )}
         </div>
       </section>

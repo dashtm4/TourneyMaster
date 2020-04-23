@@ -5,7 +5,12 @@ import {
   generateEntityId,
   setLibraryState,
 } from 'helpers';
-import { EntryPoints, IEventDetailsFields, LibraryStates } from 'common/enums';
+import {
+  EntryPoints,
+  IEventDetailsFields,
+  LibraryStates,
+  EventStatuses,
+} from 'common/enums';
 import { IEntity } from 'common/types';
 import {
   IRegistration,
@@ -82,6 +87,18 @@ const getClearClonedItem = (
     clonedItemWithNewId,
     entryPoint
   );
+
+  switch (entryPoint) {
+    case EntryPoints.EVENTS: {
+      const event = clearClonedItem as IEventDetails;
+      const updatedEvent = {
+        ...event,
+        is_published_YN: EventStatuses.Draft,
+      };
+
+      return updatedEvent;
+    }
+  }
 
   return clearClonedItem;
 };

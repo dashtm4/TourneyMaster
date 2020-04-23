@@ -6,15 +6,19 @@ import styles from './styles.module.scss';
 import MultiSelect, {
   IMultiSelectOption,
 } from 'components/common/multi-select';
+import InteractiveTooltip, {
+  IModalItem,
+} from 'components/common/interactive-tooltip';
 
 interface IProps {
   days: number;
+  warnings: IModalItem[];
   filterValues: IScheduleFilter;
   onChangeFilterValue: (values: IScheduleFilter) => void;
 }
 
 const ScoringFilter = (props: IProps) => {
-  const { filterValues, onChangeFilterValue } = props;
+  const { filterValues, onChangeFilterValue, warnings } = props;
 
   const {
     divisionsOptions,
@@ -94,6 +98,9 @@ const ScoringFilter = (props: IProps) => {
               onChange={onSelectUpdate}
             />
           </fieldset>
+          {warnings?.length ? (
+            <InteractiveTooltip title="Scheduling Warning" items={warnings} />
+          ) : null}
         </div>
       </form>
     </section>

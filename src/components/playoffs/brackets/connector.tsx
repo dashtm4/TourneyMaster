@@ -2,7 +2,8 @@ import React from 'react';
 import styles from './styles.module.scss';
 
 interface IProps {
-  step: number;
+  leftGamesNum: number;
+  rightGamesNum: number;
   hidden?: any[];
 }
 
@@ -31,7 +32,19 @@ const getHiddenStyle = (hiddenTop: boolean, hiddenBottom: boolean) => {
 };
 
 const BracketConnector = (props: IProps) => {
-  const { step, hidden } = props;
+  const { hidden, leftGamesNum, rightGamesNum } = props;
+
+  const negative =
+    leftGamesNum && rightGamesNum && leftGamesNum < rightGamesNum;
+
+  const step = negative ? rightGamesNum : leftGamesNum;
+
+  const renderConnector = () => (
+    <div
+      key={Math.random()}
+      className={`${styles.connector} ${negative && styles.negativeConnector}`}
+    />
+  );
 
   return (
     <div className={selectStyle(step)}>
@@ -42,14 +55,11 @@ const BracketConnector = (props: IProps) => {
             className={`${styles.connector} ${getHiddenStyle(
               hiddenTop,
               hiddenBottom
-            )}`}
+            )} ${negative && styles.negativeConnector}`}
           />
         ))}
 
-      {!hidden &&
-        [...Array(Math.floor(step / 2))].map(() => (
-          <div key={Math.random()} className={styles.connector} />
-        ))}
+      {!hidden && [...Array(Math.round(step / 2))].map(renderConnector)}
     </div>
   );
 };

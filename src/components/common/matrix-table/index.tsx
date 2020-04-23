@@ -34,6 +34,7 @@ interface IProps {
   teamCards: ITeamCard[];
   isFullScreen?: boolean;
   onToggleFullScreen?: BindingAction;
+  highlightedGameId?: number;
 }
 
 interface IPinchProps {
@@ -57,6 +58,7 @@ const SchedulesMatrix = (props: IProps) => {
     teamCards,
     isFullScreen,
     onToggleFullScreen,
+    highlightedGameId,
   } = props;
 
   const takeFacilityByFieldId = (facilityId: string) =>
@@ -113,6 +115,7 @@ const SchedulesMatrix = (props: IProps) => {
                         teamCards={teamCards}
                         onTeamCardsUpdate={onTeamCardsUpdate}
                         isDndMode={disableZooming}
+                        highlightedGamedId={highlightedGameId}
                       />
                     ))}
                   </tbody>

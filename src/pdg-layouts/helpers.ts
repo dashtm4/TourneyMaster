@@ -2,11 +2,27 @@ import { IField } from 'common/models/schedule/fields';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IGame } from 'components/common/matrix-table/helper';
 
-const getFieldsByFacilityId = (fields: IField[], facility: IScheduleFacility) =>
-  fields.filter(field => field.facilityId === facility.id);
+const getFieldsByFacility = (fields: IField[], facility: IScheduleFacility) => {
+  const filedsByFacility = fields.filter(
+    field => field.facilityId === facility.id
+  );
 
-const getGamesByFieldId = (games: IGame[], field: IField) =>
-  games.filter(game => game.fieldId === field.id);
+  return filedsByFacility;
+};
+
+const getGamesByField = (games: IGame[], field: IField) => {
+  const gamesByFiled = games.filter(game => game.fieldId === field.id);
+
+  return gamesByFiled;
+};
+
+const getGamesByFacility = (games: IGame[], facility: IScheduleFacility) => {
+  const gamesByFacility = games.filter(
+    (it: IGame) => it.facilityId === facility.id
+  );
+
+  return gamesByFacility;
+};
 
 const getGamesByDays = (games: IGame[]) => {
   const gamesByDays = games.reduce((acc, game) => {
@@ -20,4 +36,9 @@ const getGamesByDays = (games: IGame[]) => {
   return gamesByDays;
 };
 
-export { getFieldsByFacilityId, getGamesByFieldId, getGamesByDays };
+export {
+  getFieldsByFacility,
+  getGamesByField,
+  getGamesByFacility,
+  getGamesByDays,
+};

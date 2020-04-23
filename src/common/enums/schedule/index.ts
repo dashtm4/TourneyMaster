@@ -22,4 +22,11 @@ enum IScheduleFields {
   UPDATED_DATETIME = 'updated_datetime',
 }
 
-export { IScheduleFields };
+enum ScheduleWarningsEnum {
+  GameTimesDiffer = 'Schedule First Game Start and Last Game End options do not match the Event Details options. Your Schedule data may be corrupted.',
+  MinGamesNumExceedsPoolLength = 'The minimum # of games is not met due to the the number of teams in a pool',
+  MaxGamesNumExceededPerDay = 'The maximum # of games per day is exceeded',
+  BackToBackGamesExist = 'There are back to back games',
+}
+
+export { IScheduleFields, ScheduleWarningsEnum };
