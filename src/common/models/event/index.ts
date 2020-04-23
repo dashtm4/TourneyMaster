@@ -1,4 +1,3 @@
-import { EventStatuses } from 'common/enums';
 // ! If the interface changes, you must change the fields for the enum 'common/enums/_entity_'
 export interface IEventDetails {
   event_id: string;
@@ -16,7 +15,6 @@ export interface IEventDetails {
   event_level: string | null;
   event_tag: string | null;
   event_format_id: number | null;
-  event_status: EventStatuses;
   first_game_time: string;
   last_game_end: string;
   num_of_locations: number | null;

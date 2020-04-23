@@ -1,5 +1,4 @@
 import { getVarcharEight } from 'helpers';
-import { EventStatuses } from 'common/enums';
 import { RankingFactorValues } from 'common/enums';
 
 const defaultRankingFactor = [
@@ -28,7 +27,6 @@ const eventState = () => ({
   time_zone_utc: -5,
   event_tag: '',
   event_level: 'Other',
-  event_status: EventStatuses.DRAFT,
   event_format_id: 0,
   first_game_time: '08:30:00',
   last_game_end: '17:30:00',

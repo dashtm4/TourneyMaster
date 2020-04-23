@@ -40,11 +40,11 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
     const { createMemeber } = this.props;
 
     Hub.listen('auth', async ({ payload: { event } }) => {
-      this.setState({ isLoading: true });
-
       try {
         switch (event) {
-          case 'signIn':
+          case 'signIn': {
+            this.setState({ isLoading: true });
+
             const currentSession = await Auth.currentSession();
             const userToken = currentSession.getAccessToken().getJwtToken();
             const userAttributes = currentSession.getIdToken().payload;
@@ -58,6 +58,15 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
 
               this.props.history.push('/dashboard');
             }
+            break;
+          }
+          case 'signUp': {
+            Toasts.successToast(
+              'Check your email to activate confirmation link. After that you can sign in to your account.'
+            );
+
+            break;
+          }
         }
       } catch (err) {
         Toasts.errorToast(`${err.message}`);

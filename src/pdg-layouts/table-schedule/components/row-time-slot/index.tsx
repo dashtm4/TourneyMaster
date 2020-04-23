@@ -17,10 +17,6 @@ interface Props {
 }
 
 const RowTimeSlot = ({ timeSlot, games, isEven, isHeatMap }: Props) => {
-  if (games.length === 0) {
-    return null;
-  }
-
   const getTeamColorStyles = (team: ITeamCard) => ({
     backgroundColor: isHeatMap ? team.divisionHex : '',
     color: isHeatMap ? getContrastingColor(team.divisionHex) : '#000000',
@@ -47,7 +43,6 @@ const RowTimeSlot = ({ timeSlot, games, isEven, isHeatMap }: Props) => {
         backgroundColor: !isHeatMap && isEven ? EVEN_COLOR : '',
       }}
       wrap={false}
-      key={timeSlot.id}
     >
       <Text style={styles.timeSlot}>{formatTimeSlot(timeSlot.time)}</Text>
       {games.map(game => (
