@@ -75,11 +75,9 @@
 .msContent {
   width: 100%;
   color: #6a6a6a;
+  padding: 0 20px 20px 24px;
   .msContentTitle {
     font-weight: 600;
-  }
-  .msContentMessage {
-    padding-bottom: 10px;
   }
   .msInfoWrapper {
     display: flex;
@@ -106,5 +104,14 @@
   }
   .msDeliveryDate {
     font-size: 16px;
+  }
+}
+.noFoundWrapper {
+  padding: 40px 20px;
+  text-align: center;
+
+  span {
+    font-size: 21px;
+    color: #878787;
   }
 }

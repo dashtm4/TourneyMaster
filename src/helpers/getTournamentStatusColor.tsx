@@ -1,8 +1,13 @@
-export const getTournamentStatusColor = (status: string) => {
+import { EventStatuses } from 'common/enums';
+import { ScheduleStatuses } from 'common/models';
+
+export const getTournamentStatusColor = (status: number | string) => {
   switch (status) {
-    case 'Draft':
+    case EventStatuses.Draft:
+    case ScheduleStatuses.DRAFT:
       return { backgroundColor: '#ffcb00' };
-    case 'Published':
+    case EventStatuses.Published:
+    case ScheduleStatuses.PUBLISHED:
       return { backgroundColor: '#00cc47' };
     default:
       return null;

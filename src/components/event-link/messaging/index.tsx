@@ -3,23 +3,25 @@ import { SectionDropdown, Button, Loader } from 'components/common';
 import { MenuTitles } from 'common/enums';
 import MessageItem from './message-item';
 import styles from '../styles.module.scss';
-import { IMessage } from 'common/models/event-link';
 import { BindingCbWithOne } from 'common/models';
+import { IGroupedMessages } from '..';
 
 interface Props {
   isSectionExpand: boolean;
-  data: IMessage[];
+  data: IGroupedMessages[];
   messagesAreLoading: boolean;
-  sendMessage: BindingCbWithOne<IMessage>;
+  sendMessages: BindingCbWithOne<IGroupedMessages>;
+  deleteMessages: BindingCbWithOne<string[]>;
 }
 const Messaging = ({
   isSectionExpand,
   data,
   messagesAreLoading,
-  sendMessage,
+  sendMessages,
+  deleteMessages,
 }: Props) => {
   const [areMessagesExpand, toggleMessagesExpand] = useState<boolean>(true);
-  const [currentMessages, setCurrentMessages] = useState<number>(2);
+  const [currentMessages, setCurrentMessages] = useState<number>(3);
 
   const onToggleMessagesCollapse = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -27,7 +29,7 @@ const Messaging = ({
   };
 
   const onLoadMoreClick = () => {
-    setCurrentMessages(currentMessages + 2);
+    setCurrentMessages(currentMessages + 3);
   };
 
   return (
@@ -53,15 +55,20 @@ const Messaging = ({
             {!messagesAreLoading && data.length
               ? data
                   .slice(0, currentMessages)
-                  .map(message => (
+                  .map((message, index: number) => (
                     <MessageItem
-                      key={message.message_id}
+                      key={index}
                       isSectionExpand={areMessagesExpand}
                       message={message}
-                      sendMessage={sendMessage}
+                      sendMessages={sendMessages}
+                      deleteMessages={deleteMessages}
                     />
                   ))
-              : !messagesAreLoading && <div>No messages</div>}
+              : !messagesAreLoading && (
+                  <div className={styles.noFoundWrapper}>
+                    <span>There are no messages yet.</span>
+                  </div>
+                )}
           </ul>
           {!messagesAreLoading && data.length > currentMessages && (
             <div className={styles.msLoadeMoreBtnWrapper}>

@@ -14,6 +14,7 @@ import {
   faCalendar,
   faExclamationCircle,
 } from '@fortawesome/free-solid-svg-icons';
+import { ScheduleStatuses } from 'common/models';
 
 const DEFAULT_UPDATED_VALUE = 'Not updated yet.';
 
@@ -83,7 +84,7 @@ const BraketsItem = ({
         <span
           className={styles.scheduleStatus}
           style={{
-            ...getTournamentStatusColor('Draft'),
+            ...getTournamentStatusColor(ScheduleStatuses.DRAFT),
           }}
         />
       </p>

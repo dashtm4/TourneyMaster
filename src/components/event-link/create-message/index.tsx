@@ -10,13 +10,21 @@ import {
 } from 'components/common';
 import styles from './styles.module.scss';
 import history from 'browserhistory';
-import { getData, sendMessage, saveMessage } from '../logic/actions';
-import { BindingAction, BindingCbWithOne, IEventDetails } from 'common/models';
+import { getData, sendMessages, saveMessages } from '../logic/actions';
+import {
+  BindingAction,
+  BindingCbWithOne,
+  IEventDetails,
+  IDivision,
+  IPool,
+  ITeam,
+} from 'common/models';
 import Filter from './filter';
 import { IScheduleFilter } from './filter';
 import { applyFilters, mapFilterValues, mapTeamsByFilter } from '../helpers';
+import { IInputEvent } from 'common/types/events';
 
-export interface IMessage {
+export interface IMessageToSend {
   type: string;
   title: string;
   message: string;
@@ -24,20 +32,19 @@ export interface IMessage {
 }
 
 interface Props {
-  sendMessage: BindingCbWithOne<IMessage>;
   getData: BindingAction;
-  saveMessage: any;
-  events: any;
-  divisions: any;
-  pools: any;
-  teams: any;
-  fields: any;
+  sendMessages: BindingCbWithOne<IMessageToSend>;
+  saveMessages: BindingCbWithOne<IMessageToSend>;
+  events: IEventDetails[];
+  divisions: IDivision[];
+  pools: IPool[];
+  teams: ITeam[];
 }
 
 const CreateMessage = ({
   getData,
-  sendMessage,
-  // saveMessage,
+  sendMessages,
+  saveMessages,
   events,
   divisions,
   pools,
@@ -47,7 +54,7 @@ const CreateMessage = ({
     getData();
   }, []);
 
-  const [data, setMessage] = useState<IMessage>({
+  const [data, setMessage] = useState<IMessageToSend>({
     type: 'Text',
     title: '',
     message: '',
@@ -55,9 +62,9 @@ const CreateMessage = ({
   });
 
   const eventOptions = events.length
-    ? events.map((event: IEventDetails) => ({
-        label: event.event_name,
-        value: event.event_id,
+    ? events.map(e => ({
+        label: e.event_name,
+        value: e.event_id,
       }))
     : [];
 
@@ -80,15 +87,15 @@ const CreateMessage = ({
     history.push('/event-link');
   };
 
-  const onTypeChange = (e: any) => {
+  const onTypeChange = (e: IInputEvent) => {
     setMessage({ ...data, recipients: [''], type: e.target.value });
   };
 
-  const onTitleChange = (e: any) => {
+  const onTitleChange = (e: IInputEvent) => {
     setMessage({ ...data, title: e.target.value });
   };
 
-  const onContentChange = (e: any) => {
+  const onContentChange = (e: IInputEvent) => {
     setMessage({ ...data, message: e.target.value });
   };
 
@@ -96,32 +103,36 @@ const CreateMessage = ({
     setEvent(e.target.value);
   };
 
-  const onRecipientTypeChange = (e: any) => {
+  const onRecipientTypeChange = (e: IInputEvent) => {
     setRecipientType(e.target.value);
   };
 
-  const onRecipientChange = (e: any) => {
+  const onRecipientChange = (e: IInputEvent) => {
     setMessage({ ...data, recipients: [e.target.value] });
   };
 
   const onSend = () => {
     if (recipientType === 'Many') {
       const recipients = mapTeamsByFilter([...teams], filterValues, data.type);
-      setMessage({ ...data, recipients });
-      sendMessage({ ...data, recipients });
+      sendMessages({
+        ...data,
+        recipients: recipients.length ? recipients : [''],
+      });
     } else {
-      sendMessage(data);
+      sendMessages(data);
     }
   };
 
   const onSave = () => {
-    // if (recipientType === 'Many') {
-    //   const recipients = mapTeamsByFilter([...teams], filterValues, data.type);
-    //   setMessage({ ...data, recipients });
-    //   saveMessage({ ...data, recipients });
-    // } else {
-    //   saveMessage(data);
-    // }
+    if (recipientType === 'Many') {
+      const recipients = mapTeamsByFilter([...teams], filterValues, data.type);
+      saveMessages({
+        ...data,
+        recipients: recipients.length ? recipients : [''],
+      });
+    } else {
+      saveMessages(data);
+    }
   };
 
   const onFilterChange = (data: IScheduleFilter) => {
@@ -187,30 +198,32 @@ const CreateMessage = ({
             color="primary"
             variant="contained"
             onClick={onSave}
-            label="Save"
+            label="Send Later"
           />
           <Button
             color="primary"
             variant="contained"
             onClick={onSend}
-            label="Send"
+            label="Send Now"
           />
         </div>
       </Paper>
       <HeadingLevelTwo margin="24px 0">New Message</HeadingLevelTwo>
       <div className={styles.btnsGroup}>
-        <Radio
-          options={typeOptions}
-          formLabel="Type"
-          onChange={onTypeChange}
-          checked={data.type}
-        />
-        <Radio
-          options={recipientOptions}
-          formLabel="Recipient"
-          onChange={onRecipientTypeChange}
-          checked={recipientType}
-        />
+        <div className={styles.radioBtns}>
+          <Radio
+            options={typeOptions}
+            formLabel="Type"
+            onChange={onTypeChange}
+            checked={data.type}
+          />
+          <Radio
+            options={recipientOptions}
+            formLabel="Recipient"
+            onChange={onRecipientTypeChange}
+            checked={recipientType}
+          />
+        </div>
         {data.type === 'Text' && (
           <Input
             label="Message Name"
@@ -249,20 +262,28 @@ const CreateMessage = ({
   );
 };
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: {
+  eventLink: {
+    data: {
+      events: IEventDetails[];
+      divisions: IDivision[];
+      pools: IPool[];
+      teams: ITeam[];
+    };
+  };
+}) => {
   return {
     events: state.eventLink.data.events,
     divisions: state.eventLink.data.divisions,
     pools: state.eventLink.data.pools,
-    fields: state.eventLink.data.fields,
     teams: state.eventLink.data.teams,
   };
 };
 
 const mapDispatchToProps = {
   getData,
-  sendMessage,
-  saveMessage,
+  sendMessages,
+  saveMessages,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateMessage);
