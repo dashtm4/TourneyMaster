@@ -49,7 +49,7 @@ interface IRegistrationProps {
   match: any;
   history: History;
   isLoading: boolean;
-  event?: IEventDetails;
+  event: IEventDetails;
 }
 
 class RegistrationView extends React.Component<
@@ -139,6 +139,7 @@ class RegistrationView extends React.Component<
 
   renderView = () => {
     const { registration } = this.props;
+    const eventType = this.props.event && this.props.event[0].event_type;
     if (this.state.isEdit) {
       return (
         <RegistrationEdit
@@ -148,6 +149,7 @@ class RegistrationView extends React.Component<
           onSave={this.onSaveClick}
           changesAreMade={this.state.changesAreMade}
           divisions={this.props.divisions}
+          eventType={eventType}
         />
       );
     } else {
@@ -201,7 +203,10 @@ class RegistrationView extends React.Component<
                     expanded={this.state.isSectionsExpand}
                   >
                     <span>Teams & Athletes</span>
-                    <TeamsAthletesInfo data={registration} />
+                    <TeamsAthletesInfo
+                      data={registration}
+                      eventType={eventType}
+                    />
                   </SectionDropdown>
                 </li>
                 <li>
@@ -233,7 +238,6 @@ class RegistrationView extends React.Component<
   };
 
   render() {
-    console.log(this.props.event);
     return <>{this.renderView()}</>;
   }
 }
@@ -243,7 +247,7 @@ interface IState {
     data: IRegistration;
     divisions: IDivision[];
     isLoading: boolean;
-    event?: IEventDetails;
+    event: IEventDetails;
   };
 }
 

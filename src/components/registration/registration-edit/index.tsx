@@ -18,6 +18,7 @@ interface IRegistrationEditProps {
   onChange: BindingCbWithTwo<string, any>;
   changesAreMade: boolean;
   divisions: IDivision[];
+  eventType: string;
 }
 
 interface IRegistrationEditState {
@@ -92,6 +93,7 @@ class RegistrationEdit extends React.Component<
                 <TeamsAthletesInfo
                   data={this.props.registration}
                   onChange={this.props.onChange}
+                  eventType={this.props.eventType}
                 />
               </SectionDropdown>
             </li>
