@@ -15,13 +15,21 @@ enum OptionsEnum {
 interface ITeamsAthletesInfoProps {
   data?: IRegistration;
   onChange: BindingCbWithTwo<string, string>;
+  eventType: string;
 }
 
-const TeamsAthletesInfo = ({ data, onChange }: ITeamsAthletesInfoProps) => {
+const TeamsAthletesInfo = ({
+  data,
+  onChange,
+  eventType,
+}: ITeamsAthletesInfoProps) => {
   const options = ['Require', 'Request', 'None'];
 
   const onMaxTeamsPerDivisionChange = (e: InputTargetValue) =>
     onChange('max_teams_per_division', e.target.value);
+
+  const onMaxPlayersPerDivisionChange = (e: InputTargetValue) =>
+    onChange('max_players_per_division', e.target.value);
 
   const onMinAthletesOnRosterChange = (e: InputTargetValue) =>
     onChange('min_players_per_roster', e.target.value);
@@ -42,13 +50,23 @@ const TeamsAthletesInfo = ({ data, onChange }: ITeamsAthletesInfoProps) => {
     <div className={styles.section}>
       <div className={styles.sectionFirstRow}>
         <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            label="Max Teams Per Division"
-            type="number"
-            value={data ? data.max_teams_per_division : ''}
-            onChange={onMaxTeamsPerDivisionChange}
-          />
+          {eventType === 'Showcase' ? (
+            <Input
+              fullWidth={true}
+              label="Max Players Per Division"
+              type="number"
+              value={data ? data.max_players_per_division : ''}
+              onChange={onMaxPlayersPerDivisionChange}
+            />
+          ) : (
+            <Input
+              fullWidth={true}
+              label="Max Teams Per Division"
+              type="number"
+              value={data ? data.max_teams_per_division : ''}
+              onChange={onMaxTeamsPerDivisionChange}
+            />
+          )}
         </div>
         <div className={styles.sectionItem}>
           <Input

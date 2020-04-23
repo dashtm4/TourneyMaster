@@ -4,14 +4,16 @@ import {
   REGISTRATION_UPDATE_SUCCESS,
   REGISTRATION_FETCH_START,
   DIVISIONS_FETCH_SUCCESS,
+  EVENT_FETCH_SUCCESS,
 } from './actionTypes';
 import { sortByField } from 'helpers';
-import { IDivision, IRegistration } from 'common/models';
+import { IDivision, IRegistration, IEventDetails } from 'common/models';
 import { SortByFilesTypes } from 'common/enums';
 
 export interface IState {
   data?: Partial<IRegistration>;
   divisions: IDivision[];
+  event?: IEventDetails;
   isLoading: boolean;
   error: boolean;
 }
@@ -19,6 +21,7 @@ export interface IState {
 const defaultState: IState = {
   data: undefined,
   divisions: [],
+  event: undefined,
   isLoading: false,
   error: false,
 };
@@ -64,6 +67,9 @@ export default (
         isLoading: false,
         error: false,
       };
+    }
+    case EVENT_FETCH_SUCCESS: {
+      return { ...state, event: action.payload };
     }
     default:
       return state;

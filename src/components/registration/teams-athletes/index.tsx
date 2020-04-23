@@ -7,12 +7,23 @@ enum Options {
   'None' = 0,
 }
 
-const TeamsAthletesInfo = ({ data }: any) => (
+const TeamsAthletesInfo = ({ data, eventType }: any) => (
   <div className={styles.section}>
     <div className={styles.taSectionFirstRow}>
       <div className={styles.sectionItem}>
-        <span className={styles.sectionTitle}>Max Teams Per Division</span>
-        <p>{data.max_teams_per_division || '—'}</p>
+        {eventType === 'Showcase' ? (
+          <>
+            <span className={styles.sectionTitle}>
+              Max Players Per Division
+            </span>
+            <p>{data.max_players_per_division || '—'}</p>
+          </>
+        ) : (
+          <>
+            <span className={styles.sectionTitle}>Max Teams Per Division</span>
+            <p>{data.max_teams_per_division || '—'}</p>
+          </>
+        )}
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Min Athletes on Roster</span>

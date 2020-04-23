@@ -35,6 +35,9 @@ const PrimaryInformation = ({ data, onChange }: IPrimaryInformationProps) => {
     e: React.ChangeEvent<HTMLInputElement>
   ) => onChange('upcharge_fees_on_registrations', Number(e.target.checked));
 
+  const onFeesVaryByDivisionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('fees_vary_by_division_YN', Number(e.target.checked));
+
   return (
     <div className={styles.section}>
       <div className={styles.sectionFirstRow}>
@@ -110,6 +113,15 @@ const PrimaryInformation = ({ data, onChange }: IPrimaryInformationProps) => {
               checked: Boolean(
                 data ? data.upcharge_fees_on_registrations : false
               ),
+            },
+          ]}
+        />
+        <Checkbox
+          onChange={onFeesVaryByDivisionChange}
+          options={[
+            {
+              label: 'Division Fees Vary',
+              checked: Boolean(data ? data.fees_vary_by_division_YN : false),
             },
           ]}
         />
