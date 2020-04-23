@@ -94,6 +94,9 @@ class AddDivisionForm extends React.Component<
         onChange={this.onEntryFeeChange}
         disabled={!this.props.registration?.fees_vary_by_division_YN}
       />
+    );
+  };
+
   onIsPremierChange = (e: InputTargetValue) => {
     this.props.onChange(
       'is_premier_YN',
