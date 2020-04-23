@@ -83,14 +83,14 @@ class AddDivisionForm extends React.Component<
     });
   };
 
-  renderEntryFee = () => {
+  renderEntryFee = (entryFee?: number) => {
     return (
       <Input
         fullWidth={true}
         label="Entry Fee"
         startAdornment="$"
         type="number"
-        value={this.props.division.entry_fee || ''}
+        value={entryFee || ''}
         onChange={this.onEntryFeeChange}
         disabled={!this.props.registration?.fees_vary_by_division_YN}
       />
@@ -103,6 +103,7 @@ class AddDivisionForm extends React.Component<
       short_name,
       division_tag,
       division_description,
+      entry_fee,
       max_num_teams,
       division_message,
       division_hex,
@@ -156,10 +157,10 @@ class AddDivisionForm extends React.Component<
                   type="info"
                   title="Entry Fee is set in the Registartion section. To be able to chage it, go to the 'Registration' and toggle 'Division Fees Vary' checkbox."
                 >
-                  <div>{this.renderEntryFee()}</div>
+                  <div>{this.renderEntryFee(entry_fee)}</div>
                 </Tooltip>
               ) : (
-                this.renderEntryFee()
+                this.renderEntryFee(entry_fee)
               )}
             </div>
             <div className={styles.sectionItem}>
