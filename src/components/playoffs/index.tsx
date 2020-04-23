@@ -62,6 +62,7 @@ import {
   retrieveBrackets,
   clearBracketGames,
   fetchBracketGames,
+  onUndoBrackets,
 } from './logic/actions';
 import {
   updateGameBracketInfo,
@@ -79,6 +80,7 @@ interface IMapStateToProps extends Partial<ITournamentData> {
   schedulesDetails?: ISchedulesDetails[];
   playoffSaved?: boolean;
   bracketGames: IBracketGame[] | null;
+  historyLength: number;
 }
 
 interface IMapDispatchToProps {
@@ -93,6 +95,7 @@ interface IMapDispatchToProps {
   retrieveBrackets: (bracketId: string) => void;
   clearBracketGames: () => void;
   fetchBracketGames: (bracketGames: IBracketGame[]) => void;
+  onBracketsUndo: () => void;
 }
 
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
@@ -328,9 +331,9 @@ class Playoffs extends Component<IProps> {
     const newBracketGames = bracketGames?.map(item =>
       item.index === game.playoffIndex && item.divisionId === game.divisionId
         ? {
-          ...item,
-          hidden: !!withGame?.playoffIndex,
-        }
+            ...item,
+            hidden: !!withGame?.playoffIndex,
+          }
         : item
     );
 
@@ -391,7 +394,7 @@ class Playoffs extends Component<IProps> {
     );
   };
 
-  onSeedsUsed = () => { };
+  onSeedsUsed = () => {};
 
   onSavePressed = () => {
     const { match, bracketGames } = this.props;
@@ -437,6 +440,8 @@ class Playoffs extends Component<IProps> {
       eventSummary,
       schedule,
       schedulesDetails,
+      onBracketsUndo,
+      historyLength,
     } = this.props;
 
     const saveButtonCondition = bracket && bracketGames;
@@ -498,22 +503,24 @@ class Playoffs extends Component<IProps> {
                 scheduleData={schedule}
                 eventSummary={eventSummary}
                 schedulesDetails={schedulesDetails}
-                onTeamCardsUpdate={() => { }}
-                onTeamCardUpdate={() => { }}
-                onUndo={() => { }}
+                onTeamCardsUpdate={() => {}}
+                onTeamCardUpdate={() => {}}
+                onUndo={() => {}}
                 updateGame={this.updateMergedGames}
                 setHighlightedGame={this.setHighlightedGame}
                 highlightedGameId={this.state.highlightedGameId}
               />
             ) : (
-                <BracketManager
-                  divisions={divisions!}
-                  seeds={bracketSeeds}
-                  bracketGames={bracketGames}
-                  addGame={this.addGame}
-                  removeGame={this.removeGame}
-                />
-              )}
+              <BracketManager
+                historyLength={historyLength}
+                divisions={divisions!}
+                seeds={bracketSeeds}
+                bracketGames={bracketGames}
+                addGame={this.addGame}
+                removeGame={this.removeGame}
+                onUndoClick={onBracketsUndo}
+              />
+            )}
           </section>
         </DndProvider>
         <PopupExposure
@@ -549,6 +556,7 @@ const mapStateToProps = ({
   schedulesDetails: schedules?.schedulesDetails,
   playoffSaved: playoffs?.playoffSaved,
   bracketGames: playoffs?.bracketGames,
+  historyLength: playoffs?.bracketGamesHistory?.length,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
@@ -565,6 +573,7 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       retrieveBrackets,
       clearBracketGames,
       fetchBracketGames,
+      onBracketsUndo: onUndoBrackets,
     },
     dispatch
   );

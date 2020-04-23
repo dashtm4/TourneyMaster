@@ -5,6 +5,7 @@ import {
   PLAYOFF_SAVED_SUCCESS,
   PLAYOFF_FETCH_GAMES,
   PLAYOFF_CLEAR_GAMES,
+  PLAYOFF_UNDO_GAMES,
 } from './actionTypes';
 import {
   mapBracketData,
@@ -32,6 +33,10 @@ export const fetchBracketGames = (payload: IBracketGame[]) => ({
 
 export const clearBracketGames = () => ({
   type: PLAYOFF_CLEAR_GAMES,
+});
+
+export const onUndoBrackets = () => ({
+  type: PLAYOFF_UNDO_GAMES,
 });
 
 const newError = () =>
