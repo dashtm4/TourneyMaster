@@ -14,6 +14,7 @@ import {
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
+import { DefaultSelectValues } from 'common/enums';
 
 const getScheduleTableRow = (
   schedulesDetails: ISchedulesDetails[],
@@ -104,4 +105,19 @@ const getScheduleTableXLSX = async (
   };
 };
 
-export { getScheduleTableXLSX };
+const getSelectDayOptions = (eventDays: string[]) => {
+  const selectDayOptions = [
+    {
+      label: DefaultSelectValues.ALL,
+      value: DefaultSelectValues.ALL,
+    },
+    ...eventDays.map(day => ({
+      label: moment(day).format('l'),
+      value: day,
+    })),
+  ];
+
+  return selectDayOptions;
+};
+
+export { getScheduleTableXLSX, getSelectDayOptions };

@@ -1,17 +1,18 @@
 import React from 'react';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
-import { HeadingLevelThree, Button } from 'components/common';
+import { HeadingLevelThree, Button, Select } from 'components/common';
 import { onPDFSave, onXLSXSave, getAllGamesByTeamCards } from 'helpers';
-import { ButtonVarian, ButtonColors } from 'common/enums';
+import { ButtonVarian, ButtonColors, DefaultSelectValues } from 'common/enums';
 import { IEventDetails, ISchedule, IPool } from 'common/models';
-import { getScheduleTableXLSX } from '../../helpers';
-import { IGame } from 'components/common/matrix-table/helper';
+import { getScheduleTableXLSX, getSelectDayOptions } from '../../helpers';
+import { IGame, calculateDays } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 import styles from './styles.module.scss';
+import { IInputEvent } from 'common/types';
 
 interface Props {
   event: IEventDetails;
@@ -34,13 +35,30 @@ const ItemSchedules = ({
   teamCards,
   pools,
 }: Props) => {
-  const allGamesByTeamCards = getAllGamesByTeamCards(teamCards, games);
+  const [activeDay, changeActiveDay] = React.useState<string>(
+    DefaultSelectValues.ALL
+  );
+  const eventDays = calculateDays(teamCards);
+  const allGamesByTeamCards = getAllGamesByTeamCards(
+    teamCards,
+    games,
+    eventDays
+  );
+  const gamesByDay = allGamesByTeamCards.filter(
+    it => it.gameDate === activeDay || activeDay === DefaultSelectValues.ALL
+  );
+
+  const selectDayOptions = getSelectDayOptions(eventDays);
+
+  const onChangeActiveDay = ({ target }: IInputEvent) => {
+    changeActiveDay(target.value);
+  };
 
   const onScheduleTableSave = async () =>
     onPDFSave(
       <PDFTableSchedule
         event={event}
-        games={allGamesByTeamCards}
+        games={gamesByDay}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
@@ -53,7 +71,7 @@ const ItemSchedules = ({
     onPDFSave(
       <PDFTableSchedule
         event={event}
-        games={allGamesByTeamCards}
+        games={gamesByDay}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
@@ -69,7 +87,7 @@ const ItemSchedules = ({
     onPDFSave(
       <PDFTableFieldsSchedule
         event={event}
-        games={allGamesByTeamCards}
+        games={gamesByDay}
         fields={fields}
         timeSlots={timeSlots}
         facilities={facilities}
@@ -96,11 +114,20 @@ const ItemSchedules = ({
 
   return (
     <li>
-      <div className={styles.titleWrapper}>
-        <HeadingLevelThree>
-          <span>Schedules</span>
-        </HeadingLevelThree>
-      </div>
+      <header className={styles.headerWrapper}>
+        <div className={styles.titleWrapper}>
+          <HeadingLevelThree>
+            <span>Schedules</span>
+          </HeadingLevelThree>
+        </div>
+        <Select
+          onChange={onChangeActiveDay}
+          value={activeDay}
+          options={selectDayOptions}
+          label="Event day"
+          width="200px"
+        />
+      </header>
       <ul className={styles.scheduleList}>
         <li>
           <Button
