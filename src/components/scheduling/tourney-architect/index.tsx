@@ -103,9 +103,11 @@ const TourneyArchitect = (props: IProps) => {
           )}
           {renderSectionCell(
             'Play Time Window',
-            `${moment(timeToDate(schedule.first_game_start)).format(
-              'LT'
-            )} - ${moment(timeToDate(schedule.last_game_end)).format('LT')}`,
+            `${schedule.first_game_time &&
+              moment(timeToDate(schedule.first_game_time)).format(
+                'LT'
+              )} - ${schedule.last_game_end_time &&
+              moment(timeToDate(schedule.last_game_end_time)).format('LT')}`,
             true
           )}
           {renderSectionCell(

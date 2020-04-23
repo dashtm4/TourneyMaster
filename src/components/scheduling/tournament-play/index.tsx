@@ -48,11 +48,11 @@ export default (props: IProps) => {
 
   const sortedSchedules = orderBy(
     schedules,
-    ({ schedule_status, updated_datetime }) => [
-      schedule_status,
-      updated_datetime,
-    ],
-    ['desc', 'desc']
+    ({ schedule_status, updated_datetime, created_datetime }) =>
+      updated_datetime
+        ? [schedule_status, updated_datetime, created_datetime]
+        : [schedule_status, created_datetime],
+    ['desc', 'desc', 'desc']
   );
 
   const isSchedulePublished = (id: string) => {

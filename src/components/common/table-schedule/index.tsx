@@ -95,7 +95,6 @@ const TableSchedule = ({
   onToggleFullScreen,
   playoffTimeSlots,
 }: Props) => {
-  console.log(teamsDiagnostics);
   const minGamesNum = event.min_num_of_games;
 
   const [filterValues, changeFilterValues] = useState<IScheduleFilter>(

@@ -98,9 +98,9 @@ const ScoringFilter = (props: IProps) => {
               onChange={onSelectUpdate}
             />
           </fieldset>
-          {warnings && (
+          {warnings?.length ? (
             <InteractiveTooltip title="Scheduling Warning" items={warnings} />
-          )}
+          ) : null}
         </div>
       </form>
     </section>

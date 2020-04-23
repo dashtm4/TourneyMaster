@@ -64,8 +64,8 @@ const getTimeValuesFromEventSchedule = (
 const getTimeValuesFromSchedule = (
   schedule: IConfigurableSchedule
 ): ITimeValues => ({
-  firstGameTime: schedule.first_game_start,
-  lastGameEnd: schedule.last_game_end,
+  firstGameTime: schedule.first_game_time || '',
+  lastGameEnd: schedule.last_game_end_time || '',
   preGameWarmup: schedule.pre_game_warmup,
   periodDuration: schedule.period_duration,
   timeBtwnPeriods: schedule.time_btwn_periods,

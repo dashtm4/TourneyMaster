@@ -117,7 +117,7 @@ const BraketsItem = ({
           onClick={() => onEditBracket(bracket.id)}
         />
         <Link
-          to={`${Routes.PLAYOFFS}/${eventId}/${schedule.schedule_id}/${bracket.id}`}
+          to={`${Routes.PLAYOFFS}/${eventId}/${schedule?.schedule_id}/${bracket.id}`}
         >
           <Button
             icon={<FontAwesomeIcon icon={faCalendar} />}

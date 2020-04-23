@@ -21,7 +21,7 @@ interface Props {
   onAddGame: (data: IOnAddGame) => void;
 }
 
-const PopupDeleteConfirm = ({
+const AddGameModal = ({
   isOpen,
   onClose,
   bracketGames,
@@ -48,7 +48,7 @@ const PopupDeleteConfirm = ({
       .filter(item => item <= 0);
 
     const source = bracketGames.map(item => ({
-      label: `Loser ${item.index}`,
+      label: `Loser Game ${item.index}, Round ${Math.abs(item.round)}`,
       value: -item.index,
     }));
 
@@ -57,7 +57,7 @@ const PopupDeleteConfirm = ({
         ...bracketGames
           .filter(item => item.round <= 0)
           .map(item => ({
-            label: `Winner ${item.index}`,
+            label: `Winner Game ${item.index}, Round ${Math.abs(item.round)}`,
             value: item.index,
           }))
       );
@@ -113,31 +113,40 @@ const PopupDeleteConfirm = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.popupWrapper}>
         <h2 className={styles.title}>Add Game</h2>
-        <div>
+        <div className={styles.bodyWrapper}>
           <Select
             options={awaySourceOptions}
             value={awaySourceSelected}
             placeholder="Select"
-            label="Select Away Source"
+            label="Select First Game Source"
             onChange={onAwaySourceChange}
           />
           <Select
             options={homeSourceOptions}
             value={homeSourceSelected}
             placeholder="Select"
-            label="Select Home Source"
+            label="Select Second Game Source"
             onChange={onHomeSourceChange}
           />
         </div>
-        <Button
-          label="Add"
-          variant="contained"
-          color="primary"
-          onClick={addGame}
-        />
+        <div className={styles.btnsWrapper}>
+          <Button
+            label="Cancel"
+            variant="text"
+            color="secondary"
+            onClick={onClose}
+          />
+          <Button
+            label="+ Add"
+            variant="contained"
+            color="primary"
+            onClick={addGame}
+            disabled={!awaySourceSelected || !homeSourceSelected}
+          />
+        </div>
       </section>
     </Modal>
   );
 };
 
-export default PopupDeleteConfirm;
+export default AddGameModal;
