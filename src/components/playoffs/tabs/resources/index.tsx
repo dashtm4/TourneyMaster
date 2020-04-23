@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { orderBy } from 'lodash-es';
 import styles from './styles.module.scss';
-import { MatrixTable, Loader } from 'components/common';
+import { MatrixTable, Loader, Button } from 'components/common';
 import {
   IEventDetails,
   IDivision,
@@ -49,10 +49,13 @@ interface IState {
   tableGames?: IGame[];
   divisionOptions?: IMultiSelectOption[];
   filteredGames?: IGame[];
+  isDnd: boolean;
 }
 
 class ResourceMatrix extends Component<IProps> {
-  state: IState = {};
+  state: IState = {
+    isDnd: false,
+  };
 
   componentDidMount() {
     const { divisions } = this.props;
@@ -142,7 +145,7 @@ class ResourceMatrix extends Component<IProps> {
       games,
     } = this.props;
 
-    const { divisionOptions, filteredGames } = this.state;
+    const { divisionOptions, filteredGames, isDnd } = this.state;
 
     const tableBracketGames = games?.filter(
       v =>
@@ -177,6 +180,21 @@ class ResourceMatrix extends Component<IProps> {
                 />
               </fieldset>
             )}
+            <div className={styles.dndToggleWrapper}>
+              Mode:
+              <Button
+                label="Zoom-n-Nav"
+                variant="contained"
+                color={isDnd ? 'default' : 'primary'}
+                onClick={() => this.setState({ isDnd: false })}
+              />
+              <Button
+                label="Drag-n-Drop"
+                variant="contained"
+                color={isDnd ? 'primary' : 'default'}
+                onClick={() => this.setState({ isDnd: true })}
+              />
+            </div>
           </div>
 
           {event &&
@@ -201,7 +219,7 @@ class ResourceMatrix extends Component<IProps> {
               showHeatmap={true}
               isEnterScores={false}
               moveCard={this.onMoveCard}
-              disableZooming={false}
+              disableZooming={isDnd}
               onTeamCardUpdate={onTeamCardUpdate}
               onTeamCardsUpdate={onTeamCardsUpdate}
               teamCards={teamCards}
