@@ -328,6 +328,7 @@ const TableSchedule = ({
               timeSlots={timeSlots}
               facilities={facilities}
               schedule={scheduleData}
+              eventDays={days}
               isOpen={isPopupSaveReportOpen}
               onClose={togglePopupSaveReport}
             />

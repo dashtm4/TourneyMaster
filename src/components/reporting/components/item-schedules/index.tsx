@@ -2,10 +2,15 @@ import React from 'react';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
 import { HeadingLevelThree, Button, Select } from 'components/common';
-import { onPDFSave, onXLSXSave, getAllGamesByTeamCards } from 'helpers';
+import {
+  onPDFSave,
+  onXLSXSave,
+  getAllGamesByTeamCards,
+  getSelectDayOptions,
+} from 'helpers';
 import { ButtonVarian, ButtonColors, DefaultSelectValues } from 'common/enums';
 import { IEventDetails, ISchedule, IPool } from 'common/models';
-import { getScheduleTableXLSX, getSelectDayOptions } from '../../helpers';
+import { getScheduleTableXLSX } from '../../helpers';
 import { IGame, calculateDays } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
