@@ -94,6 +94,11 @@ class AddDivisionForm extends React.Component<
         onChange={this.onEntryFeeChange}
         disabled={!this.props.registration?.fees_vary_by_division_YN}
       />
+  onIsPremierChange = (e: InputTargetValue) => {
+    this.props.onChange(
+      'is_premier_YN',
+      e.target.checked ? 1 : 0,
+      this.props.index
     );
   };
 
@@ -109,6 +114,7 @@ class AddDivisionForm extends React.Component<
       division_hex,
       plays_at_spec_facility,
       spec_facilities_id,
+      is_premier_YN,
     } = this.props.division;
     const defaultDivisionColor = '#1C315F';
 
@@ -219,17 +225,29 @@ class AddDivisionForm extends React.Component<
                 onChange={this.onPlayAtSpecFacilityChange}
               />
               {plays_at_spec_facility ? (
-                <Select
-                  options={facilitiesOptions}
-                  label=""
-                  value={
-                    facilitiesOptions.find(
-                      facility => facility.value === spec_facilities_id
-                    )?.value || ''
-                  }
-                  onChange={this.onSpecFacilitySelect}
-                />
+                <div className={styles.selectContainer}>
+                  <Select
+                    options={facilitiesOptions}
+                    label=""
+                    value={
+                      facilitiesOptions.find(
+                        facility => facility.value === spec_facilities_id
+                      )?.value || ''
+                    }
+                    onChange={this.onSpecFacilitySelect}
+                  />
+                </div>
               ) : null}
+              <Checkbox
+                formLabel=""
+                options={[
+                  {
+                    label: 'Plays on Premier Fields',
+                    checked: Boolean(is_premier_YN),
+                  },
+                ]}
+                onChange={this.onIsPremierChange}
+              />
             </div>
           </div>
           <div className={styles.sectionRow}>

@@ -48,14 +48,14 @@ interface IDashboardProps {
 
 interface IDashboardState {
   order: number;
-  filters: { status: string[]; historical: boolean };
+  filters: { status: number[]; historical: boolean };
   isOnboardingWizardOpen: boolean;
 }
 
 class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   state = {
     order: 1,
-    filters: { status: ['Published', 'Draft'], historical: false },
+    filters: { status: [1, 0], historical: false },
     isOnboardingWizardOpen: false,
   };
 
@@ -83,13 +83,13 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
     this.setState({ order });
   };
 
-  filterEvents = (status: string) => {
+  filterEvents = (status: number) => {
     const { filters } = this.state;
     if (filters.status.includes(status)) {
       this.setState({
         filters: {
           historical: false,
-          status: filters.status.filter((filter: string) => filter !== status),
+          status: filters.status.filter((filter: number) => filter !== status),
         },
       });
     } else {
@@ -103,11 +103,11 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   };
 
   onPublishedFilter = () => {
-    this.filterEvents(EventStatuses.PUBLISHED);
+    this.filterEvents(EventStatuses.Published);
   };
 
   onDraftFilter = () => {
-    this.filterEvents(EventStatuses.DRAFT);
+    this.filterEvents(EventStatuses.Draft);
   };
 
   onHistoricalFilter = () => {
@@ -125,14 +125,14 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
           event => new Date(event.event_enddate) < new Date()
         )
       : this.props.events.filter(event =>
-          this.state.filters.status.includes(event.event_status)
+          this.state.filters.status.includes(event.is_published_YN)
         );
 
     const numOfPublished = this.props.events?.filter(
-      event => event.event_status === EventStatuses.PUBLISHED
+      event => event.is_published_YN === EventStatuses.Published
     ).length;
     const numOfDraft = this.props.events?.filter(
-      event => event.event_status === EventStatuses.DRAFT
+      event => event.is_published_YN === EventStatuses.Draft
     ).length;
 
     const numOfHistorical = this.props.events?.filter(
@@ -158,7 +158,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
               variant="contained"
               color="primary"
               type={
-                this.state.filters.status.includes('Published') &&
+                this.state.filters.status.includes(EventStatuses.Published) &&
                 !this.state.filters.historical
                   ? 'squared'
                   : 'squaredOutlined'
@@ -170,7 +170,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
               variant="contained"
               color="primary"
               type={
-                this.state.filters.status.includes('Draft') &&
+                this.state.filters.status.includes(EventStatuses.Draft) &&
                 !this.state.filters.historical
                   ? 'squared'
                   : 'squaredOutlined'

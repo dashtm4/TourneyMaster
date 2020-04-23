@@ -95,7 +95,6 @@ const TableSchedule = ({
   onToggleFullScreen,
   playoffTimeSlots,
 }: Props) => {
-  console.log(teamsDiagnostics);
   const minGamesNum = event.min_num_of_games;
 
   const [filterValues, changeFilterValues] = useState<IScheduleFilter>(
@@ -218,14 +217,12 @@ const TableSchedule = ({
 
   const togglePopupSaveReport = () => onPopupSaveReport(!isPopupSaveReportOpen);
 
-  const allGamesByTeamCards = getAllGamesByTeamCards(teamCards, games);
+  const allGamesByTeamCards = getAllGamesByTeamCards(teamCards, games, days);
 
-  const warnings = getScheduleWarning(
-    scheduleData,
-    event,
-    teamCards,
-    teamsDiagnostics!
-  );
+  const warnings =
+    tableType === TableScheduleTypes.SCORES
+      ? undefined
+      : getScheduleWarning(scheduleData, event, teamCards, teamsDiagnostics!);
 
   return (
     <section className={styles.section}>
@@ -328,6 +325,7 @@ const TableSchedule = ({
               timeSlots={timeSlots}
               facilities={facilities}
               schedule={scheduleData}
+              eventDays={days}
               isOpen={isPopupSaveReportOpen}
               onClose={togglePopupSaveReport}
             />

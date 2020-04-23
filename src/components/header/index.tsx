@@ -9,7 +9,7 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
   const menuItems: any[] = [
     { title: 'Home', link: '/' },
     { title: 'Event Production', link: '/' },
-    { title: 'Event Search', link: '/' },
+    { title: 'Event Search', link: 'https://results.tourneymaster.com' },
     { title: 'Support', link: 'https://www.tourneymaster.org/support/' },
     { title: 'About', link: 'https://www.tourneymaster.org/about/' },
     { title: 'Contact', link: 'https://www.tourneymaster.org/contact/' },
@@ -40,7 +40,7 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
                 // onClick={onMenuClick.bind(undefined, item.title)}
                 key={index}
               >
-                {index <= 2 ? (
+                {index < 2 ? (
                   <Link to={item.link}>{item.title}</Link>
                 ) : (
                   <a

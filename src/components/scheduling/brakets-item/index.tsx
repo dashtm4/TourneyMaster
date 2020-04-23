@@ -14,6 +14,7 @@ import {
   faCalendar,
   faExclamationCircle,
 } from '@fortawesome/free-solid-svg-icons';
+import { ScheduleStatuses } from 'common/models';
 
 const DEFAULT_UPDATED_VALUE = 'Not updated yet.';
 
@@ -83,9 +84,12 @@ const BraketsItem = ({
         <span
           className={styles.scheduleStatus}
           style={{
-            ...getTournamentStatusColor('Draft'),
+            ...getTournamentStatusColor(ScheduleStatuses.DRAFT),
           }}
         />
+      </p>
+      <p className={styles.textWrapper}>
+        <b>Schedule:</b> <span>{schedule.schedule_name || ''}</span>
       </p>
       <p className={styles.textWrapper}>
         <b>Created by:</b>
@@ -116,7 +120,7 @@ const BraketsItem = ({
           onClick={() => onEditBracket(bracket.id)}
         />
         <Link
-          to={`${Routes.PLAYOFFS}/${eventId}/${schedule.schedule_id}/${bracket.id}`}
+          to={`${Routes.PLAYOFFS}/${eventId}/${schedule?.schedule_id}/${bracket.id}`}
         >
           <Button
             icon={<FontAwesomeIcon icon={faCalendar} />}

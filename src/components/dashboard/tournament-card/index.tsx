@@ -8,6 +8,7 @@ import { getTournamentStatusColor } from '../../../helpers/getTournamentStatusCo
 import moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { IEventDetails } from 'common/models';
+import { EventStatuses } from 'common/enums';
 
 interface ITournamentCardProps {
   event: IEventDetails;
@@ -77,11 +78,11 @@ const TournamentCard = ({
           </div>
           <div className={styles.tournamentContentItem}>
             <span className={styles.tournamentContentTitle}>Status:</span>{' '}
-            {event.event_status || '—'}{' '}
+            {EventStatuses[event.is_published_YN] || '—'}{' '}
             <span
               className={styles.tournamentStatus}
               style={{
-                ...getTournamentStatusColor(event.event_status),
+                ...getTournamentStatusColor(event.is_published_YN),
               }}
             />
           </div>

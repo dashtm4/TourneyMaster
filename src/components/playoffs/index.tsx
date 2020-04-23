@@ -63,7 +63,11 @@ import {
   clearBracketGames,
   fetchBracketGames,
 } from './logic/actions';
-import { updateGameBracketInfo, addGameToExistingBracketGames } from './helper';
+import {
+  updateGameBracketInfo,
+  addGameToExistingBracketGames,
+  removeGameFromBracketGames,
+} from './helper';
 import { IOnAddGame } from './add-game-modal';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
@@ -108,6 +112,8 @@ interface IState {
   playoffTimeSlots?: ITimeSlot[];
   tableGames?: IGame[];
   cancelConfirmationOpen: boolean;
+  dataChanged: boolean;
+  highlightedGameId?: number;
 }
 
 enum PlayoffsTabsEnum {
@@ -119,6 +125,8 @@ class Playoffs extends Component<IProps> {
   state: IState = {
     activeTab: PlayoffsTabsEnum.ResourceMatrix,
     cancelConfirmationOpen: false,
+    dataChanged: false,
+    highlightedGameId: undefined,
   };
 
   async componentDidMount() {
@@ -300,8 +308,10 @@ class Playoffs extends Component<IProps> {
     );
 
     const seeds = createSeeds(bracketTeamsNum);
+
     this.setState({
       tableGames,
+      dataChanged: !!this.state.bracketGames,
       bracketGames: populatedBracketGames,
       bracketSeeds: seeds,
     });
@@ -318,9 +328,9 @@ class Playoffs extends Component<IProps> {
     const newBracketGames = bracketGames?.map(item =>
       item.index === game.playoffIndex && item.divisionId === game.divisionId
         ? {
-            ...item,
-            hidden: !!withGame?.playoffIndex,
-          }
+          ...item,
+          hidden: !!withGame?.playoffIndex,
+        }
         : item
     );
 
@@ -337,11 +347,13 @@ class Playoffs extends Component<IProps> {
     this.setState({ cancelConfirmationOpen: false });
 
   onGoBack = () => {
-    // if (condition) {
-    this.openCancelConfirmation();
-    // } else {
-    // this.onExit();
-    // }
+    const { dataChanged } = this.state;
+
+    if (dataChanged) {
+      this.openCancelConfirmation();
+    } else {
+      this.onExit();
+    }
   };
 
   onExit = () => {
@@ -359,16 +371,31 @@ class Playoffs extends Component<IProps> {
       selectedDivision
     );
 
-    this.setState({ bracketGames: newBracketGames }, () => {
-      this.props.fetchBracketGames(newBracketGames);
-    });
+    this.setState({ bracketGames: newBracketGames }, () =>
+      this.props.fetchBracketGames(newBracketGames)
+    );
   };
 
-  onSeedsUsed = () => {};
+  removeGame = (selectedDivision: string, gameIndex: number) => {
+    const { bracketGames } = this.state;
+    if (!bracketGames?.length) return;
+
+    const newBracketGames = removeGameFromBracketGames(
+      gameIndex,
+      bracketGames,
+      selectedDivision
+    );
+
+    this.setState({ bracketGames: newBracketGames }, () =>
+      this.props.fetchBracketGames(newBracketGames)
+    );
+  };
+
+  onSeedsUsed = () => { };
 
   onSavePressed = () => {
-    const { match } = this.props;
-    const { bracketGames, cancelConfirmationOpen } = this.state;
+    const { match, bracketGames } = this.props;
+    const { cancelConfirmationOpen } = this.state;
     const { bracketId } = match.params;
 
     if (bracketId) {
@@ -381,6 +408,12 @@ class Playoffs extends Component<IProps> {
       this.closeCancelConfirmation();
       this.onExit();
     }
+  };
+
+  setHighlightedGame = (id: number) => {
+    this.setState({
+      highlightedGameId: this.state.highlightedGameId === id ? undefined : id,
+    });
   };
 
   render() {
@@ -465,19 +498,22 @@ class Playoffs extends Component<IProps> {
                 scheduleData={schedule}
                 eventSummary={eventSummary}
                 schedulesDetails={schedulesDetails}
-                onTeamCardsUpdate={() => {}}
-                onTeamCardUpdate={() => {}}
-                onUndo={() => {}}
+                onTeamCardsUpdate={() => { }}
+                onTeamCardUpdate={() => { }}
+                onUndo={() => { }}
                 updateGame={this.updateMergedGames}
+                setHighlightedGame={this.setHighlightedGame}
+                highlightedGameId={this.state.highlightedGameId}
               />
             ) : (
-              <BracketManager
-                divisions={divisions!}
-                seeds={bracketSeeds}
-                bracketGames={bracketGames}
-                addGame={this.addGame}
-              />
-            )}
+                <BracketManager
+                  divisions={divisions!}
+                  seeds={bracketSeeds}
+                  bracketGames={bracketGames}
+                  addGame={this.addGame}
+                  removeGame={this.removeGame}
+                />
+              )}
           </section>
         </DndProvider>
         <PopupExposure

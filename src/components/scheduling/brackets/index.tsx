@@ -42,7 +42,8 @@ const Brackets = (props: IProps) => {
 
   const orderedBrackets = orderBy(
     brackets,
-    ({ status, updateDate, createDate }) => [status, updateDate, createDate],
+    ({ status, updateDate, createDate }) =>
+      updateDate ? [status, updateDate, createDate] : [status, createDate],
     ['desc', 'desc', 'desc']
   );
 

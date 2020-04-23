@@ -22,6 +22,7 @@ interface IProps {
   teamCards: ITeamCard[];
   onTeamCardsUpdate: (teamCards: ITeamCard[]) => void;
   isDndMode: boolean;
+  highlightedGamedId?: number;
 }
 
 const RenderTimeSlot = (props: IProps) => {
@@ -37,6 +38,7 @@ const RenderTimeSlot = (props: IProps) => {
     onTeamCardsUpdate,
     isDndMode,
     isEnterScores,
+    highlightedGamedId,
   } = props;
 
   const idsGamesForTimeSlot = games
@@ -99,6 +101,7 @@ const RenderTimeSlot = (props: IProps) => {
             isDndMode={isDndMode}
             isEnterScores={isEnterScores}
             teamCards={teamCards}
+            highlightedGamedId={highlightedGamedId}
           />
         ))}
     </tr>
