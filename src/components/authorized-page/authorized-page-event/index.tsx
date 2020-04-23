@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import {
   loadAuthPageData,
   clearAuthPageData,
-  changeTournamentStatus,
+  toggleTournamentStatus,
 } from './logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
@@ -32,7 +32,7 @@ import {
   ITournamentData,
   ICalendarEvent,
 } from 'common/models';
-import { Routes, EventMenuTitles, EventStatuses } from 'common/enums';
+import { Routes, EventMenuTitles } from 'common/enums';
 import { getIncompleteMenuItems } from '../helpers';
 import styles from '../styles.module.scss';
 import { closeFullscreen, openFullscreen } from 'helpers';
@@ -57,7 +57,7 @@ interface Props {
   tournamentData: ITournamentData;
   loadAuthPageData: (eventId: string) => void;
   clearAuthPageData: BindingAction;
-  changeTournamentStatus: (status: EventStatuses) => void;
+  toggleTournamentStatus: BindingAction;
   getCalendarEvents: BindingAction;
   calendarEvents: ICalendarEvent[] | null | undefined;
   updateCalendarEvent: BindingAction;
@@ -74,7 +74,7 @@ const AuthorizedPageEvent = ({
   tournamentData,
   loadAuthPageData,
   clearAuthPageData,
-  changeTournamentStatus,
+  toggleTournamentStatus,
   getCalendarEvents,
   calendarEvents,
   updateCalendarEvent,
@@ -142,9 +142,9 @@ const AuthorizedPageEvent = ({
           eventId={eventId}
           hideOnList={hideOnList}
           isAllowEdit={Boolean(eventId)}
-          tournamentStatus={event?.event_status}
+          tournamentStatus={event?.is_published_YN}
           eventName={event?.event_name || ''}
-          changeTournamentStatus={changeTournamentStatus}
+          toggleTournamentStatus={toggleTournamentStatus}
         />
         <main
           className={`${styles.content} ${
@@ -243,7 +243,7 @@ export default connect(
       {
         loadAuthPageData,
         clearAuthPageData,
-        changeTournamentStatus,
+        toggleTournamentStatus,
         getCalendarEvents,
         updateCalendarEvent,
       },
