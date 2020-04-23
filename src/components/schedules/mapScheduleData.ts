@@ -15,14 +15,10 @@ export const mapScheduleData = (
 ): ISchedule => {
   const data = {
     ...scheduleData,
-    first_game_time: scheduleData.first_game_start,
-    last_game_end_time: scheduleData.last_game_end,
   };
 
   delete data?.num_fields;
   delete data?.periods_per_game;
-  delete data?.first_game_start;
-  delete data?.last_game_end;
   delete data?.isManualScheduling;
   return data;
 };

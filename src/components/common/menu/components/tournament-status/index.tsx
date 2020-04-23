@@ -3,19 +3,20 @@ import { ProgressBar, Button, Tooltip } from 'components/common';
 import { getIcon } from 'helpers';
 import { ButtonColors, ButtonVarian, EventStatuses, Icons } from 'common/enums';
 import styles from './styles.module.scss';
+import { BindingAction } from 'common/models';
 
 interface Props {
   tournamentStatus: EventStatuses;
   percentOfCompleted: number;
-  changeTournamentStatus?: (status: EventStatuses) => void;
+  toggleTournamentStatus?: BindingAction;
 }
 
 const TournamentStatus = ({
   percentOfCompleted,
   tournamentStatus,
-  changeTournamentStatus,
+  toggleTournamentStatus,
 }: Props) => {
-  if (!changeTournamentStatus) {
+  if (!toggleTournamentStatus) {
     return null;
   }
 
@@ -23,16 +24,16 @@ const TournamentStatus = ({
     <div className={styles.progressBarWrapper}>
       <div className={styles.progressBarStatusWrapper}>
         <p className={styles.progressBarStatus}>
-          <span>Status:</span> {tournamentStatus}
+          <span>Status:</span> {EventStatuses[tournamentStatus]}
         </p>
-        {tournamentStatus === EventStatuses.DRAFT && (
+        {tournamentStatus === EventStatuses.Draft && (
           <p className={styles.progressBarComplete}>
             <output>{`${percentOfCompleted}% `}</output>
             Complete
           </p>
         )}
       </div>
-      {tournamentStatus === EventStatuses.DRAFT ? (
+      {tournamentStatus === EventStatuses.Draft ? (
         <>
           <ProgressBar completed={percentOfCompleted} />
           {percentOfCompleted === 100 && (
@@ -42,9 +43,7 @@ const TournamentStatus = ({
             >
               <span className={styles.doneBtnWrapper}>
                 <Button
-                  onClick={() =>
-                    changeTournamentStatus(EventStatuses.PUBLISHED)
-                  }
+                  onClick={toggleTournamentStatus}
                   icon={getIcon(Icons.DONE)}
                   label="Publish Tournament"
                   color={ButtonColors.INHERIT}
@@ -57,7 +56,7 @@ const TournamentStatus = ({
       ) : (
         <span className={styles.doneBtnWrapper}>
           <Button
-            onClick={() => changeTournamentStatus(EventStatuses.DRAFT)}
+            onClick={toggleTournamentStatus}
             label="Unpublish Tournament"
             color={ButtonColors.INHERIT}
             variant={ButtonVarian.CONTAINED}

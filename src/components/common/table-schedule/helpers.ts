@@ -340,7 +340,7 @@ const getScheduleWarning = (
   );
   const backToBackExist = backToBackValues.filter(v => Number(v) > 0).length;
 
-  if (backToBackExist) {
+  if (backToBackExist && event.back_to_back_warning) {
     items.push({
       type: 'INFO',
       title: ScheduleWarningsEnum.BackToBackGamesExist,

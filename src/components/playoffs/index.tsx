@@ -63,7 +63,11 @@ import {
   clearBracketGames,
   fetchBracketGames,
 } from './logic/actions';
-import { updateGameBracketInfo, addGameToExistingBracketGames } from './helper';
+import {
+  updateGameBracketInfo,
+  addGameToExistingBracketGames,
+  removeGameFromBracketGames,
+} from './helper';
 import { IOnAddGame } from './add-game-modal';
 
 interface IMapStateToProps extends Partial<ITournamentData> {
@@ -108,6 +112,7 @@ interface IState {
   playoffTimeSlots?: ITimeSlot[];
   tableGames?: IGame[];
   cancelConfirmationOpen: boolean;
+  dataChanged: boolean;
   highlightedGameId?: number;
 }
 
@@ -120,6 +125,7 @@ class Playoffs extends Component<IProps> {
   state: IState = {
     activeTab: PlayoffsTabsEnum.ResourceMatrix,
     cancelConfirmationOpen: false,
+    dataChanged: false,
     highlightedGameId: undefined,
   };
 
@@ -302,8 +308,10 @@ class Playoffs extends Component<IProps> {
     );
 
     const seeds = createSeeds(bracketTeamsNum);
+
     this.setState({
       tableGames,
+      dataChanged: !!this.state.bracketGames,
       bracketGames: populatedBracketGames,
       bracketSeeds: seeds,
     });
@@ -339,11 +347,13 @@ class Playoffs extends Component<IProps> {
     this.setState({ cancelConfirmationOpen: false });
 
   onGoBack = () => {
-    // if (condition) {
-    this.openCancelConfirmation();
-    // } else {
-    // this.onExit();
-    // }
+    const { dataChanged } = this.state;
+
+    if (dataChanged) {
+      this.openCancelConfirmation();
+    } else {
+      this.onExit();
+    }
   };
 
   onExit = () => {
@@ -361,16 +371,31 @@ class Playoffs extends Component<IProps> {
       selectedDivision
     );
 
-    this.setState({ bracketGames: newBracketGames }, () => {
-      this.props.fetchBracketGames(newBracketGames);
-    });
+    this.setState({ bracketGames: newBracketGames }, () =>
+      this.props.fetchBracketGames(newBracketGames)
+    );
+  };
+
+  removeGame = (selectedDivision: string, gameIndex: number) => {
+    const { bracketGames } = this.state;
+    if (!bracketGames?.length) return;
+
+    const newBracketGames = removeGameFromBracketGames(
+      gameIndex,
+      bracketGames,
+      selectedDivision
+    );
+
+    this.setState({ bracketGames: newBracketGames }, () =>
+      this.props.fetchBracketGames(newBracketGames)
+    );
   };
 
   onSeedsUsed = () => { };
 
   onSavePressed = () => {
-    const { match } = this.props;
-    const { bracketGames, cancelConfirmationOpen } = this.state;
+    const { match, bracketGames } = this.props;
+    const { cancelConfirmationOpen } = this.state;
     const { bracketId } = match.params;
 
     if (bracketId) {
@@ -486,6 +511,7 @@ class Playoffs extends Component<IProps> {
                   seeds={bracketSeeds}
                   bracketGames={bracketGames}
                   addGame={this.addGame}
+                  removeGame={this.removeGame}
                 />
               )}
           </section>

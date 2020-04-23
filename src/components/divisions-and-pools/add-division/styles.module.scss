@@ -31,7 +31,7 @@
     justify-content: space-between;
     .sectionItemSelect {
       width: 48.5%;
-      & > :nth-child(2) {
+      .selectContainer {
         width: 47.5%;
       }
     }

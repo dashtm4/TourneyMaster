@@ -1,5 +1,3 @@
-import { EventStatuses } from 'common/enums';
-
 export interface IEventSummary {
   event_id: string;
   sport_id: string;
@@ -8,7 +6,7 @@ export interface IEventSummary {
   event_startdate: string;
   event_enddate: string;
   time_zone_utc: number;
-  event_status: EventStatuses;
+  event_status: number;
   first_game_time: string;
   num_of_locations: number | null;
   pre_game_warmup: number | null;
