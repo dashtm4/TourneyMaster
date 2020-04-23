@@ -22,6 +22,9 @@ import {
   MatrixTableDropEnum,
   IDropParams,
 } from 'components/common/matrix-table/dnd/drop';
+import MultiSelect, {
+  IMultiSelectOption,
+} from 'components/common/multi-select';
 
 interface IProps {
   bracketGames?: IBracketGame[];
@@ -44,10 +47,63 @@ interface IProps {
 
 interface IState {
   tableGames?: IGame[];
+  divisionOptions?: IMultiSelectOption[];
+  filteredGames?: IGame[];
 }
 
 class ResourceMatrix extends Component<IProps> {
   state: IState = {};
+
+  componentDidMount() {
+    const { divisions } = this.props;
+    if (divisions) {
+      const divisionOptions = divisions.map(item => ({
+        label: item.short_name,
+        value: item.division_id,
+        checked: true,
+      }));
+      this.setState({ divisionOptions });
+    }
+  }
+
+  componentDidUpdate(_: any, prevState: IState) {
+    const { divisionOptions, filteredGames } = this.state;
+
+    if (
+      prevState.divisionOptions !== divisionOptions ||
+      (!filteredGames && this.props.games)
+    ) {
+      const divisionIds =
+        this.state.divisionOptions
+          ?.filter(item => item.checked)
+          .map(item => item.value) || [];
+
+      const filteredGames = this.props.games?.map(game =>
+        divisionIds.includes(
+          game.awayTeam?.divisionId! ||
+            game.homeTeam?.divisionId! ||
+            game.divisionId!
+        )
+          ? game
+          : {
+              ...game,
+              awayTeam: undefined,
+              homeTeam: undefined,
+              awayDependsUpon: undefined,
+              homeDependsUpon: undefined,
+              awaySeedId: undefined,
+              homeSeedId: undefined,
+            }
+      );
+
+      this.setState({
+        filteredGames,
+      });
+    }
+  }
+
+  setSelectedDivision = (name: string, data: IMultiSelectOption[]) =>
+    this.setState({ [name]: data });
 
   renderGame = (game: IGame, index: number) => {
     return (
@@ -86,6 +142,8 @@ class ResourceMatrix extends Component<IProps> {
       games,
     } = this.props;
 
+    const { divisionOptions, filteredGames } = this.state;
+
     const tableBracketGames = games?.filter(
       v =>
         v.isPlayoff &&
@@ -107,11 +165,25 @@ class ResourceMatrix extends Component<IProps> {
           {orderedGames?.map((v, i) => this.renderGame(v, i))}
         </div>
         <div className={styles.rightColumn}>
+          <div className={styles.filterWrapper}>
+            {!!divisionOptions?.length && (
+              <fieldset className={styles.selectWrapper}>
+                <legend className={styles.selectTitle}>Divisions</legend>
+                <MultiSelect
+                  placeholder="Select"
+                  name="divisionOptions"
+                  selectOptions={divisionOptions}
+                  onChange={this.setSelectedDivision}
+                />
+              </fieldset>
+            )}
+          </div>
+
           {event &&
           divisions &&
           pools &&
           teamCards &&
-          games &&
+          filteredGames &&
           fields &&
           timeSlots &&
           facilities &&
@@ -122,7 +194,7 @@ class ResourceMatrix extends Component<IProps> {
           onUndo ? (
             <MatrixTable
               tableType={TableScheduleTypes.BRACKETS}
-              games={games}
+              games={filteredGames}
               fields={fields}
               timeSlots={timeSlots}
               facilities={facilities}
