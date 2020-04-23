@@ -14,10 +14,11 @@ const TRANSFORM_WRAPPER_OPTIONS = {
 interface IProps {
   seeds: IBracketSeed[];
   games: IBracketGame[];
+  onRemove: (gameIndex: number) => void;
 }
 
 const Brackets = (props: IProps) => {
-  const { games } = props;
+  const { games, onRemove } = props;
 
   const getRoundTitle = (grid: string, round: string, gamesLength: number) => {
     if (grid !== '1') return;
@@ -163,6 +164,7 @@ const Brackets = (props: IProps) => {
                         games={playInRound![roundKey]}
                         onDrop={() => {}}
                         title="Play-In Games"
+                        onRemove={onRemove}
                       />
                       <BracketConnector
                         hidden={hidden}
@@ -183,6 +185,7 @@ const Brackets = (props: IProps) => {
                           roundKey,
                           grids[gridKey][roundKey].length
                         )}
+                        onRemove={onRemove}
                       />
                       {index < arr.length - 1 ? (
                         <BracketConnector

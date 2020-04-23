@@ -4,16 +4,19 @@ import styles from './styles.module.scss';
 import SeedDrop from '../dnd/drop';
 import Seed from '../dnd/seed';
 import { IBracketGame } from '../bracketGames';
-import { formatTimeSlot } from 'helpers';
+import { formatTimeSlot, getIcon } from 'helpers';
+import { Button } from 'components/common';
+import { Icons } from 'common/enums';
 
 interface IProps {
   game: IBracketGame;
   onDrop: any;
   seedRound?: boolean;
+  onRemove: (gameIndex: number) => void;
 }
 
 const BracketGameSlot = (props: IProps) => {
-  const { game, onDrop, seedRound } = props;
+  const { game, onDrop, seedRound, onRemove } = props;
   const time = formatTimeSlot(game?.startTime || '');
   const date = moment(game?.gameDate).format('MM/DD/YYYY');
 
@@ -22,6 +25,8 @@ const BracketGameSlot = (props: IProps) => {
     const key = round > 0 ? 'Winner' : 'Loser';
     return `${key} Game ${depends}`;
   };
+
+  const onRemovePressed = () => onRemove(game.index);
 
   return (
     <div
@@ -49,8 +54,18 @@ const BracketGameSlot = (props: IProps) => {
         )}
       </SeedDrop>
       <div className={styles.bracketGameDescription}>
-        <span>{`Game ${game?.index}:  ${game?.fieldName}`}</span>
-        <span>{`${time}, ${date}`}</span>
+        <div className={styles.descriptionInfo}>
+          <span>{`Game ${game?.index}:  ${game?.fieldName}`}</span>
+          <span>{`${time}, ${date}`}</span>
+        </div>
+        <div className={styles.bracketManage}>
+          <Button
+            label={getIcon(Icons.DELETE)}
+            variant="text"
+            color="default"
+            onClick={onRemovePressed}
+          />
+        </div>
       </div>
       <SeedDrop
         id={game?.index}

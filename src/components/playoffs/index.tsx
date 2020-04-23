@@ -359,9 +359,22 @@ class Playoffs extends Component<IProps> {
       selectedDivision
     );
 
-    this.setState({ bracketGames: newBracketGames }, () => {
-      this.props.fetchBracketGames(newBracketGames);
-    });
+    this.setState({ bracketGames: newBracketGames }, () =>
+      this.props.fetchBracketGames(newBracketGames)
+    );
+  };
+
+  removeGame = (selectedDivision: string, gameIndex: number) => {
+    const { bracketGames } = this.state;
+    if (!bracketGames?.length) return;
+
+    const newBracketGames = bracketGames.filter(
+      item => item.divisionId !== selectedDivision || item.index !== gameIndex
+    );
+
+    this.setState({ bracketGames: newBracketGames }, () =>
+      this.props.fetchBracketGames(newBracketGames)
+    );
   };
 
   onSeedsUsed = () => {};
@@ -476,6 +489,7 @@ class Playoffs extends Component<IProps> {
                 seeds={bracketSeeds}
                 bracketGames={bracketGames}
                 addGame={this.addGame}
+                removeGame={this.removeGame}
               />
             )}
           </section>

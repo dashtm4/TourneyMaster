@@ -21,7 +21,7 @@ interface Props {
   onAddGame: (data: IOnAddGame) => void;
 }
 
-const PopupDeleteConfirm = ({
+const AddGameModal = ({
   isOpen,
   onClose,
   bracketGames,
@@ -149,4 +149,4 @@ const PopupDeleteConfirm = ({
   );
 };
 
-export default PopupDeleteConfirm;
+export default AddGameModal;
