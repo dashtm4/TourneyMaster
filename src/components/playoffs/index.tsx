@@ -367,8 +367,8 @@ class Playoffs extends Component<IProps> {
   onSeedsUsed = () => {};
 
   onSavePressed = () => {
-    const { match } = this.props;
-    const { bracketGames, cancelConfirmationOpen } = this.state;
+    const { match, bracketGames } = this.props;
+    const { cancelConfirmationOpen } = this.state;
     const { bracketId } = match.params;
 
     if (bracketId) {

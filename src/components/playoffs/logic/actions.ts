@@ -16,6 +16,7 @@ import { IBracketGame } from '../bracketGames';
 import api from 'api/api';
 import { successToast, errorToast } from 'components/common/toastr/showToasts';
 import { addNewBracket } from 'components/scheduling/logic/actions';
+import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
 
 type IGetState = () => IAppState;
 
@@ -48,6 +49,10 @@ const managePlayoffSaving = (
 
   if (!bracket) return newError();
 
+  const loadedGames: IPlayoffGame[] = await api.get(`/games_brackets`, {
+    bracket_id: bracket.id,
+  });
+
   // POST/PUT Bracket
   const bracketData = await mapBracketData(bracket, true);
   const bracketResp = await callPostPut(
@@ -59,16 +64,46 @@ const managePlayoffSaving = (
   if (!bracketResp) return newError();
 
   // POST/PUT BracketGames
-  const bracketGamesData = await mapBracketGames(bracketGames, bracket);
-  const bracketGamesChunk = chunk(bracketGamesData, 50);
-  const bracketGamesResp = await Promise.all(
-    bracketGamesChunk.map(
-      async arr => await callPostPut('/games_brackets', arr, !isCreate)
+  const existingGames: IBracketGame[] = [];
+  const newGames: IBracketGame[] = [];
+
+  const existingGameIds = loadedGames.map(item => item.game_id);
+
+  bracketGames.forEach(item =>
+    existingGameIds.includes(item.id)
+      ? existingGames.push(item)
+      : newGames.push(item)
+  );
+
+  const existingBracketGames = await mapBracketGames(existingGames, bracket);
+  const existingBracketGamesChunk = chunk(existingBracketGames, 50);
+
+  const existingBracketGamesResp = await Promise.all(
+    existingBracketGamesChunk.map(
+      async arr => await api.put('/games_brackets', arr)
     )
   );
-  const bracketGamesRespOk = bracketGamesResp.every(item => item);
 
-  if (bracketResp && bracketGamesRespOk) {
+  const newBracketGames = await mapBracketGames(newGames, bracket);
+  const newBracketGamesChunk = chunk(newBracketGames, 50);
+
+  const newBracketGamesResp = await Promise.all(
+    newBracketGamesChunk.map(
+      async arr => await api.post('/games_brackets', arr)
+    )
+  );
+
+  const existingBracketGamesRespOk = existingBracketGamesResp.every(
+    item => item
+  );
+  const newBracketGamesRespOk = newBracketGamesResp.every(item => item);
+
+  const responseOk =
+    existingGames?.length && newGames?.length
+      ? existingBracketGamesRespOk && newBracketGamesRespOk
+      : existingBracketGamesRespOk || newBracketGamesRespOk;
+
+  if (bracketResp && responseOk) {
     dispatch(playoffSavedSuccess(true));
     successToast('Playoff data was successfully saved!');
     return;
