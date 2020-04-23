@@ -45,13 +45,45 @@ $height: 400px;
       .bracketGameDescription {
         height: 40px;
         display: flex;
-        flex-direction: column;
-        font-size: 13px;
-        color: #1c315f;
-        font-weight: 600;
+        flex-direction: row;
 
-        span {
-          white-space: nowrap;
+        .descriptionInfo {
+          width: 160px;
+          display: flex;
+          flex-direction: column;
+          align-items: baseline;
+          justify-content: center;
+
+          span {
+            font-size: 13px;
+            color: #1c315f;
+            font-weight: 600;
+            white-space: nowrap;
+          }
+        }
+
+        .bracketManage {
+          opacity: 0.1;
+          transition: opacity 0.3s ease-in-out;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: absolute;
+          right: 0;
+          top: 27px;
+
+          > button {
+            color: rgb(44, 44, 44);
+            transition: color 0.2s ease-in-out;
+          }
+
+          &:hover {
+            opacity: 1;
+
+            > button {
+              color: #e82b2b;
+            }
+          }
         }
       }
 

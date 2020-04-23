@@ -43,6 +43,8 @@ interface IProps {
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
   updateGame: (game: IGame, withGame?: IGame) => void;
+  setHighlightedGame?: (id: number) => void;
+  highlightedGameId?: number;
 }
 
 interface IState {
@@ -114,6 +116,7 @@ class ResourceMatrix extends Component<IProps> {
         key={`${index}-renderGame`}
         game={game}
         type={MatrixTableDropEnum.BracketDrop}
+        setHighlightedGame={this.props.setHighlightedGame}
       />
     );
   };
@@ -143,6 +146,7 @@ class ResourceMatrix extends Component<IProps> {
       onTeamCardUpdate,
       onUndo,
       games,
+      highlightedGameId,
     } = this.props;
 
     const { divisionOptions, filteredGames, isDnd } = this.state;
@@ -225,6 +229,7 @@ class ResourceMatrix extends Component<IProps> {
               teamCards={teamCards}
               isFullScreen={false}
               onToggleFullScreen={() => {}}
+              highlightedGameId={highlightedGameId}
             />
           ) : (
             <Loader styles={{ height: '100%' }} />

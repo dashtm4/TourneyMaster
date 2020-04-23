@@ -1,3 +1,4 @@
+import { orderBy } from 'lodash-es';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IBracketGame } from './bracketGames';
 import { IOnAddGame } from './add-game-modal';
@@ -97,4 +98,61 @@ export const addGameToExistingBracketGames = (
   newBracketGames.push(newBracketGame);
 
   return newBracketGames;
+};
+
+const getDependentGames = (
+  dependentInds: number[],
+  games: IBracketGame[]
+): number[] => {
+  const foundGames = games.filter(
+    item =>
+      dependentInds.includes(item.awayDependsUpon!) ||
+      dependentInds.includes(item.homeDependsUpon!)
+  );
+
+  const foundGamesInds = foundGames.map(item => item.index);
+  const newDependentInds = [...dependentInds, ...foundGamesInds];
+
+  const newGames = games.filter(item => !foundGamesInds.includes(item.index));
+
+  if (!foundGamesInds?.length || !newGames?.length) {
+    return newDependentInds;
+  }
+
+  return getDependentGames(newDependentInds, newGames);
+};
+
+export const removeGameFromBracketGames = (
+  gameIndex: number,
+  games: IBracketGame[],
+  divisionId: string
+) => {
+  const dependentInds = [gameIndex];
+  const divisionGames = games.filter(item => item.divisionId === divisionId);
+
+  const newFound = getDependentGames(dependentInds, divisionGames);
+
+  const removedGames = games
+    .filter(
+      item => item.divisionId === divisionId && newFound.includes(item.index)
+    )
+    .map(item => ({ ...item, hidden: true }));
+
+  const updatedDivisionGames = games
+    .filter(
+      item => item.divisionId === divisionId && !newFound.includes(item.index)
+    )
+    .map((item, index) => ({ ...item, index: index + 1 }));
+
+  const otherGames = games.filter(
+    item => !newFound.includes(item.index) && item.divisionId !== divisionId
+  );
+
+  const allGames = orderBy(
+    [...otherGames, ...updatedDivisionGames],
+    'divisionId'
+  );
+
+  const resultGames: IBracketGame[] = [...allGames, ...removedGames];
+  return resultGames;
 };

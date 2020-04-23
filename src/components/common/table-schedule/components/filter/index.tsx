@@ -12,7 +12,7 @@ import InteractiveTooltip, {
 
 interface IProps {
   days: number;
-  warnings: IModalItem[];
+  warnings?: IModalItem[];
   filterValues: IScheduleFilter;
   onChangeFilterValue: (values: IScheduleFilter) => void;
 }
@@ -98,9 +98,9 @@ const ScoringFilter = (props: IProps) => {
               onChange={onSelectUpdate}
             />
           </fieldset>
-          {warnings && (
+          {warnings?.length ? (
             <InteractiveTooltip title="Scheduling Warning" items={warnings} />
-          )}
+          ) : null}
         </div>
       </form>
     </section>

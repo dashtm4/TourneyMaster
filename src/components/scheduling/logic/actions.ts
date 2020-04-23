@@ -126,8 +126,8 @@ export const addNewSchedule = () => async (
     pre_game_warmup: tournamentData.event?.pre_game_warmup,
     period_duration: tournamentData.event?.period_duration,
     time_btwn_periods: tournamentData.event?.time_btwn_periods,
-    first_game_start: tournamentData.event?.first_game_time,
-    last_game_end: tournamentData.event?.last_game_end,
+    first_game_time: tournamentData.event?.first_game_time,
+    last_game_end_time: tournamentData.event?.last_game_end,
     games_start_on: gameStartOnOptions[0],
   };
 
@@ -202,8 +202,8 @@ export const createNewSchedule = (schedule: IConfigurableSchedule) => async (
 
     const updatedSchedule = {
       ...schedule,
-      first_game_start: event?.first_game_time,
-      last_game_end: event?.last_game_end,
+      first_game_time: event?.first_game_time,
+      last_game_end_time: event?.last_game_end,
     };
 
     dispatch({
@@ -269,6 +269,12 @@ export const deleteSchedule = (schedule: ISchedulingSchedule) => async (
   dispatch: Dispatch
 ) => {
   try {
+    const brackets = await api.get(
+      `/brackets_details?schedule_id=${schedule.schedule_id}`
+    );
+
+    await api.delete('/brackets_details', brackets);
+
     await api.delete(`/schedules?schedule_id=${schedule.schedule_id}`);
 
     dispatch({

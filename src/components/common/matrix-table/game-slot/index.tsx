@@ -16,6 +16,7 @@ interface Props {
   isDndMode: boolean;
   isEnterScores?: boolean;
   teamCards: ITeamCard[];
+  highlightedGamedId?: number;
 }
 
 const RenderGameSlot = (props: Props) => {
@@ -28,6 +29,7 @@ const RenderGameSlot = (props: Props) => {
     isDndMode,
     isEnterScores,
     teamCards,
+    highlightedGamedId,
   } = props;
 
   const {
@@ -55,7 +57,10 @@ const RenderGameSlot = (props: Props) => {
       className={`${styles.gameSlotContainer} ${isPlayoff &&
         styles.gameSlotPlayoff}`}
     >
-      <div className={styles.gameSlot}>
+      <div
+        className={`${styles.gameSlot} ${highlightedGamedId === game.id &&
+          styles.highlighted}`}
+      >
         <DropContainer
           acceptType={acceptType}
           gameId={game.id}

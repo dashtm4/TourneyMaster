@@ -4,6 +4,7 @@ export interface IPlayoffGame {
   event_id: string;
   division_id: string;
   bracket_year: string | null;
+  grid_num: number;
   round_num: number;
   field_id: string | null;
   game_date: Date | string;

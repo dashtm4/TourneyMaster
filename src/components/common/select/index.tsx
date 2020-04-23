@@ -28,7 +28,14 @@ const Select: React.FC<ISelectProps> = ({
 }) => (
   <div className={styles.container} style={{ alignItems: align || '' }}>
     <span className={styles.label}>{label}</span>
-    {!value ? <span className={styles.placeholder}>{placeholder}</span> : null}
+    {!value ? (
+      <span
+        className={styles.placeholder}
+        style={label?.length ? { top: 40 } : {}}
+      >
+        {placeholder}
+      </span>
+    ) : null}
     <MuiTextField
       id="select"
       style={{ width }}

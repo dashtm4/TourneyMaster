@@ -41,15 +41,20 @@ const CreateNewModal = (props: IProps) => {
   const onTypeChange = (e: InputTargetValue) =>
     setType(TypeOptions[e.target.value]);
 
-  const onCancelClick = () => {
+  const localClose = () => {
+    onChange('schedule_name', '');
     onClose();
+  };
+
+  const onCancelClick = () => {
+    localClose();
     setStep(1);
     setType(1);
   };
 
   const ref = useRef<HTMLDivElement>(null);
   useOnclickOutside(ref, () => {
-    onClose();
+    localClose();
     setStep(1);
     setType(1);
   });
@@ -164,7 +169,7 @@ const CreateNewModal = (props: IProps) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={localClose}>
       <div className={styles.wrapper} ref={ref}>
         <HeadingLevelFour>
           <span>Create Schedule</span>

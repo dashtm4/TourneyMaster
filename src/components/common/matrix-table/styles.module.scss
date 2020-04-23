@@ -32,6 +32,10 @@
   }
 }
 
+.highlighted {
+  box-shadow: #fa0000 0px 0px 5px 3px;
+}
+
 .table {
   display: flex;
   flex-wrap: nowrap;
