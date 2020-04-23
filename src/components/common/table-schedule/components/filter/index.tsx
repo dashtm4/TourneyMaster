@@ -12,7 +12,7 @@ import InteractiveTooltip, {
 
 interface IProps {
   days: number;
-  warnings: IModalItem[];
+  warnings?: IModalItem[];
   filterValues: IScheduleFilter;
   onChangeFilterValue: (values: IScheduleFilter) => void;
 }
