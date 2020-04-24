@@ -2,7 +2,7 @@ import { Auth } from 'aws-amplify';
 import api from 'api/api';
 import { IBracket, IFetchedBracket } from 'common/models/playoffs/bracket';
 import { getVarcharEight } from 'helpers';
-import { IMember } from 'common/models';
+import { IMember, IField } from 'common/models';
 import { IBracketGame } from './bracketGames';
 import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
 
@@ -98,7 +98,10 @@ export const mapFetchedBracket = (bracketData: IFetchedBracket) => {
   } as IBracket;
 };
 
-export const mapFetchedBracketGames = (bracketGames: IPlayoffGame[]) => {
+export const mapFetchedBracketGames = (
+  bracketGames: IPlayoffGame[],
+  fields: IField[]
+) => {
   return bracketGames.map(
     (game): IBracketGame => ({
       id: game.game_id,
@@ -116,7 +119,8 @@ export const mapFetchedBracketGames = (bracketGames: IPlayoffGame[]) => {
       awayDisplayName: '',
       homeDisplayName: '',
       fieldId: game.field_id || undefined,
-      fieldName: '',
+      fieldName: fields.find(item => item.field_id === game.field_id)
+        ?.field_name,
       startTime: game.start_time || undefined,
       gameDate: game.game_date.toString(),
       hidden: !game.is_active_YN,

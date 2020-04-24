@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { orderBy } from 'lodash-es';
 import styles from './styles.module.scss';
 import { MatrixTable, Loader, Button } from 'components/common';
 import {
@@ -42,7 +41,7 @@ interface IProps {
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
-  updateGame: (game: IGame, withGame?: IGame) => void;
+  updateGame: (gameId: string, slotId: number) => void;
   setHighlightedGame?: (id: number) => void;
   highlightedGameId?: number;
 }
@@ -71,11 +70,12 @@ class ResourceMatrix extends Component<IProps> {
     }
   }
 
-  componentDidUpdate(_: any, prevState: IState) {
+  componentDidUpdate(prevProps: IProps, prevState: IState) {
     const { divisionOptions, filteredGames } = this.state;
 
     if (
       prevState.divisionOptions !== divisionOptions ||
+      prevProps.games !== this.props.games ||
       (!filteredGames && this.props.games)
     ) {
       const divisionIds =
@@ -110,11 +110,22 @@ class ResourceMatrix extends Component<IProps> {
   setSelectedDivision = (name: string, data: IMultiSelectOption[]) =>
     this.setState({ [name]: data });
 
-  renderGame = (game: IGame, index: number) => {
+  renderGame = (bracketGame: IBracketGame, index: number) => {
+    const divisionHex = this.props.divisions?.find(
+      item => item.division_id === bracketGame.divisionId
+    )?.division_hex;
+    const game = this.state.filteredGames?.find(
+      item =>
+        item.fieldId === bracketGame.fieldId &&
+        item.startTime === bracketGame.startTime
+    );
+
     return (
       <BracketGameCard
         key={`${index}-renderGame`}
-        game={game}
+        game={bracketGame}
+        gameSlotId={game?.id}
+        divisionHex={divisionHex!}
         type={MatrixTableDropEnum.BracketDrop}
         setHighlightedGame={this.props.setHighlightedGame}
       />
@@ -122,13 +133,8 @@ class ResourceMatrix extends Component<IProps> {
   };
 
   onMoveCard = (dropParams: IDropParams) => {
-    const { teamId, gameId } = dropParams;
-    const { games } = this.props;
-    const dragGame = games!.find(item => +item.id === +teamId)!;
-    const dropGame = games!.find(item => item.id === gameId)!;
-
-    this.props.updateGame(dragGame);
-    this.props.updateGame(dropGame, dragGame);
+    // Send <IBracketGame.id, IGame.id>
+    this.props.updateGame(dropParams.teamId, dropParams.gameId!);
   };
 
   render() {
@@ -145,31 +151,19 @@ class ResourceMatrix extends Component<IProps> {
       onTeamCardsUpdate,
       onTeamCardUpdate,
       onUndo,
-      games,
       highlightedGameId,
+      bracketGames,
     } = this.props;
 
     const { divisionOptions, filteredGames, isDnd } = this.state;
 
-    const tableBracketGames = games?.filter(
-      v =>
-        v.isPlayoff &&
-        v.divisionId &&
-        v.playoffIndex &&
-        (v.awaySeedId ||
-          v.homeSeedId ||
-          v.awayDisplayName ||
-          v.homeDisplayName ||
-          v.awayDependsUpon ||
-          v.homeDependsUpon)
-    );
-    const orderedGames = orderBy(tableBracketGames, 'divisionId');
+    const orderedBracketGames = bracketGames?.filter(item => !item.hidden);
 
     return (
       <section className={styles.container}>
         <div className={styles.leftColumn}>
           <div className={styles.gamesTitle}>Bracket Games</div>
-          {orderedGames?.map((v, i) => this.renderGame(v, i))}
+          {orderedBracketGames?.map((v, i) => this.renderGame(v, i))}
         </div>
         <div className={styles.rightColumn}>
           <div className={styles.filterWrapper}>

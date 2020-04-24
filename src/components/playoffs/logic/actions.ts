@@ -156,12 +156,14 @@ export const retrieveBrackets = (bracketId: string) => async (
 };
 
 export const retrieveBracketsGames = (bracketId: string) => async (
-  dispatch: Dispatch
+  dispatch: Dispatch,
+  getState: IGetState
 ) => {
   const response = await api.get('/games_brackets', { bracket_id: bracketId });
+  const fields = getState().pageEvent.tournamentData.fields;
 
   if (response?.length) {
-    const bracketGames = mapFetchedBracketGames(response);
+    const bracketGames = mapFetchedBracketGames(response, fields);
     const orderedGames = orderBy(bracketGames, ['divisionId', 'index']);
     dispatch(fetchBracketGames(orderedGames));
   }
