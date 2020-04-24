@@ -128,7 +128,7 @@ class AddDivisionForm extends React.Component<
       spec_facilities_id,
       is_premier_YN,
     } = this.props.division;
-    const defaultDivisionColor = '#1C315F';
+    const defaultDivisionColor = '#1c315f';
 
     const facilitiesOptions = this.props.facilities
       ? this.props.facilities.map(facility => ({
@@ -136,7 +136,7 @@ class AddDivisionForm extends React.Component<
           value: facility.facilities_id,
         }))
       : [];
-
+    console.log(division_hex);
     return (
       <div className={styles.sectionContainer}>
         <div className={styles.section}>
