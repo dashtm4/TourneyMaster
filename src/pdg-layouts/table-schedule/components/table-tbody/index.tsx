@@ -14,29 +14,22 @@ interface Props {
 }
 
 const TableTbody = ({ timeSlots, games, splitIdx, isHeatMap }: Props) => {
-  const timeSlotsWithGames = timeSlots.reduce((acc, timeSlot) => {
+  const timeSlotsWithGames = timeSlots.map((timeSlot, idx) => {
     const gamesPerTimeSlot = selectProperGamesPerTimeSlot(
       timeSlot,
       games
     ).slice(splitIdx, splitIdx + DEFAUL_COLUMNS_COUNT);
 
-    const isEmptyTimeSlot = gamesPerTimeSlot.every(
-      it => !it.awayTeam && !it.homeTeam
+    return (
+      <RowTimeSlot
+        games={gamesPerTimeSlot}
+        timeSlot={timeSlot}
+        isEven={(idx + 1) % 2 === 0}
+        isHeatMap={isHeatMap}
+        key={timeSlot.id}
+      />
     );
-
-    return isEmptyTimeSlot
-      ? acc
-      : [
-          ...acc,
-          <RowTimeSlot
-            games={gamesPerTimeSlot}
-            timeSlot={timeSlot}
-            isEven={(acc.length + 1) % 2 === 0}
-            isHeatMap={isHeatMap}
-            key={timeSlot.id}
-          />,
-        ];
-  }, [] as JSX.Element[]);
+  });
 
   return <View>{timeSlotsWithGames}</View>;
 };

@@ -22,7 +22,11 @@ const getScheduleTableRow = (
   teamCards: ITeamCard[],
   pools: IPool[]
 ) => {
-  const rows = schedulesDetails.map(it => {
+  const rows = schedulesDetails.reduce((acc, it) => {
+    if (!it.away_team_id && !it.home_team_id) {
+      return acc;
+    }
+
     const date = it.game_date ? moment(it.game_date).format('L') : '';
     const time = it.game_time;
     const field = fields.find(field => field.id === it.field_id);
@@ -49,8 +53,8 @@ const getScheduleTableRow = (
       homeTeam?.name,
     ];
 
-    return row;
-  });
+    return [...acc, row];
+  }, [] as Array<string | null | undefined>[]);
 
   return rows;
 };
