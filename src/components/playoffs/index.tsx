@@ -62,6 +62,7 @@ import {
   retrieveBrackets,
   clearBracketGames,
   fetchBracketGames,
+  onUndoBrackets,
 } from './logic/actions';
 import {
   updateGameBracketInfo,
@@ -79,6 +80,7 @@ interface IMapStateToProps extends Partial<ITournamentData> {
   schedulesDetails?: ISchedulesDetails[];
   playoffSaved?: boolean;
   bracketGames: IBracketGame[] | null;
+  historyLength: number;
 }
 
 interface IMapDispatchToProps {
@@ -93,6 +95,7 @@ interface IMapDispatchToProps {
   retrieveBrackets: (bracketId: string) => void;
   clearBracketGames: () => void;
   fetchBracketGames: (bracketGames: IBracketGame[]) => void;
+  onBracketsUndo: () => void;
 }
 
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
@@ -437,6 +440,8 @@ class Playoffs extends Component<IProps> {
       eventSummary,
       schedule,
       schedulesDetails,
+      onBracketsUndo,
+      historyLength,
     } = this.props;
 
     const saveButtonCondition = bracket && bracketGames;
@@ -507,11 +512,13 @@ class Playoffs extends Component<IProps> {
               />
             ) : (
               <BracketManager
+                historyLength={historyLength}
                 divisions={divisions!}
                 seeds={bracketSeeds}
                 bracketGames={bracketGames}
                 addGame={this.addGame}
                 removeGame={this.removeGame}
+                onUndoClick={onBracketsUndo}
               />
             )}
           </section>
@@ -549,6 +556,7 @@ const mapStateToProps = ({
   schedulesDetails: schedules?.schedulesDetails,
   playoffSaved: playoffs?.playoffSaved,
   bracketGames: playoffs?.bracketGames,
+  historyLength: playoffs?.bracketGamesHistory?.length,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
@@ -565,6 +573,7 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       retrieveBrackets,
       clearBracketGames,
       fetchBracketGames,
+      onBracketsUndo: onUndoBrackets,
     },
     dispatch
   );
