@@ -1,7 +1,13 @@
 import React from 'react';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
-import { Modal, HeadingLevelTwo, Button, Select } from 'components/common';
+import {
+  Modal,
+  HeadingLevelTwo,
+  ButtonLoad,
+  Button,
+  Select,
+} from 'components/common';
 import { onPDFSave, getSelectDayOptions } from 'helpers';
 import { BindingAction } from 'common/models';
 import { ButtonColors, ButtonVarian, DefaultSelectValues } from 'common/enums';
@@ -50,7 +56,7 @@ const PopupSaveReporting = ({
     changeActiveDay(target.value);
   };
 
-  const onScheduleTableSave = async () =>
+  const onScheduleTableSave = () =>
     onPDFSave(
       <PDFTableSchedule
         event={event}
@@ -63,7 +69,7 @@ const PopupSaveReporting = ({
       event.event_name ? `${event.event_name} Master Schedule` : 'Schedule'
     );
 
-  const onHeatmapScheduleTableSave = async () =>
+  const onHeatmapScheduleTableSave = () =>
     onPDFSave(
       <PDFTableSchedule
         event={event}
@@ -79,7 +85,7 @@ const PopupSaveReporting = ({
         : 'Schedule'
     );
 
-  const onScheduleFieldsSave = async () =>
+  const onScheduleFieldsSave = () =>
     onPDFSave(
       <PDFTableFieldsSchedule
         event={event}
@@ -115,8 +121,8 @@ const PopupSaveReporting = ({
             <ul className={styles.downloadLinkList}>
               <li className={styles.dowloadLinkWrapper}>
                 <b>Schedule table</b>
-                <Button
-                  onClick={onScheduleTableSave}
+                <ButtonLoad
+                  loadFunc={onScheduleTableSave}
                   variant={ButtonVarian.TEXT}
                   color={ButtonColors.SECONDARY}
                   label="Download"
@@ -124,8 +130,8 @@ const PopupSaveReporting = ({
               </li>
               <li className={styles.dowloadLinkWrapper}>
                 <b>Schedule table (with Heatmap)</b>
-                <Button
-                  onClick={onHeatmapScheduleTableSave}
+                <ButtonLoad
+                  loadFunc={onHeatmapScheduleTableSave}
                   variant={ButtonVarian.TEXT}
                   color={ButtonColors.SECONDARY}
                   label="Download"
@@ -138,8 +144,8 @@ const PopupSaveReporting = ({
             <ul className={styles.downloadLinkList}>
               <li className={styles.dowloadLinkWrapper}>
                 <b>Fields' schedule table</b>
-                <Button
-                  onClick={onScheduleFieldsSave}
+                <ButtonLoad
+                  loadFunc={onScheduleFieldsSave}
                   variant={ButtonVarian.TEXT}
                   color={ButtonColors.SECONDARY}
                   label="Download"

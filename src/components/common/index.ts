@@ -30,6 +30,7 @@ import ScrollTopButton from './scroll-top-button';
 import PopupAddToLibrary from './popup-add-to-library';
 import CsvLoader from './csv-loader';
 import SelectMultiple from './select-multiple';
+import ButtonLoad from './button-load';
 import * as Toasts from './toastr/showToasts';
 
 export {
@@ -66,4 +67,5 @@ export {
   PopupAddToLibrary,
   CsvLoader,
   SelectMultiple,
+  ButtonLoad,
 };
