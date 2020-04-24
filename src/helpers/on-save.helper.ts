@@ -36,10 +36,10 @@ const onXLSXSave = <T, Y>(headers: T[], body: Y[][], title: string) => {
   );
 };
 
-const onPDFSave = async (PDFComponent: JSX.Element, title: string) => {
-  const blob = await pdf(PDFComponent).toBlob();
-
-  saveAs(blob, `${title}.pdf`);
+const onPDFSave = (PDFComponent: JSX.Element, title: string) => {
+  return Promise.resolve(pdf(PDFComponent).toBlob()).then(blob => {
+    saveAs(blob as Blob, `${title}.pdf`);
+  });
 };
 
 export { onXLSXSave, onPDFSave };

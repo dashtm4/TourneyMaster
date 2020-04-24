@@ -51,7 +51,7 @@ const PopupSaveReporting = ({
   };
 
   const onScheduleTableSave = async () =>
-    onPDFSave(
+    await  onPDFSave(
       <PDFTableSchedule
         event={event}
         games={gamesByDay}
@@ -64,7 +64,7 @@ const PopupSaveReporting = ({
     );
 
   const onHeatmapScheduleTableSave = async () =>
-    onPDFSave(
+    await onPDFSave(
       <PDFTableSchedule
         event={event}
         games={gamesByDay}
@@ -80,7 +80,7 @@ const PopupSaveReporting = ({
     );
 
   const onScheduleFieldsSave = async () =>
-    onPDFSave(
+    await onPDFSave(
       <PDFTableFieldsSchedule
         event={event}
         games={gamesByDay}
