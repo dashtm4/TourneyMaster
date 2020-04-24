@@ -44,7 +44,11 @@ export interface IDefinedGames {
 }
 
 export const sortFieldsByPremier = (fields: IField[]) => {
-  return orderBy(fields, ['isPremier', 'facilityId'], 'desc');
+  return fields.sort(
+    (a, b): any =>
+      (b.isPremier ? 1 : 0) - (a.isPremier ? 1 : 0) ||
+      a.name?.localeCompare(b.name!, undefined, { numeric: true })
+  );
 };
 
 export const defineGames = (
