@@ -12,6 +12,7 @@ import { getIcon } from 'helpers';
 const STYLES_WARNING_ICON = {
   marginLeft: '5px',
   fill: '#FFCC00',
+  height: '20px',
 };
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
