@@ -162,6 +162,7 @@ export const updateGameSlot = (
   divisions?: IDivision[]
 ): IGame => ({
   ...game,
+  bracketGameId: bracketGame?.id,
   awaySeedId: bracketGame?.awaySeedId,
   homeSeedId: bracketGame?.homeSeedId,
   awayDisplayName: bracketGame?.awayDisplayName,

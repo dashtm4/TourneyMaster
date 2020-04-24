@@ -19,7 +19,7 @@ export interface IGame {
   timeSlotId: number;
   fieldId: string;
   isPremier?: boolean;
-  // added new
+  // PLAYOFFS
   awayDependsUpon?: number;
   homeDependsUpon?: number;
   isPlayoff?: boolean;
@@ -32,6 +32,7 @@ export interface IGame {
   divisionName?: string;
   divisionHex?: string;
   divisionId?: string;
+  bracketGameId?: string;
   gameDate?: string;
   scheduleVersionId?: string;
   createDate?: string;
