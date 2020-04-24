@@ -57,8 +57,8 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   divisionId = this.props.location.state?.divisionId;
   eventId = this.props.match.params.eventId;
   state = {
-    defaultDivision: { division_hex: '1C315F' },
-    divisions: [{ division_hex: '1C315F' }],
+    defaultDivision: { division_hex: '1c315f' },
+    divisions: [{ division_hex: '1c315f' }],
     isModalOpen: false,
     isModalConfirmOpen: false,
     changesAreMade: false,
@@ -223,6 +223,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
             division={this.state.divisions[index] || {}}
             registration={this.props.registration}
             facilities={this.props.facilities}
+            divisions={this.props.divisions}
           />
         ))}
         {this.renderButton()}
