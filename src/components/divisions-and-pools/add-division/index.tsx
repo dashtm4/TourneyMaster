@@ -223,6 +223,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
             division={this.state.divisions[index] || {}}
             registration={this.props.registration}
             facilities={this.props.facilities}
+            divisions={this.props.divisions}
           />
         ))}
         {this.renderButton()}

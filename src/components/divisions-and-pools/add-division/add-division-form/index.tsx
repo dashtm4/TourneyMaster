@@ -6,6 +6,13 @@ import styles from '../styles.module.scss';
 import { BindingCbWithThree, IDivision, IFacility } from 'common/models';
 import { IRegistration } from 'common/models/registration';
 import { Select, Tooltip } from 'components/common';
+import { Icons } from 'common/enums';
+import { getIcon } from 'helpers';
+
+const STYLES_WARNING_ICON = {
+  marginLeft: '5px',
+  fill: '#FFCC00',
+};
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -19,6 +26,7 @@ interface IAddDivisionFormProps {
   division: Partial<IDivision>;
   registration?: IRegistration;
   facilities: IFacility[];
+  divisions: IDivision[];
 }
 
 class AddDivisionForm extends React.Component<
@@ -107,6 +115,7 @@ class AddDivisionForm extends React.Component<
 
   render() {
     const {
+      division_id,
       long_name,
       short_name,
       division_tag,
@@ -190,7 +199,21 @@ class AddDivisionForm extends React.Component<
               />
             </div>
             <div className={styles.sectionItemColorPicker}>
-              <p className={styles.sectionLabel}>Color</p>
+              <p className={styles.sectionLabel}>
+                <span>Color</span>
+                {this.props.divisions.some(
+                  division =>
+                    division.division_id !== division_id &&
+                    division.division_hex === division_hex
+                ) && (
+                  <Tooltip
+                    type="info"
+                    title="There is already a division with such color"
+                  >
+                    {getIcon(Icons.WARNING, STYLES_WARNING_ICON)}
+                  </Tooltip>
+                )}
+              </p>
               <ColorPicker
                 value={division_hex || defaultDivisionColor}
                 onChange={this.onColorChange}
