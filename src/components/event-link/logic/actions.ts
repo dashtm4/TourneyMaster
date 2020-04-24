@@ -88,7 +88,7 @@ export const sendMessages: ActionCreator<ThunkAction<
   if (!response || response.status === 500) {
     return Toasts.errorToast(response.message);
   }
-  console.log(response.results);
+
   // Save messages
 
   const currentSession = await Auth.currentSession();
@@ -110,8 +110,6 @@ export const sendMessages: ActionCreator<ThunkAction<
     status: message.status,
     email_from_name: data.senderName,
   }));
-
-  console.log(messagesToSave);
 
   const messagesToSaveChunk = chunk(messagesToSave, 50);
 
@@ -192,7 +190,6 @@ export const sendSavedMessages: ActionCreator<ThunkAction<
   if (!response || response.status === 500) {
     return Toasts.errorToast(response.message);
   }
-  console.log(response.results);
 
   // update messages in db
 
@@ -211,8 +208,6 @@ export const sendSavedMessages: ActionCreator<ThunkAction<
       status: message.status,
     })
   );
-
-  console.log(messagesToUpdate);
 
   const messagesToUpdateChunk = chunk(messagesToUpdate, 50);
 
@@ -254,6 +249,10 @@ export const getMessages: ActionCreator<ThunkAction<
   { type: string }
 >> = () => async (dispatch: Dispatch) => {
   const messages = await api.get('/messaging');
+
+  if (!messages) {
+    return Toasts.errorToast("Couldn't load the messages.");
+  }
 
   dispatch(getMessagesSuccess(messages));
 };

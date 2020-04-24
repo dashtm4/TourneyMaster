@@ -53,7 +53,7 @@ const EventLink = ({
   };
 
   const groupMessages = () => {
-    const data = messages.filter(message => message.message_id);
+    const data = messages?.filter(message => message.message_id);
     const groupedMessages = groupBy(data, 'request_id');
     const res = Object.entries(groupedMessages).map(([_key, value]) => {
       return {
