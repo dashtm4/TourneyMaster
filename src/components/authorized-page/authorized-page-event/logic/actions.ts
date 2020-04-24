@@ -92,6 +92,8 @@ const toggleTournamentStatus = () => async (
     const { tournamentData } = getState().pageEvent;
     const { event } = tournamentData;
 
+    console.log(event?.is_published_YN);
+
     const updatedEvent = {
       ...event,
       is_published_YN:
