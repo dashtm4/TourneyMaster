@@ -136,7 +136,7 @@ class AddDivisionForm extends React.Component<
           value: facility.facilities_id,
         }))
       : [];
-    console.log(division_hex);
+
     return (
       <div className={styles.sectionContainer}>
         <div className={styles.section}>
