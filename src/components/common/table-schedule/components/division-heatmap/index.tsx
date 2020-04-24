@@ -2,6 +2,7 @@ import React from 'react';
 import { Checkbox } from 'components/common';
 import { IDivision } from 'common/models';
 import styles from './styles.module.scss';
+import { orderBy } from 'lodash-es';
 
 const DEFAUL_DIVISION_COLOR = '#ffffff';
 
@@ -27,7 +28,7 @@ const DivisionHeatmap = ({
         />
       </div>
       <ul className={styles.divisionsList}>
-        {divisions.map(it => (
+        {orderBy(divisions, 'short_name').map(it => (
           <li className={styles.divisionItem} key={it.division_id}>
             <span
               className={styles.divisionColor}
