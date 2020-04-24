@@ -9,6 +9,8 @@ import styles from './styles.module.scss';
 const TRANSFORM_WRAPPER_OPTIONS = {
   minScale: 0.3,
   limitToWrapper: true,
+  limitToBounds: true,
+  centerContent: true,
 };
 
 interface IProps {
@@ -49,6 +51,8 @@ const Brackets = (props: IProps) => {
   const [playInRound, setPlayInRound] = useState<
     { [key: string]: IBracketGame[] } | undefined
   >();
+
+  const [visualScale, setVisualScale] = useState(0.7);
 
   const [hidden, setHidden] = useState<any>();
 
@@ -117,6 +121,10 @@ const Brackets = (props: IProps) => {
     }
   }, [playInRound, grids]);
 
+  useEffect(() => {
+    setVisualScale(0.7);
+  }, [grids]);
+
   const setHiddenConnectors = (leftRound: any[], rightRound: any[]) => {
     if (!leftRound || !rightRound) return;
 
@@ -148,9 +156,7 @@ const Brackets = (props: IProps) => {
   return (
     <div className={styles.container}>
       <TransformWrapper
-        defaultPositionX={1}
-        defaultPositionY={1}
-        defaultScale={0.5}
+        defaultScale={visualScale}
         options={{ ...TRANSFORM_WRAPPER_OPTIONS, disabled: false }}
       >
         <TransformComponent>

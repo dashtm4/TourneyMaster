@@ -181,10 +181,20 @@ class ResourceMatrix extends Component<IProps> {
     return (
       <section className={styles.container}>
         <div className={styles.leftColumn}>
-          <div className={styles.gamesTitle}>Bracket Games</div>
-          {orderedUnassignedBracketGames?.map((v, i) => this.renderGame(v, i))}
-          <div className={styles.separationLine}>Assigned Games</div>
-          {orderedBracketGames?.map((v, i) => this.renderGame(v, i))}
+          {!!orderedUnassignedBracketGames?.length && (
+            <>
+              <div className={styles.gamesTitle}>Unassigned Games</div>
+              {orderedUnassignedBracketGames?.map((v, i) =>
+                this.renderGame(v, i)
+              )}
+            </>
+          )}
+          {!!orderedBracketGames?.length && (
+            <>
+              <div className={styles.separationLine}>Assigned Games</div>
+              {orderedBracketGames?.map((v, i) => this.renderGame(v, i))}
+            </>
+          )}
         </div>
         <div className={styles.rightColumn}>
           <div className={styles.filterWrapper}>
