@@ -31,7 +31,7 @@ interface ILocationState {
 }
 
 interface IAddDivisionState {
-  defaultDivision: Partial<{ entry_fee: number; max_num_teams: number }>;
+  defaultDivision: Partial<IDivision>;
   divisions: Partial<IDivision>[];
   isModalOpen: boolean;
   isModalConfirmOpen: boolean;
@@ -57,8 +57,8 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
   divisionId = this.props.location.state?.divisionId;
   eventId = this.props.match.params.eventId;
   state = {
-    defaultDivision: {},
-    divisions: [{}],
+    defaultDivision: { division_hex: '1C315F' },
+    divisions: [{ division_hex: '1C315F' }],
     isModalOpen: false,
     isModalConfirmOpen: false,
     changesAreMade: false,
@@ -165,6 +165,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
     ) {
       this.setState({
         defaultDivision: {
+          ...this.state.defaultDivision,
           ...(this.props.registration.entry_fee && {
             entry_fee: this.props.registration.entry_fee,
           }),
@@ -174,6 +175,7 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
         },
         divisions: [
           {
+            ...this.state.divisions[0],
             ...(this.props.registration.entry_fee && {
               entry_fee: this.props.registration.entry_fee,
             }),
