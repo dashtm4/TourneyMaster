@@ -7,7 +7,7 @@ const teamSchema = Yup.object({
   phone_num: Yup.string()
     .matches(
       /^\+?[1-9]\d{1,14}$/,
-      'Phone number must specified using the E.164 format'
+      'Phone number must specified using the following format: [+][country code][subscriber number including area code].'
     )
     .nullable(),
 });
