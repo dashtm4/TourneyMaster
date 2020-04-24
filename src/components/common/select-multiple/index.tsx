@@ -45,14 +45,33 @@ interface Props {
   label?: string;
   value: string[];
   width?: string;
+  primaryValue?: string;
   onChange: (values: string[] | null) => void;
 }
 
-const SelectMultiple = ({ options, label, value, onChange }: Props) => {
+const SelectMultiple = ({
+  options,
+  label,
+  value,
+  onChange,
+  primaryValue,
+}: Props) => {
   const classes = useStyles();
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    onChange(event.target.value as string[]);
+  const handleChange = ({
+    target: { value },
+  }: React.ChangeEvent<{ value: unknown }>) => {
+    const values = value as string[];
+
+    console.log(values, primaryValue);
+
+    if (primaryValue && values.includes(primaryValue)) {
+      onChange([primaryValue]);
+    } else {
+      const valuesWithOutPrimary = values.filter(it => it !== primaryValue);
+
+      onChange(valuesWithOutPrimary);
+    }
   };
 
   const checkedLabel = options.reduce(

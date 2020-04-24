@@ -48,7 +48,7 @@ const PopupAddToLibrary = ({
   const isAllowShare = entities.length > 0;
 
   const onChangeOption = (checkedValues: string[] | null) => {
-    changeOptions(checkedValues);
+    changeOptions(checkedValues as string[]);
   };
 
   const onToggleConfirm = () => toggleConfirm(!isConfirm);

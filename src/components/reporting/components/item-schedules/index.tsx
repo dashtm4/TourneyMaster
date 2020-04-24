@@ -1,7 +1,7 @@
 import React from 'react';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
-import { HeadingLevelThree, Button, Select } from 'components/common';
+import { HeadingLevelThree, Button, SelectMultiple } from 'components/common';
 import {
   onPDFSave,
   onXLSXSave,
@@ -17,7 +17,6 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 import styles from './styles.module.scss';
-import { IInputEvent } from 'common/types';
 
 interface Props {
   event: IEventDetails;
@@ -40,9 +39,9 @@ const ItemSchedules = ({
   teamCards,
   pools,
 }: Props) => {
-  const [activeDay, changeActiveDay] = React.useState<string>(
-    DefaultSelectValues.ALL
-  );
+  const [activeDay, changeActiveDay] = React.useState<string[]>([
+    DefaultSelectValues.ALL,
+  ]);
   const eventDays = calculateDays(teamCards);
   const allGamesByTeamCards = getAllGamesByTeamCards(
     teamCards,
@@ -50,13 +49,17 @@ const ItemSchedules = ({
     eventDays
   );
   const gamesByDay = allGamesByTeamCards.filter(
-    it => it.gameDate === activeDay || activeDay === DefaultSelectValues.ALL
+    it =>
+      activeDay.includes(it.gameDate!) ||
+      activeDay.includes(DefaultSelectValues.ALL)
   );
 
   const selectDayOptions = getSelectDayOptions(eventDays);
 
-  const onChangeActiveDay = ({ target }: IInputEvent) => {
-    changeActiveDay(target.value);
+  const onChangeActiveDay = (avtiveDay: string[] | null) => {
+    if (activeDay) {
+      changeActiveDay(avtiveDay as string[]);
+    }
   };
 
   const onScheduleTableSave = async () =>
@@ -125,12 +128,19 @@ const ItemSchedules = ({
             <span>Schedules</span>
           </HeadingLevelThree>
         </div>
-        <Select
+        {/* <Select
           onChange={onChangeActiveDay}
           value={activeDay}
           options={selectDayOptions}
           label="Event day"
           width="200px"
+        /> */}
+        <SelectMultiple
+          options={selectDayOptions}
+          value={activeDay}
+          onChange={onChangeActiveDay}
+          primaryValue={DefaultSelectValues.ALL}
+          label="Event day"
         />
       </header>
       <ul className={styles.scheduleList}>
