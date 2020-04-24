@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styles from './styles.module.scss';
+import { orderBy } from 'lodash-es';
 import { MatrixTable, Loader, Button } from 'components/common';
 import {
   IEventDetails,
@@ -24,6 +24,7 @@ import {
 import MultiSelect, {
   IMultiSelectOption,
 } from 'components/common/multi-select';
+import styles from './styles.module.scss';
 
 interface IProps {
   bracketGames?: IBracketGame[];
@@ -157,12 +158,32 @@ class ResourceMatrix extends Component<IProps> {
 
     const { divisionOptions, filteredGames, isDnd } = this.state;
 
-    const orderedBracketGames = bracketGames?.filter(item => !item.hidden);
+    const unassignedBracketGames = bracketGames?.filter(
+      item => !item.hidden && !item.fieldId && !item.startTime
+    );
+
+    const currentBracketGames = bracketGames?.filter(
+      item => !item.hidden && item.fieldId && item.startTime
+    );
+
+    const orderedUnassignedBracketGames = orderBy(unassignedBracketGames, [
+      'divisionId',
+      'index',
+      'round',
+    ]);
+
+    const orderedBracketGames = orderBy(currentBracketGames, [
+      'divisionId',
+      'index',
+      'round',
+    ]);
 
     return (
       <section className={styles.container}>
         <div className={styles.leftColumn}>
           <div className={styles.gamesTitle}>Bracket Games</div>
+          {orderedUnassignedBracketGames?.map((v, i) => this.renderGame(v, i))}
+          <div className={styles.separationLine}>Assigned Games</div>
           {orderedBracketGames?.map((v, i) => this.renderGame(v, i))}
         </div>
         <div className={styles.rightColumn}>

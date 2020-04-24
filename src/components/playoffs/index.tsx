@@ -403,7 +403,8 @@ class Playoffs extends Component<IProps> {
   };
 
   addGame = (selectedDivision: string, data: IOnAddGame) => {
-    const { bracketGames } = this.state;
+    const { bracketGames } = this.props;
+
     if (!bracketGames?.length) return;
 
     const newBracketGames = addGameToExistingBracketGames(
@@ -412,13 +413,11 @@ class Playoffs extends Component<IProps> {
       selectedDivision
     );
 
-    this.setState({ bracketGames: newBracketGames }, () =>
-      this.props.fetchBracketGames(newBracketGames)
-    );
+    this.props.fetchBracketGames(newBracketGames);
   };
 
   removeGame = (selectedDivision: string, gameIndex: number) => {
-    const { bracketGames } = this.state;
+    const { bracketGames } = this.props;
     if (!bracketGames?.length) return;
 
     const newBracketGames = removeGameFromBracketGames(
@@ -427,9 +426,7 @@ class Playoffs extends Component<IProps> {
       selectedDivision
     );
 
-    this.setState({ bracketGames: newBracketGames }, () =>
-      this.props.fetchBracketGames(newBracketGames)
-    );
+    this.props.fetchBracketGames(newBracketGames);
   };
 
   onSeedsUsed = () => {};
