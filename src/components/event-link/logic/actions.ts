@@ -108,6 +108,7 @@ export const sendMessages: ActionCreator<ThunkAction<
     message_body: message.message,
     send_datetime: message.send_datetime,
     status: message.status,
+    email_from_name: data.senderName,
   }));
 
   console.log(messagesToSave);
@@ -152,6 +153,7 @@ export const saveMessages: ActionCreator<ThunkAction<
     message_title: data.title,
     message_body: data.message,
     status: 0,
+    email_from_name: data.senderName,
   }));
 
   const messagesToSaveChunk = chunk(messagesToSave, 50);
@@ -182,6 +184,7 @@ export const sendSavedMessages: ActionCreator<ThunkAction<
     title: data.message_title,
     message: data.message_body,
     recipients: data.recipients,
+    senderName: data.senderName,
   };
 
   const response = await api.post('/event-link', message);
