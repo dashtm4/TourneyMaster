@@ -27,9 +27,8 @@ import Navigation from './navigation';
 import Division from './division';
 import styles from './styles.module.scss';
 import CsvLoader from 'components/common/csv-loader';
-import { EntryPoints, SortByFilesTypes } from 'common/enums';
+import { EntryPoints } from 'common/enums';
 import { IEntity } from 'common/types';
-import { orderBy } from 'lodash-es';
 
 interface IDivisionsAndPoolsProps {
   divisions: IDivision[];
@@ -117,12 +116,6 @@ class DivisionsAndPools extends React.Component<
     const { divisions, pools, teams, isLoading, saveTeams } = this.props;
     const { isLibraryPopupOpen } = this.state;
 
-    const sortedDivisions = orderBy(
-      divisions,
-      SortByFilesTypes.DIVISIONS,
-      'asc'
-    );
-
     return (
       <section className={styles.container}>
         <Navigation
@@ -148,7 +141,7 @@ class DivisionsAndPools extends React.Component<
           {divisions.length && !isLoading ? (
             <>
               <ul className={styles.divisionsList}>
-                {sortedDivisions.map(division => (
+                {divisions.map(division => (
                   <li key={division.division_id}>
                     <Division
                       eventId={this.eventId}
