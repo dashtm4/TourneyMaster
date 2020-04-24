@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import DivisionItem from '../division-item';
 import { SectionDropdown } from '../../../common';
 import { IDivision, IPool, ITeam } from '../../../../common/models';
-import { EventMenuTitles } from 'common/enums';
+import { EventMenuTitles, SortByFilesTypes } from 'common/enums';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
+import { sortByField } from 'helpers';
 
 interface Props {
   divisions: IDivision[];
@@ -32,6 +33,8 @@ const TeamManagement = ({
     toggleSectionCollapse(!isSectionsExpand);
   };
 
+  const sortedDivisions = sortByField(divisions, SortByFilesTypes.DIVISIONS);
+
   return (
     <li>
       <SectionDropdown
@@ -53,7 +56,7 @@ const TeamManagement = ({
           ) : null}
         </div>
         <ul className={styles.divisionList}>
-          {divisions.map(division => (
+          {sortedDivisions.map(division => (
             <DivisionItem
               division={division}
               pools={pools.filter(

@@ -31,6 +31,8 @@ import {
 } from 'common/models';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
+import { SortByFilesTypes } from 'common/enums';
+import { sortByField } from 'helpers';
 
 interface MatchParams {
   eventId: string;
@@ -175,6 +177,8 @@ class Sсoring extends React.Component<
       return <Loader />;
     }
 
+    const sortedDivisions = sortByField(divisions, SortByFilesTypes.DIVISIONS);
+
     return (
       <section>
         <Navigation eventId={this.props.match.params.eventId} />
@@ -193,7 +197,7 @@ class Sсoring extends React.Component<
         </div>
         <ListStatistic games={games} />
         <ul className={styles.scoringList}>
-          {divisions.map(division => (
+          {sortedDivisions.map(division => (
             <ScoringItem
               event={event}
               division={division}
