@@ -1,5 +1,5 @@
 enum DefaultSelectValues {
-  ALL = 'all',
+  ALL = 'All',
 }
 
 export { DefaultSelectValues };
