@@ -210,7 +210,7 @@ class Playoffs extends Component<IProps> {
     const timeValues = getTimeValuesFromEventSchedule(event, schedule);
     const timeSlots = calculateTimeSlots(timeValues);
 
-    const mappedFields = mapFieldsData(fields);
+    const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);
 
     const { games } = defineGames(sortedFields, timeSlots!);

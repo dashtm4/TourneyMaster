@@ -48,6 +48,9 @@ export const sortFieldsByPremier = (fields: IField[]) => {
   return fields.sort(
     (a, b): any =>
       (b.isPremier ? 1 : 0) - (a.isPremier ? 1 : 0) ||
+      a.facilityName.localeCompare(b.facilityName, undefined, {
+        numeric: true,
+      }) ||
       a.name?.localeCompare(b.name!, undefined, { numeric: true })
   );
 };
