@@ -64,7 +64,7 @@ export const mapBracketGames = async (
       game_num: game.index,
       away_depends_upon: game.awayDependsUpon || null,
       home_depends_upon: game.homeDependsUpon || null,
-      start_time: game.startTime!,
+      start_time: game.startTime || null,
       seed_num_away: game.awaySeedId || null,
       seed_num_home: game.homeSeedId || null,
       away_team_id: game.awayTeamId || null,
