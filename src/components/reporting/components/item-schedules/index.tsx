@@ -118,53 +118,55 @@ const ItemSchedules = ({
 
   return (
     <li>
-      <header className={styles.headerWrapper}>
-        <HeadingLevelThree>
-          <span>Schedules</span>
-        </HeadingLevelThree>
-        <SelectMultiple
-          options={selectDayOptions}
-          value={activeDay}
-          onChange={onChangeActiveDay}
-          primaryValue={DefaultSelectValues.ALL}
-          isFormControlRow={true}
-          label="Event day: "
-        />
-      </header>
-      <ul className={styles.scheduleList}>
-        <li>
-          <ButtonLoad
-            loadFunc={onScheduleTableSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule"
+      <section>
+        <header className={styles.headerWrapper}>
+          <HeadingLevelThree>
+            <span>Schedules</span>
+          </HeadingLevelThree>
+          <SelectMultiple
+            options={selectDayOptions}
+            value={activeDay}
+            onChange={onChangeActiveDay}
+            primaryValue={DefaultSelectValues.ALL}
+            isFormControlRow={true}
+            label="Event day: "
           />
-        </li>
-        <li>
-          <ButtonLoad
-            loadFunc={onHeatmapScheduleTableSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule (with Heatmap)"
-          />
-        </li>
-        <li>
-          <ButtonLoad
-            loadFunc={onScheduleFieldsSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule (by fields)"
-          />
-        </li>
-        <li>
-          <ButtonLoad
-            loadFunc={onScheduleTableXLSXSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule (XLSX)"
-          />
-        </li>
-      </ul>
+        </header>
+        <ul className={styles.scheduleList}>
+          <li>
+            <ButtonLoad
+              loadFunc={onScheduleTableSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Master Schedule"
+            />
+          </li>
+          <li>
+            <ButtonLoad
+              loadFunc={onHeatmapScheduleTableSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Master Schedule (with Heatmap)"
+            />
+          </li>
+          <li>
+            <ButtonLoad
+              loadFunc={onScheduleFieldsSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Master Schedule (by fields)"
+            />
+          </li>
+          <li>
+            <ButtonLoad
+              loadFunc={onScheduleTableXLSXSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Master Schedule (XLSX)"
+            />
+          </li>
+        </ul>
+      </section>
     </li>
   );
 };
