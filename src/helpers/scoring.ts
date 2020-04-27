@@ -10,7 +10,10 @@ const getScoringSettings = (event: IEventDetails): IScoringSetting => {
     hasGoalsAllowed: Boolean(event.show_goals_allowed),
     hasGoalsDifferential: Boolean(event.show_goals_diff),
     hasTies: Boolean(event.tie_breaker_format_id),
-    maxGoalDifferential: Number(event.max_goal_differential),
+    maxGoalDifferential:
+      event.max_goal_differential !== null
+        ? Number(event.max_goal_differential)
+        : null,
   };
 
   return scroingSetting;
