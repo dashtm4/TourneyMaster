@@ -13,8 +13,15 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     formControl: {
       margin: theme.spacing(1),
-      minWidth: 120,
       maxWidth: 300,
+      minWidth: 300,
+    },
+    formControlRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      '& span': {
+        margin: '0 15px 0 0',
+      },
     },
     chips: {
       display: 'flex',
@@ -25,6 +32,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     noLabel: {
       marginTop: theme.spacing(3),
+    },
+    select: {
+      flexGrow: 1,
     },
   })
 );
@@ -47,6 +57,7 @@ interface Props {
   value: string[];
   width?: string;
   primaryValue?: string;
+  isFormControlRow?: boolean;
   onChange: (values: string[] | null) => void;
 }
 
@@ -54,8 +65,9 @@ const SelectMultiple = ({
   options,
   label,
   value,
-  onChange,
+  isFormControlRow,
   primaryValue,
+  onChange,
 }: Props) => {
   const classes = useStyles();
   const [isDisabled, changeDisabled] = React.useState<boolean>(false);
@@ -94,14 +106,19 @@ const SelectMultiple = ({
 
   return (
     <div className={styles.container}>
-      <FormControl className={classes.formControl}>
+      <FormControl
+        className={`${classes.formControl} ${
+          isFormControlRow ? classes.formControlRow : ''
+        }`}
+      >
         <span className={styles.label}>{label}</span>
         <Select
-          multiple
+          className={classes.select}
           value={value}
           onChange={handleChange}
           renderValue={() => checkedLabel.join(', ')}
           MenuProps={MenuProps}
+          multiple
         >
           {options.map((option, idx) => (
             <MenuItem

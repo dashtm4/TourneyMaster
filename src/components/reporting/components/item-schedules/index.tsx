@@ -9,8 +9,9 @@ import {
 import {
   onPDFSave,
   onXLSXSave,
-  getAllGamesByTeamCards,
+  getAllTeamCardGames,
   getSelectDayOptions,
+  getGamesByDays,
 } from 'helpers';
 import { ButtonVarian, ButtonColors, DefaultSelectValues } from 'common/enums';
 import { IEventDetails, ISchedule, IPool } from 'common/models';
@@ -47,17 +48,8 @@ const ItemSchedules = ({
     DefaultSelectValues.ALL,
   ]);
   const eventDays = calculateDays(teamCards);
-  const allGamesByTeamCards = getAllGamesByTeamCards(
-    teamCards,
-    games,
-    eventDays
-  );
-  const gamesByDay = allGamesByTeamCards.filter(
-    it =>
-      activeDay.includes(it.gameDate!) ||
-      activeDay.includes(DefaultSelectValues.ALL)
-  );
-
+  const allTeamCardGames = getAllTeamCardGames(teamCards, games, eventDays);
+  const gamesByDay = getGamesByDays(allTeamCardGames, activeDay);
   const selectDayOptions = getSelectDayOptions(eventDays);
 
   const onChangeActiveDay = (avtiveDay: string[] | null) => {
@@ -127,24 +119,16 @@ const ItemSchedules = ({
   return (
     <li>
       <header className={styles.headerWrapper}>
-        <div className={styles.titleWrapper}>
-          <HeadingLevelThree>
-            <span>Schedules</span>
-          </HeadingLevelThree>
-        </div>
-        {/* <Select
-          onChange={onChangeActiveDay}
-          value={activeDay}
-          options={selectDayOptions}
-          label="Event day"
-          width="200px"
-        /> */}
+        <HeadingLevelThree>
+          <span>Schedules</span>
+        </HeadingLevelThree>
         <SelectMultiple
           options={selectDayOptions}
           value={activeDay}
           onChange={onChangeActiveDay}
           primaryValue={DefaultSelectValues.ALL}
-          label="Event day"
+          isFormControlRow={true}
+          label="Event day: "
         />
       </header>
       <ul className={styles.scheduleList}>

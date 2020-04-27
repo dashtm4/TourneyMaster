@@ -3,8 +3,9 @@ import {
   IGame,
 } from 'components/common/matrix-table/helper';
 import { ITeamCard } from 'common/models/schedule/teams';
+import { DefaultSelectValues } from 'common/enums';
 
-const getAllGamesByTeamCards = (
+const getAllTeamCardGames = (
   teamCards: ITeamCard[],
   games: IGame[],
   eventDays: string[]
@@ -18,4 +19,14 @@ const getAllGamesByTeamCards = (
   return allGamesByTeamCards;
 };
 
-export { getAllGamesByTeamCards };
+const getGamesByDays = (games: IGame[], activeDay: string[]) => {
+  const gamesByDays = games.filter(
+    it =>
+      activeDay.includes(it.gameDate!) ||
+      activeDay.includes(DefaultSelectValues.ALL)
+  );
+
+  return gamesByDays;
+};
+
+export { getAllTeamCardGames, getGamesByDays };
