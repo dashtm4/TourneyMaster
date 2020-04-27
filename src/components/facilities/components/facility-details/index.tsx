@@ -25,7 +25,6 @@ import {
   IUploadFile,
   BindingCbWithOne,
 } from 'common/models';
-import { sortFields } from '../../helpers';
 import styles from './styles.module.scss';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
@@ -180,8 +179,6 @@ class FacilityDetails extends React.Component<Props, State> {
 
     const { facility_lat: lat, facility_long: lng } = this.props.facility;
 
-    const sortedFields = sortFields(fields);
-
     const deleteMessage = `You are about to delete this facility and this cannot be undone. Fields (${Number(
       facility.num_fields
     )}) of this facility will be deleted too.
@@ -320,7 +317,7 @@ class FacilityDetails extends React.Component<Props, State> {
             {facility.isFieldsLoading ? (
               <Loader />
             ) : (
-              sortedFields.map((it, idx) => (
+              fields.map((it, idx) => (
                 <li key={it.field_id}>
                   <Field
                     field={it}
