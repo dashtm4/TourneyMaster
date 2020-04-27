@@ -6,12 +6,11 @@ import {
   HeadingLevelTwo,
   ButtonLoad,
   Button,
-  Select,
+  SelectMultiple,
 } from 'components/common';
-import { onPDFSave, getSelectDayOptions } from 'helpers';
+import { onPDFSave, getSelectDayOptions, getGamesByDays } from 'helpers';
 import { BindingAction } from 'common/models';
 import { ButtonColors, ButtonVarian, DefaultSelectValues } from 'common/enums';
-import { IInputEvent } from 'common/types';
 import { IEventDetails, ISchedule } from 'common/models';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
@@ -42,18 +41,17 @@ const PopupSaveReporting = ({
   isOpen,
   onClose,
 }: Props) => {
-  const [activeDay, changeActiveDay] = React.useState<string>(
-    DefaultSelectValues.ALL
-  );
+  const [activeDay, changeActiveDay] = React.useState<string[]>([
+    DefaultSelectValues.ALL,
+  ]);
 
-  const gamesByDay = games.filter(
-    it => it.gameDate === activeDay || activeDay === DefaultSelectValues.ALL
-  );
-
+  const gamesByDay = getGamesByDays(games, activeDay);
   const selectDayOptions = getSelectDayOptions(eventDays);
 
-  const onChangeActiveDay = ({ target }: IInputEvent) => {
-    changeActiveDay(target.value);
+  const onChangeActiveDay = (avtiveDay: string[] | null) => {
+    if (activeDay) {
+      changeActiveDay(avtiveDay as string[]);
+    }
   };
 
   const onScheduleTableSave = () =>
@@ -104,15 +102,14 @@ const PopupSaveReporting = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.section}>
         <header className={styles.headerWrapper}>
-          <div className={styles.titleWrapper}>
-            <HeadingLevelTwo>Save as:</HeadingLevelTwo>
-          </div>
-          <Select
-            onChange={onChangeActiveDay}
-            value={activeDay}
+          <HeadingLevelTwo>Save as:</HeadingLevelTwo>
+          <SelectMultiple
             options={selectDayOptions}
-            label="Days"
-            width="200px"
+            value={activeDay}
+            onChange={onChangeActiveDay}
+            primaryValue={DefaultSelectValues.ALL}
+            isFormControlRow={true}
+            label="Days: "
           />
         </header>
         <ul className={styles.linkList}>

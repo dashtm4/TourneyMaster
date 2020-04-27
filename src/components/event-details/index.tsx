@@ -21,7 +21,7 @@ import MediaAssetsSection from './media-assets';
 import PlayoffsSection from './playoffs';
 import Rankings from './rankings';
 
-import { Button, HeadingLevelTwo, Loader } from 'components/common';
+import { Button, HeadingLevelTwo, Loader, Tooltip } from 'components/common';
 import {
   IUploadFile,
   BindingCbWithOne,
@@ -196,6 +196,20 @@ class EventDetails extends Component<Props, State> {
     this.props.addEntityToLibrary(event as IEventDetails, EntryPoints.EVENTS);
   };
 
+  renderDeleteEventBtn = () => {
+    return (
+      <Button
+        label="Delete Event"
+        variant="text"
+        color="secondary"
+        type="dangerLink"
+        icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
+        onClick={this.onDeleteClick}
+        disabled={Boolean(this.state.event?.is_published_YN)}
+      />
+    );
+  };
+
   render() {
     const eventTypeOptions = ['Tournament', 'Showcase', 'League'];
     const { event } = this.state;
@@ -219,15 +233,16 @@ class EventDetails extends Component<Props, State> {
         <div className={styles.headingContainer}>
           <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
           <div>
-            {this.props.match?.params.eventId && (
-              <Button
-                label="Delete Event"
-                variant="text"
-                color="secondary"
-                type="dangerLink"
-                icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
-                onClick={this.onDeleteClick}
-              />
+            {this.props.match?.params.eventId &&
+            this.state.event?.is_published_YN ? (
+              <Tooltip
+                type="info"
+                title="This event is currently published. Unpublish it first if you would like to delete it."
+              >
+                <span>{this.renderDeleteEventBtn()}</span>
+              </Tooltip>
+            ) : (
+              this.renderDeleteEventBtn()
             )}
             <Button
               label={
