@@ -31,13 +31,14 @@ export default (state = defaultState, action: IPlayoffAction) => {
         ...state,
         bracketGamesHistory: [
           ...(state.bracketGamesHistory || []),
-          state.bracketGames || [],
+          ...(state.bracketGames ? [state.bracketGames] : []),
         ],
         bracketGames: action.payload,
       };
     case PLAYOFF_CLEAR_GAMES:
       return {
         ...state,
+        bracketGamesHistory: [],
         bracketGames: null,
       };
     case PLAYOFF_UNDO_GAMES:

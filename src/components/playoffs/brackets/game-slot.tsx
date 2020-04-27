@@ -63,7 +63,7 @@ const BracketGameSlot = (props: IProps) => {
           ) : (
             <>
               <span>{`Game ${game?.index}`}</span>
-              <span>Empty Game</span>
+              <span>Unassigned Game</span>
             </>
           )}
         </div>
