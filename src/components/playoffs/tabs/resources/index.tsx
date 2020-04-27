@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { orderBy } from 'lodash-es';
 import { MatrixTable, Loader, Button } from 'components/common';
 import {
   IEventDetails,
@@ -16,14 +15,14 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { TableScheduleTypes } from 'common/enums';
 import { IBracketGame } from 'components/playoffs/bracketGames';
-import BracketGameCard from 'components/playoffs/dnd/bracket-game';
 import {
-  MatrixTableDropEnum,
   IDropParams,
+  MatrixTableDropEnum,
 } from 'components/common/matrix-table/dnd/drop';
 import MultiSelect, {
   IMultiSelectOption,
 } from 'components/common/multi-select';
+import BracketGamesList from './bracket-games-list';
 import styles from './styles.module.scss';
 
 interface IProps {
@@ -111,28 +110,6 @@ class ResourceMatrix extends Component<IProps> {
   setSelectedDivision = (name: string, data: IMultiSelectOption[]) =>
     this.setState({ [name]: data });
 
-  renderGame = (bracketGame: IBracketGame, index: number) => {
-    const divisionHex = this.props.divisions?.find(
-      item => item.division_id === bracketGame.divisionId
-    )?.division_hex;
-    const game = this.state.filteredGames?.find(
-      item =>
-        item.fieldId === bracketGame.fieldId &&
-        item.startTime === bracketGame.startTime
-    );
-
-    return (
-      <BracketGameCard
-        key={`${index}-renderGame`}
-        game={bracketGame}
-        gameSlotId={game?.id}
-        divisionHex={divisionHex!}
-        type={MatrixTableDropEnum.BracketDrop}
-        setHighlightedGame={this.props.setHighlightedGame}
-      />
-    );
-  };
-
   onMoveCard = (dropParams: IDropParams) => {
     // Send <IBracketGame.id, IGame.id>
     this.props.updateGame(dropParams.teamId, dropParams.gameId!);
@@ -154,46 +131,23 @@ class ResourceMatrix extends Component<IProps> {
       onUndo,
       highlightedGameId,
       bracketGames,
+      setHighlightedGame,
     } = this.props;
 
     const { divisionOptions, filteredGames, isDnd } = this.state;
 
-    const unassignedBracketGames = bracketGames?.filter(
-      item => !item.hidden && !item.fieldId && !item.startTime
-    );
-
-    const currentBracketGames = bracketGames?.filter(
-      item => !item.hidden && item.fieldId && item.startTime
-    );
-
-    const orderedUnassignedBracketGames = orderBy(unassignedBracketGames, [
-      'divisionId',
-      'index',
-      'round',
-    ]);
-
-    const orderedBracketGames = orderBy(currentBracketGames, [
-      'divisionId',
-      'index',
-      'round',
-    ]);
-
     return (
       <section className={styles.container}>
         <div className={styles.leftColumn}>
-          {!!orderedUnassignedBracketGames?.length && (
-            <>
-              <div className={styles.gamesTitle}>Unassigned Games</div>
-              {orderedUnassignedBracketGames?.map((v, i) =>
-                this.renderGame(v, i)
-              )}
-            </>
-          )}
-          {!!orderedBracketGames?.length && (
-            <>
-              <div className={styles.separationLine}>Assigned Games</div>
-              {orderedBracketGames?.map((v, i) => this.renderGame(v, i))}
-            </>
+          {bracketGames && divisions && filteredGames && (
+            <BracketGamesList
+              acceptType={MatrixTableDropEnum.BracketDrop}
+              bracketGames={bracketGames}
+              divisions={divisions}
+              filteredGames={filteredGames}
+              onDrop={this.onMoveCard}
+              setHighlightedGame={setHighlightedGame!}
+            />
           )}
         </div>
         <div className={styles.rightColumn}>
