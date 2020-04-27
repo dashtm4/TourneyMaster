@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme: Theme) =>
     formControl: {
       margin: theme.spacing(1),
       maxWidth: 300,
-      minWidth: 300,
     },
     formControlRow: {
       flexDirection: 'row',
@@ -35,6 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     select: {
       flexGrow: 1,
+      width: 150,
     },
   })
 );
