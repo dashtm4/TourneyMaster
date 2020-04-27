@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -12,8 +13,14 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     formControl: {
       margin: theme.spacing(1),
-      minWidth: 120,
       maxWidth: 300,
+    },
+    formControlRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      '& span': {
+        margin: '0 15px 0 0',
+      },
     },
     chips: {
       display: 'flex',
@@ -24,6 +31,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     noLabel: {
       marginTop: theme.spacing(3),
+    },
+    select: {
+      flexGrow: 1,
+      width: 150,
     },
   })
 );
@@ -45,14 +56,46 @@ interface Props {
   label?: string;
   value: string[];
   width?: string;
+  primaryValue?: string;
+  isFormControlRow?: boolean;
   onChange: (values: string[] | null) => void;
 }
 
-const SelectMultiple = ({ options, label, value, onChange }: Props) => {
+const SelectMultiple = ({
+  options,
+  label,
+  value,
+  isFormControlRow,
+  primaryValue,
+  onChange,
+}: Props) => {
   const classes = useStyles();
+  const [isDisabled, changeDisabled] = React.useState<boolean>(false);
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    onChange(event.target.value as string[]);
+  React.useEffect(() => {
+    if (primaryValue) {
+      const isIncludePrimaryValues = value.includes(primaryValue);
+
+      changeDisabled(isIncludePrimaryValues);
+    }
+  }, [value]);
+
+  const handleChange = ({
+    target: { value },
+  }: React.ChangeEvent<{ value: unknown }>) => {
+    const values = value as string[];
+
+    if (primaryValue) {
+      if (values.includes(primaryValue)) {
+        onChange([primaryValue]);
+      } else {
+        const valuesWithoutPrimary = values.filter(it => it !== primaryValue);
+
+        onChange(valuesWithoutPrimary);
+      }
+    } else {
+      onChange(values);
+    }
   };
 
   const checkedLabel = options.reduce(
@@ -63,17 +106,26 @@ const SelectMultiple = ({ options, label, value, onChange }: Props) => {
 
   return (
     <div className={styles.container}>
-      <FormControl className={classes.formControl}>
+      <FormControl
+        className={`${classes.formControl} ${
+          isFormControlRow ? classes.formControlRow : ''
+        }`}
+      >
         <span className={styles.label}>{label}</span>
         <Select
-          multiple
+          className={classes.select}
           value={value}
           onChange={handleChange}
           renderValue={() => checkedLabel.join(', ')}
           MenuProps={MenuProps}
+          multiple
         >
           {options.map((option, idx) => (
-            <MenuItem key={idx} value={option.value}>
+            <MenuItem
+              key={idx}
+              value={option.value}
+              disabled={isDisabled && option.value !== primaryValue}
+            >
               <Checkbox checked={value.includes(option.value.toString())} />
               <ListItemText primary={option.label} />
             </MenuItem>

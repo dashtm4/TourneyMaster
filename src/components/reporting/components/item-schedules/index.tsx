@@ -1,12 +1,17 @@
 import React from 'react';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
-import { HeadingLevelThree, Select, ButtonLoad } from 'components/common';
+import {
+  HeadingLevelThree,
+  ButtonLoad,
+  SelectMultiple,
+} from 'components/common';
 import {
   onPDFSave,
   onXLSXSave,
-  getAllGamesByTeamCards,
+  getAllTeamCardGames,
   getSelectDayOptions,
+  getGamesByDays,
 } from 'helpers';
 import { ButtonVarian, ButtonColors, DefaultSelectValues } from 'common/enums';
 import { IEventDetails, ISchedule, IPool } from 'common/models';
@@ -17,7 +22,6 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 import styles from './styles.module.scss';
-import { IInputEvent } from 'common/types';
 
 interface Props {
   event: IEventDetails;
@@ -40,23 +44,18 @@ const ItemSchedules = ({
   teamCards,
   pools,
 }: Props) => {
-  const [activeDay, changeActiveDay] = React.useState<string>(
-    DefaultSelectValues.ALL
-  );
+  const [activeDay, changeActiveDay] = React.useState<string[]>([
+    DefaultSelectValues.ALL,
+  ]);
   const eventDays = calculateDays(teamCards);
-  const allGamesByTeamCards = getAllGamesByTeamCards(
-    teamCards,
-    games,
-    eventDays
-  );
-  const gamesByDay = allGamesByTeamCards.filter(
-    it => it.gameDate === activeDay || activeDay === DefaultSelectValues.ALL
-  );
-
+  const allTeamCardGames = getAllTeamCardGames(teamCards, games, eventDays);
+  const gamesByDay = getGamesByDays(allTeamCardGames, activeDay);
   const selectDayOptions = getSelectDayOptions(eventDays);
 
-  const onChangeActiveDay = ({ target }: IInputEvent) => {
-    changeActiveDay(target.value);
+  const onChangeActiveDay = (avtiveDay: string[] | null) => {
+    if (activeDay) {
+      changeActiveDay(avtiveDay as string[]);
+    }
   };
 
   const onScheduleTableSave = () =>
@@ -119,54 +118,55 @@ const ItemSchedules = ({
 
   return (
     <li>
-      <header className={styles.headerWrapper}>
-        <div className={styles.titleWrapper}>
+      <section>
+        <header className={styles.headerWrapper}>
           <HeadingLevelThree>
             <span>Schedules</span>
           </HeadingLevelThree>
-        </div>
-        <Select
-          onChange={onChangeActiveDay}
-          value={activeDay}
-          options={selectDayOptions}
-          label="Event day"
-          width="200px"
-        />
-      </header>
-      <ul className={styles.scheduleList}>
-        <li>
-          <ButtonLoad
-            loadFunc={onScheduleTableSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule"
+          <SelectMultiple
+            options={selectDayOptions}
+            value={activeDay}
+            onChange={onChangeActiveDay}
+            primaryValue={DefaultSelectValues.ALL}
+            isFormControlRow={true}
+            label="Event day: "
           />
-        </li>
-        <li>
-          <ButtonLoad
-            loadFunc={onHeatmapScheduleTableSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule (with Heatmap)"
-          />
-        </li>
-        <li>
-          <ButtonLoad
-            loadFunc={onScheduleFieldsSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule (by fields)"
-          />
-        </li>
-        <li>
-          <ButtonLoad
-            loadFunc={onScheduleTableXLSXSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule (XLSX)"
-          />
-        </li>
-      </ul>
+        </header>
+        <ul className={styles.scheduleList}>
+          <li>
+            <ButtonLoad
+              loadFunc={onScheduleTableSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Master Schedule"
+            />
+          </li>
+          <li>
+            <ButtonLoad
+              loadFunc={onHeatmapScheduleTableSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Master Schedule (with Heatmap)"
+            />
+          </li>
+          <li>
+            <ButtonLoad
+              loadFunc={onScheduleFieldsSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Master Schedule (by fields)"
+            />
+          </li>
+          <li>
+            <ButtonLoad
+              loadFunc={onScheduleTableXLSXSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Master Schedule (XLSX)"
+            />
+          </li>
+        </ul>
+      </section>
     </li>
   );
 };
