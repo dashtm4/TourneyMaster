@@ -4,7 +4,6 @@ export interface IFetchedBracket {
   event_id: string;
   bracket_name: string;
   bracket_date: Date | string | null;
-  bracket_status: string | null;
   align_games: 1 | 0 | null;
   adjust_columns: 1 | 0 | null;
   start_timeslot: string | null;
@@ -12,6 +11,7 @@ export interface IFetchedBracket {
   end_timeslot: string | null;
   fields_excluded: string | null;
   is_active_YN: 1 | 0 | null;
+  is_published_YN: 1 | 0;
   created_by: string;
   created_datetime: string;
   updated_by: string | null;
@@ -27,7 +27,7 @@ export interface IBracket {
   warmup: string;
   bracketDate: string;
   eventId: string;
-  status: string;
+  published: boolean;
   createdBy: string;
   createDate: string;
   updatedBy: string | null;

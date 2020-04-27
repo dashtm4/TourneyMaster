@@ -80,6 +80,14 @@ const Brackets = (props: IProps) => {
     const newGrids = {};
 
     keys(grids).forEach(key => (newGrids[key] = groupBy(grids[key], 'round')));
+
+    if (newGrids[1][1]?.length < newGrids[1][2]?.length) {
+      setPlayInRound({
+        1: setInPlayGames(newGrids[1][1], newGrids[1][2]),
+      });
+      delete newGrids[1][1];
+    }
+
     keys(newGrids).forEach(gridKey =>
       Object.keys(newGrids[gridKey])
         .sort((a, b) => +a - +b)
@@ -104,19 +112,12 @@ const Brackets = (props: IProps) => {
         })
     );
 
-    if (newGrids[1][1]?.length < newGrids[1][2]?.length) {
-      setPlayInRound({
-        1: setInPlayGames(newGrids[1][1], newGrids[1][2]),
-      });
-      delete newGrids[1][1];
-    }
-
     setNewGrids(newGrids);
   }, [games]);
 
   useEffect(() => {
     if (playInRound && grids) {
-      const hiddenConnectors = setHiddenConnectors(playInRound[1], grids[1][1]);
+      const hiddenConnectors = setHiddenConnectors(playInRound[1], grids[1][2]);
       setHidden(hiddenConnectors);
     }
   }, [playInRound, grids]);
@@ -126,6 +127,7 @@ const Brackets = (props: IProps) => {
   }, [grids]);
 
   const setHiddenConnectors = (leftRound: any[], rightRound: any[]) => {
+    console.log(leftRound, rightRound);
     if (!leftRound || !rightRound) return;
 
     const arr: any[] = [];
@@ -135,6 +137,13 @@ const Brackets = (props: IProps) => {
         arr.push({
           hiddenTop: leftRound[i]?.hidden,
           hiddenBottom: leftRound[i]?.hidden,
+        });
+      });
+    } else {
+      [...Array(Math.round(leftRound.length / 2))].forEach((_, i) => {
+        arr.push({
+          hiddenTop: leftRound[i * 2]?.hidden,
+          hiddenBottom: leftRound[i * 2 + 1]?.hidden,
         });
       });
     }
@@ -174,8 +183,8 @@ const Brackets = (props: IProps) => {
                       />
                       <BracketConnector
                         hidden={hidden}
-                        leftGamesNum={grids[gridKey][roundKey].length}
-                        rightGamesNum={grids[gridKey][1].length}
+                        leftGamesNum={playInRound![roundKey]?.length}
+                        rightGamesNum={grids[gridKey][1]?.length}
                       />
                     </Fragment>
                   ))}
