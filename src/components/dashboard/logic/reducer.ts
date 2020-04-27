@@ -6,13 +6,24 @@ import {
   DASHBOARD_FETCH_START,
   CALENDAR_EVENTS_FETCH_START,
   CALENDAR_EVENTS_FETCH_SUCCESS,
+  DASHBOARD_SCHEDULES_FETCH_SUCCESS,
 } from './actionTypes';
-import { ITeam, IField, ICalendarEvent, IEventDetails } from 'common/models';
+import {
+  ITeam,
+  IField,
+  ICalendarEvent,
+  IEventDetails,
+  IFacility,
+  ISchedule,
+} from 'common/models';
+import { orderBy } from 'lodash';
 
 export interface IState {
   data?: IEventDetails[];
   teams: ITeam[];
   fields: IField[];
+  facilities: IFacility[];
+  schedules: ISchedule[];
   calendarEvents: ICalendarEvent[];
   isLoading: boolean;
   isDetailLoading: boolean;
@@ -24,6 +35,8 @@ const defaultState: IState = {
   data: [],
   teams: [],
   fields: [],
+  facilities: [],
+  schedules: [],
   calendarEvents: [],
   isLoading: false,
   isDetailLoading: true,
@@ -44,12 +57,22 @@ export default (
       };
     }
     case EVENTS_FETCH_SUCCESS: {
+      const orderedEvents = orderBy(
+        action.payload,
+        [
+          ({ is_published_YN }: IEventDetails) => {
+            return is_published_YN;
+          },
+          ({ event_startdate }: IEventDetails) => {
+            return event_startdate;
+          },
+        ],
+        ['desc', 'desc']
+      );
+
       return {
         ...state,
-        data: action.payload.sort(
-          (a: IEventDetails, b: IEventDetails) =>
-            +new Date(b.event_startdate) - +new Date(a.event_startdate)
-        ),
+        data: orderedEvents,
         isLoading: false,
         error: false,
       };
@@ -72,7 +95,8 @@ export default (
     case FIELDS_FETCH_SUCCESS: {
       return {
         ...state,
-        fields: action.payload,
+        facilities: action.payload.facilities,
+        fields: action.payload.fields,
         isDetailLoading: false,
         error: false,
       };
@@ -92,6 +116,9 @@ export default (
         ),
         areCalendarEventsLoading: false,
       };
+    }
+    case DASHBOARD_SCHEDULES_FETCH_SUCCESS: {
+      return { ...state, schedules: action.payload };
     }
     default:
       return state;
