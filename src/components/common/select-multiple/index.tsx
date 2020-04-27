@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -57,20 +58,31 @@ const SelectMultiple = ({
   primaryValue,
 }: Props) => {
   const classes = useStyles();
+  const [isDisabled, changeDisabled] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (primaryValue) {
+      const isIncludePrimaryValues = value.includes(primaryValue);
+
+      changeDisabled(isIncludePrimaryValues);
+    }
+  }, [value]);
 
   const handleChange = ({
     target: { value },
   }: React.ChangeEvent<{ value: unknown }>) => {
     const values = value as string[];
 
-    console.log(values, primaryValue);
+    if (primaryValue) {
+      if (values.includes(primaryValue)) {
+        onChange([primaryValue]);
+      } else {
+        const valuesWithoutPrimary = values.filter(it => it !== primaryValue);
 
-    if (primaryValue && values.includes(primaryValue)) {
-      onChange([primaryValue]);
+        onChange(valuesWithoutPrimary);
+      }
     } else {
-      const valuesWithOutPrimary = values.filter(it => it !== primaryValue);
-
-      onChange(valuesWithOutPrimary);
+      onChange(values);
     }
   };
 
@@ -92,7 +104,11 @@ const SelectMultiple = ({
           MenuProps={MenuProps}
         >
           {options.map((option, idx) => (
-            <MenuItem key={idx} value={option.value}>
+            <MenuItem
+              key={idx}
+              value={option.value}
+              disabled={isDisabled && option.value !== primaryValue}
+            >
               <Checkbox checked={value.includes(option.value.toString())} />
               <ListItemText primary={option.label} />
             </MenuItem>
