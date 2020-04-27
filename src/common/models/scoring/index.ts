@@ -3,5 +3,5 @@ export interface IScoringSetting {
   hasGoalsAllowed: boolean;
   hasGoalsDifferential: boolean;
   hasTies: boolean;
-  maxGoalDifferential: number;
+  maxGoalDifferential: number | null;
 }

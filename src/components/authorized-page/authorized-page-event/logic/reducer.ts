@@ -224,7 +224,7 @@ const pageEventReducer = (
       };
     }
     case DIVISIONS_TEAMS_FETCH_SUCCESS: {
-      const { divisions } = action.payload;
+      const { divisions, teams } = action.payload;
 
       return {
         ...state,
@@ -242,6 +242,7 @@ const pageEventReducer = (
               }
             : item
         ),
+        tournamentData: { ...state.tournamentData, divisions, teams },
       };
     }
     case LOAD_TEAMS_DATA_SUCCESS:
