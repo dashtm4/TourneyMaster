@@ -33,6 +33,9 @@
     width: 20%;
     color: #6a6a6a;
     margin-bottom: 16px;
+    .title {
+      font-weight: 600;
+    }
   }
   .sectionItemLarge {
     @extend .sectionItem;
