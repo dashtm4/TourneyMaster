@@ -65,17 +65,19 @@ const TourneyArchitect = (props: IProps) => {
     onChange(name, timeToString(Number(value)));
   };
 
-  const renderSectionCell = (name: string, value: any, infoIcon?: boolean) => (
+  const renderSectionCell = (
+    name: string,
+    tooltipTitle: string,
+    value: any,
+    infoIcon?: boolean
+  ) => (
     <div className={styles.sectionCell}>
       <p>
         <b>{`${name}: `}</b>
         {value}
       </p>
       {infoIcon && (
-        <Tooltip
-          type="info"
-          title="Play Time is based on Facilities availability"
-        >
+        <Tooltip type="info" title={tooltipTitle}>
           {getIcon(Icons.INFO, STYLES_INFO_ICON)}
         </Tooltip>
       )}
@@ -98,11 +100,13 @@ const TourneyArchitect = (props: IProps) => {
         <div className={styles.taFirst}>
           {renderSectionCell(
             'Number of Fields',
+            'Inherited from Facilities and a constant (does not change)',
             `${schedule.num_fields}`,
             true
           )}
           {renderSectionCell(
             'Play Time Window',
+            'Inherited from Event Details and is a constant',
             `${schedule.first_game_time &&
               moment(timeToDate(schedule.first_game_time)).format(
                 'LT'
@@ -112,6 +116,7 @@ const TourneyArchitect = (props: IProps) => {
           )}
           {renderSectionCell(
             'Teams Registered/Max',
+            'Current # / Max # if timeslots are all full',
             `${schedule.num_teams}/${schedule.num_teams}`,
             true
           )}
@@ -190,6 +195,7 @@ const TourneyArchitect = (props: IProps) => {
         <div className={styles.results}>
           {renderSectionCell(
             'Game Runtime',
+            '',
             `${schedule.periods_per_game *
               getTimeFromString(schedule.period_duration!, 'minutes') +
               getTimeFromString(schedule.pre_game_warmup!, 'minutes') +
@@ -198,14 +204,16 @@ const TourneyArchitect = (props: IProps) => {
                 'minutes'
               )} Minutes`
           )}
-          {renderSectionCell('Game Slots/Day', `${totalGameSlots}`)}
+          {renderSectionCell('Game Slots/Day', '', `${totalGameSlots}`)}
           {renderSectionCell(
             'AVG # Games/Team',
+            '',
             `${((totalGameSlots * 2) / schedule.num_teams).toFixed(1)}`
           )}
           {event &&
             renderSectionCell(
               'Bracket Games Needed',
+              '',
               `${(Number(event.num_teams_bracket) - 1) *
                 schedule.num_divisions}`
             )}

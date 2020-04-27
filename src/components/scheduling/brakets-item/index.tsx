@@ -80,7 +80,7 @@ const BraketsItem = ({
         </Tooltip>
       </div>
       <p className={styles.textWrapper}>
-        <b>Status:</b> <span>{bracket.status || '—'}</span>
+        <b>Status:</b> <span>{bracket.published ? 'Published' : 'Draft'}</span>
         <span
           className={styles.scheduleStatus}
           style={{

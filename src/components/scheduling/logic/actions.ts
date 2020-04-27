@@ -540,10 +540,7 @@ export const updateBracket = (bracket: ISchedulingBracket) => async (
   getState: GetState
 ) => {
   const members = await api.get(`/members`);
-  const mappedBracket = await mapBracketData(
-    bracket,
-    bracket.status === 'Draft'
-  );
+  const mappedBracket = await mapBracketData(bracket, !bracket.published);
   const response = await api.put('/brackets_details', mappedBracket);
 
   const brackets = getState().scheduling.brackets;
