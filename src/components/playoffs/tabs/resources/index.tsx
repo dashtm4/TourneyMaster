@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { orderBy } from 'lodash-es';
-import styles from './styles.module.scss';
 import { MatrixTable, Loader, Button } from 'components/common';
 import {
   IEventDetails,
@@ -17,14 +15,15 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { TableScheduleTypes } from 'common/enums';
 import { IBracketGame } from 'components/playoffs/bracketGames';
-import BracketGameCard from 'components/playoffs/dnd/bracket-game';
 import {
-  MatrixTableDropEnum,
   IDropParams,
+  MatrixTableDropEnum,
 } from 'components/common/matrix-table/dnd/drop';
 import MultiSelect, {
   IMultiSelectOption,
 } from 'components/common/multi-select';
+import BracketGamesList from './bracket-games-list';
+import styles from './styles.module.scss';
 
 interface IProps {
   bracketGames?: IBracketGame[];
@@ -42,7 +41,7 @@ interface IProps {
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
-  updateGame: (game: IGame, withGame?: IGame) => void;
+  updateGame: (gameId: string, slotId: number) => void;
   setHighlightedGame?: (id: number) => void;
   highlightedGameId?: number;
 }
@@ -71,11 +70,12 @@ class ResourceMatrix extends Component<IProps> {
     }
   }
 
-  componentDidUpdate(_: any, prevState: IState) {
+  componentDidUpdate(prevProps: IProps, prevState: IState) {
     const { divisionOptions, filteredGames } = this.state;
 
     if (
       prevState.divisionOptions !== divisionOptions ||
+      prevProps.games !== this.props.games ||
       (!filteredGames && this.props.games)
     ) {
       const divisionIds =
@@ -110,25 +110,9 @@ class ResourceMatrix extends Component<IProps> {
   setSelectedDivision = (name: string, data: IMultiSelectOption[]) =>
     this.setState({ [name]: data });
 
-  renderGame = (game: IGame, index: number) => {
-    return (
-      <BracketGameCard
-        key={`${index}-renderGame`}
-        game={game}
-        type={MatrixTableDropEnum.BracketDrop}
-        setHighlightedGame={this.props.setHighlightedGame}
-      />
-    );
-  };
-
   onMoveCard = (dropParams: IDropParams) => {
-    const { teamId, gameId } = dropParams;
-    const { games } = this.props;
-    const dragGame = games!.find(item => +item.id === +teamId)!;
-    const dropGame = games!.find(item => item.id === gameId)!;
-
-    this.props.updateGame(dragGame);
-    this.props.updateGame(dropGame, dragGame);
+    // Send <IBracketGame.id, IGame.id>
+    this.props.updateGame(dropParams.teamId, dropParams.gameId!);
   };
 
   render() {
@@ -145,31 +129,26 @@ class ResourceMatrix extends Component<IProps> {
       onTeamCardsUpdate,
       onTeamCardUpdate,
       onUndo,
-      games,
       highlightedGameId,
+      bracketGames,
+      setHighlightedGame,
     } = this.props;
 
     const { divisionOptions, filteredGames, isDnd } = this.state;
 
-    const tableBracketGames = games?.filter(
-      v =>
-        v.isPlayoff &&
-        v.divisionId &&
-        v.playoffIndex &&
-        (v.awaySeedId ||
-          v.homeSeedId ||
-          v.awayDisplayName ||
-          v.homeDisplayName ||
-          v.awayDependsUpon ||
-          v.homeDependsUpon)
-    );
-    const orderedGames = orderBy(tableBracketGames, 'divisionId');
-
     return (
       <section className={styles.container}>
         <div className={styles.leftColumn}>
-          <div className={styles.gamesTitle}>Bracket Games</div>
-          {orderedGames?.map((v, i) => this.renderGame(v, i))}
+          {bracketGames && divisions && filteredGames && (
+            <BracketGamesList
+              acceptType={MatrixTableDropEnum.BracketDrop}
+              bracketGames={bracketGames}
+              divisions={divisions}
+              filteredGames={filteredGames}
+              onDrop={this.onMoveCard}
+              setHighlightedGame={setHighlightedGame!}
+            />
+          )}
         </div>
         <div className={styles.rightColumn}>
           <div className={styles.filterWrapper}>

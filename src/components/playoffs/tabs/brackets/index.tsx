@@ -164,7 +164,7 @@ class BracketManager extends Component<IProps> {
               <Button
                 label="Undo"
                 icon={getIcon(Icons.SETTINGS_BACKUP_RESTORE)}
-                disabled={!!(historyLength && historyLength < 2)}
+                disabled={!historyLength || historyLength < 2}
                 variant="text"
                 color="secondary"
                 onClick={onUndoClick}

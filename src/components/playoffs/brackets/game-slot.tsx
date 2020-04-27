@@ -55,16 +55,27 @@ const BracketGameSlot = (props: IProps) => {
       </SeedDrop>
       <div className={styles.bracketGameDescription}>
         <div className={styles.descriptionInfo}>
-          <span>{`Game ${game?.index}:  ${game?.fieldName}`}</span>
-          <span>{`${time}, ${date}`}</span>
+          {game.fieldId && game.startTime ? (
+            <>
+              <span>{`Game ${game?.index}:  ${game?.fieldName}`}</span>
+              <span>{`${time}, ${date}`}</span>
+            </>
+          ) : (
+            <>
+              <span>{`Game ${game?.index}`}</span>
+              <span>Unassigned Game</span>
+            </>
+          )}
         </div>
         <div className={styles.bracketManage}>
-          <Button
-            label={getIcon(Icons.DELETE)}
-            variant="text"
-            color="default"
-            onClick={onRemovePressed}
-          />
+          {game.awaySeedId || game.homeSeedId ? null : (
+            <Button
+              label={getIcon(Icons.DELETE)}
+              variant="text"
+              color="default"
+              onClick={onRemovePressed}
+            />
+          )}
         </div>
       </div>
       <SeedDrop

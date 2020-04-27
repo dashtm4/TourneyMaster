@@ -19,7 +19,7 @@ export interface IGame {
   timeSlotId: number;
   fieldId: string;
   isPremier?: boolean;
-  // added new
+  // PLAYOFFS
   awayDependsUpon?: number;
   homeDependsUpon?: number;
   isPlayoff?: boolean;
@@ -32,6 +32,7 @@ export interface IGame {
   divisionName?: string;
   divisionHex?: string;
   divisionId?: string;
+  bracketGameId?: string;
   gameDate?: string;
   scheduleVersionId?: string;
   createDate?: string;
@@ -47,6 +48,9 @@ export const sortFieldsByPremier = (fields: IField[]) => {
   return fields.sort(
     (a, b): any =>
       (b.isPremier ? 1 : 0) - (a.isPremier ? 1 : 0) ||
+      a.facilityName.localeCompare(b.facilityName, undefined, {
+        numeric: true,
+      }) ||
       a.name?.localeCompare(b.name!, undefined, { numeric: true })
   );
 };

@@ -3,6 +3,7 @@ import { IGame } from 'components/common/matrix-table/helper';
 import { IBracketGame } from './bracketGames';
 import { IOnAddGame } from './add-game-modal';
 import { getVarcharEight } from 'helpers';
+import { IDivision, IField } from 'common/models';
 
 export const updateGameBracketInfo = (game: IGame, withGame?: IGame) => ({
   ...game,
@@ -153,4 +154,66 @@ export const removeGameFromBracketGames = (
 
   const resultGames: IBracketGame[] = [...allGames, ...removedGames];
   return resultGames;
+};
+
+export const updateGameSlot = (
+  game: IGame,
+  bracketGame?: IBracketGame,
+  divisions?: IDivision[]
+): IGame => ({
+  ...game,
+  bracketGameId: bracketGame?.id,
+  awaySeedId: bracketGame?.awaySeedId,
+  homeSeedId: bracketGame?.homeSeedId,
+  awayDisplayName: bracketGame?.awayDisplayName,
+  homeDisplayName: bracketGame?.homeDisplayName,
+  awayDependsUpon: bracketGame?.awayDependsUpon,
+  homeDependsUpon: bracketGame?.homeDependsUpon,
+  divisionId: bracketGame?.divisionId,
+  divisionName: bracketGame?.divisionName,
+  divisionHex: divisions?.find(v => v.division_id === bracketGame?.divisionId)
+    ?.division_hex,
+  playoffRound: bracketGame?.round,
+  playoffIndex: bracketGame?.index,
+});
+
+export const updateBracketGame = (
+  bracketGame: IBracketGame,
+  gameSlot?: IGame,
+  fieldName?: string
+) => ({
+  ...bracketGame,
+  fieldId: gameSlot?.fieldId,
+  fieldName: fieldName || 'Empty',
+  startTime: gameSlot?.startTime,
+  gameDate: gameSlot?.gameDate,
+});
+
+export const updateBracketGamesDndResult = (
+  gameId: string,
+  slotId: number,
+  bracketGames: IBracketGame[],
+  games: IGame[],
+  fields: IField[]
+) => {
+  // 1. Find a bracket game that is being dragged
+  const bracketGame = bracketGames.find(item => item.id === gameId);
+
+  // 2. Find a game slot where the bracket game is gonna be placed
+  const gameSlot = games.find(item => item.id === slotId);
+
+  // 3. Check if the bracket game is not placed anywhere else
+  //  3.1. If so - return a warning popup
+
+  // 4. Populate the bracket data with the game slot data
+  const fieldName = fields.find(item => item.field_id === gameSlot?.fieldId)
+    ?.field_name;
+
+  bracketGames = bracketGames.map(item =>
+    item.id === bracketGame?.id
+      ? updateBracketGame(item, gameSlot, fieldName)
+      : item
+  );
+
+  return { bracketGames };
 };

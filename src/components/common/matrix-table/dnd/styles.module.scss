@@ -154,6 +154,14 @@
   font-size: 12px;
   border-radius: 2px;
 
+  &:hover {
+    cursor: grab;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
   &.heatmap {
     color: #ebebeb;
     font-weight: 600;

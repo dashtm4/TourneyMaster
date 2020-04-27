@@ -1,35 +1,34 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
-import {
-  IGame,
-  getContrastingColor,
-} from 'components/common/matrix-table/helper';
+import { getContrastingColor } from 'components/common/matrix-table/helper';
 import styles from './styles.module.scss';
+import { IBracketGame } from 'components/playoffs/bracketGames';
 
 interface IProps {
   type: string;
-  game: IGame;
+  game: IBracketGame;
+  gameSlotId?: number;
+  divisionHex: string;
   dropped?: boolean;
   setHighlightedGame?: (id: number) => void;
 }
 
 const BracketGameCard = (props: IProps) => {
-  const { type, game } = props;
+  const { type, game, divisionHex, gameSlotId } = props;
   const {
     id,
-    playoffRound,
-    playoffIndex,
+    round,
+    index,
     divisionId,
     divisionName,
     awaySeedId,
     homeSeedId,
     awayDependsUpon,
     homeDependsUpon,
-    divisionHex,
   } = game;
 
   const [{ isDragging }, drag] = useDrag({
-    item: { id, divisionId, playoffIndex, type },
+    item: { id, divisionId, playoffIndex: index, type },
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -42,8 +41,8 @@ const BracketGameCard = (props: IProps) => {
   };
 
   const highlightGame = () => {
-    if (!props.setHighlightedGame) return;
-    props.setHighlightedGame(game.id);
+    if (!props.setHighlightedGame || !gameSlotId) return;
+    props.setHighlightedGame(gameSlotId);
   };
 
   return (
@@ -54,16 +53,16 @@ const BracketGameCard = (props: IProps) => {
       onClick={highlightGame}
     >
       <span style={{ color: getContrastingColor(divisionHex) }}>
-        {divisionName}&nbsp;G{playoffIndex}
-        <i>:</i>&nbsp;R{Math.abs(playoffRound || 0)}
+        {divisionName}&nbsp;G{index}
+        <i>:</i>&nbsp;R{Math.abs(round || 0)}
         <i>,</i>&nbsp;
         {awaySeedId
           ? `S${awaySeedId}`
-          : handleDisplayName(playoffRound, awayDependsUpon)}
+          : handleDisplayName(round, awayDependsUpon)}
         <i>:</i>
         {homeSeedId
           ? `S${homeSeedId}`
-          : handleDisplayName(playoffRound, homeDependsUpon)}
+          : handleDisplayName(round, homeDependsUpon)}
       </span>
     </div>
   );

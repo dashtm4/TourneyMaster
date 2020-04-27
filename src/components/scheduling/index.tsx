@@ -45,6 +45,7 @@ import {
   IDivision,
   IEventDetails,
   BindingCbWithTwo,
+  IFacility,
 } from 'common/models';
 import { ISchedulingSchedule } from './types';
 import ViewMatrix from './view-matrix';
@@ -86,6 +87,7 @@ interface IProps {
   getEventBrackets: BindingAction;
   updateBracket: (bracket: ISchedulingBracket) => void;
   deleteBracket: (bracketId: string) => void;
+  facilities: IFacility[];
   divisions?: IDivision[];
   teams?: ITeam[];
   event?: IEventDetails | null;
@@ -249,6 +251,7 @@ class Scheduling extends Component<IProps, IState> {
       event,
       brackets,
       divisions,
+      facilities,
     } = this.props;
 
     const {
@@ -349,6 +352,7 @@ class Scheduling extends Component<IProps, IState> {
         />
         <Modal isOpen={viewMatrixOpen} onClose={this.closeViewMatrix}>
           <ViewMatrix
+            facilities={facilities}
             timeSlots={timeSlots!}
             fields={fields!}
             onClose={this.closeViewMatrix}
@@ -426,6 +430,7 @@ const mapStateToProps = ({ scheduling, pageEvent, schedules }: IAppState) => ({
   fields: pageEvent?.tournamentData?.fields,
   teams: pageEvent?.tournamentData?.teams,
   divisions: pageEvent?.tournamentData?.divisions,
+  facilities: pageEvent?.tournamentData?.facilities,
   event: pageEvent?.tournamentData?.event,
   schedulesPublished: schedules?.schedulesPublished,
   gamesAlreadyExist: schedules?.gamesAlreadyExist,
