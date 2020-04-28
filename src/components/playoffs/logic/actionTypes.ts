@@ -1,5 +1,6 @@
 import { IBracketGame } from '../bracketGames';
 import { ITeamWithResults } from 'common/models';
+import { IPlayoffSortedTeams } from './actions';
 
 export const PLAYOFF_SAVED_SUCCESS = 'PLAYOFF_SAVED_SUCCESS';
 export const PLAYOFF_FETCH_GAMES = 'PLAYOFF_FETCH_GAMES';
@@ -34,7 +35,7 @@ interface ILoadDataWithScores {
 
 interface IFetchSortedTeams {
   type: 'BRACKETS:FETCH_SCORED_TEAMS';
-  payload: { [key: string]: ITeamWithResults[] };
+  payload: IPlayoffSortedTeams;
 }
 
 export type IPlayoffAction =

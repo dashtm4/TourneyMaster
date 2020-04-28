@@ -28,6 +28,8 @@ import {
 } from 'helpers';
 import { ITeamWithResults, IFacility } from 'common/models';
 
+export type IPlayoffSortedTeams = { [key: string]: ITeamWithResults[] };
+
 type IGetState = () => IAppState;
 
 const playoffSavedSuccess = (payload: boolean) => ({
@@ -40,7 +42,7 @@ const loadDataWithScores = (payload: { scoredTeams: ITeamWithResults[] }) => ({
   payload,
 });
 
-const fetchSortedTeams = (payload: { [key: string]: ITeamWithResults[] }) => ({
+const fetchSortedTeams = (payload: IPlayoffSortedTeams) => ({
   type: FETCH_SCORED_TEAMS,
   payload,
 });

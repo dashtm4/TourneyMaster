@@ -8,15 +8,13 @@ import {
   FETCH_SCORED_TEAMS,
 } from './actionTypes';
 import { IBracketGame } from '../bracketGames';
-import { ITeamWithResults } from 'common/models';
+import { IPlayoffSortedTeams } from './actions';
 
 export interface IPlayoffState {
   playoffSaved: boolean;
   bracketGames: IBracketGame[] | null;
   bracketGamesHistory: IBracketGame[][] | [];
-  sortedTeams: {
-    [key: string]: ITeamWithResults[];
-  } | null;
+  sortedTeams: IPlayoffSortedTeams | null;
 }
 
 const defaultState: IPlayoffState = {

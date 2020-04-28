@@ -3,6 +3,8 @@ import { IGame } from 'components/common/matrix-table/helper';
 import { IDivision, IField } from 'common/models';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { getVarcharEight } from 'helpers';
+import { IPlayoffSortedTeams } from './logic/actions';
+import { ISeedDictionary } from '.';
 
 export interface IBracketGame {
   id: string;
@@ -36,6 +38,8 @@ export interface IBracketGame {
 export interface IBracketSeed {
   id: number;
   name: string;
+  teamId?: string;
+  teamName?: string;
 }
 
 interface IFacilityData {
@@ -43,11 +47,44 @@ interface IFacilityData {
   facility: string;
 }
 
-export const createSeeds = (bracketTeamsNum: number) => {
-  return [...Array(bracketTeamsNum)].map((_, i) => ({
-    id: i + 1,
-    name: `Seed ${i + 1}`,
-  }));
+export const createSeeds = (
+  bracketTeamsNum: number,
+  divisions: IDivision[],
+  sortedTeams: IPlayoffSortedTeams | null | undefined
+): ISeedDictionary => {
+  const seedsDictionary = {};
+  divisions.forEach(item => {
+    const divisionTeams = sortedTeams && sortedTeams[item.division_id];
+    seedsDictionary[item.division_id] = [...Array(bracketTeamsNum)].map(
+      (_, i) => ({
+        id: i + 1,
+        name: `Seed ${i + 1}`,
+        teamId: divisionTeams ? divisionTeams[i].team_id : undefined,
+        teamName: divisionTeams ? divisionTeams[i].short_name : undefined,
+      })
+    );
+  });
+  return seedsDictionary;
+};
+
+export const advanceBracketGamesWithTeams = (
+  bracketGames: IBracketGame[],
+  seeds: ISeedDictionary
+) => {
+  return bracketGames.map(item => {
+    const foundAwaySeed = seeds[item.divisionId].find(
+      v => v.id === item.awaySeedId
+    );
+    const foundHomeSeed = seeds[item.divisionId].find(
+      v => v.id === item.homeSeedId
+    );
+
+    return {
+      ...item,
+      awayTeamId: foundAwaySeed?.teamId,
+      homeTeamId: foundHomeSeed?.teamId,
+    };
+  });
 };
 
 const getRoundBy = (

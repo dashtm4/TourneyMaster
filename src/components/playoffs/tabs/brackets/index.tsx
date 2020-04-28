@@ -5,16 +5,17 @@ import { Icons } from 'common/enums';
 import { Select, CardMessage, Button } from 'components/common';
 import Seed from 'components/playoffs/dnd/seed';
 import Brackets from 'components/playoffs/brackets';
-import { IBracketGame, IBracketSeed } from 'components/playoffs/bracketGames';
+import { IBracketGame } from 'components/playoffs/bracketGames';
 import { IDivision } from 'common/models';
 import AddGameModal, { IOnAddGame } from '../../add-game-modal';
 import RemoveGameModal from '../../remove-game-modal';
+import { ISeedDictionary } from 'components/playoffs';
 import styles from './styles.module.scss';
 
 interface IProps {
   divisions: IDivision[];
   historyLength: number;
-  seeds?: IBracketSeed[];
+  seeds?: ISeedDictionary;
   bracketGames?: IBracketGame[];
   addGame: (selectedDivision: string, data: IOnAddGame) => void;
   removeGame: (selectedDivision: string, data: number) => void;
@@ -101,6 +102,8 @@ class BracketManager extends Component<IProps> {
           id={item.id}
           name={item.name}
           type={this.dragType}
+          teamId={item.teamId}
+          teamName={item.teamName}
         />
       </div>
     );
@@ -113,6 +116,7 @@ class BracketManager extends Component<IProps> {
       historyLength,
       advanceTeamsToBrackets,
     } = this.props;
+
     const {
       divisionGames,
       divisionsOptions,
@@ -121,7 +125,10 @@ class BracketManager extends Component<IProps> {
       removeGameIndex,
     } = this.state;
 
-    const seedsLength = seeds?.length || 0;
+    const divisionSeeds =
+      seeds && selectedDivision ? seeds[selectedDivision] : undefined;
+
+    const seedsLength = divisionSeeds?.length || 0;
     const playInGamesExist = !!(
       seedsLength -
       2 ** Math.floor(Math.log2(seedsLength))
@@ -145,7 +152,7 @@ class BracketManager extends Component<IProps> {
               Drag & drop to reorder
             </CardMessage>
             <div className={styles.seedsList}>
-              {seeds?.map((v, i) => this.renderSeed(v, i))}
+              {divisionSeeds?.map((v, i) => this.renderSeed(v, i))}
             </div>
           </div>
         </div>
@@ -212,8 +219,12 @@ class BracketManager extends Component<IProps> {
               onRemoveGame={this.onRemoveGame}
             />
           )}
-          {seeds && divisionGames && (
-            <Brackets games={divisionGames} onRemove={this.removeGamePressed} />
+          {divisionGames && divisionSeeds && (
+            <Brackets
+              seeds={divisionSeeds}
+              games={divisionGames}
+              onRemove={this.removeGamePressed}
+            />
           )}
         </div>
       </section>
