@@ -3,6 +3,8 @@ import styles from '../styles.module.scss';
 import { Input, Radio, Checkbox, Select } from 'components/common';
 import { IRegistration } from 'common/models/registration';
 import { BindingCbWithTwo } from 'common/models';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/high-res.css';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -58,8 +60,8 @@ const RegistrationDetails = ({
   const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('email_address', e.target.value);
 
-  const onMobileNumberChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('mobile_number', e.target.value);
+  const onMobileNumberChange = (value: string) =>
+    onChange('mobile_number', value);
 
   const onPermissionToTextChange = (e: React.ChangeEvent<any>) =>
     onChange('permission_to_text', e.target.checked ? 1 : 0);
@@ -212,11 +214,19 @@ const RegistrationDetails = ({
       </div>
       <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            label="Mobile Number"
-            value={data ? data.mobile_number : ''}
+          <div className={styles.sectionTitle}>Phone Number</div>
+          <PhoneInput
+            country={'us'}
+            value={data ? String(data.mobile_number) : ''}
             onChange={onMobileNumberChange}
+            containerStyle={{ marginTop: '7px' }}
+            inputStyle={{
+              height: '40px',
+              fontSize: '18px',
+              color: '#6a6a6a',
+              borderRadius: '4px',
+              width: '100%',
+            }}
           />
         </div>
         <div className={styles.sectionItem} style={{ marginTop: '20px' }}>

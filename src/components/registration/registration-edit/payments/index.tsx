@@ -74,7 +74,7 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
             <Input
               fullWidth={true}
               startAdornment="%"
-              label="Promo Code Discount (%)"
+              label="Promo Code Discount"
               type="number"
               value={data ? data.promo_code_discount : ''}
               onChange={onPromocodeDiscountChange}

@@ -88,8 +88,8 @@ const RegistrationDetails = ({ data, eventType }: IRegistrationDetails) => (
     </div>
     <div className={styles.sectionRow}>
       <div className={styles.sectionItem}>
-        <span className={styles.sectionTitle}>Mobile Number</span>
-        <p>{data.mobile_number || '—'}</p>
+        <span className={styles.sectionTitle}>Phone Number</span>
+        <p>{data.mobile_number ? `+${data.mobile_number}` : '—'}</p>
       </div>
       <div className={styles.sectionItem}>
         <Checkbox
