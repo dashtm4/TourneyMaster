@@ -50,6 +50,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
       )
     ).flat();
     const schedules = await Api.get(`/schedules?event_id=${eventId}`);
+    const brackets = await Api.get(`/brackets_details?event_id=${eventId}`);
 
     const currentEvent = events.find(
       (it: IEventDetails) => it.event_id === eventId
@@ -70,6 +71,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
           divisions,
           teams,
           schedules,
+          brackets,
         },
       },
     });

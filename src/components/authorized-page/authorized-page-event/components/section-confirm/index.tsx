@@ -1,13 +1,18 @@
 import React from 'react';
 import { Button, Input } from 'components/common';
-import { BindingAction, IEventDetails, ISchedule } from 'common/models';
+import {
+  BindingAction,
+  IEventDetails,
+  ISchedule,
+  IFetchedBracket,
+} from 'common/models';
 import { ButtonColors, ButtonVarian } from 'common/enums';
 import { IInputEvent } from 'common/types';
 import { getSettingsComponents, getSettingItemById } from '../../helpers';
 import {
   EventPublishTypes,
   IPublishSettings,
-  PublishFromFields,
+  PublishSettingFields,
 } from '../../common';
 import styles from './styles.module.scss';
 
@@ -18,15 +23,26 @@ const BUTTON_STYLES = {
 interface Props {
   event: IEventDetails;
   schedules: ISchedule[];
+  brackets: IFetchedBracket[];
   publishType: EventPublishTypes;
   onClose: BindingAction;
 }
 
-const ConfirmSection = ({ event, schedules, publishType, onClose }: Props) => {
+const ConfirmSection = ({
+  event,
+  schedules,
+  brackets,
+  publishType,
+  onClose,
+}: Props) => {
+  const DEFAULT_SELECTED_SCHEDULE = schedules[0];
+  const DEFAULT_SELECTED_BRACKET = brackets[0];
+
   const [publishSettings, changePublishSettings] = React.useState<
     IPublishSettings
   >({
-    activeSchedule: schedules[0],
+    [PublishSettingFields.ACTIVE_SCHEDULE]: DEFAULT_SELECTED_SCHEDULE,
+    [PublishSettingFields.ACTIVE_BRACKET]: DEFAULT_SELECTED_BRACKET,
   });
   const [confirmValue, changeConfirmValues] = React.useState('');
 
@@ -36,7 +52,7 @@ const ConfirmSection = ({ event, schedules, publishType, onClose }: Props) => {
 
   const onChangeSettings = ({ target: { name, value } }: IInputEvent) => {
     const settingItem = getSettingItemById(
-      name as PublishFromFields,
+      name as PublishSettingFields,
       value,
       schedules
     );

@@ -64,6 +64,7 @@ const initialState = {
     schedules: [],
     teams: [],
     fields: [],
+    brackets: [],
   },
 };
 

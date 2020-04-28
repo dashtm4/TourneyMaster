@@ -7,7 +7,7 @@ import { IInputEvent } from 'common/types';
 import {
   EventPublishTypes,
   IPublishSettings,
-  PublishFromFields,
+  PublishSettingFields,
 } from './common';
 
 const getSettingsComponents = (
@@ -30,7 +30,7 @@ const getSettingsComponents = (
       return (
         <Select
           onChange={onChangeSettings}
-          name={PublishFromFields.ACTIVE_SCHEDULE}
+          name={PublishSettingFields.ACTIVE_SCHEDULE}
           options={scheduleOptions}
           value={publishSettings.activeSchedule.schedule_id}
         />
@@ -46,7 +46,7 @@ const getSettingsComponents = (
       return (
         <Select
           onChange={onChangeSettings}
-          name={PublishFromFields.ACTIVE_SCHEDULE}
+          name={PublishSettingFields.ACTIVE_SCHEDULE}
           options={scheduleOptions}
           value={publishSettings.activeSchedule.schedule_id}
         />
@@ -58,12 +58,12 @@ const getSettingsComponents = (
 };
 
 const getSettingItemById = (
-  formField: PublishFromFields,
+  formField: PublishSettingFields,
   id: string,
   schedules: ISchedule[]
 ) => {
   switch (formField) {
-    case PublishFromFields.ACTIVE_SCHEDULE: {
+    case PublishSettingFields.ACTIVE_SCHEDULE: {
       const activeSchedule = schedules.find(it => it.schedule_id === id);
 
       return activeSchedule;

@@ -90,7 +90,7 @@ const AuthorizedPageEvent = ({
     isFullScreen ? closeFullscreen() : openFullscreen(document.documentElement);
   };
   const eventId = match.params.eventId;
-  const { event, schedules } = tournamentData;
+  const { event, schedules, brackets } = tournamentData;
 
   const onFullScreen = () => {
     if (!document.fullscreen) {
@@ -239,6 +239,7 @@ const AuthorizedPageEvent = ({
         <PopupPublishEvent
           event={event}
           schedules={schedules}
+          brackets={brackets}
           isOpen={isPublishPopupOpen}
           onClose={onTogglePublishPopup}
         />

@@ -1,7 +1,12 @@
 import React from 'react';
 import { Modal, HeadingLevelTwo, Button, Radio } from 'components/common';
 import ConfirmSection from '../section-confirm';
-import { BindingAction, IEventDetails, ISchedule } from 'common/models';
+import {
+  BindingAction,
+  IEventDetails,
+  ISchedule,
+  IFetchedBracket,
+} from 'common/models';
 import { ButtonVarian, ButtonColors } from 'common/enums';
 import { EventPublishTypes } from '../../common';
 import { IInputEvent } from 'common/types';
@@ -17,11 +22,18 @@ const DEFAULT_PUBLISH_OPTION = eventPublishOptions[0];
 interface Props {
   event: IEventDetails;
   schedules: ISchedule[];
+  brackets: IFetchedBracket[];
   isOpen: boolean;
   onClose: BindingAction;
 }
 
-const PopupPublishEvent = ({ event, schedules, isOpen, onClose }: Props) => {
+const PopupPublishEvent = ({
+  event,
+  schedules,
+  brackets,
+  isOpen,
+  onClose,
+}: Props) => {
   const [isConfrimOpen, toggleConfrim] = React.useState<boolean>(false);
   const [publishType, changePublishValue] = React.useState<string>(
     DEFAULT_PUBLISH_OPTION
@@ -50,6 +62,7 @@ const PopupPublishEvent = ({ event, schedules, isOpen, onClose }: Props) => {
           <ConfirmSection
             event={event}
             schedules={schedules}
+            brackets={brackets}
             publishType={publishType as EventPublishTypes}
             onClose={onClose}
           />
