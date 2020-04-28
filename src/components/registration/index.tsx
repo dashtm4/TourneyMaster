@@ -175,7 +175,7 @@ class RegistrationView extends React.Component<
               )}
             </div>
             {this.props.isLoading && <Loader />}
-            {registration && !this.props.isLoading ? (
+            {!this.props.isLoading && registration ? (
               <ul className={styles.libraryList}>
                 <li>
                   <SectionDropdown
@@ -238,7 +238,6 @@ class RegistrationView extends React.Component<
   };
 
   render() {
-    console.log(this.state.registration);
     return <>{this.renderView()}</>;
   }
 }

@@ -85,7 +85,7 @@ const RegistrationDetails = ({
         <div>
           <Input
             fullWidth={true}
-            label="How to name"
+            label="Group Name"
             value={data ? data.division_name_label : ''}
             onChange={onDivisionNameLabelChange}
           />

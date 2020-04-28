@@ -18,7 +18,7 @@ const RegistrationDetails = ({ data, eventType }: IRegistrationDetails) => (
   <div className={styles.section}>
     <div className={styles.sectionRow}>
       <div className={styles.sectionItem}>
-        <span className={styles.sectionTitle}>How to name</span>
+        <span className={styles.sectionTitle}>Group Name</span>
         <p>{data.division_name_label || '—'}</p>
       </div>
       <div className={styles.sectionItem}>
