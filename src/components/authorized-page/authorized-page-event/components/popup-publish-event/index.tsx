@@ -1,9 +1,9 @@
 import React from 'react';
 import { Modal, HeadingLevelTwo, Button, Radio } from 'components/common';
 import ConfirmSection from '../section-confirm';
-import { BindingAction, IEventDetails } from 'common/models';
+import { BindingAction, IEventDetails, ISchedule } from 'common/models';
 import { ButtonVarian, ButtonColors } from 'common/enums';
-import { EventPublishTypes } from './common';
+import { EventPublishTypes } from '../../common';
 import { IInputEvent } from 'common/types';
 import styles from './styles.module.scss';
 
@@ -16,13 +16,14 @@ const DEFAULT_PUBLISH_OPTION = eventPublishOptions[0];
 
 interface Props {
   event: IEventDetails;
+  schedules: ISchedule[];
   isOpen: boolean;
   onClose: BindingAction;
 }
 
-const PopupPublishEvent = ({ event, isOpen, onClose }: Props) => {
+const PopupPublishEvent = ({ event, schedules, isOpen, onClose }: Props) => {
   const [isConfrimOpen, toggleConfrim] = React.useState<boolean>(false);
-  const [publishValue, changePublishValue] = React.useState<string>(
+  const [publishType, changePublishValue] = React.useState<string>(
     DEFAULT_PUBLISH_OPTION
   );
 
@@ -46,14 +47,19 @@ const PopupPublishEvent = ({ event, isOpen, onClose }: Props) => {
           <HeadingLevelTwo>Publish Event to Public Portals</HeadingLevelTwo>
         </div>
         {isConfrimOpen ? (
-          <ConfirmSection event={event} onClose={onClose} />
+          <ConfirmSection
+            event={event}
+            schedules={schedules}
+            publishType={publishType as EventPublishTypes}
+            onClose={onClose}
+          />
         ) : (
           <>
             <div className={styles.radioWrapper}>
               <Radio
                 onChange={onChangePublishValue}
                 options={eventPublishOptions}
-                checked={publishValue}
+                checked={publishType}
               />
             </div>
             <p className={styles.btnsWrapper}>
