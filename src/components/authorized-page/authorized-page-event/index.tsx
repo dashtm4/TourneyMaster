@@ -8,6 +8,7 @@ import {
   clearAuthPageData,
   toggleTournamentStatus,
 } from './logic/actions';
+import PopupPublishEvent from './components/popup-publish-event';
 import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
 import { Loader, Menu, ScrollTopButton } from 'components/common';
@@ -79,6 +80,9 @@ const AuthorizedPageEvent = ({
   calendarEvents,
   updateCalendarEvent,
 }: Props & RouteComponentProps<MatchParams>) => {
+  const [isPublishPopupOpen, togglePublishPopup] = React.useState<boolean>(
+    false
+  );
   const [isFullScreen, toggleFullScreen] = React.useState<boolean>(false);
   const onToggleFullScreen = () => {
     toggleFullScreen(!isFullScreen);
@@ -121,6 +125,10 @@ const AuthorizedPageEvent = ({
     return () => window.removeEventListener('fullscreenchange', onFullScreen);
   }, [isFullScreen]);
 
+  const onTogglePublishPopup = () => {
+    togglePublishPopup(!isPublishPopupOpen);
+  };
+
   const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
   const schedulingIgnoreList = [
     EventMenuTitles.SCHEDULING,
@@ -145,6 +153,7 @@ const AuthorizedPageEvent = ({
           tournamentStatus={event?.is_published_YN}
           eventName={event?.event_name || ''}
           toggleTournamentStatus={toggleTournamentStatus}
+          togglePublishPopup={onTogglePublishPopup}
         />
         <main
           className={`${styles.content} ${
@@ -226,6 +235,13 @@ const AuthorizedPageEvent = ({
         </main>
       </div>
       {!isFullScreen && <Footer />}
+      {event && (
+        <PopupPublishEvent
+          event={event}
+          isOpen={isPublishPopupOpen}
+          onClose={onTogglePublishPopup}
+        />
+      )}
     </div>
   );
 };

@@ -8,18 +8,16 @@ import { BindingAction } from 'common/models';
 interface Props {
   tournamentStatus: EventStatuses;
   percentOfCompleted: number;
-  toggleTournamentStatus?: BindingAction;
+  toggleTournamentStatus: BindingAction;
+  togglePublishPopup: BindingAction;
 }
 
 const TournamentStatus = ({
   percentOfCompleted,
   tournamentStatus,
   toggleTournamentStatus,
+  togglePublishPopup,
 }: Props) => {
-  if (!toggleTournamentStatus) {
-    return null;
-  }
-
   return (
     <div className={styles.progressBarWrapper}>
       <div className={styles.progressBarStatusWrapper}>
@@ -43,9 +41,9 @@ const TournamentStatus = ({
             >
               <span className={styles.doneBtnWrapper}>
                 <Button
-                  onClick={toggleTournamentStatus}
+                  onClick={togglePublishPopup}
                   icon={getIcon(Icons.DONE)}
-                  label="Publish Tournament"
+                  label="Publish Event"
                   color={ButtonColors.INHERIT}
                   variant={ButtonVarian.CONTAINED}
                 />
@@ -57,7 +55,7 @@ const TournamentStatus = ({
         <span className={styles.doneBtnWrapper}>
           <Button
             onClick={toggleTournamentStatus}
-            label="Unpublish Tournament"
+            label="Unpublish Event"
             color={ButtonColors.INHERIT}
             variant={ButtonVarian.CONTAINED}
           />

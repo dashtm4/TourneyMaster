@@ -21,6 +21,7 @@ interface Props {
   eventId?: string;
   tournamentStatus?: EventStatuses;
   toggleTournamentStatus?: BindingAction;
+  togglePublishPopup?: BindingAction;
   eventName?: string;
   hideOnList?: Routes[];
 }
@@ -32,6 +33,7 @@ const Menu = ({
   isAllowEdit,
   tournamentStatus,
   toggleTournamentStatus,
+  togglePublishPopup,
   hideOnList,
 }: Props) => {
   const location = useLocation();
@@ -75,13 +77,17 @@ const Menu = ({
           />
         ))}
       </ul>
-      {!isCollapsed && tournamentStatus !== undefined && (
-        <TournamentStatus
-          tournamentStatus={tournamentStatus}
-          percentOfCompleted={percentOfCompleted}
-          toggleTournamentStatus={toggleTournamentStatus}
-        />
-      )}
+      {!isCollapsed &&
+        tournamentStatus !== undefined &&
+        toggleTournamentStatus &&
+        togglePublishPopup && (
+          <TournamentStatus
+            tournamentStatus={tournamentStatus}
+            percentOfCompleted={percentOfCompleted}
+            toggleTournamentStatus={toggleTournamentStatus}
+            togglePublishPopup={togglePublishPopup}
+          />
+        )}
       <button
         className={styles.pinBtn}
         onClick={() => onSetCollapsibility(!isCollapsible)}
