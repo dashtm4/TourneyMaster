@@ -71,21 +71,23 @@ const SelectMultiple = ({
 }: Props) => {
   const classes = useStyles();
 
-  const handleChange = ({
-    target: { value },
-  }: React.ChangeEvent<{ value: unknown }>) => {
-    const values = value as string[];
+  const handleChange = ({ target }: React.ChangeEvent<{ value: unknown }>) => {
+    const newValues = target.value as string[];
 
     if (primaryValue) {
-      if (values.includes(primaryValue)) {
-        onChange([primaryValue]);
-      } else {
-        const valuesWithoutPrimary = values.filter(it => it !== primaryValue);
+      if (value.includes(primaryValue) && newValues.length > value.length) {
+        const valuesWithoutPrimary = newValues.filter(
+          it => it !== primaryValue
+        );
 
         onChange(valuesWithoutPrimary);
+      } else if (newValues.includes(primaryValue) === false) {
+        onChange(newValues);
+      } else {
+        onChange([primaryValue]);
       }
     } else {
-      onChange(values);
+      onChange(newValues);
     }
   };
 
