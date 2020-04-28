@@ -70,15 +70,6 @@ const SelectMultiple = ({
   onChange,
 }: Props) => {
   const classes = useStyles();
-  const [isDisabled, changeDisabled] = React.useState<boolean>(false);
-
-  React.useEffect(() => {
-    if (primaryValue) {
-      const isIncludePrimaryValues = value.includes(primaryValue);
-
-      changeDisabled(isIncludePrimaryValues);
-    }
-  }, [value]);
 
   const handleChange = ({
     target: { value },
@@ -121,11 +112,7 @@ const SelectMultiple = ({
           multiple
         >
           {options.map((option, idx) => (
-            <MenuItem
-              key={idx}
-              value={option.value}
-              disabled={isDisabled && option.value !== primaryValue}
-            >
+            <MenuItem key={idx} value={option.value}>
               <Checkbox checked={value.includes(option.value.toString())} />
               <ListItemText primary={option.label} />
             </MenuItem>
