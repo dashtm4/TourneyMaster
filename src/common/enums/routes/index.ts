@@ -1,6 +1,7 @@
 enum Routes {
   DEFAULT = '/',
   LOGIN = '/login',
+  REGISTER = '/register',
   DASHBOARD = '/dashboard',
   LIBRARY_MANAGER = '/library-manager',
   EVENT_LINK = '/event-link',

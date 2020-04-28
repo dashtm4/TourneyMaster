@@ -7,8 +7,10 @@ import AuthorizedPage from './authorized-page';
 import { Routes } from 'common/enums';
 import AuthorizedPageEvent from './authorized-page/authorized-page-event';
 import Toastr from 'components/common/toastr';
+import RegisterPage from 'components/register-page';
 
 const LoginPageWrapped = withUnprotectedRoute(LoginPage);
+const RegisterPageWrapped = withUnprotectedRoute(RegisterPage);
 const AuthorizedPageWrapped = withProtectedRoute(AuthorizedPage);
 const AuthorizedPageEventWrapped = withProtectedRoute(AuthorizedPageEvent);
 
@@ -17,6 +19,11 @@ const App: React.FC = () => {
     <React.Fragment>
       <Switch>
         <Route path={Routes.LOGIN} component={LoginPageWrapped} exact={true} />
+        <Route
+          path={Routes.REGISTER}
+          component={RegisterPageWrapped}
+          exact={true}
+        />
         <Route
           path={[
             Routes.DASHBOARD,
