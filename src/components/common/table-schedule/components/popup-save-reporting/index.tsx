@@ -7,7 +7,9 @@ import {
   ButtonLoad,
   Button,
   SelectMultiple,
+  CardMessage,
 } from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import { onPDFSave, getSelectDayOptions, getGamesByDays } from 'helpers';
 import { BindingAction } from 'common/models';
 import { ButtonColors, ButtonVarian, DefaultSelectValues } from 'common/enums';
@@ -17,6 +19,12 @@ import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import styles from './styles.module.scss';
+
+const STYLES_ICOM_WARNING = {
+  fill: '#FFCB00',
+  height: '25px',
+  width: '30px',
+};
 
 interface Props {
   event: IEventDetails;
@@ -41,9 +49,14 @@ const PopupSaveReporting = ({
   isOpen,
   onClose,
 }: Props) => {
+  const [isAllowDownload, changeAllowDownload] = React.useState<boolean>(true);
   const [activeDay, changeActiveDay] = React.useState<string[]>([
     DefaultSelectValues.ALL,
   ]);
+
+  React.useEffect(() => {
+    changeAllowDownload(activeDay.length > 0);
+  }, [activeDay]);
 
   const gamesByDay = getGamesByDays(games, activeDay);
   const selectDayOptions = getSelectDayOptions(eventDays);
@@ -122,6 +135,7 @@ const PopupSaveReporting = ({
                   loadFunc={onScheduleTableSave}
                   variant={ButtonVarian.TEXT}
                   color={ButtonColors.SECONDARY}
+                  isDisabled={!isAllowDownload}
                   label="Download"
                 />
               </li>
@@ -131,6 +145,7 @@ const PopupSaveReporting = ({
                   loadFunc={onHeatmapScheduleTableSave}
                   variant={ButtonVarian.TEXT}
                   color={ButtonColors.SECONDARY}
+                  isDisabled={!isAllowDownload}
                   label="Download"
                 />
               </li>
@@ -145,12 +160,21 @@ const PopupSaveReporting = ({
                   loadFunc={onScheduleFieldsSave}
                   variant={ButtonVarian.TEXT}
                   color={ButtonColors.SECONDARY}
+                  isDisabled={!isAllowDownload}
                   label="Download"
                 />
               </li>
             </ul>
           </li>
         </ul>
+        {!isAllowDownload && (
+          <CardMessage
+            type={CardMessageTypes.WARNING}
+            iconStyle={STYLES_ICOM_WARNING}
+          >
+            Select day to download PDF-files
+          </CardMessage>
+        )}
         <div className={styles.btnWrapper}>
           <Button
             onClick={onClose}

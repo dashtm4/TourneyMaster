@@ -65,36 +65,30 @@ const SelectMultiple = ({
   options,
   label,
   value,
+  width,
   isFormControlRow,
   primaryValue,
   onChange,
 }: Props) => {
   const classes = useStyles();
-  const [isDisabled, changeDisabled] = React.useState<boolean>(false);
 
-  React.useEffect(() => {
-    if (primaryValue) {
-      const isIncludePrimaryValues = value.includes(primaryValue);
-
-      changeDisabled(isIncludePrimaryValues);
-    }
-  }, [value]);
-
-  const handleChange = ({
-    target: { value },
-  }: React.ChangeEvent<{ value: unknown }>) => {
-    const values = value as string[];
+  const handleChange = ({ target }: React.ChangeEvent<{ value: unknown }>) => {
+    const newValues = target.value as string[];
 
     if (primaryValue) {
-      if (values.includes(primaryValue)) {
-        onChange([primaryValue]);
-      } else {
-        const valuesWithoutPrimary = values.filter(it => it !== primaryValue);
+      if (value.includes(primaryValue) && newValues.length > value.length) {
+        const valuesWithoutPrimary = newValues.filter(
+          it => it !== primaryValue
+        );
 
         onChange(valuesWithoutPrimary);
+      } else if (newValues.includes(primaryValue) === false) {
+        onChange(newValues);
+      } else {
+        onChange([primaryValue]);
       }
     } else {
-      onChange(values);
+      onChange(newValues);
     }
   };
 
@@ -114,6 +108,7 @@ const SelectMultiple = ({
         <span className={styles.label}>{label}</span>
         <Select
           className={classes.select}
+          style={{ width }}
           value={value}
           onChange={handleChange}
           renderValue={() => checkedLabel.join(', ')}
@@ -121,11 +116,7 @@ const SelectMultiple = ({
           multiple
         >
           {options.map((option, idx) => (
-            <MenuItem
-              key={idx}
-              value={option.value}
-              disabled={isDisabled && option.value !== primaryValue}
-            >
+            <MenuItem key={idx} value={option.value}>
               <Checkbox checked={value.includes(option.value.toString())} />
               <ListItemText primary={option.label} />
             </MenuItem>
