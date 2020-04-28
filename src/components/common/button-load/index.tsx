@@ -8,9 +8,10 @@ interface Props {
   color: ButtonColors;
   variant: ButtonVarian;
   loadFunc: BindingAction;
+  isDisabled?: boolean;
 }
 
-const ButtonLoad = ({ label, color, variant, loadFunc }: Props) => {
+const ButtonLoad = ({ label, color, variant, isDisabled, loadFunc }: Props) => {
   const [isLoading, changeLoading] = React.useState<boolean>(false);
 
   const onClick = async () => {
@@ -30,6 +31,7 @@ const ButtonLoad = ({ label, color, variant, loadFunc }: Props) => {
       label={isLoading ? 'Loading...' : label}
       color={color}
       variant={variant}
+      disabled={isDisabled}
     />
   );
 };
