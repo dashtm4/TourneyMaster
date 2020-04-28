@@ -64,6 +64,7 @@ import {
   clearBracketGames,
   fetchBracketGames,
   onUndoBrackets,
+  advanceTeamsToBrackets,
 } from './logic/actions';
 import {
   addGameToExistingBracketGames,
@@ -99,6 +100,7 @@ interface IMapDispatchToProps {
   clearBracketGames: () => void;
   fetchBracketGames: (bracketGames: IBracketGame[]) => void;
   onBracketsUndo: () => void;
+  advanceTeamsToBrackets: () => void;
 }
 
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
@@ -497,6 +499,7 @@ class Playoffs extends Component<IProps> {
       onBracketsUndo,
       historyLength,
       bracketGames,
+      advanceTeamsToBrackets,
     } = this.props;
 
     const saveButtonCondition = bracket && bracketGames;
@@ -574,6 +577,7 @@ class Playoffs extends Component<IProps> {
                 addGame={this.addGame}
                 removeGame={this.removeGame}
                 onUndoClick={onBracketsUndo}
+                advanceTeamsToBrackets={advanceTeamsToBrackets}
               />
             )}
           </section>
@@ -638,6 +642,7 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       clearBracketGames,
       fetchBracketGames,
       onBracketsUndo: onUndoBrackets,
+      advanceTeamsToBrackets,
     },
     dispatch
   );

@@ -19,6 +19,7 @@ interface IProps {
   addGame: (selectedDivision: string, data: IOnAddGame) => void;
   removeGame: (selectedDivision: string, data: number) => void;
   onUndoClick: () => void;
+  advanceTeamsToBrackets: () => void;
 }
 
 interface IState {
@@ -106,7 +107,12 @@ class BracketManager extends Component<IProps> {
   };
 
   render() {
-    const { seeds, onUndoClick, historyLength } = this.props;
+    const {
+      seeds,
+      onUndoClick,
+      historyLength,
+      advanceTeamsToBrackets,
+    } = this.props;
     const {
       divisionGames,
       divisionsOptions,
@@ -185,6 +191,7 @@ class BracketManager extends Component<IProps> {
                 label="Advance Division Teams to Brackets"
                 variant="contained"
                 color="primary"
+                onClick={advanceTeamsToBrackets}
               />
             </div>
           </div>
@@ -206,11 +213,7 @@ class BracketManager extends Component<IProps> {
             />
           )}
           {seeds && divisionGames && (
-            <Brackets
-              games={divisionGames}
-              seeds={seeds}
-              onRemove={this.removeGamePressed}
-            />
+            <Brackets games={divisionGames} onRemove={this.removeGamePressed} />
           )}
         </div>
       </section>

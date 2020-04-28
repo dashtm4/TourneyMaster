@@ -2,7 +2,7 @@ import React, { useEffect, useState, Fragment } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { groupBy, keys } from 'lodash-es';
 import BracketRound from './round';
-import { IBracketSeed, IBracketGame } from '../bracketGames';
+import { IBracketGame } from '../bracketGames';
 import BracketConnector from './connector';
 import styles from './styles.module.scss';
 
@@ -14,7 +14,6 @@ const TRANSFORM_WRAPPER_OPTIONS = {
 };
 
 interface IProps {
-  seeds: IBracketSeed[];
   games: IBracketGame[];
   onRemove: (gameIndex: number) => void;
 }

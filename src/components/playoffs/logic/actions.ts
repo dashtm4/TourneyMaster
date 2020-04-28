@@ -1,11 +1,13 @@
 import { Dispatch } from 'redux';
 import { IAppState } from 'reducers/root-reducer.types';
-import { chunk, orderBy } from 'lodash-es';
+import { chunk, orderBy, groupBy } from 'lodash-es';
 import {
   PLAYOFF_SAVED_SUCCESS,
   PLAYOFF_FETCH_GAMES,
   PLAYOFF_CLEAR_GAMES,
   PLAYOFF_UNDO_GAMES,
+  LOAD_DATA_WITH_SCORES,
+  FETCH_SCORED_TEAMS,
 } from './actionTypes';
 import {
   mapBracketData,
@@ -18,11 +20,28 @@ import api from 'api/api';
 import { successToast, errorToast } from 'components/common/toastr/showToasts';
 import { addNewBracket } from 'components/scheduling/logic/actions';
 import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
+import {
+  getScoringSettings,
+  getTeamsWithResults,
+  sortTeamByScored,
+  mapScheduleGamesWithNames,
+} from 'helpers';
+import { ITeamWithResults, IFacility } from 'common/models';
 
 type IGetState = () => IAppState;
 
 const playoffSavedSuccess = (payload: boolean) => ({
   type: PLAYOFF_SAVED_SUCCESS,
+  payload,
+});
+
+const loadDataWithScores = (payload: { scoredTeams: ITeamWithResults[] }) => ({
+  type: LOAD_DATA_WITH_SCORES,
+  payload,
+});
+
+const fetchSortedTeams = (payload: { [key: string]: ITeamWithResults[] }) => ({
+  type: FETCH_SCORED_TEAMS,
   payload,
 });
 
@@ -167,4 +186,50 @@ export const retrieveBracketsGames = (bracketId: string) => async (
     const orderedGames = orderBy(bracketGames, ['divisionId', 'index']);
     dispatch(fetchBracketGames(orderedGames));
   }
+};
+
+// Advance Teams To Brackets
+
+export const advanceTeamsToBrackets = () => async (
+  dispatch: Dispatch,
+  getState: IGetState
+) => {
+  const event = getState().pageEvent.tournamentData.event;
+  const eventId = event?.event_id;
+  // get teams
+  const teams = await api.get('/teams', { event_id: eventId });
+  // get games
+  const games = await api.get('/games', { event_id: eventId });
+  // get facilities
+  const facilities = await api.get('/facilities', { event_id: eventId });
+  // get fields
+  const fields = (
+    await Promise.all(
+      facilities.map((it: IFacility) =>
+        api.get(`/fields?facilities_id=${it.facilities_id}`)
+      )
+    )
+  ).flat();
+  // calculate scoring settings
+  const scoringSettings = getScoringSettings(event!);
+  // calculate teams with scoring results
+  const scoredTeams = getTeamsWithResults(teams, games, scoringSettings);
+  // calculate games with scoring results
+  const scoredGames = mapScheduleGamesWithNames(teams, fields, games);
+
+  dispatch(loadDataWithScores({ scoredTeams }));
+
+  const divisionDictionary = groupBy(scoredTeams, 'division_id');
+  const sortedTeams = {};
+
+  Object.keys(divisionDictionary).forEach(
+    key =>
+      (sortedTeams[key] = sortTeamByScored(
+        divisionDictionary[key],
+        scoredGames,
+        event?.ranking_factor_divisions!
+      ))
+  );
+
+  dispatch(fetchSortedTeams(sortedTeams));
 };

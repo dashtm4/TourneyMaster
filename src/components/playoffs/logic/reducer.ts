@@ -4,19 +4,26 @@ import {
   PLAYOFF_FETCH_GAMES,
   PLAYOFF_CLEAR_GAMES,
   PLAYOFF_UNDO_GAMES,
+  LOAD_DATA_WITH_SCORES,
+  FETCH_SCORED_TEAMS,
 } from './actionTypes';
 import { IBracketGame } from '../bracketGames';
+import { ITeamWithResults } from 'common/models';
 
 export interface IPlayoffState {
   playoffSaved: boolean;
   bracketGames: IBracketGame[] | null;
   bracketGamesHistory: IBracketGame[][] | [];
+  sortedTeams: {
+    [key: string]: ITeamWithResults[];
+  } | null;
 }
 
 const defaultState: IPlayoffState = {
   playoffSaved: false,
   bracketGamesHistory: [],
   bracketGames: null,
+  sortedTeams: null,
 };
 
 export default (state = defaultState, action: IPlayoffAction) => {
@@ -49,6 +56,16 @@ export default (state = defaultState, action: IPlayoffAction) => {
           state.bracketGamesHistory?.length - 1
         ),
         bracketGames: state.bracketGamesHistory.pop(),
+      };
+    case LOAD_DATA_WITH_SCORES:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case FETCH_SCORED_TEAMS:
+      return {
+        ...state,
+        sortedTeams: action.payload,
       };
     default:
       return state;
