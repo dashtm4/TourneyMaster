@@ -2,7 +2,6 @@ import { orderBy, findIndex, union } from 'lodash-es';
 import { IField } from 'common/models/schedule/fields';
 import { ITeamCard } from 'common/models/schedule/teams';
 import ITimeSlot from 'common/models/schedule/timeSlots';
-import { DayTypes } from '../table-schedule/types';
 
 export enum TeamPositionEnum {
   'awayTeam' = 1,
@@ -129,13 +128,13 @@ export const settleTeamsPerGames = (
   if (days?.length && days?.length > 1 && selectedDay) {
     return games.map(game => ({
       ...game,
-      gameDate: days[DayTypes[selectedDay] - 1],
+      gameDate: days[+selectedDay - 1],
       awayTeam: teamCards.find(
         team =>
           findIndex(team.games, {
             id: game.id,
             teamPosition: 1,
-            date: days[DayTypes[selectedDay] - 1],
+            date: days[+selectedDay - 1],
           }) >= 0
       ),
       homeTeam: teamCards.find(
@@ -143,7 +142,7 @@ export const settleTeamsPerGames = (
           findIndex(team.games, {
             id: game.id,
             teamPosition: 2,
-            date: days[DayTypes[selectedDay] - 1],
+            date: days[+selectedDay - 1],
           }) >= 0
       ),
     }));

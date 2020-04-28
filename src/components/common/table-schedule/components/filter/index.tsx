@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'components/common';
 import { ButtonTypes } from 'common/enums';
-import { DayTypes, IScheduleFilter } from '../../types';
+import { IScheduleFilter } from '../../types';
 import styles from './styles.module.scss';
 import MultiSelect, {
   IMultiSelectOption,
@@ -30,7 +30,7 @@ const ScoringFilter = (props: IProps) => {
   const onDaySelect = (day: string) => {
     onChangeFilterValue({
       ...filterValues,
-      selectedDay: DayTypes[day],
+      selectedDay: day,
     });
   };
 
@@ -41,7 +41,7 @@ const ScoringFilter = (props: IProps) => {
     });
   };
 
-  const days = [...Array(props.days)].map((_v, i) => String(i + 1));
+  const days = [...Array(props.days)].map((_v, i) => `${i + 1}`);
 
   return (
     <section>
@@ -52,11 +52,11 @@ const ScoringFilter = (props: IProps) => {
             {days.map(day => (
               <Button
                 onClick={() => onDaySelect(day)}
-                label={DayTypes[day]}
+                label={`Day ${day}`}
                 variant="contained"
                 color="primary"
                 type={
-                  filterValues.selectedDay === DayTypes[day]
+                  filterValues.selectedDay === day
                     ? ButtonTypes.SQUARED
                     : ButtonTypes.SQUARED_OUTLINED
                 }
