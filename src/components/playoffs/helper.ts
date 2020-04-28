@@ -1,4 +1,4 @@
-import { orderBy, union, min } from 'lodash-es';
+import { orderBy, union, min, max } from 'lodash-es';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IBracketGame } from './bracketGames';
 import { IOnAddGame } from './add-game-modal';
@@ -8,6 +8,7 @@ import { IDivision, IField } from 'common/models';
 interface IBracketMoveWarning {
   gameAlreadyAssigned: boolean;
   gamePlayTimeInvalid: boolean;
+  facilitiesDiffer: boolean;
 }
 
 export const updateGameBracketInfo = (game: IGame, withGame?: IGame) => ({
@@ -106,6 +107,7 @@ export const addGameToExistingBracketGames = (
   return newBracketGames;
 };
 
+/* Get games indices that depend upon the given BracketGame */
 const getDependentGames = (
   dependentInds: number[],
   games: IBracketGame[]
@@ -126,6 +128,30 @@ const getDependentGames = (
   }
 
   return getDependentGames(newDependentInds, newGames);
+};
+
+/* Get games indices that the given BracketGame depends on */
+const getGameDependsUpon = (
+  dependentInds: number[],
+  games: IBracketGame[]
+): number[] => {
+  const myGamesDependsUpon = games
+    .filter(item => dependentInds.includes(item.index))
+    .map(item => [item.awayDependsUpon, item.homeDependsUpon])
+    .flat();
+
+  const newDependentInds: number[] = [
+    ...dependentInds,
+    ...myGamesDependsUpon,
+  ].filter(v => v) as number[];
+
+  const newGames = games.filter(item => !dependentInds.includes(item.index));
+
+  if (!myGamesDependsUpon.filter(v => v).length || !newGames.length) {
+    return union(newDependentInds);
+  }
+
+  return getGameDependsUpon(newDependentInds, newGames);
 };
 
 export const removeGameFromBracketGames = (
@@ -183,8 +209,9 @@ export const updateGameSlot = (
 });
 
 enum BracketMoveWarnEnum {
-  gameAlreadyAssigned = 'This bracket game is already assigned. Are you sure you want to continue?',
+  gameAlreadyAssigned = 'This bracket game is already assigned. Please confirm your intentions.',
   gamePlayTimeInvalid = 'This bracket game cannot be placed at this time.',
+  facilitiesDiffer = 'This division is not playing at this facility on this day. Please confirm your intentions.',
 }
 
 export const setReplacementMessage = (
@@ -203,6 +230,11 @@ export const setReplacementMessage = (
       return {
         bracketGames,
         message: BracketMoveWarnEnum.gameAlreadyAssigned,
+      };
+    case warnings.facilitiesDiffer:
+      return {
+        bracketGames,
+        message: BracketMoveWarnEnum.facilitiesDiffer,
       };
     default:
       return null;
@@ -231,56 +263,86 @@ export const updateBracketGamesDndResult = (
   const warnings: IBracketMoveWarning = {
     gameAlreadyAssigned: false,
     gamePlayTimeInvalid: false,
+    facilitiesDiffer: false,
   };
-  // 1. Find a bracket game that is being dragged
+  /* 1. Find a bracket game that is being dragged */
   const bracketGame = bracketGames.find(item => item.id === gameId);
-  // 2. Find a game slot where the bracket game is gonna be placed
+  /* 2. Find a game slot where the bracket game is gonna be placed */
   const gameSlot = games.find(item => item.id === slotId);
-  // 3. Check if the bracket game is not placed anywhere else
-  //  3.1. If so - return a warning popup
-  // 4. Populate the bracket data with the game slot data
+  /* 3. Check if the bracket game is not placed anywhere else */
+  /*  3.1. If so - return a warning popup */
+  /* 4. Populate the bracket data with the game slot data */
   const fieldName = fields.find(item => item.field_id === gameSlot?.fieldId)
     ?.field_name;
 
   bracketGames = bracketGames.map(item =>
-    item.id === bracketGame?.id
+    /* First - unassign existing bracket game */
+    /* Then - assign our bracket game to that place */
+    item.fieldId === gameSlot?.fieldId && item.startTime === gameSlot?.startTime
+      ? updateBracketGame(item)
+      : item.id === bracketGame?.id
       ? updateBracketGame(item, gameSlot, fieldName)
       : item
   );
 
-  // Warnings setup
-  // Find if a game is already assigned
+  /* WARNINGS SETUP */
+  /* Check assignment for the given BracketGame */
   const bracketGameToUpdate = bracketGames.find(
     item => item.id === bracketGame?.id
   );
+
   warnings.gameAlreadyAssigned = Boolean(
     bracketGame?.fieldId &&
       bracketGame?.startTime &&
       bracketGameToUpdate?.fieldId &&
       bracketGameToUpdate.startTime
   );
-  // Find if a game play time is invalid
+
+  /* Check play time for the given BracketGame */
   const divisionGames = [...bracketGames].filter(
     item => item.divisionId === bracketGame?.divisionId
   );
+
   const dependentInds = getDependentGames(
     [bracketGame?.index || -1],
     divisionGames
   );
-  const dependentStartTimes = divisionGames
+
+  const gameDependsUpon = getGameDependsUpon(
+    [bracketGame?.index || -1],
+    divisionGames
+  );
+
+  const nextDependentStartTimes = divisionGames
     .filter(item => item.index !== bracketGame?.index)
     .filter(item => dependentInds.includes(item.index))
     .map(item => item.startTime);
 
-  const minStartTimeAvailable = min(dependentStartTimes);
+  const previousDependentStartTimes = divisionGames
+    .filter(item => item.index !== bracketGame?.index)
+    .filter(item => gameDependsUpon.includes(item.index))
+    .map(item => item.startTime);
+
+  const minStartTimeAvailable = min(nextDependentStartTimes);
+  const maxStartTimeAvailable = max(previousDependentStartTimes);
+
   const bracketNewTime = divisionGames.find(
     item => item.index === bracketGame?.index
   )?.startTime;
 
   warnings.gamePlayTimeInvalid =
     !!bracketNewTime &&
-    !!minStartTimeAvailable &&
-    bracketNewTime >= minStartTimeAvailable;
+    (!!(minStartTimeAvailable && bracketNewTime >= minStartTimeAvailable) ||
+      !!(maxStartTimeAvailable && bracketNewTime <= maxStartTimeAvailable));
+
+  /* Check for Facilities consistency for the given BracketGame */
+  const divisionGamesFacilitiesIds = games
+    .filter(item => divisionGames.some(dg => dg.id === item.bracketGameId))
+    .map(item => item.facilityId);
+
+  warnings.facilitiesDiffer = Boolean(
+    gameSlot && !divisionGamesFacilitiesIds.includes(gameSlot.facilityId)
+  );
 
   return { bracketGames, warnings };
 };
