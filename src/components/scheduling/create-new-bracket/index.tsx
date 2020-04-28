@@ -85,8 +85,8 @@ const CreateNewBracket = (props: IProps) => {
   const [localWarmup, setLocalWarmup] = useState(
     getWarmupFromSchedule(schedules, selectedSchedule)
   );
-  const [overrideTimeSlots, setOverrideTimeSlots] = useState(false);
-  const [selectedTimeSlotsNum, selectTimeSlotsNum] = useState('0');
+  // const [overrideTimeSlots, setOverrideTimeSlots] = useState(false);
+  const [selectedTimeSlotsNum /*, selectTimeSlotsNum*/] = useState('0');
 
   useEffect(() => {
     const data = getWarmupFromSchedule(schedules, selectedSchedule);
@@ -148,10 +148,10 @@ const CreateNewBracket = (props: IProps) => {
     onCreateBracket(scheduleData);
   };
 
-  const selectTimeSlotsNumChange = (e: InputTargetValue) =>
-    selectTimeSlotsNum(e.target.value);
+  // const selectTimeSlotsNumChange = (e: InputTargetValue) =>
+  // selectTimeSlotsNum(e.target.value);
 
-  const overrideTimeSlotsChange = () => setOverrideTimeSlots(v => !v);
+  // const overrideTimeSlotsChange = () => setOverrideTimeSlots(v => !v);
 
   const schedulesOptions = schedules.map(item => ({
     label: item.schedule_name!,
@@ -172,25 +172,25 @@ const CreateNewBracket = (props: IProps) => {
       name: 'adjustTime',
     },
   ];
-  const timeSlotsOverrideOptions = [
-    {
-      label: 'Manually select # of Time Slots for Brackets',
-      checked: overrideTimeSlots,
-      name: 'overrideTimeSlots',
-    },
-  ];
+  // const timeSlotsOverrideOptions = [
+  //   {
+  //     label: 'Manually select # of Time Slots for Brackets',
+  //     checked: overrideTimeSlots,
+  //     name: 'overrideTimeSlots',
+  //   },
+  // ];
 
-  const overrideTimeSlotsOptions = [...Array(4)].map((_, i) => ({
-    label: `${i + playoffTimeSlots.length} Time Slots`,
-    value: String(i),
-  }));
+  // const overrideTimeSlotsOptions = [...Array(4)].map((_, i) => ({
+  //   label: `${i + playoffTimeSlots.length} Time Slots`,
+  //   value: String(i),
+  // }));
 
   const alignItemsTooltip =
     'Early morning TP games will be moved adjacent to brackets';
   const adjustTimeTooltip =
     'Provides a larger rest between games for advancing teams';
-  const overrideTimeSlotsTooltip =
-    'Increases the number of time slots used by Brackets Games';
+  // const overrideTimeSlotsTooltip =
+  //   'Increases the number of time slots used by Brackets Games';
 
   return (
     <Modal isOpen={isOpen} onClose={onClosePressed}>
@@ -246,7 +246,7 @@ const CreateNewBracket = (props: IProps) => {
               disabled={!(adjustTime && localWarmup)}
               endAdornment="Minutes"
             />
-            <div className={styles.checkboxWrapper}>
+            {/* <div className={styles.checkboxWrapper}>
               <Checkbox
                 options={timeSlotsOverrideOptions}
                 onChange={overrideTimeSlotsChange}
@@ -266,7 +266,7 @@ const CreateNewBracket = (props: IProps) => {
               options={overrideTimeSlotsOptions}
               value={selectedTimeSlotsNum}
               onChange={selectTimeSlotsNumChange}
-            />
+            /> */}
           </div>
         </div>
         <div className={styles.buttonsWrapper}>

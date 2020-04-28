@@ -32,6 +32,12 @@
       height: 80px;
       background: #f4f4f4;
 
+      > p {
+        width: calc(100% - 550px);
+        height: 40px;
+        margin-top: 26px;
+      }
+
       .selectWrapper {
         width: 190px;
         margin: 0;
