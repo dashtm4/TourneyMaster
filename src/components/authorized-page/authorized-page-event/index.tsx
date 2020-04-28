@@ -3,11 +3,7 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {
-  loadAuthPageData,
-  clearAuthPageData,
-  toggleTournamentStatus,
-} from './logic/actions';
+import { loadAuthPageData, clearAuthPageData } from './logic/actions';
 import PopupPublishEvent from './components/popup-publish-event';
 import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
@@ -261,7 +257,6 @@ export default connect(
       {
         loadAuthPageData,
         clearAuthPageData,
-        toggleTournamentStatus,
         getCalendarEvents,
         updateCalendarEvent,
       },

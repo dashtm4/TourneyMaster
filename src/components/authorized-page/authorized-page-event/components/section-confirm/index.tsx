@@ -37,7 +37,6 @@ const ConfirmSection = ({
 }: Props) => {
   const DEFAULT_SELECTED_SCHEDULE = schedules[0];
   const DEFAULT_SELECTED_BRACKET = brackets[0];
-
   const [publishSettings, changePublishSettings] = React.useState<
     IPublishSettings
   >({
@@ -54,7 +53,8 @@ const ConfirmSection = ({
     const settingItem = getSettingItemById(
       name as PublishSettingFields,
       value,
-      schedules
+      schedules,
+      brackets
     );
 
     changePublishSettings({
@@ -70,6 +70,7 @@ const ConfirmSection = ({
           publishType,
           publishSettings,
           schedules,
+          brackets,
           onChangeSettings
         )}
       </form>

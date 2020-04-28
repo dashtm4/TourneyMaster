@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { Modal, HeadingLevelTwo, Button, Radio } from 'components/common';
 import ConfirmSection from '../section-confirm';
@@ -10,14 +11,12 @@ import {
 import { ButtonVarian, ButtonColors } from 'common/enums';
 import { EventPublishTypes } from '../../common';
 import { IInputEvent } from 'common/types';
+import { getEventPublishOptions } from '../../helpers';
 import styles from './styles.module.scss';
 
 const BUTTON_STYLES = {
   width: '115px',
 };
-
-const eventPublishOptions = Object.values(EventPublishTypes);
-const DEFAULT_PUBLISH_OPTION = eventPublishOptions[0];
 
 interface Props {
   event: IEventDetails;
@@ -34,6 +33,9 @@ const PopupPublishEvent = ({
   isOpen,
   onClose,
 }: Props) => {
+  const eventPublishOptions = getEventPublishOptions(schedules, brackets);
+  const DEFAULT_PUBLISH_OPTION = eventPublishOptions[0];
+
   const [isConfrimOpen, toggleConfrim] = React.useState<boolean>(false);
   const [publishType, changePublishValue] = React.useState<string>(
     DEFAULT_PUBLISH_OPTION

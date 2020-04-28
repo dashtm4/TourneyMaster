@@ -1,10 +1,9 @@
 import moment from 'moment';
 import { DefaultSelectValues } from 'common/enums';
-import { IEntity } from 'common/types';
 import { ISelectOption } from 'common/models';
 
-const getSelectOptions = (
-  entities: IEntity[],
+const getSelectOptions = <T>(
+  entities: T[],
   valueKey: string,
   labelKey: string
 ): ISelectOption[] => {

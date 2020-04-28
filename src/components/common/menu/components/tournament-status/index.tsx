@@ -15,7 +15,6 @@ interface Props {
 const TournamentStatus = ({
   percentOfCompleted,
   tournamentStatus,
-  toggleTournamentStatus,
   togglePublishPopup,
 }: Props) => {
   return (
@@ -54,7 +53,7 @@ const TournamentStatus = ({
       ) : (
         <span className={styles.doneBtnWrapper}>
           <Button
-            onClick={toggleTournamentStatus}
+            onClick={togglePublishPopup}
             label="Unpublish Event"
             color={ButtonColors.INHERIT}
             variant={ButtonVarian.CONTAINED}
