@@ -37,7 +37,9 @@ const ViewMatrix = (props: IProps) => {
   );
 
   const renderField = (field: IScheduleField) => (
-    <th key={Math.random()}>{field.name}</th>
+    <th key={Math.random()}>
+      {field.name} ({field.facilityName})
+    </th>
   );
 
   const renderTimeSlot = (time: string) => (
