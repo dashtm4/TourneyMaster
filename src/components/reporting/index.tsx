@@ -142,7 +142,7 @@ class Reporting extends React.Component<
 
     const timeSlots = calculateTimeSlots(timeValues);
 
-    const mappedFields = mapFieldsData(fields);
+    const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);
 
     const { games } = defineGames(sortedFields, timeSlots!);

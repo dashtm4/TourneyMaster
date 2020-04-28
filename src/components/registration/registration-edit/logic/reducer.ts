@@ -4,14 +4,16 @@ import {
   REGISTRATION_UPDATE_SUCCESS,
   REGISTRATION_FETCH_START,
   DIVISIONS_FETCH_SUCCESS,
+  EVENT_FETCH_SUCCESS,
 } from './actionTypes';
 import { sortByField } from 'helpers';
-import { IDivision, IRegistration } from 'common/models';
+import { IDivision, IRegistration, IEventDetails } from 'common/models';
 import { SortByFilesTypes } from 'common/enums';
 
 export interface IState {
   data?: Partial<IRegistration>;
   divisions: IDivision[];
+  event?: IEventDetails;
   isLoading: boolean;
   error: boolean;
 }
@@ -19,7 +21,8 @@ export interface IState {
 const defaultState: IState = {
   data: undefined,
   divisions: [],
-  isLoading: false,
+  event: undefined,
+  isLoading: true,
   error: false,
 };
 
@@ -29,11 +32,7 @@ export default (
 ) => {
   switch (action.type) {
     case REGISTRATION_FETCH_START: {
-      return {
-        ...state,
-        isLoading: true,
-        error: false,
-      };
+      return { ...defaultState };
     }
     case REGISTRATION_FETCH_SUCCESS: {
       return {
@@ -54,16 +53,18 @@ export default (
         ...state,
         data: action.payload,
         isLoading: false,
-        error: true,
+        error: false,
       };
     }
     case DIVISIONS_FETCH_SUCCESS: {
       return {
         ...state,
         divisions: sortByField(action.payload, SortByFilesTypes.DIVISIONS),
-        isLoading: false,
         error: false,
       };
+    }
+    case EVENT_FETCH_SUCCESS: {
+      return { ...state, event: action.payload };
     }
     default:
       return state;

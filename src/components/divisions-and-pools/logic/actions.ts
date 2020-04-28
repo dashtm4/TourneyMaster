@@ -255,8 +255,9 @@ export const deleteDivision: ActionCreator<ThunkAction<
 >> = (divisionId: string, pools: IPool[], teams: ITeam[]) => async (
   dispatch: Dispatch
 ) => {
-  pools.forEach(pool => api.delete(`/pools?pool_id=${pool.pool_id}`));
-  teams.forEach(team => api.delete(`/teams?team_id=${team.team_id}`));
+  await api.delete('/pools', pools);
+  await api.delete('teams', teams);
+
   const response = await api.delete(`/divisions?division_id=${divisionId}`);
 
   if (response?.errorType === 'Error') {

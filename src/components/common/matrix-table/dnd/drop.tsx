@@ -40,6 +40,9 @@ const DropContainer = (props: IProps) => {
         game.teamPosition === props.position
     )[0]?.isTeamLocked;
 
+  const canBeDropped =
+    !isTeamLocked || acceptType.includes(MatrixTableDropEnum.BracketDrop);
+
   const [{ isOver }, drop] = useDrop({
     accept: acceptType,
     drop: (item: any) => {
@@ -54,7 +57,7 @@ const DropContainer = (props: IProps) => {
     collect: mon => ({
       isOver: !!mon.isOver(),
     }),
-    canDrop: () => !isTeamLocked,
+    canDrop: () => canBeDropped,
   });
 
   return (
@@ -67,7 +70,7 @@ const DropContainer = (props: IProps) => {
       } ${
         position === 1 ? styles.dropContainerTop : styles.dropContainerBottom
       }`}
-      style={{ opacity: isOver && !isTeamLocked ? 0.5 : 1 }}
+      style={{ opacity: isOver && canBeDropped ? 0.5 : 1 }}
     >
       {children}
     </div>

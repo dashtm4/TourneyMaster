@@ -4,11 +4,11 @@ import Button from '../../common/buttons/button';
 import SectionDropdown from '../../common/section-dropdown';
 import styles from './styles.module.scss';
 import Paper from '../../common/paper';
-import PrimaryInformation from './primary-information';
-import TeamsAthletesInfo from './teams-athletes';
-import MainContact from './main-contact';
+import PricingAndCalendar from './pricing-and-calendar';
+import RegistrationDetails from './registration-details';
+import Payments from './payments';
 import { IRegistration } from 'common/models/registration';
-import { BindingAction, BindingCbWithTwo } from 'common/models';
+import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
 import { PopupExposure } from 'components/common';
 
 interface IRegistrationEditProps {
@@ -17,6 +17,8 @@ interface IRegistrationEditProps {
   registration?: IRegistration;
   onChange: BindingCbWithTwo<string, any>;
   changesAreMade: boolean;
+  divisions: IDivision[];
+  eventType: string;
 }
 
 interface IRegistrationEditState {
@@ -73,8 +75,8 @@ class RegistrationEdit extends React.Component<
                 panelDetailsType="flat"
                 isDefaultExpanded={true}
               >
-                <span>Primary Information</span>
-                <PrimaryInformation
+                <span>Pricing &amp; Calendar</span>
+                <PricingAndCalendar
                   data={this.props.registration}
                   onChange={this.props.onChange}
                 />
@@ -86,10 +88,11 @@ class RegistrationEdit extends React.Component<
                 panelDetailsType="flat"
                 isDefaultExpanded={true}
               >
-                <span>Teams & Athletes</span>
-                <TeamsAthletesInfo
+                <span>Registration Details</span>
+                <RegistrationDetails
                   data={this.props.registration}
                   onChange={this.props.onChange}
+                  eventType={this.props.eventType}
                 />
               </SectionDropdown>
             </li>
@@ -99,8 +102,8 @@ class RegistrationEdit extends React.Component<
                 panelDetailsType="flat"
                 isDefaultExpanded={true}
               >
-                <span>Main Contact</span>
-                <MainContact
+                <span>Payments</span>
+                <Payments
                   data={this.props.registration}
                   onChange={this.props.onChange}
                 />

@@ -37,7 +37,7 @@ const BracketConnector = (props: IProps) => {
   const negative =
     leftGamesNum && rightGamesNum && leftGamesNum < rightGamesNum;
 
-  const step = negative ? rightGamesNum : leftGamesNum;
+  const step = (negative ? rightGamesNum : leftGamesNum) || 0;
 
   const renderConnector = () => (
     <div

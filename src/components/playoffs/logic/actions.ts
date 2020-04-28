@@ -5,6 +5,7 @@ import {
   PLAYOFF_SAVED_SUCCESS,
   PLAYOFF_FETCH_GAMES,
   PLAYOFF_CLEAR_GAMES,
+  PLAYOFF_UNDO_GAMES,
 } from './actionTypes';
 import {
   mapBracketData,
@@ -32,6 +33,10 @@ export const fetchBracketGames = (payload: IBracketGame[]) => ({
 
 export const clearBracketGames = () => ({
   type: PLAYOFF_CLEAR_GAMES,
+});
+
+export const onUndoBrackets = () => ({
+  type: PLAYOFF_UNDO_GAMES,
 });
 
 const newError = () =>
@@ -151,12 +156,14 @@ export const retrieveBrackets = (bracketId: string) => async (
 };
 
 export const retrieveBracketsGames = (bracketId: string) => async (
-  dispatch: Dispatch
+  dispatch: Dispatch,
+  getState: IGetState
 ) => {
   const response = await api.get('/games_brackets', { bracket_id: bracketId });
+  const fields = getState().pageEvent.tournamentData.fields;
 
   if (response?.length) {
-    const bracketGames = mapFetchedBracketGames(response);
+    const bracketGames = mapFetchedBracketGames(response, fields);
     const orderedGames = orderBy(bracketGames, ['divisionId', 'index']);
     dispatch(fetchBracketGames(orderedGames));
   }

@@ -127,6 +127,7 @@
 
   &.bracketContainer {
     margin: 0;
+    background-color: #414141;
 
     &.dropContainerTop {
       border-radius: 2px 2px 0 0;
@@ -153,6 +154,14 @@
   padding: 1px 0px 1px 5px;
   font-size: 12px;
   border-radius: 2px;
+
+  &:hover {
+    cursor: grab;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
 
   &.heatmap {
     color: #ebebeb;

@@ -75,8 +75,18 @@ const UnassignedList = (props: IProps) => {
   useEffect(() => {
     const newUnsatisfiedTeamCards = getUnsatisfiedTeams(teamCards, minGamesNum);
     const newSatisfiedTeamCards = getSatisfiedTeams(teamCards, minGamesNum);
-    setUnsatisfiedTeamCards(newUnsatisfiedTeamCards);
-    setSatisfiedTeamCards(newSatisfiedTeamCards);
+
+    const orderedUnsatisfiedTeamCards = orderBy(
+      newUnsatisfiedTeamCards,
+      'divisionId'
+    );
+    const orderedSatisfiedTeamCards = orderBy(
+      newSatisfiedTeamCards,
+      'divisionId'
+    );
+
+    setUnsatisfiedTeamCards(orderedUnsatisfiedTeamCards);
+    setSatisfiedTeamCards(orderedSatisfiedTeamCards);
   }, [teamCards, showAllTeams]);
 
   return (

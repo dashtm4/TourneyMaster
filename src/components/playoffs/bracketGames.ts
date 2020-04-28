@@ -234,6 +234,7 @@ export const populatePlayoffGames = (
 
       return {
         ...game,
+        bracketGameId: bracketGame?.id,
         playoffIndex: bracketGame?.index,
         playoffRound: bracketGame?.round,
         awaySeedId: bracketGame?.awaySeedId,

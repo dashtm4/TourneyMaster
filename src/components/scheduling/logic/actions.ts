@@ -30,6 +30,7 @@ import {
   IField,
   ITeam,
   IDivision,
+  IFacility,
 } from 'common/models';
 import {
   getVarcharEight,
@@ -68,6 +69,7 @@ interface TournamentInfo {
   fields: IField[];
   teams: ITeam[];
   divisions: IDivision[];
+  facilities: IFacility[];
 }
 
 const scheduleFetchInProgress = () => ({
@@ -310,11 +312,11 @@ const getSchedulesData = async (
   schedule: ISchedule,
   tournamentInfo: TournamentInfo
 ) => {
-  const { event, fields, teams, divisions } = tournamentInfo;
+  const { event, fields, teams, divisions, facilities } = tournamentInfo;
   const timeValues = getTimeValuesFromEventSchedule(event, schedule);
   const timeSlots = calculateTimeSlots(timeValues);
 
-  const mappedFields = mapFieldsData(fields);
+  const mappedFields = mapFieldsData(fields, facilities);
   const sortedFields = sortFieldsByPremier(mappedFields);
 
   const { games } = defineGames(sortedFields, timeSlots!);
@@ -390,13 +392,20 @@ const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
   const { scheduling, pageEvent } = getState();
   const { schedules } = scheduling;
   const { tournamentData } = pageEvent;
-  const { event, fields, teams, divisions } = tournamentData;
+  const { event, fields, teams, divisions, facilities } = tournamentData;
 
   const schedulingSchedule = schedules.find(
     item => item.schedule_id === scheduleId
   );
 
-  if (!event || !fields || !teams || !divisions || !schedulingSchedule)
+  if (
+    !event ||
+    !fields ||
+    !teams ||
+    !divisions ||
+    !schedulingSchedule ||
+    !facilities
+  )
     return showError();
 
   const schedule = mapSchedulingScheduleData(schedulingSchedule);
@@ -419,6 +428,7 @@ const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
     fields,
     teams,
     divisions,
+    facilities,
   });
 
   const schedulesGames = await getSchedulesGames(schedule, {
@@ -426,6 +436,7 @@ const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
     fields,
     teams,
     divisions,
+    facilities,
   });
 
   /* Chunk SchedulesDetails and SchedulesGames to arrays */
@@ -529,10 +540,7 @@ export const updateBracket = (bracket: ISchedulingBracket) => async (
   getState: GetState
 ) => {
   const members = await api.get(`/members`);
-  const mappedBracket = await mapBracketData(
-    bracket,
-    bracket.status === 'Draft'
-  );
+  const mappedBracket = await mapBracketData(bracket, !bracket.published);
   const response = await api.put('/brackets_details', mappedBracket);
 
   const brackets = getState().scheduling.brackets;

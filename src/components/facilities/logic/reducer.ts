@@ -18,6 +18,7 @@ import {
 } from 'components/authorized-page/authorized-page-event/logic/action-types';
 import { IFacility, IField } from 'common/models';
 import { EntryPoints } from 'common/enums';
+import { getSortedFieldsByFacility } from '../helpers';
 
 export interface IFacilitiesState {
   isLoading: boolean;
@@ -65,6 +66,11 @@ const facilitiesReducer = (
     case LOAD_FIELDS_SUCCESS: {
       const { facilityId, fields } = action.payload;
 
+      const sortedFields = getSortedFieldsByFacility([
+        ...state.fields,
+        ...fields,
+      ]);
+
       return {
         ...state,
         facilities: state.facilities.map(it =>
@@ -72,7 +78,7 @@ const facilitiesReducer = (
             ? { ...it, isFieldsLoading: false, isFieldsLoaded: true }
             : it
         ),
-        fields: [...state.fields, ...fields],
+        fields: sortedFields,
       };
     }
     case ADD_EMPTY_FACILITY:

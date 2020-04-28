@@ -9,6 +9,8 @@ import styles from './styles.module.scss';
 const TRANSFORM_WRAPPER_OPTIONS = {
   minScale: 0.3,
   limitToWrapper: true,
+  limitToBounds: true,
+  centerContent: true,
 };
 
 interface IProps {
@@ -50,6 +52,8 @@ const Brackets = (props: IProps) => {
     { [key: string]: IBracketGame[] } | undefined
   >();
 
+  const [visualScale, setVisualScale] = useState(0.7);
+
   const [hidden, setHidden] = useState<any>();
 
   const getPosByIndex = (index: number, games: IBracketGame[]) => {
@@ -76,6 +80,14 @@ const Brackets = (props: IProps) => {
     const newGrids = {};
 
     keys(grids).forEach(key => (newGrids[key] = groupBy(grids[key], 'round')));
+
+    if (newGrids[1][1]?.length < newGrids[1][2]?.length) {
+      setPlayInRound({
+        1: setInPlayGames(newGrids[1][1], newGrids[1][2]),
+      });
+      delete newGrids[1][1];
+    }
+
     keys(newGrids).forEach(gridKey =>
       Object.keys(newGrids[gridKey])
         .sort((a, b) => +a - +b)
@@ -100,24 +112,22 @@ const Brackets = (props: IProps) => {
         })
     );
 
-    if (newGrids[1][1].length < newGrids[1][2].length) {
-      setPlayInRound({
-        1: setInPlayGames(newGrids[1][1], newGrids[1][2]),
-      });
-      delete newGrids[1][1];
-    }
-
     setNewGrids(newGrids);
   }, [games]);
 
   useEffect(() => {
     if (playInRound && grids) {
-      const hiddenConnectors = setHiddenConnectors(playInRound[1], grids[1][1]);
+      const hiddenConnectors = setHiddenConnectors(playInRound[1], grids[1][2]);
       setHidden(hiddenConnectors);
     }
   }, [playInRound, grids]);
 
+  useEffect(() => {
+    setVisualScale(0.7);
+  }, [grids]);
+
   const setHiddenConnectors = (leftRound: any[], rightRound: any[]) => {
+    console.log(leftRound, rightRound);
     if (!leftRound || !rightRound) return;
 
     const arr: any[] = [];
@@ -127,6 +137,13 @@ const Brackets = (props: IProps) => {
         arr.push({
           hiddenTop: leftRound[i]?.hidden,
           hiddenBottom: leftRound[i]?.hidden,
+        });
+      });
+    } else {
+      [...Array(Math.round(leftRound.length / 2))].forEach((_, i) => {
+        arr.push({
+          hiddenTop: leftRound[i * 2]?.hidden,
+          hiddenBottom: leftRound[i * 2 + 1]?.hidden,
         });
       });
     }
@@ -148,9 +165,7 @@ const Brackets = (props: IProps) => {
   return (
     <div className={styles.container}>
       <TransformWrapper
-        defaultPositionX={1}
-        defaultPositionY={1}
-        defaultScale={0.5}
+        defaultScale={visualScale}
         options={{ ...TRANSFORM_WRAPPER_OPTIONS, disabled: false }}
       >
         <TransformComponent>
@@ -168,8 +183,8 @@ const Brackets = (props: IProps) => {
                       />
                       <BracketConnector
                         hidden={hidden}
-                        leftGamesNum={grids[gridKey][roundKey].length}
-                        rightGamesNum={grids[gridKey][1].length}
+                        leftGamesNum={playInRound![roundKey]?.length}
+                        rightGamesNum={grids[gridKey][1]?.length}
                       />
                     </Fragment>
                   ))}

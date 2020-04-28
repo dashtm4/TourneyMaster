@@ -182,7 +182,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             </div>
             <Tooltip
               type="info"
-              title="Shoud be in E.164 format. Example: +14155552671"
+              title="Should be in following format: [+][country code][subscriber number including area code]. Example: +14155552671"
             >
               <div className={styles.sectionItem}>
                 <Input

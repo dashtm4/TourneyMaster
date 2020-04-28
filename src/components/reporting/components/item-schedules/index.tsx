@@ -1,12 +1,19 @@
 import React from 'react';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
-import { HeadingLevelThree, Button, Select } from 'components/common';
+import {
+  HeadingLevelThree,
+  ButtonLoad,
+  SelectMultiple,
+  CardMessage,
+} from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import {
   onPDFSave,
   onXLSXSave,
-  getAllGamesByTeamCards,
+  getAllTeamCardGames,
   getSelectDayOptions,
+  getGamesByDays,
 } from 'helpers';
 import { ButtonVarian, ButtonColors, DefaultSelectValues } from 'common/enums';
 import { IEventDetails, ISchedule, IPool } from 'common/models';
@@ -17,7 +24,12 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 import styles from './styles.module.scss';
-import { IInputEvent } from 'common/types';
+
+const STYLES_ICOM_WARNING = {
+  fill: '#FFCB00',
+  height: '25px',
+  width: '30px',
+};
 
 interface Props {
   event: IEventDetails;
@@ -40,26 +52,27 @@ const ItemSchedules = ({
   teamCards,
   pools,
 }: Props) => {
-  const [activeDay, changeActiveDay] = React.useState<string>(
-    DefaultSelectValues.ALL
-  );
-  const eventDays = calculateDays(teamCards);
-  const allGamesByTeamCards = getAllGamesByTeamCards(
-    teamCards,
-    games,
-    eventDays
-  );
-  const gamesByDay = allGamesByTeamCards.filter(
-    it => it.gameDate === activeDay || activeDay === DefaultSelectValues.ALL
-  );
+  const [isAllowDownload, changeAllowDownload] = React.useState<boolean>(true);
+  const [activeDay, changeActiveDay] = React.useState<string[]>([
+    DefaultSelectValues.ALL,
+  ]);
 
+  React.useEffect(() => {
+    changeAllowDownload(activeDay.length > 0);
+  }, [activeDay]);
+
+  const eventDays = calculateDays(teamCards);
+  const allTeamCardGames = getAllTeamCardGames(teamCards, games, eventDays);
+  const gamesByDay = getGamesByDays(allTeamCardGames, activeDay);
   const selectDayOptions = getSelectDayOptions(eventDays);
 
-  const onChangeActiveDay = ({ target }: IInputEvent) => {
-    changeActiveDay(target.value);
+  const onChangeActiveDay = (avtiveDay: string[] | null) => {
+    if (activeDay) {
+      changeActiveDay(avtiveDay as string[]);
+    }
   };
 
-  const onScheduleTableSave = async () =>
+  const onScheduleTableSave = () =>
     onPDFSave(
       <PDFTableSchedule
         event={event}
@@ -72,7 +85,7 @@ const ItemSchedules = ({
       event.event_name ? `${event.event_name} Master Schedule` : 'Schedule'
     );
 
-  const onHeatmapScheduleTableSave = async () =>
+  const onHeatmapScheduleTableSave = () =>
     onPDFSave(
       <PDFTableSchedule
         event={event}
@@ -88,7 +101,7 @@ const ItemSchedules = ({
         : 'Schedule'
     );
 
-  const onScheduleFieldsSave = async () =>
+  const onScheduleFieldsSave = () =>
     onPDFSave(
       <PDFTableFieldsSchedule
         event={event}
@@ -119,54 +132,66 @@ const ItemSchedules = ({
 
   return (
     <li>
-      <header className={styles.headerWrapper}>
-        <div className={styles.titleWrapper}>
+      <section>
+        <header className={styles.headerWrapper}>
           <HeadingLevelThree>
             <span>Schedules</span>
           </HeadingLevelThree>
-        </div>
-        <Select
-          onChange={onChangeActiveDay}
-          value={activeDay}
-          options={selectDayOptions}
-          label="Event day"
-          width="200px"
-        />
-      </header>
-      <ul className={styles.scheduleList}>
-        <li>
-          <Button
-            onClick={onScheduleTableSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule"
+          <SelectMultiple
+            options={selectDayOptions}
+            value={activeDay}
+            onChange={onChangeActiveDay}
+            primaryValue={DefaultSelectValues.ALL}
+            isFormControlRow={true}
+            label="Event day: "
           />
-        </li>
-        <li>
-          <Button
-            onClick={onHeatmapScheduleTableSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule (with Heatmap)"
-          />
-        </li>
-        <li>
-          <Button
-            onClick={onScheduleFieldsSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule (by fields)"
-          />
-        </li>
-        <li>
-          <Button
-            onClick={onScheduleTableXLSXSave}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Master Schedule (XLSX)"
-          />
-        </li>
-      </ul>
+        </header>
+        <ul className={styles.scheduleList}>
+          <li>
+            <ButtonLoad
+              loadFunc={onScheduleTableSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              isDisabled={!isAllowDownload}
+              label="Master Schedule"
+            />
+          </li>
+          <li>
+            <ButtonLoad
+              loadFunc={onHeatmapScheduleTableSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              isDisabled={!isAllowDownload}
+              label="Master Schedule (with Heatmap)"
+            />
+          </li>
+          <li>
+            <ButtonLoad
+              loadFunc={onScheduleFieldsSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              isDisabled={!isAllowDownload}
+              label="Master Schedule (by fields)"
+            />
+          </li>
+          <li>
+            <ButtonLoad
+              loadFunc={onScheduleTableXLSXSave}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Master Schedule (XLSX)"
+            />
+          </li>
+        </ul>
+        {!isAllowDownload && (
+          <CardMessage
+            type={CardMessageTypes.WARNING}
+            iconStyle={STYLES_ICOM_WARNING}
+          >
+            Select day to download PDF-files
+          </CardMessage>
+        )}
+      </section>
     </li>
   );
 };

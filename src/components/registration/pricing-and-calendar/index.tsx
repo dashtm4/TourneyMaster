@@ -6,21 +6,21 @@ import { HashLink } from 'react-router-hash-link';
 import { IRegistration } from 'common/models/registration';
 import { stringToLink } from 'helpers';
 
-interface IPrimaryInformationProps {
+interface IPricingAndCalendarProps {
   data: Partial<IRegistration>;
   divisions: { name: string; id: string }[];
   eventId: string;
 }
 
-const PrimaryInformation = ({
+const PricingAndCalendar = ({
   data,
   divisions,
   eventId,
-}: IPrimaryInformationProps) => (
+}: IPricingAndCalendarProps) => (
   <div className={styles.section}>
-    <div className={styles.piSectionFirstRow}>
+    <div className={styles.sectionRow}>
       <div className={styles.sectionItem}>
-        <span className={styles.sectionTitle}>Division</span>
+        <span className={styles.sectionTitle}>Divisions</span>
         <div>
           {divisions.map((division, index: number) => (
             <HashLink
@@ -37,6 +37,7 @@ const PrimaryInformation = ({
           ))}
         </div>
       </div>
+      <div className={styles.sectionItem} />
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Open Date</span>
         <p>
@@ -54,14 +55,14 @@ const PrimaryInformation = ({
         </p>
       </div>
     </div>
-    <div className={styles.piSectionSecondRow}>
+    <div className={styles.sectionRow}>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Entry Fee</span>
         <p>{data.entry_fee ? `$${data.entry_fee}` : '—'}</p>
       </div>
       <div className={styles.sectionItem}>
-        <span className={styles.sectionTitle}>Deposit Fee</span>
-        <p>{data.entry_deposit ? `$${data.entry_deposit}` : '—'}</p>
+        <span className={styles.sectionTitle}>Currency</span>
+        <p>{data.currency ? data.currency : '—'}</p>
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Early Bird Discount</span>
@@ -76,15 +77,53 @@ const PrimaryInformation = ({
         </p>
       </div>
     </div>
-    <div className={styles.piSectionThirddRow}>
+    <div className={styles.sectionRow}>
+      <div className={styles.sectionItem}>
+        {data?.entry_deposit_YN ? (
+          <div>
+            <span className={styles.sectionTitle}>Deposit Fee</span>
+            <p>{data.entry_deposit ? `$${data.entry_deposit}` : '—'}</p>
+          </div>
+        ) : (
+          <Checkbox
+            options={[
+              {
+                label: 'Entry Deposit Enabled',
+                checked: Boolean(data ? data.entry_deposit_YN : false),
+                disabled: true,
+              },
+            ]}
+          />
+        )}
+      </div>
       <div className={styles.sectionItem}>
         <Checkbox
           options={[
             {
-              label: 'Upcharge Processing Fees',
-              checked: Boolean(
-                data ? data.upcharge_fees_on_registrations : false
-              ),
+              label: 'Division Fees Vary',
+              checked: Boolean(data ? data.fees_vary_by_division_YN : false),
+              disabled: true,
+            },
+          ]}
+        />
+      </div>
+      <div className={styles.sectionItem}>
+        <Checkbox
+          options={[
+            {
+              label: 'Opens at a specific time',
+              checked: Boolean(data ? data.specific_time_reg_open_YN : false),
+              disabled: true,
+            },
+          ]}
+        />
+      </div>
+      <div className={styles.sectionItem}>
+        <Checkbox
+          options={[
+            {
+              label: 'Enable waitlist',
+              checked: Boolean(data ? data.enable_waitlist_YN : false),
               disabled: true,
             },
           ]}
@@ -94,4 +133,4 @@ const PrimaryInformation = ({
   </div>
 );
 
-export default PrimaryInformation;
+export default PricingAndCalendar;

@@ -13,10 +13,12 @@ import styles from './styles.module.scss';
 
 interface IProps {
   divisions: IDivision[];
+  historyLength: number;
   seeds?: IBracketSeed[];
   bracketGames?: IBracketGame[];
   addGame: (selectedDivision: string, data: IOnAddGame) => void;
   removeGame: (selectedDivision: string, data: number) => void;
+  onUndoClick: () => void;
 }
 
 interface IState {
@@ -104,7 +106,7 @@ class BracketManager extends Component<IProps> {
   };
 
   render() {
-    const { seeds } = this.props;
+    const { seeds, onUndoClick, historyLength } = this.props;
     const {
       divisionGames,
       divisionsOptions,
@@ -159,6 +161,14 @@ class BracketManager extends Component<IProps> {
               />
             </div>
             <div className={styles.buttonsWrapper}>
+              <Button
+                label="Undo"
+                icon={getIcon(Icons.SETTINGS_BACKUP_RESTORE)}
+                disabled={!historyLength || historyLength < 2}
+                variant="text"
+                color="secondary"
+                onClick={onUndoClick}
+              />
               <Button
                 label="Go to Bracket Setup"
                 variant="text"
