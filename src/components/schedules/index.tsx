@@ -291,6 +291,7 @@ class Schedules extends Component<Props, State> {
           event!,
           lastDay
         ) || [];
+
       this.calculateDiagnostics();
       this.setState({ playoffTimeSlots, teamCardsAlreadyUpdated: true });
     }
@@ -381,6 +382,7 @@ class Schedules extends Component<Props, State> {
 
   calculateTournamentDays = () => {
     const { event } = this.props;
+
     if (!event) return;
 
     const tournamentDays = calculateTournamentDays(event);

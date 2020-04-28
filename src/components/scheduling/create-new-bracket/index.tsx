@@ -130,6 +130,13 @@ const CreateNewBracket = (props: IProps) => {
     const eventId = event.event_id;
     const bracketDate = event.event_enddate;
 
+    const firstTimeSlot = playoffTimeSlots?.length
+      ? playoffTimeSlots[0].id
+      : -1;
+    const lastTimeSlot = playoffTimeSlots?.length
+      ? playoffTimeSlots[playoffTimeSlots.length - 1].id
+      : -1;
+
     const scheduleData: ICreateBracketModalOutput = {
       id: getVarcharEight(),
       name: bracketName,
@@ -138,9 +145,9 @@ const CreateNewBracket = (props: IProps) => {
       adjustTime,
       bracketDate,
       eventId,
-      startTimeSlot: String(playoffTimeSlots[0].id),
+      startTimeSlot: String(firstTimeSlot),
       endTimeSlot: String(
-        playoffTimeSlots[playoffTimeSlots.length - 1].id + +selectedTimeSlotsNum
+        lastTimeSlot ? lastTimeSlot + +selectedTimeSlotsNum : lastTimeSlot
       ),
       warmup: localWarmup || '00:00:00',
       createDate: new Date().toISOString(),
