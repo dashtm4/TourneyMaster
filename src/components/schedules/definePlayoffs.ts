@@ -64,8 +64,8 @@ export default (
   };
 };
 
-const calculateRoundsNumber = (_numTeamsBracket: number) => {
-  return 3;
+const calculateRoundsNumber = (numTeamsBracket: number) => {
+  return Math.ceil(Math.log2(numTeamsBracket));
 };
 
 const recursor = (
@@ -97,7 +97,7 @@ export const predictPlayoffTimeSlots = (
   const timeSlotsLength = timeSlots.length;
   const divisionsLength = divisions.length;
   const fieldsLength = fields.length;
-  const divisionFirstRoundGames = 4;
+  const divisionFirstRoundGames = (num_teams_bracket || 0) / 2;
 
   const firstRoundGamesTotal = divisionsLength * divisionFirstRoundGames;
   const timeSlotsRequired = recursor(
@@ -129,10 +129,10 @@ export const populateDefinedGamesWithPlayoffState = (
 
 export const adjustPlayoffTimeOnLoad = (
   schedulesDetails: ISchedulesDetails[],
-  fields: IScheduleField[],
+  _fields: IScheduleField[],
   timeSlots: ITimeSlot[],
-  divisions: IScheduleDivision[] | IDivision[],
-  event: IEventDetails,
+  _divisions: IScheduleDivision[] | IDivision[],
+  _event: IEventDetails,
   day: string
 ) => {
   const sdStartTimes = schedulesDetails
@@ -147,15 +147,16 @@ export const adjustPlayoffTimeOnLoad = (
 
   if (!lastGameTimeSlot) return;
 
-  const playoffTimeSlots = predictPlayoffTimeSlots(
-    fields,
-    timeSlots,
-    divisions,
-    event
-  );
+  // const playoffTimeSlots = predictPlayoffTimeSlots(
+  //   fields,
+  //   timeSlots,
+  //   divisions,
+  //   event
+  // );
 
   const start = lastGameTimeSlot + 1;
-  const end = start + playoffTimeSlots.length;
+  const end = timeSlots.length;
+  // const end = start + playoffTimeSlots.length;
 
   return timeSlots.slice(start, end);
 };
