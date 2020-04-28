@@ -4,9 +4,9 @@ import Button from '../common/buttons/button';
 import SectionDropdown from '../common/section-dropdown';
 import styles from './styles.module.scss';
 import Navigation from './navigation';
-import PrimaryInformation from './primary-information';
-import TeamsAthletesInfo from './teams-athletes';
-import MainContact from './main-contact';
+import PricingAndCalendar from './pricing-and-calendar';
+import RegistrationDetails from './registration-details';
+import Payments from './payments';
 import { connect } from 'react-redux';
 import {
   getRegistration,
@@ -175,17 +175,17 @@ class RegistrationView extends React.Component<
               )}
             </div>
             {this.props.isLoading && <Loader />}
-            {registration && !this.props.isLoading ? (
+            {!this.props.isLoading && registration ? (
               <ul className={styles.libraryList}>
                 <li>
                   <SectionDropdown
-                    id={EventMenuRegistrationTitles.PRIMARY_INFORMATION}
+                    id={EventMenuRegistrationTitles.PRICING_AND_CALENDAR}
                     type="section"
                     panelDetailsType="flat"
                     expanded={this.state.isSectionsExpand}
                   >
-                    <span>Primary Information</span>
-                    <PrimaryInformation
+                    <span>Pricing &amp; Calendar</span>
+                    <PricingAndCalendar
                       eventId={this.eventId}
                       data={registration}
                       divisions={this.props.divisions.map(division => ({
@@ -197,13 +197,13 @@ class RegistrationView extends React.Component<
                 </li>
                 <li>
                   <SectionDropdown
-                    id={EventMenuRegistrationTitles.TEAMS_AND_ATHLETES}
+                    id={EventMenuRegistrationTitles.REGISTRATION_DETAILS}
                     type="section"
                     panelDetailsType="flat"
                     expanded={this.state.isSectionsExpand}
                   >
-                    <span>Teams & Athletes</span>
-                    <TeamsAthletesInfo
+                    <span>Registration Details</span>
+                    <RegistrationDetails
                       data={registration}
                       eventType={eventType}
                     />
@@ -211,13 +211,13 @@ class RegistrationView extends React.Component<
                 </li>
                 <li>
                   <SectionDropdown
-                    id={EventMenuRegistrationTitles.MAIN_CONTACT}
+                    id={EventMenuRegistrationTitles.PAYMENTS}
                     type="section"
                     panelDetailsType="flat"
                     expanded={this.state.isSectionsExpand}
                   >
-                    <span>Main Contact</span>
-                    <MainContact data={registration} />
+                    <span>Payments</span>
+                    <Payments data={registration} />
                   </SectionDropdown>
                 </li>
               </ul>
