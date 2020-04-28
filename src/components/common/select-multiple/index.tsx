@@ -65,6 +65,7 @@ const SelectMultiple = ({
   options,
   label,
   value,
+  width,
   isFormControlRow,
   primaryValue,
   onChange,
@@ -107,6 +108,7 @@ const SelectMultiple = ({
         <span className={styles.label}>{label}</span>
         <Select
           className={classes.select}
+          style={{ width }}
           value={value}
           onChange={handleChange}
           renderValue={() => checkedLabel.join(', ')}
