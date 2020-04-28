@@ -36,13 +36,15 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  .piSectionFirstRow,
+  .sectionRow {
+    display: flex;
+    justify-content: space-between;
+  }
   .taSectionFirstRow,
   .taSectionSecondRow {
     display: flex;
     width: 75%;
   }
-  .piSectionSecondRow,
   .maSectionFirstRow,
   .maSectionThirdRow {
     display: flex;
@@ -56,16 +58,9 @@
     width: 25%;
     color: #6a6a6a;
     margin-bottom: 32px;
-    &:last-of-type {
-      margin-bottom: 0;
-    }
     p {
       margin-top: 4px;
     }
-  }
-  .taSectionItem {
-    @extend .sectionItem;
-    width: 33%;
   }
   .sectionTitle {
     font-weight: 600;
@@ -100,4 +95,11 @@
   padding: 0 8px;
 
   color: #00a3ea;
+}
+.sectionInfoRow {
+  display: flex;
+  justify-content: space-between;
+  .sectionItem {
+    width: 48%;
+  }
 }
