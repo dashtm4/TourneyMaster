@@ -5,15 +5,13 @@ import {
   IEventDetails,
   ISchedule,
   IFetchedBracket,
+  IPublishSettings,
+  BindingCbWithTwo,
 } from 'common/models';
-import { ButtonColors, ButtonVarian } from 'common/enums';
+import { ButtonColors, ButtonVarian, EventPublishTypes } from 'common/enums';
 import { IInputEvent } from 'common/types';
 import { getSettingsComponents, getSettingItemById } from '../../helpers';
-import {
-  EventPublishTypes,
-  IPublishSettings,
-  PublishSettingFields,
-} from '../../common';
+import { PublishSettingFields } from '../../common';
 import styles from './styles.module.scss';
 
 const BUTTON_STYLES = {
@@ -26,6 +24,7 @@ interface Props {
   brackets: IFetchedBracket[];
   publishType: EventPublishTypes;
   onClose: BindingAction;
+  publishEvent: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
 }
 
 const ConfirmSection = ({
@@ -34,9 +33,10 @@ const ConfirmSection = ({
   brackets,
   publishType,
   onClose,
+  publishEvent,
 }: Props) => {
-  const DEFAULT_SELECTED_SCHEDULE = schedules[0];
-  const DEFAULT_SELECTED_BRACKET = brackets[0];
+  const DEFAULT_SELECTED_SCHEDULE = schedules[0] || null;
+  const DEFAULT_SELECTED_BRACKET = brackets[0] || null;
   const [publishSettings, changePublishSettings] = React.useState<
     IPublishSettings
   >({
@@ -61,6 +61,12 @@ const ConfirmSection = ({
       ...publishSettings,
       [name]: settingItem,
     });
+  };
+
+  const onPublishEvent = () => {
+    publishEvent(publishType, publishSettings);
+
+    onClose();
   };
 
   return (
@@ -94,6 +100,7 @@ const ConfirmSection = ({
         />
         <span className={styles.btnWrapper}>
           <Button
+            onClick={onPublishEvent}
             variant={ButtonVarian.CONTAINED}
             color={ButtonColors.PRIMARY}
             btnStyles={BUTTON_STYLES}

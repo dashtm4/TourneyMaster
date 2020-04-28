@@ -6,8 +6,8 @@ import {
   LOAD_AUTH_PAGE_DATA_SUCCESS,
   LOAD_AUTH_PAGE_DATA_FAILURE,
   CLEAR_AUTH_PAGE_DATA,
-  PUBLISH_TOURNAMENT_SUCCESS,
-  PUBLISH_TOURNAMENT_FAILURE,
+  PUBLISH_EVENT_SUCCESS,
+  PUBLISH_EVENT_FAILURE,
   ADD_ENTITY_TO_LIBRARY_SUCCESS,
   ADD_ENTITY_TO_LIBRARY_FAILURE,
   ADD_ENTITIES_TO_LIBRARY_SUCCESS,
@@ -16,12 +16,18 @@ import {
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { Toasts } from 'components/common';
-import { IEventDetails, IRegistration, IFacility } from 'common/models';
+import {
+  IEventDetails,
+  IRegistration,
+  IFacility,
+  IPublishSettings,
+} from 'common/models';
 import {
   EventStatuses,
   EntryPoints,
   MethodTypes,
   LibraryStates,
+  EventPublishTypes,
 } from 'common/enums';
 import { IEntity } from 'common/types';
 import { sentToServerByRoute, removeObjKeysByEntryPoint } from 'helpers';
@@ -86,37 +92,42 @@ const clearAuthPageData = () => ({
   type: CLEAR_AUTH_PAGE_DATA,
 });
 
-const toggleTournamentStatus = () => async (
-  dispatch: Dispatch,
-  getState: () => IAppState
-) => {
+const publishEvent = (
+  publishType: EventPublishTypes,
+  _publishSettings: IPublishSettings
+) => async (dispatch: Dispatch, getState: () => IAppState) => {
   try {
-    const { tournamentData } = getState().pageEvent;
-    const { event } = tournamentData;
+    switch (publishType) {
+      case EventPublishTypes.DETAILS: {
+        const { tournamentData } = getState().pageEvent;
+        const { event } = tournamentData;
 
-    console.log(event?.is_published_YN);
+        const updatedEvent = {
+          ...event,
+          is_published_YN:
+            event?.is_published_YN === EventStatuses.Draft
+              ? EventStatuses.Published
+              : EventStatuses.Draft,
+        } as IEventDetails;
 
-    const updatedEvent = {
-      ...event,
-      is_published_YN:
-        event?.is_published_YN === EventStatuses.Draft
-          ? EventStatuses.Published
-          : EventStatuses.Draft,
-    } as IEventDetails;
+        await Api.put(
+          `/events?event_id=${updatedEvent.event_id}`,
+          updatedEvent
+        );
 
-    await Api.put(`/events?event_id=${updatedEvent.event_id}`, updatedEvent);
-
-    dispatch({
-      type: PUBLISH_TOURNAMENT_SUCCESS,
-      payload: {
-        event: updatedEvent,
-      },
-    });
+        dispatch({
+          type: PUBLISH_EVENT_SUCCESS,
+          payload: {
+            event: updatedEvent,
+          },
+        });
+      }
+    }
 
     Toasts.successToast('Changes successfully saved.');
   } catch {
     dispatch({
-      type: PUBLISH_TOURNAMENT_FAILURE,
+      type: PUBLISH_EVENT_FAILURE,
     });
   }
 };
@@ -197,7 +208,7 @@ const addEntitiesToLibrary = (
 export {
   loadAuthPageData,
   clearAuthPageData,
-  toggleTournamentStatus,
+  publishEvent,
   addEntityToLibrary,
   addEntitiesToLibrary,
 };

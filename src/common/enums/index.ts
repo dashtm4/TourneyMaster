@@ -16,3 +16,4 @@ export * from './library';
 export * from './pool';
 export * from './select';
 export * from './bracket';
+export * from './tournament';

@@ -4,11 +4,11 @@ import TournamentStatus from './components/tournament-status';
 import MenuItem from './components/menu-item';
 import { getIcon, countCompletedPercent } from 'helpers';
 import { Icons } from 'common/enums/icons';
-import { RequiredMenuKeys, EventStatuses, Routes } from 'common/enums';
+import { RequiredMenuKeys, Routes } from 'common/enums';
 import { IMenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 import { useLocation } from 'react-router-dom';
-import { BindingAction } from 'common/models';
+import { BindingAction, IEventDetails } from 'common/models';
 
 enum MenuCollapsedTypes {
   PIN = 'Pin',
@@ -17,22 +17,16 @@ enum MenuCollapsedTypes {
 
 interface Props {
   list: IMenuItem[];
+  event?: IEventDetails;
   isAllowEdit: boolean;
-  eventId?: string;
-  tournamentStatus?: EventStatuses;
-  toggleTournamentStatus?: BindingAction;
   togglePublishPopup?: BindingAction;
-  eventName?: string;
   hideOnList?: Routes[];
 }
 
 const Menu = ({
   list,
-  eventId,
-  eventName,
+  event,
   isAllowEdit,
-  tournamentStatus,
-  toggleTournamentStatus,
   togglePublishPopup,
   hideOnList,
 }: Props) => {
@@ -60,15 +54,15 @@ const Menu = ({
       onMouseEnter={() => isCollapsible && onCollapse(false)}
       onMouseLeave={() => isCollapsible && onCollapse(true)}
     >
-      {!isCollapsed && eventName && (
-        <b className={styles.eventTitle}>{eventName}</b>
+      {!isCollapsed && event && (
+        <b className={styles.eventTitle}>{event.event_name}</b>
       )}
       <ul className={styles.list}>
         {list.map(menuItem => (
           <MenuItem
-            eventId={eventId}
+            eventId={event?.event_id}
             menuItem={menuItem}
-            tournamentStatus={tournamentStatus}
+            tournamentStatus={event?.is_published_YN}
             isAllowEdit={isAllowEdit}
             isCollapsed={isCollapsed}
             isActiveItem={activeItem === menuItem.title}
@@ -77,17 +71,13 @@ const Menu = ({
           />
         ))}
       </ul>
-      {!isCollapsed &&
-        tournamentStatus !== undefined &&
-        toggleTournamentStatus &&
-        togglePublishPopup && (
-          <TournamentStatus
-            tournamentStatus={tournamentStatus}
-            percentOfCompleted={percentOfCompleted}
-            toggleTournamentStatus={toggleTournamentStatus}
-            togglePublishPopup={togglePublishPopup}
-          />
-        )}
+      {!isCollapsed && event && togglePublishPopup && (
+        <TournamentStatus
+          tournamentStatus={event.is_published_YN}
+          percentOfCompleted={percentOfCompleted}
+          togglePublishPopup={togglePublishPopup}
+        />
+      )}
       <button
         className={styles.pinBtn}
         onClick={() => onSetCollapsibility(!isCollapsible)}

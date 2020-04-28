@@ -19,3 +19,8 @@ export interface ITournamentData {
   schedules: ISchedule[];
   brackets: IFetchedBracket[];
 }
+
+export interface IPublishSettings {
+  activeSchedule: ISchedule | null;
+  activeBracket: IFetchedBracket | null;
+}

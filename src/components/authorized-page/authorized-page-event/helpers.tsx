@@ -1,14 +1,19 @@
 import React from 'react';
 import { Select } from 'components/common';
 import { getSelectOptions } from 'helpers';
-import { BindingCbWithOne, ISchedule, IFetchedBracket } from 'common/models';
-import { IScheduleFields, IBracketFields } from 'common/enums';
-import { IInputEvent } from 'common/types';
 import {
-  EventPublishTypes,
+  BindingCbWithOne,
+  ISchedule,
+  IFetchedBracket,
   IPublishSettings,
-  PublishSettingFields,
-} from './common';
+} from 'common/models';
+import {
+  IScheduleFields,
+  IBracketFields,
+  EventPublishTypes,
+} from 'common/enums';
+import { IInputEvent } from 'common/types';
+import { PublishSettingFields } from './common';
 
 const getEventPublishOptions = (
   schedules: ISchedule[],
@@ -54,7 +59,7 @@ const getSettingsComponents = (
           onChange={onChangeSettings}
           name={PublishSettingFields.ACTIVE_SCHEDULE}
           options={scheduleOptions}
-          value={activeSchedule.schedule_id}
+          value={activeSchedule?.schedule_id || ''}
           label="Schedules:"
         />
       );
@@ -78,14 +83,14 @@ const getSettingsComponents = (
             onChange={onChangeSettings}
             name={PublishSettingFields.ACTIVE_SCHEDULE}
             options={scheduleOptions}
-            value={activeSchedule.schedule_id}
+            value={activeSchedule?.schedule_id || ''}
             label="Schedules:"
           />
           <Select
             onChange={onChangeSettings}
             name={PublishSettingFields.ACTIVE_BRACKET}
             options={bracketsOptions}
-            value={activeBracket.bracket_id}
+            value={activeBracket?.bracket_id || ''}
             label="Brackets:"
           />
         </>

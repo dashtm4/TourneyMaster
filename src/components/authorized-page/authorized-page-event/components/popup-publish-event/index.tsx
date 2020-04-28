@@ -7,9 +7,10 @@ import {
   IEventDetails,
   ISchedule,
   IFetchedBracket,
+  BindingCbWithTwo,
+  IPublishSettings,
 } from 'common/models';
-import { ButtonVarian, ButtonColors } from 'common/enums';
-import { EventPublishTypes } from '../../common';
+import { ButtonVarian, ButtonColors, EventPublishTypes } from 'common/enums';
 import { IInputEvent } from 'common/types';
 import { getEventPublishOptions } from '../../helpers';
 import styles from './styles.module.scss';
@@ -24,6 +25,7 @@ interface Props {
   brackets: IFetchedBracket[];
   isOpen: boolean;
   onClose: BindingAction;
+  publishEvent: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
 }
 
 const PopupPublishEvent = ({
@@ -32,6 +34,7 @@ const PopupPublishEvent = ({
   brackets,
   isOpen,
   onClose,
+  publishEvent,
 }: Props) => {
   const eventPublishOptions = getEventPublishOptions(schedules, brackets);
   const DEFAULT_PUBLISH_OPTION = eventPublishOptions[0];
@@ -67,6 +70,7 @@ const PopupPublishEvent = ({
             brackets={brackets}
             publishType={publishType as EventPublishTypes}
             onClose={onClose}
+            publishEvent={publishEvent}
           />
         ) : (
           <>

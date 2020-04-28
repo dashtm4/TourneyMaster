@@ -8,7 +8,6 @@ import { BindingAction } from 'common/models';
 interface Props {
   tournamentStatus: EventStatuses;
   percentOfCompleted: number;
-  toggleTournamentStatus: BindingAction;
   togglePublishPopup: BindingAction;
 }
 
@@ -53,10 +52,10 @@ const TournamentStatus = ({
       ) : (
         <span className={styles.doneBtnWrapper}>
           <Button
-            onClick={togglePublishPopup}
-            label="Unpublish Event"
             color={ButtonColors.INHERIT}
             variant={ButtonVarian.CONTAINED}
+            disabled={true}
+            label="Unpublish Event"
           />
         </span>
       )}

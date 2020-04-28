@@ -3,7 +3,11 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { loadAuthPageData, clearAuthPageData } from './logic/actions';
+import {
+  loadAuthPageData,
+  clearAuthPageData,
+  publishEvent,
+} from './logic/actions';
 import PopupPublishEvent from './components/popup-publish-event';
 import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
@@ -28,8 +32,10 @@ import {
   BindingAction,
   ITournamentData,
   ICalendarEvent,
+  BindingCbWithTwo,
+  IPublishSettings,
 } from 'common/models';
-import { Routes, EventMenuTitles } from 'common/enums';
+import { Routes, EventMenuTitles, EventPublishTypes } from 'common/enums';
 import { getIncompleteMenuItems } from '../helpers';
 import styles from '../styles.module.scss';
 import { closeFullscreen, openFullscreen } from 'helpers';
@@ -54,10 +60,10 @@ interface Props {
   tournamentData: ITournamentData;
   loadAuthPageData: (eventId: string) => void;
   clearAuthPageData: BindingAction;
-  toggleTournamentStatus: BindingAction;
   getCalendarEvents: BindingAction;
   calendarEvents: ICalendarEvent[] | null | undefined;
   updateCalendarEvent: BindingAction;
+  publishEvent: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
 }
 
 export const EmptyPage: React.FC = () => {
@@ -71,10 +77,10 @@ const AuthorizedPageEvent = ({
   tournamentData,
   loadAuthPageData,
   clearAuthPageData,
-  toggleTournamentStatus,
   getCalendarEvents,
   calendarEvents,
   updateCalendarEvent,
+  publishEvent,
 }: Props & RouteComponentProps<MatchParams>) => {
   const [isPublishPopupOpen, togglePublishPopup] = React.useState<boolean>(
     false
@@ -143,12 +149,9 @@ const AuthorizedPageEvent = ({
       <div className={styles.page}>
         <Menu
           list={menuList}
-          eventId={eventId}
+          event={event || undefined}
           hideOnList={hideOnList}
           isAllowEdit={Boolean(eventId)}
-          tournamentStatus={event?.is_published_YN}
-          eventName={event?.event_name || ''}
-          toggleTournamentStatus={toggleTournamentStatus}
           togglePublishPopup={onTogglePublishPopup}
         />
         <main
@@ -238,6 +241,7 @@ const AuthorizedPageEvent = ({
           brackets={brackets}
           isOpen={isPublishPopupOpen}
           onClose={onTogglePublishPopup}
+          publishEvent={publishEvent}
         />
       )}
     </div>
@@ -259,6 +263,7 @@ export default connect(
         clearAuthPageData,
         getCalendarEvents,
         updateCalendarEvent,
+        publishEvent,
       },
       dispatch
     )
