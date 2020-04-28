@@ -26,6 +26,8 @@ export interface IGame {
   playoffIndex?: number;
   awaySeedId?: number;
   homeSeedId?: number;
+  awayTeamId?: string;
+  homeTeamId?: string;
   awayDisplayName?: string;
   homeDisplayName?: string;
   divisionName?: string;
