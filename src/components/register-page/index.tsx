@@ -8,6 +8,7 @@ import {
   HeadingLevelThree,
   Radio,
   HeadingLevelTwo,
+  Toasts,
 } from 'components/common';
 import styles from './styles.module.scss';
 import Paper from 'components/common/paper';
@@ -19,6 +20,7 @@ import Team from './teams/team';
 import ContactInfo from './teams/contact-info';
 import CoachInfo from './teams/coach-info';
 import { Modal } from 'components/common';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 enum TypeOptions {
   'Individual' = 1,
@@ -43,7 +45,11 @@ const RegisterPage = () => {
   const steps = getSteps();
 
   const handleNext = () => {
-    setActiveStep(prevActiveStep => prevActiveStep + 1);
+    if (activeStep === steps.length - 1) {
+      handleSubmit();
+    } else {
+      setActiveStep(prevActiveStep => prevActiveStep + 1);
+    }
   };
 
   const handleBack = () => {
@@ -109,6 +115,28 @@ const RegisterPage = () => {
       }
     }
   };
+
+  // Stripe
+
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const handleSubmit = async () => {
+    if (!stripe || !elements) {
+      return Toasts.errorToast('Something went wrong');
+    }
+
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: elements.getElement(CardElement)!,
+    });
+
+    if (error) {
+      return Toasts.errorToast(error.message || 'Something wend wrong');
+    }
+    console.log(paymentMethod);
+  };
+
   console.log(registration);
   return (
     <div className={styles.container}>
@@ -160,6 +188,7 @@ const RegisterPage = () => {
           )}
         </Paper>
       </div>
+
       <Modal isOpen={isOpenModalOpen} onClose={() => {}}>
         <div className={styles.modalContainer}>
           <div style={{ height: '185px' }}>

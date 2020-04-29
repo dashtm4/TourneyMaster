@@ -8,6 +8,10 @@ import { Routes } from 'common/enums';
 import AuthorizedPageEvent from './authorized-page/authorized-page-event';
 import Toastr from 'components/common/toastr';
 import RegisterPage from 'components/register-page';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+
+const stripePromise = loadStripe('pk_live_2lYzDHwATTJOkdIHHv9p6JCu00xHXSXtRR');
 
 const LoginPageWrapped = withUnprotectedRoute(LoginPage);
 const RegisterPageWrapped = withUnprotectedRoute(RegisterPage);
@@ -19,11 +23,13 @@ const App: React.FC = () => {
     <React.Fragment>
       <Switch>
         <Route path={Routes.LOGIN} component={LoginPageWrapped} exact={true} />
-        <Route
-          path={Routes.REGISTER}
-          component={RegisterPageWrapped}
-          exact={true}
-        />
+        <Elements stripe={stripePromise}>
+          <Route
+            path={Routes.REGISTER}
+            component={RegisterPageWrapped}
+            exact={true}
+          />
+        </Elements>
         <Route
           path={[
             Routes.DASHBOARD,

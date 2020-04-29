@@ -3,6 +3,7 @@ import styles from '../../styles.module.scss';
 import { Input, Select } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
 import { IIndivisualsRegister } from 'common/models/register';
+import { CardElement } from '@stripe/react-stripe-js';
 
 interface IPaymentProps {
   data: IIndivisualsRegister;
@@ -69,6 +70,28 @@ const Payment = ({ data, onChange }: IPaymentProps) => {
             onChange={onPaymentAmountChange}
           />
         </div>
+      </div>
+      <div>
+        <div className={styles.sectionTitle}>Card Details</div>
+        <CardElement
+          className={styles.stripeElement}
+          options={{
+            iconStyle: 'solid',
+            style: {
+              base: {
+                iconColor: '#1c315f',
+                fontSize: '16px',
+                color: '#6a6a6a',
+                '::placeholder': {
+                  color: '#aab7c4',
+                },
+              },
+              invalid: {
+                color: '#9e2146',
+              },
+            },
+          }}
+        />
       </div>
     </div>
   );
