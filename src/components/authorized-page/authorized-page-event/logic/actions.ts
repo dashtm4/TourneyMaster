@@ -23,7 +23,6 @@ import {
   IPublishSettings,
   ISchedule,
   IFetchedBracket,
-  ScheduleStatuses,
 } from 'common/models';
 import {
   EventStatuses,
@@ -33,7 +32,11 @@ import {
   EventPublishTypes,
 } from 'common/enums';
 import { IEntity } from 'common/types';
-import { sentToServerByRoute, removeObjKeysByEntryPoint } from 'helpers';
+import {
+  sentToServerByRoute,
+  removeObjKeysByEntryPoint,
+  CheckEventDrafts,
+} from 'helpers';
 import {
   updateScheduleStatus,
   updateBracketStatus,
@@ -155,15 +158,13 @@ const publishEventData = (
     case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY_AND_BRACKETS: {
       const publishedSchedule = publishSettings.activeSchedule as ISchedule;
       const publishedBracket = publishSettings.activeBracket as IFetchedBracket;
-      const hasPublishedSchedule = schedules.some(
-        it => it.schedule_status === ScheduleStatuses.PUBLISHED
-      );
+      const hasDraftedSchedule = CheckEventDrafts.checkDraftSchedule(schedules);
 
       if (event?.is_published_YN === EventStatuses.Draft) {
         dispatch<any>(updateEventStatus(false));
       }
 
-      if (!hasPublishedSchedule) {
+      if (!hasDraftedSchedule) {
         dispatch<any>(
           updateScheduleStatus(publishedSchedule.schedule_id, false)
         );

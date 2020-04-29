@@ -150,6 +150,8 @@ const AuthorizedPageEvent = ({
         <Menu
           list={menuList}
           event={event || undefined}
+          schedules={schedules}
+          brackets={brackets}
           hideOnList={hideOnList}
           isAllowEdit={Boolean(eventId)}
           togglePublishPopup={onTogglePublishPopup}

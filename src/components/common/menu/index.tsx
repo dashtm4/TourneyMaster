@@ -2,13 +2,18 @@
 import React, { useEffect } from 'react';
 import TournamentStatus from './components/tournament-status';
 import MenuItem from './components/menu-item';
-import { getIcon, countCompletedPercent } from 'helpers';
+import { getIcon } from 'helpers';
 import { Icons } from 'common/enums/icons';
-import { RequiredMenuKeys, Routes } from 'common/enums';
+import { Routes } from 'common/enums';
 import { IMenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 import { useLocation } from 'react-router-dom';
-import { BindingAction, IEventDetails } from 'common/models';
+import {
+  BindingAction,
+  IEventDetails,
+  ISchedule,
+  IFetchedBracket,
+} from 'common/models';
 
 enum MenuCollapsedTypes {
   PIN = 'Pin',
@@ -17,15 +22,19 @@ enum MenuCollapsedTypes {
 
 interface Props {
   list: IMenuItem[];
-  event?: IEventDetails;
   isAllowEdit: boolean;
   togglePublishPopup?: BindingAction;
   hideOnList?: Routes[];
+  event?: IEventDetails;
+  schedules?: ISchedule[];
+  brackets?: IFetchedBracket[];
 }
 
 const Menu = ({
   list,
   event,
+  schedules,
+  brackets,
   isAllowEdit,
   togglePublishPopup,
   hideOnList,
@@ -35,10 +44,6 @@ const Menu = ({
   const [isCollapsed, onCollapse] = React.useState(false);
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(list[0].title);
-  const percentOfCompleted = countCompletedPercent(
-    list,
-    RequiredMenuKeys.IS_COMPLETED
-  );
 
   useEffect(() => {
     const value = !!hideOnList?.filter(el => location?.pathname.includes(el))
@@ -70,10 +75,11 @@ const Menu = ({
           />
         ))}
       </ul>
-      {!isCollapsed && event && togglePublishPopup && (
+      {!isCollapsed && event && schedules && brackets && togglePublishPopup && (
         <TournamentStatus
-          tournamentStatus={event.is_published_YN}
-          percentOfCompleted={percentOfCompleted}
+          event={event}
+          schedules={schedules}
+          brackets={brackets}
           togglePublishPopup={togglePublishPopup}
         />
       )}
