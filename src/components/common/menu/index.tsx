@@ -2,13 +2,18 @@
 import React, { useEffect } from 'react';
 import TournamentStatus from './components/tournament-status';
 import MenuItem from './components/menu-item';
-import { getIcon, countCompletedPercent } from 'helpers';
+import { getIcon } from 'helpers';
 import { Icons } from 'common/enums/icons';
-import { RequiredMenuKeys, EventStatuses, Routes } from 'common/enums';
+import { Routes } from 'common/enums';
 import { IMenuItem } from 'common/models/menu-list';
 import styles from './styles.module.scss';
 import { useLocation } from 'react-router-dom';
-import { BindingAction } from 'common/models';
+import {
+  BindingAction,
+  IEventDetails,
+  ISchedule,
+  IFetchedBracket,
+} from 'common/models';
 
 enum MenuCollapsedTypes {
   PIN = 'Pin',
@@ -18,20 +23,21 @@ enum MenuCollapsedTypes {
 interface Props {
   list: IMenuItem[];
   isAllowEdit: boolean;
-  eventId?: string;
-  tournamentStatus?: EventStatuses;
-  toggleTournamentStatus?: BindingAction;
-  eventName?: string;
+  togglePublishPopup?: BindingAction;
+  toggleUnpublishPopup?: BindingAction;
   hideOnList?: Routes[];
+  event?: IEventDetails;
+  schedules?: ISchedule[];
+  brackets?: IFetchedBracket[];
 }
 
 const Menu = ({
   list,
-  eventId,
-  eventName,
+  event,
+  schedules,
+  brackets,
   isAllowEdit,
-  tournamentStatus,
-  toggleTournamentStatus,
+  togglePublishPopup,
   hideOnList,
 }: Props) => {
   const location = useLocation();
@@ -39,10 +45,6 @@ const Menu = ({
   const [isCollapsed, onCollapse] = React.useState(false);
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(list[0].title);
-  const percentOfCompleted = countCompletedPercent(
-    list,
-    RequiredMenuKeys.IS_COMPLETED
-  );
 
   useEffect(() => {
     const value = !!hideOnList?.filter(el => location?.pathname.includes(el))
@@ -58,15 +60,14 @@ const Menu = ({
       onMouseEnter={() => isCollapsible && onCollapse(false)}
       onMouseLeave={() => isCollapsible && onCollapse(true)}
     >
-      {!isCollapsed && eventName && (
-        <b className={styles.eventTitle}>{eventName}</b>
+      {!isCollapsed && event && (
+        <b className={styles.eventTitle}>{event.event_name}</b>
       )}
       <ul className={styles.list}>
         {list.map(menuItem => (
           <MenuItem
-            eventId={eventId}
+            eventId={event?.event_id}
             menuItem={menuItem}
-            tournamentStatus={tournamentStatus}
             isAllowEdit={isAllowEdit}
             isCollapsed={isCollapsed}
             isActiveItem={activeItem === menuItem.title}
@@ -75,11 +76,12 @@ const Menu = ({
           />
         ))}
       </ul>
-      {!isCollapsed && tournamentStatus !== undefined && (
+      {!isCollapsed && event && schedules && brackets && togglePublishPopup && (
         <TournamentStatus
-          tournamentStatus={tournamentStatus}
-          percentOfCompleted={percentOfCompleted}
-          toggleTournamentStatus={toggleTournamentStatus}
+          event={event}
+          schedules={schedules}
+          brackets={brackets}
+          togglePublishPopup={togglePublishPopup}
         />
       )}
       <button

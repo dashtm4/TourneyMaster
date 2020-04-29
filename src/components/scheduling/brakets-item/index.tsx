@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
 import { HeadingLevelFour, Button, Paper, Tooltip } from 'components/common';
-import { Routes } from 'common/enums';
+import { Routes, ScheduleStatuses } from 'common/enums';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
 import { ISchedulingBracket } from 'common/models/playoffs/bracket';
@@ -14,7 +14,6 @@ import {
   faCalendar,
   faExclamationCircle,
 } from '@fortawesome/free-solid-svg-icons';
-import { ScheduleStatuses } from 'common/models';
 
 const DEFAULT_UPDATED_VALUE = 'Not updated yet.';
 
@@ -86,8 +85,8 @@ const BraketsItem = ({
           style={{
             ...getTournamentStatusColor(
               bracket.published
-                ? ScheduleStatuses.PUBLISHED
-                : ScheduleStatuses.DRAFT
+                ? ScheduleStatuses.Published
+                : ScheduleStatuses.Draft
             ),
           }}
         />

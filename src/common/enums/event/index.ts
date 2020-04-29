@@ -56,7 +56,7 @@ enum IEventDetailsFields {
   DESKTOP_ICON_URL = 'desktop_icon_URL',
   IS_ACTIVE_YN = 'is_active_YN',
   IS_LIBRARY_YN = 'is_library_YN',
-  is_published_YN = 'is_published_YN',
+  IS_PUBLISHED_YN = 'is_published_YN',
   NUM_GAMES_COMPLETED = 'num_games_completed',
   LAST_WEB_PUBLISHED = 'last_web_published',
   CREATED_BY = 'created_by',
