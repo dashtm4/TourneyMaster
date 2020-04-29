@@ -52,6 +52,7 @@ export default (
       return {
         ...state,
         data: action.payload,
+        isLoading: false,
         error: false,
       };
     }
