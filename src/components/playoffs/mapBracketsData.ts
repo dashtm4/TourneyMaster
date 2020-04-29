@@ -18,7 +18,7 @@ const getMember = async () => {
   return member;
 };
 
-export const mapBracketData = async (bracket: IBracket, isDraft: boolean) => {
+export const mapBracketData = async (bracket: IBracket, _isDraft: boolean) => {
   const member = await getMember();
   const memberId = member.member_id;
 
@@ -35,7 +35,7 @@ export const mapBracketData = async (bracket: IBracket, isDraft: boolean) => {
     end_timeslot: bracket.endTimeSlot,
     fields_excluded: null,
     is_active_YN: 1,
-    is_published_YN: isDraft ? 0 : 1,
+    is_published_YN: bracket.published ? 1 : 0,
     created_by: memberId,
     created_datetime: bracket.createDate || new Date().toISOString(),
     updated_by: memberId,

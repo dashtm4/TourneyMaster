@@ -10,7 +10,6 @@ import {
 } from 'common/models';
 import { IField } from 'common/models/schedule/fields';
 import { IMultiSelectOption } from '../multi-select';
-import { DayTypes } from './types';
 import { IModalItem } from '../interactive-tooltip';
 import { ScheduleWarningsEnum } from 'common/enums';
 import { IDiagnosticsInput } from 'components/schedules/diagnostics';
@@ -89,7 +88,7 @@ export const applyFilters = (params: IApplyFilterParams) => {
   );
 
   return {
-    selectedDay: DayTypes[1],
+    selectedDay: '1',
     divisionsOptions,
     poolsOptions,
     teamsOptions,
@@ -338,7 +337,7 @@ const getScheduleWarning = (
   const backToBackValues = teamsDiagnostics?.body?.map(
     item => item[backToBackIndex]
   );
-  const backToBackExist = backToBackValues.filter(v => Number(v) > 0).length;
+  const backToBackExist = backToBackValues?.filter(v => Number(v) > 0).length;
 
   if (backToBackExist && event.back_to_back_warning) {
     items.push({

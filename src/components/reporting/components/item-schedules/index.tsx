@@ -5,7 +5,9 @@ import {
   HeadingLevelThree,
   ButtonLoad,
   SelectMultiple,
+  CardMessage,
 } from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import {
   onPDFSave,
   onXLSXSave,
@@ -22,6 +24,12 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 import styles from './styles.module.scss';
+
+const STYLES_ICOM_WARNING = {
+  fill: '#FFCB00',
+  height: '25px',
+  width: '30px',
+};
 
 interface Props {
   event: IEventDetails;
@@ -44,9 +52,15 @@ const ItemSchedules = ({
   teamCards,
   pools,
 }: Props) => {
+  const [isAllowDownload, changeAllowDownload] = React.useState<boolean>(true);
   const [activeDay, changeActiveDay] = React.useState<string[]>([
     DefaultSelectValues.ALL,
   ]);
+
+  React.useEffect(() => {
+    changeAllowDownload(activeDay.length > 0);
+  }, [activeDay]);
+
   const eventDays = calculateDays(teamCards);
   const allTeamCardGames = getAllTeamCardGames(teamCards, games, eventDays);
   const gamesByDay = getGamesByDays(allTeamCardGames, activeDay);
@@ -138,6 +152,7 @@ const ItemSchedules = ({
               loadFunc={onScheduleTableSave}
               variant={ButtonVarian.TEXT}
               color={ButtonColors.SECONDARY}
+              isDisabled={!isAllowDownload}
               label="Master Schedule"
             />
           </li>
@@ -146,6 +161,7 @@ const ItemSchedules = ({
               loadFunc={onHeatmapScheduleTableSave}
               variant={ButtonVarian.TEXT}
               color={ButtonColors.SECONDARY}
+              isDisabled={!isAllowDownload}
               label="Master Schedule (with Heatmap)"
             />
           </li>
@@ -154,6 +170,7 @@ const ItemSchedules = ({
               loadFunc={onScheduleFieldsSave}
               variant={ButtonVarian.TEXT}
               color={ButtonColors.SECONDARY}
+              isDisabled={!isAllowDownload}
               label="Master Schedule (by fields)"
             />
           </li>
@@ -166,6 +183,14 @@ const ItemSchedules = ({
             />
           </li>
         </ul>
+        {!isAllowDownload && (
+          <CardMessage
+            type={CardMessageTypes.WARNING}
+            iconStyle={STYLES_ICOM_WARNING}
+          >
+            Select day to download PDF-files
+          </CardMessage>
+        )}
       </section>
     </li>
   );

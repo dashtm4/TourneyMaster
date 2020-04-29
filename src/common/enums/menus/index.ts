@@ -39,9 +39,9 @@ enum EventMenuTitles {
 }
 
 enum EventMenuRegistrationTitles {
-  PRIMARY_INFORMATION = 'Primary Information',
-  TEAMS_AND_ATHLETES = 'Teams and Athletes',
-  MAIN_CONTACT = 'Main Contact',
+  PRICING_AND_CALENDAR = 'Pricing & Calendar',
+  REGISTRATION_DETAILS = 'Registration Details',
+  PAYMENTS = 'Payments',
 }
 
 enum RequiredMenuKeys {

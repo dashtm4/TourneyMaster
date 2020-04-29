@@ -15,8 +15,8 @@ import {
   IPool,
   BindingAction,
 } from 'common/models';
-import { IScheduleFilter, OptimizeTypes, DayTypes } from './types';
-import { getAllTeamCardGames } from 'helpers';
+import { IScheduleFilter, OptimizeTypes } from './types';
+import { getAllTeamCardGames, calculateTournamentDays } from 'helpers';
 import {
   IGame,
   settleTeamsPerGames,
@@ -121,7 +121,7 @@ const TableSchedule = ({
     let definedGames = [...games];
     const day = filterValues.selectedDay!;
 
-    if (DayTypes[day] === days.length && playoffTimeSlots) {
+    if (+day === days.length && playoffTimeSlots) {
       definedGames = populateDefinedGamesWithPlayoffState(
         games,
         playoffTimeSlots
@@ -141,8 +141,9 @@ const TableSchedule = ({
   const [tableGames, setTableGames] = useState<IGame[]>(manageGamesData());
 
   useEffect(() => {
-    setDays(calculateDays(teamCards));
-  }, [teamCards]);
+    const newDays = calculateTournamentDays(event);
+    setDays(newDays);
+  }, [event]);
 
   useEffect(() => setTableGames(manageGamesData()), [manageGamesData]);
 
@@ -161,7 +162,7 @@ const TableSchedule = ({
       teamCards,
       tableGames,
       dropParams,
-      days?.length ? days[DayTypes[day] - 1] : undefined
+      days?.length ? days[+day - 1] : undefined
     );
 
     switch (true) {

@@ -64,8 +64,8 @@ export default (
   };
 };
 
-const calculateRoundsNumber = (_numTeamsBracket: number) => {
-  return 3;
+const calculateRoundsNumber = (numTeamsBracket: number) => {
+  return Math.ceil(Math.log2(numTeamsBracket));
 };
 
 const recursor = (
@@ -83,6 +83,7 @@ const recursor = (
   if (timeSlots.length === rounds) {
     return timeSlots.reduce((a, b) => a + b, 0);
   }
+
   return recursor(rounds, timeSlots, games, fields);
 };
 
@@ -91,13 +92,15 @@ export const predictPlayoffTimeSlots = (
   timeSlots: ITimeSlot[],
   divisions: IScheduleDivision[] | IDivision[],
   event: IEventDetails
-) => {
+): ITimeSlot[] | [] => {
   const { num_teams_bracket } = event;
-  const rounds = calculateRoundsNumber(num_teams_bracket!);
+  if (!num_teams_bracket) return [];
+
+  const rounds = calculateRoundsNumber(num_teams_bracket);
   const timeSlotsLength = timeSlots.length;
   const divisionsLength = divisions.length;
   const fieldsLength = fields.length;
-  const divisionFirstRoundGames = 4;
+  const divisionFirstRoundGames = (num_teams_bracket || 0) / 2;
 
   const firstRoundGamesTotal = divisionsLength * divisionFirstRoundGames;
   const timeSlotsRequired = recursor(
@@ -129,10 +132,10 @@ export const populateDefinedGamesWithPlayoffState = (
 
 export const adjustPlayoffTimeOnLoad = (
   schedulesDetails: ISchedulesDetails[],
-  fields: IScheduleField[],
+  _fields: IScheduleField[],
   timeSlots: ITimeSlot[],
-  divisions: IScheduleDivision[] | IDivision[],
-  event: IEventDetails,
+  _divisions: IScheduleDivision[] | IDivision[],
+  _event: IEventDetails,
   day: string
 ) => {
   const sdStartTimes = schedulesDetails
@@ -142,20 +145,21 @@ export const adjustPlayoffTimeOnLoad = (
     .map(item => item.game_time);
   const lastStartTime = orderBy(sdStartTimes, [], 'desc')[0];
 
-  const lastGameTimeSlot = timeSlots.find(item => item.time === lastStartTime)
-    ?.id;
+  const lastGameTimeSlot =
+    timeSlots.find(item => item.time === lastStartTime)?.id || -1;
 
-  if (!lastGameTimeSlot) return;
+  // if (!lastGameTimeSlot) return;
 
-  const playoffTimeSlots = predictPlayoffTimeSlots(
-    fields,
-    timeSlots,
-    divisions,
-    event
-  );
+  // const playoffTimeSlots = predictPlayoffTimeSlots(
+  //   fields,
+  //   timeSlots,
+  //   divisions,
+  //   event
+  // );
 
   const start = lastGameTimeSlot + 1;
-  const end = start + playoffTimeSlots.length;
+  const end = timeSlots.length;
+  // const end = start + playoffTimeSlots.length;
 
   return timeSlots.slice(start, end);
 };

@@ -6,7 +6,7 @@ import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { History } from 'history';
 import { find } from 'lodash-es';
-import { Button, Paper, PopupExposure } from 'components/common';
+import { Button, Paper, PopupExposure, PopupConfirm } from 'components/common';
 import styles from './styles.module.scss';
 import BracketManager from './tabs/brackets';
 import ResourceMatrix from './tabs/resources';
@@ -70,6 +70,7 @@ import {
   removeGameFromBracketGames,
   updateBracketGamesDndResult,
   updateGameSlot,
+  setReplacementMessage,
 } from './helper';
 import { IOnAddGame } from './add-game-modal';
 
@@ -118,6 +119,8 @@ interface IState {
   tableGames?: IGame[];
   cancelConfirmationOpen: boolean;
   highlightedGameId?: number;
+  replacementBracketGames?: IBracketGame[];
+  replacementMessage?: string;
 }
 
 enum PlayoffsTabsEnum {
@@ -355,7 +358,7 @@ class Playoffs extends Component<IProps> {
     const { tableGames } = this.state;
 
     if (!bracketGames || !tableGames || !fields)
-      return alert('No bracket games or just games');
+      return console.error('Error happened during a dnd process.');
 
     const updatedResult = updateBracketGamesDndResult(
       gameId,
@@ -364,6 +367,18 @@ class Playoffs extends Component<IProps> {
       tableGames,
       fields
     );
+
+    const warningResult = setReplacementMessage(
+      updatedResult.bracketGames,
+      updatedResult.warnings
+    );
+
+    if (warningResult) {
+      return this.setState({
+        replacementBracketGames: warningResult.bracketGames,
+        replacementMessage: warningResult.message,
+      });
+    }
 
     this.props.fetchBracketGames(updatedResult.bracketGames);
   };
@@ -435,6 +450,22 @@ class Playoffs extends Component<IProps> {
     }
   };
 
+  toggleReplacementMessage = () =>
+    this.setState({
+      replacementBracketGames: undefined,
+      replacementMessage: undefined,
+    });
+
+  confirmReplacement = () => {
+    const { replacementBracketGames } = this.state;
+
+    if (replacementBracketGames) {
+      this.props.fetchBracketGames(replacementBracketGames);
+    }
+
+    this.toggleReplacementMessage();
+  };
+
   setHighlightedGame = (id: number) => {
     this.setState({
       highlightedGameId: this.state.highlightedGameId === id ? undefined : id,
@@ -450,6 +481,8 @@ class Playoffs extends Component<IProps> {
       bracketSeeds,
       tableGames,
       cancelConfirmationOpen,
+      replacementBracketGames,
+      replacementMessage,
     } = this.state;
 
     const {
@@ -550,6 +583,15 @@ class Playoffs extends Component<IProps> {
           onClose={this.closeCancelConfirmation}
           onExitClick={this.onExit}
           onSaveClick={this.onSavePressed}
+        />
+        <PopupConfirm
+          type="warning"
+          showYes={!!replacementBracketGames}
+          isOpen={!!replacementMessage}
+          message={replacementMessage || ''}
+          onClose={this.toggleReplacementMessage}
+          onCanceClick={this.toggleReplacementMessage}
+          onYesClick={this.confirmReplacement}
         />
       </div>
     );

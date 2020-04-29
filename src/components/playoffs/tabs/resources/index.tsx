@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { MatrixTable, Loader, Button } from 'components/common';
+import { MatrixTable, Loader, Button, CardMessage } from 'components/common';
 import {
   IEventDetails,
   IDivision,
@@ -23,6 +23,7 @@ import MultiSelect, {
   IMultiSelectOption,
 } from 'components/common/multi-select';
 import BracketGamesList from './bracket-games-list';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import styles from './styles.module.scss';
 
 interface IProps {
@@ -163,6 +164,9 @@ class ResourceMatrix extends Component<IProps> {
                 />
               </fieldset>
             )}
+            <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+              Bracket games are painted in dark colors
+            </CardMessage>
             <div className={styles.dndToggleWrapper}>
               Mode:
               <Button
