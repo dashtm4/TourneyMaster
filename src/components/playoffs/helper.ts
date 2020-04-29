@@ -191,22 +191,29 @@ export const updateGameSlot = (
   game: IGame,
   bracketGame?: IBracketGame,
   divisions?: IDivision[]
-): IGame => ({
-  ...game,
-  bracketGameId: bracketGame?.id,
-  awaySeedId: bracketGame?.awaySeedId,
-  homeSeedId: bracketGame?.homeSeedId,
-  awayDisplayName: bracketGame?.awayDisplayName,
-  homeDisplayName: bracketGame?.homeDisplayName,
-  awayDependsUpon: bracketGame?.awayDependsUpon,
-  homeDependsUpon: bracketGame?.homeDependsUpon,
-  divisionId: bracketGame?.divisionId,
-  divisionName: bracketGame?.divisionName,
-  divisionHex: divisions?.find(v => v.division_id === bracketGame?.divisionId)
-    ?.division_hex,
-  playoffRound: bracketGame?.round,
-  playoffIndex: bracketGame?.index,
-});
+): IGame => {
+  const division = divisions?.find(
+    v => v.division_id === bracketGame?.divisionId
+  );
+
+  return {
+    ...game,
+    bracketGameId: bracketGame?.id,
+    awaySeedId: bracketGame?.awaySeedId,
+    homeSeedId: bracketGame?.homeSeedId,
+    awayTeamId: bracketGame?.awayTeamId,
+    homeTeamId: bracketGame?.homeTeamId,
+    awayDisplayName: bracketGame?.awayDisplayName,
+    homeDisplayName: bracketGame?.homeDisplayName,
+    awayDependsUpon: bracketGame?.awayDependsUpon,
+    homeDependsUpon: bracketGame?.homeDependsUpon,
+    divisionId: bracketGame?.divisionId,
+    divisionName: bracketGame?.divisionName,
+    divisionHex: division?.division_hex,
+    playoffRound: bracketGame?.round,
+    playoffIndex: bracketGame?.index,
+  };
+};
 
 enum BracketMoveWarnEnum {
   gameAlreadyAssigned = 'This bracket game is already assigned. Please confirm your intentions.',

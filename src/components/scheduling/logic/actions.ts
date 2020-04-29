@@ -120,6 +120,10 @@ export const addNewSchedule = () => async (
   );
   const DEFAULT_INCREMENT_MAX_NUM_GAMES = 2;
   const DEFAULT_PERIODS_PER_GAME = 2;
+  const DEFAULT_PRE_GAME_WARMUP = '5';
+  const DEFAULT_PERIOD_DURATION = '10';
+  const DEFAULT_TIME_BETWEEN_PERIODS = '5';
+  const DEFAULT_MIN_NUMBER_OF_GAMES = 1;
 
   const newSchedule = {
     ...EMPTY_SCHEDULE,
@@ -129,15 +133,20 @@ export const addNewSchedule = () => async (
     num_divisions: tournamentData.divisions.length,
     num_teams: tournamentData.teams.length,
     num_fields: tournamentData.fields.length,
-    min_num_games: tournamentData.event?.min_num_of_games,
+    min_num_games:
+      Number(tournamentData.event?.min_num_of_games) ||
+      DEFAULT_MIN_NUMBER_OF_GAMES,
     max_num_games:
-      Number(tournamentData.event?.min_num_of_games) +
-      DEFAULT_INCREMENT_MAX_NUM_GAMES,
+      (Number(tournamentData.event?.min_num_of_games) ||
+        DEFAULT_MIN_NUMBER_OF_GAMES) + DEFAULT_INCREMENT_MAX_NUM_GAMES,
     periods_per_game:
       tournamentData.event?.periods_per_game || DEFAULT_PERIODS_PER_GAME,
-    pre_game_warmup: tournamentData.event?.pre_game_warmup,
-    period_duration: tournamentData.event?.period_duration,
-    time_btwn_periods: tournamentData.event?.time_btwn_periods,
+    pre_game_warmup:
+      tournamentData.event?.pre_game_warmup || DEFAULT_PRE_GAME_WARMUP,
+    period_duration:
+      tournamentData.event?.period_duration || DEFAULT_PERIOD_DURATION,
+    time_btwn_periods:
+      tournamentData.event?.time_btwn_periods || DEFAULT_TIME_BETWEEN_PERIODS,
     first_game_time: tournamentData.event?.first_game_time,
     last_game_end_time: tournamentData.event?.last_game_end,
     games_start_on: gameStartOnOptions[0],

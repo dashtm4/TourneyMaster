@@ -48,6 +48,8 @@ const RenderGameSlot = (props: Props) => {
     bracketGameId,
     divisionId,
     playoffIndex,
+    awayTeamId,
+    homeTeamId,
   } = game;
 
   const acceptType = [MatrixTableDropEnum.TeamDrop];
@@ -55,6 +57,9 @@ const RenderGameSlot = (props: Props) => {
   if (isPlayoff) {
     acceptType.push(MatrixTableDropEnum.BracketDrop);
   }
+
+  const awayTeamName = teamCards.find(item => item.id === awayTeamId)?.name;
+  const homeTeamName = teamCards.find(item => item.id === homeTeamId)?.name;
 
   return (
     <td
@@ -93,6 +98,7 @@ const RenderGameSlot = (props: Props) => {
                 round={playoffRound}
                 showHeatmap={true}
                 seedId={awaySeedId}
+                teamName={awayTeamName}
                 dependsUpon={awayDependsUpon}
                 divisionHex={divisionHex}
                 divisionName={divisionName}
@@ -133,6 +139,7 @@ const RenderGameSlot = (props: Props) => {
                 dependsUpon={homeDependsUpon}
                 showHeatmap={true}
                 seedId={homeSeedId}
+                teamName={homeTeamName}
                 divisionHex={divisionHex}
                 divisionName={divisionName}
                 slotId={id}

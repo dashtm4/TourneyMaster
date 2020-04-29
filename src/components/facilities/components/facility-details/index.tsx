@@ -212,7 +212,7 @@ class FacilityDetails extends React.Component<Props, State> {
                   }
                   value={facility.facilities_description || ''}
                   disabled={!isEdit}
-                  placeholder={'Main Stadium'}
+                  placeholder={'Big Sports Complex'}
                   label="Facility Name"
                   width="100%"
                 />
@@ -317,17 +317,17 @@ class FacilityDetails extends React.Component<Props, State> {
             {facility.isFieldsLoading ? (
               <Loader />
             ) : (
-              fields.map((it, idx) => (
-                <li key={it.field_id}>
-                  <Field
-                    field={it}
-                    fieldNumber={idx + 1}
-                    isEdit={isEdit}
-                    onChange={this.onChangeField}
-                  />
-                </li>
-              ))
-            )}
+                fields.map((it, idx) => (
+                  <li key={it.field_id}>
+                    <Field
+                      field={it}
+                      fieldNumber={idx + 1}
+                      isEdit={isEdit}
+                      onChange={this.onChangeField}
+                    />
+                  </li>
+                ))
+              )}
           </ul>
           <div className={styles.restroomWrapper}>
             <fieldset

@@ -118,9 +118,7 @@ export default (props: Props) => {
               style={{
                 color: isEnterScores
                   ? '#000000'
-                  : showHeatmap
-                  ? '#f8f8f8'
-                  : 'gray',
+                  : getContrastingColor(teamCard.divisionHex),
                 backgroundColor: isEnterScores ? '#ffffff' : '',
               }}
               readOnly={!isEnterScores}

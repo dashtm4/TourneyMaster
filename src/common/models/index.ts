@@ -21,3 +21,4 @@ export * from './schedule/game';
 export * from './select';
 export * from './scoring';
 export * from './playoffs/bracket';
+export * from './pinch';

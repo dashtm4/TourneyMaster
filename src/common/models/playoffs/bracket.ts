@@ -37,6 +37,7 @@ export interface IBracket {
   updateDate: string | null;
   startTimeSlot: string;
   endTimeSlot: string;
+  isManualCreation?: boolean;
 }
 
 export interface ISchedulingBracket extends IBracket {
