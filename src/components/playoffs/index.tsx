@@ -117,6 +117,8 @@ interface IMapDispatchToProps {
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
   match: any;
   history: History;
+  isFullScreen: boolean;
+  onToggleFullScreen: () => void;
 }
 
 interface IState {
@@ -561,12 +563,17 @@ class Playoffs extends Component<IProps> {
       bracketGames,
       advanceTeamsToBrackets,
       advancingInProgress,
+      isFullScreen,
+      onToggleFullScreen,
     } = this.props;
 
     const saveButtonCondition = bracket && bracketGames;
 
     return (
-      <div className={styles.container}>
+      <div
+        className={`${styles.container} ${isFullScreen &&
+          styles.containerFullScreen}`}
+      >
         <DndProvider backend={HTML5Backend}>
           <div className={styles.paperWrapper}>
             <Paper>
@@ -575,12 +582,14 @@ class Playoffs extends Component<IProps> {
                   <span>{bracket?.name}</span>
                 </div>
                 <div>
-                  <Button
-                    label="Close"
-                    variant="text"
-                    color="secondary"
-                    onClick={this.onGoBack}
-                  />
+                  {!isFullScreen && (
+                    <Button
+                      label="Close"
+                      variant="text"
+                      color="secondary"
+                      onClick={this.onGoBack}
+                    />
+                  )}
                   <Button
                     label="Save"
                     variant="contained"
@@ -625,9 +634,11 @@ class Playoffs extends Component<IProps> {
                 onTeamCardsUpdate={() => {}}
                 onTeamCardUpdate={() => {}}
                 onUndo={() => {}}
+                isFullScreen={isFullScreen}
                 updateGame={this.updateMergedGames}
                 setHighlightedGame={this.setHighlightedGame}
                 highlightedGameId={this.state.highlightedGameId}
+                onToggleFullScreen={onToggleFullScreen}
               />
             ) : (
               <BracketManager

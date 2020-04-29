@@ -181,7 +181,16 @@ const AuthorizedPageEvent = ({
                 />
               )}
             />
-            <Route path={Routes.PLAYOFFS_ID} component={Playoffs} />
+            <Route
+              path={Routes.PLAYOFFS_ID}
+              render={props => (
+                <Playoffs
+                  {...props}
+                  isFullScreen={isFullScreen}
+                  onToggleFullScreen={onToggleFullScreen}
+                />
+              )}
+            />
             <Route path={Routes.TEAMS_ID} component={Teams} />
             <Route
               path={Routes.SCORING_ID}
