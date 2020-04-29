@@ -84,7 +84,11 @@ const BraketsItem = ({
         <span
           className={styles.scheduleStatus}
           style={{
-            ...getTournamentStatusColor(ScheduleStatuses.DRAFT),
+            ...getTournamentStatusColor(
+              bracket.published
+                ? ScheduleStatuses.PUBLISHED
+                : ScheduleStatuses.DRAFT
+            ),
           }}
         />
       </p>

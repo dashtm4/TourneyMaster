@@ -1,4 +1,4 @@
-import { union, findKey, find, keys, unionBy, orderBy } from 'lodash-es';
+import { union, findKey, find, keys, unionBy } from 'lodash-es';
 import { getTimeFromString } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
@@ -22,7 +22,6 @@ export interface IGameOptions {
 interface IFindGameOptions {
   ignorePremier?: boolean;
   includeBackToBack?: boolean;
-  reverse?: boolean;
 }
 
 interface IKeyId {
@@ -48,6 +47,8 @@ interface ITournamentBaseInfo {
   teamsInPlay?: IKeyId;
 }
 
+// Here is the class. This is the start of the scheduling algorithm
+
 export default class Scheduler {
   fields: IField[];
   teamCards: ITeamCard[];
@@ -66,6 +67,7 @@ export default class Scheduler {
   maxGameNum: number;
   totalGameTime: number;
 
+  // Constructor sets initial parameter and calls base functions
   constructor(
     fields: IField[],
     teamCards: ITeamCard[],
@@ -109,10 +111,13 @@ export default class Scheduler {
     }));
   };
 
+  // a function called within another function
+  // this recursive function allocates the premier games
   handlePremierGames = (recursor = 1) => {
     // set premier teams
-    const premierTeams = this.getUnsatisfiedTeams({ isPremier: true });
+    const premierTeams = this.getUnsatisfiedTeams({ isPremier: true }); // by default, they are all "unsatisfied"
     this.settleMinGameTeams(premierTeams);
+    // settleMinGameTeams is the allocation process
 
     // set unsatisfied premier teams WITH back-to-back
     const premierTeamsWBTB = this.getUnsatisfiedTeams({
@@ -157,11 +162,12 @@ export default class Scheduler {
     }
   };
 
+  // Function called after premier games
   handleRegularGames = (recursor = 1) => {
     // settle regular teams on regular fields
     const regularTeams = this.getUnsatisfiedTeams({
       isPremier: false,
-      gamesNum: recursor,
+      gamesNum: recursor, // calculates the array of the length of the games
     });
     this.settleMinGameTeams(regularTeams);
 
@@ -170,9 +176,10 @@ export default class Scheduler {
       isPremier: false,
       gamesNum: recursor,
     });
-    this.settleMinGameTeams(orderBy(unsatisfiedTeams, 'games'));
+    this.settleMinGameTeams(unsatisfiedTeams);
 
     // settle unsatisfied regular teams on regular fields with back-to-back
+    // adds the "IF" section vs the above to settle the min games teams for unsatisfied teams
     const unsatisfiedTeamsStill = this.getUnsatisfiedTeams({
       isPremier: false,
       gamesNum: recursor,
@@ -189,26 +196,50 @@ export default class Scheduler {
     }
   };
 
+  // this function iterates through the team cards array in order to see if premier teams and/or game num are satisfied 
+  // this also
+  getUnsatisfiedTeams = (options?: {
+    isPremier?: boolean;
+    gamesNum?: number;
+  }) => {
+    const { isPremier, gamesNum } = options || {};
+
+    return this.teamCards.filter(teamCard => {
+      if (!teamCard.poolId) return false;
+
+      if (!((teamCard.games?.length || 0) < (gamesNum || this.minGameNum)))
+        return false;
+
+      if (isPremier !== undefined) {
+        if (teamCard.isPremier !== isPremier) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  };
+
+  settleMinGameTeams = (teams: ITeamCard[], options?: IFindGameOptions) => {
+    const rearrangedTeams = this.rearrangeTeamsByConstraints(teams);
+    const foundGames = this.manageGamesByTeamSets(rearrangedTeams, options);
+    return foundGames;
+  };
+
   calculateTeamData = () => {
     this.handlePremierGames();
     this.handleRegularGames();
   };
 
-  rearrangeTeamsByConstraints = (
-    teamCards?: ITeamCard[],
-    options?: { reverse: boolean }
-  ) => {
-    const { reverse } = options || {};
+
+  // "rearrangeTeamsByConstraints" and "manageGamesByTeamSets" are two of the 'core' utilities within the scheduling algorithm
+  // Takes teams and iterates through using the pool, is_premier, and not the same team constraint
+  // Finds pairs....
+  rearrangeTeamsByConstraints = (teamCards?: ITeamCard[]) => {
     const teamCardsArr = teamCards || this.teamCards;
     const teams = {};
-    let thisTeamCards = [...this.teamCards];
-
-    if (reverse) {
-      thisTeamCards = thisTeamCards.reverse();
-    }
-
     teamCardsArr.forEach(teamCard => {
-      teams[teamCard.id] = orderBy(thisTeamCards, 'games').find(
+      teams[teamCard.id] = this.teamCards.find(
         tc =>
           teamCard.id !== tc.id &&
           teamCard.isPremier === tc.isPremier &&
@@ -225,6 +256,7 @@ export default class Scheduler {
     return teams;
   };
 
+  // Now finds game_slot for each pair from above
   manageGamesByTeamSets = (
     teamSets: IUnequippedTeams,
     options?: IFindGameOptions
@@ -258,6 +290,7 @@ export default class Scheduler {
     return foundGames;
   };
 
+  // increments num of games per facility
   incrementGamePerTeam = () => {
     Object.keys(this.facilityData).forEach(
       key =>
@@ -276,6 +309,7 @@ export default class Scheduler {
     return returnNum || -1;
   };
 
+  // used by function to find a game_slot
   findGame = (
     teamOne: ITeamCard,
     teamTwo: ITeamCard,
@@ -311,12 +345,12 @@ export default class Scheduler {
     this.updatedGames = this.updatedGames.map(game =>
       game.id === foundGame.id
         ? {
-            ...game,
-            [TeamPositionEnum[
-              teamCard.games?.find(teamGame => teamGame.id === game.id)
-                ?.teamPosition!
-            ]]: teamCard,
-          }
+          ...game,
+          [TeamPositionEnum[
+            teamCard.games?.find(teamGame => teamGame.id === game.id)
+              ?.teamPosition!
+          ]]: teamCard,
+        }
         : game
     );
   };
@@ -431,12 +465,12 @@ export default class Scheduler {
     this.teamCards = this.teamCards.map(teamCard =>
       teamCard.id === updatedTeamCard.id
         ? {
-            ...teamCard,
-            games: unionBy(
-              [...(teamCard.games || []), ...updatedTeamCard.games],
-              'id'
-            ),
-          }
+          ...teamCard,
+          games: unionBy(
+            [...(teamCard.games || []), ...updatedTeamCard.games],
+            'id'
+          ),
+        }
         : teamCard
     );
   };
@@ -534,35 +568,6 @@ export default class Scheduler {
     });
   };
 
-  getUnsatisfiedTeams = (options?: {
-    isPremier?: boolean;
-    gamesNum?: number;
-  }) => {
-    const { isPremier, gamesNum } = options || {};
-
-    return this.teamCards.filter(teamCard => {
-      if (!teamCard.poolId) return false;
-
-      if (!((teamCard.games?.length || 0) < (gamesNum || this.minGameNum)))
-        return false;
-
-      if (isPremier !== undefined) {
-        if (teamCard.isPremier !== isPremier) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  };
-
-  settleMinGameTeams = (teams: ITeamCard[], options?: IFindGameOptions) => {
-    const rearrangedTeams = this.rearrangeTeamsByConstraints(teams, {
-      reverse: !!options?.reverse,
-    });
-    const foundGames = this.manageGamesByTeamSets(rearrangedTeams, options);
-    return foundGames;
-  };
 
   calculateAvgStartTime = () => {
     const timeStarts = this.teamCards.map(tc => tc.startTime);
