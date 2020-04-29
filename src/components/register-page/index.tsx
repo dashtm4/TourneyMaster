@@ -21,6 +21,8 @@ import ContactInfo from './teams/contact-info';
 import CoachInfo from './teams/coach-info';
 import { Modal } from 'components/common';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import Header from './header';
+import Footer from 'components/footer';
 
 enum TypeOptions {
   'Individual' = 1,
@@ -140,55 +142,61 @@ const RegisterPage = () => {
   console.log(registration);
   return (
     <div className={styles.container}>
-      <div style={{ height: '100px', backgroundColor: '#1c315f' }}>Header</div>
-      <div className={styles.stepperWrapper}>
-        <HeadingLevelTwo>{`${TypeOptions[type]} Registration`}</HeadingLevelTwo>
-        <Paper>
-          <Stepper
-            activeStep={activeStep}
-            orientation="vertical"
-            style={{ backgroundColor: 'transparent', width: '1200px' }}
-          >
-            {steps.map((label, index) => (
-              <Step key={label}>
-                <StepLabel>
-                  <HeadingLevelThree color="#1c315f">
-                    <span>{label}</span>
-                  </HeadingLevelThree>
-                </StepLabel>
-                <StepContent>
-                  <div>{getStepContent(index)}</div>
-                  <div className={styles.buttonsWrapper}>
-                    <Button
-                      disabled={activeStep === 0}
-                      onClick={handleBack}
-                      label="Back"
-                      variant="text"
-                      color="secondary"
-                    />
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleNext}
-                      label={
-                        activeStep === steps.length - 1 ? 'Register' : 'Next'
-                      }
-                    />
+      <Header />
+      <div className={styles.main}>
+        <div className={styles.stepperWrapper}>
+          <HeadingLevelTwo>{`${TypeOptions[type]} Registration`}</HeadingLevelTwo>
+          <div style={{ width: '90%' }}>
+            <Paper>
+              <Stepper
+                activeStep={activeStep}
+                orientation="vertical"
+                style={{ backgroundColor: 'transparent', width: '100%' }}
+              >
+                {steps.map((label, index) => (
+                  <Step key={label}>
+                    <StepLabel>
+                      <HeadingLevelThree color="#1c315f">
+                        <span>{label}</span>
+                      </HeadingLevelThree>
+                    </StepLabel>
+                    <StepContent>
+                      <div>{getStepContent(index)}</div>
+                      <div className={styles.buttonsWrapper}>
+                        <Button
+                          disabled={activeStep === 0}
+                          onClick={handleBack}
+                          label="Back"
+                          variant="text"
+                          color="secondary"
+                        />
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={handleNext}
+                          label={
+                            activeStep === steps.length - 1
+                              ? 'Register'
+                              : 'Next'
+                          }
+                        />
+                      </div>
+                    </StepContent>
+                  </Step>
+                ))}
+              </Stepper>
+              {activeStep === steps.length && (
+                <div className={styles.section}>
+                  <div style={{ width: '100%' }}>
+                    All steps completed - you&apos;re finished
                   </div>
-                </StepContent>
-              </Step>
-            ))}
-          </Stepper>
-          {activeStep === steps.length && (
-            <div className={styles.section}>
-              <div style={{ width: '100%' }}>
-                All steps completed - you&apos;re finished
-              </div>
-            </div>
-          )}
-        </Paper>
+                </div>
+              )}
+            </Paper>
+          </div>
+        </div>
+        <div className={styles.sideContent}>side</div>
       </div>
-
       <Modal isOpen={isOpenModalOpen} onClose={() => {}}>
         <div className={styles.modalContainer}>
           <div style={{ height: '185px' }}>
@@ -214,6 +222,9 @@ const RegisterPage = () => {
           </div>
         </div>
       </Modal>
+      <div style={{ marginTop: '50px' }}>
+        <Footer />
+      </div>
     </div>
   );
 };
