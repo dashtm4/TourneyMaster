@@ -9,7 +9,7 @@ import {
 } from '../expansion-panel-material';
 import { getIcon, stringToLink } from 'helpers';
 import { IMenuItem } from 'common/models';
-import { Icons, RequiredMenuKeys, EventStatuses } from 'common/enums';
+import { Icons, RequiredMenuKeys } from 'common/enums';
 import styles from './styles.module.scss';
 
 const STYLES_MENUITEM_ICON = {
@@ -25,7 +25,6 @@ const STYLES_PROGREES_ICON = {
 interface Props {
   eventId?: string;
   menuItem: IMenuItem;
-  tournamentStatus?: EventStatuses;
   isAllowEdit: boolean;
   isCollapsed: boolean;
   isActiveItem: boolean;
@@ -39,7 +38,6 @@ const MenuItem = ({
   isCollapsed,
   isActiveItem,
   setActiveItem,
-  tournamentStatus,
 }: Props) => (
   <li className={styles.listItem}>
     <ExpansionPanelWrapped disabled={!menuItem.isAllowEdit && !isAllowEdit}>
@@ -62,7 +60,6 @@ const MenuItem = ({
           >
             {menuItem.title}
             {!isCollapsed &&
-              tournamentStatus === EventStatuses.Draft &&
               menuItem.hasOwnProperty(RequiredMenuKeys.IS_COMPLETED) &&
               (menuItem.isCompleted
                 ? getIcon(Icons.CHECK_CIRCLE, {

@@ -6,6 +6,7 @@ import {
   ISchedule,
   IFetchedBracket,
   IPublishSettings,
+  ScheduleStatuses,
 } from 'common/models';
 import {
   IScheduleFields,
@@ -21,7 +22,10 @@ const getEventPublishOptions = (
 ) => {
   const eventPublishOptions = [EventPublishTypes.DETAILS];
 
-  if (schedules.length > 0) {
+  if (
+    schedules.length > 0 &&
+    schedules.every(it => it.schedule_status === ScheduleStatuses.DRAFT)
+  ) {
     eventPublishOptions.push(EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY);
   }
 

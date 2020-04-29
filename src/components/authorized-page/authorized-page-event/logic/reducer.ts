@@ -44,6 +44,7 @@ import {
   SortByFilesTypes,
 } from 'common/enums';
 import { CheckIsCompleted } from '../../helpers';
+import { mapSchedulingScheduleData } from 'components/schedules/mapScheduleData';
 
 export interface IPageEventState {
   isLoading: boolean;
@@ -265,6 +266,10 @@ const pageEventReducer = (
     case SCHEDULE_FETCH_SUCCESS: {
       const { schedules } = action.payload;
 
+      const mappedSchedles = schedules.map(schedule =>
+        mapSchedulingScheduleData(schedule)
+      );
+
       return {
         ...state,
         menuList: state.menuList.map(item =>
@@ -278,6 +283,7 @@ const pageEventReducer = (
               }
             : item
         ),
+        tournamentData: { ...state.tournamentData, schedules: mappedSchedles },
       };
     }
     case PUBLISH_EVENT_SUCCESS: {

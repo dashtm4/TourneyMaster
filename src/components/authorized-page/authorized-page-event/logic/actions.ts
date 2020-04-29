@@ -21,6 +21,7 @@ import {
   IRegistration,
   IFacility,
   IPublishSettings,
+  ISchedule,
 } from 'common/models';
 import {
   EventStatuses,
@@ -31,6 +32,7 @@ import {
 } from 'common/enums';
 import { IEntity } from 'common/types';
 import { sentToServerByRoute, removeObjKeysByEntryPoint } from 'helpers';
+import { updateScheduleStatus } from 'components/scheduling/logic/actions';
 
 const loadAuthPageData: ActionCreator<ThunkAction<
   void,
@@ -92,43 +94,52 @@ const clearAuthPageData = () => ({
   type: CLEAR_AUTH_PAGE_DATA,
 });
 
-const publishEvent = (
-  publishType: EventPublishTypes,
-  _publishSettings: IPublishSettings
-) => async (dispatch: Dispatch, getState: () => IAppState) => {
+const updateEventStatus = (isDraft: boolean) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
+  const { tournamentData } = getState().pageEvent;
+  const { event } = tournamentData;
+
   try {
-    switch (publishType) {
-      case EventPublishTypes.DETAILS: {
-        const { tournamentData } = getState().pageEvent;
-        const { event } = tournamentData;
+    const updatedEvent = {
+      ...event,
+      is_published_YN: isDraft ? EventStatuses.Draft : EventStatuses.Published,
+    } as IEventDetails;
 
-        const updatedEvent = {
-          ...event,
-          is_published_YN:
-            event?.is_published_YN === EventStatuses.Draft
-              ? EventStatuses.Published
-              : EventStatuses.Draft,
-        } as IEventDetails;
+    await Api.put(`/events?event_id=${updatedEvent.event_id}`, updatedEvent);
 
-        await Api.put(
-          `/events?event_id=${updatedEvent.event_id}`,
-          updatedEvent
-        );
+    dispatch({
+      type: PUBLISH_EVENT_SUCCESS,
+      payload: {
+        event: updatedEvent,
+      },
+    });
 
-        dispatch({
-          type: PUBLISH_EVENT_SUCCESS,
-          payload: {
-            event: updatedEvent,
-          },
-        });
-      }
-    }
-
-    Toasts.successToast('Changes successfully saved.');
+    Toasts.successToast('Event changes successfully saved.');
   } catch {
     dispatch({
       type: PUBLISH_EVENT_FAILURE,
     });
+  }
+};
+
+const publishEventData = (
+  publishType: EventPublishTypes,
+  publishSettings: IPublishSettings
+) => async (dispatch: Dispatch) => {
+  switch (publishType) {
+    case EventPublishTypes.DETAILS: {
+      dispatch<any>(updateEventStatus(false));
+      break;
+    }
+    case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY: {
+      const publishedSchedule = publishSettings.activeSchedule as ISchedule;
+
+      dispatch<any>(updateEventStatus(false));
+      dispatch<any>(updateScheduleStatus(publishedSchedule.schedule_id, false));
+      break;
+    }
   }
 };
 
@@ -208,7 +219,7 @@ const addEntitiesToLibrary = (
 export {
   loadAuthPageData,
   clearAuthPageData,
-  publishEvent,
+  publishEventData,
   addEntityToLibrary,
   addEntitiesToLibrary,
 };

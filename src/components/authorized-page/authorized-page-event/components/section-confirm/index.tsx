@@ -24,7 +24,7 @@ interface Props {
   brackets: IFetchedBracket[];
   publishType: EventPublishTypes;
   onClose: BindingAction;
-  publishEvent: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
+  publishEventData: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
 }
 
 const ConfirmSection = ({
@@ -33,7 +33,7 @@ const ConfirmSection = ({
   brackets,
   publishType,
   onClose,
-  publishEvent,
+  publishEventData,
 }: Props) => {
   const DEFAULT_SELECTED_SCHEDULE = schedules[0] || null;
   const DEFAULT_SELECTED_BRACKET = brackets[0] || null;
@@ -64,7 +64,7 @@ const ConfirmSection = ({
   };
 
   const onPublishEvent = () => {
-    publishEvent(publishType, publishSettings);
+    publishEventData(publishType, publishSettings);
 
     onClose();
   };

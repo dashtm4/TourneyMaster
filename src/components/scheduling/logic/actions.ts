@@ -52,7 +52,6 @@ import {
   mapTeamsFromSchedulesDetails,
   mapSchedulesTeamCards,
   mapTeamCardsToSchedulesGames,
-  mapSchedulingScheduleData,
 } from 'components/schedules/mapScheduleData';
 import { errorToast, successToast } from 'components/common/toastr/showToasts';
 import { ICreateBracketModalOutput } from '../create-new-bracket';
@@ -385,30 +384,27 @@ const getSchedulesGames = async (
   );
 };
 
-const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
-  dispatch: Dispatch,
-  getState: GetState
-) => {
-  const { scheduling, pageEvent } = getState();
-  const { schedules } = scheduling;
+export const updateScheduleStatus = (
+  scheduleId: string,
+  isDraft: boolean
+) => async (dispatch: Dispatch, getState: GetState) => {
+  const { pageEvent } = getState();
   const { tournamentData } = pageEvent;
-  const { event, fields, teams, divisions, facilities } = tournamentData;
+  const {
+    event,
+    fields,
+    teams,
+    divisions,
+    facilities,
+    schedules,
+  } = tournamentData;
 
-  const schedulingSchedule = schedules.find(
-    item => item.schedule_id === scheduleId
+  const schedule = schedules.find(
+    schedule => schedule.schedule_id === scheduleId
   );
 
-  if (
-    !event ||
-    !fields ||
-    !teams ||
-    !divisions ||
-    !schedulingSchedule ||
-    !facilities
-  )
+  if (!event || !fields || !teams || !divisions || !schedule || !facilities)
     return showError();
-
-  const schedule = mapSchedulingScheduleData(schedulingSchedule);
 
   // const scheduleGames = await getGamesByScheduleId(scheduleId);
   // const gamesExist = scheduleGames?.length;

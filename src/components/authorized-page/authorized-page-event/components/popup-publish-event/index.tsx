@@ -25,7 +25,7 @@ interface Props {
   brackets: IFetchedBracket[];
   isOpen: boolean;
   onClose: BindingAction;
-  publishEvent: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
+  publishEventData: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
 }
 
 const PopupPublishEvent = ({
@@ -34,7 +34,7 @@ const PopupPublishEvent = ({
   brackets,
   isOpen,
   onClose,
-  publishEvent,
+  publishEventData,
 }: Props) => {
   const eventPublishOptions = getEventPublishOptions(schedules, brackets);
   const DEFAULT_PUBLISH_OPTION = eventPublishOptions[0];
@@ -70,7 +70,7 @@ const PopupPublishEvent = ({
             brackets={brackets}
             publishType={publishType as EventPublishTypes}
             onClose={onClose}
-            publishEvent={publishEvent}
+            publishEventData={publishEventData}
           />
         ) : (
           <>

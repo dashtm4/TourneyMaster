@@ -62,7 +62,6 @@ const Menu = ({
           <MenuItem
             eventId={event?.event_id}
             menuItem={menuItem}
-            tournamentStatus={event?.is_published_YN}
             isAllowEdit={isAllowEdit}
             isCollapsed={isCollapsed}
             isActiveItem={activeItem === menuItem.title}

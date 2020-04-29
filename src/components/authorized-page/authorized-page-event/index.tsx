@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import {
   loadAuthPageData,
   clearAuthPageData,
-  publishEvent,
+  publishEventData,
 } from './logic/actions';
 import PopupPublishEvent from './components/popup-publish-event';
 import { IAppState } from 'reducers/root-reducer.types';
@@ -63,7 +63,7 @@ interface Props {
   getCalendarEvents: BindingAction;
   calendarEvents: ICalendarEvent[] | null | undefined;
   updateCalendarEvent: BindingAction;
-  publishEvent: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
+  publishEventData: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
 }
 
 export const EmptyPage: React.FC = () => {
@@ -80,7 +80,7 @@ const AuthorizedPageEvent = ({
   getCalendarEvents,
   calendarEvents,
   updateCalendarEvent,
-  publishEvent,
+  publishEventData,
 }: Props & RouteComponentProps<MatchParams>) => {
   const [isPublishPopupOpen, togglePublishPopup] = React.useState<boolean>(
     false
@@ -241,7 +241,7 @@ const AuthorizedPageEvent = ({
           brackets={brackets}
           isOpen={isPublishPopupOpen}
           onClose={onTogglePublishPopup}
-          publishEvent={publishEvent}
+          publishEventData={publishEventData}
         />
       )}
     </div>
@@ -263,7 +263,7 @@ export default connect(
         clearAuthPageData,
         getCalendarEvents,
         updateCalendarEvent,
-        publishEvent,
+        publishEventData,
       },
       dispatch
     )
