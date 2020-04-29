@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from '../../styles.module.scss';
 import { Input, Select, DatePicker } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
@@ -9,12 +9,28 @@ import { IIndivisualsRegister } from 'common/models/register';
 interface IPlayerInfoProps {
   data: IIndivisualsRegister;
   onChange: BindingCbWithTwo<string, string | number>;
+  fillParticipantInfo: any;
 }
 
 const divisionsOptions = [{ label: 'Division1', value: 'Division1' }];
 const playerLevelOptions = [{ label: 'Level1', value: 'Level1' }];
 
-const PlayerInfo = ({ data, onChange }: IPlayerInfoProps) => {
+const PlayerInfo = ({
+  data,
+  onChange,
+  fillParticipantInfo,
+}: IPlayerInfoProps) => {
+  useEffect(() => {
+    if (data.registrant_is_the_participant) {
+      const info = {
+        participant_first_name: data.registrant_first_name,
+        participant_last_name: data.registrant_last_name,
+        participant_mobile: data.registrant_mobile,
+        participant_email: data.registrant_email,
+      };
+      fillParticipantInfo(info);
+    }
+  }, []);
   const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('participant_first_name', e.target.value);
 

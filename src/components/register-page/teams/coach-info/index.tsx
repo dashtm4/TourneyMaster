@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from '../../styles.module.scss';
 import { Input } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
@@ -9,9 +9,21 @@ import { ITeamsRegister } from 'common/models/register';
 interface ICoachInfoProps {
   data: ITeamsRegister;
   onChange: BindingCbWithTwo<string, string | number>;
+  fillCoachInfo: any;
 }
 
-const CoachInfo = ({ data, onChange }: ICoachInfoProps) => {
+const CoachInfo = ({ data, onChange, fillCoachInfo }: ICoachInfoProps) => {
+  useEffect(() => {
+    if (data.contact_is_also_the_coach) {
+      const info = {
+        coach_first_name: data.contact_first_name,
+        coach_last_name: data.contact_last_name,
+        coach_mobile: data.contact_mobile,
+        coach_email: data.contact_email,
+      };
+      fillCoachInfo(info);
+    }
+  }, []);
   const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('coach_first_name', e.target.value);
 

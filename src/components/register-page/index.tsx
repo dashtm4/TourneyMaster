@@ -56,6 +56,14 @@ const RegisterPage = () => {
     setRegistration({ ...registration, [name]: value });
   };
 
+  const fillParticipantInfo = (info: any) => {
+    setRegistration({ ...registration, ...info });
+  };
+
+  const fillCoachInfo = (info: any) => {
+    setRegistration({ ...registration, ...info });
+  };
+
   const onTypeChange = (e: any) => {
     setType(Number(TypeOptions[e.target.value]));
   };
@@ -70,7 +78,13 @@ const RegisterPage = () => {
         case 0:
           return <RegistrantName onChange={onChange} data={registration} />;
         case 1:
-          return <PlayerInfo onChange={onChange} data={registration} />;
+          return (
+            <PlayerInfo
+              onChange={onChange}
+              data={registration}
+              fillParticipantInfo={fillParticipantInfo}
+            />
+          );
         case 2:
           return <PlayerStats onChange={onChange} data={registration} />;
         default:
@@ -83,7 +97,13 @@ const RegisterPage = () => {
         case 1:
           return <ContactInfo onChange={onChange} data={registration} />;
         case 2:
-          return <CoachInfo onChange={onChange} data={registration} />;
+          return (
+            <CoachInfo
+              onChange={onChange}
+              data={registration}
+              fillCoachInfo={fillCoachInfo}
+            />
+          );
         default:
           return <Payment onChange={onChange} data={registration} />;
       }
@@ -156,7 +176,7 @@ const RegisterPage = () => {
             </div>
             <div className={styles.btnWrapper}>
               <Button
-                label="Select"
+                label="Next"
                 color="primary"
                 variant="contained"
                 onClick={onTypeSelect}
