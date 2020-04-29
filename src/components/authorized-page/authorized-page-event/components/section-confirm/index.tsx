@@ -45,6 +45,8 @@ const ConfirmSection = ({
   });
   const [confirmValue, changeConfirmValues] = React.useState('');
 
+  const trimmedEventName = event.event_name.trim();
+
   const onChangeConfirmValue = ({ target }: IInputEvent) => {
     changeConfirmValues(target.value);
   };
@@ -104,7 +106,7 @@ const ConfirmSection = ({
             variant={ButtonVarian.CONTAINED}
             color={ButtonColors.PRIMARY}
             btnStyles={BUTTON_STYLES}
-            disabled={confirmValue !== event.event_name}
+            disabled={confirmValue !== trimmedEventName}
             label="Confirm"
           />
         </span>

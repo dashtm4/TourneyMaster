@@ -24,6 +24,7 @@ interface Props {
   list: IMenuItem[];
   isAllowEdit: boolean;
   togglePublishPopup?: BindingAction;
+  toggleUnpublishPopup?: BindingAction;
   hideOnList?: Routes[];
   event?: IEventDetails;
   schedules?: ISchedule[];
@@ -37,6 +38,7 @@ const Menu = ({
   brackets,
   isAllowEdit,
   togglePublishPopup,
+  toggleUnpublishPopup,
   hideOnList,
 }: Props) => {
   const location = useLocation();
@@ -75,14 +77,20 @@ const Menu = ({
           />
         ))}
       </ul>
-      {!isCollapsed && event && schedules && brackets && togglePublishPopup && (
-        <TournamentStatus
-          event={event}
-          schedules={schedules}
-          brackets={brackets}
-          togglePublishPopup={togglePublishPopup}
-        />
-      )}
+      {!isCollapsed &&
+        event &&
+        schedules &&
+        brackets &&
+        togglePublishPopup &&
+        toggleUnpublishPopup && (
+          <TournamentStatus
+            event={event}
+            schedules={schedules}
+            brackets={brackets}
+            togglePublishPopup={togglePublishPopup}
+            toggleUnpublishPopup={toggleUnpublishPopup}
+          />
+        )}
       <button
         className={styles.pinBtn}
         onClick={() => onSetCollapsibility(!isCollapsible)}

@@ -9,6 +9,7 @@ import {
   publishEventData,
 } from './logic/actions';
 import PopupPublishEvent from './components/popup-publish-event';
+import PopupUnpublishEvent from './components/popup-unpublish-event';
 import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
 import { Loader, Menu, ScrollTopButton } from 'components/common';
@@ -85,6 +86,9 @@ const AuthorizedPageEvent = ({
   const [isPublishPopupOpen, togglePublishPopup] = React.useState<boolean>(
     false
   );
+  const [isUnpublishPopupOpen, toggleUnpublishPopup] = React.useState<boolean>(
+    false
+  );
   const [isFullScreen, toggleFullScreen] = React.useState<boolean>(false);
   const onToggleFullScreen = () => {
     toggleFullScreen(!isFullScreen);
@@ -131,6 +135,10 @@ const AuthorizedPageEvent = ({
     togglePublishPopup(!isPublishPopupOpen);
   };
 
+  const onToggleUnpublishPopup = () => {
+    toggleUnpublishPopup(!isUnpublishPopupOpen);
+  };
+
   const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
   const schedulingIgnoreList = [
     EventMenuTitles.SCHEDULING,
@@ -155,6 +163,7 @@ const AuthorizedPageEvent = ({
           hideOnList={hideOnList}
           isAllowEdit={Boolean(eventId)}
           togglePublishPopup={onTogglePublishPopup}
+          toggleUnpublishPopup={onToggleUnpublishPopup}
         />
         <main
           className={`${styles.content} ${
@@ -237,14 +246,22 @@ const AuthorizedPageEvent = ({
       </div>
       {!isFullScreen && <Footer />}
       {event && (
-        <PopupPublishEvent
-          event={event}
-          schedules={schedules}
-          brackets={brackets}
-          isOpen={isPublishPopupOpen}
-          onClose={onTogglePublishPopup}
-          publishEventData={publishEventData}
-        />
+        <>
+          <PopupPublishEvent
+            event={event}
+            schedules={schedules}
+            brackets={brackets}
+            isOpen={isPublishPopupOpen}
+            onClose={onTogglePublishPopup}
+            publishEventData={publishEventData}
+          />
+          <PopupUnpublishEvent
+            event={event}
+            isOpen={isUnpublishPopupOpen}
+            onClose={onToggleUnpublishPopup}
+            unpublishEventData={() => {}}
+          />
+        </>
       )}
     </div>
   );

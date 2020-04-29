@@ -16,6 +16,7 @@ interface Props {
   schedules: ISchedule[];
   brackets: IFetchedBracket[];
   togglePublishPopup: BindingAction;
+  toggleUnpublishPopup: BindingAction;
 }
 
 const TournamentStatus = ({
@@ -23,8 +24,13 @@ const TournamentStatus = ({
   schedules,
   brackets,
   togglePublishPopup,
+  toggleUnpublishPopup,
 }: Props) => {
-  const isAllDruft = CheckEventDrafts.checkAllDraft(event, schedules, brackets);
+  const hasAllDruft = CheckEventDrafts.checkAllDraft(
+    event,
+    schedules,
+    brackets
+  );
 
   return (
     <div className={styles.progressBarWrapper}>
@@ -34,7 +40,7 @@ const TournamentStatus = ({
         </p>
         <ListPublised event={event} schedules={schedules} brackets={brackets} />
       </div>
-      {isAllDruft ? (
+      {hasAllDruft ? (
         <span className={styles.doneBtnWrapper}>
           <Button
             onClick={togglePublishPopup}
@@ -47,7 +53,7 @@ const TournamentStatus = ({
       ) : (
         <span className={styles.doneBtnWrapper}>
           <Button
-            onClick={togglePublishPopup}
+            onClick={toggleUnpublishPopup}
             color={ButtonColors.INHERIT}
             variant={ButtonVarian.CONTAINED}
             label="Unpublish Event"
