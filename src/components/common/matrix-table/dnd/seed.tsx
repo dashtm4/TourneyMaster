@@ -16,6 +16,7 @@ interface Props {
   slotId: number;
   bracketGameId: string;
   type: string;
+  teamName?: string;
 }
 
 export default (props: Props) => {
@@ -31,6 +32,7 @@ export default (props: Props) => {
     dependsUpon,
     type,
     bracketGameId,
+    teamName,
   } = props;
 
   const [{ isDragging }, drag] = useDrag({
@@ -58,7 +60,9 @@ export default (props: Props) => {
         opacity: isDragging ? 0.8 : 1,
       }}
     >
-      {seedId
+      {teamName
+        ? `${teamName} (${divisionName})`
+        : seedId
         ? `Seed ${seedId} (${divisionName})`
         : getDisplayName(round, dependsUpon)}
     </div>
