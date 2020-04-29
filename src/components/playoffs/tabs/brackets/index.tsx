@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { orderBy } from 'lodash-es';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { getIcon } from 'helpers';
 import { Icons } from 'common/enums';
@@ -45,10 +46,11 @@ class BracketManager extends Component<IProps> {
       label: item.short_name,
       value: item.division_id,
     }));
+    const orderedDivisions = orderBy(divisionsOptions, 'label');
 
     this.setState({
-      divisionsOptions,
-      selectedDivision: divisionsOptions[0]?.value,
+      divisionsOptions: orderedDivisions,
+      selectedDivision: orderedDivisions[0]?.value,
     });
   }
 
