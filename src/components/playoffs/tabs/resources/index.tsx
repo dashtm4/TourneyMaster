@@ -42,7 +42,7 @@ interface IProps {
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
-  updateGame: (gameId: string, slotId: number) => void;
+  updateGame: (gameId: string, slotId: number, originId?: number) => void;
   setHighlightedGame?: (id: number) => void;
   highlightedGameId?: number;
 }
@@ -112,8 +112,9 @@ class ResourceMatrix extends Component<IProps> {
     this.setState({ [name]: data });
 
   onMoveCard = (dropParams: IDropParams) => {
+    const originId = dropParams.originGameId;
     // Send <IBracketGame.id, IGame.id>
-    this.props.updateGame(dropParams.teamId, dropParams.gameId!);
+    this.props.updateGame(dropParams.teamId, dropParams.gameId!, originId);
   };
 
   render() {

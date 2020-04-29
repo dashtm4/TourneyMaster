@@ -265,7 +265,8 @@ export const updateBracketGamesDndResult = (
   slotId: number,
   bracketGames: IBracketGame[],
   games: IGame[],
-  fields: IField[]
+  fields: IField[],
+  originId?: number
 ) => {
   const warnings: IBracketMoveWarning = {
     gameAlreadyAssigned: false,
@@ -299,7 +300,8 @@ export const updateBracketGamesDndResult = (
   );
 
   warnings.gameAlreadyAssigned = Boolean(
-    bracketGame?.fieldId &&
+    originId === -1 &&
+      bracketGame?.fieldId &&
       bracketGame?.startTime &&
       bracketGameToUpdate?.fieldId &&
       bracketGameToUpdate.startTime
