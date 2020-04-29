@@ -1,8 +1,3 @@
-export enum ScheduleStatuses {
-  DRAFT = 'Draft',
-  PUBLISHED = 'Published',
-}
-
 // ! If the interface changes, you must change the fields for the enum 'common/enums/_entity_'
 export interface ISchedule {
   schedule_id: string;
@@ -16,7 +11,6 @@ export interface ISchedule {
   num_teams: number;
   min_num_games: string | null;
   max_num_games: string | null;
-  schedule_status: string;
   last_web_publish: string;
   games_start_on: string;
   period_duration: string;
@@ -24,6 +18,7 @@ export interface ISchedule {
   time_btwn_periods: string;
   is_active_YN: number;
   is_library_YN: 0 | 1 | null;
+  is_published_YN: number;
   // ! from server
   created_by: string;
   created_datetime: string;

@@ -23,7 +23,6 @@ import {
   IPublishSettings,
   ISchedule,
   IFetchedBracket,
-  ScheduleStatuses,
 } from 'common/models';
 import {
   EventStatuses,
@@ -32,6 +31,7 @@ import {
   LibraryStates,
   EventPublishTypes,
   BracketStatuses,
+  ScheduleStatuses,
 } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
@@ -188,7 +188,7 @@ const unpublishEventData = () => async (
   const { schedules, brackets } = tournamentData;
 
   const publishedSchedule = schedules.find(
-    it => it.schedule_status === ScheduleStatuses.PUBLISHED
+    it => it.is_published_YN === ScheduleStatuses.Published
   );
 
   const publishedBracket = brackets.find(

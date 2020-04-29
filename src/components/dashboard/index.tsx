@@ -27,7 +27,7 @@ import {
 } from 'common/models';
 import OnboardingWizard from 'components/onboarding-wizard';
 import { loadOrganizations } from 'components/organizations-management/logic/actions';
-import { EventStatuses } from 'common/enums';
+import { EventStatuses, ScheduleStatuses } from 'common/enums';
 
 interface IFieldWithEventId extends IField {
   event_id: string;
@@ -219,11 +219,13 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
                       facility => facility.event_id === event.event_id
                     )?.length
                   }
-                  lastScheduleRelease={this.props.schedules.filter(
-                    schedule =>
-                      schedule.event_id === event.event_id &&
-                      schedule.schedule_status === 'Published'
-                  )[0]?.updated_datetime}
+                  lastScheduleRelease={
+                    this.props.schedules.filter(
+                      schedule =>
+                        schedule.event_id === event.event_id &&
+                        schedule.is_published_YN === ScheduleStatuses.Published
+                    )[0]?.updated_datetime
+                  }
                   isDetailLoading={this.props.isDetailLoading}
                 />
               ))
