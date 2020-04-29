@@ -22,6 +22,8 @@ import {
   IFacility,
   IPublishSettings,
   ISchedule,
+  IFetchedBracket,
+  ScheduleStatuses,
 } from 'common/models';
 import {
   EventStatuses,
@@ -32,7 +34,10 @@ import {
 } from 'common/enums';
 import { IEntity } from 'common/types';
 import { sentToServerByRoute, removeObjKeysByEntryPoint } from 'helpers';
-import { updateScheduleStatus } from 'components/scheduling/logic/actions';
+import {
+  updateScheduleStatus,
+  updateBracketStatus,
+} from 'components/scheduling/logic/actions';
 
 const loadAuthPageData: ActionCreator<ThunkAction<
   void,
@@ -127,7 +132,10 @@ const updateEventStatus = (isDraft: boolean) => async (
 const publishEventData = (
   publishType: EventPublishTypes,
   publishSettings: IPublishSettings
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: Dispatch, getState: () => IAppState) => {
+  const { tournamentData } = getState().pageEvent;
+  const { event, schedules } = tournamentData;
+
   switch (publishType) {
     case EventPublishTypes.DETAILS: {
       dispatch<any>(updateEventStatus(false));
@@ -136,8 +144,32 @@ const publishEventData = (
     case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY: {
       const publishedSchedule = publishSettings.activeSchedule as ISchedule;
 
-      dispatch<any>(updateEventStatus(false));
+      if (event?.is_published_YN === EventStatuses.Draft) {
+        dispatch<any>(updateEventStatus(false));
+      }
+
       dispatch<any>(updateScheduleStatus(publishedSchedule.schedule_id, false));
+      break;
+    }
+
+    case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY_AND_BRACKETS: {
+      const publishedSchedule = publishSettings.activeSchedule as ISchedule;
+      const publishedBracket = publishSettings.activeBracket as IFetchedBracket;
+      const hasPublishedSchedule = schedules.some(
+        it => it.schedule_status === ScheduleStatuses.PUBLISHED
+      );
+
+      if (event?.is_published_YN === EventStatuses.Draft) {
+        dispatch<any>(updateEventStatus(false));
+      }
+
+      if (!hasPublishedSchedule) {
+        dispatch<any>(
+          updateScheduleStatus(publishedSchedule.schedule_id, false)
+        );
+      }
+
+      dispatch<any>(updateBracketStatus(publishedBracket.bracket_id, false));
       break;
     }
   }

@@ -1,3 +1,8 @@
+enum BracketStatuses {
+  'Draft' = 0,
+  'Published' = 1,
+}
+
 enum IBracketFields {
   BRACKET_ID = 'bracket_id',
   SCHEDULE_ID = 'schedule_id',
@@ -18,4 +23,4 @@ enum IBracketFields {
   UPDATED_DATETIME = 'updated_datetime',
 }
 
-export { IBracketFields };
+export { IBracketFields, BracketStatuses };

@@ -36,7 +36,11 @@ const PopupPublishEvent = ({
   onClose,
   publishEventData,
 }: Props) => {
-  const eventPublishOptions = getEventPublishOptions(schedules, brackets);
+  const eventPublishOptions = getEventPublishOptions(
+    event,
+    schedules,
+    brackets
+  );
   const DEFAULT_PUBLISH_OPTION = eventPublishOptions[0];
 
   const [isConfrimOpen, toggleConfrim] = React.useState<boolean>(false);

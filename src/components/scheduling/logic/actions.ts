@@ -65,6 +65,7 @@ import {
   ISchedulingBracket,
   IFetchedBracket,
 } from 'common/models/playoffs/bracket';
+import { BracketStatuses } from 'common/enums';
 
 type GetState = () => IAppState;
 
@@ -597,7 +598,37 @@ export const deleteBracket = (bracketId: string) => async (
   errorToast("Couldn't remove the bracket");
 };
 
-// export const updateBracketStatus = (
-//   scheduleId: string,
-//   isDraft: boolean
-// ) => async (dispatch: Dispatch) => {};
+export const updateBracketStatus = (
+  bracketId: string,
+  isDraft: boolean
+) => async (dispatch: Dispatch, getState: GetState) => {
+  const { pageEvent } = getState();
+  const { tournamentData } = pageEvent;
+  const { brackets } = tournamentData;
+
+  const bracket = brackets.find(bracket => bracket.bracket_id === bracketId);
+
+  if (!bracket) {
+    return showError();
+  }
+
+  /* PUT Bracket */
+  const updatedBracket: IFetchedBracket = {
+    ...bracket,
+    is_published_YN: isDraft
+      ? BracketStatuses.Draft
+      : BracketStatuses.Published,
+  };
+
+  const bracketResp = await api.put('/brackets_details', updatedBracket);
+
+  if (!bracketResp) {
+    return showError();
+  }
+
+  dispatch<any>(getEventBrackets());
+
+  const name = isDraft ? 'unpublished' : 'published';
+
+  successToast(`Bracket was successfully ${name}`);
+};

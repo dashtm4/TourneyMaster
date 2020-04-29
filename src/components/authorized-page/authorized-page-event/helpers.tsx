@@ -7,20 +7,28 @@ import {
   IFetchedBracket,
   IPublishSettings,
   ScheduleStatuses,
+  IEventDetails,
 } from 'common/models';
 import {
   IScheduleFields,
   IBracketFields,
   EventPublishTypes,
+  BracketStatuses,
+  EventStatuses,
 } from 'common/enums';
 import { IInputEvent } from 'common/types';
 import { PublishSettingFields } from './common';
 
 const getEventPublishOptions = (
+  event: IEventDetails,
   schedules: ISchedule[],
   brackets: IFetchedBracket[]
 ) => {
-  const eventPublishOptions = [EventPublishTypes.DETAILS];
+  const eventPublishOptions = [];
+
+  if (event.is_published_YN === EventStatuses.Draft) {
+    eventPublishOptions.push(EventPublishTypes.DETAILS);
+  }
 
   if (
     schedules.length > 0 &&
@@ -29,7 +37,10 @@ const getEventPublishOptions = (
     eventPublishOptions.push(EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY);
   }
 
-  if (brackets.length > 0) {
+  if (
+    brackets.length > 0 &&
+    brackets.every(it => it.is_published_YN === BracketStatuses.Draft)
+  ) {
     eventPublishOptions.push(
       EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY_AND_BRACKETS
     );

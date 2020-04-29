@@ -1,3 +1,5 @@
+import { BracketStatuses } from 'common/enums';
+
 // ! If the interface changes, you must change the fields for the enum 'common/enums/_entity_'
 export interface IFetchedBracket {
   bracket_id: string;
@@ -12,7 +14,7 @@ export interface IFetchedBracket {
   end_timeslot: string | null;
   fields_excluded: string | null;
   is_active_YN: 1 | 0 | null;
-  is_published_YN: 1 | 0;
+  is_published_YN: BracketStatuses;
   created_by: string;
   created_datetime: string;
   updated_by: string | null;
