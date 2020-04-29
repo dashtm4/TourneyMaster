@@ -4,6 +4,7 @@ import {
   PLAYOFF_FETCH_GAMES,
   PLAYOFF_CLEAR_GAMES,
   PLAYOFF_UNDO_GAMES,
+  PLAYOFF_UNDO_CLEAR,
   LOAD_DATA_WITH_SCORES,
   FETCH_SCORED_TEAMS,
   CLEAR_SCORED_TEAMS,
@@ -58,6 +59,11 @@ export default (state = defaultState, action: IPlayoffAction) => {
           state.bracketGamesHistory?.length - 1
         ),
         bracketGames: state.bracketGamesHistory.pop(),
+      };
+    case PLAYOFF_UNDO_CLEAR:
+      return {
+        ...state,
+        bracketGamesHistory: [],
       };
     case LOAD_DATA_WITH_SCORES:
       return {

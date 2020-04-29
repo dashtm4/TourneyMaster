@@ -293,7 +293,13 @@ class Playoffs extends Component<IProps> {
 
   /* CALCULATE BRACKET GAMES */
   calculateBracketGames = () => {
-    const { event, divisions, schedulesTeamCards, fields } = this.props;
+    const {
+      event,
+      divisions,
+      schedulesTeamCards,
+      fields,
+      bracket,
+    } = this.props;
     const { games, playoffTimeSlots } = this.state;
     const gameDate = moment(event?.event_enddate).toISOString();
 
@@ -314,23 +320,29 @@ class Playoffs extends Component<IProps> {
       playoffTimeSlots
     );
 
-    const facilityData = getFacilityData(schedulesTeamCards, games);
-    const mergedGames = populatePlayoffGames(
-      definedGames,
-      bracketGames,
-      divisions,
-      facilityData
-    );
+    if (!bracket?.isManualCreation) {
+      const facilityData = getFacilityData(schedulesTeamCards, games);
+      const mergedGames = populatePlayoffGames(
+        definedGames,
+        bracketGames,
+        divisions,
+        facilityData
+      );
 
-    const populatedBracketGames = populateBracketGamesWithData(
-      bracketGames,
-      mergedGames,
-      fields,
-      gameDate
-    );
+      const populatedBracketGames = populateBracketGamesWithData(
+        bracketGames,
+        mergedGames,
+        fields,
+        gameDate
+      );
 
-    this.mapBracketGamesIntoTableGames(mergedGames);
-    this.props.fetchBracketGames(populatedBracketGames);
+      this.props.fetchBracketGames(populatedBracketGames);
+      this.mapBracketGamesIntoTableGames(mergedGames);
+      return;
+    }
+
+    this.props.fetchBracketGames(bracketGames);
+    this.mapBracketGamesIntoTableGames(definedGames);
   };
 
   /* PUT BRACKET GAMES INTO GAMES */

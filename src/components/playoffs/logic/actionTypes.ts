@@ -6,6 +6,7 @@ export const PLAYOFF_SAVED_SUCCESS = 'PLAYOFF_SAVED_SUCCESS';
 export const PLAYOFF_FETCH_GAMES = 'PLAYOFF_FETCH_GAMES';
 export const PLAYOFF_CLEAR_GAMES = 'PLAYOFF_CLEAR_GAMES';
 export const PLAYOFF_UNDO_GAMES = 'PLAYOFF_UNDO_GAMES';
+export const PLAYOFF_UNDO_CLEAR = 'PLAYOFF_UNDO_CLEAR';
 
 export const LOAD_DATA_WITH_SCORES = 'BRACKETS:LOAD_DATA_WITH_SCORES';
 export const FETCH_SCORED_TEAMS = 'BRACKETS:FETCH_SCORED_TEAMS';
@@ -49,6 +50,10 @@ interface IBracketsAdvancingInProgress {
   payload: boolean;
 }
 
+interface IPlayoffUndoClear {
+  type: 'PLAYOFF_UNDO_CLEAR';
+}
+
 export type IPlayoffAction =
   | IPlayoffSavedSuccess
   | IPlayoffFetchGames
@@ -57,4 +62,5 @@ export type IPlayoffAction =
   | ILoadDataWithScores
   | IFetchSortedTeams
   | IClearSortedTeams
-  | IBracketsAdvancingInProgress;
+  | IBracketsAdvancingInProgress
+  | IPlayoffUndoClear;
