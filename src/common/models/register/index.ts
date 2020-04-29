@@ -46,3 +46,37 @@ export interface IIndivisualsRegister {
   updated_by: string;
   updated_datetime: string;
 }
+export interface ITeamsRegister {
+  reg_response_id: string;
+  registration_id: string;
+  team_name: string;
+  team_city: string;
+  team_state: string;
+  division_id: string;
+  division_name: string;
+  team_level: string;
+  team_website: string;
+  contact_first_name: string;
+  contact_last_name: string;
+  contact_mobile: string;
+  contact_email: string;
+  contact_is_also_the_coach: number;
+  coach_first_name: string;
+  coach_last_name: string;
+  coach_mobile: string;
+  coach_email: string;
+  additional_emails: string;
+  payment_method: string;
+  payment_selection: string;
+  discount_code: string;
+  payment_amount: number;
+  stripe_id: string;
+  stripe_payment_date: string;
+  stripe_credit_amount: number;
+  is_waitlist_YN: number;
+  is_active_YN: number;
+  created_by: string;
+  created_datetime: string;
+  updated_by: string;
+  updated_datetime: string;
+}

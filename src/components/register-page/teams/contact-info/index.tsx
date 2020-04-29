@@ -4,28 +4,28 @@ import { Input, Checkbox } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/high-res.css';
-import { IIndivisualsRegister } from 'common/models/register';
+import { ITeamsRegister } from 'common/models/register';
 
-interface IRegistrantNameProps {
-  data: IIndivisualsRegister;
+interface IContacnInfoProps {
+  data: ITeamsRegister;
   onChange: BindingCbWithTwo<string, string | number>;
 }
 
-const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
+const ContacnInfo = ({ data, onChange }: IContacnInfoProps) => {
   const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('registrant_first_name', e.target.value);
+    onChange('contact_first_name', e.target.value);
 
   const onLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('registrant_last_name', e.target.value);
+    onChange('contact_last_name', e.target.value);
 
   const onPhoneNumberChange = (value: string) =>
-    onChange('registrant_mobile', value);
+    onChange('contact_mobile', value);
 
   const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('registrant_email', e.target.value);
+    onChange('contact_email', e.target.value);
 
-  const onIsParticipantChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange('registrant_is_the_participant', Number(e.target.checked));
+  const onIsCoachChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange('contact_is_also_the_coach', Number(e.target.checked));
   };
 
   return (
@@ -35,7 +35,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
           <Input
             fullWidth={true}
             label="First Name"
-            value={data.registrant_first_name || ''}
+            value={data.contact_first_name || ''}
             onChange={onFirstNameChange}
           />
         </div>
@@ -43,7 +43,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
           <Input
             fullWidth={true}
             label="Last Name"
-            value={data.registrant_last_name || ''}
+            value={data.contact_last_name || ''}
             onChange={onLastNameChange}
           />
         </div>
@@ -51,7 +51,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
           <Input
             fullWidth={true}
             label="Email"
-            value={data.registrant_email || ''}
+            value={data.contact_email || ''}
             onChange={onEmailChange}
           />
         </div>
@@ -59,7 +59,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
           <div className={styles.sectionTitle}>Phone Number</div>
           <PhoneInput
             country={'us'}
-            value={data.registrant_mobile || ''}
+            value={data.contact_mobile || ''}
             onChange={onPhoneNumberChange}
             containerStyle={{ marginTop: '7px' }}
             inputStyle={{
@@ -75,11 +75,11 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
       <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
           <Checkbox
-            onChange={onIsParticipantChange}
+            onChange={onIsCoachChange}
             options={[
               {
-                label: 'Registrant is the Player',
-                checked: Boolean(data.registrant_is_the_participant || false),
+                label: 'Contact is the Coach',
+                checked: Boolean(data.contact_is_also_the_coach || false),
               },
             ]}
           />
@@ -89,4 +89,4 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
   );
 };
 
-export default RegistrantName;
+export default ContacnInfo;

@@ -3,17 +3,25 @@
   width: 100%;
   .stepperWrapper {
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    & > :first-child {
+      margin: 30px 0 10px 0;
+    }
   }
 }
 .section {
-  width: 1000px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
   .sectionRow {
     display: flex;
     justify-content: space-between;
+    & > :last-child {
+      margin-bottom: 0;
+    }
   }
   .sectionItem {
     flex-grow: 0;
@@ -30,5 +38,25 @@
   justify-content: flex-end;
   & > :first-child {
     margin-right: 15px;
+  }
+}
+.modalContainer {
+  width: 500px;
+  height: 100%;
+  margin: 20px;
+  color: #6a6a6a;
+  .radioBtnsWrapper {
+    padding-top: 9px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .btnWrapper {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 5px;
+  }
+  .message {
+    padding-top: 22px;
   }
 }
