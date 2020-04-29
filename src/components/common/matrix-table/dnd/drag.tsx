@@ -42,10 +42,14 @@ export default (props: Props) => {
   } = props;
 
   const game = find(teamCard.games, { id: originGameId, date: originGameDate });
+  const isTeamLocked = game?.isTeamLocked;
+  const isBracketTable = tableType === TableScheduleTypes.BRACKETS;
+
+  const isDraggable = !isTeamLocked && !isBracketTable;
 
   const [{ isDragging }, drag] = useDrag({
     item: { id: teamCard.id, type, originGameId, originGameDate },
-    canDrag: !game?.isTeamLocked,
+    canDrag: isDraggable,
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -141,7 +145,7 @@ export default (props: Props) => {
     <div
       ref={drag}
       className={`${styles.cardContainer} ${isDndMode &&
-        game?.isTeamLocked &&
+        !isDraggable &&
         styles.isLocked}`}
       style={{
         opacity: isDragging ? 0.8 : 1,
