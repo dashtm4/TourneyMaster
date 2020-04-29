@@ -172,7 +172,7 @@ const Brackets = (props: IProps) => {
       >
         {({ zoomIn, zoomOut }: IPinchProps) => (
           <>
-            <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} />
+            {grids && <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} />}
             <TransformComponent>
               {grids &&
                 keys(grids).map(gridKey => (
