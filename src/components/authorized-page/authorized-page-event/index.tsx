@@ -7,10 +7,8 @@ import {
   loadAuthPageData,
   clearAuthPageData,
   publishEventData,
-  unpublishEventData,
 } from './logic/actions';
 import PopupPublishEvent from './components/popup-publish-event';
-import PopupUnpublishEvent from './components/popup-unpublish-event';
 import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
 import { Loader, Menu, ScrollTopButton } from 'components/common';
@@ -34,10 +32,15 @@ import {
   BindingAction,
   ITournamentData,
   ICalendarEvent,
-  BindingCbWithTwo,
   IPublishSettings,
+  BindingCbWithThree,
 } from 'common/models';
-import { Routes, EventMenuTitles, EventPublishTypes } from 'common/enums';
+import {
+  Routes,
+  EventMenuTitles,
+  EventPublishTypes,
+  EventModifyTypes,
+} from 'common/enums';
 import { getIncompleteMenuItems } from '../helpers';
 import styles from '../styles.module.scss';
 import { closeFullscreen, openFullscreen } from 'helpers';
@@ -65,8 +68,11 @@ interface Props {
   getCalendarEvents: BindingAction;
   calendarEvents: ICalendarEvent[] | null | undefined;
   updateCalendarEvent: BindingAction;
-  publishEventData: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
-  unpublishEventData: BindingAction;
+  publishEventData: BindingCbWithThree<
+    EventPublishTypes,
+    EventModifyTypes,
+    IPublishSettings
+  >;
 }
 
 export const EmptyPage: React.FC = () => {
@@ -84,12 +90,8 @@ const AuthorizedPageEvent = ({
   calendarEvents,
   updateCalendarEvent,
   publishEventData,
-  unpublishEventData,
 }: Props & RouteComponentProps<MatchParams>) => {
   const [isPublishPopupOpen, togglePublishPopup] = React.useState<boolean>(
-    false
-  );
-  const [isUnpublishPopupOpen, toggleUnpublishPopup] = React.useState<boolean>(
     false
   );
   const [isFullScreen, toggleFullScreen] = React.useState<boolean>(false);
@@ -138,10 +140,6 @@ const AuthorizedPageEvent = ({
     togglePublishPopup(!isPublishPopupOpen);
   };
 
-  const onToggleUnpublishPopup = () => {
-    toggleUnpublishPopup(!isUnpublishPopupOpen);
-  };
-
   const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
   const schedulingIgnoreList = [
     EventMenuTitles.SCHEDULING,
@@ -166,7 +164,6 @@ const AuthorizedPageEvent = ({
           hideOnList={hideOnList}
           isAllowEdit={Boolean(eventId)}
           togglePublishPopup={onTogglePublishPopup}
-          toggleUnpublishPopup={onToggleUnpublishPopup}
         />
         <main
           className={`${styles.content} ${
@@ -258,12 +255,6 @@ const AuthorizedPageEvent = ({
             onClose={onTogglePublishPopup}
             publishEventData={publishEventData}
           />
-          <PopupUnpublishEvent
-            event={event}
-            isOpen={isUnpublishPopupOpen}
-            onClose={onToggleUnpublishPopup}
-            unpublishEventData={unpublishEventData}
-          />
         </>
       )}
     </div>
@@ -286,7 +277,6 @@ export default connect(
         getCalendarEvents,
         updateCalendarEvent,
         publishEventData,
-        unpublishEventData,
       },
       dispatch
     )

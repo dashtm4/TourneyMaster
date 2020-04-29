@@ -80,7 +80,7 @@ import {
 } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
-import { TableScheduleTypes } from 'common/enums';
+import { TableScheduleTypes, ScheduleStatuses } from 'common/enums';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import SchedulesLoader, { LoaderTypeEnum } from './loader';
@@ -641,7 +641,7 @@ class Schedules extends Component<Props, State> {
 
     if (schedule) {
       const schedulesGamesChunk = chunk(schedulesGames, 50);
-      schedule.schedule_status = 'Draft';
+      schedule.is_published_YN = ScheduleStatuses.Draft;
       const response = await api.put('/schedules', schedule);
       await Promise.all(
         schedulesGamesChunk.map(async arr => await api.delete('/games', arr))

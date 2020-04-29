@@ -1,47 +1,34 @@
 import React from 'react';
 import { Select } from 'components/common';
-import { getSelectOptions, CheckEventDrafts } from 'helpers';
+import { getSelectOptions } from 'helpers';
 import {
   BindingCbWithOne,
   ISchedule,
   IFetchedBracket,
   IPublishSettings,
-  IEventDetails,
+  ISelectOption,
 } from 'common/models';
 import {
   IScheduleFields,
   IBracketFields,
   EventPublishTypes,
+  EventModifyTypes,
 } from 'common/enums';
 import { IInputEvent } from 'common/types';
 import { PublishSettingFields } from './common';
 
-const getEventPublishOptions = (
-  event: IEventDetails,
-  schedules: ISchedule[],
-  brackets: IFetchedBracket[]
-) => {
-  const eventPublishOptions = [];
+const getModifyStatuOptions = (): ISelectOption[] => {
+  const modifyStatuOptions = Object.values(EventModifyTypes).map(it => ({
+    value: it,
+    label: it,
+  }));
 
-  if (CheckEventDrafts.checkDraftEvent(event)) {
-    eventPublishOptions.push(EventPublishTypes.DETAILS);
-  }
-
-  if (CheckEventDrafts.checkDraftSchedule(schedules)) {
-    eventPublishOptions.push(EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY);
-  }
-
-  if (CheckEventDrafts.checkDraftBracket(brackets)) {
-    eventPublishOptions.push(
-      EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY_AND_BRACKETS
-    );
-  }
-
-  return eventPublishOptions;
+  return modifyStatuOptions;
 };
 
 const getSettingsComponents = (
   publishType: EventPublishTypes,
+  modifyModValue: EventModifyTypes,
   publishSettings: IPublishSettings,
   schedules: ISchedule[],
   brackets: IFetchedBracket[],
@@ -66,6 +53,7 @@ const getSettingsComponents = (
           name={PublishSettingFields.ACTIVE_SCHEDULE}
           options={scheduleOptions}
           value={activeSchedule?.schedule_id || ''}
+          disabled={modifyModValue === EventModifyTypes.UNPUBLISH}
           label="Schedules:"
         />
       );
@@ -90,6 +78,7 @@ const getSettingsComponents = (
             name={PublishSettingFields.ACTIVE_SCHEDULE}
             options={scheduleOptions}
             value={activeSchedule?.schedule_id || ''}
+            disabled={modifyModValue === EventModifyTypes.UNPUBLISH}
             label="Schedules:"
           />
           <Select
@@ -97,6 +86,7 @@ const getSettingsComponents = (
             name={PublishSettingFields.ACTIVE_BRACKET}
             options={bracketsOptions}
             value={activeBracket?.bracket_id || ''}
+            disabled={modifyModValue === EventModifyTypes.UNPUBLISH}
             label="Brackets:"
           />
         </>
@@ -127,4 +117,4 @@ const getSettingItemById = (
   }
 };
 
-export { getSettingsComponents, getSettingItemById, getEventPublishOptions };
+export { getModifyStatuOptions, getSettingsComponents, getSettingItemById };

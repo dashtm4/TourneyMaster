@@ -16,7 +16,6 @@ export interface ISchedulesDetails {
   away_team_locked: 1 | 0 | null;
   home_team_locked: 1 | 0 | null;
   is_draft_YN: 1 | 0 | null;
-  is_published_YN: 1 | 0 | null;
   created_by: string | null;
   created_datetime: string;
   updated_by: string | null;

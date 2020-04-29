@@ -99,7 +99,6 @@ export const mapSchedulesTeamCards = async (
     away_team_locked: getLockedValue(game.awayTeam, game),
     home_team_locked: getLockedValue(game.homeTeam, game),
     is_draft_YN: isDraft ? 1 : 0,
-    is_published_YN: isDraft ? 0 : 1,
     created_by: memberId,
     created_datetime: game.createDate || new Date().toISOString(),
     updated_by: memberId,

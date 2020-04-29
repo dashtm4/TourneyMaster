@@ -65,7 +65,7 @@ import {
   ISchedulingBracket,
   IFetchedBracket,
 } from 'common/models/playoffs/bracket';
-import { BracketStatuses } from 'common/enums';
+import { BracketStatuses, ScheduleStatuses } from 'common/enums';
 
 type GetState = () => IAppState;
 
@@ -432,7 +432,9 @@ export const updateScheduleStatus = (
   /* PUT Schedule */
   const updatedSchedule: ISchedule = {
     ...schedule,
-    schedule_status: isDraft ? 'Draft' : 'Published',
+    is_published_YN: isDraft
+      ? ScheduleStatuses.Draft
+      : ScheduleStatuses.Published,
     last_web_publish: isDraft
       ? schedule.last_web_publish
       : new Date().toISOString(),

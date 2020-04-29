@@ -23,6 +23,7 @@ import { IAppState } from 'reducers/root-reducer.types';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { successToast, errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesGame } from 'common/models/schedule/game';
+import { ScheduleStatuses } from 'common/enums';
 
 type ThunkActionType<R> = ThunkAction<R, IAppState, undefined, any>;
 
@@ -279,7 +280,11 @@ export const getPublishedGames = (
   });
 
   if (!scheduleId) {
-    if (schedulesResponse?.find(item => item.schedule_status === 'Published')) {
+    if (
+      schedulesResponse?.find(
+        item => item.is_published_YN === ScheduleStatuses.Published
+      )
+    ) {
       dispatch(anotherSchedulePublished(true));
       dispatch(publishedClear());
     }
@@ -298,14 +303,16 @@ export const getPublishedGames = (
   if (
     schedulesResponse?.find(
       item =>
-        item.schedule_status === 'Published' && item.schedule_id === scheduleId
+        item.is_published_YN === ScheduleStatuses.Published &&
+        item.schedule_id === scheduleId
     )
   ) {
     dispatch(publishedSuccess());
   } else if (
     schedulesResponse?.find(
       item =>
-        item.schedule_status === 'Published' && item.schedule_id !== scheduleId
+        item.is_published_YN === ScheduleStatuses.Published &&
+        item.schedule_id !== scheduleId
     )
   ) {
     dispatch(anotherSchedulePublished(true));

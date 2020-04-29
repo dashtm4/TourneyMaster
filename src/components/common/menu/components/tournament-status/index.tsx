@@ -1,8 +1,7 @@
 import React from 'react';
 import { Button } from 'components/common';
 import ListPublised from '../list-publised';
-import { getIcon, CheckEventDrafts } from 'helpers';
-import { ButtonColors, ButtonVarian, EventStatuses, Icons } from 'common/enums';
+import { ButtonColors, ButtonVarian, EventStatuses } from 'common/enums';
 import {
   BindingAction,
   IEventDetails,
@@ -16,7 +15,6 @@ interface Props {
   schedules: ISchedule[];
   brackets: IFetchedBracket[];
   togglePublishPopup: BindingAction;
-  toggleUnpublishPopup: BindingAction;
 }
 
 const TournamentStatus = ({
@@ -24,10 +22,7 @@ const TournamentStatus = ({
   schedules,
   brackets,
   togglePublishPopup,
-  toggleUnpublishPopup,
 }: Props) => {
-  const isEventDraft = CheckEventDrafts.checkDraftEvent(event);
-
   return (
     <div className={styles.progressBarWrapper}>
       <div className={styles.progressBarStatusWrapper}>
@@ -36,26 +31,14 @@ const TournamentStatus = ({
         </p>
         <ListPublised event={event} schedules={schedules} brackets={brackets} />
       </div>
-      {isEventDraft ? (
-        <span className={styles.doneBtnWrapper}>
-          <Button
-            onClick={togglePublishPopup}
-            icon={getIcon(Icons.DONE)}
-            label="Publish Event"
-            color={ButtonColors.INHERIT}
-            variant={ButtonVarian.CONTAINED}
-          />
-        </span>
-      ) : (
-        <span className={styles.doneBtnWrapper}>
-          <Button
-            onClick={toggleUnpublishPopup}
-            color={ButtonColors.INHERIT}
-            variant={ButtonVarian.CONTAINED}
-            label="Unpublish Event"
-          />
-        </span>
-      )}
+      <span className={styles.doneBtnWrapper}>
+        <Button
+          onClick={togglePublishPopup}
+          label="Modify Published Status"
+          color={ButtonColors.INHERIT}
+          variant={ButtonVarian.CONTAINED}
+        />
+      </span>
     </div>
   );
 };

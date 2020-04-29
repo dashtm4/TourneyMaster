@@ -23,7 +23,6 @@ import {
   IPublishSettings,
   ISchedule,
   IFetchedBracket,
-  ScheduleStatuses,
 } from 'common/models';
 import {
   EventStatuses,
@@ -31,7 +30,7 @@ import {
   MethodTypes,
   LibraryStates,
   EventPublishTypes,
-  BracketStatuses,
+  EventModifyTypes,
 } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
@@ -136,74 +135,59 @@ const updateEventStatus = (isDraft: boolean) => async (
 
 const publishEventData = (
   publishType: EventPublishTypes,
+  modifyModValue: EventModifyTypes,
   publishSettings: IPublishSettings
 ) => async (dispatch: Dispatch, getState: () => IAppState) => {
   const { tournamentData } = getState().pageEvent;
   const { event, schedules } = tournamentData;
+  const hasPublishedEvent = !CheckEventDrafts.checkDraftEvent(
+    event as IEventDetails
+  );
+  const hasPublishedSchedule = !CheckEventDrafts.checkDraftSchedule(schedules);
+
+  const isDraft = modifyModValue === EventModifyTypes.UNPUBLISH;
 
   switch (publishType) {
     case EventPublishTypes.DETAILS: {
-      dispatch<any>(updateEventStatus(false));
+      dispatch<any>(updateEventStatus(isDraft));
       break;
     }
-    case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY: {
+    case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY:
+    case EventPublishTypes.TOURNAMENT_PLAY: {
       const publishedSchedule = publishSettings.activeSchedule as ISchedule;
 
-      if (event?.is_published_YN === EventStatuses.Draft) {
-        dispatch<any>(updateEventStatus(false));
+      if (modifyModValue === EventModifyTypes.PUBLISH && !hasPublishedEvent) {
+        dispatch<any>(updateEventStatus(isDraft));
       }
 
-      dispatch<any>(updateScheduleStatus(publishedSchedule.schedule_id, false));
+      dispatch<any>(
+        updateScheduleStatus(publishedSchedule.schedule_id, isDraft)
+      );
       break;
     }
 
-    case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY_AND_BRACKETS: {
+    case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY_AND_BRACKETS:
+    case EventPublishTypes.BRACKETS: {
       const publishedSchedule = publishSettings.activeSchedule as ISchedule;
       const publishedBracket = publishSettings.activeBracket as IFetchedBracket;
-      const isAllSchedulesDrafted = CheckEventDrafts.checkDraftSchedule(
-        schedules
-      );
 
-      if (event?.is_published_YN === EventStatuses.Draft) {
-        dispatch<any>(updateEventStatus(false));
+      if (modifyModValue === EventModifyTypes.PUBLISH && !hasPublishedEvent) {
+        dispatch<any>(updateEventStatus(isDraft));
       }
 
-      if (isAllSchedulesDrafted) {
+      if (
+        modifyModValue === EventModifyTypes.PUBLISH &&
+        !hasPublishedSchedule
+      ) {
         dispatch<any>(
-          updateScheduleStatus(publishedSchedule.schedule_id, false)
+          updateScheduleStatus(publishedSchedule.schedule_id, isDraft)
         );
       }
 
-      dispatch<any>(updateBracketStatus(publishedBracket.bracket_id, false));
+      dispatch<any>(updateBracketStatus(publishedBracket.bracket_id, isDraft));
       break;
     }
   }
-};
-
-const unpublishEventData = () => async (
-  dispatch: Dispatch,
-  getState: () => IAppState
-) => {
-  const { tournamentData } = getState().pageEvent;
-  const { schedules, brackets } = tournamentData;
-
-  const publishedSchedule = schedules.find(
-    it => it.schedule_status === ScheduleStatuses.PUBLISHED
-  );
-
-  const publishedBracket = brackets.find(
-    it => it.is_published_YN === BracketStatuses.Published
-  );
-
-  if (publishedBracket) {
-    dispatch<any>(updateBracketStatus(publishedBracket.bracket_id, true));
-  }
-
-  if (publishedSchedule) {
-    dispatch<any>(updateScheduleStatus(publishedSchedule.schedule_id, true));
-  }
-
-  dispatch<any>(updateEventStatus(true));
 };
 
 const addEntityToLibrary = (entity: IEntity, entryPoint: EntryPoints) => async (
@@ -285,5 +269,4 @@ export {
   publishEventData,
   addEntityToLibrary,
   addEntitiesToLibrary,
-  unpublishEventData,
 };

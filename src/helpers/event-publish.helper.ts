@@ -1,10 +1,5 @@
-import {
-  ISchedule,
-  IFetchedBracket,
-  ScheduleStatuses,
-  IEventDetails,
-} from 'common/models';
-import { BracketStatuses, EventStatuses } from 'common/enums';
+import { ISchedule, IFetchedBracket, IEventDetails } from 'common/models';
+import { BracketStatuses, EventStatuses, ScheduleStatuses } from 'common/enums';
 
 const checkDraftEvent = (event: IEventDetails): boolean => {
   const isPublished = event.is_published_YN === EventStatuses.Draft;
@@ -15,7 +10,7 @@ const checkDraftEvent = (event: IEventDetails): boolean => {
 const checkDraftSchedule = (schedules: ISchedule[]): boolean => {
   const hasPublished =
     schedules.length > 0 &&
-    schedules.every(it => it.schedule_status === ScheduleStatuses.DRAFT);
+    schedules.every(it => it.is_published_YN === ScheduleStatuses.Draft);
 
   return hasPublished;
 };
