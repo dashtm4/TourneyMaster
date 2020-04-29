@@ -24,6 +24,7 @@ import {
   publishedSuccess,
   createSchedule,
   updateSchedule,
+  schedulesDetailsClear,
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
@@ -144,6 +145,7 @@ interface IMapDispatchToProps {
     schedule: ISchedule,
     schedulesDetails: ISchedulesDetails[]
   ) => void;
+  schedulesDetailsClear: () => void;
 }
 
 interface ComponentProps {
@@ -201,6 +203,7 @@ class Schedules extends Component<Props, State> {
     const facilitiesIds = facilities?.map(f => f.facilities_id);
     const { isManualScheduling } = scheduleData || {};
 
+    this.props.schedulesDetailsClear();
     this.props.clearSchedulesTable();
     this.getPublishedStatus();
     this.activateLoaders(scheduleId, !!isManualScheduling);
@@ -250,9 +253,7 @@ class Schedules extends Component<Props, State> {
       teams,
       neccessaryDataCalculated,
       teamCardsAlreadyUpdated,
-      fields,
       timeSlots,
-      divisions,
       tournamentDays,
     } = this.state;
 
@@ -285,12 +286,15 @@ class Schedules extends Component<Props, State> {
       const playoffTimeSlots =
         adjustPlayoffTimeOnLoad(
           schedulesDetails!,
-          fields!,
           timeSlots!,
-          divisions!,
           event!,
           lastDay
         ) || [];
+
+      console.log(
+        'componentDidUpdate - playoffTimeSlots:',
+        JSON.parse(JSON.stringify(playoffTimeSlots))
+      );
 
       this.calculateDiagnostics();
       this.setState({ playoffTimeSlots, teamCardsAlreadyUpdated: true });
@@ -445,6 +449,11 @@ class Schedules extends Component<Props, State> {
       timeSlots,
       divisions!,
       event!
+    );
+
+    console.log(
+      'calculateSchedules - playoffTimeSlots:',
+      JSON.parse(JSON.stringify(playoffTimeSlots))
     );
 
     /* Truncate gameslots and timeslots for the last day by the number of playoff timeslots */
@@ -618,20 +627,20 @@ class Schedules extends Component<Props, State> {
 
     if (!schedule) return;
 
+    const schedulesDetails = await this.retrieveSchedulesDetails(
+      true,
+      scheduleId ? 'PUT' : 'POST'
+    );
+
     if (scheduleId) {
-      const schedulesDetailsPUT = await this.retrieveSchedulesDetails(
-        true,
-        'PUT'
-      );
-      this.props.updateSchedule(schedule, schedulesDetailsPUT);
-      return;
+      this.props.updateSchedule(schedule, schedulesDetails);
+    } else {
+      this.props.createSchedule(schedule, schedulesDetails);
     }
 
-    const schedulesDetailsPOST = await this.retrieveSchedulesDetails(
-      true,
-      'POST'
-    );
-    this.props.createSchedule(schedule, schedulesDetailsPOST);
+    if (this.state.cancelConfirmationOpen) {
+      this.onExit();
+    }
   };
 
   unpublish = async () => {
@@ -876,6 +885,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       //
       createSchedule,
       updateSchedule,
+      schedulesDetailsClear,
     },
     dispatch
   );

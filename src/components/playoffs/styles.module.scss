@@ -1,4 +1,11 @@
 .container {
+  &.containerFullScreen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+
   .paperWrapper {
     margin-bottom: 20px;
 

@@ -16,6 +16,7 @@ import {
   SCHEDULES_PUBLISHED_CLEAR,
   ANOTHER_SCHEDULE_PUBLISHED,
   SCHEDULES_GAMES_ALREADY_EXIST,
+  SCHEDULES_DETAILS_CLEAR,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
@@ -60,6 +61,10 @@ const fetchSchedulesDetailsSuccess = (payload: {
 }) => ({
   type: FETCH_SCHEDULES_DETAILS_SUCCESS,
   payload,
+});
+
+export const schedulesDetailsClear = () => ({
+  type: SCHEDULES_DETAILS_CLEAR,
 });
 
 export const publishedSuccess = () => ({
@@ -347,7 +352,9 @@ const saveSchedule = (
     )
   );
 
-  if (scheduleResp && schedulesDetailsResp.length) {
+  const schedulesDetailsRespOk = schedulesDetailsResp?.every(v => v);
+
+  if (scheduleResp && schedulesDetailsRespOk) {
     dispatch(draftSavedSuccess());
     successToast('Schedule data was successfully saved');
   } else {

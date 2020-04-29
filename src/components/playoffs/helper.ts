@@ -217,7 +217,7 @@ export const updateGameSlot = (
 
 enum BracketMoveWarnEnum {
   gameAlreadyAssigned = 'This bracket game is already assigned. Please confirm your intentions.',
-  gamePlayTimeInvalid = 'This bracket game cannot be placed at this time.',
+  gamePlayTimeInvalid = 'This bracket game depends upon preceeding games being complete. They are not. Please place this game in a later game slot.',
   facilitiesDiffer = 'This division is not playing at this facility on this day. Please confirm your intentions.',
 }
 
@@ -265,7 +265,8 @@ export const updateBracketGamesDndResult = (
   slotId: number,
   bracketGames: IBracketGame[],
   games: IGame[],
-  fields: IField[]
+  fields: IField[],
+  originId?: number
 ) => {
   const warnings: IBracketMoveWarning = {
     gameAlreadyAssigned: false,
@@ -299,7 +300,8 @@ export const updateBracketGamesDndResult = (
   );
 
   warnings.gameAlreadyAssigned = Boolean(
-    bracketGame?.fieldId &&
+    originId === -1 &&
+      bracketGame?.fieldId &&
       bracketGame?.startTime &&
       bracketGameToUpdate?.fieldId &&
       bracketGameToUpdate.startTime

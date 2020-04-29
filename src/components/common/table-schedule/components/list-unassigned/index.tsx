@@ -45,10 +45,18 @@ const UnassignedList = (props: IProps) => {
     setSortBy(by);
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     setUnsatisfiedTeamCards(
-      orderBy(unsatisfiedTeamCards, by, sortOrder === 'asc' ? 'asc' : 'desc')
+      orderBy(
+        unsatisfiedTeamCards,
+        ['divisionShortName', by],
+        ['asc', sortOrder === 'asc' ? 'asc' : 'desc']
+      )
     );
     setSatisfiedTeamCards(
-      orderBy(satisfiedTeamCards, by, sortOrder === 'asc' ? 'asc' : 'desc')
+      orderBy(
+        satisfiedTeamCards,
+        ['divisionShortName', by],
+        ['asc', sortOrder === 'asc' ? 'asc' : 'desc']
+      )
     );
   };
 
@@ -78,11 +86,11 @@ const UnassignedList = (props: IProps) => {
 
     const orderedUnsatisfiedTeamCards = orderBy(
       newUnsatisfiedTeamCards,
-      'divisionId'
+      'divisionShortName'
     );
     const orderedSatisfiedTeamCards = orderBy(
       newSatisfiedTeamCards,
-      'divisionId'
+      'divisionShortName'
     );
 
     setUnsatisfiedTeamCards(orderedUnsatisfiedTeamCards);

@@ -117,6 +117,8 @@ interface IMapDispatchToProps {
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
   match: any;
   history: History;
+  isFullScreen: boolean;
+  onToggleFullScreen: () => void;
 }
 
 interface IState {
@@ -262,26 +264,16 @@ class Playoffs extends Component<IProps> {
   };
 
   calculatePlayoffTimeSlots = () => {
-    const { schedulesDetails, divisions, event } = this.props;
-    const { timeSlots, fields } = this.state;
+    const { schedulesDetails, event } = this.props;
+    const { timeSlots } = this.state;
 
     const day = event?.event_enddate;
 
-    if (
-      !schedulesDetails ||
-      !fields ||
-      !timeSlots ||
-      !divisions ||
-      !event ||
-      !day
-    )
-      return;
+    if (!schedulesDetails || !timeSlots || !event || !day) return;
 
     const playoffTimeSlots = adjustPlayoffTimeOnLoad(
       schedulesDetails,
-      fields,
       timeSlots,
-      divisions,
       event,
       day
     );
@@ -414,7 +406,7 @@ class Playoffs extends Component<IProps> {
     this.setState({ bracketSeeds });
   };
 
-  updateMergedGames = (gameId: string, slotId: number) => {
+  updateMergedGames = (gameId: string, slotId: number, originId?: number) => {
     const { bracketGames, fields } = this.props;
     const { tableGames } = this.state;
 
@@ -426,7 +418,8 @@ class Playoffs extends Component<IProps> {
       slotId,
       bracketGames,
       tableGames,
-      fields
+      fields,
+      originId
     );
 
     const warningResult = setReplacementMessage(
@@ -560,12 +553,17 @@ class Playoffs extends Component<IProps> {
       bracketGames,
       advanceTeamsToBrackets,
       advancingInProgress,
+      isFullScreen,
+      onToggleFullScreen,
     } = this.props;
 
     const saveButtonCondition = bracket && bracketGames;
 
     return (
-      <div className={styles.container}>
+      <div
+        className={`${styles.container} ${isFullScreen &&
+          styles.containerFullScreen}`}
+      >
         <DndProvider backend={HTML5Backend}>
           <div className={styles.paperWrapper}>
             <Paper>
@@ -574,12 +572,14 @@ class Playoffs extends Component<IProps> {
                   <span>{bracket?.name}</span>
                 </div>
                 <div>
-                  <Button
-                    label="Close"
-                    variant="text"
-                    color="secondary"
-                    onClick={this.onGoBack}
-                  />
+                  {!isFullScreen && (
+                    <Button
+                      label="Close"
+                      variant="text"
+                      color="secondary"
+                      onClick={this.onGoBack}
+                    />
+                  )}
                   <Button
                     label="Save"
                     variant="contained"
@@ -624,9 +624,11 @@ class Playoffs extends Component<IProps> {
                 onTeamCardsUpdate={() => {}}
                 onTeamCardUpdate={() => {}}
                 onUndo={() => {}}
+                isFullScreen={isFullScreen}
                 updateGame={this.updateMergedGames}
                 setHighlightedGame={this.setHighlightedGame}
                 highlightedGameId={this.state.highlightedGameId}
+                onToggleFullScreen={onToggleFullScreen}
               />
             ) : (
               <BracketManager

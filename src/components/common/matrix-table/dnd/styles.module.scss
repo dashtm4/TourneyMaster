@@ -141,6 +141,7 @@
 
 .isLocked {
   cursor: not-allowed;
+  opacity: 0.7 !important;
   :active {
     cursor: not-allowed;
   }
