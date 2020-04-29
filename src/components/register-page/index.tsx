@@ -3,25 +3,18 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
-import Typography from '@material-ui/core/Typography';
-import { Button } from 'components/common';
+// import Typography from '@material-ui/core/Typography';
+import { Button, HeadingLevelThree } from 'components/common';
 import styles from './styles.module.scss';
 import Paper from 'components/common/paper';
 import RegistrantName from './individuals/registrant-name';
+import PlayerInfo from './individuals/player-info';
+import PlayerStats from './individuals/player-stats';
+import Payment from './individuals/payment';
 
 const getSteps = () => {
-  return ['Registrant Name', 'Player Info', 'Payment', 'Player Stats'];
+  return ['Registrant Name', 'Player Info', 'Player Stats', 'Payment'];
 };
-
-const renderPlayerInfo = () => (
-  <div className={styles.section}>Player Info</div>
-);
-
-const renderPayment = () => <div className={styles.section}>Payment</div>;
-
-const renderPlayerStats = () => (
-  <div className={styles.section}>Player Stats</div>
-);
 
 const RegisterPage = () => {
   const [activeStep, setActiveStep] = React.useState(0);
@@ -35,11 +28,7 @@ const RegisterPage = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-
-  const [registration, setRegistration] = useState({});
+  const [registration, setRegistration] = useState<any>({});
 
   const onChange = (name: string, value: string | number) => {
     setRegistration({ ...registration, [name]: value });
@@ -50,18 +39,18 @@ const RegisterPage = () => {
       case 0:
         return <RegistrantName onChange={onChange} data={registration} />;
       case 1:
-        return renderPlayerInfo();
+        return <PlayerInfo onChange={onChange} data={registration} />;
       case 2:
-        return renderPayment();
+        return <PlayerStats onChange={onChange} data={registration} />;
       default:
-        return renderPlayerStats();
+        return <Payment onChange={onChange} data={registration} />;
     }
   };
   console.log(registration);
   return (
     <div className={styles.container}>
-      <Paper>
-        <div className={styles.stepperWrapper}>
+      <div className={styles.stepperWrapper}>
+        <Paper>
           <Stepper
             activeStep={activeStep}
             orientation="vertical"
@@ -69,7 +58,11 @@ const RegisterPage = () => {
           >
             {steps.map((label, index) => (
               <Step key={label}>
-                <StepLabel>{label}</StepLabel>
+                <StepLabel>
+                  <HeadingLevelThree color="#1c315f">
+                    <span>{label}</span>
+                  </HeadingLevelThree>
+                </StepLabel>
                 <StepContent>
                   <div>{getStepContent(index)}</div>
                   <div className={styles.buttonsWrapper}>
@@ -85,7 +78,7 @@ const RegisterPage = () => {
                       color="primary"
                       onClick={handleNext}
                       label={
-                        activeStep === steps.length - 1 ? 'Finish' : 'Next'
+                        activeStep === steps.length - 1 ? 'Register' : 'Next'
                       }
                     />
                   </div>
@@ -93,21 +86,8 @@ const RegisterPage = () => {
               </Step>
             ))}
           </Stepper>
-          {activeStep === steps.length && (
-            <div>
-              <Typography>
-                All steps completed - you&apos;re finished
-              </Typography>
-              <Button
-                onClick={handleReset}
-                label="Reset"
-                variant="contained"
-                color="primary"
-              />
-            </div>
-          )}
-        </div>
-      </Paper>
+        </Paper>
+      </div>
     </div>
   );
 };

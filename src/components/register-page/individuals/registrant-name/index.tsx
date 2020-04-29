@@ -2,9 +2,12 @@ import React from 'react';
 import styles from '../../styles.module.scss';
 import { Input, Checkbox } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/high-res.css';
+import { IIndivisualsRegister } from 'common/models/register';
 
 interface IRegistrantNameProps {
-  data: any;
+  data: IIndivisualsRegister;
   onChange: BindingCbWithTwo<string, string | number>;
 }
 
@@ -15,14 +18,15 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
   const onLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('registrant_last_name', e.target.value);
 
-  const onPhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('registrant_mobile', e.target.value);
+  const onPhoneNumberChange = (value: string) =>
+    onChange('registrant_mobile', value);
 
   const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('registrant_email', e.target.value);
 
-  const onIsParticipantChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onIsParticipantChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange('registrant_is_the_participant', Number(e.target.checked));
+  };
 
   return (
     <div className={styles.section}>
@@ -52,11 +56,19 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
           />
         </div>
         <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            label="Phone Number"
+          <div className={styles.sectionTitle}>Phone Number</div>
+          <PhoneInput
+            country={'us'}
             value={data.registrant_mobile || ''}
             onChange={onPhoneNumberChange}
+            containerStyle={{ marginTop: '7px' }}
+            inputStyle={{
+              height: '40px',
+              fontSize: '18px',
+              color: '#6a6a6a',
+              borderRadius: '4px',
+              width: '100%',
+            }}
           />
         </div>
       </div>
@@ -66,7 +78,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
             onChange={onIsParticipantChange}
             options={[
               {
-                label: 'Registrant is participant',
+                label: 'Registrant is the Player',
                 checked: Boolean(
                   data ? data.registrant_is_the_participant : false
                 ),

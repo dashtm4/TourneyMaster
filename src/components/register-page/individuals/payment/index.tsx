@@ -1,0 +1,77 @@
+import React from 'react';
+import styles from '../../styles.module.scss';
+import { Input, Select } from 'components/common';
+import { BindingCbWithTwo } from 'common/models';
+import { IIndivisualsRegister } from 'common/models/register';
+
+interface IPaymentProps {
+  data: IIndivisualsRegister;
+  onChange: BindingCbWithTwo<string, string | number>;
+}
+
+const paymentMethodOptions = [
+  { label: 'Check', value: 'Check' },
+  { label: 'Credit Card', value: 'Credit Card' },
+  { label: 'ACH', value: 'ACH' },
+];
+const paymentSelectionOptions = [
+  { label: 'Full', value: 'Full' },
+  { label: 'Partial', value: 'Partial' },
+  { label: 'Deposit', value: 'Deposit' },
+];
+
+const Payment = ({ data, onChange }: IPaymentProps) => {
+  const onPaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('payment_method', e.target.value);
+
+  const onDiscountCodeChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('discount_code', e.target.value);
+
+  const onPaymentSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('payment_selection', e.target.value);
+
+  const onPaymentAmountChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('payment_amount', e.target.value);
+
+  return (
+    <div className={styles.section}>
+      <div className={styles.sectionRow}>
+        <div className={styles.sectionItem}>
+          <Select
+            options={paymentMethodOptions}
+            label="Payment Method"
+            value={data.payment_method || ''}
+            onChange={onPaymentMethodChange}
+          />
+        </div>
+        <div className={styles.sectionItem}>
+          <Input
+            fullWidth={true}
+            label="Discount Code"
+            value={data.discount_code || ''}
+            onChange={onDiscountCodeChange}
+          />
+        </div>
+        <div className={styles.sectionItem}>
+          <Select
+            options={paymentSelectionOptions}
+            label="Payment Selection"
+            value={data.payment_selection || ''}
+            onChange={onPaymentSelectionChange}
+          />
+        </div>
+        <div className={styles.sectionItem}>
+          <Input
+            fullWidth={true}
+            type="number"
+            label="Payment Amount"
+            value={data.payment_amount || ''}
+            onChange={onPaymentAmountChange}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Payment;
