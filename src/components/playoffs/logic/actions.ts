@@ -6,6 +6,7 @@ import {
   PLAYOFF_FETCH_GAMES,
   PLAYOFF_CLEAR_GAMES,
   PLAYOFF_UNDO_GAMES,
+  PLAYOFF_UNDO_CLEAR,
   LOAD_DATA_WITH_SCORES,
   FETCH_SCORED_TEAMS,
   CLEAR_SCORED_TEAMS,
@@ -69,6 +70,10 @@ export const clearBracketGames = () => ({
 
 export const onUndoBrackets = () => ({
   type: PLAYOFF_UNDO_GAMES,
+});
+
+const clearUndoHistory = () => ({
+  type: PLAYOFF_UNDO_CLEAR,
 });
 
 const newError = () =>
@@ -153,6 +158,7 @@ const managePlayoffSaving = (
       : existingBracketGamesRespOk || newBracketGamesRespOk;
 
   if (bracketResp && responseOk) {
+    dispatch(clearUndoHistory());
     dispatch(playoffSavedSuccess(true));
     successToast('Playoff data was successfully saved!');
     return;
