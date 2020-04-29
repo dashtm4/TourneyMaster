@@ -19,6 +19,7 @@ import {
   DELETE_SCHEDULE_FAILURE,
   ADD_NEW_BRACKET,
   FETCH_EVENT_BRACKETS,
+  FETCH_BRACKETS_SUCCESS,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
 import { scheduleSchema, updatedScheduleSchema } from 'validations';
@@ -52,7 +53,6 @@ import {
   mapTeamsFromSchedulesDetails,
   mapSchedulesTeamCards,
   mapTeamCardsToSchedulesGames,
-  mapSchedulingScheduleData,
 } from 'components/schedules/mapScheduleData';
 import { errorToast, successToast } from 'components/common/toastr/showToasts';
 import { ICreateBracketModalOutput } from '../create-new-bracket';
@@ -60,7 +60,12 @@ import {
   mapFetchedBracket,
   mapBracketData,
 } from 'components/playoffs/mapBracketsData';
-import { IBracket, ISchedulingBracket } from 'common/models/playoffs/bracket';
+import {
+  IBracket,
+  ISchedulingBracket,
+  IFetchedBracket,
+} from 'common/models/playoffs/bracket';
+import { BracketStatuses } from 'common/enums';
 
 type GetState = () => IAppState;
 
@@ -89,6 +94,11 @@ const scheduleFetchFailure = () => ({
 
 const fetchEventBrackets = (payload: ISchedulingBracket[]) => ({
   type: FETCH_EVENT_BRACKETS,
+  payload,
+});
+
+const fetchBracketsSuccess = (payload: IFetchedBracket[]) => ({
+  type: FETCH_BRACKETS_SUCCESS,
   payload,
 });
 
@@ -394,30 +404,27 @@ const getSchedulesGames = async (
   );
 };
 
-const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
-  dispatch: Dispatch,
-  getState: GetState
-) => {
-  const { scheduling, pageEvent } = getState();
-  const { schedules } = scheduling;
+export const updateScheduleStatus = (
+  scheduleId: string,
+  isDraft: boolean
+) => async (dispatch: Dispatch, getState: GetState) => {
+  const { pageEvent } = getState();
   const { tournamentData } = pageEvent;
-  const { event, fields, teams, divisions, facilities } = tournamentData;
+  const {
+    event,
+    fields,
+    teams,
+    divisions,
+    facilities,
+    schedules,
+  } = tournamentData;
 
-  const schedulingSchedule = schedules.find(
-    item => item.schedule_id === scheduleId
+  const schedule = schedules.find(
+    schedule => schedule.schedule_id === scheduleId
   );
 
-  if (
-    !event ||
-    !fields ||
-    !teams ||
-    !divisions ||
-    !schedulingSchedule ||
-    !facilities
-  )
+  if (!event || !fields || !teams || !divisions || !schedule || !facilities)
     return showError();
-
-  const schedule = mapSchedulingScheduleData(schedulingSchedule);
 
   // const scheduleGames = await getGamesByScheduleId(scheduleId);
   // const gamesExist = scheduleGames?.length;
@@ -535,6 +542,8 @@ export const getEventBrackets = () => async (
   const response = await api.get('/brackets_details', { event_id });
 
   if (response?.length) {
+    dispatch(fetchBracketsSuccess(response));
+
     const mappedBrackets = response.map(mapFetchedBracket);
     const mappedBrackets2 = mappedBrackets.map((item: IBracket) =>
       mapToSchedulingBracket(item, members)
@@ -563,6 +572,14 @@ export const updateBracket = (bracket: ISchedulingBracket) => async (
       const mappedBrackets = updatedBrackets.map(item =>
         mapToSchedulingBracket(item, members)
       );
+      const mappedFetchedBrackets = await Promise.all(
+        mappedBrackets.map((it: ISchedulingBracket) =>
+          mapBracketData(it, !it.published)
+        )
+      );
+
+      dispatch(fetchBracketsSuccess(mappedFetchedBrackets));
+
       dispatch(fetchEventBrackets(mappedBrackets));
     }
     successToast('Bracket was successfully updated!');
@@ -588,4 +605,39 @@ export const deleteBracket = (bracketId: string) => async (
     return;
   }
   errorToast("Couldn't remove the bracket");
+};
+
+export const updateBracketStatus = (
+  bracketId: string,
+  isDraft: boolean
+) => async (dispatch: Dispatch, getState: GetState) => {
+  const { pageEvent } = getState();
+  const { tournamentData } = pageEvent;
+  const { brackets } = tournamentData;
+
+  const bracket = brackets.find(bracket => bracket.bracket_id === bracketId);
+
+  if (!bracket) {
+    return showError();
+  }
+
+  /* PUT Bracket */
+  const updatedBracket: IFetchedBracket = {
+    ...bracket,
+    is_published_YN: isDraft
+      ? BracketStatuses.Draft
+      : BracketStatuses.Published,
+  };
+
+  const bracketResp = await api.put('/brackets_details', updatedBracket);
+
+  if (!bracketResp) {
+    return showError();
+  }
+
+  dispatch<any>(getEventBrackets());
+
+  const name = isDraft ? 'unpublished' : 'published';
+
+  successToast(`Bracket was successfully ${name}`);
 };

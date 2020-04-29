@@ -6,8 +6,11 @@ import { connect } from 'react-redux';
 import {
   loadAuthPageData,
   clearAuthPageData,
-  toggleTournamentStatus,
+  publishEventData,
+  unpublishEventData,
 } from './logic/actions';
+import PopupPublishEvent from './components/popup-publish-event';
+import PopupUnpublishEvent from './components/popup-unpublish-event';
 import { IAppState } from 'reducers/root-reducer.types';
 import Header from 'components/header';
 import { Loader, Menu, ScrollTopButton } from 'components/common';
@@ -31,8 +34,10 @@ import {
   BindingAction,
   ITournamentData,
   ICalendarEvent,
+  BindingCbWithTwo,
+  IPublishSettings,
 } from 'common/models';
-import { Routes, EventMenuTitles } from 'common/enums';
+import { Routes, EventMenuTitles, EventPublishTypes } from 'common/enums';
 import { getIncompleteMenuItems } from '../helpers';
 import styles from '../styles.module.scss';
 import { closeFullscreen, openFullscreen } from 'helpers';
@@ -57,10 +62,11 @@ interface Props {
   tournamentData: ITournamentData;
   loadAuthPageData: (eventId: string) => void;
   clearAuthPageData: BindingAction;
-  toggleTournamentStatus: BindingAction;
   getCalendarEvents: BindingAction;
   calendarEvents: ICalendarEvent[] | null | undefined;
   updateCalendarEvent: BindingAction;
+  publishEventData: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
+  unpublishEventData: BindingAction;
 }
 
 export const EmptyPage: React.FC = () => {
@@ -74,11 +80,18 @@ const AuthorizedPageEvent = ({
   tournamentData,
   loadAuthPageData,
   clearAuthPageData,
-  toggleTournamentStatus,
   getCalendarEvents,
   calendarEvents,
   updateCalendarEvent,
+  publishEventData,
+  unpublishEventData,
 }: Props & RouteComponentProps<MatchParams>) => {
+  const [isPublishPopupOpen, togglePublishPopup] = React.useState<boolean>(
+    false
+  );
+  const [isUnpublishPopupOpen, toggleUnpublishPopup] = React.useState<boolean>(
+    false
+  );
   const [isFullScreen, toggleFullScreen] = React.useState<boolean>(false);
   const onToggleFullScreen = () => {
     toggleFullScreen(!isFullScreen);
@@ -86,7 +99,7 @@ const AuthorizedPageEvent = ({
     isFullScreen ? closeFullscreen() : openFullscreen(document.documentElement);
   };
   const eventId = match.params.eventId;
-  const { event } = tournamentData;
+  const { event, schedules, brackets } = tournamentData;
 
   const onFullScreen = () => {
     if (!document.fullscreen) {
@@ -121,6 +134,14 @@ const AuthorizedPageEvent = ({
     return () => window.removeEventListener('fullscreenchange', onFullScreen);
   }, [isFullScreen]);
 
+  const onTogglePublishPopup = () => {
+    togglePublishPopup(!isPublishPopupOpen);
+  };
+
+  const onToggleUnpublishPopup = () => {
+    toggleUnpublishPopup(!isUnpublishPopupOpen);
+  };
+
   const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
   const schedulingIgnoreList = [
     EventMenuTitles.SCHEDULING,
@@ -139,12 +160,13 @@ const AuthorizedPageEvent = ({
       <div className={styles.page}>
         <Menu
           list={menuList}
-          eventId={eventId}
+          event={event || undefined}
+          schedules={schedules}
+          brackets={brackets}
           hideOnList={hideOnList}
           isAllowEdit={Boolean(eventId)}
-          tournamentStatus={event?.is_published_YN}
-          eventName={event?.event_name || ''}
-          toggleTournamentStatus={toggleTournamentStatus}
+          togglePublishPopup={onTogglePublishPopup}
+          toggleUnpublishPopup={onToggleUnpublishPopup}
         />
         <main
           className={`${styles.content} ${
@@ -226,6 +248,24 @@ const AuthorizedPageEvent = ({
         </main>
       </div>
       {!isFullScreen && <Footer />}
+      {event && (
+        <>
+          <PopupPublishEvent
+            event={event}
+            schedules={schedules}
+            brackets={brackets}
+            isOpen={isPublishPopupOpen}
+            onClose={onTogglePublishPopup}
+            publishEventData={publishEventData}
+          />
+          <PopupUnpublishEvent
+            event={event}
+            isOpen={isUnpublishPopupOpen}
+            onClose={onToggleUnpublishPopup}
+            unpublishEventData={unpublishEventData}
+          />
+        </>
+      )}
     </div>
   );
 };
@@ -243,9 +283,10 @@ export default connect(
       {
         loadAuthPageData,
         clearAuthPageData,
-        toggleTournamentStatus,
         getCalendarEvents,
         updateCalendarEvent,
+        publishEventData,
+        unpublishEventData,
       },
       dispatch
     )

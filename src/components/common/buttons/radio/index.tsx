@@ -9,7 +9,7 @@ import styles from './style.module.scss';
 interface IRadioProps {
   options: string[];
   checked: string;
-  formLabel: string;
+  formLabel?: string;
   onChange: any;
   row?: boolean;
 }

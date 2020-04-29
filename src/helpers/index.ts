@@ -19,3 +19,4 @@ export * from './scoring';
 export * from './library.helper';
 export * from './games.heler';
 export * from './select-options.helper';
+export * from './event-publish.helper';
