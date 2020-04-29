@@ -21,13 +21,13 @@ const ListPublished = ({ event, schedules, brackets }: Props) => {
     <ul className={styles.publishedList}>
       <ItemPublished
         title={PublishedItemTitles[EventPublishTypes.DETAILS]}
-        isPublish={isEventDrafted}
+        isComplete={!isEventDrafted}
       />
       <ItemPublished
         title={
           PublishedItemTitles[EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY]
         }
-        isPublish={isScheduleDrafted}
+        isComplete={!isScheduleDrafted && schedules.length > 0}
       />
       <ItemPublished
         title={
@@ -35,7 +35,7 @@ const ListPublished = ({ event, schedules, brackets }: Props) => {
             EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY_AND_BRACKETS
           ]
         }
-        isPublish={isBracketDrafted}
+        isComplete={!isBracketDrafted && brackets.length > 0}
       />
     </ul>
   );

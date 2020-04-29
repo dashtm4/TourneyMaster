@@ -9,20 +9,20 @@ const STYLES_ICON = {
 };
 
 interface Props {
-  isPublish: boolean;
+  isComplete: boolean;
   title: string;
 }
 
-const publishedItem = ({ isPublish, title }: Props) => (
+const publishedItem = ({ isComplete, title }: Props) => (
   <li>
-    {isPublish
-      ? getIcon(Icons.WARNING, {
-          ...STYLES_ICON,
-          fill: '#FFCB00',
-        })
-      : getIcon(Icons.CHECK_CIRCLE, {
+    {isComplete
+      ? getIcon(Icons.CHECK_CIRCLE, {
           ...STYLES_ICON,
           fill: '#00CC47',
+        })
+      : getIcon(Icons.WARNING, {
+          ...STYLES_ICON,
+          fill: '#FFCB00',
         })}
     {title}
   </li>

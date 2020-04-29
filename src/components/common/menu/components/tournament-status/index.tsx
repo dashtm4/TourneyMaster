@@ -26,11 +26,7 @@ const TournamentStatus = ({
   togglePublishPopup,
   toggleUnpublishPopup,
 }: Props) => {
-  const hasAllDruft = CheckEventDrafts.checkAllDraft(
-    event,
-    schedules,
-    brackets
-  );
+  const isEventDraft = CheckEventDrafts.checkDraftEvent(event);
 
   return (
     <div className={styles.progressBarWrapper}>
@@ -40,7 +36,7 @@ const TournamentStatus = ({
         </p>
         <ListPublised event={event} schedules={schedules} brackets={brackets} />
       </div>
-      {hasAllDruft ? (
+      {isEventDraft ? (
         <span className={styles.doneBtnWrapper}>
           <Button
             onClick={togglePublishPopup}
