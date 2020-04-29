@@ -6,6 +6,8 @@ import {
   PLAYOFF_UNDO_GAMES,
   LOAD_DATA_WITH_SCORES,
   FETCH_SCORED_TEAMS,
+  CLEAR_SCORED_TEAMS,
+  BRACKETS_ADVANCING_IN_PROGRESS,
 } from './actionTypes';
 import { IBracketGame } from '../bracketGames';
 import { IPlayoffSortedTeams } from './actions';
@@ -15,6 +17,7 @@ export interface IPlayoffState {
   bracketGames: IBracketGame[] | null;
   bracketGamesHistory: IBracketGame[][] | [];
   sortedTeams: IPlayoffSortedTeams | null;
+  advancingInProgress: boolean;
 }
 
 const defaultState: IPlayoffState = {
@@ -22,6 +25,7 @@ const defaultState: IPlayoffState = {
   bracketGamesHistory: [],
   bracketGames: null,
   sortedTeams: null,
+  advancingInProgress: false,
 };
 
 export default (state = defaultState, action: IPlayoffAction) => {
@@ -64,6 +68,16 @@ export default (state = defaultState, action: IPlayoffAction) => {
       return {
         ...state,
         sortedTeams: action.payload,
+      };
+    case CLEAR_SCORED_TEAMS:
+      return {
+        ...state,
+        sortedTeams: null,
+      };
+    case BRACKETS_ADVANCING_IN_PROGRESS:
+      return {
+        ...state,
+        advancingInProgress: action.payload,
       };
     default:
       return state;

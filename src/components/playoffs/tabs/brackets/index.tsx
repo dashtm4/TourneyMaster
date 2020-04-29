@@ -17,6 +17,7 @@ interface IProps {
   historyLength: number;
   seeds?: ISeedDictionary;
   bracketGames?: IBracketGame[];
+  advancingInProgress?: boolean;
   addGame: (selectedDivision: string, data: IOnAddGame) => void;
   removeGame: (selectedDivision: string, data: number) => void;
   onUndoClick: () => void;
@@ -115,6 +116,7 @@ class BracketManager extends Component<IProps> {
       onUndoClick,
       historyLength,
       advanceTeamsToBrackets,
+      advancingInProgress,
     } = this.props;
 
     const {
@@ -198,6 +200,7 @@ class BracketManager extends Component<IProps> {
                 label="Advance Division Teams to Brackets"
                 variant="contained"
                 color="primary"
+                disabled={advancingInProgress}
                 onClick={advanceTeamsToBrackets}
               />
             </div>

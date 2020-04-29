@@ -8,6 +8,8 @@ import {
   PLAYOFF_UNDO_GAMES,
   LOAD_DATA_WITH_SCORES,
   FETCH_SCORED_TEAMS,
+  CLEAR_SCORED_TEAMS,
+  BRACKETS_ADVANCING_IN_PROGRESS,
 } from './actionTypes';
 import {
   mapBracketData,
@@ -45,6 +47,15 @@ const loadDataWithScores = (payload: { scoredTeams: ITeamWithResults[] }) => ({
 const fetchSortedTeams = (payload: IPlayoffSortedTeams) => ({
   type: FETCH_SCORED_TEAMS,
   payload,
+});
+
+const setAdvancingInProgress = (payload: boolean) => ({
+  type: BRACKETS_ADVANCING_IN_PROGRESS,
+  payload,
+});
+
+export const clearSortedTeams = () => ({
+  type: CLEAR_SCORED_TEAMS,
 });
 
 export const fetchBracketGames = (payload: IBracketGame[]) => ({
@@ -196,6 +207,7 @@ export const advanceTeamsToBrackets = () => async (
   dispatch: Dispatch,
   getState: IGetState
 ) => {
+  dispatch(setAdvancingInProgress(true));
   const event = getState().pageEvent.tournamentData.event;
   const eventId = event?.event_id;
   // get teams
@@ -233,5 +245,6 @@ export const advanceTeamsToBrackets = () => async (
       ))
   );
 
+  dispatch(setAdvancingInProgress(false));
   dispatch(fetchSortedTeams(sortedTeams));
 };

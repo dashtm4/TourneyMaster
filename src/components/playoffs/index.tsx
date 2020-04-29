@@ -49,7 +49,8 @@ import {
   getFacilityData,
   populateBracketGamesWithData,
   populatePlayoffGames,
-  createSeeds,
+  createSeedsFromNum,
+  createSeedsFromBrackets,
   createBracketGames,
   advanceBracketGamesWithTeams,
 } from './bracketGames';
@@ -67,6 +68,7 @@ import {
   onUndoBrackets,
   advanceTeamsToBrackets,
   IPlayoffSortedTeams,
+  clearSortedTeams,
 } from './logic/actions';
 import {
   addGameToExistingBracketGames,
@@ -92,6 +94,7 @@ interface IMapStateToProps extends Partial<ITournamentData> {
   bracketGames: IBracketGame[] | null;
   historyLength: number;
   sortedTeams: IPlayoffSortedTeams | null;
+  advancingInProgress?: boolean;
 }
 
 interface IMapDispatchToProps {
@@ -108,6 +111,7 @@ interface IMapDispatchToProps {
   fetchBracketGames: (bracketGames: IBracketGame[]) => void;
   onBracketsUndo: () => void;
   advanceTeamsToBrackets: () => void;
+  clearSortedTeams: () => void;
 }
 
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
@@ -151,6 +155,7 @@ class Playoffs extends Component<IProps> {
 
     this.props.clearBracketGames();
     this.props.clearSchedulesTable();
+    this.props.clearSortedTeams();
     this.props.fetchEventSummary(eventId);
     this.props.fetchSchedulesDetails(scheduleId);
 
@@ -194,7 +199,13 @@ class Playoffs extends Component<IProps> {
       this.calculateBracketGames();
     }
 
-    if (prevProps.sortedTeams !== this.props.sortedTeams || !bracketSeeds) {
+    // if (prevProps.sortedTeams !== this.props.sortedTeams || !bracketSeeds) {
+    //   this.calculateBracketSeeds();
+    // }
+    if (
+      (!prevProps.sortedTeams && this.props.sortedTeams) ||
+      (!bracketSeeds && this.props.bracketGames)
+    ) {
       this.calculateBracketSeeds();
     }
 
@@ -365,9 +376,20 @@ class Playoffs extends Component<IProps> {
   };
 
   calculateBracketSeeds = () => {
-    const { event, divisions, sortedTeams, bracketGames } = this.props;
+    const { event, bracketGames, divisions, sortedTeams, teams } = this.props;
     const bracketTeamsNum = event?.num_teams_bracket || 0;
-    const bracketSeeds = createSeeds(bracketTeamsNum, divisions!, sortedTeams);
+
+    let bracketSeeds = {};
+
+    if (bracketGames && !sortedTeams) {
+      bracketSeeds = createSeedsFromBrackets(bracketGames, teams);
+    } else {
+      bracketSeeds = createSeedsFromNum(
+        bracketTeamsNum,
+        divisions!,
+        sortedTeams
+      );
+    }
 
     if (bracketGames && sortedTeams) {
       const populatedBracketGames = advanceBracketGamesWithTeams(
@@ -525,6 +547,7 @@ class Playoffs extends Component<IProps> {
       historyLength,
       bracketGames,
       advanceTeamsToBrackets,
+      advancingInProgress,
     } = this.props;
 
     const saveButtonCondition = bracket && bracketGames;
@@ -599,6 +622,7 @@ class Playoffs extends Component<IProps> {
                 divisions={divisions!}
                 seeds={bracketSeeds}
                 bracketGames={bracketGames!}
+                advancingInProgress={advancingInProgress}
                 addGame={this.addGame}
                 removeGame={this.removeGame}
                 onUndoClick={onBracketsUndo}
@@ -651,6 +675,7 @@ const mapStateToProps = ({
   bracketGames: playoffs?.bracketGames,
   historyLength: playoffs?.bracketGamesHistory?.length,
   sortedTeams: playoffs?.sortedTeams,
+  advancingInProgress: playoffs?.advancingInProgress,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
@@ -669,6 +694,7 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       fetchBracketGames,
       onBracketsUndo: onUndoBrackets,
       advanceTeamsToBrackets,
+      clearSortedTeams,
     },
     dispatch
   );
