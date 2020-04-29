@@ -119,9 +119,9 @@ export const addNewSchedule = () => async (
     num_divisions: tournamentData.divisions.length,
     num_teams: tournamentData.teams.length,
     num_fields: tournamentData.fields.length,
-    min_num_games: tournamentData.event?.min_num_of_games,
+    min_num_games: Number(tournamentData.event?.min_num_of_games) || 1,
     max_num_games:
-      Number(tournamentData.event?.min_num_of_games) +
+      (Number(tournamentData.event?.min_num_of_games) || 1) +
       DEFAULT_INCREMENT_MAX_NUM_GAMES,
     periods_per_game:
       tournamentData.event?.periods_per_game || DEFAULT_PERIODS_PER_GAME,
