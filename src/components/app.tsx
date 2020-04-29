@@ -11,7 +11,7 @@ import RegisterPage from 'components/register-page';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
-const stripePromise = loadStripe('pk_live_2lYzDHwATTJOkdIHHv9p6JCu00xHXSXtRR');
+const stripePromise = loadStripe('pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh');
 
 const LoginPageWrapped = withUnprotectedRoute(LoginPage);
 const RegisterPageWrapped = withUnprotectedRoute(RegisterPage);
