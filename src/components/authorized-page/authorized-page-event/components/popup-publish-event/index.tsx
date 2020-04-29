@@ -98,7 +98,7 @@ const PopupPublishEvent = ({
                   value={modifyModValue}
                   options={modifyStatuOptions}
                   onChange={onChangeModifyModeValue}
-                  label="Modify mod"
+                  label="Modify mode"
                 />
               </div>
               <SectionModify
