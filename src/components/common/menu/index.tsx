@@ -38,7 +38,6 @@ const Menu = ({
   brackets,
   isAllowEdit,
   togglePublishPopup,
-  toggleUnpublishPopup,
   hideOnList,
 }: Props) => {
   const location = useLocation();
@@ -77,20 +76,14 @@ const Menu = ({
           />
         ))}
       </ul>
-      {!isCollapsed &&
-        event &&
-        schedules &&
-        brackets &&
-        togglePublishPopup &&
-        toggleUnpublishPopup && (
-          <TournamentStatus
-            event={event}
-            schedules={schedules}
-            brackets={brackets}
-            togglePublishPopup={togglePublishPopup}
-            toggleUnpublishPopup={toggleUnpublishPopup}
-          />
-        )}
+      {!isCollapsed && event && schedules && brackets && togglePublishPopup && (
+        <TournamentStatus
+          event={event}
+          schedules={schedules}
+          brackets={brackets}
+          togglePublishPopup={togglePublishPopup}
+        />
+      )}
       <button
         className={styles.pinBtn}
         onClick={() => onSetCollapsibility(!isCollapsible)}

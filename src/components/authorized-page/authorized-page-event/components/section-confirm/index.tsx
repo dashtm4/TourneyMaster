@@ -6,9 +6,14 @@ import {
   ISchedule,
   IFetchedBracket,
   IPublishSettings,
-  BindingCbWithTwo,
+  BindingCbWithThree,
 } from 'common/models';
-import { ButtonColors, ButtonVarian, EventPublishTypes } from 'common/enums';
+import {
+  ButtonColors,
+  ButtonVarian,
+  EventPublishTypes,
+  EventModifyTypes,
+} from 'common/enums';
 import { IInputEvent } from 'common/types';
 import { getSettingsComponents, getSettingItemById } from '../../helpers';
 import { PublishSettingFields } from '../../common';
@@ -23,8 +28,13 @@ interface Props {
   schedules: ISchedule[];
   brackets: IFetchedBracket[];
   publishType: EventPublishTypes;
+  modifyModValue: EventModifyTypes;
   onClose: BindingAction;
-  publishEventData: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
+  publishEventData: BindingCbWithThree<
+    EventPublishTypes,
+    EventModifyTypes,
+    IPublishSettings
+  >;
 }
 
 const ConfirmSection = ({
@@ -32,6 +42,7 @@ const ConfirmSection = ({
   schedules,
   brackets,
   publishType,
+  modifyModValue,
   onClose,
   publishEventData,
 }: Props) => {
@@ -66,7 +77,7 @@ const ConfirmSection = ({
   };
 
   const onPublishEvent = () => {
-    publishEventData(publishType, publishSettings);
+    publishEventData(publishType, modifyModValue, publishSettings);
 
     onClose();
   };
@@ -76,6 +87,7 @@ const ConfirmSection = ({
       <form className={styles.selectsWrapper}>
         {getSettingsComponents(
           publishType,
+          modifyModValue,
           publishSettings,
           schedules,
           brackets,

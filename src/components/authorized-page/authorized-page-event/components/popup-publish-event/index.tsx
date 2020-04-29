@@ -1,19 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
-import { Modal, HeadingLevelTwo, Button, Radio } from 'components/common';
-import ConfirmSection from '../section-confirm';
+import { Modal, HeadingLevelTwo, Button, Select } from 'components/common';
+import SectionConfirm from '../section-confirm';
+import SectionModify from '../section-modify';
 import {
   BindingAction,
   IEventDetails,
   ISchedule,
   IFetchedBracket,
-  BindingCbWithTwo,
   IPublishSettings,
+  BindingCbWithThree,
 } from 'common/models';
-import { ButtonVarian, ButtonColors, EventPublishTypes } from 'common/enums';
+import {
+  ButtonVarian,
+  ButtonColors,
+  EventPublishTypes,
+  EventModifyTypes,
+} from 'common/enums';
 import { IInputEvent } from 'common/types';
-import { getEventPublishOptions } from '../../helpers';
+import { getModifyStatuOptions } from '../../helpers';
 import styles from './styles.module.scss';
+
+const modifyStatuOptions = getModifyStatuOptions();
 
 const BUTTON_STYLES = {
   width: '115px',
@@ -25,7 +33,11 @@ interface Props {
   brackets: IFetchedBracket[];
   isOpen: boolean;
   onClose: BindingAction;
-  publishEventData: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
+  publishEventData: BindingCbWithThree<
+    EventPublishTypes,
+    EventModifyTypes,
+    IPublishSettings
+  >;
 }
 
 const PopupPublishEvent = ({
@@ -36,26 +48,27 @@ const PopupPublishEvent = ({
   onClose,
   publishEventData,
 }: Props) => {
-  const eventPublishOptions = getEventPublishOptions(
-    event,
-    schedules,
-    brackets
-  );
-  const DEFAULT_PUBLISH_OPTION = eventPublishOptions[0];
-
   const [isConfrimOpen, toggleConfrim] = React.useState<boolean>(false);
-  const [publishType, changePublishValue] = React.useState<string>(
-    DEFAULT_PUBLISH_OPTION
-  );
+  const [
+    publishType,
+    changePublishValue,
+  ] = React.useState<EventPublishTypes | null>(null);
+
+  const [modifyModValue, changeModifyModeValue] = React.useState<
+    EventModifyTypes
+  >(EventModifyTypes.PUBLISH);
+
+  const onChangeModifyModeValue = ({ target }: IInputEvent) => {
+    changePublishValue(null);
+
+    changeModifyModeValue(target.value as EventModifyTypes);
+  };
 
   React.useEffect(() => {
+    changeModifyModeValue(EventModifyTypes.PUBLISH);
     toggleConfrim(false);
-    changePublishValue(DEFAULT_PUBLISH_OPTION);
+    changePublishValue(null);
   }, [isOpen]);
-
-  const onChangePublishValue = ({ target }: IInputEvent) => {
-    changePublishValue(target.value);
-  };
 
   const onToggleConfrim = () => {
     toggleConfrim(!isConfrimOpen);
@@ -65,24 +78,36 @@ const PopupPublishEvent = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.section}>
         <div className={styles.titleWrapper}>
-          <HeadingLevelTwo>Publish Event to Public Portals</HeadingLevelTwo>
+          <HeadingLevelTwo>Modify Published Status</HeadingLevelTwo>
         </div>
-        {isConfrimOpen ? (
-          <ConfirmSection
+        {isConfrimOpen && publishType ? (
+          <SectionConfirm
             event={event}
             schedules={schedules}
             brackets={brackets}
-            publishType={publishType as EventPublishTypes}
+            publishType={publishType}
+            modifyModValue={modifyModValue}
             onClose={onClose}
             publishEventData={publishEventData}
           />
         ) : (
           <>
-            <div className={styles.radioWrapper}>
-              <Radio
-                onChange={onChangePublishValue}
-                options={eventPublishOptions}
-                checked={publishType}
+            <div className={styles.modifyWrapper}>
+              <div className={styles.selectWrapper}>
+                <Select
+                  value={modifyModValue}
+                  options={modifyStatuOptions}
+                  onChange={onChangeModifyModeValue}
+                  label="Modify mod"
+                />
+              </div>
+              <SectionModify
+                event={event}
+                schedules={schedules}
+                brackets={brackets}
+                modifyModValue={modifyModValue}
+                publishType={publishType}
+                changePublishValue={changePublishValue}
               />
             </div>
             <p className={styles.btnsWrapper}>
@@ -99,6 +124,7 @@ const PopupPublishEvent = ({
                   variant={ButtonVarian.CONTAINED}
                   color={ButtonColors.PRIMARY}
                   btnStyles={BUTTON_STYLES}
+                  disabled={!Boolean(publishType)}
                   label="Save"
                 />
               </span>
