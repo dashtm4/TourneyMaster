@@ -217,7 +217,7 @@ export const updateGameSlot = (
 
 enum BracketMoveWarnEnum {
   gameAlreadyAssigned = 'This bracket game is already assigned. Please confirm your intentions.',
-  gamePlayTimeInvalid = 'This bracket game cannot be placed at this time.',
+  gamePlayTimeInvalid = 'This bracket game depends upon preceeding games being complete. They are not. Please place this game in a later game slot.',
   facilitiesDiffer = 'This division is not playing at this facility on this day. Please confirm your intentions.',
 }
 
