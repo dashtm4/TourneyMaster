@@ -23,6 +23,7 @@ import {
   IPublishSettings,
   ISchedule,
   IFetchedBracket,
+  ScheduleStatuses,
 } from 'common/models';
 import {
   EventStatuses,
@@ -30,6 +31,7 @@ import {
   MethodTypes,
   LibraryStates,
   EventPublishTypes,
+  BracketStatuses,
 } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
@@ -158,13 +160,15 @@ const publishEventData = (
     case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY_AND_BRACKETS: {
       const publishedSchedule = publishSettings.activeSchedule as ISchedule;
       const publishedBracket = publishSettings.activeBracket as IFetchedBracket;
-      const hasDraftedSchedule = CheckEventDrafts.checkDraftSchedule(schedules);
+      const isAllSchedulesDrafted = CheckEventDrafts.checkDraftSchedule(
+        schedules
+      );
 
       if (event?.is_published_YN === EventStatuses.Draft) {
         dispatch<any>(updateEventStatus(false));
       }
 
-      if (!hasDraftedSchedule) {
+      if (isAllSchedulesDrafted) {
         dispatch<any>(
           updateScheduleStatus(publishedSchedule.schedule_id, false)
         );
@@ -174,6 +178,32 @@ const publishEventData = (
       break;
     }
   }
+};
+
+const unpublishEventData = () => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
+  const { tournamentData } = getState().pageEvent;
+  const { schedules, brackets } = tournamentData;
+
+  const publishedSchedule = schedules.find(
+    it => it.schedule_status === ScheduleStatuses.PUBLISHED
+  );
+
+  const publishedBracket = brackets.find(
+    it => it.is_published_YN === BracketStatuses.Published
+  );
+
+  if (publishedBracket) {
+    dispatch<any>(updateBracketStatus(publishedBracket.bracket_id, true));
+  }
+
+  if (publishedSchedule) {
+    dispatch<any>(updateScheduleStatus(publishedSchedule.schedule_id, true));
+  }
+
+  dispatch<any>(updateEventStatus(true));
 };
 
 const addEntityToLibrary = (entity: IEntity, entryPoint: EntryPoints) => async (
@@ -255,4 +285,5 @@ export {
   publishEventData,
   addEntityToLibrary,
   addEntitiesToLibrary,
+  unpublishEventData,
 };

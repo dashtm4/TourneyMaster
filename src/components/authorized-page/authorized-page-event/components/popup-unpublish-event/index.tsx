@@ -26,6 +26,10 @@ const PopupUnpublishEvent = ({
   const [confirmValue, changeConfirmValue] = React.useState('');
   const trimmedEventName = event.event_name.trim();
 
+  React.useEffect(() => {
+    changeConfirmValue('');
+  }, [isOpen]);
+
   const onChangeInputValue = ({ target }: IInputEvent) => {
     changeConfirmValue(target.value);
   };

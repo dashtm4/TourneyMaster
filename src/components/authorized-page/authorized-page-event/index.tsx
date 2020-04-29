@@ -7,6 +7,7 @@ import {
   loadAuthPageData,
   clearAuthPageData,
   publishEventData,
+  unpublishEventData,
 } from './logic/actions';
 import PopupPublishEvent from './components/popup-publish-event';
 import PopupUnpublishEvent from './components/popup-unpublish-event';
@@ -65,6 +66,7 @@ interface Props {
   calendarEvents: ICalendarEvent[] | null | undefined;
   updateCalendarEvent: BindingAction;
   publishEventData: BindingCbWithTwo<EventPublishTypes, IPublishSettings>;
+  unpublishEventData: BindingAction;
 }
 
 export const EmptyPage: React.FC = () => {
@@ -82,6 +84,7 @@ const AuthorizedPageEvent = ({
   calendarEvents,
   updateCalendarEvent,
   publishEventData,
+  unpublishEventData,
 }: Props & RouteComponentProps<MatchParams>) => {
   const [isPublishPopupOpen, togglePublishPopup] = React.useState<boolean>(
     false
@@ -259,7 +262,7 @@ const AuthorizedPageEvent = ({
             event={event}
             isOpen={isUnpublishPopupOpen}
             onClose={onToggleUnpublishPopup}
-            unpublishEventData={() => {}}
+            unpublishEventData={unpublishEventData}
           />
         </>
       )}
@@ -283,6 +286,7 @@ export default connect(
         getCalendarEvents,
         updateCalendarEvent,
         publishEventData,
+        unpublishEventData,
       },
       dispatch
     )
