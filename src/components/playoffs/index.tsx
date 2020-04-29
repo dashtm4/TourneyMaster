@@ -264,26 +264,16 @@ class Playoffs extends Component<IProps> {
   };
 
   calculatePlayoffTimeSlots = () => {
-    const { schedulesDetails, divisions, event } = this.props;
-    const { timeSlots, fields } = this.state;
+    const { schedulesDetails, event } = this.props;
+    const { timeSlots } = this.state;
 
     const day = event?.event_enddate;
 
-    if (
-      !schedulesDetails ||
-      !fields ||
-      !timeSlots ||
-      !divisions ||
-      !event ||
-      !day
-    )
-      return;
+    if (!schedulesDetails || !timeSlots || !event || !day) return;
 
     const playoffTimeSlots = adjustPlayoffTimeOnLoad(
       schedulesDetails,
-      fields,
       timeSlots,
-      divisions,
       event,
       day
     );

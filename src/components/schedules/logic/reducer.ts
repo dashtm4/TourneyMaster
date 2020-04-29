@@ -110,6 +110,7 @@ const SchedulesReducer = (state = initialState, action: IScheduleAction) => {
     case SCHEDULES_DETAILS_CLEAR:
       return {
         ...state,
+        schedule: undefined,
         schedulesDetails: undefined,
       };
     default:

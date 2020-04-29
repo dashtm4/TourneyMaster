@@ -93,8 +93,8 @@ export const predictPlayoffTimeSlots = (
   divisions: IScheduleDivision[] | IDivision[],
   event: IEventDetails
 ): ITimeSlot[] | [] => {
-  const { num_teams_bracket } = event;
-  if (!num_teams_bracket) return [];
+  const { num_teams_bracket, playoffs_exist } = event;
+  if (!num_teams_bracket || !playoffs_exist) return [];
 
   const rounds = calculateRoundsNumber(num_teams_bracket);
   const timeSlotsLength = timeSlots.length;
@@ -132,34 +132,26 @@ export const populateDefinedGamesWithPlayoffState = (
 
 export const adjustPlayoffTimeOnLoad = (
   schedulesDetails: ISchedulesDetails[],
-  _fields: IScheduleField[],
   timeSlots: ITimeSlot[],
-  _divisions: IScheduleDivision[] | IDivision[],
-  _event: IEventDetails,
+  event: IEventDetails,
   day: string
 ) => {
+  const { playoffs_exist } = event;
+  if (!playoffs_exist) return [];
+
   const sdStartTimes = schedulesDetails
     .filter(
       item => item.game_date === day && (item.home_team_id || item.away_team_id)
     )
     .map(item => item.game_time);
+
   const lastStartTime = orderBy(sdStartTimes, [], 'desc')[0];
 
   const lastGameTimeSlot =
     timeSlots.find(item => item.time === lastStartTime)?.id || -1;
 
-  // if (!lastGameTimeSlot) return;
-
-  // const playoffTimeSlots = predictPlayoffTimeSlots(
-  //   fields,
-  //   timeSlots,
-  //   divisions,
-  //   event
-  // );
-
   const start = lastGameTimeSlot + 1;
   const end = timeSlots.length;
-  // const end = start + playoffTimeSlots.length;
 
   return timeSlots.slice(start, end);
 };

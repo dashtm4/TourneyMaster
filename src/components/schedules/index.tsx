@@ -253,9 +253,7 @@ class Schedules extends Component<Props, State> {
       teams,
       neccessaryDataCalculated,
       teamCardsAlreadyUpdated,
-      fields,
       timeSlots,
-      divisions,
       tournamentDays,
     } = this.state;
 
@@ -288,9 +286,7 @@ class Schedules extends Component<Props, State> {
       const playoffTimeSlots =
         adjustPlayoffTimeOnLoad(
           schedulesDetails!,
-          fields!,
           timeSlots!,
-          divisions!,
           event!,
           lastDay
         ) || [];
