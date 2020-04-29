@@ -34,6 +34,7 @@ import {
 } from 'components/schedules/logic/actionTypes';
 import {
   SCHEDULE_FETCH_SUCCESS,
+  FETCH_BRACKETS_SUCCESS,
   ScheduleActionType,
 } from 'components/scheduling/logic/actionTypes';
 import { sortTitleByField } from 'helpers';
@@ -283,7 +284,21 @@ const pageEventReducer = (
               }
             : item
         ),
-        tournamentData: { ...state.tournamentData, schedules: mappedSchedles },
+        tournamentData: {
+          ...state.tournamentData,
+          schedules: mappedSchedles,
+        },
+      };
+    }
+    case FETCH_BRACKETS_SUCCESS: {
+      const brackets = action.payload;
+
+      return {
+        ...state,
+        tournamentData: {
+          ...state.tournamentData,
+          brackets,
+        },
       };
     }
     case PUBLISH_EVENT_SUCCESS: {

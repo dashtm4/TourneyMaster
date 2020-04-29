@@ -19,6 +19,7 @@ import {
   DELETE_SCHEDULE_FAILURE,
   ADD_NEW_BRACKET,
   FETCH_EVENT_BRACKETS,
+  FETCH_BRACKETS_SUCCESS,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
 import { scheduleSchema, updatedScheduleSchema } from 'validations';
@@ -59,7 +60,11 @@ import {
   mapFetchedBracket,
   mapBracketData,
 } from 'components/playoffs/mapBracketsData';
-import { IBracket, ISchedulingBracket } from 'common/models/playoffs/bracket';
+import {
+  IBracket,
+  ISchedulingBracket,
+  IFetchedBracket,
+} from 'common/models/playoffs/bracket';
 
 type GetState = () => IAppState;
 
@@ -88,6 +93,11 @@ const scheduleFetchFailure = () => ({
 
 const fetchEventBrackets = (payload: ISchedulingBracket[]) => ({
   type: FETCH_EVENT_BRACKETS,
+  payload,
+});
+
+const fetchBracketsSuccess = (payload: IFetchedBracket[]) => ({
+  type: FETCH_BRACKETS_SUCCESS,
   payload,
 });
 
@@ -522,6 +532,8 @@ export const getEventBrackets = () => async (
   const response = await api.get('/brackets_details', { event_id });
 
   if (response?.length) {
+    dispatch(fetchBracketsSuccess(response));
+
     const mappedBrackets = response.map(mapFetchedBracket);
     const mappedBrackets2 = mappedBrackets.map((item: IBracket) =>
       mapToSchedulingBracket(item, members)
@@ -550,6 +562,14 @@ export const updateBracket = (bracket: ISchedulingBracket) => async (
       const mappedBrackets = updatedBrackets.map(item =>
         mapToSchedulingBracket(item, members)
       );
+      const mappedFetchedBrackets = await Promise.all(
+        mappedBrackets.map((it: ISchedulingBracket) =>
+          mapBracketData(it, !it.published)
+        )
+      );
+
+      dispatch(fetchBracketsSuccess(mappedFetchedBrackets));
+
       dispatch(fetchEventBrackets(mappedBrackets));
     }
     successToast('Bracket was successfully updated!');
@@ -576,3 +596,8 @@ export const deleteBracket = (bracketId: string) => async (
   }
   errorToast("Couldn't remove the bracket");
 };
+
+// export const updateBracketStatus = (
+//   scheduleId: string,
+//   isDraft: boolean
+// ) => async (dispatch: Dispatch) => {};
