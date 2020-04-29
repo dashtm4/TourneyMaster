@@ -22,3 +22,10 @@
     margin-bottom: 32px;
   }
 }
+.buttonsWrapper {
+  display: flex;
+  justify-content: flex-end;
+  & > :first-child {
+    margin-right: 15px;
+  }
+}

@@ -1,68 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
 import Typography from '@material-ui/core/Typography';
-import { Button, Input, Checkbox } from 'components/common';
+import { Button } from 'components/common';
 import styles from './styles.module.scss';
 import Paper from 'components/common/paper';
+import RegistrantName from './individuals/registrant-name';
 
 const getSteps = () => {
   return ['Registrant Name', 'Player Info', 'Payment', 'Player Stats'];
 };
-
-const renderRegistrantName = () => (
-  <div className={styles.section}>
-    <div className={styles.sectionRow}>
-      <div className={styles.sectionItem}>
-        <Input
-          fullWidth={true}
-          label="First Name"
-          value={''}
-          // onChange={onFirstNameChange}
-        />
-      </div>
-      <div className={styles.sectionItem}>
-        <Input
-          fullWidth={true}
-          label="Last Name"
-          value={''}
-          // onChange={onLastNameChange}
-        />
-      </div>
-      <div className={styles.sectionItem}>
-        <Input
-          fullWidth={true}
-          label="Email"
-          value={''}
-          // onChange={onEmailChange}
-        />
-      </div>
-      <div className={styles.sectionItem}>
-        <Input
-          fullWidth={true}
-          label="Mobile"
-          value={''}
-          // onChange={onEmailChange}
-        />
-      </div>
-    </div>
-    <div className={styles.sectionRow}>
-      <div className={styles.sectionItem}>
-        <Checkbox
-          // onChange={onUpchargeProcessingFeesChange}
-          options={[
-            {
-              label: 'Registrant is participant',
-              checked: false,
-            },
-          ]}
-        />
-      </div>
-    </div>
-  </div>
-);
 
 const renderPlayerInfo = () => (
   <div className={styles.section}>Player Info</div>
@@ -73,19 +22,6 @@ const renderPayment = () => <div className={styles.section}>Payment</div>;
 const renderPlayerStats = () => (
   <div className={styles.section}>Player Stats</div>
 );
-
-const getStepContent = (step: number) => {
-  switch (step) {
-    case 0:
-      return renderRegistrantName();
-    case 1:
-      return renderPlayerInfo();
-    case 2:
-      return renderPayment();
-    default:
-      return renderPlayerStats();
-  }
-};
 
 const RegisterPage = () => {
   const [activeStep, setActiveStep] = React.useState(0);
@@ -103,6 +39,25 @@ const RegisterPage = () => {
     setActiveStep(0);
   };
 
+  const [registration, setRegistration] = useState({});
+
+  const onChange = (name: string, value: string | number) => {
+    setRegistration({ ...registration, [name]: value });
+  };
+
+  const getStepContent = (step: number) => {
+    switch (step) {
+      case 0:
+        return <RegistrantName onChange={onChange} data={registration} />;
+      case 1:
+        return renderPlayerInfo();
+      case 2:
+        return renderPayment();
+      default:
+        return renderPlayerStats();
+    }
+  };
+  console.log(registration);
   return (
     <div className={styles.container}>
       <Paper>
@@ -116,25 +71,23 @@ const RegisterPage = () => {
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>
                 <StepContent>
-                  <Typography>{getStepContent(index)}</Typography>
-                  <div>
-                    <div>
-                      <Button
-                        disabled={activeStep === 0}
-                        onClick={handleBack}
-                        label="Back"
-                        variant="text"
-                        color="secondary"
-                      />
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleNext}
-                        label={
-                          activeStep === steps.length - 1 ? 'Finish' : 'Next'
-                        }
-                      />
-                    </div>
+                  <div>{getStepContent(index)}</div>
+                  <div className={styles.buttonsWrapper}>
+                    <Button
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                      label="Back"
+                      variant="text"
+                      color="secondary"
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleNext}
+                      label={
+                        activeStep === steps.length - 1 ? 'Finish' : 'Next'
+                      }
+                    />
                   </div>
                 </StepContent>
               </Step>
