@@ -1,10 +1,12 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { ZoomControls } from 'components/common';
 import { groupBy, keys } from 'lodash-es';
 import BracketRound from './round';
 import { IBracketSeed, IBracketGame } from '../bracketGames';
 import BracketConnector from './connector';
 import styles from './styles.module.scss';
+import { IPinchProps } from 'common/models';
 
 const TRANSFORM_WRAPPER_OPTIONS = {
   minScale: 0.3,
@@ -168,59 +170,69 @@ const Brackets = (props: IProps) => {
         defaultScale={visualScale}
         options={{ ...TRANSFORM_WRAPPER_OPTIONS, disabled: false }}
       >
-        <TransformComponent>
-          {grids &&
-            keys(grids).map(gridKey => (
-              <div key={`${gridKey}-grid`} className={styles.bracketContainer}>
-                {gridKey === '1' &&
-                  keys(playInRound)?.map(roundKey => (
-                    <Fragment key={`${roundKey}-playInRound`}>
-                      <BracketRound
-                        games={playInRound![roundKey]}
-                        onDrop={() => {}}
-                        title="Play-In Games"
-                        onRemove={onRemove}
-                      />
-                      <BracketConnector
-                        hidden={hidden}
-                        leftGamesNum={playInRound![roundKey]?.length}
-                        rightGamesNum={grids[gridKey][1]?.length}
-                      />
-                    </Fragment>
-                  ))}
-                {keys(grids[gridKey])
-                  .sort((a, b) => Number(a) - Number(b))
-                  .map((roundKey, index, arr) => (
-                    <Fragment key={`${roundKey}-playInRound`}>
-                      <BracketRound
-                        games={grids[gridKey][roundKey]}
-                        onDrop={() => {}}
-                        title={getRoundTitle(
-                          gridKey,
-                          roundKey,
-                          grids[gridKey][roundKey].length
-                        )}
-                        onRemove={onRemove}
-                      />
-                      {index < arr.length - 1 ? (
-                        <BracketConnector
-                          leftGamesNum={grids[gridKey][roundKey].length}
-                          rightGamesNum={grids[gridKey][arr[index + 1]].length}
-                          hidden={
-                            grids[gridKey][roundKey].some(v => v.hidden)
-                              ? setHiddenConnectors(
-                                  grids[gridKey][roundKey],
-                                  grids[gridKey][arr[index + 1]]
-                                )
-                              : undefined
-                          }
-                        />
-                      ) : null}
-                    </Fragment>
-                  ))}
-              </div>
-            ))}
-        </TransformComponent>
+        {({ zoomIn, zoomOut }: IPinchProps) => (
+          <>
+            <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} />
+            <TransformComponent>
+              {grids &&
+                keys(grids).map(gridKey => (
+                  <div
+                    key={`${gridKey}-grid`}
+                    className={styles.bracketContainer}
+                  >
+                    {gridKey === '1' &&
+                      keys(playInRound)?.map(roundKey => (
+                        <Fragment key={`${roundKey}-playInRound`}>
+                          <BracketRound
+                            games={playInRound![roundKey]}
+                            onDrop={() => {}}
+                            title="Play-In Games"
+                            onRemove={onRemove}
+                          />
+                          <BracketConnector
+                            hidden={hidden}
+                            leftGamesNum={playInRound![roundKey]?.length}
+                            rightGamesNum={grids[gridKey][1]?.length}
+                          />
+                        </Fragment>
+                      ))}
+                    {keys(grids[gridKey])
+                      .sort((a, b) => Number(a) - Number(b))
+                      .map((roundKey, index, arr) => (
+                        <Fragment key={`${roundKey}-playInRound`}>
+                          <BracketRound
+                            games={grids[gridKey][roundKey]}
+                            onDrop={() => {}}
+                            title={getRoundTitle(
+                              gridKey,
+                              roundKey,
+                              grids[gridKey][roundKey].length
+                            )}
+                            onRemove={onRemove}
+                          />
+                          {index < arr.length - 1 ? (
+                            <BracketConnector
+                              leftGamesNum={grids[gridKey][roundKey].length}
+                              rightGamesNum={
+                                grids[gridKey][arr[index + 1]].length
+                              }
+                              hidden={
+                                grids[gridKey][roundKey].some(v => v.hidden)
+                                  ? setHiddenConnectors(
+                                      grids[gridKey][roundKey],
+                                      grids[gridKey][arr[index + 1]]
+                                    )
+                                  : undefined
+                              }
+                            />
+                          ) : null}
+                        </Fragment>
+                      ))}
+                  </div>
+                ))}
+            </TransformComponent>
+          </>
+        )}
       </TransformWrapper>
     </div>
   );
