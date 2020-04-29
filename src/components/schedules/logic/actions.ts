@@ -340,7 +340,9 @@ const saveSchedule = (
     )
   );
 
-  if (scheduleResp && schedulesDetailsResp.length) {
+  const schedulesDetailsRespOk = schedulesDetailsResp?.every(v => v);
+
+  if (scheduleResp && schedulesDetailsRespOk) {
     dispatch(draftSavedSuccess());
     successToast('Schedule data was successfully saved');
   } else {

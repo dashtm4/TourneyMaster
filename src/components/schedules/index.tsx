@@ -618,20 +618,20 @@ class Schedules extends Component<Props, State> {
 
     if (!schedule) return;
 
+    const schedulesDetails = await this.retrieveSchedulesDetails(
+      true,
+      scheduleId ? 'PUT' : 'POST'
+    );
+
     if (scheduleId) {
-      const schedulesDetailsPUT = await this.retrieveSchedulesDetails(
-        true,
-        'PUT'
-      );
-      this.props.updateSchedule(schedule, schedulesDetailsPUT);
-      return;
+      this.props.updateSchedule(schedule, schedulesDetails);
+    } else {
+      this.props.createSchedule(schedule, schedulesDetails);
     }
 
-    const schedulesDetailsPOST = await this.retrieveSchedulesDetails(
-      true,
-      'POST'
-    );
-    this.props.createSchedule(schedule, schedulesDetailsPOST);
+    if (this.state.cancelConfirmationOpen) {
+      this.onExit();
+    }
   };
 
   unpublish = async () => {
