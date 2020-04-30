@@ -18,8 +18,15 @@ import Api from 'api/api';
 import { teamSchema } from 'validations';
 import { mapScheduleGamesWithNames, getVarcharEight } from 'helpers';
 import { Toasts } from 'components/common';
-import { ITeam, BindingAction, IDivision, IFacility } from 'common/models';
+import {
+  ITeam,
+  BindingAction,
+  IDivision,
+  IFacility,
+  ISchedule,
+} from 'common/models';
 import history from 'browserhistory';
+import { ScheduleStatuses } from 'common/enums';
 
 const loadTeamsData: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   eventId: string
@@ -39,9 +46,16 @@ const loadTeamsData: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
         )
       )
     ).flat();
-    const schedulesGames = await Api.get(`/games?event_id=${eventId}`);
+    const schedules = await Api.get(`/schedules?event_id=${eventId}`);
+    const publishedSchedule = schedules.find(
+      (it: ISchedule) => it.is_published_YN === ScheduleStatuses.Published
+    );
 
-    const mappedGames = await mapScheduleGamesWithNames(
+    const schedulesGames = publishedSchedule
+      ? await Api.get(`/games?schedule_id=${publishedSchedule}`)
+      : [];
+
+    const mappedGames = mapScheduleGamesWithNames(
       teams,
       fields,
       schedulesGames

@@ -7,16 +7,38 @@ import AuthorizedPage from './authorized-page';
 import { Routes } from 'common/enums';
 import AuthorizedPageEvent from './authorized-page/authorized-page-event';
 import Toastr from 'components/common/toastr';
+import RegisterPage from 'components/register-page';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import EventSearch from 'components/register-page/event-search';
+import { RegisterMatchParams } from 'components/register-page';
 
 const LoginPageWrapped = withUnprotectedRoute(LoginPage);
 const AuthorizedPageWrapped = withProtectedRoute(AuthorizedPage);
 const AuthorizedPageEventWrapped = withProtectedRoute(AuthorizedPageEvent);
+const wrappedRegister = ({ match }: RegisterMatchParams) => {
+  const stripePromise = loadStripe(
+    'pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh'
+  );
+
+  return (
+    <Elements stripe={stripePromise}>
+      <RegisterPage match={match} />
+    </Elements>
+  );
+};
 
 const App: React.FC = () => {
   return (
     <React.Fragment>
       <Switch>
         <Route path={Routes.LOGIN} component={LoginPageWrapped} exact={true} />
+        <Route path={Routes.REGISTER} component={EventSearch} exact={true} />
+        <Route
+          path={Routes.EVENT_REGISTER}
+          component={wrappedRegister}
+          exact={true}
+        />
         <Route
           path={[
             Routes.DASHBOARD,
