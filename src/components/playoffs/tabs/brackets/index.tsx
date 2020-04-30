@@ -107,6 +107,8 @@ class BracketManager extends Component<IProps> {
           type={this.dragType}
           teamId={item.teamId}
           teamName={item.teamName}
+          isHighlighted={false}
+          setHighlightedTeamId={() => {}}
         />
       </div>
     );

@@ -50,7 +50,7 @@ const BracketGameSlot = (props: IProps) => {
   return (
     <div className={`${styles.bracketGame} ${game?.hidden && styles.hidden}`}>
       <SeedsContext.Consumer>
-        {seeds => (
+        {({ seeds, highlightedTeam, setHighlightedTeamId }) => (
           <>
             <SeedDrop
               id={game?.index}
@@ -69,8 +69,13 @@ const BracketGameSlot = (props: IProps) => {
                   name={String(game?.awaySeedId)}
                   teamId={getSeedData(game, seeds).awayTeamId}
                   teamName={getSeedData(game, seeds).awayTeamName}
+                  score={game.awayTeamScore}
                   type="seed"
                   dropped={true}
+                  isHighlighted={
+                    highlightedTeam === getSeedData(game, seeds).awayTeamId
+                  }
+                  setHighlightedTeamId={setHighlightedTeamId}
                 />
               ) : (
                 undefined
@@ -118,8 +123,13 @@ const BracketGameSlot = (props: IProps) => {
                   name={String(game?.homeSeedId)}
                   teamId={getSeedData(game, seeds).homeTeamId}
                   teamName={getSeedData(game, seeds).homeTeamName}
+                  score={game.homeTeamScore}
                   type="seed"
                   dropped={true}
+                  isHighlighted={
+                    highlightedTeam === getSeedData(game, seeds).homeTeamId
+                  }
+                  setHighlightedTeamId={setHighlightedTeamId}
                 />
               ) : (
                 undefined

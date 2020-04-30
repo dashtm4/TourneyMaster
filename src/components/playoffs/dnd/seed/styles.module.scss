@@ -9,6 +9,39 @@
   padding: 0px 12px;
   display: flex;
   align-items: center;
+  transition: background-color 0.25s ease-in-out, border 0.3s ease-in-out,
+    color 0.3s ease-in-out;
+
+  &.highlighted {
+    background-color: orange;
+    border: 1px solid orange;
+    color: white;
+  }
+
+  .seedName {
+    width: 125px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .scoreWrapper {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 5px;
+    color: inherit;
+    font-size: 12px;
+    text-align: center;
+
+    &.winner {
+      color: #12c700;
+    }
+
+    &.loser {
+      color: #c03d33;
+    }
+  }
 
   &.dropped {
     position: absolute;

@@ -21,12 +21,19 @@ interface IProps {
   onRemove: (gameIndex: number) => void;
 }
 
-export const SeedsContext = React.createContext<IBracketSeed[] | undefined>(
-  undefined
-);
+export const SeedsContext = React.createContext<{
+  seeds?: IBracketSeed[];
+  highlightedTeam?: string;
+  setHighlightedTeamId: (teamId: string) => void;
+}>({ setHighlightedTeamId: () => {} });
 
 const Brackets = (props: IProps) => {
   const { games, onRemove, seeds } = props;
+
+  const [highlightedTeam, setHighlighteamTeam] = useState<string | undefined>();
+  const setHighlightedTeamId = (teamId: string) => {
+    setHighlighteamTeam(teamId);
+  };
 
   const getRoundTitle = (grid: string, round: string, gamesLength: number) => {
     if (grid !== '1') return;
@@ -177,7 +184,9 @@ const Brackets = (props: IProps) => {
           <>
             <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} />
             <TransformComponent>
-              <SeedsContext.Provider value={seeds}>
+              <SeedsContext.Provider
+                value={{ seeds, highlightedTeam, setHighlightedTeamId }}
+              >
                 {grids &&
                   keys(grids).map(gridKey => (
                     <div
