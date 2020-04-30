@@ -12,6 +12,7 @@ import { ITeam, ITeamWithResults } from 'common/models/teams';
 import { Icons } from 'common/enums/icons';
 import { ISchedulesGameWithNames } from 'common/models';
 import styles from './styles.module.scss';
+import { formatPhoneNumber } from 'helpers/formatPhoneNumber';
 
 const EDIT_ICON_STYLES = {
   marginRight: '5px',
@@ -230,7 +231,9 @@ const TeamDetailsPopup = ({
                     <span className="visually-hidden">Mobile number</span>
                   </label>
                 ) : (
-                  <span>{team.phone_num}</span>
+                  <span>
+                    {team.phone_num ? formatPhoneNumber(team.phone_num) : ''}
+                  </span>
                 )}
               </li>
               <li>
