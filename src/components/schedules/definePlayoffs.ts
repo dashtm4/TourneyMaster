@@ -10,6 +10,7 @@ import {
   IDivision,
   ISchedulesDetails,
   IField,
+  ISchedulesGame,
 } from 'common/models';
 
 export default (
@@ -130,6 +131,18 @@ export const populateDefinedGamesWithPlayoffState = (
   return populatedGames;
 };
 
+export const adjustPlayofftimeAfterLoad = (
+  sdStartTimes: any[],
+  timeSlots: ITimeSlot[]
+) => {
+  const lastStartTime = orderBy(sdStartTimes, [], 'desc')[0];
+  const lastGameTimeSlot =
+    timeSlots.find(item => item.time === lastStartTime)?.id || -1;
+  const start = lastGameTimeSlot + 1;
+  const end = timeSlots.length;
+  return timeSlots.slice(start, end);
+};
+
 export const adjustPlayoffTimeOnLoad = (
   schedulesDetails: ISchedulesDetails[],
   timeSlots: ITimeSlot[],
@@ -145,13 +158,23 @@ export const adjustPlayoffTimeOnLoad = (
     )
     .map(item => item.game_time);
 
-  const lastStartTime = orderBy(sdStartTimes, [], 'desc')[0];
+  return adjustPlayofftimeAfterLoad(sdStartTimes, timeSlots);
+};
 
-  const lastGameTimeSlot =
-    timeSlots.find(item => item.time === lastStartTime)?.id || -1;
+export const adjustPlayoffTimeOnLoadScoring = (
+  schedulesGames: ISchedulesGame[],
+  timeSlots: ITimeSlot[],
+  event: IEventDetails,
+  day: string
+) => {
+  const { playoffs_exist } = event;
+  if (!playoffs_exist) return [];
 
-  const start = lastGameTimeSlot + 1;
-  const end = timeSlots.length;
+  const sdStartTimes = schedulesGames
+    .filter(
+      item => item.game_date === day && (item.home_team_id || item.away_team_id)
+    )
+    .map(item => item.start_time);
 
-  return timeSlots.slice(start, end);
+  return adjustPlayofftimeAfterLoad(sdStartTimes, timeSlots);
 };
