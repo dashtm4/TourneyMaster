@@ -17,7 +17,7 @@ const EMPTY_SCHEDULE = {
   time_btwn_periods: '',
   is_active_YN: 0,
   is_library_YN: 0,
-  is_published_YN: ScheduleStatuses.Published,
+  is_published_YN: ScheduleStatuses.Draft,
 };
 
 export { EMPTY_SCHEDULE };
