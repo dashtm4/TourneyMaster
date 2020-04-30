@@ -130,7 +130,7 @@ export const settleTeamsPerGames = (
   days?: string[],
   selectedDay?: string
 ) => {
-  if (days?.length && days?.length > 1 && selectedDay) {
+  if (days?.length && selectedDay) {
     return games.map(game => ({
       ...game,
       gameDate: days[+selectedDay - 1],
