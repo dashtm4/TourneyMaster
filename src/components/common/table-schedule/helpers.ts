@@ -1,4 +1,4 @@
-import { findIndex, find, groupBy, max } from 'lodash-es';
+import { findIndex, find, groupBy, max, orderBy } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from '../matrix-table/helper';
 import {
@@ -87,11 +87,15 @@ export const applyFilters = (params: IApplyFilterParams) => {
     eventSummary
   );
 
+  const sortedDivisionsOptions = orderBy(divisionsOptions, 'label');
+  const sortedPoolsOptions = orderBy(poolsOptions, 'label');
+  const sortedTeamsOptions = orderBy(teamsOptions, 'label');
+
   return {
     selectedDay: '1',
-    divisionsOptions,
-    poolsOptions,
-    teamsOptions,
+    divisionsOptions: sortedDivisionsOptions,
+    poolsOptions: sortedPoolsOptions,
+    teamsOptions: sortedTeamsOptions,
     fieldsOptions,
   };
 };
