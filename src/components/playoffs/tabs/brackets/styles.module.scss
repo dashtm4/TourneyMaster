@@ -19,6 +19,10 @@
       height: 400px;
       overflow-x: hidden;
 
+      > p {
+        justify-content: center;
+      }
+
       h4 {
         text-align: center;
         font-size: 14px;
