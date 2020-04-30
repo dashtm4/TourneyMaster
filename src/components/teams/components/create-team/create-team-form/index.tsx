@@ -76,7 +76,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
       contact_email,
       schedule_restrictions,
     } = this.props.team;
-    console.log(phone_num);
+
     const divisionsOptions = sortByField(
       this.props.divisions,
       SortByFilesTypes.DIVISIONS
