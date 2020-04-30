@@ -63,7 +63,7 @@
   margin: 20px;
   color: #6a6a6a;
   .radioBtnsWrapper {
-    padding-top: 9px;
+    padding-top: 5px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -72,9 +72,10 @@
     display: flex;
     justify-content: flex-end;
     padding-top: 5px;
+    padding-bottom: 5px;
   }
   .message {
-    padding-top: 22px;
+    padding-top: 10px;
   }
 }
 .stripeElement {

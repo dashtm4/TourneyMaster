@@ -7,10 +7,10 @@ import { ITeamsRegister } from 'common/models/register';
 interface ITeamProps {
   data: Partial<ITeamsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
+  divisions: { label: string; value: string }[];
 }
-const teamLevelOptions = [{ label: 'Level1', value: 'level1' }];
 
-const Team = ({ data, onChange }: ITeamProps) => {
+const Team = ({ data, onChange, divisions }: ITeamProps) => {
   const onTeamNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('team_name', e.target.value);
 
@@ -20,8 +20,8 @@ const Team = ({ data, onChange }: ITeamProps) => {
   const onTeamStateChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('team_state', e.target.value);
 
-  const onTeamLevelChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('team_level', e.target.value);
+  const onDivisionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('ext_sku', e.target.value);
 
   const onTeamWebsiteChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('team_website', e.target.value);
@@ -55,10 +55,10 @@ const Team = ({ data, onChange }: ITeamProps) => {
         </div>
         <div className={styles.sectionItem}>
           <Select
-            options={teamLevelOptions}
-            label="Team Level"
-            value={data.team_level || ''}
-            onChange={onTeamLevelChange}
+            options={divisions}
+            label="Division"
+            value={data.ext_sku || ''}
+            onChange={onDivisionChange}
           />
         </div>
       </div>

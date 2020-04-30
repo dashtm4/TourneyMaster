@@ -10,6 +10,7 @@ import {
   Toasts,
   HeadingLevelTwo,
   Loader,
+  HeadingLevelFour,
 } from 'components/common';
 import styles from './styles.module.scss';
 import Paper from 'components/common/paper';
@@ -50,6 +51,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     eventRegistration,
     setEventRegistration,
   ] = useState<IRegistration | null>(null);
+  const [divisions, setDivisions] = useState([]);
 
   useEffect(() => {
     const eventId = match.params.eventId;
@@ -67,6 +69,19 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           (reg: IRegistration) => reg.event_id === eventId
         )[0];
         setEventRegistration(registrationData);
+      });
+
+    axios
+      .get(
+        `https://api.tourneymaster.org/public/skus?product_id=evn_${eventId}`
+      )
+      .then(response => {
+        const divisions = response.data.map((sku: any) => ({
+          label: sku['sku_name​'],
+          value: sku.sku_id,
+        }));
+
+        setDivisions(divisions);
       });
   }, []);
 
@@ -131,6 +146,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               onChange={onChange}
               data={registration}
               fillParticipantInfo={fillParticipantInfo}
+              divisions={divisions}
             />
           );
         case 2:
@@ -141,7 +157,13 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     } else {
       switch (step) {
         case 0:
-          return <Team onChange={onChange} data={registration} />;
+          return (
+            <Team
+              onChange={onChange}
+              data={registration}
+              divisions={divisions}
+            />
+          );
         case 1:
           return <ContactInfo onChange={onChange} data={registration} />;
         case 2:
@@ -168,6 +190,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         return Toasts.errorToast('Something went wrong');
       }
 
+      const card = elements.getElement(CardElement)!;
+
       let data: any = {
         ...registration,
         reg_response_id: getVarcharEight(),
@@ -175,16 +199,22 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
       };
 
       if (registration.payment_method === 'Credit Card') {
-        const { error, paymentMethod } = await stripe.createPaymentMethod({
+        const { token, error } = await stripe.createToken(card);
+
+        const { paymentMethod } = await stripe.createPaymentMethod({
           type: 'card',
-          card: elements.getElement(CardElement)!,
+          card,
         });
 
         if (error) {
           throw new Error(error.message);
         }
 
-        data = { ...data, stripe_id: paymentMethod?.id };
+        data = {
+          ...data,
+          ext_payment_id: paymentMethod?.id,
+          ext_payment_token: token && token.id,
+        };
       }
 
       if (!data.payment_method) {
@@ -202,7 +232,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     } catch (e) {
       return Toasts.errorToast(e.message);
     }
-    Toasts.successToast('Registration is successfully saved');
+    Toasts.successToast('Registration is successfully saved.');
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
   return (
@@ -274,7 +305,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
       </div>
       <Modal isOpen={isOpenModalOpen} onClose={() => {}}>
         <div className={styles.modalContainer}>
-          <div style={{ height: '185px' }}>
+          <div style={{ height: '190px' }}>
+            <HeadingLevelFour>
+              <span>Event Registration</span>
+            </HeadingLevelFour>
             <p className={styles.message}>
               Do you want to register an individual or a team?
             </p>

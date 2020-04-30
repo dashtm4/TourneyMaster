@@ -10,15 +10,16 @@ interface IPlayerInfoProps {
   data: Partial<IIndivisualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
   fillParticipantInfo: any;
+  divisions: { label: string; value: string }[];
 }
 
-const divisionsOptions = [{ label: 'Division1', value: 'Division1' }];
 const playerLevelOptions = [{ label: 'Level1', value: 'Level1' }];
 
 const PlayerInfo = ({
   data,
   onChange,
   fillParticipantInfo,
+  divisions,
 }: IPlayerInfoProps) => {
   useEffect(() => {
     if (data.registrant_is_the_participant) {
@@ -49,8 +50,8 @@ const PlayerInfo = ({
   const onPlayerStateChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('player_state', e.target.value);
 
-  const onDivisionNameSelect = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('division_name', e.target.value);
+  const onDivisionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('ext_sku', e.target.value);
 
   const onPlayerLevelSelect = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('player_level', e.target.value);
@@ -122,10 +123,10 @@ const PlayerInfo = ({
         </div>
         <div className={styles.sectionItem}>
           <Select
-            options={divisionsOptions}
-            label="Division Selection"
-            value={data.division_name || ''}
-            onChange={onDivisionNameSelect}
+            options={divisions}
+            label="Division"
+            value={data.ext_sku || ''}
+            onChange={onDivisionChange}
           />
         </div>
         <div className={styles.sectionItem}>

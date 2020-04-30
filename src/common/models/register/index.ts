@@ -21,9 +21,11 @@ export interface IIndivisualsRegister {
   discount_code: string;
   payment_selection: string;
   payment_amount: number;
+  ext_payment_token: string;
   payment_date: string;
   ext_payment_system: string;
   ext_payment_id: string;
+  ext_sku: string;
   player_club_name: string;
   player_highlight_URL: string;
   school_attending: string;
@@ -67,10 +69,12 @@ export interface ITeamsRegister {
   coach_email: string;
   additional_emails: string;
   payment_method: string;
-  payment_selection: string;
   discount_code: string;
+  payment_selection: string;
   payment_amount: number;
-  stripe_id: string;
+  ext_payment_id: string;
+  ext_payment_token: string;
+  ext_sku: string;
   stripe_payment_date: string;
   stripe_credit_amount: number;
   is_waitlist_YN: number;
