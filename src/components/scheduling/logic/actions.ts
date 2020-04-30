@@ -315,13 +315,13 @@ export const deleteSchedule = (schedule: ISchedulingSchedule) => async (
   }
 };
 
-const callPostDelete = (uri: string, data: any, isDraft: boolean) =>
-  isDraft ? api.delete(uri, data) : api.post(uri, data);
+const callPostPut = (uri: string, data: any, update: boolean) =>
+  update ? api.put(uri, data) : api.post(uri, data);
 
-// const getGamesByScheduleId = async (scheduleId: string) => {
-//   const games = await api.get('/games', { schedule_id: scheduleId });
-//   return games;
-// };
+const getGamesByScheduleId = async (scheduleId: string) => {
+  const games = await api.get('/games', { schedule_id: scheduleId });
+  return games;
+};
 
 const showError = () => {
   errorToast('Something happened during the saving process');
@@ -426,8 +426,8 @@ export const updateScheduleStatus = (
   if (!event || !fields || !teams || !divisions || !schedule || !facilities)
     return showError();
 
-  // const scheduleGames = await getGamesByScheduleId(scheduleId);
-  // const gamesExist = scheduleGames?.length;
+  const scheduleGames = await getGamesByScheduleId(scheduleId);
+  const hasGames = scheduleGames?.length;
 
   /* PUT Schedule */
   const updatedSchedule: ISchedule = {
@@ -474,7 +474,7 @@ export const updateScheduleStatus = (
 
   const schedulesGamesResp = await Promise.all(
     schedulesGamesChunk.map(
-      async arr => await callPostDelete('/games', arr, isDraft)
+      async arr => await callPostPut('/games', arr, hasGames)
     )
   );
 
