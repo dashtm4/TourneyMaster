@@ -321,7 +321,7 @@ class Scheduling extends Component<IProps, IState> {
                 schedules={schedules}
                 eventId={eventId}
                 isSectionExpand={isSectionsExpand}
-                bracketCreationAllowed={true}
+                bracketCreationAllowed={!!event?.playoffs_exist}
                 onCreateBracket={this.onCreateBracketPressed}
                 onEditBracket={this.onEditBracket}
               />
