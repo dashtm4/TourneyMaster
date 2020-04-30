@@ -334,6 +334,11 @@ class RecordScores extends React.Component<
         ? bracketGame.homeTeamId
         : bracketGame.awayTeamId;
 
+    const whoIsLoser =
+      (bracketGame.homeTeamScore || 0) < (bracketGame.awayTeamScore || 0)
+        ? bracketGame.homeTeamId
+        : bracketGame.awayTeamId;
+
     const newBracketGames = bracketGames.map(item => {
       if (
         item.divisionId === bracketGame.divisionId &&
@@ -345,7 +350,7 @@ class RecordScores extends React.Component<
 
         return {
           ...item,
-          [positionedTeam]: whoIsWinner,
+          [positionedTeam]: item.round >= 0 ? whoIsWinner : whoIsLoser,
         };
       }
 

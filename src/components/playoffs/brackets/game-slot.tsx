@@ -73,6 +73,7 @@ const BracketGameSlot = (props: IProps) => {
                   type="seed"
                   dropped={true}
                   isHighlighted={
+                    !!highlightedTeam &&
                     highlightedTeam === getSeedData(game, seeds).awayTeamId
                   }
                   setHighlightedTeamId={setHighlightedTeamId}
@@ -127,6 +128,7 @@ const BracketGameSlot = (props: IProps) => {
                   type="seed"
                   dropped={true}
                   isHighlighted={
+                    !!highlightedTeam &&
                     highlightedTeam === getSeedData(game, seeds).homeTeamId
                   }
                   setHighlightedTeamId={setHighlightedTeamId}
