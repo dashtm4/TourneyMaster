@@ -187,7 +187,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   const handleSubmit = async () => {
     try {
       if (!stripe || !elements) {
-        return Toasts.errorToast('Something went wrong');
+        return Toasts.errorToast('Rats. Something went wrong. Please retry.');
       }
 
       const card = elements.getElement(CardElement)!;
@@ -232,7 +232,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     } catch (e) {
       return Toasts.errorToast(e.message);
     }
-    Toasts.successToast('Registration is successfully saved.');
+    Toasts.successToast('Registration is successfully saved!');
     setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
@@ -288,7 +288,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               {activeStep === steps.length && (
                 <div className={styles.section}>
                   <div className={styles.successMessage}>
-                    Registration is successfully completed!
+                    Registration completed successfully! A confirmation email has also been sent. Thanks!
                   </div>
                 </div>
               )}
@@ -310,7 +310,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               <span>Event Registration</span>
             </HeadingLevelFour>
             <p className={styles.message}>
-              Do you want to register an individual or a team?
+              Do you want to register as an individual or as a team?
             </p>
             <div className={styles.radioBtnsWrapper}>
               <Radio
