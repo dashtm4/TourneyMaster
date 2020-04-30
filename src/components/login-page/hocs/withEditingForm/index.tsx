@@ -5,6 +5,8 @@ interface State {
   surname: string;
   email: string;
   password: string;
+  confirmCode: string;
+  newPwd: string;
 }
 
 const withEditingForm = (Component: React.ComponentType<any>) =>
@@ -17,6 +19,8 @@ const withEditingForm = (Component: React.ComponentType<any>) =>
         surname: '',
         email: '',
         password: '',
+        confirmCode: '',
+        newPwd: ''
       };
     }
 
@@ -24,7 +28,7 @@ const withEditingForm = (Component: React.ComponentType<any>) =>
       this.setState({ [name]: value } as Pick<State, keyof State>);
 
     render() {
-      const { name, surname, email, password } = this.state;
+      const { name, surname, email, password, confirmCode, newPwd } = this.state;
 
       return (
         <Component
@@ -33,6 +37,8 @@ const withEditingForm = (Component: React.ComponentType<any>) =>
           surname={surname}
           email={email}
           password={password}
+          confirmCode={confirmCode}
+          newPwd={newPwd}
           onChange={this.onChangeField}
         />
       );
