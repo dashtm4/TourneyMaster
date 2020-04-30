@@ -13,7 +13,7 @@ export const LOAD_FIELDS_FAILURE = 'FACILITIES:LOAD_FIELDS_FAILURE';
 
 export const ADD_EMPTY_FACILITIES = 'ADD_EMPTY_FACILITIES';
 
-export const ADD_EMPTY_FIELD = 'ADD_EMPTY_FIELD';
+export const ADD_EMPTY_FIELDS = 'ADD_EMPTY_FIELDS';
 
 export const UPDATE_FACILITY = 'UPDATE_FACILITY';
 
@@ -60,10 +60,10 @@ export interface addEmptyFacilities {
   };
 }
 
-export interface addEmptyField {
-  type: 'ADD_EMPTY_FIELD';
+export interface addEmptyFields {
+  type: 'ADD_EMPTY_FIELDS';
   payload: {
-    field: IField;
+    fields: IField[];
   };
 }
 
@@ -109,7 +109,7 @@ export type FacilitiesAction =
   | loadFieldsStart
   | loadFieldsSuccess
   | addEmptyFacilities
-  | addEmptyField
+  | addEmptyFields
   | updateFacilities
   | updateField
   | saveFacilities

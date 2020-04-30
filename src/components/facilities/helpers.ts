@@ -1,13 +1,13 @@
-import { IField, IFacility, ISelectOption } from 'common/models';
+import { IField, ISelectOption } from 'common/models';
 
 const DEFAULT_COUN_SELECT_OPTIONST = 10;
 
-const getFacilitiesSelectOptions = (
-  facilities: IFacility[]
+const getIncrementSelectOptions = (
+  incrementCount: number
 ): ISelectOption[] => {
   const currentCount =
-    facilities.length >= DEFAULT_COUN_SELECT_OPTIONST
-      ? facilities.length + 1
+    incrementCount >= DEFAULT_COUN_SELECT_OPTIONST
+      ? incrementCount + 1
       : DEFAULT_COUN_SELECT_OPTIONST;
 
   const FacilitiesSelectOptions = Array.from(
@@ -35,4 +35,4 @@ const getSortedFieldsByFacility = (fields: IField[]) => {
   return sortedFields;
 };
 
-export { getFacilitiesSelectOptions, getSortedFieldsByFacility };
+export { getIncrementSelectOptions, getSortedFieldsByFacility };

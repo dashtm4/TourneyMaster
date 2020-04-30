@@ -5,7 +5,7 @@ import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
   ADD_EMPTY_FACILITIES,
-  ADD_EMPTY_FIELD,
+  ADD_EMPTY_FIELDS,
   LOAD_FACILITIES_START,
   LOAD_FACILITIES_SUCCESS,
   LOAD_FACILITIES_FAILURE,
@@ -111,22 +111,26 @@ const addEmptyFacility = (incrementValue: number) => async (
   });
 };
 
-const addEmptyField = (
-  facilityId: string,
-  fieldsLength: number
-): FacilitiesAction => ({
-  type: ADD_EMPTY_FIELD,
-  payload: {
-    field: {
+const addEmptyFields = (facility: IFacility, incrementValue: number) => {
+  let fieldNumber = Number(facility.num_fields);
+
+  const newFields = Array.from(new Array(incrementValue), () => {
+    return {
       ...EMPTY_FIELD,
       field_id: getVarcharEight(),
-      field_name: `Field ${fieldsLength + 1}`,
+      facilities_id: facility.facilities_id,
+      field_name: `Field ${++fieldNumber}`,
       isNew: true,
-      facilities_id: facilityId,
-      is_library_YN: 0,
+    };
+  });
+
+  return {
+    type: ADD_EMPTY_FIELDS,
+    payload: {
+      fields: newFields,
     },
-  },
-});
+  };
+};
 
 const updateFacilities = (updatedFacility: IFacility): FacilitiesAction => ({
   type: UPDATE_FACILITY,
@@ -275,7 +279,7 @@ export {
   loadFacilities,
   loadFields,
   addEmptyFacility,
-  addEmptyField,
+  addEmptyFields,
   updateFacilities,
   updateField,
   saveFacilities,

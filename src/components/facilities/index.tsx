@@ -7,7 +7,7 @@ import {
   loadFacilities,
   loadFields,
   addEmptyFacility,
-  addEmptyField,
+  addEmptyFields,
   updateFacilities,
   updateField,
   uploadFileMap,
@@ -36,7 +36,7 @@ import {
 } from 'common/models';
 import { EntryPoints } from 'common/enums';
 import { IEntity, IInputEvent } from 'common/types';
-import { getFacilitiesSelectOptions } from './helpers';
+import { getIncrementSelectOptions } from './helpers';
 import history from '../../browserhistory';
 import styles from './styles.module.scss';
 
@@ -51,7 +51,7 @@ interface Props {
   loadFacilities: (eventId: string) => void;
   loadFields: (facilityId: string) => void;
   addEmptyFacility: (incrementCount: number) => void;
-  addEmptyField: (facilityId: string, fieldsLength: number) => void;
+  addEmptyFields: (facility: IFacility, incrementCount: number) => void;
   updateFacilities: BindingCbWithOne<IFacility>;
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
@@ -154,7 +154,7 @@ class Facilities extends React.Component<
       facilities,
       fields,
       loadFields,
-      addEmptyField,
+      addEmptyFields,
       updateFacilities,
       updateField,
       uploadFileMap,
@@ -163,7 +163,9 @@ class Facilities extends React.Component<
 
     const { isLibraryPopupOpen } = this.state;
 
-    const facilitiesSelectOptions = getFacilitiesSelectOptions(facilities);
+    const facilitiesSelectOptions = getIncrementSelectOptions(
+      facilities.length
+    );
 
     if (isLoading) {
       return <Loader />;
@@ -229,7 +231,7 @@ class Facilities extends React.Component<
                     )}
                     facilitiyNumber={idx + 1}
                     loadFields={loadFields}
-                    addEmptyField={addEmptyField}
+                    addEmptyFields={addEmptyFields}
                     updateFacilities={updateFacilities}
                     updateField={updateField}
                     uploadFileMap={uploadFileMap}
@@ -277,7 +279,7 @@ export default connect(
         loadFacilities,
         loadFields,
         addEmptyFacility,
-        addEmptyField,
+        addEmptyFields,
         updateFacilities,
         updateField,
         saveFacilities,

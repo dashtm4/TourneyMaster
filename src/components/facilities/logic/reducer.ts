@@ -4,7 +4,7 @@ import {
   LOAD_FIELDS_START,
   LOAD_FIELDS_SUCCESS,
   ADD_EMPTY_FACILITIES,
-  ADD_EMPTY_FIELD,
+  ADD_EMPTY_FIELDS,
   UPDATE_FACILITY,
   FacilitiesAction,
   UPDATE_FIELD,
@@ -89,12 +89,12 @@ const facilitiesReducer = (
         facilities: [...state.facilities, ...facilities],
       };
     }
-    case ADD_EMPTY_FIELD: {
-      const { field } = action.payload;
+    case ADD_EMPTY_FIELDS: {
+      const { fields } = action.payload;
 
       return {
         ...state,
-        fields: [...state.fields, field],
+        fields: [...state.fields, ...fields],
       };
     }
     case UPDATE_FACILITY: {
