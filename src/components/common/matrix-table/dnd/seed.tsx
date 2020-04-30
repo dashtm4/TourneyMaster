@@ -8,6 +8,7 @@ interface Props {
   tableType: TableScheduleTypes;
   position: 1 | 2;
   seedId?: number;
+  teamId?: string;
   round?: number;
   showHeatmap: boolean;
   divisionId: string;
@@ -28,6 +29,7 @@ export default (props: Props) => {
   const {
     position,
     seedId,
+    teamId,
     showHeatmap,
     divisionId,
     divisionHex,
@@ -70,7 +72,7 @@ export default (props: Props) => {
       <label className={styles.scoresInputWrapper}>
         <input
           onChange={onChangeScore}
-          value={teamScore || ''}
+          value={teamScore}
           type="number"
           min="0"
           style={{
@@ -101,7 +103,9 @@ export default (props: Props) => {
           ? `Seed ${seedId} (${divisionName})`
           : getDisplayName(round, dependsUpon)}
       </span>
-      {tableType === TableScheduleTypes.SCORES && renderScoringInput()}
+      {tableType === TableScheduleTypes.SCORES &&
+        teamId &&
+        renderScoringInput()}
     </div>
   );
 };

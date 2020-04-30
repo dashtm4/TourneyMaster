@@ -114,6 +114,8 @@ export const mapFetchedBracketGames = (
       homeSeedId: game.seed_num_home || undefined,
       awayTeamId: game.away_team_id || undefined,
       homeTeamId: game.home_team_id || undefined,
+      awayTeamScore: game.away_team_score || undefined,
+      homeTeamScore: game.home_team_score || undefined,
       awayDependsUpon: game.away_depends_upon || undefined,
       homeDependsUpon: game.home_depends_upon || undefined,
       awayDisplayName: '',
