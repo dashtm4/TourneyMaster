@@ -21,6 +21,7 @@ interface IPlayoffSavedSuccess {
 interface IPlayoffFetchGames {
   type: 'PLAYOFF_FETCH_GAMES';
   payload: IBracketGame[];
+  skipHistory?: boolean;
 }
 
 interface IPlayoffClearGames {

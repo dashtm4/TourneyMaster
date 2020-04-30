@@ -39,10 +39,12 @@ export default (state = defaultState, action: IPlayoffAction) => {
     case PLAYOFF_FETCH_GAMES:
       return {
         ...state,
-        bracketGamesHistory: [
-          ...(state.bracketGamesHistory || []),
-          ...(state.bracketGames ? [state.bracketGames] : []),
-        ],
+        bracketGamesHistory: action.skipHistory
+          ? state.bracketGamesHistory
+          : [
+              ...(state.bracketGamesHistory || []),
+              ...(state.bracketGames ? [state.bracketGames] : []),
+            ],
         bracketGames: action.payload,
       };
     case PLAYOFF_CLEAR_GAMES:

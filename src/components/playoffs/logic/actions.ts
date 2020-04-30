@@ -59,9 +59,13 @@ export const clearSortedTeams = () => ({
   type: CLEAR_SCORED_TEAMS,
 });
 
-export const fetchBracketGames = (payload: IBracketGame[]) => ({
+export const fetchBracketGames = (
+  payload: IBracketGame[],
+  skipHistory?: boolean
+) => ({
   type: PLAYOFF_FETCH_GAMES,
   payload,
+  skipHistory,
 });
 
 export const clearBracketGames = () => ({

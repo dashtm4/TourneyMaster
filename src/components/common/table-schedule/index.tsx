@@ -74,6 +74,7 @@ interface Props {
   onToggleFullScreen?: BindingAction;
   playoffTimeSlots?: ITimeSlot[];
   bracketGames?: IBracketGame[];
+  onBracketGameUpdate: (bracketGame: IBracketGame) => void;
 }
 
 const TableSchedule = ({
@@ -99,6 +100,7 @@ const TableSchedule = ({
   onToggleFullScreen,
   playoffTimeSlots,
   bracketGames,
+  onBracketGameUpdate,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -152,7 +154,7 @@ const TableSchedule = ({
     );
     const filteredGames = mapGamesByFilter([...filledGames], filterValues);
     return filteredGames;
-  }, [games, teamCards, days, filterValues, playoffTimeSlots]);
+  }, [games, teamCards, days, filterValues, playoffTimeSlots, bracketGames]);
 
   const [tableGames, setTableGames] = useState<IGame[]>(manageGamesData());
 
@@ -164,6 +166,22 @@ const TableSchedule = ({
   useEffect(() => setTableGames(manageGamesData()), [manageGamesData]);
 
   const updatedFields = mapUnusedFields(fields, tableGames, filterValues);
+
+  const onGameUpdate = (game: IGame) => {
+    const foundBracketGame = bracketGames?.find(
+      item => item.id === game.bracketGameId
+    );
+
+    if (!foundBracketGame) return;
+
+    const updatedBracketGame: IBracketGame = {
+      ...foundBracketGame,
+      awayTeamScore: game.awayTeamScore,
+      homeTeamScore: game.homeTeamScore,
+    };
+
+    onBracketGameUpdate(updatedBracketGame);
+  };
 
   const onFilterChange = (data: IScheduleFilter) => {
     const newData = mapFilterValues({ teamCards, pools }, data);
@@ -312,6 +330,7 @@ const TableSchedule = ({
               teamCards={teamCards}
               isFullScreen={isFullScreen}
               onToggleFullScreen={onToggleFullScreen}
+              onGameUpdate={onGameUpdate}
             />
           </div>
         </DndProvider>

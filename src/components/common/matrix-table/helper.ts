@@ -37,6 +37,9 @@ export interface IGame {
   gameDate?: string;
   scheduleVersionId?: string;
   createDate?: string;
+  //
+  awayTeamScore?: number;
+  homeTeamScore?: number;
 }
 
 export interface IDefinedGames {

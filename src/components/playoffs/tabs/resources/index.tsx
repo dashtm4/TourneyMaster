@@ -218,6 +218,7 @@ class ResourceMatrix extends Component<IProps> {
               isFullScreen={isFullScreen}
               onToggleFullScreen={onToggleFullScreen}
               highlightedGameId={highlightedGameId}
+              onGameUpdate={() => {}}
             />
           ) : (
             <Loader styles={{ height: '100%' }} />

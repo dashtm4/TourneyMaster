@@ -20,7 +20,10 @@ import {
   BindingAction,
   IFetchedBracket,
 } from 'common/models';
-import { retrieveBracketsGames } from 'components/playoffs/logic/actions';
+import {
+  retrieveBracketsGames,
+  fetchBracketGames,
+} from 'components/playoffs/logic/actions';
 import { Routes, TableScheduleTypes } from 'common/enums';
 import styles from './styles.module.scss';
 import {
@@ -90,6 +93,10 @@ interface Props {
   onToggleFullScreen: BindingAction;
   clearSchedulesTable: () => void;
   retrieveBracketsGames: (bracketId: string) => void;
+  fetchBracketGames: (
+    bracketGames: IBracketGame[],
+    skipHistory?: boolean
+  ) => void;
 }
 
 interface State {
@@ -303,6 +310,14 @@ class RecordScores extends React.Component<
     }
   };
 
+  onBracketGameUpdate = (bracketGame: IBracketGame) => {
+    const { bracketGames } = this.props;
+    const newBracketGames = bracketGames?.map(item =>
+      item.id === bracketGame.id ? bracketGame : item
+    )!;
+    this.props.fetchBracketGames(newBracketGames, true);
+  };
+
   render() {
     const {
       isLoading,
@@ -371,6 +386,7 @@ class RecordScores extends React.Component<
               onToggleFullScreen={onToggleFullScreen}
               playoffTimeSlots={playoffTimeSlots}
               bracketGames={bracketGames || undefined}
+              onBracketGameUpdate={this.onBracketGameUpdate}
             />
           ) : (
             <Loader />
@@ -412,6 +428,7 @@ export default connect(
         saveGames,
         clearSchedulesTable,
         retrieveBracketsGames,
+        fetchBracketGames,
       },
       dispatch
     )

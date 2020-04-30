@@ -50,7 +50,6 @@ import {
   populateBracketGamesWithData,
   populatePlayoffGames,
   createSeedsFromNum,
-  createSeedsFromBrackets,
   createBracketGames,
   advanceBracketGamesWithTeams,
 } from './bracketGames';
@@ -380,20 +379,14 @@ class Playoffs extends Component<IProps> {
   };
 
   calculateBracketSeeds = () => {
-    const { event, bracketGames, divisions, sortedTeams, teams } = this.props;
-    const bracketTeamsNum = event?.num_teams_bracket || 0;
+    const { bracketGames, divisions, sortedTeams, teams } = this.props;
 
-    let bracketSeeds = {};
-
-    if (bracketGames && !sortedTeams) {
-      bracketSeeds = createSeedsFromBrackets(bracketGames, teams);
-    } else {
-      bracketSeeds = createSeedsFromNum(
-        bracketTeamsNum,
-        divisions!,
-        sortedTeams
-      );
-    }
+    const bracketSeeds = createSeedsFromNum(
+      bracketGames!,
+      divisions!,
+      teams,
+      sortedTeams
+    );
 
     if (bracketGames && sortedTeams) {
       const populatedBracketGames = advanceBracketGamesWithTeams(
