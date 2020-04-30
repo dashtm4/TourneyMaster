@@ -41,6 +41,7 @@ export default (props: Props) => {
     teamScore,
     isEnterScores,
     onGameUpdate,
+    tableType,
   } = props;
 
   const [{ isDragging }, drag] = useDrag({
@@ -100,7 +101,7 @@ export default (props: Props) => {
           ? `Seed ${seedId} (${divisionName})`
           : getDisplayName(round, dependsUpon)}
       </span>
-      {TableScheduleTypes.SCORES && renderScoringInput()}
+      {tableType === TableScheduleTypes.SCORES && renderScoringInput()}
     </div>
   );
 };

@@ -175,7 +175,7 @@ const Brackets = (props: IProps) => {
       >
         {({ zoomIn, zoomOut }: IPinchProps) => (
           <>
-            {grids && <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} />}
+            <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} />
             <TransformComponent>
               <SeedsContext.Provider value={seeds}>
                 {grids &&

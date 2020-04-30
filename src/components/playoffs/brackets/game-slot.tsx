@@ -27,7 +27,9 @@ const BracketGameSlot = (props: IProps) => {
     return `${key} Game ${depends}`;
   };
 
-  const onRemovePressed = () => onRemove(game.index);
+  const onRemovePressed = () => {
+    onRemove(game.index);
+  };
 
   const getSeedData = (game: IBracketGame, seeds?: IBracketSeed[]) => {
     const awaySeed = seeds?.find(
@@ -46,10 +48,7 @@ const BracketGameSlot = (props: IProps) => {
   };
 
   return (
-    <div
-      key={game?.index}
-      className={`${styles.bracketGame} ${game?.hidden && styles.hidden}`}
-    >
+    <div className={`${styles.bracketGame} ${game?.hidden && styles.hidden}`}>
       <SeedsContext.Consumer>
         {seeds => (
           <>
