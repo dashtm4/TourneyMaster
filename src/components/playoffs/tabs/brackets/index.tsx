@@ -155,7 +155,7 @@ class BracketManager extends Component<IProps> {
           <div className={styles.seedsWrapper}>
             <h4>Seeds</h4>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Drag & drop to reorder
+              Seeds list
             </CardMessage>
             <div className={styles.seedsList}>
               {divisionSeeds?.map((v, i) => this.renderSeed(v, i))}
@@ -173,6 +173,7 @@ class BracketManager extends Component<IProps> {
                 Drag, drop, and zoom to navigate the bracket
               </CardMessage>
               <Button
+                btnStyles={{ marginLeft: 20 }}
                 label="+ Add Game"
                 variant="text"
                 color="secondary"
