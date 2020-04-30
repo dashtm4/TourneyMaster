@@ -34,10 +34,11 @@ import {
   BindingCbWithOne,
   BindingCbWithTwo,
 } from 'common/models';
-import styles from './styles.module.scss';
-import history from '../../browserhistory';
 import { EntryPoints } from 'common/enums';
-import { IEntity } from 'common/types';
+import { IEntity, IInputEvent } from 'common/types';
+import { getFacilitiesSelectOptions } from './helpers';
+import history from '../../browserhistory';
+import styles from './styles.module.scss';
 
 interface MatchParams {
   eventId?: string;
@@ -49,7 +50,7 @@ interface Props {
   fields: IField[];
   loadFacilities: (eventId: string) => void;
   loadFields: (facilityId: string) => void;
-  addEmptyFacility: (eventId: string) => void;
+  addEmptyFacility: (incrementCount: number) => void;
   addEmptyField: (facilityId: string, fieldsLength: number) => void;
   updateFacilities: BindingCbWithOne<IFacility>;
   updateField: BindingCbWithOne<IField>;
@@ -91,12 +92,12 @@ class Facilities extends React.Component<
     }
   }
 
-  onChangeFacilitiesCount = (evt: any) => {
+  onChangeFacilitiesCount = ({ target }: IInputEvent) => {
     const { facilities, addEmptyFacility } = this.props;
-    const eventId = this.props.match.params.eventId;
+    const incrementValue = Number(target.value);
 
-    if (evt.target.value > facilities.length) {
-      addEmptyFacility(eventId!);
+    if (incrementValue > facilities.length) {
+      addEmptyFacility(incrementValue);
     }
   };
 
@@ -160,6 +161,8 @@ class Facilities extends React.Component<
 
     const { isLibraryPopupOpen } = this.state;
 
+    const facilitiesSelectOptions = getFacilitiesSelectOptions(facilities);
+
     if (isLoading) {
       return <Loader />;
     }
@@ -184,10 +187,7 @@ class Facilities extends React.Component<
               <Select
                 onChange={this.onChangeFacilitiesCount}
                 value={`${facilities.length || ''}`}
-                options={Array.from(
-                  new Array(facilities.length + 1),
-                  (_, idx) => ({ label: `${idx + 1}`, value: `${idx + 1}` })
-                )}
+                options={facilitiesSelectOptions}
                 width="160px"
               />
               {facilities?.length ? (

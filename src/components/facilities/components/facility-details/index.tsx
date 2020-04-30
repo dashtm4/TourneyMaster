@@ -317,17 +317,17 @@ class FacilityDetails extends React.Component<Props, State> {
             {facility.isFieldsLoading ? (
               <Loader />
             ) : (
-                fields.map((it, idx) => (
-                  <li key={it.field_id}>
-                    <Field
-                      field={it}
-                      fieldNumber={idx + 1}
-                      isEdit={isEdit}
-                      onChange={this.onChangeField}
-                    />
-                  </li>
-                ))
-              )}
+              fields.map((it, idx) => (
+                <li key={it.field_id}>
+                  <Field
+                    field={it}
+                    fieldNumber={idx + 1}
+                    isEdit={isEdit}
+                    onChange={this.onChangeField}
+                  />
+                </li>
+              ))
+            )}
           </ul>
           <div className={styles.restroomWrapper}>
             <fieldset

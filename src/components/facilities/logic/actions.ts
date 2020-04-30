@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
-  ADD_EMPTY_FACILITY,
+  ADD_EMPTY_FACILITIES,
   ADD_EMPTY_FIELD,
   LOAD_FACILITIES_START,
   LOAD_FACILITIES_SUCCESS,
@@ -87,25 +87,26 @@ const loadFields: ActionCreator<ThunkAction<
   }
 };
 
-const addEmptyFacility = (eventId: string) => async (
+const addEmptyFacility = (incrementValue: number) => async (
   dispatch: Dispatch,
   getState: () => IAppState
 ) => {
   const { tournamentData } = getState().pageEvent;
+  const { event } = tournamentData;
 
-  const emptyFacility = {
+  const newFacilities = Array.from(new Array(incrementValue), () => ({
     ...EMPTY_FACILITY,
-    event_id: eventId,
+    event_id: event?.event_id,
     facilities_id: getVarcharEight(),
-    first_game_time: tournamentData.event?.first_game_time,
-    last_game_end: tournamentData.event?.last_game_end,
+    first_game_time: event?.first_game_time,
+    last_game_end: event?.last_game_end,
     isNew: true,
-  };
+  }));
 
   dispatch({
-    type: ADD_EMPTY_FACILITY,
+    type: ADD_EMPTY_FACILITIES,
     payload: {
-      facility: emptyFacility,
+      facilities: newFacilities,
     },
   });
 };

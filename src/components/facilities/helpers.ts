@@ -1,38 +1,24 @@
-import { IField } from 'common/models';
+import { IField, IFacility, ISelectOption } from 'common/models';
 
-const getOrderFields = (fields: IField[]) => {
-  const sortedFields = fields.reduce(
-    (acc, field) => {
-      return field.isNew
-        ? {
-            ...acc,
-            newFields: [...acc.newFields, field],
-          }
-        : {
-            ...acc,
-            oldFields: [...acc.oldFields, field],
-          };
-    },
-    {
-      newFields: [] as IField[],
-      oldFields: [] as IField[],
-    }
+const DEFAULT_COUN_SELECT_OPTIONST = 10;
+
+const getFacilitiesSelectOptions = (
+  facilities: IFacility[]
+): ISelectOption[] => {
+  const currentCount =
+    facilities.length >= DEFAULT_COUN_SELECT_OPTIONST
+      ? facilities.length + 1
+      : DEFAULT_COUN_SELECT_OPTIONST;
+
+  const FacilitiesSelectOptions = Array.from(
+    new Array(currentCount),
+    (_, idx) => ({
+      label: `${idx + 1}`,
+      value: `${idx + 1}`,
+    })
   );
 
-  const sortedOlsFields = getSortedFields(sortedFields.oldFields);
-
-  return [...sortedOlsFields, ...sortedFields.newFields];
-};
-
-const getSortedFields = (fields: IField[]) => {
-  const sortedFields = fields.sort((a, b) => {
-    return (
-      Number(b.is_premier_YN) - Number(a.is_premier_YN) ||
-      a.field_name.localeCompare(b.field_name, undefined, { numeric: true })
-    );
-  });
-
-  return sortedFields;
+  return FacilitiesSelectOptions;
 };
 
 const getSortedFieldsByFacility = (fields: IField[]) => {
@@ -49,4 +35,4 @@ const getSortedFieldsByFacility = (fields: IField[]) => {
   return sortedFields;
 };
 
-export { getOrderFields, getSortedFieldsByFacility };
+export { getFacilitiesSelectOptions, getSortedFieldsByFacility };
