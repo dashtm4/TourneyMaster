@@ -3,8 +3,8 @@ import {
   LOAD_FACILITIES_SUCCESS,
   LOAD_FIELDS_START,
   LOAD_FIELDS_SUCCESS,
-  ADD_EMPTY_FACILITY,
-  ADD_EMPTY_FIELD,
+  ADD_EMPTY_FACILITIES,
+  ADD_EMPTY_FIELDS,
   UPDATE_FACILITY,
   FacilitiesAction,
   UPDATE_FIELD,
@@ -81,17 +81,20 @@ const facilitiesReducer = (
         fields: sortedFields,
       };
     }
-    case ADD_EMPTY_FACILITY:
-      return {
-        ...state,
-        facilities: [...state.facilities, action.payload.facility],
-      };
-    case ADD_EMPTY_FIELD: {
-      const { field } = action.payload;
+    case ADD_EMPTY_FACILITIES: {
+      const { facilities } = action.payload;
 
       return {
         ...state,
-        fields: [...state.fields, field],
+        facilities: [...state.facilities, ...facilities],
+      };
+    }
+    case ADD_EMPTY_FIELDS: {
+      const { fields } = action.payload;
+
+      return {
+        ...state,
+        fields: [...state.fields, ...fields],
       };
     }
     case UPDATE_FACILITY: {

@@ -7,7 +7,7 @@ import {
   loadFacilities,
   loadFields,
   addEmptyFacility,
-  addEmptyField,
+  addEmptyFields,
   updateFacilities,
   updateField,
   uploadFileMap,
@@ -34,10 +34,11 @@ import {
   BindingCbWithOne,
   BindingCbWithTwo,
 } from 'common/models';
-import styles from './styles.module.scss';
-import history from '../../browserhistory';
 import { EntryPoints } from 'common/enums';
-import { IEntity } from 'common/types';
+import { IEntity, IInputEvent } from 'common/types';
+import { getIncrementSelectOptions } from './helpers';
+import history from '../../browserhistory';
+import styles from './styles.module.scss';
 
 interface MatchParams {
   eventId?: string;
@@ -49,8 +50,8 @@ interface Props {
   fields: IField[];
   loadFacilities: (eventId: string) => void;
   loadFields: (facilityId: string) => void;
-  addEmptyFacility: (eventId: string) => void;
-  addEmptyField: (facilityId: string, fieldsLength: number) => void;
+  addEmptyFacility: (incrementCount: number) => void;
+  addEmptyFields: (facility: IFacility, incrementCount: number) => void;
   updateFacilities: BindingCbWithOne<IFacility>;
   updateField: BindingCbWithOne<IField>;
   saveFacilities: BindingCbWithTwo<IFacility[], IField[]>;
@@ -91,12 +92,14 @@ class Facilities extends React.Component<
     }
   }
 
-  onChangeFacilitiesCount = (evt: any) => {
+  onChangeFacilitiesCount = ({ target }: IInputEvent) => {
     const { facilities, addEmptyFacility } = this.props;
-    const eventId = this.props.match.params.eventId;
+    const inputValue = Number(target.value);
 
-    if (evt.target.value > facilities.length) {
-      addEmptyFacility(eventId!);
+    if (inputValue > facilities.length) {
+      const incrementValue = inputValue - facilities.length;
+
+      addEmptyFacility(incrementValue);
     }
   };
 
@@ -151,7 +154,7 @@ class Facilities extends React.Component<
       facilities,
       fields,
       loadFields,
-      addEmptyField,
+      addEmptyFields,
       updateFacilities,
       updateField,
       uploadFileMap,
@@ -159,6 +162,10 @@ class Facilities extends React.Component<
     } = this.props;
 
     const { isLibraryPopupOpen } = this.state;
+
+    const facilitiesSelectOptions = getIncrementSelectOptions(
+      facilities.length
+    );
 
     if (isLoading) {
       return <Loader />;
@@ -184,10 +191,7 @@ class Facilities extends React.Component<
               <Select
                 onChange={this.onChangeFacilitiesCount}
                 value={`${facilities.length || ''}`}
-                options={Array.from(
-                  new Array(facilities.length + 1),
-                  (_, idx) => ({ label: `${idx + 1}`, value: `${idx + 1}` })
-                )}
+                options={facilitiesSelectOptions}
                 width="160px"
               />
               {facilities?.length ? (
@@ -222,17 +226,12 @@ class Facilities extends React.Component<
                 >
                   <FacilityDetails
                     facility={facilitiy}
-                    // fields={getOrderFields(
-                    //   fields.filter(
-                    //     it => it.facilities_id === facilitiy.facilities_id
-                    //   )
-                    // )}
                     fields={fields.filter(
                       it => it.facilities_id === facilitiy.facilities_id
                     )}
                     facilitiyNumber={idx + 1}
                     loadFields={loadFields}
-                    addEmptyField={addEmptyField}
+                    addEmptyFields={addEmptyFields}
                     updateFacilities={updateFacilities}
                     updateField={updateField}
                     uploadFileMap={uploadFileMap}
@@ -280,7 +279,7 @@ export default connect(
         loadFacilities,
         loadFields,
         addEmptyFacility,
-        addEmptyField,
+        addEmptyFields,
         updateFacilities,
         updateField,
         saveFacilities,

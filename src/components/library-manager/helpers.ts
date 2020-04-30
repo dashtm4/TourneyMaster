@@ -10,6 +10,7 @@ import {
   IEventDetailsFields,
   LibraryStates,
   EventStatuses,
+  ScheduleStatuses,
 } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
@@ -210,7 +211,12 @@ const setDivisionFromLibrary = async (
 };
 
 const setScheduleFromLibrary = async (newSchedule: ISchedule) => {
-  await Api.post(EntryPoints.SCHEDULES, newSchedule);
+  const undetedScheduls: ISchedule = {
+    ...newSchedule,
+    is_published_YN: ScheduleStatuses.Draft,
+  };
+
+  await Api.post(EntryPoints.SCHEDULES, undetedScheduls);
 };
 
 const SetFromLibraryManager = {
