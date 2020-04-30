@@ -6,6 +6,7 @@ import {
   ITeam,
   IField,
   ISchedule,
+  IFetchedBracket,
 } from 'common/models';
 
 export interface ITournamentData {
@@ -16,4 +17,10 @@ export interface ITournamentData {
   teams: ITeam[];
   fields: IField[];
   schedules: ISchedule[];
+  brackets: IFetchedBracket[];
+}
+
+export interface IPublishSettings {
+  activeSchedule: ISchedule | null;
+  activeBracket: IFetchedBracket | null;
 }

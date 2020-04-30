@@ -19,6 +19,7 @@ import {
   DELETE_SCHEDULE_FAILURE,
   ADD_NEW_BRACKET,
   FETCH_EVENT_BRACKETS,
+  FETCH_BRACKETS_SUCCESS,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
 import { scheduleSchema, updatedScheduleSchema } from 'validations';
@@ -52,7 +53,6 @@ import {
   mapTeamsFromSchedulesDetails,
   mapSchedulesTeamCards,
   mapTeamCardsToSchedulesGames,
-  mapSchedulingScheduleData,
 } from 'components/schedules/mapScheduleData';
 import { errorToast, successToast } from 'components/common/toastr/showToasts';
 import { ICreateBracketModalOutput } from '../create-new-bracket';
@@ -60,7 +60,12 @@ import {
   mapFetchedBracket,
   mapBracketData,
 } from 'components/playoffs/mapBracketsData';
-import { IBracket, ISchedulingBracket } from 'common/models/playoffs/bracket';
+import {
+  IBracket,
+  ISchedulingBracket,
+  IFetchedBracket,
+} from 'common/models/playoffs/bracket';
+import { BracketStatuses, ScheduleStatuses } from 'common/enums';
 
 type GetState = () => IAppState;
 
@@ -92,6 +97,11 @@ const fetchEventBrackets = (payload: ISchedulingBracket[]) => ({
   payload,
 });
 
+const fetchBracketsSuccess = (payload: IFetchedBracket[]) => ({
+  type: FETCH_BRACKETS_SUCCESS,
+  payload,
+});
+
 export const addNewBracket = (payload: ICreateBracketModalOutput) => ({
   type: ADD_NEW_BRACKET,
   payload,
@@ -110,6 +120,10 @@ export const addNewSchedule = () => async (
   );
   const DEFAULT_INCREMENT_MAX_NUM_GAMES = 2;
   const DEFAULT_PERIODS_PER_GAME = 2;
+  const DEFAULT_PRE_GAME_WARMUP = '5';
+  const DEFAULT_PERIOD_DURATION = '10';
+  const DEFAULT_TIME_BETWEEN_PERIODS = '5';
+  const DEFAULT_MIN_NUMBER_OF_GAMES = 1;
 
   const newSchedule = {
     ...EMPTY_SCHEDULE,
@@ -119,15 +133,20 @@ export const addNewSchedule = () => async (
     num_divisions: tournamentData.divisions.length,
     num_teams: tournamentData.teams.length,
     num_fields: tournamentData.fields.length,
-    min_num_games: tournamentData.event?.min_num_of_games,
+    min_num_games:
+      Number(tournamentData.event?.min_num_of_games) ||
+      DEFAULT_MIN_NUMBER_OF_GAMES,
     max_num_games:
-      Number(tournamentData.event?.min_num_of_games) +
-      DEFAULT_INCREMENT_MAX_NUM_GAMES,
+      (Number(tournamentData.event?.min_num_of_games) ||
+        DEFAULT_MIN_NUMBER_OF_GAMES) + DEFAULT_INCREMENT_MAX_NUM_GAMES,
     periods_per_game:
       tournamentData.event?.periods_per_game || DEFAULT_PERIODS_PER_GAME,
-    pre_game_warmup: tournamentData.event?.pre_game_warmup,
-    period_duration: tournamentData.event?.period_duration,
-    time_btwn_periods: tournamentData.event?.time_btwn_periods,
+    pre_game_warmup:
+      tournamentData.event?.pre_game_warmup || DEFAULT_PRE_GAME_WARMUP,
+    period_duration:
+      tournamentData.event?.period_duration || DEFAULT_PERIOD_DURATION,
+    time_btwn_periods:
+      tournamentData.event?.time_btwn_periods || DEFAULT_TIME_BETWEEN_PERIODS,
     first_game_time: tournamentData.event?.first_game_time,
     last_game_end_time: tournamentData.event?.last_game_end,
     games_start_on: gameStartOnOptions[0],
@@ -385,30 +404,27 @@ const getSchedulesGames = async (
   );
 };
 
-const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
-  dispatch: Dispatch,
-  getState: GetState
-) => {
-  const { scheduling, pageEvent } = getState();
-  const { schedules } = scheduling;
+export const updateScheduleStatus = (
+  scheduleId: string,
+  isDraft: boolean
+) => async (dispatch: Dispatch, getState: GetState) => {
+  const { pageEvent } = getState();
   const { tournamentData } = pageEvent;
-  const { event, fields, teams, divisions, facilities } = tournamentData;
+  const {
+    event,
+    fields,
+    teams,
+    divisions,
+    facilities,
+    schedules,
+  } = tournamentData;
 
-  const schedulingSchedule = schedules.find(
-    item => item.schedule_id === scheduleId
+  const schedule = schedules.find(
+    schedule => schedule.schedule_id === scheduleId
   );
 
-  if (
-    !event ||
-    !fields ||
-    !teams ||
-    !divisions ||
-    !schedulingSchedule ||
-    !facilities
-  )
+  if (!event || !fields || !teams || !divisions || !schedule || !facilities)
     return showError();
-
-  const schedule = mapSchedulingScheduleData(schedulingSchedule);
 
   // const scheduleGames = await getGamesByScheduleId(scheduleId);
   // const gamesExist = scheduleGames?.length;
@@ -416,7 +432,9 @@ const updateScheduleStatus = (scheduleId: string, isDraft: boolean) => async (
   /* PUT Schedule */
   const updatedSchedule: ISchedule = {
     ...schedule,
-    schedule_status: isDraft ? 'Draft' : 'Published',
+    is_published_YN: isDraft
+      ? ScheduleStatuses.Draft
+      : ScheduleStatuses.Published,
     last_web_publish: isDraft
       ? schedule.last_web_publish
       : new Date().toISOString(),
@@ -526,6 +544,8 @@ export const getEventBrackets = () => async (
   const response = await api.get('/brackets_details', { event_id });
 
   if (response?.length) {
+    dispatch(fetchBracketsSuccess(response));
+
     const mappedBrackets = response.map(mapFetchedBracket);
     const mappedBrackets2 = mappedBrackets.map((item: IBracket) =>
       mapToSchedulingBracket(item, members)
@@ -554,6 +574,14 @@ export const updateBracket = (bracket: ISchedulingBracket) => async (
       const mappedBrackets = updatedBrackets.map(item =>
         mapToSchedulingBracket(item, members)
       );
+      const mappedFetchedBrackets = await Promise.all(
+        mappedBrackets.map((it: ISchedulingBracket) =>
+          mapBracketData(it, !it.published)
+        )
+      );
+
+      dispatch(fetchBracketsSuccess(mappedFetchedBrackets));
+
       dispatch(fetchEventBrackets(mappedBrackets));
     }
     successToast('Bracket was successfully updated!');
@@ -579,4 +607,39 @@ export const deleteBracket = (bracketId: string) => async (
     return;
   }
   errorToast("Couldn't remove the bracket");
+};
+
+export const updateBracketStatus = (
+  bracketId: string,
+  isDraft: boolean
+) => async (dispatch: Dispatch, getState: GetState) => {
+  const { pageEvent } = getState();
+  const { tournamentData } = pageEvent;
+  const { brackets } = tournamentData;
+
+  const bracket = brackets.find(bracket => bracket.bracket_id === bracketId);
+
+  if (!bracket) {
+    return showError();
+  }
+
+  /* PUT Bracket */
+  const updatedBracket: IFetchedBracket = {
+    ...bracket,
+    is_published_YN: isDraft
+      ? BracketStatuses.Draft
+      : BracketStatuses.Published,
+  };
+
+  const bracketResp = await api.put('/brackets_details', updatedBracket);
+
+  if (!bracketResp) {
+    return showError();
+  }
+
+  dispatch<any>(getEventBrackets());
+
+  const name = isDraft ? 'unpublished' : 'published';
+
+  successToast(`Bracket was successfully ${name}`);
 };

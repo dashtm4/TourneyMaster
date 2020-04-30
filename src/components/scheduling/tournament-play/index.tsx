@@ -7,7 +7,7 @@ import {
   Button,
 } from 'components/common';
 import { BindingCbWithOne, ISchedule, IEventDetails } from 'common/models';
-import { EventMenuTitles } from 'common/enums';
+import { EventMenuTitles, ScheduleStatuses } from 'common/enums';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
 import { CardMessageTypes } from 'components/common/card-message/types';
@@ -48,23 +48,23 @@ export default (props: IProps) => {
 
   const sortedSchedules = orderBy(
     schedules,
-    ({ schedule_status, updated_datetime, created_datetime }) =>
+    ({ is_published_YN, updated_datetime, created_datetime }) =>
       updated_datetime
-        ? [schedule_status, updated_datetime, created_datetime]
-        : [schedule_status, created_datetime],
+        ? [is_published_YN, updated_datetime, created_datetime]
+        : [is_published_YN, created_datetime],
     ['desc', 'desc', 'desc']
   );
 
   const isSchedulePublished = (id: string) => {
     const schedule = schedules.find(
-      item => item.schedule_status === 'Published'
+      item => item.is_published_YN === ScheduleStatuses.Published
     );
     return schedule && schedule.schedule_id === id;
   };
 
   const isAnotherSchedulePublished = (id: string) => {
     const schedule = schedules.find(
-      item => item.schedule_status === 'Published'
+      item => item.is_published_YN === ScheduleStatuses.Published
     );
     return schedule && schedule.schedule_id !== id;
   };

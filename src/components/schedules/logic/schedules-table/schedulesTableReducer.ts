@@ -6,6 +6,7 @@ import {
   SCHEDULES_TABLE_UPDATE,
   SCHEDULES_TABLE_CLEAR,
 } from './actionTypes';
+import { SCHEDULES_DRAFT_SAVED_SUCCESS } from '../actionTypes';
 
 export interface ISchedulesTableState {
   previous: (ITeamCard[] | undefined)[];
@@ -43,6 +44,11 @@ const SchedulesTableReducer = (state = initialState, action: AnyAction) => {
         ...state,
         previous: [],
         current: undefined,
+      };
+    case SCHEDULES_DRAFT_SAVED_SUCCESS:
+      return {
+        ...state,
+        previous: [],
       };
     default:
       return state;

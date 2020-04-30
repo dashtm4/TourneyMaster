@@ -49,8 +49,9 @@ import {
   getFacilityData,
   populateBracketGamesWithData,
   populatePlayoffGames,
-  createSeeds,
+  createSeedsFromNum,
   createBracketGames,
+  advanceBracketGamesWithTeams,
 } from './bracketGames';
 import {
   populateDefinedGamesWithPlayoffState,
@@ -64,6 +65,9 @@ import {
   clearBracketGames,
   fetchBracketGames,
   onUndoBrackets,
+  advanceTeamsToBrackets,
+  IPlayoffSortedTeams,
+  clearSortedTeams,
 } from './logic/actions';
 import {
   addGameToExistingBracketGames,
@@ -73,6 +77,10 @@ import {
   setReplacementMessage,
 } from './helper';
 import { IOnAddGame } from './add-game-modal';
+
+export interface ISeedDictionary {
+  [key: string]: IBracketSeed[];
+}
 
 interface IMapStateToProps extends Partial<ITournamentData> {
   eventSummary?: IEventSummary[];
@@ -84,6 +92,8 @@ interface IMapStateToProps extends Partial<ITournamentData> {
   playoffSaved?: boolean;
   bracketGames: IBracketGame[] | null;
   historyLength: number;
+  sortedTeams: IPlayoffSortedTeams | null;
+  advancingInProgress?: boolean;
 }
 
 interface IMapDispatchToProps {
@@ -99,11 +109,15 @@ interface IMapDispatchToProps {
   clearBracketGames: () => void;
   fetchBracketGames: (bracketGames: IBracketGame[]) => void;
   onBracketsUndo: () => void;
+  advanceTeamsToBrackets: () => void;
+  clearSortedTeams: () => void;
 }
 
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
   match: any;
   history: History;
+  isFullScreen: boolean;
+  onToggleFullScreen: () => void;
 }
 
 interface IState {
@@ -114,7 +128,7 @@ interface IState {
   fields?: IField[];
   facilities?: IScheduleFacility[];
   bracketGames?: IBracketGame[];
-  bracketSeeds?: IBracketSeed[];
+  bracketSeeds?: ISeedDictionary;
   playoffTimeSlots?: ITimeSlot[];
   tableGames?: IGame[];
   cancelConfirmationOpen: boolean;
@@ -142,6 +156,7 @@ class Playoffs extends Component<IProps> {
 
     this.props.clearBracketGames();
     this.props.clearSchedulesTable();
+    this.props.clearSortedTeams();
     this.props.fetchEventSummary(eventId);
     this.props.fetchSchedulesDetails(scheduleId);
 
@@ -157,7 +172,7 @@ class Playoffs extends Component<IProps> {
       match,
       historyLength,
     } = this.props;
-    const { teams } = this.state;
+    const { teams, bracketSeeds } = this.state;
     const { bracketId } = match.params;
 
     if (!schedulesTeamCards && schedulesDetails && teams) {
@@ -183,6 +198,16 @@ class Playoffs extends Component<IProps> {
 
     if (!bracketId && !this.state.tableGames) {
       this.calculateBracketGames();
+    }
+
+    // if (prevProps.sortedTeams !== this.props.sortedTeams || !bracketSeeds) {
+    //   this.calculateBracketSeeds();
+    // }
+    if (
+      (!prevProps.sortedTeams && this.props.sortedTeams) ||
+      (!bracketSeeds && this.props.bracketGames)
+    ) {
+      this.calculateBracketSeeds();
     }
 
     if (this.props.playoffSaved && !prevProps.playoffSaved) {
@@ -238,26 +263,16 @@ class Playoffs extends Component<IProps> {
   };
 
   calculatePlayoffTimeSlots = () => {
-    const { schedulesDetails, divisions, event } = this.props;
-    const { timeSlots, fields } = this.state;
+    const { schedulesDetails, event } = this.props;
+    const { timeSlots } = this.state;
 
     const day = event?.event_enddate;
 
-    if (
-      !schedulesDetails ||
-      !fields ||
-      !timeSlots ||
-      !divisions ||
-      !event ||
-      !day
-    )
-      return;
+    if (!schedulesDetails || !timeSlots || !event || !day) return;
 
     const playoffTimeSlots = adjustPlayoffTimeOnLoad(
       schedulesDetails,
-      fields,
       timeSlots,
-      divisions,
       event,
       day
     );
@@ -269,7 +284,13 @@ class Playoffs extends Component<IProps> {
 
   /* CALCULATE BRACKET GAMES */
   calculateBracketGames = () => {
-    const { event, divisions, schedulesTeamCards, fields } = this.props;
+    const {
+      event,
+      divisions,
+      schedulesTeamCards,
+      fields,
+      bracket,
+    } = this.props;
     const { games, playoffTimeSlots } = this.state;
     const gameDate = moment(event?.event_enddate).toISOString();
 
@@ -290,23 +311,29 @@ class Playoffs extends Component<IProps> {
       playoffTimeSlots
     );
 
-    const facilityData = getFacilityData(schedulesTeamCards, games);
-    const mergedGames = populatePlayoffGames(
-      definedGames,
-      bracketGames,
-      divisions,
-      facilityData
-    );
+    if (!bracket?.isManualCreation) {
+      const facilityData = getFacilityData(schedulesTeamCards, games);
+      const mergedGames = populatePlayoffGames(
+        definedGames,
+        bracketGames,
+        divisions,
+        facilityData
+      );
 
-    const populatedBracketGames = populateBracketGamesWithData(
-      bracketGames,
-      mergedGames,
-      fields,
-      gameDate
-    );
+      const populatedBracketGames = populateBracketGamesWithData(
+        bracketGames,
+        mergedGames,
+        fields,
+        gameDate
+      );
 
-    this.mapBracketGamesIntoTableGames(mergedGames);
-    this.props.fetchBracketGames(populatedBracketGames);
+      this.props.fetchBracketGames(populatedBracketGames);
+      this.mapBracketGamesIntoTableGames(mergedGames);
+      return;
+    }
+
+    this.props.fetchBracketGames(bracketGames);
+    this.mapBracketGamesIntoTableGames(definedGames);
   };
 
   /* PUT BRACKET GAMES INTO GAMES */
@@ -339,7 +366,6 @@ class Playoffs extends Component<IProps> {
   mapBracketGamesIntoTableGames = (mergedGames: IGame[]) => {
     const { schedulesTeamCards, event } = this.props;
     const gameDate = moment(event?.event_enddate).toISOString();
-    const bracketTeamsNum = event?.num_teams_bracket || 0;
 
     if (!schedulesTeamCards) return;
 
@@ -349,12 +375,32 @@ class Playoffs extends Component<IProps> {
       gameDate
     );
 
-    const bracketSeeds = createSeeds(bracketTeamsNum);
-    this.setState({ tableGames, bracketSeeds });
+    this.setState({ tableGames });
   };
 
-  updateMergedGames = (gameId: string, slotId: number) => {
-    const { bracketGames, fields } = this.props;
+  calculateBracketSeeds = () => {
+    const { bracketGames, divisions, sortedTeams, teams } = this.props;
+
+    const bracketSeeds = createSeedsFromNum(
+      bracketGames!,
+      divisions!,
+      teams,
+      sortedTeams
+    );
+
+    if (bracketGames && sortedTeams) {
+      const populatedBracketGames = advanceBracketGamesWithTeams(
+        bracketGames,
+        bracketSeeds
+      );
+      this.props.fetchBracketGames(populatedBracketGames);
+    }
+
+    this.setState({ bracketSeeds });
+  };
+
+  updateMergedGames = (gameId: string, slotId: number, originId?: number) => {
+    const { bracketGames, fields, schedulesTeamCards } = this.props;
     const { tableGames } = this.state;
 
     if (!bracketGames || !tableGames || !fields)
@@ -365,7 +411,9 @@ class Playoffs extends Component<IProps> {
       slotId,
       bracketGames,
       tableGames,
-      fields
+      fields,
+      originId,
+      schedulesTeamCards
     );
 
     const warningResult = setReplacementMessage(
@@ -497,12 +545,19 @@ class Playoffs extends Component<IProps> {
       onBracketsUndo,
       historyLength,
       bracketGames,
+      advanceTeamsToBrackets,
+      advancingInProgress,
+      isFullScreen,
+      onToggleFullScreen,
     } = this.props;
 
     const saveButtonCondition = bracket && bracketGames;
 
     return (
-      <div className={styles.container}>
+      <div
+        className={`${styles.container} ${isFullScreen &&
+          styles.containerFullScreen}`}
+      >
         <DndProvider backend={HTML5Backend}>
           <div className={styles.paperWrapper}>
             <Paper>
@@ -511,12 +566,14 @@ class Playoffs extends Component<IProps> {
                   <span>{bracket?.name}</span>
                 </div>
                 <div>
-                  <Button
-                    label="Close"
-                    variant="text"
-                    color="secondary"
-                    onClick={this.onGoBack}
-                  />
+                  {!isFullScreen && (
+                    <Button
+                      label="Close"
+                      variant="text"
+                      color="secondary"
+                      onClick={this.onGoBack}
+                    />
+                  )}
                   <Button
                     label="Save"
                     variant="contained"
@@ -561,9 +618,11 @@ class Playoffs extends Component<IProps> {
                 onTeamCardsUpdate={() => {}}
                 onTeamCardUpdate={() => {}}
                 onUndo={() => {}}
+                isFullScreen={isFullScreen}
                 updateGame={this.updateMergedGames}
                 setHighlightedGame={this.setHighlightedGame}
                 highlightedGameId={this.state.highlightedGameId}
+                onToggleFullScreen={onToggleFullScreen}
               />
             ) : (
               <BracketManager
@@ -571,9 +630,11 @@ class Playoffs extends Component<IProps> {
                 divisions={divisions!}
                 seeds={bracketSeeds}
                 bracketGames={bracketGames!}
+                advancingInProgress={advancingInProgress}
                 addGame={this.addGame}
                 removeGame={this.removeGame}
                 onUndoClick={onBracketsUndo}
+                advanceTeamsToBrackets={advanceTeamsToBrackets}
               />
             )}
           </section>
@@ -621,6 +682,8 @@ const mapStateToProps = ({
   playoffSaved: playoffs?.playoffSaved,
   bracketGames: playoffs?.bracketGames,
   historyLength: playoffs?.bracketGamesHistory?.length,
+  sortedTeams: playoffs?.sortedTeams,
+  advancingInProgress: playoffs?.advancingInProgress,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
@@ -638,6 +701,8 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       clearBracketGames,
       fetchBracketGames,
       onBracketsUndo: onUndoBrackets,
+      advanceTeamsToBrackets,
+      clearSortedTeams,
     },
     dispatch
   );

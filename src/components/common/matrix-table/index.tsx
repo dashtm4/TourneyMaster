@@ -1,10 +1,10 @@
 import React from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import ITimeSlot from 'common/models/schedule/timeSlots';
+import { ZoomControls } from 'components/common';
 import { selectProperGamesPerTimeSlot, IGame } from './helper';
 import RenderFieldHeader from './field-header';
 import RenderTimeSlot from './time-slot';
-import NavControls from './nav-controls';
 import { IField } from 'common/models/schedule/fields';
 import styles from './styles.module.scss';
 import './styles.scss';
@@ -12,7 +12,7 @@ import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IDropParams } from './dnd/drop';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { TableScheduleTypes } from 'common/enums';
-import { BindingAction } from 'common/models';
+import { BindingAction, IPinchProps } from 'common/models';
 
 const TRANSFORM_WRAPPER_OPTIONS = {
   minScale: 0.1,
@@ -35,11 +35,7 @@ interface IProps {
   isFullScreen?: boolean;
   onToggleFullScreen?: BindingAction;
   highlightedGameId?: number;
-}
-
-interface IPinchProps {
-  zoomIn: BindingAction;
-  zoomOut: BindingAction;
+  onGameUpdate: (game: IGame) => void;
 }
 
 const SchedulesMatrix = (props: IProps) => {
@@ -59,6 +55,7 @@ const SchedulesMatrix = (props: IProps) => {
     isFullScreen,
     onToggleFullScreen,
     highlightedGameId,
+    onGameUpdate,
   } = props;
 
   const takeFacilityByFieldId = (facilityId: string) =>
@@ -76,7 +73,7 @@ const SchedulesMatrix = (props: IProps) => {
         >
           {({ zoomIn, zoomOut }: IPinchProps) => (
             <>
-              <NavControls
+              <ZoomControls
                 zoomIn={zoomIn}
                 zoomOut={zoomOut}
                 isFullScreen={isFullScreen}
@@ -116,6 +113,7 @@ const SchedulesMatrix = (props: IProps) => {
                         onTeamCardsUpdate={onTeamCardsUpdate}
                         isDndMode={disableZooming}
                         highlightedGamedId={highlightedGameId}
+                        onGameUpdate={onGameUpdate}
                       />
                     ))}
                   </tbody>

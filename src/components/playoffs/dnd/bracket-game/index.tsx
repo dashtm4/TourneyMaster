@@ -28,7 +28,13 @@ const BracketGameCard = (props: IProps) => {
   } = game;
 
   const [{ isDragging }, drag] = useDrag({
-    item: { id, divisionId, playoffIndex: index, type },
+    item: {
+      id,
+      divisionId,
+      playoffIndex: index,
+      type,
+      originGameId: !game.fieldId ? undefined : -1,
+    },
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),

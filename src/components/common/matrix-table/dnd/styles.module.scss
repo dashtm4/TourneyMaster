@@ -141,6 +141,7 @@
 
 .isLocked {
   cursor: not-allowed;
+  opacity: 0.7 !important;
   :active {
     cursor: not-allowed;
   }
@@ -155,6 +156,13 @@
   font-size: 12px;
   border-radius: 2px;
 
+  .seedName {
+    max-width: 120px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
   &:hover {
     cursor: grab;
   }
@@ -168,6 +176,36 @@
     font-weight: 600;
   }
 
+  .cardOptionsWrapper {
+    border-left: 1px solid #f4f4f4;
+    width: 34px;
+    margin-right: 3px;
+    margin-left: auto;
+
+    .scoresInputWrapper {
+      margin: 0;
+      padding: 0;
+
+      input {
+        width: 32px;
+        padding-left: 5px;
+        color: inherit;
+        font-size: 12px;
+        font-style: italic;
+        line-height: 17px;
+        background-color: transparent;
+        border: 0;
+        appearance: none;
+      }
+
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+  }
+
   &.seedContainerTop {
     border-radius: 2px 2px 0 0;
     &::before {
@@ -179,7 +217,8 @@
       margin-right: 10px;
       margin-left: -3px;
       border-radius: 2px 2px 0 0;
-      background-color: #ffffff47;
+      background-color: #00000047;
+      // background-color: #ffffff47;
       // content: '';
       // flex-shrink: 0;
       // height: 16px;
@@ -202,7 +241,8 @@
       margin-right: 10px;
       margin-left: -3px;
       border-radius: 0 0 2px 2px;
-      background-color: #ffffff47;
+      background-color: #00000047;
+      // background-color: #ffffff47;
       // content: '';
       // flex-shrink: 0;
       // height: 16px;

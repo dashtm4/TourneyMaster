@@ -28,6 +28,8 @@ import {
 import styles from './styles.module.scss';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import { IInputEvent } from 'common/types';
+import { getIncrementSelectOptions } from '../../helpers';
 
 const STYLES_FACILITIES_DESCRIPTION_CARD_MESSAGE = {
   marginTop: '10px',
@@ -73,7 +75,7 @@ interface Props {
   fields: IField[];
   facilitiyNumber: number;
   loadFields: (facilityId: string) => void;
-  addEmptyField: (facilityId: string, fieldsLength: number) => void;
+  addEmptyFields: (facility: IFacility, incrementCount: number) => void;
   updateField: BindingCbWithOne<IField>;
   updateFacilities: BindingCbWithOne<IFacility>;
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
@@ -129,6 +131,18 @@ class FacilityDetails extends React.Component<Props, State> {
     updateField({ ...field, [name]: type === 'checkbox' ? +checked : value });
   };
 
+  onChangeFieldsCount = ({ target }: IInputEvent) => {
+    const { fields, facility } = this.props;
+    const inputValue = Number(target.value);
+
+    if (inputValue > fields.length) {
+      const incrementValue = inputValue - fields.length;
+      this.onChangeFacility(FormFields.NUM_FIELDS, inputValue);
+
+      this.props.addEmptyFields(facility, incrementValue);
+    }
+  };
+
   onEditClick = () => this.setState(({ isEdit }) => ({ isEdit: !isEdit }));
 
   onMapFileUpload = (files: File[]) => {
@@ -160,13 +174,7 @@ class FacilityDetails extends React.Component<Props, State> {
   };
 
   render() {
-    const {
-      facility,
-      fields,
-      facilitiyNumber,
-      loadFields,
-      addEmptyField,
-    } = this.props;
+    const { facility, fields, facilitiyNumber, loadFields } = this.props;
     const { isEdit, isRestRoomDetails, isParkingDetails } = this.state;
 
     if (
@@ -183,6 +191,8 @@ class FacilityDetails extends React.Component<Props, State> {
       facility.num_fields
     )}) of this facility will be deleted too.
       Please, enter the name of the facility to continue.`;
+
+    const fieldsSelectOptions = getIncrementSelectOptions(fields.length);
 
     return (
       <SectionDropdown
@@ -212,7 +222,7 @@ class FacilityDetails extends React.Component<Props, State> {
                   }
                   value={facility.facilities_description || ''}
                   disabled={!isEdit}
-                  placeholder={'Main Stadium'}
+                  placeholder={'Big Sports Complex'}
                   label="Facility Name"
                   width="100%"
                 />
@@ -265,23 +275,9 @@ class FacilityDetails extends React.Component<Props, State> {
                 className={`${styles.filedset} ${styles.filedsetFields}`}
               >
                 <Select
-                  onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-                    const inputValue = Number(evt.target.value);
-
-                    if (inputValue > fields.length) {
-                      this.onChangeFacility(FormFields.NUM_FIELDS, inputValue);
-
-                      addEmptyField(facility.facilities_id, fields.length);
-                    }
-                  }}
+                  onChange={this.onChangeFieldsCount}
                   value={`${fields.length || ''}`}
-                  options={Array.from(
-                    new Array(fields.length + 1),
-                    (_, idx) => ({
-                      label: `${idx + 1}`,
-                      value: `${idx + 1}`,
-                    })
-                  )}
+                  options={fieldsSelectOptions}
                   width="100%"
                   label="Number of Fields"
                   disabled={!isEdit}

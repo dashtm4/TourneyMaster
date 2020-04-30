@@ -12,6 +12,7 @@ import {
   SCHEDULES_PUBLISHED_CLEAR,
   ANOTHER_SCHEDULE_PUBLISHED,
   SCHEDULES_GAMES_ALREADY_EXIST,
+  SCHEDULES_DETAILS_CLEAR,
 } from './actionTypes';
 import { IEventSummary } from 'common/models/event-summary';
 import { ISchedule } from 'common/models';
@@ -105,6 +106,12 @@ const SchedulesReducer = (state = initialState, action: IScheduleAction) => {
       return {
         ...state,
         gamesAlreadyExist: action.payload,
+      };
+    case SCHEDULES_DETAILS_CLEAR:
+      return {
+        ...state,
+        schedule: undefined,
+        schedulesDetails: undefined,
       };
     default:
       return state;

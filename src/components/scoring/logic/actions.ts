@@ -25,13 +25,12 @@ import {
 import {
   ITeam,
   ISchedule,
-  ScheduleStatuses,
   ITeamWithResults,
   IFacility,
   IEventDetails,
 } from 'common/models';
 import { Toasts } from 'components/common';
-import { ITeamFields } from 'common/enums';
+import { ITeamFields, ScheduleStatuses } from 'common/enums';
 import { getScoringSettings } from 'helpers/scoring';
 
 const loadScoringData: ActionCreator<ThunkAction<
@@ -49,7 +48,7 @@ const loadScoringData: ActionCreator<ThunkAction<
     const divisions = await Api.get(`/divisions?event_id=${eventId}`);
     const schedules = await Api.get(`/schedules?event_id=${eventId}`);
     const publishedSchedule = schedules.find(
-      (it: ISchedule) => it.schedule_status === ScheduleStatuses.PUBLISHED
+      (it: ISchedule) => it.is_published_YN === ScheduleStatuses.Published
     );
     const teams = await Api.get(`/teams?event_id=${eventId}`);
     const schedulesGames = await Api.get(

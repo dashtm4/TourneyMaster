@@ -39,12 +39,14 @@ interface IProps {
   facilities?: IScheduleFacility[];
   eventSummary?: IEventSummary[];
   schedulesDetails?: ISchedulesDetails[];
+  isFullScreen: boolean;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
-  updateGame: (gameId: string, slotId: number) => void;
+  updateGame: (gameId: string, slotId: number, originId?: number) => void;
   setHighlightedGame?: (id: number) => void;
   highlightedGameId?: number;
+  onToggleFullScreen: () => void;
 }
 
 interface IState {
@@ -112,8 +114,9 @@ class ResourceMatrix extends Component<IProps> {
     this.setState({ [name]: data });
 
   onMoveCard = (dropParams: IDropParams) => {
+    const originId = dropParams.originGameId;
     // Send <IBracketGame.id, IGame.id>
-    this.props.updateGame(dropParams.teamId, dropParams.gameId!);
+    this.props.updateGame(dropParams.teamId, dropParams.gameId!, originId);
   };
 
   render() {
@@ -133,6 +136,8 @@ class ResourceMatrix extends Component<IProps> {
       highlightedGameId,
       bracketGames,
       setHighlightedGame,
+      onToggleFullScreen,
+      isFullScreen,
     } = this.props;
 
     const { divisionOptions, filteredGames, isDnd } = this.state;
@@ -210,9 +215,10 @@ class ResourceMatrix extends Component<IProps> {
               onTeamCardUpdate={onTeamCardUpdate}
               onTeamCardsUpdate={onTeamCardsUpdate}
               teamCards={teamCards}
-              isFullScreen={false}
-              onToggleFullScreen={() => {}}
+              isFullScreen={isFullScreen}
+              onToggleFullScreen={onToggleFullScreen}
               highlightedGameId={highlightedGameId}
+              onGameUpdate={() => {}}
             />
           ) : (
             <Loader styles={{ height: '100%' }} />

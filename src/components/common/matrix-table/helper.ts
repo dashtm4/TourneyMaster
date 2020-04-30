@@ -26,6 +26,8 @@ export interface IGame {
   playoffIndex?: number;
   awaySeedId?: number;
   homeSeedId?: number;
+  awayTeamId?: string;
+  homeTeamId?: string;
   awayDisplayName?: string;
   homeDisplayName?: string;
   divisionName?: string;
@@ -35,6 +37,9 @@ export interface IGame {
   gameDate?: string;
   scheduleVersionId?: string;
   createDate?: string;
+  //
+  awayTeamScore?: number;
+  homeTeamScore?: number;
 }
 
 export interface IDefinedGames {

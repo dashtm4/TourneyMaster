@@ -22,6 +22,8 @@ export const SCHEDULES_PUBLISHED_CLEAR = 'SCHEDULES_PUBLISHED_CLEAR';
 export const ANOTHER_SCHEDULE_PUBLISHED = 'ANOTHER_SCHEDULE_PUBLISHED';
 export const SCHEDULES_GAMES_ALREADY_EXIST = 'SCHEDULES_GAMES_ALREADY_EXIST';
 
+export const SCHEDULES_DETAILS_CLEAR = 'SCHEDULES:SCHEDULES_DETAILS_CLEAR';
+
 interface IFetchFieldsSuccess {
   type: 'FETCH_FIELDS_SUCCESS';
   payload: IField[];
@@ -87,6 +89,10 @@ interface SchedulesGamesAlreadyExist {
   payload: boolean;
 }
 
+interface SchedulesDetailsClear {
+  type: 'SCHEDULES:SCHEDULES_DETAILS_CLEAR';
+}
+
 export type FieldsAction = IFetchFieldsSuccess | IFetchFieldsFailure;
 
 export type IScheduleAction =
@@ -101,4 +107,5 @@ export type IScheduleAction =
   | SchedulesPublishedFailure
   | SchedulesPublishedClear
   | AnotherSchedulePublished
-  | SchedulesGamesAlreadyExist;
+  | SchedulesGamesAlreadyExist
+  | SchedulesDetailsClear;

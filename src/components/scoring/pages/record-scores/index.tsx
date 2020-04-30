@@ -18,7 +18,14 @@ import {
   ISchedulesGame,
   BindingCbWithOne,
   BindingAction,
+  IFetchedBracket,
 } from 'common/models';
+import {
+  retrieveBracketsGames,
+  fetchBracketGames,
+  savePlayoff,
+  retrieveBrackets,
+} from 'components/playoffs/logic/actions';
 import { Routes, TableScheduleTypes } from 'common/enums';
 import styles from './styles.module.scss';
 import {
@@ -59,6 +66,8 @@ import { IField as IScheduleField } from 'common/models/schedule/fields';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { mapGamesWithSchedulesGamesId } from 'components/scoring/helpers';
 import api from 'api/api';
+import { adjustPlayoffTimeOnLoadScoring } from 'components/schedules/definePlayoffs';
+import { IBracketGame } from 'components/playoffs/bracketGames';
 
 interface MatchParams {
   eventId?: string;
@@ -78,12 +87,20 @@ interface Props {
   schedulesGames: ISchedulesGame[];
   schedulesTeamCards?: ITeamCard[];
   isFullScreen: boolean;
+  bracketGames: IBracketGame[] | null;
   loadScoresData: (eventId: string) => void;
   fillSchedulesTable: BindingCbWithOne<ITeamCard[]>;
   updateSchedulesTable: BindingCbWithOne<ITeamCard>;
   saveGames: BindingCbWithOne<ISchedulesGame[]>;
   onToggleFullScreen: BindingAction;
   clearSchedulesTable: () => void;
+  retrieveBracketsGames: (bracketId: string) => void;
+  fetchBracketGames: (
+    bracketGames: IBracketGame[],
+    skipHistory?: boolean
+  ) => void;
+  savePlayoff: (bracketGames: IBracketGame[]) => void;
+  retrieveBrackets: (bracketId: string) => void;
 }
 
 interface State {
@@ -97,6 +114,8 @@ interface State {
   isEnterScores: boolean;
   neccessaryDataCalculated: boolean;
   changesAreMade: boolean;
+  playoffTimeSlots?: ITimeSlot[];
+  bracketId?: string;
 }
 
 class RecordScores extends React.Component<
@@ -114,19 +133,38 @@ class RecordScores extends React.Component<
     };
   }
 
-  componentDidMount() {
-    const { loadScoresData } = this.props;
+  async componentDidMount() {
+    const {
+      loadScoresData,
+      retrieveBrackets,
+      retrieveBracketsGames,
+    } = this.props;
     const eventId = this.props.match.params.eventId;
     this.props.clearSchedulesTable();
+    const brackets: (
+      | IFetchedBracket
+      | undefined
+    )[] = await api.get('/brackets_details', { event_id: eventId });
+    const publishedBracketId = brackets.find(item => item?.is_published_YN)
+      ?.bracket_id;
 
     if (eventId) {
       loadScoresData(eventId);
+
+      if (publishedBracketId) {
+        retrieveBrackets(publishedBracketId);
+        retrieveBracketsGames(publishedBracketId);
+      }
     }
+
+    this.setState({
+      bracketId: publishedBracketId,
+    });
   }
 
   componentDidUpdate() {
-    const { schedule, schedulesGames, schedulesTeamCards } = this.props;
-    const { teams, games, neccessaryDataCalculated } = this.state;
+    const { schedule, schedulesGames, schedulesTeamCards, event } = this.props;
+    const { teams, games, neccessaryDataCalculated, timeSlots } = this.state;
 
     if (!neccessaryDataCalculated && schedule) {
       this.calculateNeccessaryData();
@@ -134,15 +172,26 @@ class RecordScores extends React.Component<
     }
 
     if (
+      event &&
       games?.length &&
       !schedulesTeamCards &&
       schedulesGames &&
       teams &&
       schedule
     ) {
+      const days = calculateTournamentDays(event);
+      const lastDay = days[days.length - 1];
+
       const mappedGames = mapGamesWithSchedulesGamesId(games, schedulesGames);
 
-      this.setState({ games: mappedGames });
+      const playoffTimeSlots = adjustPlayoffTimeOnLoadScoring(
+        schedulesGames,
+        timeSlots!,
+        event,
+        lastDay
+      );
+
+      this.setState({ games: mappedGames, playoffTimeSlots });
 
       const mappedTeams = mapTeamsFromShedulesGames(
         schedulesGames,
@@ -229,10 +278,15 @@ class RecordScores extends React.Component<
   };
 
   saveDraft = async () => {
+    const { bracketGames } = this.props;
     const schedulesGames = await this.retrieveSchedulesGames();
 
     if (!schedulesGames) {
       throw errorToast('Failed to save schedules data');
+    }
+
+    if (bracketGames?.length) {
+      this.props.savePlayoff(bracketGames);
     }
 
     this.props.saveGames(schedulesGames);
@@ -270,6 +324,39 @@ class RecordScores extends React.Component<
     }
   };
 
+  onBracketGameUpdate = (bracketGame: IBracketGame) => {
+    const { bracketGames } = this.props;
+
+    if (!bracketGames) return;
+
+    const whoIsWinner =
+      (bracketGame.homeTeamScore || 0) > (bracketGame.awayTeamScore || 0)
+        ? bracketGame.homeTeamId
+        : bracketGame.awayTeamId;
+
+    const newBracketGames = bracketGames.map(item => {
+      if (
+        item.divisionId === bracketGame.divisionId &&
+        (item.awayDependsUpon === bracketGame.index ||
+          item.homeDependsUpon === bracketGame.index)
+      ) {
+        const isAwayTeam = item.awayDependsUpon === bracketGame.index;
+        const positionedTeam = isAwayTeam ? 'awayTeamId' : 'homeTeamId';
+
+        return {
+          ...item,
+          [positionedTeam]: whoIsWinner,
+        };
+      }
+
+      if (item.id === bracketGame.id) return bracketGame;
+
+      return item;
+    });
+
+    this.props.fetchBracketGames(newBracketGames, true);
+  };
+
   render() {
     const {
       isLoading,
@@ -281,6 +368,7 @@ class RecordScores extends React.Component<
       schedulesTeamCards,
       isFullScreen,
       onToggleFullScreen,
+      bracketGames,
     } = this.props;
 
     const {
@@ -290,6 +378,7 @@ class RecordScores extends React.Component<
       facilities,
       isEnterScores,
       isExposurePopupOpen,
+      playoffTimeSlots,
     } = this.state;
 
     const loadCondition = !!(
@@ -334,6 +423,9 @@ class RecordScores extends React.Component<
               onTeamCardUpdate={this.onScheduleCardUpdate}
               onUndo={() => {}}
               onToggleFullScreen={onToggleFullScreen}
+              playoffTimeSlots={playoffTimeSlots}
+              bracketGames={bracketGames || undefined}
+              onBracketGameUpdate={this.onBracketGameUpdate}
             />
           ) : (
             <Loader />
@@ -351,7 +443,7 @@ class RecordScores extends React.Component<
 }
 
 export default connect(
-  ({ recordScores, schedulesTable }: IAppState) => ({
+  ({ recordScores, schedulesTable, playoffs }: IAppState) => ({
     isLoading: recordScores.isLoading,
     isLoaded: recordScores.isLoaded,
     event: recordScores.event,
@@ -364,6 +456,7 @@ export default connect(
     eventSummary: recordScores.eventSummary,
     schedulesTeamCards: schedulesTable?.current,
     schedulesGames: recordScores.schedulesGames,
+    bracketGames: playoffs?.bracketGames,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
@@ -373,6 +466,10 @@ export default connect(
         updateSchedulesTable,
         saveGames,
         clearSchedulesTable,
+        retrieveBracketsGames,
+        fetchBracketGames,
+        savePlayoff,
+        retrieveBrackets,
       },
       dispatch
     )

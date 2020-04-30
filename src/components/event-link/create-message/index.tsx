@@ -23,6 +23,8 @@ import Filter from './filter';
 import { IScheduleFilter } from './filter';
 import { applyFilters, mapFilterValues, mapTeamsByFilter } from '../helpers';
 import { IInputEvent } from 'common/types/events';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 export interface IMessageToSend {
   type: string;
@@ -152,22 +154,32 @@ const CreateMessage = ({
         <span className={styles.title}>
           {data.type === 'Text' ? 'Number:' : 'Email:'}{' '}
         </span>
-        <Input
-          width="250px"
-          placeholder={
-            data.type === 'Text' ? '+11234567890' : 'example@example.com'
-          }
-          onChange={onRecipientChange}
-          value={data.recipients[0] || ''}
-        />
-        <span className={styles.additionalInfo}>
-          {data.type === 'Text' &&
-            'Format: [+][country code][subscriber number including area code]'}
-        </span>
+        {data.type === 'Text' ? (
+          <PhoneInput
+            country={'us'}
+            value={data.recipients[0] || ''}
+            onChange={(value: string) =>
+              setMessage({ ...data, recipients: [value] })
+            }
+            containerStyle={{ marginTop: '7px' }}
+            inputStyle={{
+              height: '40px',
+              fontSize: '18px',
+              color: '#6a6a6a',
+              borderRadius: '4px',
+            }}
+          />
+        ) : (
+          <Input
+            width="250px"
+            placeholder={'example@example.com'}
+            onChange={onRecipientChange}
+            value={data.recipients[0] || ''}
+          />
+        )}
       </div>
     );
   };
-
   const renderRecipientFilter = () => {
     return (
       <div className={styles.recipientsFilterWrapper}>

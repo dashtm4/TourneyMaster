@@ -4,8 +4,8 @@ import * as Yup from 'yup';
 import { Toasts } from 'components/common';
 import { EMPTY_FACILITY, EMPTY_FIELD } from './constants';
 import {
-  ADD_EMPTY_FACILITY,
-  ADD_EMPTY_FIELD,
+  ADD_EMPTY_FACILITIES,
+  ADD_EMPTY_FIELDS,
   LOAD_FACILITIES_START,
   LOAD_FACILITIES_SUCCESS,
   LOAD_FACILITIES_FAILURE,
@@ -87,45 +87,50 @@ const loadFields: ActionCreator<ThunkAction<
   }
 };
 
-const addEmptyFacility = (eventId: string) => async (
+const addEmptyFacility = (incrementValue: number) => async (
   dispatch: Dispatch,
   getState: () => IAppState
 ) => {
   const { tournamentData } = getState().pageEvent;
+  const { event } = tournamentData;
 
-  const emptyFacility = {
+  const newFacilities = Array.from(new Array(incrementValue), () => ({
     ...EMPTY_FACILITY,
-    event_id: eventId,
+    event_id: event?.event_id,
     facilities_id: getVarcharEight(),
-    first_game_time: tournamentData.event?.first_game_time,
-    last_game_end: tournamentData.event?.last_game_end,
+    first_game_time: event?.first_game_time,
+    last_game_end: event?.last_game_end,
     isNew: true,
-  };
+  }));
 
   dispatch({
-    type: ADD_EMPTY_FACILITY,
+    type: ADD_EMPTY_FACILITIES,
     payload: {
-      facility: emptyFacility,
+      facilities: newFacilities,
     },
   });
 };
 
-const addEmptyField = (
-  facilityId: string,
-  fieldsLength: number
-): FacilitiesAction => ({
-  type: ADD_EMPTY_FIELD,
-  payload: {
-    field: {
+const addEmptyFields = (facility: IFacility, incrementValue: number) => {
+  let fieldNumber = Number(facility.num_fields);
+
+  const newFields = Array.from(new Array(incrementValue), () => {
+    return {
       ...EMPTY_FIELD,
       field_id: getVarcharEight(),
-      field_name: `Field ${fieldsLength + 1}`,
+      facilities_id: facility.facilities_id,
+      field_name: `Field ${++fieldNumber}`,
       isNew: true,
-      facilities_id: facilityId,
-      is_library_YN: 0,
+    };
+  });
+
+  return {
+    type: ADD_EMPTY_FIELDS,
+    payload: {
+      fields: newFields,
     },
-  },
-});
+  };
+};
 
 const updateFacilities = (updatedFacility: IFacility): FacilitiesAction => ({
   type: UPDATE_FACILITY,
@@ -141,14 +146,13 @@ const updateField = (updatedField: IField): FacilitiesAction => ({
   },
 });
 
-const saveFacilities: ActionCreator<ThunkAction<
-  void,
-  {},
-  null,
-  FacilitiesAction
->> = (facilities: IFacility[], fields: IField[]) => async (
-  dispatch: Dispatch
+const saveFacilities = (facilities: IFacility[], fields: IField[]) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
 ) => {
+  const { tournamentData } = getState().pageEvent;
+  const { event } = tournamentData;
+
   try {
     const mappedFacilityFields = Object.values(
       fields.reduce((acc, it: IField) => {
@@ -187,7 +191,7 @@ const saveFacilities: ActionCreator<ThunkAction<
       if (copiedFacility.isChange && !copiedFacility.isNew) {
         delete copiedFacility.isChange;
 
-        Api.put(
+        await Api.put(
           `/facilities?facilities_id=${copiedFacility.facilities_id}`,
           copiedFacility
         );
@@ -196,7 +200,7 @@ const saveFacilities: ActionCreator<ThunkAction<
         delete copiedFacility.isChange;
         delete copiedFacility.isNew;
 
-        Api.post('/facilities', copiedFacility);
+        await Api.post('/facilities', copiedFacility);
       }
     }
 
@@ -206,14 +210,14 @@ const saveFacilities: ActionCreator<ThunkAction<
       if (copiedField.isChange && !copiedField.isNew) {
         delete copiedField.isChange;
 
-        Api.put(`/fields?field_id=${copiedField.field_id}`, copiedField);
+        await Api.put(`/fields?field_id=${copiedField.field_id}`, copiedField);
       }
 
       if (copiedField.isNew) {
         delete copiedField.isChange;
         delete copiedField.isNew;
 
-        Api.post('/fields', copiedField);
+        await Api.post('/fields', copiedField);
       }
     }
 
@@ -226,6 +230,10 @@ const saveFacilities: ActionCreator<ThunkAction<
     });
 
     Toasts.successToast('Facilities saved successfully');
+
+    if (event && facilities.length) {
+      dispatch<any>(loadFacilities(event.event_id));
+    }
   } catch (err) {
     dispatch({
       type: SAVE_FACILITIES_FAILURE,
@@ -274,7 +282,7 @@ export {
   loadFacilities,
   loadFields,
   addEmptyFacility,
-  addEmptyField,
+  addEmptyFields,
   updateFacilities,
   updateField,
   saveFacilities,
