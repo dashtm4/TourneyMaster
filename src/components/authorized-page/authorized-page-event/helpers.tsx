@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select } from 'components/common';
-import { getSelectOptions } from 'helpers';
+import { getSelectOptions, CheckEventDrafts } from 'helpers';
 import {
   BindingCbWithOne,
   ISchedule,
@@ -37,7 +37,9 @@ const getSettingsComponents = (
   const { activeSchedule, activeBracket } = publishSettings;
 
   switch (publishType) {
-    case EventPublishTypes.DETAILS: {
+    case EventPublishTypes.DETAILS:
+    case EventPublishTypes.BRACKETS:
+    case EventPublishTypes.TOURNAMENT_PLAY: {
       return null;
     }
     case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY: {
@@ -78,7 +80,7 @@ const getSettingsComponents = (
             name={PublishSettingFields.ACTIVE_SCHEDULE}
             options={scheduleOptions}
             value={activeSchedule?.schedule_id || ''}
-            disabled={modifyModValue === EventModifyTypes.UNPUBLISH}
+            disabled={!CheckEventDrafts.checkDraftSchedule(schedules)}
             label="Schedules:"
           />
           <Select
@@ -86,7 +88,6 @@ const getSettingsComponents = (
             name={PublishSettingFields.ACTIVE_BRACKET}
             options={bracketsOptions}
             value={activeBracket?.bracket_id || ''}
-            disabled={modifyModValue === EventModifyTypes.UNPUBLISH}
             label="Brackets:"
           />
         </>
