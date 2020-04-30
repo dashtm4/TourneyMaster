@@ -1,5 +1,19 @@
 import moment from 'moment';
 import { DefaultSelectValues } from 'common/enums';
+import { ISelectOption } from 'common/models';
+
+const getSelectOptions = <T>(
+  entities: T[],
+  valueKey: string,
+  labelKey: string
+): ISelectOption[] => {
+  const selectOptions = entities.map(it => ({
+    value: it[valueKey],
+    label: it[labelKey],
+  }));
+
+  return selectOptions;
+};
 
 const getSelectDayOptions = (eventDays: string[]) => {
   const selectDayOptions = [
@@ -16,4 +30,4 @@ const getSelectDayOptions = (eventDays: string[]) => {
   return selectDayOptions;
 };
 
-export { getSelectDayOptions };
+export { getSelectDayOptions, getSelectOptions };

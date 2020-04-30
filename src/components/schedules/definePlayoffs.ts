@@ -10,6 +10,7 @@ import {
   IDivision,
   ISchedulesDetails,
   IField,
+  ISchedulesGame,
 } from 'common/models';
 
 export default (
@@ -64,8 +65,8 @@ export default (
   };
 };
 
-const calculateRoundsNumber = (_numTeamsBracket: number) => {
-  return 3;
+const calculateRoundsNumber = (numTeamsBracket: number) => {
+  return Math.ceil(Math.log2(numTeamsBracket));
 };
 
 const recursor = (
@@ -83,6 +84,7 @@ const recursor = (
   if (timeSlots.length === rounds) {
     return timeSlots.reduce((a, b) => a + b, 0);
   }
+
   return recursor(rounds, timeSlots, games, fields);
 };
 
@@ -91,13 +93,15 @@ export const predictPlayoffTimeSlots = (
   timeSlots: ITimeSlot[],
   divisions: IScheduleDivision[] | IDivision[],
   event: IEventDetails
-) => {
-  const { num_teams_bracket } = event;
-  const rounds = calculateRoundsNumber(num_teams_bracket!);
+): ITimeSlot[] | [] => {
+  const { num_teams_bracket, playoffs_exist } = event;
+  if (!num_teams_bracket || !playoffs_exist) return [];
+
+  const rounds = calculateRoundsNumber(num_teams_bracket);
   const timeSlotsLength = timeSlots.length;
   const divisionsLength = divisions.length;
   const fieldsLength = fields.length;
-  const divisionFirstRoundGames = 4;
+  const divisionFirstRoundGames = (num_teams_bracket || 0) / 2;
 
   const firstRoundGamesTotal = divisionsLength * divisionFirstRoundGames;
   const timeSlotsRequired = recursor(
@@ -127,35 +131,50 @@ export const populateDefinedGamesWithPlayoffState = (
   return populatedGames;
 };
 
+export const adjustPlayofftimeAfterLoad = (
+  sdStartTimes: any[],
+  timeSlots: ITimeSlot[]
+) => {
+  const lastStartTime = orderBy(sdStartTimes, [], 'desc')[0];
+  const lastGameTimeSlot =
+    timeSlots.find(item => item.time === lastStartTime)?.id || -1;
+  const start = lastGameTimeSlot + 1;
+  const end = timeSlots.length;
+  return timeSlots.slice(start, end);
+};
+
 export const adjustPlayoffTimeOnLoad = (
   schedulesDetails: ISchedulesDetails[],
-  fields: IScheduleField[],
   timeSlots: ITimeSlot[],
-  divisions: IScheduleDivision[] | IDivision[],
   event: IEventDetails,
   day: string
 ) => {
+  const { playoffs_exist } = event;
+  if (!playoffs_exist) return [];
+
   const sdStartTimes = schedulesDetails
     .filter(
       item => item.game_date === day && (item.home_team_id || item.away_team_id)
     )
     .map(item => item.game_time);
-  const lastStartTime = orderBy(sdStartTimes, [], 'desc')[0];
 
-  const lastGameTimeSlot = timeSlots.find(item => item.time === lastStartTime)
-    ?.id;
+  return adjustPlayofftimeAfterLoad(sdStartTimes, timeSlots);
+};
 
-  if (!lastGameTimeSlot) return;
+export const adjustPlayoffTimeOnLoadScoring = (
+  schedulesGames: ISchedulesGame[],
+  timeSlots: ITimeSlot[],
+  event: IEventDetails,
+  day: string
+) => {
+  const { playoffs_exist } = event;
+  if (!playoffs_exist) return [];
 
-  const playoffTimeSlots = predictPlayoffTimeSlots(
-    fields,
-    timeSlots,
-    divisions,
-    event
-  );
+  const sdStartTimes = schedulesGames
+    .filter(
+      item => item.game_date === day && (item.home_team_id || item.away_team_id)
+    )
+    .map(item => item.start_time);
 
-  const start = lastGameTimeSlot + 1;
-  const end = start + playoffTimeSlots.length;
-
-  return timeSlots.slice(start, end);
+  return adjustPlayofftimeAfterLoad(sdStartTimes, timeSlots);
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -12,8 +13,14 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     formControl: {
       margin: theme.spacing(1),
-      minWidth: 120,
       maxWidth: 300,
+    },
+    formControlRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      '& span': {
+        margin: '0 15px 0 0',
+      },
     },
     chips: {
       display: 'flex',
@@ -24,6 +31,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     noLabel: {
       marginTop: theme.spacing(3),
+    },
+    select: {
+      flexGrow: 1,
+      width: 150,
     },
   })
 );
@@ -45,14 +56,40 @@ interface Props {
   label?: string;
   value: string[];
   width?: string;
+  primaryValue?: string;
+  isFormControlRow?: boolean;
   onChange: (values: string[] | null) => void;
 }
 
-const SelectMultiple = ({ options, label, value, onChange }: Props) => {
+const SelectMultiple = ({
+  options,
+  label,
+  value,
+  width,
+  isFormControlRow,
+  primaryValue,
+  onChange,
+}: Props) => {
   const classes = useStyles();
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    onChange(event.target.value as string[]);
+  const handleChange = ({ target }: React.ChangeEvent<{ value: unknown }>) => {
+    const newValues = target.value as string[];
+
+    if (primaryValue) {
+      if (value.includes(primaryValue) && newValues.length > value.length) {
+        const valuesWithoutPrimary = newValues.filter(
+          it => it !== primaryValue
+        );
+
+        onChange(valuesWithoutPrimary);
+      } else if (newValues.includes(primaryValue) === false) {
+        onChange(newValues);
+      } else {
+        onChange([primaryValue]);
+      }
+    } else {
+      onChange(newValues);
+    }
   };
 
   const checkedLabel = options.reduce(
@@ -63,14 +100,20 @@ const SelectMultiple = ({ options, label, value, onChange }: Props) => {
 
   return (
     <div className={styles.container}>
-      <FormControl className={classes.formControl}>
+      <FormControl
+        className={`${classes.formControl} ${
+          isFormControlRow ? classes.formControlRow : ''
+        }`}
+      >
         <span className={styles.label}>{label}</span>
         <Select
-          multiple
+          className={classes.select}
+          style={{ width }}
           value={value}
           onChange={handleChange}
           renderValue={() => checkedLabel.join(', ')}
           MenuProps={MenuProps}
+          multiple
         >
           {options.map((option, idx) => (
             <MenuItem key={idx} value={option.value}>

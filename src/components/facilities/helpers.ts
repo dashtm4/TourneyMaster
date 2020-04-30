@@ -1,18 +1,38 @@
-import { IField } from 'common/models';
+import { IField, ISelectOption } from 'common/models';
 
-const sortFields = (fields: IField[]) => {
-  const isAllowSort = !fields.some(it => it.isNew || it.isChange);
+const DEFAULT_COUN_SELECT_OPTIONST = 10;
 
-  return isAllowSort
-    ? fields.sort((a, b) => {
-        return (
-          Number(b.is_premier_YN) - Number(a.is_premier_YN) ||
-          a.field_name.localeCompare(b.field_name, undefined, {
-            numeric: true,
-          })
-        );
-      })
-    : fields;
+const getIncrementSelectOptions = (
+  incrementCount: number
+): ISelectOption[] => {
+  const currentCount =
+    incrementCount >= DEFAULT_COUN_SELECT_OPTIONST
+      ? incrementCount + 1
+      : DEFAULT_COUN_SELECT_OPTIONST;
+
+  const FacilitiesSelectOptions = Array.from(
+    new Array(currentCount),
+    (_, idx) => ({
+      label: `${idx + 1}`,
+      value: `${idx + 1}`,
+    })
+  );
+
+  return FacilitiesSelectOptions;
 };
 
-export { sortFields };
+const getSortedFieldsByFacility = (fields: IField[]) => {
+  const sortedFields = fields.sort((a, b) => {
+    return (
+      a.facilities_id.localeCompare(b.facilities_id, undefined, {
+        numeric: true,
+      }) ||
+      Number(b.is_premier_YN) - Number(a.is_premier_YN) ||
+      a.field_name.localeCompare(b.field_name, undefined, { numeric: true })
+    );
+  });
+
+  return sortedFields;
+};
+
+export { getIncrementSelectOptions, getSortedFieldsByFacility };

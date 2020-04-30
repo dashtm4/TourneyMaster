@@ -24,6 +24,7 @@ import {
   publishedSuccess,
   createSchedule,
   updateSchedule,
+  schedulesDetailsClear,
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
@@ -80,7 +81,7 @@ import {
 } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
-import { TableScheduleTypes } from 'common/enums';
+import { TableScheduleTypes, ScheduleStatuses } from 'common/enums';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import SchedulesLoader, { LoaderTypeEnum } from './loader';
@@ -144,6 +145,7 @@ interface IMapDispatchToProps {
     schedule: ISchedule,
     schedulesDetails: ISchedulesDetails[]
   ) => void;
+  schedulesDetailsClear: () => void;
 }
 
 interface ComponentProps {
@@ -201,6 +203,7 @@ class Schedules extends Component<Props, State> {
     const facilitiesIds = facilities?.map(f => f.facilities_id);
     const { isManualScheduling } = scheduleData || {};
 
+    this.props.schedulesDetailsClear();
     this.props.clearSchedulesTable();
     this.getPublishedStatus();
     this.activateLoaders(scheduleId, !!isManualScheduling);
@@ -250,9 +253,7 @@ class Schedules extends Component<Props, State> {
       teams,
       neccessaryDataCalculated,
       teamCardsAlreadyUpdated,
-      fields,
       timeSlots,
-      divisions,
       tournamentDays,
     } = this.state;
 
@@ -285,12 +286,11 @@ class Schedules extends Component<Props, State> {
       const playoffTimeSlots =
         adjustPlayoffTimeOnLoad(
           schedulesDetails!,
-          fields!,
           timeSlots!,
-          divisions!,
           event!,
           lastDay
         ) || [];
+
       this.calculateDiagnostics();
       this.setState({ playoffTimeSlots, teamCardsAlreadyUpdated: true });
     }
@@ -358,7 +358,7 @@ class Schedules extends Component<Props, State> {
 
     const timeSlots = calculateTimeSlots(timeValues);
 
-    const mappedFields = mapFieldsData(fields);
+    const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);
 
     const { games } = defineGames(sortedFields, timeSlots!);
@@ -381,6 +381,7 @@ class Schedules extends Component<Props, State> {
 
   calculateTournamentDays = () => {
     const { event } = this.props;
+
     if (!event) return;
 
     const tournamentDays = calculateTournamentDays(event);
@@ -443,6 +444,11 @@ class Schedules extends Component<Props, State> {
       timeSlots,
       divisions!,
       event!
+    );
+
+    console.log(
+      'calculateSchedules - playoffTimeSlots:',
+      JSON.parse(JSON.stringify(playoffTimeSlots))
     );
 
     /* Truncate gameslots and timeslots for the last day by the number of playoff timeslots */
@@ -616,20 +622,20 @@ class Schedules extends Component<Props, State> {
 
     if (!schedule) return;
 
+    const schedulesDetails = await this.retrieveSchedulesDetails(
+      true,
+      scheduleId ? 'PUT' : 'POST'
+    );
+
     if (scheduleId) {
-      const schedulesDetailsPUT = await this.retrieveSchedulesDetails(
-        true,
-        'PUT'
-      );
-      this.props.updateSchedule(schedule, schedulesDetailsPUT);
-      return;
+      this.props.updateSchedule(schedule, schedulesDetails);
+    } else {
+      this.props.createSchedule(schedule, schedulesDetails);
     }
 
-    const schedulesDetailsPOST = await this.retrieveSchedulesDetails(
-      true,
-      'POST'
-    );
-    this.props.createSchedule(schedule, schedulesDetailsPOST);
+    if (this.state.cancelConfirmationOpen) {
+      this.onExit();
+    }
   };
 
   unpublish = async () => {
@@ -639,7 +645,7 @@ class Schedules extends Component<Props, State> {
 
     if (schedule) {
       const schedulesGamesChunk = chunk(schedulesGames, 50);
-      schedule.schedule_status = 'Draft';
+      schedule.is_published_YN = ScheduleStatuses.Draft;
       const response = await api.put('/schedules', schedule);
       await Promise.all(
         schedulesGamesChunk.map(async arr => await api.delete('/games', arr))
@@ -808,6 +814,7 @@ class Schedules extends Component<Props, State> {
             onUndo={onScheduleUndo}
             onToggleFullScreen={onToggleFullScreen}
             playoffTimeSlots={playoffTimeSlots}
+            onBracketGameUpdate={() => {}}
           />
         ) : (
           <div className={styles.loadingWrapper}>
@@ -874,6 +881,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       //
       createSchedule,
       updateSchedule,
+      schedulesDetailsClear,
     },
     dispatch
   );

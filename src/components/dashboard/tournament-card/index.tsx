@@ -14,6 +14,8 @@ interface ITournamentCardProps {
   event: IEventDetails;
   numOfTeams: number;
   numOfFields: number;
+  numOfLocations: number;
+  lastScheduleRelease?: string;
   isDetailLoading: boolean;
   history: History;
 }
@@ -24,6 +26,8 @@ const TournamentCard = ({
   isDetailLoading,
   numOfTeams,
   numOfFields,
+  numOfLocations,
+  lastScheduleRelease,
 }: ITournamentCardProps) => {
   const onTournamentManage = () => {
     history.push(`/event/event-details/${event.event_id}`);
@@ -31,6 +35,7 @@ const TournamentCard = ({
 
   const startDate = moment(event.event_startdate).format('MM.DD.YYYY');
   const endDate = moment(event.event_enddate).format('MM.DD.YYYY');
+
   return (
     <div className={styles.tournamentContainer}>
       <Paper>
@@ -74,7 +79,11 @@ const TournamentCard = ({
           </div>
           <div className={styles.tournamentContentItem}>
             <span className={styles.tournamentContentTitle}>Locations:</span>{' '}
-            {event.num_of_locations || '—'}
+            {!isDetailLoading ? (
+              numOfLocations || '—'
+            ) : (
+              <CircularProgress size={15} />
+            )}
           </div>
           <div className={styles.tournamentContentItem}>
             <span className={styles.tournamentContentTitle}>Status:</span>{' '}
@@ -102,7 +111,15 @@ const TournamentCard = ({
             <span className={styles.tournamentContentTitle}>
               Last Schedule Release:
             </span>{' '}
-            {'—'}
+            {!isDetailLoading ? (
+              lastScheduleRelease ? (
+                moment(lastScheduleRelease).format('MM.DD.YYYY, HH:mm')
+              ) : (
+                '—'
+              )
+            ) : (
+              <CircularProgress size={15} />
+            )}
           </div>
         </div>
       </Paper>

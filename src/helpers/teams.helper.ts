@@ -60,9 +60,15 @@ const countGoalDifferential = (
   teamOneScore: null | string | number,
   teamTwoScore: null | string | number
 ) => {
-  let scoreValue = prevValue === undefined ? 0 : prevValue;
+  let scoreValue = prevValue || 0;
 
   const differentialScore = Number(teamOneScore) - Number(teamTwoScore);
+
+  if (scoringSettings.maxGoalDifferential === null) {
+    scoreValue = scoreValue + differentialScore;
+
+    return scoreValue;
+  }
 
   let increment = differentialScore;
 

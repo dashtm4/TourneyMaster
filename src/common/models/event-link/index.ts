@@ -10,6 +10,7 @@ export interface IMessage {
   message_title: string;
   message_body: string;
   status: number;
+  email_from_name: string;
   in_library_YN: number;
   is_active_YN: number;
   created_by: string;

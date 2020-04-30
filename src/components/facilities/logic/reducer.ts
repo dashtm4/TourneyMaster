@@ -3,8 +3,8 @@ import {
   LOAD_FACILITIES_SUCCESS,
   LOAD_FIELDS_START,
   LOAD_FIELDS_SUCCESS,
-  ADD_EMPTY_FACILITY,
-  ADD_EMPTY_FIELD,
+  ADD_EMPTY_FACILITIES,
+  ADD_EMPTY_FIELDS,
   UPDATE_FACILITY,
   FacilitiesAction,
   UPDATE_FIELD,
@@ -18,6 +18,7 @@ import {
 } from 'components/authorized-page/authorized-page-event/logic/action-types';
 import { IFacility, IField } from 'common/models';
 import { EntryPoints } from 'common/enums';
+import { getSortedFieldsByFacility } from '../helpers';
 
 export interface IFacilitiesState {
   isLoading: boolean;
@@ -65,6 +66,11 @@ const facilitiesReducer = (
     case LOAD_FIELDS_SUCCESS: {
       const { facilityId, fields } = action.payload;
 
+      const sortedFields = getSortedFieldsByFacility([
+        ...state.fields,
+        ...fields,
+      ]);
+
       return {
         ...state,
         facilities: state.facilities.map(it =>
@@ -72,20 +78,23 @@ const facilitiesReducer = (
             ? { ...it, isFieldsLoading: false, isFieldsLoaded: true }
             : it
         ),
-        fields: [...state.fields, ...fields],
+        fields: sortedFields,
       };
     }
-    case ADD_EMPTY_FACILITY:
-      return {
-        ...state,
-        facilities: [...state.facilities, action.payload.facility],
-      };
-    case ADD_EMPTY_FIELD: {
-      const { field } = action.payload;
+    case ADD_EMPTY_FACILITIES: {
+      const { facilities } = action.payload;
 
       return {
         ...state,
-        fields: [...state.fields, field],
+        facilities: [...state.facilities, ...facilities],
+      };
+    }
+    case ADD_EMPTY_FIELDS: {
+      const { fields } = action.payload;
+
+      return {
+        ...state,
+        fields: [...state.fields, ...fields],
       };
     }
     case UPDATE_FACILITY: {

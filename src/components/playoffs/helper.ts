@@ -1,8 +1,16 @@
-import { orderBy } from 'lodash-es';
+import { orderBy, union, min, max, groupBy } from 'lodash-es';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IBracketGame } from './bracketGames';
 import { IOnAddGame } from './add-game-modal';
 import { getVarcharEight } from 'helpers';
+import { IDivision, IField } from 'common/models';
+import { ITeamCard } from 'common/models/schedule/teams';
+
+interface IBracketMoveWarning {
+  gameAlreadyAssigned: boolean;
+  gamePlayTimeInvalid: boolean;
+  facilitiesDiffer: boolean;
+}
 
 export const updateGameBracketInfo = (game: IGame, withGame?: IGame) => ({
   ...game,
@@ -100,7 +108,8 @@ export const addGameToExistingBracketGames = (
   return newBracketGames;
 };
 
-const getDependentGames = (
+/* Get games indices that depend upon the given BracketGame */
+export const getDependentGames = (
   dependentInds: number[],
   games: IBracketGame[]
 ): number[] => {
@@ -116,10 +125,34 @@ const getDependentGames = (
   const newGames = games.filter(item => !foundGamesInds.includes(item.index));
 
   if (!foundGamesInds?.length || !newGames?.length) {
-    return newDependentInds;
+    return union(newDependentInds);
   }
 
   return getDependentGames(newDependentInds, newGames);
+};
+
+/* Get games indices that the given BracketGame depends on */
+const getGameDependsUpon = (
+  dependentInds: number[],
+  games: IBracketGame[]
+): number[] => {
+  const myGamesDependsUpon = games
+    .filter(item => dependentInds.includes(item.index))
+    .map(item => [item.awayDependsUpon, item.homeDependsUpon])
+    .flat();
+
+  const newDependentInds: number[] = [
+    ...dependentInds,
+    ...myGamesDependsUpon,
+  ].filter(v => v) as number[];
+
+  const newGames = games.filter(item => !dependentInds.includes(item.index));
+
+  if (!myGamesDependsUpon.filter(v => v).length || !newGames.length) {
+    return union(newDependentInds);
+  }
+
+  return getGameDependsUpon(newDependentInds, newGames);
 };
 
 export const removeGameFromBracketGames = (
@@ -144,9 +177,7 @@ export const removeGameFromBracketGames = (
     )
     .map((item, index) => ({ ...item, index: index + 1 }));
 
-  const otherGames = games.filter(
-    item => !newFound.includes(item.index) && item.divisionId !== divisionId
-  );
+  const otherGames = games.filter(item => item.divisionId !== divisionId);
 
   const allGames = orderBy(
     [...otherGames, ...updatedDivisionGames],
@@ -155,4 +186,204 @@ export const removeGameFromBracketGames = (
 
   const resultGames: IBracketGame[] = [...allGames, ...removedGames];
   return resultGames;
+};
+
+export const updateGameSlot = (
+  game: IGame,
+  bracketGame?: IBracketGame,
+  divisions?: IDivision[]
+): IGame => {
+  const division = divisions?.find(
+    v => v.division_id === bracketGame?.divisionId
+  );
+
+  return {
+    ...game,
+    bracketGameId: bracketGame?.id,
+    awaySeedId: bracketGame?.awaySeedId,
+    homeSeedId: bracketGame?.homeSeedId,
+    awayTeamId: bracketGame?.awayTeamId,
+    homeTeamId: bracketGame?.homeTeamId,
+    awayDisplayName: bracketGame?.awayDisplayName,
+    homeDisplayName: bracketGame?.homeDisplayName,
+    awayDependsUpon: bracketGame?.awayDependsUpon,
+    homeDependsUpon: bracketGame?.homeDependsUpon,
+    divisionId: bracketGame?.divisionId,
+    divisionName: bracketGame?.divisionName,
+    divisionHex: division?.division_hex,
+    playoffRound: bracketGame?.round,
+    playoffIndex: bracketGame?.index,
+    awayTeamScore: bracketGame?.awayTeamScore,
+    homeTeamScore: bracketGame?.homeTeamScore,
+  };
+};
+
+enum BracketMoveWarnEnum {
+  gameAlreadyAssigned = 'This bracket game is already assigned. Please confirm your intentions.',
+  gamePlayTimeInvalid = 'This bracket game depends upon preceeding games being complete. They are not. Please place this game in a later game slot.',
+  facilitiesDiffer = 'This division is not playing at this facility on this day. Please confirm your intentions.',
+}
+
+export const setReplacementMessage = (
+  bracketGames: IBracketGame[],
+  warnings: IBracketMoveWarning
+): {
+  bracketGames?: IBracketGame[];
+  message?: string;
+} | null => {
+  switch (true) {
+    case warnings.gamePlayTimeInvalid:
+      return {
+        message: BracketMoveWarnEnum.gamePlayTimeInvalid,
+      };
+    case warnings.facilitiesDiffer:
+      return {
+        bracketGames,
+        message: BracketMoveWarnEnum.facilitiesDiffer,
+      };
+    case warnings.gameAlreadyAssigned:
+      return {
+        bracketGames,
+        message: BracketMoveWarnEnum.gameAlreadyAssigned,
+      };
+    default:
+      return null;
+  }
+};
+
+export const updateBracketGame = (
+  bracketGame: IBracketGame,
+  gameSlot?: IGame,
+  fieldName?: string
+) => ({
+  ...bracketGame,
+  fieldId: gameSlot?.fieldId,
+  fieldName: fieldName || 'Empty',
+  startTime: gameSlot?.startTime,
+  gameDate: gameSlot?.gameDate,
+});
+
+export const updateBracketGamesDndResult = (
+  gameId: string,
+  slotId: number,
+  bracketGames: IBracketGame[],
+  games: IGame[],
+  fields: IField[],
+  originId?: number,
+  teamCards?: ITeamCard[]
+) => {
+  const playoffsGameDate = games.map(v => v.gameDate).filter(v => v)[0];
+
+  const warnings: IBracketMoveWarning = {
+    gameAlreadyAssigned: false,
+    gamePlayTimeInvalid: false,
+    facilitiesDiffer: false,
+  };
+  /* 1. Find a bracket game that is being dragged */
+  const bracketGame = bracketGames.find(item => item.id === gameId);
+  /* 2. Find a game slot where the bracket game is gonna be placed */
+  const gameSlot = games.find(item => item.id === slotId);
+  /* 3. Check if the bracket game is not placed anywhere else */
+  /*  3.1. If so - return a warning popup */
+  /* 4. Populate the bracket data with the game slot data */
+  const fieldName = fields.find(item => item.field_id === gameSlot?.fieldId)
+    ?.field_name;
+
+  bracketGames = bracketGames.map(item =>
+    /* First - unassign existing bracket game */
+    /* Then - assign our bracket game to that place */
+    item.fieldId === gameSlot?.fieldId && item.startTime === gameSlot?.startTime
+      ? updateBracketGame(item)
+      : item.id === bracketGame?.id
+      ? updateBracketGame(item, gameSlot, fieldName)
+      : item
+  );
+
+  /* WARNINGS SETUP */
+  /* Check assignment for the given BracketGame */
+  const bracketGameToUpdate = bracketGames.find(
+    item => item.id === bracketGame?.id
+  );
+
+  warnings.gameAlreadyAssigned = Boolean(
+    originId === -1 &&
+      bracketGame?.fieldId &&
+      bracketGame?.startTime &&
+      bracketGameToUpdate?.fieldId &&
+      bracketGameToUpdate.startTime
+  );
+
+  /* Check play time for the given BracketGame */
+  const divisionGames = [...bracketGames].filter(
+    item => item.divisionId === bracketGame?.divisionId
+  );
+
+  const dependentInds = getDependentGames(
+    [bracketGame?.index || -1],
+    divisionGames
+  );
+
+  const gameDependsUpon = getGameDependsUpon(
+    [bracketGame?.index || -1],
+    divisionGames
+  );
+
+  const nextDependentStartTimes = divisionGames
+    .filter(item => item.index !== bracketGame?.index)
+    .filter(item => dependentInds.includes(item.index))
+    .map(item => item.startTime);
+
+  const previousDependentStartTimes = divisionGames
+    .filter(item => item.index !== bracketGame?.index)
+    .filter(item => gameDependsUpon.includes(item.index))
+    .map(item => item.startTime);
+
+  const minStartTimeAvailable = min(nextDependentStartTimes);
+  const maxStartTimeAvailable = max(previousDependentStartTimes);
+
+  const bracketNewTime = divisionGames.find(
+    item => item.index === bracketGame?.index
+  )?.startTime;
+
+  warnings.gamePlayTimeInvalid =
+    !!bracketNewTime &&
+    (!!(minStartTimeAvailable && bracketNewTime >= minStartTimeAvailable) ||
+      !!(maxStartTimeAvailable && bracketNewTime <= maxStartTimeAvailable));
+
+  /* Check for Facilities consistency for the given BracketGame */
+  const divisionGamesFacilitiesIds = games
+    .filter(item => divisionGames.some(dg => dg.id === item.bracketGameId))
+    .map(item => item.facilityId);
+
+  const divisionGameIds = teamCards
+    ?.filter(item => item.divisionId === bracketGame?.divisionId)
+    .map(item =>
+      item.games?.filter(v => v.date === playoffsGameDate)?.map(v => v.id)
+    )
+    .flat();
+
+  const tableGames = games
+    .filter(item => item.gameDate === playoffsGameDate)
+    .filter(item => divisionGameIds?.includes(item.id));
+
+  const facilitiesIds = Object.keys(groupBy(tableGames, 'facilityId')).map(
+    key => key
+  );
+
+  const bracketGamesFacilitiesUnmatch =
+    gameSlot?.facilityId &&
+    !divisionGamesFacilitiesIds.includes(gameSlot?.facilityId);
+
+  const regularGamesFacilitiesUnmatch =
+    divisionGamesFacilitiesIds.length === 0
+      ? gameSlot?.facilityId &&
+        facilitiesIds.length > 0 &&
+        !facilitiesIds.includes(gameSlot?.facilityId)
+      : bracketGamesFacilitiesUnmatch;
+
+  warnings.facilitiesDiffer = Boolean(
+    bracketGamesFacilitiesUnmatch && regularGamesFacilitiesUnmatch
+  );
+
+  return { bracketGames, warnings };
 };

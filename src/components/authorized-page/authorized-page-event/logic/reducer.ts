@@ -3,7 +3,7 @@ import {
   LOAD_AUTH_PAGE_DATA_START,
   LOAD_AUTH_PAGE_DATA_SUCCESS,
   CLEAR_AUTH_PAGE_DATA,
-  PUBLISH_TOURNAMENT_SUCCESS,
+  PUBLISH_EVENT_SUCCESS,
   AuthPageAction,
 } from './action-types';
 import {
@@ -34,6 +34,7 @@ import {
 } from 'components/schedules/logic/actionTypes';
 import {
   SCHEDULE_FETCH_SUCCESS,
+  FETCH_BRACKETS_SUCCESS,
   ScheduleActionType,
 } from 'components/scheduling/logic/actionTypes';
 import { sortTitleByField } from 'helpers';
@@ -44,6 +45,7 @@ import {
   SortByFilesTypes,
 } from 'common/enums';
 import { CheckIsCompleted } from '../../helpers';
+import { mapSchedulingScheduleData } from 'components/schedules/mapScheduleData';
 
 export interface IPageEventState {
   isLoading: boolean;
@@ -64,6 +66,7 @@ const initialState = {
     schedules: [],
     teams: [],
     fields: [],
+    brackets: [],
   },
 };
 
@@ -224,7 +227,7 @@ const pageEventReducer = (
       };
     }
     case DIVISIONS_TEAMS_FETCH_SUCCESS: {
-      const { divisions } = action.payload;
+      const { divisions, teams } = action.payload;
 
       return {
         ...state,
@@ -242,6 +245,7 @@ const pageEventReducer = (
               }
             : item
         ),
+        tournamentData: { ...state.tournamentData, divisions, teams },
       };
     }
     case LOAD_TEAMS_DATA_SUCCESS:
@@ -263,6 +267,10 @@ const pageEventReducer = (
     case SCHEDULE_FETCH_SUCCESS: {
       const { schedules } = action.payload;
 
+      const mappedSchedles = schedules.map(schedule =>
+        mapSchedulingScheduleData(schedule)
+      );
+
       return {
         ...state,
         menuList: state.menuList.map(item =>
@@ -276,9 +284,24 @@ const pageEventReducer = (
               }
             : item
         ),
+        tournamentData: {
+          ...state.tournamentData,
+          schedules: mappedSchedles,
+        },
       };
     }
-    case PUBLISH_TOURNAMENT_SUCCESS: {
+    case FETCH_BRACKETS_SUCCESS: {
+      const brackets = action.payload;
+
+      return {
+        ...state,
+        tournamentData: {
+          ...state.tournamentData,
+          brackets,
+        },
+      };
+    }
+    case PUBLISH_EVENT_SUCCESS: {
       const { event } = action.payload;
 
       return {

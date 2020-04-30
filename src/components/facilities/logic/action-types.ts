@@ -11,9 +11,9 @@ export const LOAD_FIELDS_START = 'FACILITIES:LOAD_FIELDS_START';
 export const LOAD_FIELDS_SUCCESS = 'FACILITIES:LOAD_FIELDS_SUCCESS';
 export const LOAD_FIELDS_FAILURE = 'FACILITIES:LOAD_FIELDS_FAILURE';
 
-export const ADD_EMPTY_FACILITY = 'ADD_EMPTY_FACILITY';
+export const ADD_EMPTY_FACILITIES = 'ADD_EMPTY_FACILITIES';
 
-export const ADD_EMPTY_FIELD = 'ADD_EMPTY_FIELD';
+export const ADD_EMPTY_FIELDS = 'ADD_EMPTY_FIELDS';
 
 export const UPDATE_FACILITY = 'UPDATE_FACILITY';
 
@@ -53,17 +53,17 @@ export interface loadFieldsSuccess {
   };
 }
 
-export interface addEmptyFacility {
-  type: 'ADD_EMPTY_FACILITY';
+export interface addEmptyFacilities {
+  type: 'ADD_EMPTY_FACILITIES';
   payload: {
-    facility: IFacility;
+    facilities: IFacility[];
   };
 }
 
-export interface addEmptyField {
-  type: 'ADD_EMPTY_FIELD';
+export interface addEmptyFields {
+  type: 'ADD_EMPTY_FIELDS';
   payload: {
-    field: IField;
+    fields: IField[];
   };
 }
 
@@ -108,8 +108,8 @@ export type FacilitiesAction =
   | loadFacilitiesSuccess
   | loadFieldsStart
   | loadFieldsSuccess
-  | addEmptyFacility
-  | addEmptyField
+  | addEmptyFacilities
+  | addEmptyFields
   | updateFacilities
   | updateField
   | saveFacilities

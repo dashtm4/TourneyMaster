@@ -6,8 +6,8 @@ import {
   LOAD_AUTH_PAGE_DATA_SUCCESS,
   LOAD_AUTH_PAGE_DATA_FAILURE,
   CLEAR_AUTH_PAGE_DATA,
-  PUBLISH_TOURNAMENT_SUCCESS,
-  PUBLISH_TOURNAMENT_FAILURE,
+  PUBLISH_EVENT_SUCCESS,
+  PUBLISH_EVENT_FAILURE,
   ADD_ENTITY_TO_LIBRARY_SUCCESS,
   ADD_ENTITY_TO_LIBRARY_FAILURE,
   ADD_ENTITIES_TO_LIBRARY_SUCCESS,
@@ -16,15 +16,32 @@ import {
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { Toasts } from 'components/common';
-import { IEventDetails, IRegistration, IFacility } from 'common/models';
+import {
+  IEventDetails,
+  IRegistration,
+  IFacility,
+  IPublishSettings,
+  ISchedule,
+  IFetchedBracket,
+} from 'common/models';
 import {
   EventStatuses,
   EntryPoints,
   MethodTypes,
   LibraryStates,
+  EventPublishTypes,
+  EventModifyTypes,
 } from 'common/enums';
 import { IEntity } from 'common/types';
-import { sentToServerByRoute, removeObjKeysByEntryPoint } from 'helpers';
+import {
+  sentToServerByRoute,
+  removeObjKeysByEntryPoint,
+  CheckEventDrafts,
+} from 'helpers';
+import {
+  updateScheduleStatus,
+  updateBracketStatus,
+} from 'components/scheduling/logic/actions';
 
 const loadAuthPageData: ActionCreator<ThunkAction<
   void,
@@ -50,6 +67,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
       )
     ).flat();
     const schedules = await Api.get(`/schedules?event_id=${eventId}`);
+    const brackets = await Api.get(`/brackets_details?event_id=${eventId}`);
 
     const currentEvent = events.find(
       (it: IEventDetails) => it.event_id === eventId
@@ -70,6 +88,7 @@ const loadAuthPageData: ActionCreator<ThunkAction<
           divisions,
           teams,
           schedules,
+          brackets,
         },
       },
     });
@@ -84,36 +103,90 @@ const clearAuthPageData = () => ({
   type: CLEAR_AUTH_PAGE_DATA,
 });
 
-const toggleTournamentStatus = () => async (
+const updateEventStatus = (isDraft: boolean) => async (
   dispatch: Dispatch,
   getState: () => IAppState
 ) => {
-  try {
-    const { tournamentData } = getState().pageEvent;
-    const { event } = tournamentData;
+  const { tournamentData } = getState().pageEvent;
+  const { event } = tournamentData;
 
+  try {
     const updatedEvent = {
       ...event,
-      is_published_YN:
-        event?.is_published_YN === EventStatuses.Draft
-          ? EventStatuses.Published
-          : EventStatuses.Draft,
+      is_published_YN: isDraft ? EventStatuses.Draft : EventStatuses.Published,
     } as IEventDetails;
 
     await Api.put(`/events?event_id=${updatedEvent.event_id}`, updatedEvent);
 
     dispatch({
-      type: PUBLISH_TOURNAMENT_SUCCESS,
+      type: PUBLISH_EVENT_SUCCESS,
       payload: {
         event: updatedEvent,
       },
     });
 
-    Toasts.successToast('Changes successfully saved.');
+    Toasts.successToast('Event changes successfully saved.');
   } catch {
     dispatch({
-      type: PUBLISH_TOURNAMENT_FAILURE,
+      type: PUBLISH_EVENT_FAILURE,
     });
+  }
+};
+
+const publishEventData = (
+  publishType: EventPublishTypes,
+  modifyModValue: EventModifyTypes,
+  publishSettings: IPublishSettings
+) => async (dispatch: Dispatch, getState: () => IAppState) => {
+  const { tournamentData } = getState().pageEvent;
+  const { event, schedules } = tournamentData;
+  const hasPublishedEvent = !CheckEventDrafts.checkDraftEvent(
+    event as IEventDetails
+  );
+  const hasPublishedSchedule = !CheckEventDrafts.checkDraftSchedule(schedules);
+
+  const isDraft = modifyModValue === EventModifyTypes.UNPUBLISH;
+
+  switch (publishType) {
+    case EventPublishTypes.DETAILS: {
+      dispatch<any>(updateEventStatus(isDraft));
+      break;
+    }
+    case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY:
+    case EventPublishTypes.TOURNAMENT_PLAY: {
+      const publishedSchedule = publishSettings.activeSchedule as ISchedule;
+
+      if (modifyModValue === EventModifyTypes.PUBLISH && !hasPublishedEvent) {
+        dispatch<any>(updateEventStatus(isDraft));
+      }
+
+      dispatch<any>(
+        updateScheduleStatus(publishedSchedule.schedule_id, isDraft)
+      );
+      break;
+    }
+
+    case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY_AND_BRACKETS:
+    case EventPublishTypes.BRACKETS: {
+      const publishedSchedule = publishSettings.activeSchedule as ISchedule;
+      const publishedBracket = publishSettings.activeBracket as IFetchedBracket;
+
+      if (modifyModValue === EventModifyTypes.PUBLISH && !hasPublishedEvent) {
+        dispatch<any>(updateEventStatus(isDraft));
+      }
+
+      if (
+        modifyModValue === EventModifyTypes.PUBLISH &&
+        !hasPublishedSchedule
+      ) {
+        dispatch<any>(
+          updateScheduleStatus(publishedSchedule.schedule_id, isDraft)
+        );
+      }
+
+      dispatch<any>(updateBracketStatus(publishedBracket.bracket_id, isDraft));
+      break;
+    }
   }
 };
 
@@ -193,7 +266,7 @@ const addEntitiesToLibrary = (
 export {
   loadAuthPageData,
   clearAuthPageData,
-  toggleTournamentStatus,
+  publishEventData,
   addEntityToLibrary,
   addEntitiesToLibrary,
 };

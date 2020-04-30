@@ -1,22 +1,28 @@
 import React, { Component } from 'react';
+import { orderBy } from 'lodash-es';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { getIcon } from 'helpers';
 import { Icons } from 'common/enums';
 import { Select, CardMessage, Button } from 'components/common';
 import Seed from 'components/playoffs/dnd/seed';
 import Brackets from 'components/playoffs/brackets';
-import { IBracketGame, IBracketSeed } from 'components/playoffs/bracketGames';
+import { IBracketGame } from 'components/playoffs/bracketGames';
 import { IDivision } from 'common/models';
 import AddGameModal, { IOnAddGame } from '../../add-game-modal';
 import RemoveGameModal from '../../remove-game-modal';
+import { ISeedDictionary } from 'components/playoffs';
 import styles from './styles.module.scss';
 
 interface IProps {
   divisions: IDivision[];
-  seeds?: IBracketSeed[];
+  historyLength: number;
+  seeds?: ISeedDictionary;
   bracketGames?: IBracketGame[];
+  advancingInProgress?: boolean;
   addGame: (selectedDivision: string, data: IOnAddGame) => void;
   removeGame: (selectedDivision: string, data: number) => void;
+  onUndoClick: () => void;
+  advanceTeamsToBrackets: () => void;
 }
 
 interface IState {
@@ -40,10 +46,11 @@ class BracketManager extends Component<IProps> {
       label: item.short_name,
       value: item.division_id,
     }));
+    const orderedDivisions = orderBy(divisionsOptions, 'label');
 
     this.setState({
-      divisionsOptions,
-      selectedDivision: divisionsOptions[0]?.value,
+      divisionsOptions: orderedDivisions,
+      selectedDivision: orderedDivisions[0]?.value,
     });
   }
 
@@ -95,16 +102,27 @@ class BracketManager extends Component<IProps> {
         <span>{index + 1}.</span>
         <Seed
           key={item.id}
-          id={item.id}
+          seedId={item.id}
           name={item.name}
           type={this.dragType}
+          teamId={item.teamId}
+          teamName={item.teamName}
+          isHighlighted={false}
+          setHighlightedTeamId={() => {}}
         />
       </div>
     );
   };
 
   render() {
-    const { seeds } = this.props;
+    const {
+      seeds,
+      onUndoClick,
+      historyLength,
+      advanceTeamsToBrackets,
+      advancingInProgress,
+    } = this.props;
+
     const {
       divisionGames,
       divisionsOptions,
@@ -113,7 +131,10 @@ class BracketManager extends Component<IProps> {
       removeGameIndex,
     } = this.state;
 
-    const seedsLength = seeds?.length || 0;
+    const divisionSeeds =
+      seeds && selectedDivision ? seeds[selectedDivision] : undefined;
+
+    const seedsLength = divisionSeeds?.length || 0;
     const playInGamesExist = !!(
       seedsLength -
       2 ** Math.floor(Math.log2(seedsLength))
@@ -137,7 +158,7 @@ class BracketManager extends Component<IProps> {
               Drag & drop to reorder
             </CardMessage>
             <div className={styles.seedsList}>
-              {seeds?.map((v, i) => this.renderSeed(v, i))}
+              {divisionSeeds?.map((v, i) => this.renderSeed(v, i))}
             </div>
           </div>
         </div>
@@ -160,6 +181,14 @@ class BracketManager extends Component<IProps> {
             </div>
             <div className={styles.buttonsWrapper}>
               <Button
+                label="Undo"
+                icon={getIcon(Icons.SETTINGS_BACKUP_RESTORE)}
+                disabled={!historyLength || historyLength < 2}
+                variant="text"
+                color="secondary"
+                onClick={onUndoClick}
+              />
+              <Button
                 label="Go to Bracket Setup"
                 variant="text"
                 color="secondary"
@@ -175,6 +204,8 @@ class BracketManager extends Component<IProps> {
                 label="Advance Division Teams to Brackets"
                 variant="contained"
                 color="primary"
+                disabled={advancingInProgress}
+                onClick={advanceTeamsToBrackets}
               />
             </div>
           </div>
@@ -195,10 +226,10 @@ class BracketManager extends Component<IProps> {
               onRemoveGame={this.onRemoveGame}
             />
           )}
-          {seeds && divisionGames && (
+          {divisionGames && divisionSeeds && (
             <Brackets
+              seeds={divisionSeeds}
               games={divisionGames}
-              seeds={seeds}
               onRemove={this.removeGamePressed}
             />
           )}

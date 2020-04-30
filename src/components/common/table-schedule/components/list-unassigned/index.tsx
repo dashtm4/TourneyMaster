@@ -45,10 +45,18 @@ const UnassignedList = (props: IProps) => {
     setSortBy(by);
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     setUnsatisfiedTeamCards(
-      orderBy(unsatisfiedTeamCards, by, sortOrder === 'asc' ? 'asc' : 'desc')
+      orderBy(
+        unsatisfiedTeamCards,
+        ['divisionShortName', by],
+        ['asc', sortOrder === 'asc' ? 'asc' : 'desc']
+      )
     );
     setSatisfiedTeamCards(
-      orderBy(satisfiedTeamCards, by, sortOrder === 'asc' ? 'asc' : 'desc')
+      orderBy(
+        satisfiedTeamCards,
+        ['divisionShortName', by],
+        ['asc', sortOrder === 'asc' ? 'asc' : 'desc']
+      )
     );
   };
 
@@ -75,8 +83,18 @@ const UnassignedList = (props: IProps) => {
   useEffect(() => {
     const newUnsatisfiedTeamCards = getUnsatisfiedTeams(teamCards, minGamesNum);
     const newSatisfiedTeamCards = getSatisfiedTeams(teamCards, minGamesNum);
-    setUnsatisfiedTeamCards(newUnsatisfiedTeamCards);
-    setSatisfiedTeamCards(newSatisfiedTeamCards);
+
+    const orderedUnsatisfiedTeamCards = orderBy(
+      newUnsatisfiedTeamCards,
+      'divisionShortName'
+    );
+    const orderedSatisfiedTeamCards = orderBy(
+      newSatisfiedTeamCards,
+      'divisionShortName'
+    );
+
+    setUnsatisfiedTeamCards(orderedUnsatisfiedTeamCards);
+    setSatisfiedTeamCards(orderedSatisfiedTeamCards);
   }, [teamCards, showAllTeams]);
 
   return (

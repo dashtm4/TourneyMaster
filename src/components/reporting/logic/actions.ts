@@ -7,13 +7,8 @@ import {
   LOAD_REPORTING_DATA_FAILURE,
 } from './action-types';
 import Api from 'api/api';
-import {
-  IFacility,
-  IEventDetails,
-  ScheduleStatuses,
-  ISchedule,
-  IDivision,
-} from 'common/models';
+import { IFacility, IEventDetails, ISchedule, IDivision } from 'common/models';
+import { ScheduleStatuses } from 'common/enums';
 
 const loadReportingData: ActionCreator<ThunkAction<
   void,
@@ -51,7 +46,7 @@ const loadReportingData: ActionCreator<ThunkAction<
     );
 
     const activeSchedule = schedules.find(
-      (it: ISchedule) => it.schedule_status === ScheduleStatuses.PUBLISHED
+      (it: ISchedule) => it.is_published_YN === ScheduleStatuses.Published
     );
 
     const schedulesDetails = await Api.get(

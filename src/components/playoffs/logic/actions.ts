@@ -1,10 +1,16 @@
 import { Dispatch } from 'redux';
 import { IAppState } from 'reducers/root-reducer.types';
-import { chunk, orderBy } from 'lodash-es';
+import { chunk, orderBy, groupBy } from 'lodash-es';
 import {
   PLAYOFF_SAVED_SUCCESS,
   PLAYOFF_FETCH_GAMES,
   PLAYOFF_CLEAR_GAMES,
+  PLAYOFF_UNDO_GAMES,
+  PLAYOFF_UNDO_CLEAR,
+  LOAD_DATA_WITH_SCORES,
+  FETCH_SCORED_TEAMS,
+  CLEAR_SCORED_TEAMS,
+  BRACKETS_ADVANCING_IN_PROGRESS,
 } from './actionTypes';
 import {
   mapBracketData,
@@ -17,6 +23,15 @@ import api from 'api/api';
 import { successToast, errorToast } from 'components/common/toastr/showToasts';
 import { addNewBracket } from 'components/scheduling/logic/actions';
 import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
+import {
+  getScoringSettings,
+  getTeamsWithResults,
+  sortTeamByScored,
+  mapScheduleGamesWithNames,
+} from 'helpers';
+import { ITeamWithResults, IFacility } from 'common/models';
+
+export type IPlayoffSortedTeams = { [key: string]: ITeamWithResults[] };
 
 type IGetState = () => IAppState;
 
@@ -25,13 +40,44 @@ const playoffSavedSuccess = (payload: boolean) => ({
   payload,
 });
 
-export const fetchBracketGames = (payload: IBracketGame[]) => ({
+const loadDataWithScores = (payload: { scoredTeams: ITeamWithResults[] }) => ({
+  type: LOAD_DATA_WITH_SCORES,
+  payload,
+});
+
+const fetchSortedTeams = (payload: IPlayoffSortedTeams) => ({
+  type: FETCH_SCORED_TEAMS,
+  payload,
+});
+
+const setAdvancingInProgress = (payload: boolean) => ({
+  type: BRACKETS_ADVANCING_IN_PROGRESS,
+  payload,
+});
+
+export const clearSortedTeams = () => ({
+  type: CLEAR_SCORED_TEAMS,
+});
+
+export const fetchBracketGames = (
+  payload: IBracketGame[],
+  skipHistory?: boolean
+) => ({
   type: PLAYOFF_FETCH_GAMES,
   payload,
+  skipHistory,
 });
 
 export const clearBracketGames = () => ({
   type: PLAYOFF_CLEAR_GAMES,
+});
+
+export const onUndoBrackets = () => ({
+  type: PLAYOFF_UNDO_GAMES,
+});
+
+const clearUndoHistory = () => ({
+  type: PLAYOFF_UNDO_CLEAR,
 });
 
 const newError = () =>
@@ -116,6 +162,7 @@ const managePlayoffSaving = (
       : existingBracketGamesRespOk || newBracketGamesRespOk;
 
   if (bracketResp && responseOk) {
+    dispatch(clearUndoHistory());
     dispatch(playoffSavedSuccess(true));
     successToast('Playoff data was successfully saved!');
     return;
@@ -151,13 +198,63 @@ export const retrieveBrackets = (bracketId: string) => async (
 };
 
 export const retrieveBracketsGames = (bracketId: string) => async (
-  dispatch: Dispatch
+  dispatch: Dispatch,
+  getState: IGetState
 ) => {
   const response = await api.get('/games_brackets', { bracket_id: bracketId });
+  const fields = getState().pageEvent.tournamentData.fields;
 
   if (response?.length) {
-    const bracketGames = mapFetchedBracketGames(response);
+    const bracketGames = mapFetchedBracketGames(response, fields);
     const orderedGames = orderBy(bracketGames, ['divisionId', 'index']);
     dispatch(fetchBracketGames(orderedGames));
   }
+};
+
+// Advance Teams To Brackets
+
+export const advanceTeamsToBrackets = () => async (
+  dispatch: Dispatch,
+  getState: IGetState
+) => {
+  dispatch(setAdvancingInProgress(true));
+  const event = getState().pageEvent.tournamentData.event;
+  const eventId = event?.event_id;
+  // get teams
+  const teams = await api.get('/teams', { event_id: eventId });
+  // get games
+  const games = await api.get('/games', { event_id: eventId });
+  // get facilities
+  const facilities = await api.get('/facilities', { event_id: eventId });
+  // get fields
+  const fields = (
+    await Promise.all(
+      facilities.map((it: IFacility) =>
+        api.get(`/fields?facilities_id=${it.facilities_id}`)
+      )
+    )
+  ).flat();
+  // calculate scoring settings
+  const scoringSettings = getScoringSettings(event!);
+  // calculate teams with scoring results
+  const scoredTeams = getTeamsWithResults(teams, games, scoringSettings);
+  // calculate games with scoring results
+  const scoredGames = mapScheduleGamesWithNames(teams, fields, games);
+
+  dispatch(loadDataWithScores({ scoredTeams }));
+
+  const divisionDictionary = groupBy(scoredTeams, 'division_id');
+  const sortedTeams = {};
+
+  Object.keys(divisionDictionary).forEach(
+    key =>
+      (sortedTeams[key] = sortTeamByScored(
+        divisionDictionary[key],
+        scoredGames,
+        event?.ranking_factor_divisions!
+      ))
+  );
+
+  dispatch(setAdvancingInProgress(false));
+  dispatch(fetchSortedTeams(sortedTeams));
 };

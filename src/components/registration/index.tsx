@@ -4,9 +4,9 @@ import Button from '../common/buttons/button';
 import SectionDropdown from '../common/section-dropdown';
 import styles from './styles.module.scss';
 import Navigation from './navigation';
-import PrimaryInformation from './primary-information';
-import TeamsAthletesInfo from './teams-athletes';
-import MainContact from './main-contact';
+import PricingAndCalendar from './pricing-and-calendar';
+import RegistrationDetails from './registration-details';
+import Payments from './payments';
 import { connect } from 'react-redux';
 import {
   getRegistration,
@@ -16,7 +16,12 @@ import {
 import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import RegistrationEdit from 'components/registration/registration-edit';
 import { IRegistration } from 'common/models/registration';
-import { BindingCbWithOne, BindingCbWithTwo, IDivision } from 'common/models';
+import {
+  BindingCbWithOne,
+  BindingCbWithTwo,
+  IDivision,
+  IEventDetails,
+} from 'common/models';
 import {
   EventMenuRegistrationTitles,
   EntryPoints,
@@ -44,6 +49,7 @@ interface IRegistrationProps {
   match: any;
   history: History;
   isLoading: boolean;
+  event: IEventDetails;
 }
 
 class RegistrationView extends React.Component<
@@ -88,12 +94,16 @@ class RegistrationView extends React.Component<
   };
 
   onCancelClick = () => {
-    this.setState({ isEdit: false });
+    this.setState({
+      isEdit: false,
+      registration: undefined,
+      changesAreMade: false,
+    });
   };
 
   onSaveClick = () => {
     this.props.saveRegistration(this.state.registration, this.eventId);
-    this.setState({ isEdit: false });
+    this.setState({ isEdit: false, changesAreMade: false });
   };
 
   static getDerivedStateFromProps(
@@ -129,6 +139,7 @@ class RegistrationView extends React.Component<
 
   renderView = () => {
     const { registration } = this.props;
+    const eventType = this.props.event && this.props.event[0].event_type;
     if (this.state.isEdit) {
       return (
         <RegistrationEdit
@@ -137,6 +148,8 @@ class RegistrationView extends React.Component<
           onCancel={this.onCancelClick}
           onSave={this.onSaveClick}
           changesAreMade={this.state.changesAreMade}
+          divisions={this.props.divisions}
+          eventType={eventType}
         />
       );
     } else {
@@ -162,17 +175,17 @@ class RegistrationView extends React.Component<
               )}
             </div>
             {this.props.isLoading && <Loader />}
-            {registration && !this.props.isLoading ? (
+            {!this.props.isLoading && registration ? (
               <ul className={styles.libraryList}>
                 <li>
                   <SectionDropdown
-                    id={EventMenuRegistrationTitles.PRIMARY_INFORMATION}
+                    id={EventMenuRegistrationTitles.PRICING_AND_CALENDAR}
                     type="section"
                     panelDetailsType="flat"
                     expanded={this.state.isSectionsExpand}
                   >
-                    <span>Primary Information</span>
-                    <PrimaryInformation
+                    <span>Pricing &amp; Calendar</span>
+                    <PricingAndCalendar
                       eventId={this.eventId}
                       data={registration}
                       divisions={this.props.divisions.map(division => ({
@@ -184,24 +197,27 @@ class RegistrationView extends React.Component<
                 </li>
                 <li>
                   <SectionDropdown
-                    id={EventMenuRegistrationTitles.TEAMS_AND_ATHLETES}
+                    id={EventMenuRegistrationTitles.REGISTRATION_DETAILS}
                     type="section"
                     panelDetailsType="flat"
                     expanded={this.state.isSectionsExpand}
                   >
-                    <span>Teams & Athletes</span>
-                    <TeamsAthletesInfo data={registration} />
+                    <span>Registration Details</span>
+                    <RegistrationDetails
+                      data={registration}
+                      eventType={eventType}
+                    />
                   </SectionDropdown>
                 </li>
                 <li>
                   <SectionDropdown
-                    id={EventMenuRegistrationTitles.MAIN_CONTACT}
+                    id={EventMenuRegistrationTitles.PAYMENTS}
                     type="section"
                     panelDetailsType="flat"
                     expanded={this.state.isSectionsExpand}
                   >
-                    <span>Main Contact</span>
-                    <MainContact data={registration} />
+                    <span>Payments</span>
+                    <Payments data={registration} />
                   </SectionDropdown>
                 </li>
               </ul>
@@ -231,6 +247,7 @@ interface IState {
     data: IRegistration;
     divisions: IDivision[];
     isLoading: boolean;
+    event: IEventDetails;
   };
 }
 
@@ -238,6 +255,7 @@ const mapStateToProps = (state: IState) => ({
   registration: state.registration.data,
   isLoading: state.registration.isLoading,
   divisions: state.registration.divisions,
+  event: state.registration.event,
 });
 
 const mapDispatchToProps = {

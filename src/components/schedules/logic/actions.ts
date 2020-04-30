@@ -16,6 +16,7 @@ import {
   SCHEDULES_PUBLISHED_CLEAR,
   ANOTHER_SCHEDULE_PUBLISHED,
   SCHEDULES_GAMES_ALREADY_EXIST,
+  SCHEDULES_DETAILS_CLEAR,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
@@ -23,6 +24,7 @@ import { IAppState } from 'reducers/root-reducer.types';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
 import { successToast, errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesGame } from 'common/models/schedule/game';
+import { ScheduleStatuses } from 'common/enums';
 
 type ThunkActionType<R> = ThunkAction<R, IAppState, undefined, any>;
 
@@ -59,6 +61,10 @@ const fetchSchedulesDetailsSuccess = (payload: {
 }) => ({
   type: FETCH_SCHEDULES_DETAILS_SUCCESS,
   payload,
+});
+
+export const schedulesDetailsClear = () => ({
+  type: SCHEDULES_DETAILS_CLEAR,
 });
 
 export const publishedSuccess = () => ({
@@ -279,7 +285,11 @@ export const getPublishedGames = (
   });
 
   if (!scheduleId) {
-    if (schedulesResponse?.find(item => item.schedule_status === 'Published')) {
+    if (
+      schedulesResponse?.find(
+        item => item.is_published_YN === ScheduleStatuses.Published
+      )
+    ) {
       dispatch(anotherSchedulePublished(true));
       dispatch(publishedClear());
     }
@@ -298,14 +308,16 @@ export const getPublishedGames = (
   if (
     schedulesResponse?.find(
       item =>
-        item.schedule_status === 'Published' && item.schedule_id === scheduleId
+        item.is_published_YN === ScheduleStatuses.Published &&
+        item.schedule_id === scheduleId
     )
   ) {
     dispatch(publishedSuccess());
   } else if (
     schedulesResponse?.find(
       item =>
-        item.schedule_status === 'Published' && item.schedule_id !== scheduleId
+        item.is_published_YN === ScheduleStatuses.Published &&
+        item.schedule_id !== scheduleId
     )
   ) {
     dispatch(anotherSchedulePublished(true));
@@ -340,7 +352,9 @@ const saveSchedule = (
     )
   );
 
-  if (scheduleResp && schedulesDetailsResp.length) {
+  const schedulesDetailsRespOk = schedulesDetailsResp?.every(v => v);
+
+  if (scheduleResp && schedulesDetailsRespOk) {
     dispatch(draftSavedSuccess());
     successToast('Schedule data was successfully saved');
   } else {

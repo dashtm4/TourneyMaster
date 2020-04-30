@@ -24,6 +24,7 @@ export interface IGroupedMessages {
   recipients: string[];
   sendDatetime: string;
   status: number;
+  senderName: string;
 }
 
 interface IProps {
@@ -52,7 +53,7 @@ const EventLink = ({
   };
 
   const groupMessages = () => {
-    const data = messages.filter(message => message.message_id);
+    const data = messages?.filter(message => message.message_id);
     const groupedMessages = groupBy(data, 'request_id');
     const res = Object.entries(groupedMessages).map(([_key, value]) => {
       return {
@@ -64,6 +65,7 @@ const EventLink = ({
         recipients: value.map(mes => mes.recipient_details),
         sendDatetime: value[0].send_datetime,
         status: value[0].status,
+        senderName: value[0].email_from_name,
       };
     });
 

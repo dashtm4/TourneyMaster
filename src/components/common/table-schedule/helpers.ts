@@ -1,4 +1,4 @@
-import { findIndex, find, groupBy, max } from 'lodash-es';
+import { findIndex, find, groupBy, max, orderBy } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from '../matrix-table/helper';
 import {
@@ -10,7 +10,6 @@ import {
 } from 'common/models';
 import { IField } from 'common/models/schedule/fields';
 import { IMultiSelectOption } from '../multi-select';
-import { DayTypes } from './types';
 import { IModalItem } from '../interactive-tooltip';
 import { ScheduleWarningsEnum } from 'common/enums';
 import { IDiagnosticsInput } from 'components/schedules/diagnostics';
@@ -88,12 +87,19 @@ export const applyFilters = (params: IApplyFilterParams) => {
     eventSummary
   );
 
+  const sortedDivisionsOptions = orderBy(divisionsOptions, 'label');
+  const sortedPoolsOptions = orderBy(poolsOptions, 'label');
+  const sortedTeamsOptions = orderBy(teamsOptions, 'label');
+  const sortedFieldsOptions = fieldsOptions.sort((a, b) =>
+    a.label.localeCompare(b.label, undefined, { numeric: true })
+  );
+
   return {
-    selectedDay: DayTypes[1],
-    divisionsOptions,
-    poolsOptions,
-    teamsOptions,
-    fieldsOptions,
+    selectedDay: '1',
+    divisionsOptions: sortedDivisionsOptions,
+    poolsOptions: sortedPoolsOptions,
+    teamsOptions: sortedTeamsOptions,
+    fieldsOptions: sortedFieldsOptions,
   };
 };
 
@@ -129,23 +135,33 @@ export const mapGamesByFilter = (
       delete game.homeTeam;
     }
 
+    if (!filteredGamesIds.includes(game.id) && game.isPlayoff) {
+      delete game.bracketGameId;
+    }
+
     return game;
   });
 };
 
 const checkDivisions = (game: IGame, divisionIds: string[]) => {
-  const { awayTeam, homeTeam } = game;
-  return divisionIds.includes(awayTeam?.divisionId! || homeTeam?.divisionId!);
+  const { awayTeam, homeTeam, divisionId } = game;
+  return divisionIds.includes(
+    awayTeam?.divisionId! || homeTeam?.divisionId! || divisionId!
+  );
 };
 
 const checkPools = (game: IGame, poolIds: string[]) => {
-  const { awayTeam, homeTeam } = game;
-  return poolIds.includes(awayTeam?.poolId! || homeTeam?.poolId!);
+  const { awayTeam, homeTeam, isPlayoff } = game;
+  return isPlayoff || poolIds.includes(awayTeam?.poolId! || homeTeam?.poolId!);
 };
 
 const checkTeams = (game: IGame, teamIds: string[]) => {
-  const { awayTeam, homeTeam } = game;
-  return teamIds.includes(awayTeam?.id!) || teamIds.includes(homeTeam?.id!);
+  const { awayTeam, homeTeam, isPlayoff } = game;
+  return (
+    isPlayoff ||
+    teamIds.includes(awayTeam?.id!) ||
+    teamIds.includes(homeTeam?.id!)
+  );
 };
 
 const checkFields = (game: IGame, fieldIds: string[]) => {
@@ -261,7 +277,10 @@ export const mapUnusedFields = (
   }
 
   const filledGames = games.filter(
-    game => game.awayTeam?.id || game.homeTeam?.id
+    game =>
+      game.awayTeam?.id ||
+      game.homeTeam?.id ||
+      (game.isPlayoff && game.bracketGameId)
   );
   const usedFieldIds = fields
     .map(field => field.id)
@@ -332,13 +351,13 @@ const getScheduleWarning = (
 
   // If there are back to back games
   const backToBackIndex =
-    teamsDiagnostics.header.findIndex(item =>
+    teamsDiagnostics?.header?.findIndex(item =>
       item.toLowerCase().includes('back-to-back')
     ) || 5;
-  const backToBackValues = teamsDiagnostics.body.map(
+  const backToBackValues = teamsDiagnostics?.body?.map(
     item => item[backToBackIndex]
   );
-  const backToBackExist = backToBackValues.filter(v => Number(v) > 0).length;
+  const backToBackExist = backToBackValues?.filter(v => Number(v) > 0).length;
 
   if (backToBackExist && event.back_to_back_warning) {
     items.push({

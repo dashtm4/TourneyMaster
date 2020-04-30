@@ -2,12 +2,15 @@ $width: 100%;
 $height: 400px;
 
 .container {
+  position: relative;
+
   width: $width;
   height: $height;
 
   > div {
     width: $width;
     height: $height;
+    max-width: 1200px;
   }
 
   .bracketContainer {
@@ -17,7 +20,6 @@ $height: 400px;
     display: flex;
     flex-direction: row;
     padding-top: 40px;
-    margin-bottom: 80px;
 
     // MAIN BRACKET GAME STYLE
     .bracketGame {

@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import { orderBy } from 'lodash-es';
-import styles from './styles.module.scss';
-import { MatrixTable, Loader } from 'components/common';
+import { MatrixTable, Loader, Button, CardMessage } from 'components/common';
 import {
   IEventDetails,
   IDivision,
@@ -17,11 +15,16 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { TableScheduleTypes } from 'common/enums';
 import { IBracketGame } from 'components/playoffs/bracketGames';
-import BracketGameCard from 'components/playoffs/dnd/bracket-game';
 import {
-  MatrixTableDropEnum,
   IDropParams,
+  MatrixTableDropEnum,
 } from 'components/common/matrix-table/dnd/drop';
+import MultiSelect, {
+  IMultiSelectOption,
+} from 'components/common/multi-select';
+import BracketGamesList from './bracket-games-list';
+import { CardMessageTypes } from 'components/common/card-message/types';
+import styles from './styles.module.scss';
 
 interface IProps {
   bracketGames?: IBracketGame[];
@@ -36,40 +39,84 @@ interface IProps {
   facilities?: IScheduleFacility[];
   eventSummary?: IEventSummary[];
   schedulesDetails?: ISchedulesDetails[];
+  isFullScreen: boolean;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
-  updateGame: (game: IGame, withGame?: IGame) => void;
+  updateGame: (gameId: string, slotId: number, originId?: number) => void;
   setHighlightedGame?: (id: number) => void;
   highlightedGameId?: number;
+  onToggleFullScreen: () => void;
 }
 
 interface IState {
   tableGames?: IGame[];
+  divisionOptions?: IMultiSelectOption[];
+  filteredGames?: IGame[];
+  isDnd: boolean;
 }
 
 class ResourceMatrix extends Component<IProps> {
-  state: IState = {};
-
-  renderGame = (game: IGame, index: number) => {
-    return (
-      <BracketGameCard
-        key={`${index}-renderGame`}
-        game={game}
-        type={MatrixTableDropEnum.BracketDrop}
-        setHighlightedGame={this.props.setHighlightedGame}
-      />
-    );
+  state: IState = {
+    isDnd: false,
   };
 
-  onMoveCard = (dropParams: IDropParams) => {
-    const { teamId, gameId } = dropParams;
-    const { games } = this.props;
-    const dragGame = games!.find(item => +item.id === +teamId)!;
-    const dropGame = games!.find(item => item.id === gameId)!;
+  componentDidMount() {
+    const { divisions } = this.props;
+    if (divisions) {
+      const divisionOptions = divisions.map(item => ({
+        label: item.short_name,
+        value: item.division_id,
+        checked: true,
+      }));
+      this.setState({ divisionOptions });
+    }
+  }
 
-    this.props.updateGame(dragGame);
-    this.props.updateGame(dropGame, dragGame);
+  componentDidUpdate(prevProps: IProps, prevState: IState) {
+    const { divisionOptions, filteredGames } = this.state;
+
+    if (
+      prevState.divisionOptions !== divisionOptions ||
+      prevProps.games !== this.props.games ||
+      (!filteredGames && this.props.games)
+    ) {
+      const divisionIds =
+        this.state.divisionOptions
+          ?.filter(item => item.checked)
+          .map(item => item.value) || [];
+
+      const filteredGames = this.props.games?.map(game =>
+        divisionIds.includes(
+          game.awayTeam?.divisionId! ||
+            game.homeTeam?.divisionId! ||
+            game.divisionId!
+        )
+          ? game
+          : {
+              ...game,
+              awayTeam: undefined,
+              homeTeam: undefined,
+              awayDependsUpon: undefined,
+              homeDependsUpon: undefined,
+              awaySeedId: undefined,
+              homeSeedId: undefined,
+            }
+      );
+
+      this.setState({
+        filteredGames,
+      });
+    }
+  }
+
+  setSelectedDivision = (name: string, data: IMultiSelectOption[]) =>
+    this.setState({ [name]: data });
+
+  onMoveCard = (dropParams: IDropParams) => {
+    const originId = dropParams.originGameId;
+    // Send <IBracketGame.id, IGame.id>
+    this.props.updateGame(dropParams.teamId, dropParams.gameId!, originId);
   };
 
   render() {
@@ -86,64 +133,96 @@ class ResourceMatrix extends Component<IProps> {
       onTeamCardsUpdate,
       onTeamCardUpdate,
       onUndo,
-      games,
       highlightedGameId,
+      bracketGames,
+      setHighlightedGame,
+      onToggleFullScreen,
+      isFullScreen,
     } = this.props;
 
-    const tableBracketGames = games?.filter(
-      v =>
-        v.isPlayoff &&
-        v.divisionId &&
-        v.playoffIndex &&
-        (v.awaySeedId ||
-          v.homeSeedId ||
-          v.awayDisplayName ||
-          v.homeDisplayName ||
-          v.awayDependsUpon ||
-          v.homeDependsUpon)
-    );
-    const orderedGames = orderBy(tableBracketGames, 'divisionId');
+    const { divisionOptions, filteredGames, isDnd } = this.state;
 
     return (
       <section className={styles.container}>
         <div className={styles.leftColumn}>
-          <div className={styles.gamesTitle}>Bracket Games</div>
-          {orderedGames?.map((v, i) => this.renderGame(v, i))}
+          {bracketGames && divisions && filteredGames && (
+            <BracketGamesList
+              acceptType={MatrixTableDropEnum.BracketDrop}
+              bracketGames={bracketGames}
+              divisions={divisions}
+              filteredGames={filteredGames}
+              onDrop={this.onMoveCard}
+              setHighlightedGame={setHighlightedGame!}
+            />
+          )}
         </div>
         <div className={styles.rightColumn}>
-          {event &&
-            divisions &&
-            pools &&
-            teamCards &&
-            games &&
-            fields &&
-            timeSlots &&
-            facilities &&
-            eventSummary &&
-            onTeamCardsUpdate &&
-            scheduleData &&
-            onTeamCardUpdate &&
-            onUndo ? (
-              <MatrixTable
-                tableType={TableScheduleTypes.BRACKETS}
-                games={games}
-                fields={fields}
-                timeSlots={timeSlots}
-                facilities={facilities}
-                showHeatmap={true}
-                isEnterScores={false}
-                moveCard={this.onMoveCard}
-                disableZooming={false}
-                onTeamCardUpdate={onTeamCardUpdate}
-                onTeamCardsUpdate={onTeamCardsUpdate}
-                teamCards={teamCards}
-                isFullScreen={false}
-                onToggleFullScreen={() => { }}
-                highlightedGameId={highlightedGameId}
-              />
-            ) : (
-              <Loader styles={{ height: '100%' }} />
+          <div className={styles.filterWrapper}>
+            {!!divisionOptions?.length && (
+              <fieldset className={styles.selectWrapper}>
+                <legend className={styles.selectTitle}>Divisions</legend>
+                <MultiSelect
+                  placeholder="Select"
+                  name="divisionOptions"
+                  selectOptions={divisionOptions}
+                  onChange={this.setSelectedDivision}
+                />
+              </fieldset>
             )}
+            <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+              Bracket games are painted in dark colors
+            </CardMessage>
+            <div className={styles.dndToggleWrapper}>
+              Mode:
+              <Button
+                label="Zoom-n-Nav"
+                variant="contained"
+                color={isDnd ? 'default' : 'primary'}
+                onClick={() => this.setState({ isDnd: false })}
+              />
+              <Button
+                label="Drag-n-Drop"
+                variant="contained"
+                color={isDnd ? 'primary' : 'default'}
+                onClick={() => this.setState({ isDnd: true })}
+              />
+            </div>
+          </div>
+
+          {event &&
+          divisions &&
+          pools &&
+          teamCards &&
+          filteredGames &&
+          fields &&
+          timeSlots &&
+          facilities &&
+          eventSummary &&
+          onTeamCardsUpdate &&
+          scheduleData &&
+          onTeamCardUpdate &&
+          onUndo ? (
+            <MatrixTable
+              tableType={TableScheduleTypes.BRACKETS}
+              games={filteredGames}
+              fields={fields}
+              timeSlots={timeSlots}
+              facilities={facilities}
+              showHeatmap={true}
+              isEnterScores={false}
+              moveCard={this.onMoveCard}
+              disableZooming={isDnd}
+              onTeamCardUpdate={onTeamCardUpdate}
+              onTeamCardsUpdate={onTeamCardsUpdate}
+              teamCards={teamCards}
+              isFullScreen={isFullScreen}
+              onToggleFullScreen={onToggleFullScreen}
+              highlightedGameId={highlightedGameId}
+              onGameUpdate={() => {}}
+            />
+          ) : (
+            <Loader styles={{ height: '100%' }} />
+          )}
         </div>
       </section>
     );

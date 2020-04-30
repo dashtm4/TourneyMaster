@@ -3,7 +3,7 @@ import styles from './styles.module.scss';
 import { Button, HeadingLevelFour } from 'components/common';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import ITimeSlot from 'common/models/schedule/timeSlots';
-import { IField } from 'common/models';
+import { IField, IFacility } from 'common/models';
 import { IField as IScheduleField } from 'common/models/schedule/fields';
 import { formatTimeSlot } from 'helpers';
 import { mapFieldsData } from 'components/schedules/mapTournamentData';
@@ -19,13 +19,14 @@ const TRANSFORM_WRAPPER_OPTIONS = {
 interface IProps {
   timeSlots: ITimeSlot[];
   fields: IField[];
+  facilities: IFacility[];
   onClose: () => void;
 }
 
 const ViewMatrix = (props: IProps) => {
-  const { onClose, timeSlots, fields } = props;
+  const { onClose, timeSlots, fields, facilities } = props;
 
-  const mappedFields = mapFieldsData(fields);
+  const mappedFields = mapFieldsData(fields, facilities);
   const sortedFields = sortFieldsByPremier(mappedFields);
 
   const renderGameSlot = () => (
@@ -36,7 +37,9 @@ const ViewMatrix = (props: IProps) => {
   );
 
   const renderField = (field: IScheduleField) => (
-    <th key={Math.random()}>{field.name}</th>
+    <th key={Math.random()}>
+      {field.name} ({field.facilityName})
+    </th>
   );
 
   const renderTimeSlot = (time: string) => (

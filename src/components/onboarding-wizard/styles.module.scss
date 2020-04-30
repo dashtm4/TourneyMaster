@@ -3,6 +3,11 @@
   height: 100%;
   margin: 20px;
   color: #6a6a6a;
+  .headerWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   .radioBtnsWrapper {
     padding-top: 9px;
     display: flex;

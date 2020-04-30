@@ -33,16 +33,9 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  .sectionFirstRow {
+  .sectionRow {
     display: flex;
     justify-content: space-between;
-  }
-  .sectionSecondRow {
-    display: flex;
-    justify-content: space-between;
-  }
-  .sectionTooltipRow {
-    display: flex;
   }
   .sectionItem {
     flex-grow: 0;
@@ -63,5 +56,20 @@
   .divisionLink {
     color: #11a8ea;
     text-decoration: none;
+  }
+}
+.sectionFourthRow {
+  display: flex;
+  flex-wrap: wrap;
+  & > * {
+    margin-right: 10px;
+    width: 100px;
+  }
+}
+.sectionInfoRow {
+  display: flex;
+  justify-content: space-between;
+  .sectionItem {
+    width: 48%;
   }
 }

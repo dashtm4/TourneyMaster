@@ -1,17 +1,30 @@
 import React from 'react';
 import PDFTableSchedule from 'pdg-layouts/table-schedule';
 import PDFTableFieldsSchedule from 'pdg-layouts/table-fields-schedule';
-import { Modal, HeadingLevelTwo, Button, Select } from 'components/common';
-import { onPDFSave, getSelectDayOptions } from 'helpers';
+import {
+  Modal,
+  HeadingLevelTwo,
+  ButtonLoad,
+  Button,
+  SelectMultiple,
+  CardMessage,
+} from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
+import { onPDFSave, getSelectDayOptions, getGamesByDays } from 'helpers';
 import { BindingAction } from 'common/models';
 import { ButtonColors, ButtonVarian, DefaultSelectValues } from 'common/enums';
-import { IInputEvent } from 'common/types';
 import { IEventDetails, ISchedule } from 'common/models';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import styles from './styles.module.scss';
+
+const STYLES_ICOM_WARNING = {
+  fill: '#FFCB00',
+  height: '25px',
+  width: '30px',
+};
 
 interface Props {
   event: IEventDetails;
@@ -36,21 +49,25 @@ const PopupSaveReporting = ({
   isOpen,
   onClose,
 }: Props) => {
-  const [activeDay, changeActiveDay] = React.useState<string>(
-    DefaultSelectValues.ALL
-  );
+  const [isAllowDownload, changeAllowDownload] = React.useState<boolean>(true);
+  const [activeDay, changeActiveDay] = React.useState<string[]>([
+    DefaultSelectValues.ALL,
+  ]);
 
-  const gamesByDay = games.filter(
-    it => it.gameDate === activeDay || activeDay === DefaultSelectValues.ALL
-  );
+  React.useEffect(() => {
+    changeAllowDownload(activeDay.length > 0);
+  }, [activeDay]);
 
+  const gamesByDay = getGamesByDays(games, activeDay);
   const selectDayOptions = getSelectDayOptions(eventDays);
 
-  const onChangeActiveDay = ({ target }: IInputEvent) => {
-    changeActiveDay(target.value);
+  const onChangeActiveDay = (avtiveDay: string[] | null) => {
+    if (activeDay) {
+      changeActiveDay(avtiveDay as string[]);
+    }
   };
 
-  const onScheduleTableSave = async () =>
+  const onScheduleTableSave = () =>
     onPDFSave(
       <PDFTableSchedule
         event={event}
@@ -63,7 +80,7 @@ const PopupSaveReporting = ({
       event.event_name ? `${event.event_name} Master Schedule` : 'Schedule'
     );
 
-  const onHeatmapScheduleTableSave = async () =>
+  const onHeatmapScheduleTableSave = () =>
     onPDFSave(
       <PDFTableSchedule
         event={event}
@@ -79,7 +96,7 @@ const PopupSaveReporting = ({
         : 'Schedule'
     );
 
-  const onScheduleFieldsSave = async () =>
+  const onScheduleFieldsSave = () =>
     onPDFSave(
       <PDFTableFieldsSchedule
         event={event}
@@ -98,15 +115,14 @@ const PopupSaveReporting = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.section}>
         <header className={styles.headerWrapper}>
-          <div className={styles.titleWrapper}>
-            <HeadingLevelTwo>Save as:</HeadingLevelTwo>
-          </div>
-          <Select
-            onChange={onChangeActiveDay}
-            value={activeDay}
+          <HeadingLevelTwo>Save as:</HeadingLevelTwo>
+          <SelectMultiple
             options={selectDayOptions}
-            label="Days"
-            width="200px"
+            value={activeDay}
+            onChange={onChangeActiveDay}
+            primaryValue={DefaultSelectValues.ALL}
+            isFormControlRow={true}
+            label="Days: "
           />
         </header>
         <ul className={styles.linkList}>
@@ -115,19 +131,21 @@ const PopupSaveReporting = ({
             <ul className={styles.downloadLinkList}>
               <li className={styles.dowloadLinkWrapper}>
                 <b>Schedule table</b>
-                <Button
-                  onClick={onScheduleTableSave}
+                <ButtonLoad
+                  loadFunc={onScheduleTableSave}
                   variant={ButtonVarian.TEXT}
                   color={ButtonColors.SECONDARY}
+                  isDisabled={!isAllowDownload}
                   label="Download"
                 />
               </li>
               <li className={styles.dowloadLinkWrapper}>
                 <b>Schedule table (with Heatmap)</b>
-                <Button
-                  onClick={onHeatmapScheduleTableSave}
+                <ButtonLoad
+                  loadFunc={onHeatmapScheduleTableSave}
                   variant={ButtonVarian.TEXT}
                   color={ButtonColors.SECONDARY}
+                  isDisabled={!isAllowDownload}
                   label="Download"
                 />
               </li>
@@ -138,16 +156,25 @@ const PopupSaveReporting = ({
             <ul className={styles.downloadLinkList}>
               <li className={styles.dowloadLinkWrapper}>
                 <b>Fields' schedule table</b>
-                <Button
-                  onClick={onScheduleFieldsSave}
+                <ButtonLoad
+                  loadFunc={onScheduleFieldsSave}
                   variant={ButtonVarian.TEXT}
                   color={ButtonColors.SECONDARY}
+                  isDisabled={!isAllowDownload}
                   label="Download"
                 />
               </li>
             </ul>
           </li>
         </ul>
+        {!isAllowDownload && (
+          <CardMessage
+            type={CardMessageTypes.WARNING}
+            iconStyle={STYLES_ICOM_WARNING}
+          >
+            Select day to download PDF-files
+          </CardMessage>
+        )}
         <div className={styles.btnWrapper}>
           <Button
             onClick={onClose}

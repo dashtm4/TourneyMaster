@@ -8,6 +8,7 @@ import {
   Select,
   Checkbox,
   Tooltip,
+  Radio,
 } from 'components/common';
 import styles from './styles.module.scss';
 import { ISchedule, IEventDetails, IField, IDivision } from 'common/models';
@@ -25,6 +26,16 @@ import { predictPlayoffTimeSlots } from 'components/schedules/definePlayoffs';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
+enum ModalPageEnum {
+  chooseMode = 1,
+  modalBody = 2,
+}
+
+enum ModeOptionEnum {
+  'Use Scheduler' = 0,
+  'Create Manually' = 1,
+}
+
 export interface ICreateBracketModalOutput {
   id: string;
   name: string;
@@ -37,6 +48,7 @@ export interface ICreateBracketModalOutput {
   createDate: string;
   startTimeSlot: string;
   endTimeSlot: string;
+  isManualCreation?: boolean;
 }
 
 interface IProps {
@@ -78,15 +90,19 @@ const CreateNewBracket = (props: IProps) => {
     event!
   );
 
+  const ModeOptions = ['Use Scheduler', 'Create Manually'];
+
   const [bracketName, setBracketName] = useState('');
   const [selectedSchedule, setSelectedSchedule] = useState('');
   const [alignItems, setAlignItems] = useState(false);
   const [adjustTime, setAdjustTime] = useState(false);
+  const [modalPage, setModalPage] = useState(ModalPageEnum.chooseMode);
   const [localWarmup, setLocalWarmup] = useState(
     getWarmupFromSchedule(schedules, selectedSchedule)
   );
-  const [overrideTimeSlots, setOverrideTimeSlots] = useState(false);
-  const [selectedTimeSlotsNum, selectTimeSlotsNum] = useState('0');
+  const [mode, setModeOptions] = useState(ModeOptionEnum['Use Scheduler']);
+  // const [overrideTimeSlots, setOverrideTimeSlots] = useState(false);
+  const [selectedTimeSlotsNum /*, selectTimeSlotsNum*/] = useState('0');
 
   useEffect(() => {
     const data = getWarmupFromSchedule(schedules, selectedSchedule);
@@ -108,12 +124,18 @@ const CreateNewBracket = (props: IProps) => {
   };
 
   const onClosePressed = () => {
+    setModalPage(ModalPageEnum.chooseMode);
+    setModeOptions(ModeOptionEnum['Use Scheduler']);
     setBracketName('');
     setSelectedSchedule('');
     setAlignItems(false);
     setAdjustTime(false);
     setLocalWarmup('00:00:00');
     onClose();
+  };
+
+  const onNextPressed = () => {
+    setModalPage(ModalPageEnum.modalBody);
   };
 
   const onCreatePressed = (e: any) => {
@@ -130,6 +152,13 @@ const CreateNewBracket = (props: IProps) => {
     const eventId = event.event_id;
     const bracketDate = event.event_enddate;
 
+    const firstTimeSlot = playoffTimeSlots?.length
+      ? playoffTimeSlots[0].id
+      : -1;
+    const lastTimeSlot = playoffTimeSlots?.length
+      ? playoffTimeSlots[playoffTimeSlots.length - 1].id
+      : -1;
+
     const scheduleData: ICreateBracketModalOutput = {
       id: getVarcharEight(),
       name: bracketName,
@@ -138,20 +167,21 @@ const CreateNewBracket = (props: IProps) => {
       adjustTime,
       bracketDate,
       eventId,
-      startTimeSlot: String(playoffTimeSlots[0].id),
+      startTimeSlot: String(firstTimeSlot),
       endTimeSlot: String(
-        playoffTimeSlots[playoffTimeSlots.length - 1].id + +selectedTimeSlotsNum
+        lastTimeSlot ? lastTimeSlot + +selectedTimeSlotsNum : lastTimeSlot
       ),
       warmup: localWarmup || '00:00:00',
       createDate: new Date().toISOString(),
+      isManualCreation: mode === ModeOptionEnum['Create Manually'],
     };
     onCreateBracket(scheduleData);
   };
 
-  const selectTimeSlotsNumChange = (e: InputTargetValue) =>
-    selectTimeSlotsNum(e.target.value);
+  // const selectTimeSlotsNumChange = (e: InputTargetValue) =>
+  // selectTimeSlotsNum(e.target.value);
 
-  const overrideTimeSlotsChange = () => setOverrideTimeSlots(v => !v);
+  // const overrideTimeSlotsChange = () => setOverrideTimeSlots(v => !v);
 
   const schedulesOptions = schedules.map(item => ({
     label: item.schedule_name!,
@@ -172,81 +202,88 @@ const CreateNewBracket = (props: IProps) => {
       name: 'adjustTime',
     },
   ];
-  const timeSlotsOverrideOptions = [
-    {
-      label: 'Manually select # of Time Slots for Brackets',
-      checked: overrideTimeSlots,
-      name: 'overrideTimeSlots',
-    },
-  ];
+  // const timeSlotsOverrideOptions = [
+  //   {
+  //     label: 'Manually select # of Time Slots for Brackets',
+  //     checked: overrideTimeSlots,
+  //     name: 'overrideTimeSlots',
+  //   },
+  // ];
 
-  const overrideTimeSlotsOptions = [...Array(4)].map((_, i) => ({
-    label: `${i + playoffTimeSlots.length} Time Slots`,
-    value: String(i),
-  }));
+  // const overrideTimeSlotsOptions = [...Array(4)].map((_, i) => ({
+  //   label: `${i + playoffTimeSlots.length} Time Slots`,
+  //   value: String(i),
+  // }));
 
   const alignItemsTooltip =
     'Early morning TP games will be moved adjacent to brackets';
   const adjustTimeTooltip =
     'Provides a larger rest between games for advancing teams';
-  const overrideTimeSlotsTooltip =
-    'Increases the number of time slots used by Brackets Games';
+  // const overrideTimeSlotsTooltip =
+  //   'Increases the number of time slots used by Brackets Games';
 
-  return (
-    <Modal isOpen={isOpen} onClose={onClosePressed}>
-      <div className={styles.wrapper}>
-        <HeadingLevelFour>
-          <span>Create Bracket</span>
-        </HeadingLevelFour>
-        <div className={styles.mainBody}>
-          <div className={styles.inputsWrapper}>
-            <Input
-              width="230px"
-              onChange={onChange}
-              value={bracketName}
-              autofocus={true}
-              placeholder="Brackets Version Name"
-            />
-            <Select
-              name="Name"
-              width="230px"
-              placeholder="Select Schedule"
-              options={schedulesOptions}
-              value={selectedSchedule}
-              onChange={onChangeSchedule}
-            />
-          </div>
-          <div className={styles.checkboxWrapper}>
-            <Checkbox options={alignItemsOptions} onChange={alignItemsChange} />
-            <Tooltip title={alignItemsTooltip} type={TooltipMessageTypes.INFO}>
-              <div className={styles.tooltipIcon}>{getIcon(Icons.INFO)}</div>
-            </Tooltip>
-          </div>
-          <div>
-            <div className={styles.checkboxWrapper}>
-              <Checkbox
-                options={adjustTimeOptions}
-                onChange={adjustTimeChange}
-              />
-              <Tooltip
-                title={adjustTimeTooltip}
-                type={TooltipMessageTypes.INFO}
-              >
-                <div className={styles.tooltipIcon}>{getIcon(Icons.INFO)}</div>
-              </Tooltip>
-            </div>
-            <Input
-              onChange={onChangeTimeBtwnPeriods}
-              value={
-                localWarmup ? getTimeFromString(localWarmup, 'minutes') : 0
-              }
-              width="150px"
-              minWidth="50px"
-              type="number"
-              disabled={!(adjustTime && localWarmup)}
-              endAdornment="Minutes"
-            />
-            <div className={styles.checkboxWrapper}>
+  const onModeChange = (e: InputTargetValue) => {
+    setModeOptions(ModeOptions.findIndex(v => v === e.target.value));
+  };
+
+  const ChooseMode = () => (
+    <div>
+      <p className={styles.message}>
+        Do you want to use 'Brackets Algorithm' or create brackets manually?
+      </p>
+      <div className={styles.radioBtnsWrapper}>
+        <Radio
+          options={ModeOptions}
+          formLabel=""
+          onChange={onModeChange}
+          checked={ModeOptions[mode] || ''}
+        />
+      </div>
+    </div>
+  );
+
+  const ModalBody = () => (
+    <div className={styles.mainBody}>
+      <div className={styles.inputsWrapper}>
+        <Input
+          width="230px"
+          onChange={onChange}
+          value={bracketName}
+          autofocus={true}
+          placeholder="Brackets Version Name"
+        />
+        <Select
+          name="Name"
+          width="230px"
+          placeholder="Select Schedule"
+          options={schedulesOptions}
+          value={selectedSchedule}
+          onChange={onChangeSchedule}
+        />
+      </div>
+      <div className={styles.checkboxWrapper}>
+        <Checkbox options={alignItemsOptions} onChange={alignItemsChange} />
+        <Tooltip title={alignItemsTooltip} type={TooltipMessageTypes.INFO}>
+          <div className={styles.tooltipIcon}>{getIcon(Icons.INFO)}</div>
+        </Tooltip>
+      </div>
+      <div>
+        <div className={styles.checkboxWrapper}>
+          <Checkbox options={adjustTimeOptions} onChange={adjustTimeChange} />
+          <Tooltip title={adjustTimeTooltip} type={TooltipMessageTypes.INFO}>
+            <div className={styles.tooltipIcon}>{getIcon(Icons.INFO)}</div>
+          </Tooltip>
+        </div>
+        <Input
+          onChange={onChangeTimeBtwnPeriods}
+          value={localWarmup ? getTimeFromString(localWarmup, 'minutes') : 0}
+          width="150px"
+          minWidth="50px"
+          type="number"
+          disabled={!(adjustTime && localWarmup)}
+          endAdornment="Minutes"
+        />
+        {/* <div className={styles.checkboxWrapper}>
               <Checkbox
                 options={timeSlotsOverrideOptions}
                 onChange={overrideTimeSlotsChange}
@@ -266,9 +303,22 @@ const CreateNewBracket = (props: IProps) => {
               options={overrideTimeSlotsOptions}
               value={selectedTimeSlotsNum}
               onChange={selectTimeSlotsNumChange}
-            />
-          </div>
-        </div>
+            /> */}
+      </div>
+    </div>
+  );
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClosePressed}>
+      <div className={styles.wrapper}>
+        <HeadingLevelFour>
+          <span>Create Bracket</span>
+        </HeadingLevelFour>
+        {modalPage === ModalPageEnum.chooseMode ? (
+          <ChooseMode />
+        ) : (
+          <ModalBody />
+        )}
         <div className={styles.buttonsWrapper}>
           <Button
             label="Cancel"
@@ -276,13 +326,22 @@ const CreateNewBracket = (props: IProps) => {
             variant="text"
             onClick={onClosePressed}
           />
-          <Button
-            label="Create"
-            color="primary"
-            variant="contained"
-            disabled={!bracketName || !selectedSchedule}
-            onClick={onCreatePressed}
-          />
+          {modalPage === ModalPageEnum.chooseMode ? (
+            <Button
+              label="Next"
+              color="primary"
+              variant="contained"
+              onClick={onNextPressed}
+            />
+          ) : (
+            <Button
+              label="Create"
+              color="primary"
+              variant="contained"
+              disabled={!bracketName || !selectedSchedule}
+              onClick={onCreatePressed}
+            />
+          )}
         </div>
       </div>
     </Modal>

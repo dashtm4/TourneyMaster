@@ -23,12 +23,15 @@ import Filter from './filter';
 import { IScheduleFilter } from './filter';
 import { applyFilters, mapFilterValues, mapTeamsByFilter } from '../helpers';
 import { IInputEvent } from 'common/types/events';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 export interface IMessageToSend {
   type: string;
   title: string;
   message: string;
   recipients: any[];
+  senderName: string;
 }
 
 interface Props {
@@ -59,6 +62,7 @@ const CreateMessage = ({
     title: '',
     message: '',
     recipients: [''],
+    senderName: '',
   });
 
   const eventOptions = events.length
@@ -111,6 +115,10 @@ const CreateMessage = ({
     setMessage({ ...data, recipients: [e.target.value] });
   };
 
+  const onSenderNameChange = (e: IInputEvent) => {
+    setMessage({ ...data, senderName: e.target.value });
+  };
+
   const onSend = () => {
     if (recipientType === 'Many') {
       const recipients = mapTeamsByFilter([...teams], filterValues, data.type);
@@ -146,22 +154,32 @@ const CreateMessage = ({
         <span className={styles.title}>
           {data.type === 'Text' ? 'Number:' : 'Email:'}{' '}
         </span>
-        <Input
-          width="250px"
-          placeholder={
-            data.type === 'Text' ? '+11234567890' : 'example@example.com'
-          }
-          onChange={onRecipientChange}
-          value={data.recipients[0] || ''}
-        />
-        <span className={styles.additionalInfo}>
-          {data.type === 'Text' &&
-            'Format: [+][country code][subscriber number including area code]'}
-        </span>
+        {data.type === 'Text' ? (
+          <PhoneInput
+            country={'us'}
+            value={data.recipients[0] || ''}
+            onChange={(value: string) =>
+              setMessage({ ...data, recipients: [value] })
+            }
+            containerStyle={{ marginTop: '7px' }}
+            inputStyle={{
+              height: '40px',
+              fontSize: '18px',
+              color: '#6a6a6a',
+              borderRadius: '4px',
+            }}
+          />
+        ) : (
+          <Input
+            width="250px"
+            placeholder={'example@example.com'}
+            onChange={onRecipientChange}
+            value={data.recipients[0] || ''}
+          />
+        )}
       </div>
     );
   };
-
   const renderRecipientFilter = () => {
     return (
       <div className={styles.recipientsFilterWrapper}>
@@ -241,12 +259,20 @@ const CreateMessage = ({
       <div className={styles.inputGroup}>
         <div>
           {data.type === 'Email' && (
-            <Input
-              label="Title"
-              fullWidth={true}
-              onChange={onTitleChange}
-              value={data.title}
-            />
+            <>
+              <Input
+                label="From"
+                fullWidth={true}
+                onChange={onSenderNameChange}
+                value={data.senderName}
+              />
+              <Input
+                label="Title"
+                fullWidth={true}
+                onChange={onTitleChange}
+                value={data.title}
+              />
+            </>
           )}
           <Input
             label="Message"
