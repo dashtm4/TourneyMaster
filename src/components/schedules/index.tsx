@@ -291,11 +291,6 @@ class Schedules extends Component<Props, State> {
           lastDay
         ) || [];
 
-      console.log(
-        'componentDidUpdate - playoffTimeSlots:',
-        JSON.parse(JSON.stringify(playoffTimeSlots))
-      );
-
       this.calculateDiagnostics();
       this.setState({ playoffTimeSlots, teamCardsAlreadyUpdated: true });
     }

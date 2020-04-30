@@ -9,10 +9,22 @@ interface IProps {
   dropped?: boolean;
   teamId?: string;
   teamName?: string;
+  score?: number;
+  isHighlighted: boolean;
+  setHighlightedTeamId: (teamId: string) => void;
 }
 
 const Seed = (props: IProps) => {
-  const { seedId, teamId, type, dropped, teamName } = props;
+  const {
+    seedId,
+    teamId,
+    type,
+    dropped,
+    teamName,
+    score,
+    isHighlighted,
+    setHighlightedTeamId,
+  } = props;
 
   const [{ isDragging }, drag] = useDrag({
     item: { seedId, teamId, type },
@@ -23,11 +35,18 @@ const Seed = (props: IProps) => {
 
   return (
     <div
+      onMouseEnter={() => setHighlightedTeamId(teamId!)}
+      onMouseLeave={() => setHighlightedTeamId('')}
       ref={drag}
-      style={{ opacity: isDragging ? 0.8 : 1 }}
-      className={`${styles.container} ${dropped ? styles.dropped : ''}`}
+      style={{ opacity: isDragging ? 0.5 : 1 }}
+      className={`${styles.container} ${dropped ? styles.dropped : ''} ${
+        isHighlighted ? styles.highlighted : ''
+      }`}
     >
-      {teamId && teamName ? teamName : `Seed ${seedId}`}
+      <span className={styles.seedName}>
+        {teamId && teamName ? teamName : `Seed ${seedId}`}
+      </span>
+      <p className={styles.scoreWrapper}>{score || ''}</p>
     </div>
   );
 };
