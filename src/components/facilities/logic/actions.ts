@@ -146,14 +146,13 @@ const updateField = (updatedField: IField): FacilitiesAction => ({
   },
 });
 
-const saveFacilities: ActionCreator<ThunkAction<
-  void,
-  {},
-  null,
-  FacilitiesAction
->> = (facilities: IFacility[], fields: IField[]) => async (
-  dispatch: Dispatch
+const saveFacilities = (facilities: IFacility[], fields: IField[]) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
 ) => {
+  const { tournamentData } = getState().pageEvent;
+  const { event } = tournamentData;
+
   try {
     const mappedFacilityFields = Object.values(
       fields.reduce((acc, it: IField) => {
@@ -192,7 +191,7 @@ const saveFacilities: ActionCreator<ThunkAction<
       if (copiedFacility.isChange && !copiedFacility.isNew) {
         delete copiedFacility.isChange;
 
-        Api.put(
+        await Api.put(
           `/facilities?facilities_id=${copiedFacility.facilities_id}`,
           copiedFacility
         );
@@ -201,7 +200,7 @@ const saveFacilities: ActionCreator<ThunkAction<
         delete copiedFacility.isChange;
         delete copiedFacility.isNew;
 
-        Api.post('/facilities', copiedFacility);
+        await Api.post('/facilities', copiedFacility);
       }
     }
 
@@ -211,14 +210,14 @@ const saveFacilities: ActionCreator<ThunkAction<
       if (copiedField.isChange && !copiedField.isNew) {
         delete copiedField.isChange;
 
-        Api.put(`/fields?field_id=${copiedField.field_id}`, copiedField);
+        await Api.put(`/fields?field_id=${copiedField.field_id}`, copiedField);
       }
 
       if (copiedField.isNew) {
         delete copiedField.isChange;
         delete copiedField.isNew;
 
-        Api.post('/fields', copiedField);
+        await Api.post('/fields', copiedField);
       }
     }
 
@@ -231,6 +230,10 @@ const saveFacilities: ActionCreator<ThunkAction<
     });
 
     Toasts.successToast('Facilities saved successfully');
+
+    if (event && facilities.length) {
+      dispatch<any>(loadFacilities(event.event_id));
+    }
   } catch (err) {
     dispatch({
       type: SAVE_FACILITIES_FAILURE,
