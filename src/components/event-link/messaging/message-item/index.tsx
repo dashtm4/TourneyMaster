@@ -8,6 +8,7 @@ import moment from 'moment';
 import { BindingCbWithOne } from 'common/models';
 import { IGroupedMessages } from 'components/event-link';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import { formatPhoneNumber } from 'helpers/formatPhoneNumber';
 
 interface IProps {
   isSectionExpand: boolean;
@@ -75,7 +76,7 @@ const MessageItem = ({
                 <p>
                   <span className={styles.msContentTitle}>Recipients:</span>{' '}
                   {message.recipients.length === 1
-                    ? message.recipients
+                    ? formatPhoneNumber(message.recipients[0])
                     : message.recipients.length}
                 </p>
                 <p>

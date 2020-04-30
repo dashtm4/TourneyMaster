@@ -4,6 +4,7 @@ import { getIcon } from 'helpers/get-icon.helper';
 import { ITeam } from 'common/models';
 import { Icons, ButtonColors, ButtonVarian, ButtonTypes } from 'common/enums';
 import styles from './styles.module.scss';
+import { formatPhoneNumber } from 'helpers/formatPhoneNumber';
 
 const EDIT_ICON_STYLES = {
   width: '21px',
@@ -30,7 +31,9 @@ const TeamItem = ({ team, divisionName, poolName, onEditPopupOpen }: Props) => {
       <td className={styles.teamName}>{team.short_name}</td>
       <td className={styles.contactName}>{`${team.contact_first_name ||
         ''} ${team.contact_last_name || ''}`}</td>
-      <td className={styles.phone_num}>{team.phone_num || ''}</td>
+      <td className={styles.phone_num}>
+        {team.phone_num ? formatPhoneNumber(team.phone_num) : ''}
+      </td>
       <td className={styles.btnsWrapper}>
         <Button
           onClick={onEdit}
