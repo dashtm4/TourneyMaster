@@ -21,6 +21,9 @@ interface Props {
 interface State {
   isSignUpOpen: boolean;
   isLoading: boolean;
+  isLogin: boolean;
+  confirmCodeForm: boolean;
+  newPwdForm: boolean;
 }
 
 const FormSignUpWrapped = WithEditingForm(FormSignUp);
@@ -33,6 +36,9 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
     this.state = {
       isSignUpOpen: false,
       isLoading: false,
+      isLogin: true,
+      confirmCodeForm: false,
+      newPwdForm: false,
     };
   }
 
@@ -78,6 +84,24 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
     this.setState(({ isSignUpOpen }) => ({ isSignUpOpen: !isSignUpOpen }));
   };
 
+  toggleLogin = () => {
+    this.setState(({ isLogin }) => ({ isLogin: !isLogin }))
+  }
+
+  resetPwd = async (email: string, confirmCode: string, newPwd: string) => {
+    try {
+      this.setState({ isLoading: true });
+      await Auth.forgotPasswordSubmit(email, confirmCode, newPwd);
+      this.setState({ isLoading: false, isLogin: true });
+      Toasts.successToast(
+        'Your Password Updated Successfully.'
+      );
+    } catch (error) {
+      this.setState({ isLoading: false });
+      Toasts.errorToast(`${error.message}`);
+    }
+  }
+
   onAuthSubmit = async (email: string, password: string) => {
     try {
       this.setState({ isLoading: true });
@@ -89,6 +113,21 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
       Toasts.errorToast(`${err.message}`);
     }
   };
+
+  requestResetPassword = async (email: string) => {
+    console.log(email)
+    try {
+      this.setState({ isLoading: true });
+
+      await Auth.forgotPassword(email);
+      this.setState({ isLoading: false, confirmCodeForm: true, newPwdForm: true });
+      Toasts.successToast('Please check your email, we sent verification code.')
+    } catch (error) {
+      this.setState({ isLoading: false })
+
+      Toasts.errorToast(`${error.message}`);
+    }
+  }
 
   onRegistrationSubmit = async (
     fullName: string,
@@ -134,6 +173,10 @@ class LoginPage extends React.Component<Props & RouteComponentProps, State> {
           <FormSignInWrapped
             onAuthSubmit={this.onAuthSubmit}
             onGoogleLogin={this.onGoogleLogin}
+            toggleLogin={this.toggleLogin}
+            requestResetPassword={this.requestResetPassword}
+            resetPwd={this.resetPwd}
+            {...this.state}
           />
           {isLoading && <LoadingWrapper />}
           <div className="sign-form__overlay">

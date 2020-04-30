@@ -6,9 +6,12 @@ import {
   IDivision,
   ITeam,
   ISchedule,
-  ScheduleStatuses,
 } from 'common/models';
-import { RequiredMenuKeys, EventMenuTitles } from 'common/enums';
+import {
+  RequiredMenuKeys,
+  EventMenuTitles,
+  ScheduleStatuses,
+} from 'common/enums';
 
 const getIncompleteMenuItems = (
   menuList: IMenuItem[],
@@ -59,7 +62,7 @@ const checkIsCompletedTeams = (teams: ITeam[]): boolean => {
 
 const checkIsCompletedSchedules = (schedules: ISchedule[]): boolean => {
   const isSchedulesCompleted = schedules.some(
-    it => it.schedule_status === ScheduleStatuses.PUBLISHED
+    it => it.is_published_YN === ScheduleStatuses.Published
   );
 
   return isSchedulesCompleted;

@@ -33,6 +33,7 @@ const RenderGameSlot = (props: Props) => {
   } = props;
 
   const {
+    id,
     awayTeam,
     homeTeam,
     gameDate,
@@ -44,6 +45,11 @@ const RenderGameSlot = (props: Props) => {
     divisionHex,
     awayDependsUpon,
     homeDependsUpon,
+    bracketGameId,
+    divisionId,
+    playoffIndex,
+    awayTeamId,
+    homeTeamId,
   } = game;
 
   const acceptType = [MatrixTableDropEnum.TeamDrop];
@@ -51,6 +57,9 @@ const RenderGameSlot = (props: Props) => {
   if (isPlayoff) {
     acceptType.push(MatrixTableDropEnum.BracketDrop);
   }
+
+  const awayTeamName = teamCards.find(item => item.id === awayTeamId)?.name;
+  const homeTeamName = teamCards.find(item => item.id === homeTeamId)?.name;
 
   return (
     <td
@@ -82,15 +91,21 @@ const RenderGameSlot = (props: Props) => {
                 isEnterScores={isEnterScores}
               />
             )}
-            {(awaySeedId || awayDependsUpon) && (
+            {(awaySeedId || awayDependsUpon) && bracketGameId && (
               <SeedCard
+                type={MatrixTableDropEnum.BracketDrop}
                 position={1}
                 round={playoffRound}
                 showHeatmap={true}
                 seedId={awaySeedId}
+                teamName={awayTeamName}
                 dependsUpon={awayDependsUpon}
                 divisionHex={divisionHex}
                 divisionName={divisionName}
+                slotId={id}
+                bracketGameId={bracketGameId}
+                divisionId={divisionId!}
+                playoffIndex={playoffIndex!}
               />
             )}
           </>
@@ -116,15 +131,21 @@ const RenderGameSlot = (props: Props) => {
                 isEnterScores={isEnterScores}
               />
             )}
-            {(homeSeedId || homeDependsUpon) && (
+            {(homeSeedId || homeDependsUpon) && bracketGameId && (
               <SeedCard
+                type={MatrixTableDropEnum.BracketDrop}
                 position={2}
                 round={playoffRound}
                 dependsUpon={homeDependsUpon}
                 showHeatmap={true}
                 seedId={homeSeedId}
+                teamName={homeTeamName}
                 divisionHex={divisionHex}
                 divisionName={divisionName}
+                slotId={id}
+                bracketGameId={bracketGameId}
+                divisionId={divisionId!}
+                playoffIndex={playoffIndex!}
               />
             )}
           </>

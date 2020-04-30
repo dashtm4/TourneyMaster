@@ -1,24 +1,28 @@
 .container {
+  position: relative;
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
   overflow-x: hidden;
-  position: relative;
+}
 
-  .label {
-    font-size: 16px;
-    font-weight: 600;
-    color: #6a6a6a;
-    margin-bottom: 7px;
-    white-space: nowrap;
-  }
+.label {
+  margin: 0 7px 7px 0;
 
-  .placeholder {
-    position: absolute;
-    z-index: 10;
-    top: 18px;
-    left: 18px;
-    color: silver;
-    pointer-events: none;
-  }
+  font-size: 16px;
+  font-weight: 600;
+  color: #6a6a6a;
+  white-space: nowrap;
+}
+
+.placeholder {
+  z-index: 10;
+  position: absolute;
+  top: 18px;
+  left: 18px;
+
+  color: silver;
+  pointer-events: none;
 }

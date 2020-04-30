@@ -9,7 +9,7 @@ import InteractiveTooltip from 'components/common/interactive-tooltip';
 import { BindingCbWithOne, ISchedule, IEventDetails } from 'common/models';
 import { ISchedulingSchedule } from '../types';
 import styles from '../styles.module.scss';
-import { Routes } from 'common/enums';
+import { Routes, ScheduleStatuses } from 'common/enums';
 import { getTournamentStatusColor } from 'helpers/getTournamentStatusColor';
 import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 
@@ -100,11 +100,12 @@ const TournamentPlayItem = ({
           </Tooltip>
         </div>
         <p className={styles.textWrapper}>
-          <b>Status:</b> <span>{schedule.schedule_status || '—'}</span>{' '}
+          <b>Status:</b>{' '}
+          <span>{ScheduleStatuses[schedule.is_published_YN] || '—'}</span>{' '}
           <span
             className={styles.scheduleStatus}
             style={{
-              ...getTournamentStatusColor(schedule.schedule_status),
+              ...getTournamentStatusColor(schedule.is_published_YN),
             }}
           />
         </p>

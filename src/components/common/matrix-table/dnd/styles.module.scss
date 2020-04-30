@@ -127,6 +127,7 @@
 
   &.bracketContainer {
     margin: 0;
+    background-color: #414141;
 
     &.dropContainerTop {
       border-radius: 2px 2px 0 0;
@@ -140,6 +141,7 @@
 
 .isLocked {
   cursor: not-allowed;
+  opacity: 0.7 !important;
   :active {
     cursor: not-allowed;
   }
@@ -153,6 +155,14 @@
   padding: 1px 0px 1px 5px;
   font-size: 12px;
   border-radius: 2px;
+
+  &:hover {
+    cursor: grab;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
 
   &.heatmap {
     color: #ebebeb;
@@ -170,7 +180,8 @@
       margin-right: 10px;
       margin-left: -3px;
       border-radius: 2px 2px 0 0;
-      background-color: #ffffff47;
+      background-color: #00000047;
+      // background-color: #ffffff47;
       // content: '';
       // flex-shrink: 0;
       // height: 16px;
@@ -193,7 +204,8 @@
       margin-right: 10px;
       margin-left: -3px;
       border-radius: 0 0 2px 2px;
-      background-color: #ffffff47;
+      background-color: #00000047;
+      // background-color: #ffffff47;
       // content: '';
       // flex-shrink: 0;
       // height: 16px;

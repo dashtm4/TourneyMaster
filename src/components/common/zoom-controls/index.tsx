@@ -15,7 +15,7 @@ interface Props {
   onToggleFullScreen?: BindingAction;
 }
 
-const NavControls = ({
+const ZoomControls = ({
   zoomIn,
   zoomOut,
   isFullScreen,
@@ -32,14 +32,16 @@ const NavControls = ({
         <span className="visually-hidden">Zoom out</span>
       </button>
     </p>
-    <button onClick={onToggleFullScreen} className={styles.fullScreen}>
-      {getIcon(
-        isFullScreen ? Icons.FULL_SCREEN_EXIT : Icons.FULL_SCREEN,
-        FULL_SCREEN_ICON_STYLES
-      )}
-      <span className="visually-hidden">Full screen</span>
-    </button>
+    {onToggleFullScreen && (
+      <button onClick={onToggleFullScreen} className={styles.fullScreen}>
+        {getIcon(
+          isFullScreen ? Icons.FULL_SCREEN_EXIT : Icons.FULL_SCREEN,
+          FULL_SCREEN_ICON_STYLES
+        )}
+        <span className="visually-hidden">Full screen</span>
+      </button>
+    )}
   </div>
 );
 
-export default NavControls;
+export default ZoomControls;

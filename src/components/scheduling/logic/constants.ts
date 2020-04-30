@@ -1,3 +1,5 @@
+import { ScheduleStatuses } from 'common/enums';
+
 const EMPTY_SCHEDULE = {
   schedule_id: null,
   event_id: null,
@@ -8,7 +10,6 @@ const EMPTY_SCHEDULE = {
   num_teams: null,
   min_num_games: '',
   max_num_games: '',
-  schedule_status: 'Draft',
   last_web_publish: null,
   games_start_on: '',
   pre_game_warmup: '',
@@ -16,6 +17,7 @@ const EMPTY_SCHEDULE = {
   time_btwn_periods: '',
   is_active_YN: 0,
   is_library_YN: 0,
+  is_published_YN: ScheduleStatuses.Draft,
 };
 
 export { EMPTY_SCHEDULE };

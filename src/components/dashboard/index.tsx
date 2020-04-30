@@ -22,10 +22,12 @@ import {
   ICalendarEvent,
   IOrganization,
   IEventDetails,
+  IFacility,
+  ISchedule,
 } from 'common/models';
 import OnboardingWizard from 'components/onboarding-wizard';
 import { loadOrganizations } from 'components/organizations-management/logic/actions';
-import { EventStatuses } from 'common/enums';
+import { EventStatuses, ScheduleStatuses } from 'common/enums';
 
 interface IFieldWithEventId extends IField {
   event_id: string;
@@ -36,6 +38,8 @@ interface IDashboardProps {
   events: IEventDetails[];
   teams: ITeam[];
   fields: IFieldWithEventId[];
+  facilities: IFacility[];
+  schedules: ISchedule[];
   isLoading: boolean;
   isDetailLoading: boolean;
   areCalendarEventsLoading: boolean;
@@ -210,6 +214,18 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
                       field => field.event_id === event.event_id
                     )?.length
                   }
+                  numOfLocations={
+                    this.props.facilities.filter(
+                      facility => facility.event_id === event.event_id
+                    )?.length
+                  }
+                  lastScheduleRelease={
+                    this.props.schedules.filter(
+                      schedule =>
+                        schedule.event_id === event.event_id &&
+                        schedule.is_published_YN === ScheduleStatuses.Published
+                    )[0]?.updated_datetime
+                  }
                   isDetailLoading={this.props.isDetailLoading}
                 />
               ))
@@ -339,6 +355,8 @@ interface IState {
     data: IEventDetails[];
     teams: ITeam[];
     fields: IFieldWithEventId[];
+    facilities: IFacility[];
+    schedules: ISchedule[];
     calendarEvents: ICalendarEvent[];
     isLoading: boolean;
     isDetailLoading: boolean;
@@ -351,6 +369,8 @@ const mapStateToProps = (state: IState) => ({
   events: state.events.data,
   teams: state.events.teams,
   fields: state.events.fields,
+  facilities: state.events.facilities,
+  schedules: state.events.schedules,
   calendarEvents: state.events.calendarEvents,
   isLoading: state.events.isLoading,
   isDetailLoading: state.events.isDetailLoading,

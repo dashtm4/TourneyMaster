@@ -15,10 +15,10 @@ import {
   IDivision,
   ISchedulesGame,
   ISchedule,
-  ScheduleStatuses,
 } from 'common/models';
 import { Toasts } from 'components/common';
 import { chunk } from 'lodash-es';
+import { ScheduleStatuses } from 'common/enums';
 
 const loadScoresData: ActionCreator<ThunkAction<
   void,
@@ -58,7 +58,7 @@ const loadScoresData: ActionCreator<ThunkAction<
     );
 
     const activeSchedule = schedules.find(
-      (it: ISchedule) => it.schedule_status === ScheduleStatuses.PUBLISHED
+      (it: ISchedule) => it.is_published_YN === ScheduleStatuses.Published
     );
 
     const schedulesGames = await Api.get(

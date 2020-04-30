@@ -22,7 +22,7 @@ const defaultState: IState = {
   data: undefined,
   divisions: [],
   event: undefined,
-  isLoading: false,
+  isLoading: true,
   error: false,
 };
 
@@ -32,11 +32,7 @@ export default (
 ) => {
   switch (action.type) {
     case REGISTRATION_FETCH_START: {
-      return {
-        ...state,
-        isLoading: true,
-        error: false,
-      };
+      return { ...defaultState };
     }
     case REGISTRATION_FETCH_SUCCESS: {
       return {
@@ -57,14 +53,13 @@ export default (
         ...state,
         data: action.payload,
         isLoading: false,
-        error: true,
+        error: false,
       };
     }
     case DIVISIONS_FETCH_SUCCESS: {
       return {
         ...state,
         divisions: sortByField(action.payload, SortByFilesTypes.DIVISIONS),
-        isLoading: false,
         error: false,
       };
     }

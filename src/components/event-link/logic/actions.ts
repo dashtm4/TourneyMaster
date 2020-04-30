@@ -88,7 +88,7 @@ export const sendMessages: ActionCreator<ThunkAction<
   if (!response || response.status === 500) {
     return Toasts.errorToast(response.message);
   }
-  console.log(response.results);
+
   // Save messages
 
   const currentSession = await Auth.currentSession();
@@ -108,9 +108,8 @@ export const sendMessages: ActionCreator<ThunkAction<
     message_body: message.message,
     send_datetime: message.send_datetime,
     status: message.status,
+    email_from_name: data.senderName,
   }));
-
-  console.log(messagesToSave);
 
   const messagesToSaveChunk = chunk(messagesToSave, 50);
 
@@ -152,6 +151,7 @@ export const saveMessages: ActionCreator<ThunkAction<
     message_title: data.title,
     message_body: data.message,
     status: 0,
+    email_from_name: data.senderName,
   }));
 
   const messagesToSaveChunk = chunk(messagesToSave, 50);
@@ -182,6 +182,7 @@ export const sendSavedMessages: ActionCreator<ThunkAction<
     title: data.message_title,
     message: data.message_body,
     recipients: data.recipients,
+    senderName: data.senderName,
   };
 
   const response = await api.post('/event-link', message);
@@ -189,7 +190,6 @@ export const sendSavedMessages: ActionCreator<ThunkAction<
   if (!response || response.status === 500) {
     return Toasts.errorToast(response.message);
   }
-  console.log(response.results);
 
   // update messages in db
 
@@ -208,8 +208,6 @@ export const sendSavedMessages: ActionCreator<ThunkAction<
       status: message.status,
     })
   );
-
-  console.log(messagesToUpdate);
 
   const messagesToUpdateChunk = chunk(messagesToUpdate, 50);
 
@@ -251,6 +249,10 @@ export const getMessages: ActionCreator<ThunkAction<
   { type: string }
 >> = () => async (dispatch: Dispatch) => {
   const messages = await api.get('/messaging');
+
+  if (!messages) {
+    return Toasts.errorToast("Couldn't load the messages.");
+  }
 
   dispatch(getMessagesSuccess(messages));
 };

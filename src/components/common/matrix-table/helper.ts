@@ -2,7 +2,6 @@ import { orderBy, findIndex, union } from 'lodash-es';
 import { IField } from 'common/models/schedule/fields';
 import { ITeamCard } from 'common/models/schedule/teams';
 import ITimeSlot from 'common/models/schedule/timeSlots';
-import { DayTypes } from '../table-schedule/types';
 
 export enum TeamPositionEnum {
   'awayTeam' = 1,
@@ -19,7 +18,7 @@ export interface IGame {
   timeSlotId: number;
   fieldId: string;
   isPremier?: boolean;
-  // added new
+  // PLAYOFFS
   awayDependsUpon?: number;
   homeDependsUpon?: number;
   isPlayoff?: boolean;
@@ -27,11 +26,14 @@ export interface IGame {
   playoffIndex?: number;
   awaySeedId?: number;
   homeSeedId?: number;
+  awayTeamId?: string;
+  homeTeamId?: string;
   awayDisplayName?: string;
   homeDisplayName?: string;
   divisionName?: string;
   divisionHex?: string;
   divisionId?: string;
+  bracketGameId?: string;
   gameDate?: string;
   scheduleVersionId?: string;
   createDate?: string;
@@ -44,7 +46,14 @@ export interface IDefinedGames {
 }
 
 export const sortFieldsByPremier = (fields: IField[]) => {
-  return orderBy(fields, ['isPremier', 'facilityId'], 'desc');
+  return fields.sort(
+    (a, b): any =>
+      (b.isPremier ? 1 : 0) - (a.isPremier ? 1 : 0) ||
+      a.facilityName.localeCompare(b.facilityName, undefined, {
+        numeric: true,
+      }) ||
+      a.name?.localeCompare(b.name!, undefined, { numeric: true })
+  );
 };
 
 export const defineGames = (
@@ -121,13 +130,13 @@ export const settleTeamsPerGames = (
   if (days?.length && days?.length > 1 && selectedDay) {
     return games.map(game => ({
       ...game,
-      gameDate: days[DayTypes[selectedDay] - 1],
+      gameDate: days[+selectedDay - 1],
       awayTeam: teamCards.find(
         team =>
           findIndex(team.games, {
             id: game.id,
             teamPosition: 1,
-            date: days[DayTypes[selectedDay] - 1],
+            date: days[+selectedDay - 1],
           }) >= 0
       ),
       homeTeam: teamCards.find(
@@ -135,7 +144,7 @@ export const settleTeamsPerGames = (
           findIndex(team.games, {
             id: game.id,
             teamPosition: 2,
-            date: days[DayTypes[selectedDay] - 1],
+            date: days[+selectedDay - 1],
           }) >= 0
       ),
     }));

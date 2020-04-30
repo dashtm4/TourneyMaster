@@ -6,8 +6,7 @@
 
   height: 100vh;
 
-  background: url(https://www.tourneymaster.org/wp-content/uploads/2020/01/Background.jpg)
-    no-repeat center center fixed;
+  background: url(https://www.tourneymaster.org/wp-content/uploads/2020/01/Background.jpg) no-repeat center center fixed;
 
   background-size: cover;
 
@@ -100,10 +99,10 @@
   }
 }
 
-:local(.accountPassword) {
+:local(.resetEmail) {
   width: 100%;
-  margin: 8px 0 15px;
-
+  margin: 8px 0;
+  margin-top: 40px;
   input {
     width: inherit;
     padding: 12px 15px;
@@ -115,6 +114,37 @@
   }
 }
 
+:local(.accountPassword) {
+  width: 100%;
+  margin: 8px 0 15px;
+  input {
+    width: inherit;
+    padding: 12px 15px;
+
+    font-size: 14px;
+
+    background-color: #eee;
+    border: 0;
+  }
+}
+
+:local(.resetPassword) {
+  width: 100%;
+  margin: 8px 0 15px;
+  margin-top: 8px;
+  input {
+    width: inherit;
+    padding: 12px 15px;
+
+    font-size: 14px;
+
+    background-color: #eee;
+    border: 0;
+  }
+}
+:local(.newpwdInput) {
+  margin-top: 8px;
+}
 :local(.accountName) {
   width: 100%;
   margin: 8px 0 15px;
@@ -159,6 +189,54 @@
 
   &:active {
     transform: scale(0.95);
+  }
+}
+
+:local(.reset) {
+  padding: 12px 45px;
+  margin-top: 20px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  background-color: #0081b9;
+
+  border: 0;
+  border-radius: 20px;
+
+  transition: transform 80ms ease-in;
+
+  cursor: pointer;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+:local(.forgot) {
+  margin: 30px;
+  padding: 0;
+  background: transparent;
+
+  color: #1c315f;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+
+  border: 0;
+  border-radius: 20px;
+
+  transition: transform 80ms ease-in;
+
+  cursor: pointer;
+
+  &:active {
+    text-decoration: underline;
+  }
+  &:hover {
+    text-decoration: underline;
   }
 }
 

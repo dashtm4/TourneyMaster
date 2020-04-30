@@ -31,6 +31,7 @@ export interface IMessageToSend {
   title: string;
   message: string;
   recipients: any[];
+  senderName: string;
 }
 
 interface Props {
@@ -61,6 +62,7 @@ const CreateMessage = ({
     title: '',
     message: '',
     recipients: [''],
+    senderName: '',
   });
 
   const eventOptions = events.length
@@ -111,6 +113,10 @@ const CreateMessage = ({
 
   const onRecipientChange = (e: IInputEvent) => {
     setMessage({ ...data, recipients: [e.target.value] });
+  };
+
+  const onSenderNameChange = (e: IInputEvent) => {
+    setMessage({ ...data, senderName: e.target.value });
   };
 
   const onSend = () => {
@@ -253,12 +259,20 @@ const CreateMessage = ({
       <div className={styles.inputGroup}>
         <div>
           {data.type === 'Email' && (
-            <Input
-              label="Title"
-              fullWidth={true}
-              onChange={onTitleChange}
-              value={data.title}
-            />
+            <>
+              <Input
+                label="From"
+                fullWidth={true}
+                onChange={onSenderNameChange}
+                value={data.senderName}
+              />
+              <Input
+                label="Title"
+                fullWidth={true}
+                onChange={onTitleChange}
+                value={data.title}
+              />
+            </>
           )}
           <Input
             label="Message"

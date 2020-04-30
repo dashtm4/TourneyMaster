@@ -6,6 +6,7 @@ import {
   DASHBOARD_FETCH_START,
   CALENDAR_EVENTS_FETCH_START,
   CALENDAR_EVENTS_FETCH_SUCCESS,
+  DASHBOARD_SCHEDULES_FETCH_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
 import { ActionCreator, Dispatch } from 'redux';
@@ -17,6 +18,7 @@ import {
   IField,
   ICalendarEvent,
   IEventDetails,
+  ISchedule,
 } from 'common/models';
 
 export const fetchStart = (): { type: string } => ({
@@ -45,10 +47,21 @@ export const dashboardTeamsFetchSuccess = (
   payload,
 });
 
-export const fieldsFetchSuccess = (
-  payload: IField[]
-): { type: string; payload: IField[] } => ({
+export const fieldsFetchSuccess = (payload: {
+  facilities: IFacility[];
+  fields: IField[];
+}): {
+  type: string;
+  payload: { facilities: IFacility[]; fields: IField[] };
+} => ({
   type: FIELDS_FETCH_SUCCESS,
+  payload,
+});
+
+export const schedulesFetchSuccess = (
+  payload: ISchedule[]
+): { type: string; payload: ISchedule[] } => ({
+  type: DASHBOARD_SCHEDULES_FETCH_SUCCESS,
   payload,
 });
 
@@ -93,7 +106,11 @@ export const getEvents: ActionCreator<ThunkAction<
     }));
     fields = [...fields, ...updFields];
   }
-  dispatch(fieldsFetchSuccess(fields));
+
+  const schedules = await api.get('/schedules');
+
+  dispatch(fieldsFetchSuccess({ fields, facilities }));
+  dispatch(schedulesFetchSuccess(schedules));
   dispatch(dashboardTeamsFetchSuccess(teams));
 };
 

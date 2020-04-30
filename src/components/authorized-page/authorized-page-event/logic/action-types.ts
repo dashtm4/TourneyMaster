@@ -1,4 +1,4 @@
-import { ITournamentData, IEvent } from 'common/models';
+import { ITournamentData, IEventDetails } from 'common/models';
 import { IEntity } from 'common/types';
 import { EntryPoints } from 'common/enums';
 
@@ -8,8 +8,8 @@ export const LOAD_AUTH_PAGE_DATA_FAILURE = 'LOAD_AUTH_PAGE_DATA_FAILURE';
 
 export const CLEAR_AUTH_PAGE_DATA = 'CLEAR_AUTH_PAGE_DATA';
 
-export const PUBLISH_TOURNAMENT_SUCCESS = 'PUBLISH_TOURNAMENT_SUCCESS';
-export const PUBLISH_TOURNAMENT_FAILURE = 'PUBLISH_TOURNAMENT_FAILURE';
+export const PUBLISH_EVENT_SUCCESS = 'PUBLISH_EVENT_SUCCESS';
+export const PUBLISH_EVENT_FAILURE = 'PUBLISH_EVENT_FAILURE';
 
 export const ADD_ENTITY_TO_LIBRARY_SUCCESS = 'ADD_ENTITY_TO_LIBRARY_SUCCESS';
 export const ADD_ENTITY_TO_LIBRARY_FAILURE = 'ADD_ENTITY_TO_LIBRARY_FAILURE';
@@ -34,10 +34,10 @@ export interface cleatAuthPageData {
   type: 'CLEAR_AUTH_PAGE_DATA';
 }
 
-export interface publishTournamentSuccess {
-  type: 'PUBLISH_TOURNAMENT_SUCCESS';
+export interface publishEventSuccess {
+  type: 'PUBLISH_EVENT_SUCCESS';
   payload: {
-    event: IEvent;
+    event: IEventDetails;
   };
 }
 
@@ -61,6 +61,6 @@ export type AuthPageAction =
   | loadAuthPageDataStart
   | loadAuthPageDataSuccess
   | cleatAuthPageData
-  | publishTournamentSuccess
+  | publishEventSuccess
   | addEntityToLibrarySuccess
   | addEntitiesToLibrarySuccess;
