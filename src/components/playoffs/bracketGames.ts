@@ -25,6 +25,9 @@ export interface IBracketGame {
   //
   awayDependsUpon?: number;
   homeDependsUpon?: number;
+  // score
+  awayTeamScore?: number;
+  homeTeamScore?: number;
   // venue time date
   fieldId?: string;
   fieldName?: string;
@@ -84,21 +87,50 @@ export const createSeedsFromBrackets = (
 };
 
 export const createSeedsFromNum = (
-  bracketTeamsNum: number,
+  bracketGames: IBracketGame[],
   divisions: IDivision[],
+  teams: ITeam[] | undefined,
   sortedTeams: IPlayoffSortedTeams | null | undefined
 ): ISeedDictionary => {
   const seedsDictionary = {};
+
   divisions.forEach(item => {
+    const seedsNum = bracketGames
+      .map(v => [v.awaySeedId || 0, v.homeSeedId || 0])
+      .flat()
+      .sort((a, b) => b - a)[0];
+
+    const getTeamId = (divisionId: string, seedId: number) => {
+      const awayTeamId = bracketGames.find(
+        bracketGame =>
+          bracketGame.divisionId === divisionId &&
+          bracketGame.awaySeedId === seedId
+      )?.awayTeamId;
+
+      const homeTeamId = bracketGames.find(
+        bracketGame =>
+          bracketGame.divisionId === divisionId &&
+          bracketGame.homeSeedId === seedId
+      )?.homeTeamId;
+
+      return awayTeamId || homeTeamId;
+    };
+
+    const getTeamName = (teamId?: string) =>
+      teams?.find(team => team.team_id === teamId)?.short_name;
+
     const divisionTeams = sortedTeams && sortedTeams[item.division_id];
-    seedsDictionary[item.division_id] = [...Array(bracketTeamsNum)].map(
-      (_, i) => ({
+    seedsDictionary[item.division_id] = [...Array(seedsNum)].map((_, i) => {
+      const teamId = getTeamId(item.division_id, i + 1);
+      const teamName = getTeamName(teamId);
+
+      return {
         id: i + 1,
         name: `Seed ${i + 1}`,
-        teamId: divisionTeams ? divisionTeams[i].team_id : undefined,
-        teamName: divisionTeams ? divisionTeams[i].short_name : undefined,
-      })
-    );
+        teamId: divisionTeams ? divisionTeams[i].team_id : teamId,
+        teamName: divisionTeams ? divisionTeams[i].short_name : teamName,
+      };
+    });
   });
   return seedsDictionary;
 };

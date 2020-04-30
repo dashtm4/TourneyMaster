@@ -819,6 +819,7 @@ class Schedules extends Component<Props, State> {
             onUndo={onScheduleUndo}
             onToggleFullScreen={onToggleFullScreen}
             playoffTimeSlots={playoffTimeSlots}
+            onBracketGameUpdate={() => {}}
           />
         ) : (
           <div className={styles.loadingWrapper}>

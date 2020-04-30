@@ -27,11 +27,17 @@ const BracketGameSlot = (props: IProps) => {
     return `${key} Game ${depends}`;
   };
 
-  const onRemovePressed = () => onRemove(game.index);
+  const onRemovePressed = () => {
+    onRemove(game.index);
+  };
 
   const getSeedData = (game: IBracketGame, seeds?: IBracketSeed[]) => {
-    const awaySeed = seeds?.find(item => item.id === game.awaySeedId);
-    const homeSeed = seeds?.find(item => item.id === game.homeSeedId);
+    const awaySeed = seeds?.find(
+      seed => seed.teamId === game.awayTeamId || seed.id === game.awaySeedId
+    );
+    const homeSeed = seeds?.find(
+      seed => seed.teamId === game.homeTeamId || seed.id === game.homeSeedId
+    );
 
     return {
       awayTeamId: awaySeed?.teamId,
@@ -42,10 +48,7 @@ const BracketGameSlot = (props: IProps) => {
   };
 
   return (
-    <div
-      key={game?.index}
-      className={`${styles.bracketGame} ${game?.hidden && styles.hidden}`}
-    >
+    <div className={`${styles.bracketGame} ${game?.hidden && styles.hidden}`}>
       <SeedsContext.Consumer>
         {seeds => (
           <>
@@ -55,14 +58,14 @@ const BracketGameSlot = (props: IProps) => {
               type="seed"
               onDrop={onDrop}
               placeholder={
-                !seedRound
+                !seedRound && !game.awayTeamId
                   ? getDisplayName(game.round, game.awayDependsUpon)
                   : ''
               }
             >
-              {game?.awaySeedId ? (
+              {game?.awaySeedId || game?.awayTeamId ? (
                 <Seed
-                  id={game?.awaySeedId}
+                  seedId={game?.awaySeedId}
                   name={String(game?.awaySeedId)}
                   teamId={getSeedData(game, seeds).awayTeamId}
                   teamName={getSeedData(game, seeds).awayTeamName}
@@ -104,14 +107,14 @@ const BracketGameSlot = (props: IProps) => {
               type="seed"
               onDrop={onDrop}
               placeholder={
-                !seedRound
+                !seedRound && !game.homeTeamId
                   ? getDisplayName(game.round, game.homeDependsUpon)
                   : ''
               }
             >
-              {game?.homeSeedId ? (
+              {game?.homeSeedId || game?.homeTeamId ? (
                 <Seed
-                  id={game?.homeSeedId}
+                  seedId={game?.homeSeedId}
                   name={String(game?.homeSeedId)}
                   teamId={getSeedData(game, seeds).homeTeamId}
                   teamName={getSeedData(game, seeds).homeTeamName}

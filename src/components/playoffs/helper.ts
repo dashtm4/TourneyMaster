@@ -213,6 +213,8 @@ export const updateGameSlot = (
     divisionHex: division?.division_hex,
     playoffRound: bracketGame?.round,
     playoffIndex: bracketGame?.index,
+    awayTeamScore: bracketGame?.awayTeamScore,
+    homeTeamScore: bracketGame?.homeTeamScore,
   };
 };
 

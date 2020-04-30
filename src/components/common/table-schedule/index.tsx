@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import { find } from 'lodash-es';
 import ListUnassigned from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
@@ -47,6 +48,8 @@ import TeamsDiagnostics from 'components/schedules/diagnostics/teamsDiagnostics'
 import DivisionsDiagnostics from 'components/schedules/diagnostics/divisionsDiagnostics';
 import { IDiagnosticsInput } from 'components/schedules/diagnostics';
 import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
+import { IBracketGame } from 'components/playoffs/bracketGames';
+import { updateGameSlot } from 'components/playoffs/helper';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -70,6 +73,8 @@ interface Props {
   onUndo: () => void;
   onToggleFullScreen?: BindingAction;
   playoffTimeSlots?: ITimeSlot[];
+  bracketGames?: IBracketGame[];
+  onBracketGameUpdate: (bracketGame: IBracketGame) => void;
 }
 
 const TableSchedule = ({
@@ -94,6 +99,8 @@ const TableSchedule = ({
   isFullScreen,
   onToggleFullScreen,
   playoffTimeSlots,
+  bracketGames,
+  onBracketGameUpdate,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -126,6 +133,17 @@ const TableSchedule = ({
         games,
         playoffTimeSlots
       );
+
+      definedGames = definedGames.map(item => {
+        const foundBracketGame = find(bracketGames, {
+          fieldId: item.fieldId,
+          startTime: item.startTime,
+        });
+
+        return foundBracketGame
+          ? updateGameSlot(item, foundBracketGame, divisions)
+          : item;
+      });
     }
 
     const filledGames = settleTeamsPerGames(
@@ -136,7 +154,7 @@ const TableSchedule = ({
     );
     const filteredGames = mapGamesByFilter([...filledGames], filterValues);
     return filteredGames;
-  }, [games, teamCards, days, filterValues, playoffTimeSlots]);
+  }, [games, teamCards, days, filterValues, playoffTimeSlots, bracketGames]);
 
   const [tableGames, setTableGames] = useState<IGame[]>(manageGamesData());
 
@@ -148,6 +166,22 @@ const TableSchedule = ({
   useEffect(() => setTableGames(manageGamesData()), [manageGamesData]);
 
   const updatedFields = mapUnusedFields(fields, tableGames, filterValues);
+
+  const onGameUpdate = (game: IGame) => {
+    const foundBracketGame = bracketGames?.find(
+      item => item.id === game.bracketGameId
+    );
+
+    if (!foundBracketGame) return;
+
+    const updatedBracketGame: IBracketGame = {
+      ...foundBracketGame,
+      awayTeamScore: game.awayTeamScore,
+      homeTeamScore: game.homeTeamScore,
+    };
+
+    onBracketGameUpdate(updatedBracketGame);
+  };
 
   const onFilterChange = (data: IScheduleFilter) => {
     const newData = mapFilterValues({ teamCards, pools }, data);
@@ -296,6 +330,7 @@ const TableSchedule = ({
               teamCards={teamCards}
               isFullScreen={isFullScreen}
               onToggleFullScreen={onToggleFullScreen}
+              onGameUpdate={onGameUpdate}
             />
           </div>
         </DndProvider>

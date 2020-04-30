@@ -16,10 +16,10 @@ const BracketRound = (props: IProps) => {
   return (
     <div className={styles.bracketRound}>
       <span className={styles.roundTitle}>{title}</span>
-      {games.map(game => (
+      {games.map((game, index) => (
         <BracketGameSlot
           onRemove={onRemove}
-          key={`${Math.random()}-round`}
+          key={`${index}-round`}
           seedRound={seedRound}
           game={game}
           onDrop={onDrop}

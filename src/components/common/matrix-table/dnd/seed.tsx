@@ -1,9 +1,11 @@
 import React from 'react';
-import styles from './styles.module.scss';
-import { getContrastingColor } from '../helper';
+import { getContrastingColor, IGame } from '../helper';
 import { useDrag } from 'react-dnd';
+import { TableScheduleTypes } from 'common/enums';
+import styles from './styles.module.scss';
 
 interface Props {
+  tableType: TableScheduleTypes;
   position: 1 | 2;
   seedId?: number;
   round?: number;
@@ -17,6 +19,9 @@ interface Props {
   bracketGameId: string;
   type: string;
   teamName?: string;
+  teamScore?: number;
+  isEnterScores?: boolean;
+  onGameUpdate: (gameChanges: Partial<IGame>) => void;
 }
 
 export default (props: Props) => {
@@ -33,6 +38,10 @@ export default (props: Props) => {
     type,
     bracketGameId,
     teamName,
+    teamScore,
+    isEnterScores,
+    onGameUpdate,
+    tableType,
   } = props;
 
   const [{ isDragging }, drag] = useDrag({
@@ -42,12 +51,37 @@ export default (props: Props) => {
     }),
   });
 
+  const positionedTeam = position === 1 ? 'awayTeamScore' : 'homeTeamScore';
+
+  const onChangeScore = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onGameUpdate({
+      [positionedTeam]: Number(e.target.value),
+    });
+  };
+
   const getDisplayName = (round?: number, depends?: number) => {
     if (!round || !depends) return;
     const key = round >= 0 ? 'Winner' : 'Loser';
     return `${key} Game ${depends}`;
   };
 
+  const renderScoringInput = () => (
+    <p className={styles.cardOptionsWrapper}>
+      <label className={styles.scoresInputWrapper}>
+        <input
+          onChange={onChangeScore}
+          value={teamScore || ''}
+          type="number"
+          min="0"
+          style={{
+            color: isEnterScores ? '#000000' : getContrastingColor(divisionHex),
+            backgroundColor: isEnterScores ? '#ffffff' : '',
+          }}
+          readOnly={!isEnterScores}
+        />
+      </label>
+    </p>
+  );
   return (
     <div
       ref={drag}
@@ -60,11 +94,14 @@ export default (props: Props) => {
         opacity: isDragging ? 0.8 : 1,
       }}
     >
-      {teamName
-        ? `${teamName} (${divisionName})`
-        : seedId
-        ? `Seed ${seedId} (${divisionName})`
-        : getDisplayName(round, dependsUpon)}
+      <span className={styles.seedName}>
+        {teamName
+          ? `${teamName} (${divisionName})`
+          : seedId
+          ? `Seed ${seedId} (${divisionName})`
+          : getDisplayName(round, dependsUpon)}
+      </span>
+      {tableType === TableScheduleTypes.SCORES && renderScoringInput()}
     </div>
   );
 };
