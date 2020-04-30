@@ -16,6 +16,7 @@ import {
 } from 'common/enums';
 import { IInputEvent } from 'common/types';
 import { getSettingsComponents, getSettingItemById } from '../../helpers';
+import { getPublishedSchedule, getPublishedBracket } from './helpers';
 import { PublishSettingFields } from '../../common';
 import styles from './styles.module.scss';
 
@@ -46,8 +47,15 @@ const ConfirmSection = ({
   onClose,
   publishEventData,
 }: Props) => {
-  const DEFAULT_SELECTED_SCHEDULE = schedules[0] || null;
-  const DEFAULT_SELECTED_BRACKET = brackets[0] || null;
+  const DEFAULT_SELECTED_SCHEDULE =
+    modifyModValue === EventModifyTypes.UNPUBLISH
+      ? getPublishedSchedule(schedules)
+      : schedules[0] || null;
+  const DEFAULT_SELECTED_BRACKET =
+    modifyModValue === EventModifyTypes.UNPUBLISH
+      ? getPublishedBracket(brackets)
+      : brackets[0] || null;
+
   const [publishSettings, changePublishSettings] = React.useState<
     IPublishSettings
   >({
