@@ -102,7 +102,7 @@ class BracketManager extends Component<IProps> {
         <span>{index + 1}.</span>
         <Seed
           key={item.id}
-          id={item.id}
+          seedId={item.id}
           name={item.name}
           type={this.dragType}
           teamId={item.teamId}

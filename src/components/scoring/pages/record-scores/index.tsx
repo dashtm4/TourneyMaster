@@ -23,6 +23,8 @@ import {
 import {
   retrieveBracketsGames,
   fetchBracketGames,
+  savePlayoff,
+  retrieveBrackets,
 } from 'components/playoffs/logic/actions';
 import { Routes, TableScheduleTypes } from 'common/enums';
 import styles from './styles.module.scss';
@@ -97,6 +99,8 @@ interface Props {
     bracketGames: IBracketGame[],
     skipHistory?: boolean
   ) => void;
+  savePlayoff: (bracketGames: IBracketGame[]) => void;
+  retrieveBrackets: (bracketId: string) => void;
 }
 
 interface State {
@@ -130,7 +134,11 @@ class RecordScores extends React.Component<
   }
 
   async componentDidMount() {
-    const { loadScoresData, retrieveBracketsGames } = this.props;
+    const {
+      loadScoresData,
+      retrieveBrackets,
+      retrieveBracketsGames,
+    } = this.props;
     const eventId = this.props.match.params.eventId;
     this.props.clearSchedulesTable();
     const brackets: (
@@ -144,6 +152,7 @@ class RecordScores extends React.Component<
       loadScoresData(eventId);
 
       if (publishedBracketId) {
+        retrieveBrackets(publishedBracketId);
         retrieveBracketsGames(publishedBracketId);
       }
     }
@@ -269,10 +278,15 @@ class RecordScores extends React.Component<
   };
 
   saveDraft = async () => {
+    const { bracketGames } = this.props;
     const schedulesGames = await this.retrieveSchedulesGames();
 
     if (!schedulesGames) {
       throw errorToast('Failed to save schedules data');
+    }
+
+    if (bracketGames?.length) {
+      this.props.savePlayoff(bracketGames);
     }
 
     this.props.saveGames(schedulesGames);
@@ -312,9 +326,34 @@ class RecordScores extends React.Component<
 
   onBracketGameUpdate = (bracketGame: IBracketGame) => {
     const { bracketGames } = this.props;
-    const newBracketGames = bracketGames?.map(item =>
-      item.id === bracketGame.id ? bracketGame : item
-    )!;
+
+    if (!bracketGames) return;
+
+    const whoIsWinner =
+      (bracketGame.homeTeamScore || 0) > (bracketGame.awayTeamScore || 0)
+        ? bracketGame.homeTeamId
+        : bracketGame.awayTeamId;
+
+    const newBracketGames = bracketGames.map(item => {
+      if (
+        item.divisionId === bracketGame.divisionId &&
+        (item.awayDependsUpon === bracketGame.index ||
+          item.homeDependsUpon === bracketGame.index)
+      ) {
+        const isAwayTeam = item.awayDependsUpon === whoIsWinner;
+        const positionedTeam = isAwayTeam ? 'awayTeamId' : 'homeTeamId';
+
+        return {
+          ...item,
+          [positionedTeam]: whoIsWinner,
+        };
+      }
+
+      if (item.id === bracketGame.id) return bracketGame;
+
+      return item;
+    });
+
     this.props.fetchBracketGames(newBracketGames, true);
   };
 
@@ -429,6 +468,8 @@ export default connect(
         clearSchedulesTable,
         retrieveBracketsGames,
         fetchBracketGames,
+        savePlayoff,
+        retrieveBrackets,
       },
       dispatch
     )
