@@ -1,9 +1,10 @@
-import { orderBy, union, min, max } from 'lodash-es';
+import { orderBy, union, min, max, groupBy } from 'lodash-es';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IBracketGame } from './bracketGames';
 import { IOnAddGame } from './add-game-modal';
 import { getVarcharEight } from 'helpers';
 import { IDivision, IField } from 'common/models';
+import { ITeamCard } from 'common/models/schedule/teams';
 
 interface IBracketMoveWarning {
   gameAlreadyAssigned: boolean;
@@ -233,15 +234,15 @@ export const setReplacementMessage = (
       return {
         message: BracketMoveWarnEnum.gamePlayTimeInvalid,
       };
-    case warnings.gameAlreadyAssigned:
-      return {
-        bracketGames,
-        message: BracketMoveWarnEnum.gameAlreadyAssigned,
-      };
     case warnings.facilitiesDiffer:
       return {
         bracketGames,
         message: BracketMoveWarnEnum.facilitiesDiffer,
+      };
+    case warnings.gameAlreadyAssigned:
+      return {
+        bracketGames,
+        message: BracketMoveWarnEnum.gameAlreadyAssigned,
       };
     default:
       return null;
@@ -266,8 +267,11 @@ export const updateBracketGamesDndResult = (
   bracketGames: IBracketGame[],
   games: IGame[],
   fields: IField[],
-  originId?: number
+  originId?: number,
+  teamCards?: ITeamCard[]
 ) => {
+  const playoffsGameDate = games.map(v => v.gameDate).filter(v => v)[0];
+
   const warnings: IBracketMoveWarning = {
     gameAlreadyAssigned: false,
     gamePlayTimeInvalid: false,
@@ -349,8 +353,34 @@ export const updateBracketGamesDndResult = (
     .filter(item => divisionGames.some(dg => dg.id === item.bracketGameId))
     .map(item => item.facilityId);
 
+  const divisionGameIds = teamCards
+    ?.filter(item => item.divisionId === bracketGame?.divisionId)
+    .map(item =>
+      item.games?.filter(v => v.date === playoffsGameDate)?.map(v => v.id)
+    )
+    .flat();
+
+  const tableGames = games
+    .filter(item => item.gameDate === playoffsGameDate)
+    .filter(item => divisionGameIds?.includes(item.id));
+
+  const facilitiesIds = Object.keys(groupBy(tableGames, 'facilityId')).map(
+    key => key
+  );
+
+  const bracketGamesFacilitiesUnmatch =
+    gameSlot?.facilityId &&
+    !divisionGamesFacilitiesIds.includes(gameSlot?.facilityId);
+
+  const regularGamesFacilitiesUnmatch =
+    divisionGamesFacilitiesIds.length === 0
+      ? gameSlot?.facilityId &&
+        facilitiesIds.length > 0 &&
+        !facilitiesIds.includes(gameSlot?.facilityId)
+      : bracketGamesFacilitiesUnmatch;
+
   warnings.facilitiesDiffer = Boolean(
-    gameSlot && !divisionGamesFacilitiesIds.includes(gameSlot.facilityId)
+    bracketGamesFacilitiesUnmatch && regularGamesFacilitiesUnmatch
   );
 
   return { bracketGames, warnings };

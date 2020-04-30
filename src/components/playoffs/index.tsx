@@ -407,7 +407,7 @@ class Playoffs extends Component<IProps> {
   };
 
   updateMergedGames = (gameId: string, slotId: number, originId?: number) => {
-    const { bracketGames, fields } = this.props;
+    const { bracketGames, fields, schedulesTeamCards } = this.props;
     const { tableGames } = this.state;
 
     if (!bracketGames || !tableGames || !fields)
@@ -419,7 +419,8 @@ class Playoffs extends Component<IProps> {
       bracketGames,
       tableGames,
       fields,
-      originId
+      originId,
+      schedulesTeamCards
     );
 
     const warningResult = setReplacementMessage(
