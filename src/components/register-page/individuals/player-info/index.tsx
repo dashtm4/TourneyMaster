@@ -7,7 +7,7 @@ import PhoneInput from 'react-phone-input-2';
 import { IIndivisualsRegister } from 'common/models/register';
 
 interface IPlayerInfoProps {
-  data: IIndivisualsRegister;
+  data: Partial<IIndivisualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
   fillParticipantInfo: any;
 }

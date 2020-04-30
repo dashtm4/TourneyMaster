@@ -5,7 +5,7 @@ import { BindingCbWithTwo } from 'common/models';
 import { IIndivisualsRegister } from 'common/models/register';
 
 interface IPlayerStatsProps {
-  data: IIndivisualsRegister;
+  data: Partial<IIndivisualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
 }
 
@@ -154,7 +154,7 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
           <Input
             fullWidth={true}
             type="number"
-            label="High School Graduation Year"
+            label="HS Graduation Year"
             value={data.hs_graduation_year || ''}
             onChange={onGraduationYearChange}
           />

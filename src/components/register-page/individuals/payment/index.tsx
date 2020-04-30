@@ -4,9 +4,10 @@ import { Input, Select } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
 import { IIndivisualsRegister } from 'common/models/register';
 import { CardElement } from '@stripe/react-stripe-js';
+import stripeLogo from 'assets/stripeLogo.png';
 
 interface IPaymentProps {
-  data: IIndivisualsRegister;
+  data: Partial<IIndivisualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
 }
 
@@ -71,25 +72,36 @@ const Payment = ({ data, onChange }: IPaymentProps) => {
           />
         </div>
       </div>
-      <div>
-        <div className={styles.sectionTitle}>Card Details</div>
-        <CardElement
-          className={styles.stripeElement}
-          options={{
-            iconStyle: 'solid',
-            style: {
-              base: {
-                iconColor: '#1c315f',
-                fontSize: '16px',
-                color: '#6a6a6a',
-                '::placeholder': {
-                  color: '#aab7c4',
+      <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '48%' }}>
+          <div className={styles.sectionTitle}>Card Details</div>
+          <CardElement
+            className={styles.stripeElement}
+            options={{
+              disabled: data.payment_method !== 'Credit Card' ? true : false,
+              iconStyle: 'solid',
+              style: {
+                base: {
+                  iconColor: '#1c315f',
+                  fontSize: '16px',
+                  color: '#6a6a6a',
+                  '::placeholder': {
+                    color: '#aab7c4',
+                  },
+                },
+                invalid: {
+                  color: '#9e2146',
                 },
               },
-              invalid: {
-                color: '#9e2146',
-              },
-            },
+            }}
+          />
+        </div>
+        <img
+          src={stripeLogo}
+          style={{
+            marginLeft: '46px',
+            width: '150px',
+            height: '75px',
           }}
         />
       </div>

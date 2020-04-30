@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from 'assets/logo.png';
-import './styles.css';
+import styles from './styles.module.scss';
 
 const Header = () => (
-  <header className="header">
-    <div className="header__wrapper">
-      <p className="header__logo-wrapper">
+  <header className={styles.header}>
+    <div className={styles.headerWrapper}>
+      <p className={styles.headerLogoWrapper}>
         <Link to="/">
           <img src={logo} width="157" height="122" alt="Tourneymaster logo" />
         </Link>

@@ -5,7 +5,7 @@ import { BindingCbWithTwo } from 'common/models';
 import { ITeamsRegister } from 'common/models/register';
 
 interface ITeamProps {
-  data: ITeamsRegister;
+  data: Partial<ITeamsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
 }
 const teamLevelOptions = [{ label: 'Level1', value: 'level1' }];

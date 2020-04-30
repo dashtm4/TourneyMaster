@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -7,8 +7,9 @@ import {
   Button,
   HeadingLevelThree,
   Radio,
-  HeadingLevelTwo,
   Toasts,
+  HeadingLevelTwo,
+  Loader,
 } from 'components/common';
 import styles from './styles.module.scss';
 import Paper from 'components/common/paper';
@@ -23,15 +24,52 @@ import { Modal } from 'components/common';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Header from './header';
 import Footer from 'components/footer';
+import axios from 'axios';
+import { IEventDetails, IRegistration } from 'common/models';
+import SideBar from './side-bar';
+import { getVarcharEight } from 'helpers';
+import { IIndivisualsRegister, ITeamsRegister } from 'common/models/register';
 
 enum TypeOptions {
   'Individual' = 1,
   'Team' = 2,
 }
 
+export interface RegisterMatchParams {
+  match: {
+    params: {
+      eventId?: string;
+    };
+  };
+}
 const typeOptions = ['Individual', 'Team'];
 
-const RegisterPage = () => {
+const RegisterPage = ({ match }: RegisterMatchParams) => {
+  const [event, setEvent] = useState<IEventDetails | null>(null);
+  const [
+    eventRegistration,
+    setEventRegistration,
+  ] = useState<IRegistration | null>(null);
+
+  useEffect(() => {
+    const eventId = match.params.eventId;
+    axios.get('https://api.tourneymaster.org/public/events').then(response => {
+      const eventData = response.data.filter(
+        (e: IEventDetails) => e.event_id === eventId
+      )[0];
+      setEvent(eventData);
+    });
+
+    axios
+      .get('https://api.tourneymaster.org/public/registrations')
+      .then(response => {
+        const registrationData = response.data.filter(
+          (reg: IRegistration) => reg.event_id === eventId
+        )[0];
+        setEventRegistration(registrationData);
+      });
+  }, []);
+
   const [type, setType] = React.useState(1);
   const [isOpenModalOpen, toggleModal] = React.useState(true);
 
@@ -58,7 +96,9 @@ const RegisterPage = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  const [registration, setRegistration] = useState<any>({});
+  const [registration, setRegistration] = useState<
+    Partial<IIndivisualsRegister> | Partial<ITeamsRegister>
+  >({});
 
   const onChange = (name: string, value: string | number) => {
     setRegistration({ ...registration, [name]: value });
@@ -72,7 +112,7 @@ const RegisterPage = () => {
     setRegistration({ ...registration, ...info });
   };
 
-  const onTypeChange = (e: any) => {
+  const onTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setType(Number(TypeOptions[e.target.value]));
   };
 
@@ -119,33 +159,62 @@ const RegisterPage = () => {
   };
 
   // Stripe
-
   const stripe = useStripe();
   const elements = useElements();
 
   const handleSubmit = async () => {
-    if (!stripe || !elements) {
-      return Toasts.errorToast('Something went wrong');
-    }
+    try {
+      if (!stripe || !elements) {
+        return Toasts.errorToast('Something went wrong');
+      }
 
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: 'card',
-      card: elements.getElement(CardElement)!,
-    });
+      let data: any = {
+        ...registration,
+        reg_response_id: getVarcharEight(),
+        registration_id: eventRegistration?.registration_id,
+      };
 
-    if (error) {
-      return Toasts.errorToast(error.message || 'Something wend wrong');
+      if (registration.payment_method === 'Credit Card') {
+        const { error, paymentMethod } = await stripe.createPaymentMethod({
+          type: 'card',
+          card: elements.getElement(CardElement)!,
+        });
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        data = { ...data, stripe_id: paymentMethod?.id };
+      }
+
+      if (!data.payment_method) {
+        throw new Error('Please, specify payment method');
+      }
+
+      let url;
+      if (type === 1) {
+        url = 'https://api.tourneymaster.org/public/reg_individuals';
+      } else {
+        url = 'https://api.tourneymaster.org/public/reg_teams';
+      }
+
+      await axios.post(url, data);
+    } catch (e) {
+      return Toasts.errorToast(e.message);
     }
-    console.log(paymentMethod);
+    Toasts.successToast('Registration is successfully saved');
   };
 
-  console.log(registration);
   return (
     <div className={styles.container}>
       <Header />
       <div className={styles.main}>
         <div className={styles.stepperWrapper}>
-          <HeadingLevelTwo>{`${TypeOptions[type]} Registration`}</HeadingLevelTwo>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <HeadingLevelTwo>
+              {`${TypeOptions[type]} Registration`}
+            </HeadingLevelTwo>
+          </div>
           <div style={{ width: '90%' }}>
             <Paper>
               <Stepper
@@ -187,15 +256,21 @@ const RegisterPage = () => {
               </Stepper>
               {activeStep === steps.length && (
                 <div className={styles.section}>
-                  <div style={{ width: '100%' }}>
-                    All steps completed - you&apos;re finished
+                  <div className={styles.successMessage}>
+                    Registration is successfully completed!
                   </div>
                 </div>
               )}
             </Paper>
           </div>
         </div>
-        <div className={styles.sideContent}>side</div>
+        <div className={styles.sideContent}>
+          {event && eventRegistration ? (
+            <SideBar event={event} eventRegistration={eventRegistration} />
+          ) : (
+            <Loader />
+          )}
+        </div>
       </div>
       <Modal isOpen={isOpenModalOpen} onClose={() => {}}>
         <div className={styles.modalContainer}>

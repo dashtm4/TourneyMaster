@@ -7,7 +7,7 @@ import 'react-phone-input-2/lib/high-res.css';
 import { ITeamsRegister } from 'common/models/register';
 
 interface ICoachInfoProps {
-  data: ITeamsRegister;
+  data: Partial<ITeamsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
   fillCoachInfo: any;
 }

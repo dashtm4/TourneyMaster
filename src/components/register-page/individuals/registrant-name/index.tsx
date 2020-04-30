@@ -7,7 +7,7 @@ import 'react-phone-input-2/lib/high-res.css';
 import { IIndivisualsRegister } from 'common/models/register';
 
 interface IRegistrantNameProps {
-  data: IIndivisualsRegister;
+  data: Partial<IIndivisualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
 }
 
