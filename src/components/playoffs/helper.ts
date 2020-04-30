@@ -109,7 +109,7 @@ export const addGameToExistingBracketGames = (
 };
 
 /* Get games indices that depend upon the given BracketGame */
-const getDependentGames = (
+export const getDependentGames = (
   dependentInds: number[],
   games: IBracketGame[]
 ): number[] => {

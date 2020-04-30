@@ -340,7 +340,7 @@ class RecordScores extends React.Component<
         (item.awayDependsUpon === bracketGame.index ||
           item.homeDependsUpon === bracketGame.index)
       ) {
-        const isAwayTeam = item.awayDependsUpon === whoIsWinner;
+        const isAwayTeam = item.awayDependsUpon === bracketGame.index;
         const positionedTeam = isAwayTeam ? 'awayTeamId' : 'homeTeamId';
 
         return {

@@ -103,6 +103,7 @@ const RenderGameSlot = (props: Props) => {
                 round={playoffRound}
                 showHeatmap={true}
                 seedId={awaySeedId}
+                teamId={awayTeamId}
                 teamName={awayTeamName}
                 teamScore={awayTeamScore}
                 dependsUpon={awayDependsUpon}
@@ -150,6 +151,7 @@ const RenderGameSlot = (props: Props) => {
                 dependsUpon={homeDependsUpon}
                 showHeatmap={true}
                 seedId={homeSeedId}
+                teamId={homeTeamId}
                 teamName={homeTeamName}
                 teamScore={homeTeamScore}
                 divisionHex={divisionHex}
