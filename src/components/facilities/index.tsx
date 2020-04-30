@@ -94,9 +94,11 @@ class Facilities extends React.Component<
 
   onChangeFacilitiesCount = ({ target }: IInputEvent) => {
     const { facilities, addEmptyFacility } = this.props;
-    const incrementValue = Number(target.value);
+    const inputValue = Number(target.value);
 
-    if (incrementValue > facilities.length) {
+    if (inputValue > facilities.length) {
+      const incrementValue = inputValue - facilities.length;
+
       addEmptyFacility(incrementValue);
     }
   };
@@ -222,11 +224,6 @@ class Facilities extends React.Component<
                 >
                   <FacilityDetails
                     facility={facilitiy}
-                    // fields={getOrderFields(
-                    //   fields.filter(
-                    //     it => it.facilities_id === facilitiy.facilities_id
-                    //   )
-                    // )}
                     fields={fields.filter(
                       it => it.facilities_id === facilitiy.facilities_id
                     )}
