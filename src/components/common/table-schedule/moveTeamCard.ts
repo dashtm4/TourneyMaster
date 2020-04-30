@@ -47,6 +47,10 @@ export default (
     const teamTimeSlots = incomingTeamGames.map(item => item.timeSlotId);
     const teamFacilities = incomingTeamGames.map(item => item.facilityId);
 
+    const pairTeam = gamePlace
+      ? gamePlace[position === 1 ? 'homeTeam' : 'awayTeam']
+      : undefined;
+
     if (gamePlace?.isPlayoff) {
       result = {
         ...result,
@@ -76,27 +80,32 @@ export default (
     }
 
     /* When divisions do not match */
-    if (
-      incomingTeam !== undefined &&
-      outcomingTeam !== undefined &&
-      incomingTeam.divisionId !== outcomingTeam.divisionId
-    ) {
-      result = {
-        ...result,
-        divisionUnmatch: true,
-      };
+    if (incomingTeam !== undefined) {
+      const oppositeDivisionId =
+        outcomingTeam?.divisionId || pairTeam?.divisionId || undefined;
+
+      if (
+        oppositeDivisionId &&
+        incomingTeam.divisionId !== oppositeDivisionId
+      ) {
+        result = {
+          ...result,
+          divisionUnmatch: true,
+        };
+      }
     }
 
     /* When pools do not match */
-    if (
-      incomingTeam !== undefined &&
-      outcomingTeam !== undefined &&
-      incomingTeam.poolId !== outcomingTeam.poolId
-    ) {
-      result = {
-        ...result,
-        poolUnmatch: true,
-      };
+    if (incomingTeam !== undefined) {
+      const oppositePoolId =
+        outcomingTeam?.poolId || pairTeam?.poolId || undefined;
+
+      if (oppositePoolId && incomingTeam.poolId !== oppositePoolId) {
+        result = {
+          ...result,
+          poolUnmatch: true,
+        };
+      }
     }
 
     /* 1. Handle dropping inside the table */
