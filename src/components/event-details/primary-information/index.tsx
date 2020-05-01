@@ -59,10 +59,10 @@ const sportOptions = [
   { label: 'Soccer', value: sportsEnum[4] },
 ];
 const timeZoneOptions = [
-  'Eastern Time',
-  'Central Time',
-  'Mountain Time',
-  'Pacific Time',
+  'Eastern Standard Time',
+  'Central Standard Time',
+  'Mountain Standard Time',
+  'Pacific Standard Time',
 ];
 const genderOptions = [
   { label: 'Male', value: genderEnum[1] },
