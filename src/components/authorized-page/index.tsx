@@ -6,6 +6,7 @@ import Header from '../header';
 import Menu from '../common/menu';
 import { MenuList } from './logic/constants';
 import Dashboard from '../dashboard';
+import Support from '../support';
 import LibraryManager from '../library-manager';
 import OrganizationsManagement from '../organizations-management';
 import Calendar from 'components/calendar';
@@ -77,6 +78,7 @@ const AuthorizedPage = ({
               path={Routes.ORGANIZATIONS_MANAGEMENT}
               component={OrganizationsManagement}
             />
+            <Route path={Routes.SUPPORT} component={Support} />
             <Route path={Routes.DEFAULT} component={Dashboard} />
           </Switch>
           <ScrollTopButton />
