@@ -10,7 +10,7 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
     { title: 'Home', link: '/' },
     { title: 'Event Production', link: '/' },
     { title: 'Event Search', link: 'https://results.tourneymaster.com' },
-    { title: 'Support', link: 'https://www.tourneymaster.org/support/' },
+    { title: 'Support', link: '/support' },
     { title: 'About', link: 'https://www.tourneymaster.org/about/' },
     { title: 'Contact', link: 'https://www.tourneymaster.org/contact/' },
   ];
@@ -40,17 +40,17 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
                 // onClick={onMenuClick.bind(undefined, item.title)}
                 key={index}
               >
-                {index < 2 ? (
+                {!item.link.includes('http') ? (
                   <Link to={item.link}>{item.title}</Link>
                 ) : (
-                  <a
-                    href={item.link}
-                    target={'_blank'}
-                    rel="noopener noreferrer"
-                  >
-                    {item.title}
-                  </a>
-                )}
+                    <a
+                      href={item.link}
+                      target={'_blank'}
+                      rel="noopener noreferrer"
+                    >
+                      {item.title}
+                    </a>
+                  )}
               </li>
             ))}
           </ul>
