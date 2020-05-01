@@ -38,6 +38,8 @@ interface Props {
 enum sportsEnum {
   'Lacrosse' = 1,
   'Field Hockey' = 2,
+  'Basketball' = 3,
+  'Soccer' = 4
 }
 enum genderEnum {
   'Male' = 1,
@@ -53,12 +55,14 @@ enum timeZoneEnum {
 const sportOptions = [
   { label: 'Lacrosse', value: sportsEnum[1] },
   { label: 'Field Hockey', value: sportsEnum[2] },
+  { label: 'Basketball', value: sportsEnum[3] },
+  { label: 'Soccer', value: sportsEnum[4] },
 ];
 const timeZoneOptions = [
-  'Eastern Standard Time',
-  'Central Standard Time',
-  'Mountain Standard Time',
-  'Pacific Standard Time',
+  'Eastern Time',
+  'Central Time',
+  'Mountain Time',
+  'Pacific Time',
 ];
 const genderOptions = [
   { label: 'Male', value: genderEnum[1] },
