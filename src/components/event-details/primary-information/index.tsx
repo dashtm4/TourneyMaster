@@ -191,6 +191,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
           <Input
             fullWidth={true}
             label="Event Tag"
+            startAdornment="@"
             value={eventData.event_tag || ''}
             onChange={onTagChange}
           />
@@ -216,7 +217,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
         <div className={styles.piDetailsFirstContacts}>
           <Input
             fullWidth={true}
-            label="Main Contact"
+            label="Main Contact Name"
             value={eventData.main_contact || ''}
             onChange={onMainContactChange}
           />
@@ -290,7 +291,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             <div className={styles.piDetailsThirdArea}>
               <Input
                 fullWidth={true}
-                label="Description"
+                label="Event Description"
                 multiline={true}
                 rows="4"
                 value={eventData.event_description}
