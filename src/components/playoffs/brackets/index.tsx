@@ -104,7 +104,7 @@ const Brackets = (props: IProps) => {
     keys(newGrids).forEach(gridKey =>
       Object.keys(newGrids[gridKey])
         .sort((a, b) => +a - +b)
-        .map((key, i, arr) => {
+        .forEach((key, i, arr) => {
           const thisRound = newGrids[gridKey][key];
           const nextRound = newGrids[gridKey][arr[i + 1]];
 

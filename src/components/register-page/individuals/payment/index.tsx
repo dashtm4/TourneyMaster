@@ -103,6 +103,7 @@ const Payment = ({ data, onChange }: IPaymentProps) => {
             width: '150px',
             height: '75px',
           }}
+          alt="Stripe logo"
         />
       </div>
     </div>
