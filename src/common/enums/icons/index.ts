@@ -34,6 +34,8 @@ enum Icons {
   FLIP = 'flip',
   DROPDOWN = 'DROPDOWN',
   DROPUP = 'DROPUP',
+  EXPAND_MORE = 'ExpandMore',
+  EXPAND_LESS = 'ExpandLess',
   CLEAR = 'CLEAR',
   EYE = 'VISIBILITY',
   FULL_SCREEN = 'fullScreen',

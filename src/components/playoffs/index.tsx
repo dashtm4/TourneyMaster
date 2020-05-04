@@ -53,10 +53,7 @@ import {
   createBracketGames,
   advanceBracketGamesWithTeams,
 } from './bracketGames';
-import {
-  populateDefinedGamesWithPlayoffState,
-  adjustPlayoffTimeOnLoad,
-} from 'components/schedules/definePlayoffs';
+import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
 import {
   createPlayoff,
   savePlayoff,
@@ -272,42 +269,42 @@ class Playoffs extends Component<IProps> {
   };
 
   calculatePlayoffTimeSlots = () => {
-    const { schedulesDetails, event, bracket, match } = this.props;
+    const { schedulesDetails, event, bracket } = this.props;
     const { timeSlots } = this.state;
-    const { bracketId } = match?.params;
+    // const { bracketId } = match?.params;
 
     const day = moment(event?.event_enddate).toISOString();
 
     if (!schedulesDetails || !timeSlots || !event || !day || !bracket) return;
 
     const initialStartTimeSlot = bracket.startTimeSlot;
-    const initialEndTimeSlot = bracket.endTimeSlot;
+    // const initialEndTimeSlot = bracket.endTimeSlot;
 
-    let playoffTimeSlots = timeSlots.slice(
+    const playoffTimeSlots = timeSlots.slice(
       Number(initialStartTimeSlot),
       timeSlots.length
     );
 
-    if (!bracketId) {
-      playoffTimeSlots = adjustPlayoffTimeOnLoad(
-        schedulesDetails,
-        timeSlots,
-        event,
-        day
-      );
+    // if (!bracketId) {
+    //   playoffTimeSlots = adjustPlayoffTimeOnLoad(
+    //     schedulesDetails,
+    //     timeSlots,
+    //     event,
+    //     day
+    //   );
 
-      const startTimeSlot = playoffTimeSlots?.length
-        ? String(playoffTimeSlots[0].id)
-        : initialStartTimeSlot;
-      const endTimeSlot = playoffTimeSlots?.length
-        ? String(playoffTimeSlots[playoffTimeSlots.length - 1].id)
-        : initialEndTimeSlot;
+    //   const startTimeSlot = playoffTimeSlots?.length
+    //     ? String(playoffTimeSlots[0].id)
+    //     : initialStartTimeSlot;
+    //   const endTimeSlot = playoffTimeSlots?.length
+    //     ? String(playoffTimeSlots[playoffTimeSlots.length - 1].id)
+    //     : initialEndTimeSlot;
 
-      this.props.updateExistingBracket({
-        startTimeSlot,
-        endTimeSlot,
-      });
-    }
+    //   this.props.updateExistingBracket({
+    //     startTimeSlot,
+    //     endTimeSlot,
+    //   });
+    // }
 
     if (playoffTimeSlots) {
       this.setState({ playoffTimeSlots });
@@ -467,7 +464,7 @@ class Playoffs extends Component<IProps> {
     const { tableGames } = this.state;
 
     if (!bracketGames || !tableGames || !fields)
-      return console.error('Error happened during a dnd process.');
+      return new Error('Error happened during a dnd process.');
 
     const updatedResult = updateBracketGamesDndResult(
       gameId,

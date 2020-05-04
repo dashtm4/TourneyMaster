@@ -33,7 +33,7 @@
       background: #f4f4f4;
 
       > p {
-        width: calc(100% - 760px);
+        width: calc(100% - 800px);
         height: 40px;
         margin-top: 26px;
       }
@@ -54,13 +54,27 @@
 
       .moveBrackets {
         display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        height: 60px;
-        min-width: 210px;
-        padding: 0 20px;
-        margin-top: 14px;
+        flex-direction: column;
+        width: 360px;
+        height: 70px;
+        margin-top: 3px;
+
+        > p {
+          white-space: nowrap;
+        }
+
+        .moveBracketsBtns {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          width: 152px;
+
+          > button {
+            color: #858585;
+            font-weight: 600;
+          }
+        }
       }
 
       .dndToggleWrapper {

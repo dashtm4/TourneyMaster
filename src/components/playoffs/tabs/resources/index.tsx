@@ -201,24 +201,31 @@ class ResourceMatrix extends Component<IProps> {
               Bracket games are painted in dark colors
             </CardMessage>
             <div className={styles.moveBrackets}>
-              <Button
-                label="Up"
-                icon={getIcon(Icons.DROPUP)}
-                variant="text"
-                color="default"
-                disabled={Boolean(upDisabled !== undefined ? upDisabled : true)}
-                onClick={this.movePlayoffsUp}
-              />
-              <Button
-                label="Down"
-                icon={getIcon(Icons.DROPDOWN)}
-                variant="text"
-                color="default"
-                disabled={Boolean(
-                  downDisabled !== undefined ? downDisabled : true
-                )}
-                onClick={this.movePlayoffsDown}
-              />
+              <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+                Move Playoff Start Time Up & Down
+              </CardMessage>
+              <div className={styles.moveBracketsBtns}>
+                <Button
+                  label="Up"
+                  icon={getIcon(Icons.EXPAND_LESS)}
+                  variant="text"
+                  color="default"
+                  disabled={Boolean(
+                    upDisabled !== undefined ? upDisabled : true
+                  )}
+                  onClick={this.movePlayoffsUp}
+                />
+                <Button
+                  label="Down"
+                  icon={getIcon(Icons.EXPAND_MORE)}
+                  variant="text"
+                  color="default"
+                  disabled={Boolean(
+                    downDisabled !== undefined ? downDisabled : true
+                  )}
+                  onClick={this.movePlayoffsDown}
+                />
+              </div>
             </div>
             <div className={styles.dndToggleWrapper}>
               Mode:
