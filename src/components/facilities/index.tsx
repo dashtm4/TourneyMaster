@@ -14,6 +14,7 @@ import {
   saveFacilities,
   createFacilities,
   deleteFacility,
+  deleteField,
 } from './logic/actions';
 import { addEntitiesToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import Navigation from './components/navigation';
@@ -59,6 +60,7 @@ interface Props {
   createFacilities: (facilities: IFacility[]) => void;
   addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
   deleteFacility: (facilityId: string) => void;
+  deleteField: BindingCbWithOne<IField>;
 }
 
 interface State {
@@ -159,6 +161,7 @@ class Facilities extends React.Component<
       updateField,
       uploadFileMap,
       deleteFacility,
+      deleteField,
     } = this.props;
 
     const { isLibraryPopupOpen } = this.state;
@@ -237,6 +240,7 @@ class Facilities extends React.Component<
                     uploadFileMap={uploadFileMap}
                     isSectionExpand={this.state.isSectionsExpand}
                     deleteFacility={deleteFacility}
+                    deleteField={deleteField}
                   />
                 </li>
               ))}
@@ -287,6 +291,7 @@ export default connect(
         createFacilities,
         addEntitiesToLibrary,
         deleteFacility,
+        deleteField,
       },
       dispatch
     )

@@ -20,6 +20,8 @@ import {
   UPLOAD_FILE_MAP_SUCCESS,
   UPLOAD_FILE_MAP_FAILURE,
   DELETE_FACILITY_SUCCESS,
+  DELETE_FILED_SUCCESS,
+  DELETE_FILED_FAILURE,
 } from './action-types';
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
@@ -345,8 +347,8 @@ export const deleteFacility: ActionCreator<ThunkAction<
   { type: string }
 >> = (facilityId: string) => async (dispatch: Dispatch) => {
   const fields = await Api.get(`/fields?facilities_id=${facilityId}`);
-  for (const field of fields) {
-    Api.delete(`/fields?field_id=${field.field_id}`);
+  for await (const field of fields) {
+    await Api.delete(`/fields?field_id=${field.field_id}`);
   }
 
   const response = await Api.delete(`/facilities?facilities_id=${facilityId}`);
@@ -361,4 +363,31 @@ export const deleteFacility: ActionCreator<ThunkAction<
   });
 
   Toasts.successToast('Facility is successfully deleted');
+};
+
+export const deleteField = (field: IField) => async (dispatch: Dispatch) => {
+  try {
+    if (!field.isNew) {
+      const response = await Api.delete('/fields', field);
+
+      if (response?.errorType === 'Error') {
+        throw new Error('Could not delete a field');
+      }
+    }
+
+    dispatch({
+      type: DELETE_FILED_SUCCESS,
+      payload: {
+        field,
+      },
+    });
+
+    Toasts.successToast('Facility is successfully deleted');
+  } catch (err) {
+    dispatch({
+      type: DELETE_FILED_FAILURE,
+    });
+
+    Toasts.errorToast(err.message);
+  }
 };

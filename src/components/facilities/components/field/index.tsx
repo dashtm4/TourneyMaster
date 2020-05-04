@@ -1,15 +1,16 @@
 import React from 'react';
-import { Input, Checkbox, Button } from 'components/common';
-import { IField } from '../../../../common/models';
-import styles from './styles.module.scss';
+import { Input, Checkbox, Button, DeletePopupConfrim } from 'components/common';
+import { IField, BindingCbWithOne } from 'common/models';
 import { IInputEvent } from 'common/types';
 import { ButtonVarian, ButtonColors, ButtonTypes } from 'common/enums';
+import styles from './styles.module.scss';
 
 interface Props {
   field: IField;
   fieldNumber: number;
   isEdit: boolean;
   onChangeField: (field: IField) => void;
+  deleteField: BindingCbWithOne<IField>;
 }
 
 enum FormFields {
@@ -18,7 +19,25 @@ enum FormFields {
   IS_PREMIER_YN = 'is_premier_YN',
 }
 
-const Field = ({ field, fieldNumber, isEdit, onChangeField }: Props) => {
+const Field = ({
+  field,
+  fieldNumber,
+  isEdit,
+  onChangeField,
+  deleteField,
+}: Props) => {
+  const [isDeletePopupOpen, toggleDeletePopup] = React.useState<boolean>(false);
+
+  const onToggleDeletePopup = () => {
+    toggleDeletePopup(!isDeletePopupOpen);
+  };
+
+  const onDeleteField = () => {
+    deleteField(field);
+
+    onToggleDeletePopup();
+  };
+
   const FIELD_OPTIONS = [
     {
       label: 'Illuminated',
@@ -46,26 +65,36 @@ const Field = ({ field, fieldNumber, isEdit, onChangeField }: Props) => {
   };
 
   return (
-    <fieldset className={styles.field}>
-      <legend className={styles.fieldTitleWrapper}>
-        <span>Field {fieldNumber} Name</span>
-        <Button
-          variant={ButtonVarian.TEXT}
-          color={ButtonColors.SECONDARY}
-          type={ButtonTypes.DANGER_LINK}
-          label="Delete"
+    <>
+      <fieldset className={styles.field}>
+        <legend className={styles.fieldTitleWrapper}>
+          <span>Field {fieldNumber} Name</span>
+          <Button
+            onClick={onToggleDeletePopup}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            type={ButtonTypes.DANGER_LINK}
+            label="Delete"
+          />
+        </legend>
+        <Input
+          onChange={onChange}
+          value={field.field_name || ''}
+          name={FormFields.FIELD_NAME}
+          width="250px"
+          placeholder={`Field ${fieldNumber}`}
+          disabled={!isEdit}
         />
-      </legend>
-      <Input
-        onChange={onChange}
-        value={field.field_name || ''}
-        name={FormFields.FIELD_NAME}
-        width="250px"
-        placeholder={`Field ${fieldNumber}`}
-        disabled={!isEdit}
+        <Checkbox onChange={onChange} options={FIELD_OPTIONS} />
+      </fieldset>
+      <DeletePopupConfrim
+        type="Field"
+        deleteTitle={field.field_name}
+        isOpen={isDeletePopupOpen}
+        onClose={onToggleDeletePopup}
+        onDeleteClick={onDeleteField}
       />
-      <Checkbox onChange={onChange} options={FIELD_OPTIONS} />
-    </fieldset>
+    </>
   );
 };
 

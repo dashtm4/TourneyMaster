@@ -81,6 +81,7 @@ interface Props {
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
   isSectionExpand: boolean;
   deleteFacility: BindingCbWithOne<string>;
+  deleteField: BindingCbWithOne<IField>;
 }
 
 class FacilityDetails extends React.Component<Props, State> {
@@ -315,6 +316,7 @@ class FacilityDetails extends React.Component<Props, State> {
                     fieldNumber={idx + 1}
                     isEdit={isEdit}
                     onChangeField={this.onChangeField}
+                    deleteField={this.props.deleteField}
                   />
                 </li>
               ))
