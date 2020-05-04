@@ -52,6 +52,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
             fullWidth={true}
             label="Email"
             value={data.registrant_email || ''}
+            isRequired={true}
             onChange={onEmailChange}
           />
         </div>
