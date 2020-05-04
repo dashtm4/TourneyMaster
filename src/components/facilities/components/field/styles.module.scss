@@ -1,13 +1,18 @@
-:local(.field) {
+.field {
   margin: 0;
   padding: 0;
 
   border: 0;
+}
 
-  legend {
-    color: #6a6a6a;
-    font-weight: bold;
+.fieldTitleWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-    margin-bottom: 5px;
-  }
+  width: 100%;
+  margin: 0 0 -10px;
+
+  color: #6a6a6a;
+  font-weight: bold;
 }

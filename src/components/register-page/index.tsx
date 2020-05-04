@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -288,7 +289,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               {activeStep === steps.length && (
                 <div className={styles.section}>
                   <div className={styles.successMessage}>
-                    Registration completed successfully! A confirmation email has also been sent. Thanks!
+                    Registration completed successfully! A confirmation email
+                    has also been sent. Thanks!
                   </div>
                 </div>
               )}
