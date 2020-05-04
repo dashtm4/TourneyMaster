@@ -173,13 +173,14 @@ const facilitiesReducer = (
       };
     }
     case DELETE_FILED_SUCCESS: {
-      const { field } = action.payload;
-
-      console.log(field);
+      const { field, facility } = action.payload;
 
       return {
         ...state,
         fields: state.fields.filter(it => it.field_id !== field.field_id),
+        facilities: state.facilities.map(it =>
+          it.facilities_id === facility.facilities_id ? facility : it
+        ),
       };
     }
 

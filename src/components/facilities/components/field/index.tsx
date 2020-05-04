@@ -1,16 +1,17 @@
 import React from 'react';
 import { Input, Checkbox, Button, DeletePopupConfrim } from 'components/common';
-import { IField, BindingCbWithOne } from 'common/models';
+import { IField, IFacility, BindingCbWithTwo } from 'common/models';
 import { IInputEvent } from 'common/types';
 import { ButtonVarian, ButtonColors, ButtonTypes } from 'common/enums';
 import styles from './styles.module.scss';
 
 interface Props {
   field: IField;
+  facility: IFacility;
   fieldNumber: number;
   isEdit: boolean;
   onChangeField: (field: IField) => void;
-  deleteField: BindingCbWithOne<IField>;
+  deleteField: BindingCbWithTwo<IFacility, IField>;
 }
 
 enum FormFields {
@@ -20,6 +21,7 @@ enum FormFields {
 }
 
 const Field = ({
+  facility,
   field,
   fieldNumber,
   isEdit,
@@ -33,7 +35,7 @@ const Field = ({
   };
 
   const onDeleteField = () => {
-    deleteField(field);
+    deleteField(facility, field);
 
     onToggleDeletePopup();
   };

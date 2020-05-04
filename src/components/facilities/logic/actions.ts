@@ -26,8 +26,13 @@ import {
 import { IAppState } from 'reducers/root-reducer.types';
 import Api from 'api/api';
 import { facilitySchema, fieldSchema } from 'validations';
-import { getVarcharEight, uploadFile } from 'helpers';
+import {
+  getVarcharEight,
+  uploadFile,
+  removeObjKeysByEntryPoint,
+} from 'helpers';
 import { IFacility, IField, IUploadFile } from 'common/models';
+import { EntryPoints } from 'common/enums';
 
 const loadFacilities = (eventId: string) => async (
   dispatch: Dispatch,
@@ -365,12 +370,31 @@ export const deleteFacility: ActionCreator<ThunkAction<
   Toasts.successToast('Facility is successfully deleted');
 };
 
-export const deleteField = (field: IField) => async (dispatch: Dispatch) => {
+export const deleteField = (facility: IFacility, field: IField) => async (
+  dispatch: Dispatch
+) => {
+  const DEFAULT_DECREMENT_VALUE = 1;
+  const updatedFacility = {
+    ...facility,
+    num_fields: Number(facility.num_fields) - DEFAULT_DECREMENT_VALUE,
+  };
+
   try {
     if (!field.isNew) {
-      const response = await Api.delete('/fields', field);
+      const clearFacility = removeObjKeysByEntryPoint(
+        updatedFacility,
+        EntryPoints.FACILITIES
+      );
+      const fieldResponse = await Api.delete('/fields', field);
+      const facilityResponse = await Api.put(
+        `/facilities?facilities_id=${updatedFacility.facilities_id}`,
+        clearFacility
+      );
 
-      if (response?.errorType === 'Error') {
+      if (
+        fieldResponse?.errorType === 'Error' ||
+        facilityResponse?.errorType === 'Error'
+      ) {
         throw new Error('Could not delete a field');
       }
     }
@@ -379,10 +403,11 @@ export const deleteField = (field: IField) => async (dispatch: Dispatch) => {
       type: DELETE_FILED_SUCCESS,
       payload: {
         field,
+        facility: updatedFacility,
       },
     });
 
-    Toasts.successToast('Facility is successfully deleted');
+    Toasts.successToast('Field is successfully deleted');
   } catch (err) {
     dispatch({
       type: DELETE_FILED_FAILURE,

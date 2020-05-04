@@ -60,7 +60,7 @@ interface Props {
   createFacilities: (facilities: IFacility[]) => void;
   addEntitiesToLibrary: BindingCbWithTwo<IEntity[], EntryPoints>;
   deleteFacility: (facilityId: string) => void;
-  deleteField: BindingCbWithOne<IField>;
+  deleteField: BindingCbWithTwo<IFacility, IField>;
 }
 
 interface State {

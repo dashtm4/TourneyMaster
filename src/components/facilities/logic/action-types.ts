@@ -110,6 +110,7 @@ export interface deleteFieldSuccess {
   type: 'FACILITIES:DELETE_FIELD_SUCCESS';
   payload: {
     field: IField;
+    facility: IFacility;
   };
 }
 
