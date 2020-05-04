@@ -456,7 +456,7 @@ class Schedules extends Component<Props, State> {
 
     /* Truncate gameslots and timeslots for the last day by the number of playoff timeslots */
 
-    tournamentDays.map(day => {
+    tournamentDays.forEach(day => {
       let definedGames = [...games];
       if (tournamentDays[tournamentDays.length - 1] === day) {
         definedGames = populateDefinedGamesWithPlayoffState(
