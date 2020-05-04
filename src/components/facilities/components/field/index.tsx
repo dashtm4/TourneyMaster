@@ -1,8 +1,9 @@
 import React from 'react';
-import { Input, Checkbox } from 'components/common';
+import { Input, Checkbox, Button } from 'components/common';
 import { IField } from '../../../../common/models';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
+import { ButtonVarian, ButtonColors, ButtonTypes } from 'common/enums';
 
 interface Props {
   field: IField;
@@ -46,7 +47,15 @@ const Field = ({ field, fieldNumber, isEdit, onChangeField }: Props) => {
 
   return (
     <fieldset className={styles.field}>
-      <legend>Field {fieldNumber} Name</legend>
+      <legend className={styles.fieldTitleWrapper}>
+        <span>Field {fieldNumber} Name</span>
+        <Button
+          variant={ButtonVarian.TEXT}
+          color={ButtonColors.SECONDARY}
+          type={ButtonTypes.DANGER_LINK}
+          label="Delete"
+        />
+      </legend>
       <Input
         onChange={onChange}
         value={field.field_name || ''}
