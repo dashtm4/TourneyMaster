@@ -212,7 +212,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
         <div className={styles.piDetailsFirstContacts}>
           <Input
             fullWidth={true}
-            label="Main Contact"
+            label="Main Contact Name"
             value={eventData.main_contact || ''}
             onChange={onMainContactChange}
           />
