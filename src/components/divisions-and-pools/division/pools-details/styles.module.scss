@@ -14,21 +14,29 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  ul {
-    padding: 0;
-  }
-  .pool {
-    width: 33%;
-    color: #6a6a6a;
-    padding-bottom: 20px;
-    .poolTitle {
-      font-weight: 600;
-      padding-bottom: 6px;
-    }
-  }
+
+  margin: 0 0 0 -15px;
+}
+
+.pool {
+  display: flex;
+  flex-direction: column;
+
+  width: 30%;
+  margin: 0 0 20px 15px;
+  padding: 5px 10px 0;
+
+  color: #6a6a6a;
+}
+
+.poolTitle {
+  font-weight: 600;
+  padding-bottom: 6px;
 }
 
 .teamList {
+  flex-grow: 1;
+
   min-height: 92px;
-  height: 100%;
+  padding: 15px 0 15px;
 }
