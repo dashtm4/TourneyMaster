@@ -52,6 +52,7 @@ const ContacnInfo = ({ data, onChange }: IContacnInfoProps) => {
             fullWidth={true}
             label="Email"
             value={data.contact_email || ''}
+            isRequired={true}
             onChange={onEmailChange}
           />
         </div>
