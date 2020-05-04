@@ -1,10 +1,12 @@
-import { orderBy, union, min, max, groupBy } from 'lodash-es';
+import { orderBy, union, min, max, groupBy, maxBy, minBy } from 'lodash-es';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IBracketGame } from './bracketGames';
 import { IOnAddGame } from './add-game-modal';
 import { getVarcharEight } from 'helpers';
-import { IDivision, IField } from 'common/models';
+import { IDivision, IField, ISchedulesDetails } from 'common/models';
 import { ITeamCard } from 'common/models/schedule/teams';
+import { MovePlayoffWindowEnum } from '.';
+import ITimeSlot from 'common/models/schedule/timeSlots';
 
 interface IBracketMoveWarning {
   gameAlreadyAssigned: boolean;
@@ -386,4 +388,140 @@ export const updateBracketGamesDndResult = (
   );
 
   return { bracketGames, warnings };
+};
+
+const getMinMaxGameTimeSlots = (
+  schedulesDetails: ISchedulesDetails[],
+  timeSlots: ITimeSlot[],
+  day: string
+) => {
+  const lastGame = maxBy(
+    schedulesDetails.filter(
+      item => item.game_date === day && (item.away_team_id || item.home_team_id)
+    ),
+    'game_time'
+  );
+
+  const lastGameTimeSlotId =
+    timeSlots.find(item => item.time === lastGame?.game_time)?.id || 0;
+  const minGameTimeSlotAvailable =
+    timeSlots.length > lastGameTimeSlotId ? lastGameTimeSlotId + 1 : 0;
+  const maxGameTimeSlotAvailable = timeSlots.length - 1;
+
+  return { minGameTimeSlotAvailable, maxGameTimeSlotAvailable };
+};
+
+export const movePlayoffTimeSlots = (
+  schedulesDetails: ISchedulesDetails[],
+  timeSlots: ITimeSlot[],
+  playoffTimeSlots: ITimeSlot[],
+  day: string,
+  direction: MovePlayoffWindowEnum
+) => {
+  const { minGameTimeSlotAvailable } = getMinMaxGameTimeSlots(
+    schedulesDetails,
+    timeSlots,
+    day
+  );
+
+  const playoffStartTimeSlot = playoffTimeSlots[0];
+
+  if (
+    direction === MovePlayoffWindowEnum.UP &&
+    playoffStartTimeSlot.id - minGameTimeSlotAvailable >= 1
+  ) {
+    const previousTimeSlot = timeSlots.find(
+      (_, index, arr) => arr[index + 1].id === playoffStartTimeSlot.id
+    );
+    if (previousTimeSlot) {
+      playoffTimeSlots.unshift(previousTimeSlot);
+    }
+  }
+
+  if (direction === MovePlayoffWindowEnum.DOWN) {
+    playoffTimeSlots.shift();
+  }
+
+  return playoffTimeSlots;
+};
+
+export const moveBracketGames = (
+  bracketGames: IBracketGame[],
+  schedulesDetails: ISchedulesDetails[],
+  timeSlots: ITimeSlot[],
+  day: string,
+  direction: MovePlayoffWindowEnum
+) => {
+  const {
+    minGameTimeSlotAvailable,
+    maxGameTimeSlotAvailable,
+  } = getMinMaxGameTimeSlots(schedulesDetails, timeSlots, day);
+
+  const minGameStartTime = minBy(bracketGames, 'startTime')?.startTime;
+  const minGameTimeSlot = timeSlots.find(item => item.time === minGameStartTime)
+    ?.id;
+
+  const maxGameStartTime = maxBy(bracketGames, 'startTime')?.startTime;
+  const maxGameTimeSlot = timeSlots.find(item => item.time === maxGameStartTime)
+    ?.id;
+
+  if (
+    (minGameTimeSlotAvailable >= (minGameTimeSlot || 0) &&
+      direction === MovePlayoffWindowEnum.UP) ||
+    (maxGameTimeSlotAvailable <= (maxGameTimeSlot || 0) &&
+      direction === MovePlayoffWindowEnum.DOWN)
+  )
+    return bracketGames;
+
+  return bracketGames.map(item => {
+    const timeSlotId = timeSlots.find(v => v.time === item.startTime)?.id || 0;
+    const previousTimeSlot = timeSlots.find(
+      (_, index) => timeSlotId - index === 1
+    );
+    const nextTimeSlot = timeSlots.find((_, index) => index - timeSlotId === 1);
+
+    const startTime =
+      direction === MovePlayoffWindowEnum.UP
+        ? previousTimeSlot?.time
+        : nextTimeSlot?.time;
+
+    return {
+      ...item,
+      startTime,
+    };
+  });
+};
+
+export const getPlayoffMovementAvailability = (
+  schedulesDetails: ISchedulesDetails[],
+  bracketGames: IBracketGame[],
+  playoffTimeSlots: ITimeSlot[],
+  timeSlots: ITimeSlot[],
+  day: string
+) => {
+  const result = {
+    upDisabled: true,
+    downDisabled: true,
+  };
+
+  if (!playoffTimeSlots.length) return result;
+
+  const {
+    minGameTimeSlotAvailable,
+    maxGameTimeSlotAvailable,
+  } = getMinMaxGameTimeSlots(schedulesDetails, timeSlots, day);
+
+  const lastGameStartTime = maxBy(bracketGames, 'startTime')?.startTime;
+  const lastGameTimeSlotId =
+    timeSlots.find(item => item.time === lastGameStartTime)?.id || 0;
+
+  const upDisabled = Boolean(
+    playoffTimeSlots[0].id <= minGameTimeSlotAvailable
+  );
+  const downDisabled = Boolean(lastGameTimeSlotId >= maxGameTimeSlotAvailable);
+
+  return {
+    upDisabled,
+    downDisabled,
+  };
 };

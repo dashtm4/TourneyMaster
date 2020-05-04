@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import moment from 'moment';
 import { MatrixTable, Loader, Button, CardMessage } from 'components/common';
 import {
   IEventDetails,
@@ -13,7 +14,7 @@ import { ITeamCard } from 'common/models/schedule/teams';
 import { IGame } from 'components/common/matrix-table/helper';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
-import { TableScheduleTypes } from 'common/enums';
+import { TableScheduleTypes, Icons } from 'common/enums';
 import { IBracketGame } from 'components/playoffs/bracketGames';
 import {
   IDropParams,
@@ -25,6 +26,9 @@ import MultiSelect, {
 import BracketGamesList from './bracket-games-list';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import styles from './styles.module.scss';
+import { MovePlayoffWindowEnum } from 'components/playoffs';
+import { getPlayoffMovementAvailability } from 'components/playoffs/helper';
+import { getIcon } from 'helpers';
 
 interface IProps {
   bracketGames?: IBracketGame[];
@@ -40,6 +44,7 @@ interface IProps {
   eventSummary?: IEventSummary[];
   schedulesDetails?: ISchedulesDetails[];
   isFullScreen: boolean;
+  playoffTimeSlots?: ITimeSlot[];
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
@@ -47,6 +52,7 @@ interface IProps {
   setHighlightedGame?: (id: number) => void;
   highlightedGameId?: number;
   onToggleFullScreen: () => void;
+  movePlayoffWindow: (direction: MovePlayoffWindowEnum) => void;
 }
 
 interface IState {
@@ -119,6 +125,10 @@ class ResourceMatrix extends Component<IProps> {
     this.props.updateGame(dropParams.teamId, dropParams.gameId!, originId);
   };
 
+  movePlayoffsUp = () => this.props.movePlayoffWindow(MovePlayoffWindowEnum.UP);
+  movePlayoffsDown = () =>
+    this.props.movePlayoffWindow(MovePlayoffWindowEnum.DOWN);
+
   render() {
     const {
       event,
@@ -138,9 +148,27 @@ class ResourceMatrix extends Component<IProps> {
       setHighlightedGame,
       onToggleFullScreen,
       isFullScreen,
+      playoffTimeSlots,
+      schedulesDetails,
     } = this.props;
 
     const { divisionOptions, filteredGames, isDnd } = this.state;
+    const gameDate = moment(event?.event_enddate).toISOString();
+
+    const result =
+      schedulesDetails &&
+      bracketGames &&
+      playoffTimeSlots &&
+      timeSlots &&
+      getPlayoffMovementAvailability(
+        schedulesDetails,
+        bracketGames,
+        playoffTimeSlots,
+        timeSlots,
+        gameDate
+      );
+
+    const { upDisabled, downDisabled } = result || {};
 
     return (
       <section className={styles.container}>
@@ -172,6 +200,26 @@ class ResourceMatrix extends Component<IProps> {
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
               Bracket games are painted in dark colors
             </CardMessage>
+            <div className={styles.moveBrackets}>
+              <Button
+                label="Up"
+                icon={getIcon(Icons.DROPUP)}
+                variant="text"
+                color="default"
+                disabled={Boolean(upDisabled !== undefined ? upDisabled : true)}
+                onClick={this.movePlayoffsUp}
+              />
+              <Button
+                label="Down"
+                icon={getIcon(Icons.DROPDOWN)}
+                variant="text"
+                color="default"
+                disabled={Boolean(
+                  downDisabled !== undefined ? downDisabled : true
+                )}
+                onClick={this.movePlayoffsDown}
+              />
+            </div>
             <div className={styles.dndToggleWrapper}>
               Mode:
               <Button

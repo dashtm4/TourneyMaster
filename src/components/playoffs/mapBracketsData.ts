@@ -95,6 +95,8 @@ export const mapFetchedBracket = (bracketData: IFetchedBracket) => {
     createDate: bracketData.created_datetime,
     updatedBy: bracketData.updated_by,
     updateDate: bracketData.updated_datetime,
+    startTimeSlot: bracketData.start_timeslot,
+    endTimeSlot: bracketData.end_timeslot,
   } as IBracket;
 };
 

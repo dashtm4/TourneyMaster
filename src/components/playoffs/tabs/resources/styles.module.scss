@@ -33,7 +33,7 @@
       background: #f4f4f4;
 
       > p {
-        width: calc(100% - 550px);
+        width: calc(100% - 760px);
         height: 40px;
         margin-top: 26px;
       }
@@ -50,6 +50,17 @@
           font-weight: 600;
           line-height: 19px;
         }
+      }
+
+      .moveBrackets {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        height: 60px;
+        min-width: 210px;
+        padding: 0 20px;
+        margin-top: 14px;
       }
 
       .dndToggleWrapper {
