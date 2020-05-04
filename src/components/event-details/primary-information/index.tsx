@@ -187,6 +187,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
           <Input
             fullWidth={true}
             label="Event Tag"
+            startAdornment="@"
             value={eventData.event_tag || ''}
             onChange={onTagChange}
           />
