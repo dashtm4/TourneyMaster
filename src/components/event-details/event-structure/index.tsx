@@ -173,7 +173,7 @@ const EventStructureSection: React.FC<Props> = ({
           <div className={styles.column}>
             <Radio
               options={timeDivisionOptions}
-              formLabel="Time Division"
+              formLabel="Time Selection"
               onChange={onChangePeriod}
               checked={timeDivisionEnum[periods_per_game!] || ''}
             />
@@ -218,7 +218,7 @@ const EventStructureSection: React.FC<Props> = ({
           <Input
             fullWidth={true}
             endAdornment="Minutes"
-            label="Time Division Duration"
+            label="Time Selection Duration"
             type="number"
             value={getTimeFromString(period_duration!, 'minutes').toString()}
             onChange={onTimeDivisionDuration}
