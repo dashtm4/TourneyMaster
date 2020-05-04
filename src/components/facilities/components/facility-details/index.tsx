@@ -120,15 +120,10 @@ class FacilityDetails extends React.Component<Props, State> {
     });
   };
 
-  onChangeField = (
-    field: IField,
-    {
-      target: { name, type, value, checked },
-    }: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  onChangeField = (field: IField) => {
     const { updateField } = this.props;
 
-    updateField({ ...field, [name]: type === 'checkbox' ? +checked : value });
+    updateField(field);
   };
 
   onChangeFieldsCount = ({ target }: IInputEvent) => {
@@ -319,7 +314,7 @@ class FacilityDetails extends React.Component<Props, State> {
                     field={it}
                     fieldNumber={idx + 1}
                     isEdit={isEdit}
-                    onChange={this.onChangeField}
+                    onChangeField={this.onChangeField}
                   />
                 </li>
               ))
