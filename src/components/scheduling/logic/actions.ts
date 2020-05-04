@@ -20,6 +20,7 @@ import {
   ADD_NEW_BRACKET,
   FETCH_EVENT_BRACKETS,
   FETCH_BRACKETS_SUCCESS,
+  UPDATE_EXISTING_BRACKET,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
 import { scheduleSchema, updatedScheduleSchema } from 'validations';
@@ -104,6 +105,11 @@ const fetchBracketsSuccess = (payload: IFetchedBracket[]) => ({
 
 export const addNewBracket = (payload: ICreateBracketModalOutput) => ({
   type: ADD_NEW_BRACKET,
+  payload,
+});
+
+export const updateExistingBracket = (payload: Partial<IBracket>) => ({
+  type: UPDATE_EXISTING_BRACKET,
   payload,
 });
 

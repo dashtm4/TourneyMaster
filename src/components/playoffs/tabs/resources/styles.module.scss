@@ -33,7 +33,7 @@
       background: #f4f4f4;
 
       > p {
-        width: calc(100% - 550px);
+        width: calc(100% - 800px);
         height: 40px;
         margin-top: 26px;
       }
@@ -49,6 +49,31 @@
           font-size: 16px;
           font-weight: 600;
           line-height: 19px;
+        }
+      }
+
+      .moveBrackets {
+        display: flex;
+        flex-direction: column;
+        width: 360px;
+        height: 70px;
+        margin-top: 3px;
+
+        > p {
+          white-space: nowrap;
+        }
+
+        .moveBracketsBtns {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          width: 152px;
+
+          > button {
+            color: #858585;
+            font-weight: 600;
+          }
         }
       }
 

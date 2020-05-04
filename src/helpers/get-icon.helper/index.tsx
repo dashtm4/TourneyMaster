@@ -3,6 +3,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import EmailIcon from '@material-ui/icons/Email';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import PeopleIcon from '@material-ui/icons/People';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -120,6 +121,10 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <FullscreenExitIcon style={iconStyles} />;
     case Icons.ARROW_RIGHT:
       return <ArrowRightAltIcon style={iconStyles} />;
+    case Icons.EXPAND_MORE:
+      return <ExpandMoreIcon style={iconStyles} />;
+    case Icons.EXPAND_LESS:
+      return <ExpandLessIcon style={iconStyles} />;
   }
   return <ClearIcon />;
 };
