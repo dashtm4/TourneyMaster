@@ -286,7 +286,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             <div className={styles.piDetailsThirdArea}>
               <Input
                 fullWidth={true}
-                label="Description"
+                label="Event Description"
                 multiline={true}
                 rows="4"
                 value={eventData.event_description}
