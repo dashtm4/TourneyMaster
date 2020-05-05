@@ -5,7 +5,7 @@ import { BindingCbWithTwo } from 'common/models';
 import { IIndivisualsRegister } from 'common/models/register';
 import { CardElement } from '@stripe/react-stripe-js';
 import stripeLogo from 'assets/stripeLogo.png';
-import CardHelp from '../../card-help';
+// import CardHelp from '../../card-help';
 
 interface IPaymentProps {
   data: Partial<IIndivisualsRegister>;
@@ -103,7 +103,6 @@ const Payment = ({ data, onChange, processing }: IPaymentProps) => {
               },
             }}
           />
-          <CardHelp />
         </div>
         <img
           src={stripeLogo}
