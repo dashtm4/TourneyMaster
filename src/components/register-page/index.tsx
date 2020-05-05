@@ -108,6 +108,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
         setDivisions(sortedDivs);
       });
+
+    // axios.get('https://api.tourneymaster.org/v2/states').then(response => {
+    //   console.log(response);
+    // });
   }, []);
 
   const getPaymentIntent = (order: any) => {
