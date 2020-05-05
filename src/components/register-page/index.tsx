@@ -27,7 +27,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Header from './header';
 import Footer from 'components/footer';
 import axios from 'axios';
-import { IEventDetails, IRegistration } from 'common/models';
+import { IEventDetails, IRegistration, ISelectOption } from 'common/models';
 import SideBar from './side-bar';
 import { getVarcharEight } from 'helpers';
 import { IIndivisualsRegister, ITeamsRegister } from 'common/models/register';
@@ -102,7 +102,11 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           value: sku.sku_id,
         }));
 
-        setDivisions(divs);
+        const sortedDivs = divs.sort((a: ISelectOption, b: ISelectOption) =>
+          a.label.localeCompare(b.label, undefined, { numeric: true })
+        );
+
+        setDivisions(sortedDivs);
       });
   }, []);
 
