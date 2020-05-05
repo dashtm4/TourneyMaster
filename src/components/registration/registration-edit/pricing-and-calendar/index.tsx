@@ -3,10 +3,11 @@ import styles from '../styles.module.scss';
 import { Input, DatePicker, Checkbox, Select } from 'components/common';
 import { IRegistration } from 'common/models/registration';
 import { BindingCbWithTwo } from 'common/models';
+import { timeToDate, dateToTime } from 'helpers';
 
 interface IPricingAndCalendarProps {
   data?: IRegistration;
-  onChange: BindingCbWithTwo<string, string | number>;
+  onChange: BindingCbWithTwo<string, string | number | null>;
 }
 
 const currencyOptions = [
@@ -50,15 +51,26 @@ const PricingAndCalendar = ({ data, onChange }: IPricingAndCalendarProps) => {
     e: React.ChangeEvent<HTMLInputElement>
   ) => onChange('entry_deposit_YN', Number(e.target.checked));
 
-  const onSpecificTimeOpenChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('specific_time_reg_open_YN', Number(e.target.checked));
+  const onSpecificTimeOpenChange = ({
+    target: { checked },
+  }: React.ChangeEvent<HTMLInputElement>) => {
+    if (checked) {
+      onChange('specific_time_reg_open_YN', Number(checked));
+    } else {
+      onChange('specific_time_reg_open_YN', Number(checked));
+      onChange('specific_time_reg_open', null);
+    }
+  };
 
   const onEnableWaitListChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('enable_waitlist_YN', Number(e.target.checked));
 
-    const onFeesVaryByDivisionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onFeesVaryByDivisionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('fees_vary_by_division_YN', Number(e.target.checked));
 
+  const onSpecificTimeRegOpen = (date: Date) => {
+    onChange('specific_time_reg_open', dateToTime(date));
+  };
 
   return (
     <div className={styles.section}>
@@ -146,7 +158,7 @@ const PricingAndCalendar = ({ data, onChange }: IPricingAndCalendarProps) => {
           ) : null}
         </div>
         <div className={styles.sectionItem}>
-        <Checkbox
+          <Checkbox
             onChange={onFeesVaryByDivisionChange}
             options={[
               {
@@ -155,17 +167,30 @@ const PricingAndCalendar = ({ data, onChange }: IPricingAndCalendarProps) => {
               },
             ]}
           />
-          </div>
+        </div>
         <div className={styles.sectionItem}>
-          <Checkbox
-            onChange={onSpecificTimeOpenChange}
-            options={[
-              {
-                label: 'Opens at a specific time',
-                checked: Boolean(data ? data.specific_time_reg_open_YN : false),
-              },
-            ]}
-          />
+          <div className={styles.sectionItemWrapper}>
+            <Checkbox
+              onChange={onSpecificTimeOpenChange}
+              options={[
+                {
+                  label: 'Opens at a specific time',
+                  checked: Boolean(
+                    data ? data.specific_time_reg_open_YN : false
+                  ),
+                },
+              ]}
+            />
+          </div>
+          {Boolean(data?.specific_time_reg_open_YN) && (
+            <DatePicker
+              onChange={onSpecificTimeRegOpen}
+              minWidth="100%"
+              label="First Game Start"
+              type="time"
+              value={timeToDate(data?.specific_time_reg_open || '')}
+            />
+          )}
         </div>
         <div className={styles.sectionItem}>
           <Checkbox
