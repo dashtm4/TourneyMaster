@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import styles from '../../styles.module.scss';
 import { Input, Select, DatePicker } from 'components/common';
@@ -68,6 +69,7 @@ const PlayerInfo = ({
             fullWidth={true}
             label="Participant First Name"
             value={data.participant_first_name || ''}
+            isRequired={true}
             onChange={onFirstNameChange}
           />
         </div>
@@ -76,6 +78,7 @@ const PlayerInfo = ({
             fullWidth={true}
             label="Participant Last Name"
             value={data.participant_last_name || ''}
+            isRequired={true}
             onChange={onLastNameChange}
           />
         </div>
@@ -84,6 +87,7 @@ const PlayerInfo = ({
             fullWidth={true}
             label="Email"
             value={data.participant_email || ''}
+            isRequired={true}
             onChange={onEmailChange}
           />
         </div>
@@ -101,6 +105,7 @@ const PlayerInfo = ({
               borderRadius: '4px',
               width: '100%',
             }}
+            inputProps={{ required: true }}
           />
         </div>
       </div>
@@ -110,6 +115,7 @@ const PlayerInfo = ({
             fullWidth={true}
             label="City"
             value={data.player_city || ''}
+            isRequired={true}
             onChange={onPlayerCityChange}
           />
         </div>
@@ -118,6 +124,7 @@ const PlayerInfo = ({
             fullWidth={true}
             label="State"
             value={data.player_state || ''}
+            isRequired={true}
             onChange={onPlayerStateChange}
           />
         </div>
@@ -126,6 +133,7 @@ const PlayerInfo = ({
             options={divisions}
             label="Division"
             value={data.ext_sku || ''}
+            isRequired={true}
             onChange={onDivisionChange}
           />
         </div>
@@ -134,6 +142,7 @@ const PlayerInfo = ({
             options={playerLevelOptions}
             label="Player Level"
             value={data.player_level || ''}
+            isRequired={true}
             onChange={onPlayerLevelSelect}
           />
         </div>
@@ -145,6 +154,7 @@ const PlayerInfo = ({
             label="Birthdate and Year"
             type="date"
             value={data.player_birthdate || new Date()}
+            isRequired={true}
             onChange={onPlayerBirthdayChange}
           />
         </div>

@@ -4,7 +4,7 @@ import styles from '../styles.module.scss';
 import moment from 'moment';
 import { HashLink } from 'react-router-hash-link';
 import { IRegistration } from 'common/models/registration';
-import { stringToLink } from 'helpers';
+import { stringToLink, formatTimeSlot } from 'helpers';
 
 interface IPricingAndCalendarProps {
   data: Partial<IRegistration>;
@@ -108,21 +108,34 @@ const PricingAndCalendar = ({
         />
       </div>
       <div className={styles.sectionItem}>
-        <Checkbox
-          options={[
-            {
-              label: 'Opens at a specific time',
-              checked: Boolean(data ? data.specific_time_reg_open_YN : false),
-              disabled: true,
-            },
-          ]}
-        />
+        {data?.specific_time_reg_open ? (
+          <div>
+            <span className={styles.sectionTitle}>
+              Opens At a Specific Time
+            </span>
+            <p>
+              {data.specific_time_reg_open
+                ? `${formatTimeSlot(data.specific_time_reg_open)}`
+                : '—'}
+            </p>
+          </div>
+        ) : (
+          <Checkbox
+            options={[
+              {
+                label: 'Opens At a Specific Time',
+                checked: Boolean(data ? data.specific_time_reg_open_YN : false),
+                disabled: true,
+              },
+            ]}
+          />
+        )}
       </div>
       <div className={styles.sectionItem}>
         <Checkbox
           options={[
             {
-              label: 'Enable waitlist',
+              label: 'Enable Waitlist',
               checked: Boolean(data ? data.enable_waitlist_YN : false),
               disabled: true,
             },

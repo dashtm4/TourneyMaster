@@ -53,10 +53,7 @@ import {
   createBracketGames,
   advanceBracketGamesWithTeams,
 } from './bracketGames';
-import {
-  populateDefinedGamesWithPlayoffState,
-  adjustPlayoffTimeOnLoad,
-} from 'components/schedules/definePlayoffs';
+import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
 import {
   createPlayoff,
   savePlayoff,
@@ -75,11 +72,19 @@ import {
   updateBracketGamesDndResult,
   updateGameSlot,
   setReplacementMessage,
+  movePlayoffTimeSlots,
+  moveBracketGames,
 } from './helper';
 import { IOnAddGame } from './add-game-modal';
+import { updateExistingBracket } from 'components/scheduling/logic/actions';
 
 export interface ISeedDictionary {
   [key: string]: IBracketSeed[];
+}
+
+export enum MovePlayoffWindowEnum {
+  UP = 'up',
+  DOWN = 'down',
 }
 
 interface IMapStateToProps extends Partial<ITournamentData> {
@@ -111,6 +116,7 @@ interface IMapDispatchToProps {
   onBracketsUndo: () => void;
   advanceTeamsToBrackets: () => void;
   clearSortedTeams: () => void;
+  updateExistingBracket: (data: Partial<IBracket>) => void;
 }
 
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
@@ -263,23 +269,77 @@ class Playoffs extends Component<IProps> {
   };
 
   calculatePlayoffTimeSlots = () => {
-    const { schedulesDetails, event } = this.props;
+    const { schedulesDetails, event, bracket } = this.props;
     const { timeSlots } = this.state;
+    // const { bracketId } = match?.params;
 
-    const day = event?.event_enddate;
+    const day = moment(event?.event_enddate).toISOString();
 
-    if (!schedulesDetails || !timeSlots || !event || !day) return;
+    if (!schedulesDetails || !timeSlots || !event || !day || !bracket) return;
 
-    const playoffTimeSlots = adjustPlayoffTimeOnLoad(
-      schedulesDetails,
-      timeSlots,
-      event,
-      day
+    const initialStartTimeSlot = bracket.startTimeSlot;
+    // const initialEndTimeSlot = bracket.endTimeSlot;
+
+    const playoffTimeSlots = timeSlots.slice(
+      Number(initialStartTimeSlot),
+      timeSlots.length
     );
+
+    // if (!bracketId) {
+    //   playoffTimeSlots = adjustPlayoffTimeOnLoad(
+    //     schedulesDetails,
+    //     timeSlots,
+    //     event,
+    //     day
+    //   );
+
+    //   const startTimeSlot = playoffTimeSlots?.length
+    //     ? String(playoffTimeSlots[0].id)
+    //     : initialStartTimeSlot;
+    //   const endTimeSlot = playoffTimeSlots?.length
+    //     ? String(playoffTimeSlots[playoffTimeSlots.length - 1].id)
+    //     : initialEndTimeSlot;
+
+    //   this.props.updateExistingBracket({
+    //     startTimeSlot,
+    //     endTimeSlot,
+    //   });
+    // }
 
     if (playoffTimeSlots) {
       this.setState({ playoffTimeSlots });
     }
+  };
+
+  /* MOVE PLAYOFF WINDOW */
+  movePlayoffWindow = (direction: MovePlayoffWindowEnum) => {
+    const { playoffTimeSlots, timeSlots } = this.state;
+    const { schedulesDetails, event, bracketGames } = this.props;
+    const gameDate = moment(event?.event_enddate).toISOString();
+
+    const newPlayoffTimeSlots = movePlayoffTimeSlots(
+      schedulesDetails!,
+      timeSlots!,
+      playoffTimeSlots!,
+      gameDate,
+      direction
+    );
+
+    const startTimeSlot = String(newPlayoffTimeSlots[0].id);
+    const endTimeSlot = String(
+      newPlayoffTimeSlots[newPlayoffTimeSlots.length - 1].id
+    );
+
+    const newBracketGames = moveBracketGames(
+      bracketGames!,
+      schedulesDetails!,
+      timeSlots!,
+      gameDate,
+      direction
+    );
+
+    this.props.fetchBracketGames(newBracketGames);
+    this.props.updateExistingBracket({ startTimeSlot, endTimeSlot });
   };
 
   /* CALCULATE BRACKET GAMES */
@@ -404,7 +464,7 @@ class Playoffs extends Component<IProps> {
     const { tableGames } = this.state;
 
     if (!bracketGames || !tableGames || !fields)
-      return console.error('Error happened during a dnd process.');
+      return new Error('Error happened during a dnd process.');
 
     const updatedResult = updateBracketGamesDndResult(
       gameId,
@@ -531,6 +591,7 @@ class Playoffs extends Component<IProps> {
       cancelConfirmationOpen,
       replacementBracketGames,
       replacementMessage,
+      playoffTimeSlots,
     } = this.state;
 
     const {
@@ -618,11 +679,13 @@ class Playoffs extends Component<IProps> {
                 onTeamCardsUpdate={() => {}}
                 onTeamCardUpdate={() => {}}
                 onUndo={() => {}}
+                playoffTimeSlots={playoffTimeSlots}
                 isFullScreen={isFullScreen}
                 updateGame={this.updateMergedGames}
                 setHighlightedGame={this.setHighlightedGame}
                 highlightedGameId={this.state.highlightedGameId}
                 onToggleFullScreen={onToggleFullScreen}
+                movePlayoffWindow={this.movePlayoffWindow}
               />
             ) : (
               <BracketManager
@@ -703,6 +766,7 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       onBracketsUndo: onUndoBrackets,
       advanceTeamsToBrackets,
       clearSortedTeams,
+      updateExistingBracket,
     },
     dispatch
   );

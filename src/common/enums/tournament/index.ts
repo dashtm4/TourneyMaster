@@ -1,7 +1,7 @@
 enum EventPublishTypes {
-  DETAILS = 'Division & Pools (Details)',
-  TOURNAMENT_PLAY = 'Tournament Plays',
-  BRACKETS = 'Brackets',
+  DETAILS = 'Event Divisions & Pools (No Games)',
+  TOURNAMENT_PLAY = 'Tournament Play',
+  BRACKETS = 'Playoff Brackets',
   DETAILS_AND_TOURNAMENT_PLAY = 'Details + Tournament Plays',
   DETAILS_AND_TOURNAMENT_PLAY_AND_BRACKETS = 'Details, Tournament Plays, Brackets',
 }

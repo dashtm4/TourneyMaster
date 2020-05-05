@@ -40,17 +40,17 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
                 // onClick={onMenuClick.bind(undefined, item.title)}
                 key={index}
               >
-                {index < 2 ? (
+                {!item.link.includes('http') ? (
                   <Link to={item.link}>{item.title}</Link>
                 ) : (
-                  <a
-                    href={item.link}
-                    target={'_blank'}
-                    rel="noopener noreferrer"
-                  >
-                    {item.title}
-                  </a>
-                )}
+                    <a
+                      href={item.link}
+                      target={'_blank'}
+                      rel="noopener noreferrer"
+                    >
+                      {item.title}
+                    </a>
+                  )}
               </li>
             ))}
           </ul>

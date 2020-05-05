@@ -9,6 +9,7 @@ import {
   DELETE_SCHEDULE_SUCCESS,
   ADD_NEW_BRACKET,
   FETCH_EVENT_BRACKETS,
+  UPDATE_EXISTING_BRACKET,
 } from './actionTypes';
 import {
   ADD_ENTITIES_TO_LIBRARY_SUCCESS,
@@ -113,6 +114,14 @@ export default (
       return {
         ...state,
         bracket: action.payload,
+      };
+    case UPDATE_EXISTING_BRACKET:
+      return {
+        ...state,
+        bracket: {
+          ...state.bracket,
+          ...action.payload,
+        },
       };
     case FETCH_EVENT_BRACKETS:
       return {

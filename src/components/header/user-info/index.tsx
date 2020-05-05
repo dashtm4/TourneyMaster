@@ -4,6 +4,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import hisory from '../../../browserhistory';
 import { Routes } from 'common/enums';
 import styles from './style.module.scss';
+import Divider from '@material-ui/core/Divider';
 
 const USER_LOGO = '';
 
@@ -39,6 +40,36 @@ const UserInfo: React.FC = () => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
+          <MenuItem
+            onClick={() => {
+              hisory.replace(Routes.SUPPORT)
+              handleClose()
+            }}
+          >
+            Give Feedback
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              window.location.href = 'https://www.tourneymaster.org/contact/'
+            }}
+          >
+            Get Help
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              window.location.href = 'https://www.tourneymaster.org/about/'
+            }}
+          >
+            About
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              window.location.href = 'https://www.tourneymaster.org/privacy-policy/'
+            }}
+          >
+            Privacy Policy
+          </MenuItem>
+          <Divider light />
           <MenuItem
             onClick={() => {
               localStorage.clear();
