@@ -16,8 +16,8 @@ enum OptionsEnum {
 
 const roleOptions = [
   { label: 'Event Manager', value: 'Event Manager' },
-  { label: 'Accounting Admin', value: 'Accounting Admin' },
-  { label: 'Onsite Pointperson', value: 'Onsite Pointperson' },
+  { label: 'Billing Admin', value: 'Billing Admin' },
+  { label: 'Onsite Contact', value: 'Onsite Contact' },
   { label: 'Other', value: 'Other' },
 ];
 
