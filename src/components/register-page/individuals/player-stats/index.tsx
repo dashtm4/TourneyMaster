@@ -77,6 +77,7 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
             fullWidth={true}
             label="Club Name"
             value={data.player_club_name || ''}
+            isRequired={true}
             onChange={onClubNameChange}
           />
         </div>

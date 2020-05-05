@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField as MuiTextField, MenuItem } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import { ISelectOption } from 'common/models';
 import styles from './style.module.scss';
 
@@ -13,6 +13,7 @@ interface ISelectProps {
   disabled?: boolean;
   align?: string;
   placeholder?: string;
+  isRequired?: boolean;
 }
 
 const Select: React.FC<ISelectProps> = ({
@@ -25,6 +26,7 @@ const Select: React.FC<ISelectProps> = ({
   disabled,
   align,
   placeholder,
+  isRequired,
 }) => (
   <div className={styles.container} style={{ alignItems: align || '' }}>
     <span className={styles.label}>{label}</span>
@@ -36,7 +38,7 @@ const Select: React.FC<ISelectProps> = ({
         {placeholder}
       </span>
     ) : null}
-    <MuiTextField
+    <TextField
       id="select"
       style={{ width }}
       variant="outlined"
@@ -47,13 +49,17 @@ const Select: React.FC<ISelectProps> = ({
       fullWidth={true}
       name={name}
       disabled={disabled}
+      required={isRequired}
+      SelectProps={{
+        native: true,
+      }}
     >
       {options.map((option: ISelectOption, index: number) => (
-        <MenuItem key={index} value={option.value}>
+        <option key={index} value={option.value}>
           {option.label}
-        </MenuItem>
+        </option>
       ))}
-    </MuiTextField>
+    </TextField>
   </div>
 );
 

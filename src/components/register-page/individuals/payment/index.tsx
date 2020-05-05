@@ -47,6 +47,7 @@ const Payment = ({ data, onChange, processing }: IPaymentProps) => {
             label="Payment Method"
             value={data.payment_method || ''}
             onChange={onPaymentMethodChange}
+            isRequired={true}
           />
         </div>
         <div className={styles.sectionItem}>

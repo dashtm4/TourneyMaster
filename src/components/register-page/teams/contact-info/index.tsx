@@ -37,6 +37,7 @@ const ContacnInfo = ({ data, onChange }: IContacnInfoProps) => {
             label="First Name"
             value={data.contact_first_name || ''}
             onChange={onFirstNameChange}
+            isRequired={true}
           />
         </div>
         <div className={styles.sectionItem}>
@@ -45,6 +46,7 @@ const ContacnInfo = ({ data, onChange }: IContacnInfoProps) => {
             label="Last Name"
             value={data.contact_last_name || ''}
             onChange={onLastNameChange}
+            isRequired={true}
           />
         </div>
         <div className={styles.sectionItem}>
@@ -70,6 +72,7 @@ const ContacnInfo = ({ data, onChange }: IContacnInfoProps) => {
               borderRadius: '4px',
               width: '100%',
             }}
+            inputProps={{ required: true }}
           />
         </div>
       </div>
