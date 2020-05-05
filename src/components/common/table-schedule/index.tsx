@@ -76,6 +76,7 @@ interface Props {
   playoffTimeSlots?: ITimeSlot[];
   bracketGames?: IBracketGame[];
   onBracketGameUpdate: (bracketGame: IBracketGame) => void;
+  recalculateDiagnostics?: () => void;
 }
 
 const TableSchedule = ({
@@ -102,6 +103,7 @@ const TableSchedule = ({
   playoffTimeSlots,
   bracketGames,
   onBracketGameUpdate,
+  recalculateDiagnostics,
 }: Props) => {
   const minGamesNum = event.min_num_of_games;
 
@@ -290,9 +292,13 @@ const TableSchedule = ({
             {teamsDiagnostics && divisionsDiagnostics && (
               <div className={styles.diagnosticsWrapper}>
                 Diagnostics:
-                <TeamsDiagnostics teamsDiagnostics={teamsDiagnostics} />
+                <TeamsDiagnostics
+                  teamsDiagnostics={teamsDiagnostics}
+                  recalculateDiagnostics={recalculateDiagnostics}
+                />
                 <DivisionsDiagnostics
                   divisionsDiagnostics={divisionsDiagnostics}
+                  recalculateDiagnostics={recalculateDiagnostics}
                 />
               </div>
             )}
