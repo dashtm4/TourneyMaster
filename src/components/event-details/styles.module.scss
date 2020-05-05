@@ -52,6 +52,7 @@ $sectionBodyPadding: 20px 0;
   .piDetails {
     width: 100%;
     height: 100%;
+    padding: 0 0 10px;
 
     & > div {
       padding: $sectionBodyPadding;
@@ -125,6 +126,7 @@ $sectionBodyPadding: 20px 0;
       display: flex;
       justify-content: space-between;
       padding: 0;
+      margin: 0 0 10px;
       .piSection {
         width: 60%;
       }

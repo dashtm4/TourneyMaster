@@ -1,20 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import CodeIcon from '@material-ui/icons/Code';
 
 import {
   SectionDropdown,
   HeadingLevelThree,
   Input,
   Select,
-  Button,
   DatePicker,
   CardMessage,
+  ButtonCopy,
 } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
 
 import { IPosition } from './map/autocomplete';
-import { EventMenuTitles } from 'common/enums';
+import {
+  EventMenuTitles,
+  ButtonColors,
+  ButtonVarian,
+  EventStatuses,
+} from 'common/enums';
 
 import styles from '../styles.module.scss';
 
@@ -26,6 +30,10 @@ import { timeToDate, dateToTime } from 'helpers';
 
 const CONTACT_TOOLTIP_MESSAGE =
   'Contact details will be included when printing schedules and fields by field datails';
+const RESULTS_DISABLE_MESSAGE =
+  'Link will be available after the publication of the event';
+
+const BASE_RESULT_LINK = 'http://results.tourneymaster.com/event/';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -39,7 +47,7 @@ enum sportsEnum {
   'Lacrosse' = 1,
   'Field Hockey' = 2,
   'Basketball' = 3,
-  'Soccer' = 4
+  'Soccer' = 4,
 }
 enum genderEnum {
   'Male' = 1,
@@ -77,12 +85,14 @@ const PrimaryInformationSection: React.FC<Props> = ({
   isSectionExpand,
 }: Props) => {
   const {
+    event_id,
     time_zone_utc,
     event_startdate,
     event_enddate,
     first_game_time,
     last_game_end,
     event_level,
+    is_published_YN,
   } = eventData;
 
   const {
@@ -191,6 +201,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
           <Input
             fullWidth={true}
             label="Event Tag"
+            startAdornment="@"
             value={eventData.event_tag || ''}
             onChange={onTagChange}
           />
@@ -216,7 +227,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
         <div className={styles.piDetailsFirstContacts}>
           <Input
             fullWidth={true}
-            label="Main Contact"
+            label="Main Contact Name"
             value={eventData.main_contact || ''}
             onChange={onMainContactChange}
           />
@@ -290,7 +301,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
             <div className={styles.piDetailsThirdArea}>
               <Input
                 fullWidth={true}
-                label="Description"
+                label="Event Description"
                 multiline={true}
                 rows="4"
                 value={eventData.event_description}
@@ -307,11 +318,16 @@ const PrimaryInformationSection: React.FC<Props> = ({
             />
           </div>
         </div>
-        <Button
-          label="Embed Code"
-          icon={<CodeIcon />}
-          color="secondary"
-          variant="text"
+        <ButtonCopy
+          copyString={`${BASE_RESULT_LINK}${event_id}`}
+          color={ButtonColors.SECONDARY}
+          variant={ButtonVarian.TEXT}
+          disableMessage={
+            is_published_YN === EventStatuses.Draft
+              ? RESULTS_DISABLE_MESSAGE
+              : undefined
+          }
+          label="Results Link"
         />
       </div>
     </SectionDropdown>

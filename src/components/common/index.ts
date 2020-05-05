@@ -32,6 +32,7 @@ import CsvLoader from './csv-loader';
 import SelectMultiple from './select-multiple';
 import ButtonLoad from './button-load';
 import ZoomControls from './zoom-controls';
+import ButtonCopy from './button-copy';
 import * as Toasts from './toastr/showToasts';
 
 export {
@@ -70,4 +71,5 @@ export {
   SelectMultiple,
   ButtonLoad,
   ZoomControls,
+  ButtonCopy,
 };

@@ -1,14 +1,17 @@
 import React from 'react';
 import styles from '../../styles.module.scss';
-import { Input, Select } from 'components/common';
+import { Input, Select, Loader } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
 import { IIndivisualsRegister } from 'common/models/register';
 import { CardElement } from '@stripe/react-stripe-js';
 import stripeLogo from 'assets/stripeLogo.png';
+import CardHelp from '../../card-help';
 
 interface IPaymentProps {
   data: Partial<IIndivisualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
+  processing: boolean;
+  purchasing: boolean;
 }
 
 const paymentMethodOptions = [
@@ -22,7 +25,7 @@ const paymentSelectionOptions = [
   { label: 'Deposit', value: 'Deposit' },
 ];
 
-const Payment = ({ data, onChange }: IPaymentProps) => {
+const Payment = ({ data, onChange, processing }: IPaymentProps) => {
   const onPaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('payment_method', e.target.value);
 
@@ -35,7 +38,7 @@ const Payment = ({ data, onChange }: IPaymentProps) => {
   const onPaymentAmountChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('payment_amount', e.target.value);
 
-  return (
+  const paymentForm = (
     <div className={styles.section}>
       <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
@@ -59,6 +62,7 @@ const Payment = ({ data, onChange }: IPaymentProps) => {
             options={paymentSelectionOptions}
             label="Payment Selection"
             value={data.payment_selection || ''}
+            disabled={true}
             onChange={onPaymentSelectionChange}
           />
         </div>
@@ -68,6 +72,7 @@ const Payment = ({ data, onChange }: IPaymentProps) => {
             type="number"
             label="Payment Amount"
             value={data.payment_amount || ''}
+            disabled={true}
             onChange={onPaymentAmountChange}
           />
         </div>
@@ -78,7 +83,10 @@ const Payment = ({ data, onChange }: IPaymentProps) => {
           <CardElement
             className={styles.stripeElement}
             options={{
-              disabled: data.payment_method !== 'Credit Card' ? true : false,
+              disabled:
+                data.payment_method !== 'Credit Card' || processing
+                  ? true
+                  : false,
               iconStyle: 'solid',
               style: {
                 base: {
@@ -95,6 +103,7 @@ const Payment = ({ data, onChange }: IPaymentProps) => {
               },
             }}
           />
+          <CardHelp />
         </div>
         <img
           src={stripeLogo}
@@ -108,6 +117,8 @@ const Payment = ({ data, onChange }: IPaymentProps) => {
       </div>
     </div>
   );
+
+  return processing ? <Loader /> : paymentForm;
 };
 
 export default Payment;
