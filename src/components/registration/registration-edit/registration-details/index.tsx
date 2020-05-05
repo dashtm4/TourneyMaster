@@ -15,9 +15,9 @@ enum OptionsEnum {
 }
 
 const roleOptions = [
-  { label: 'Coach', value: 'Coach' },
-  { label: 'Participant', value: 'Participant' },
-  { label: 'Parent/Guardian', value: 'Parent/Guardian' },
+  { label: 'Event Manager', value: 'Event Manager' },
+  { label: 'Accounting Admin', value: 'Accounting Admin' },
+  { label: 'Onsite Pointperson', value: 'Onsite Pointperson' },
   { label: 'Other', value: 'Other' },
 ];
 
