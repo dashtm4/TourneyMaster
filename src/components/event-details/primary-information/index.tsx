@@ -8,11 +8,17 @@ import {
   Select,
   DatePicker,
   CardMessage,
+  ButtonCopy,
 } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
 
 import { IPosition } from './map/autocomplete';
-import { EventMenuTitles } from 'common/enums';
+import {
+  EventMenuTitles,
+  ButtonColors,
+  ButtonVarian,
+  EventStatuses,
+} from 'common/enums';
 
 import styles from '../styles.module.scss';
 
@@ -24,6 +30,10 @@ import { timeToDate, dateToTime } from 'helpers';
 
 const CONTACT_TOOLTIP_MESSAGE =
   'Contact details will be included when printing schedules and fields by field datails';
+const RESULTS_DISABLE_MESSAGE =
+  'Link will be available after the publication of the event';
+
+const BASE_RESULT_LINK = 'http://results.tourneymaster.com/event/';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -75,12 +85,14 @@ const PrimaryInformationSection: React.FC<Props> = ({
   isSectionExpand,
 }: Props) => {
   const {
+    event_id,
     time_zone_utc,
     event_startdate,
     event_enddate,
     first_game_time,
     last_game_end,
     event_level,
+    is_published_YN,
   } = eventData;
 
   const {
@@ -306,12 +318,17 @@ const PrimaryInformationSection: React.FC<Props> = ({
             />
           </div>
         </div>
-        {/* <Button
-          icon={getIcon(Icons.FILE_COPY, COPY_ICON_STYLES)}
+        <ButtonCopy
+          copyString={`${BASE_RESULT_LINK}${event_id}`}
           color={ButtonColors.SECONDARY}
           variant={ButtonVarian.TEXT}
+          disableMessage={
+            is_published_YN === EventStatuses.Draft
+              ? RESULTS_DISABLE_MESSAGE
+              : undefined
+          }
           label="Results Link"
-        /> */}
+        />
       </div>
     </SectionDropdown>
   );

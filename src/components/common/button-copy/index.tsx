@@ -1,6 +1,7 @@
 import React, { CSSProperties } from 'react';
 import { getIcon } from 'helpers';
-import { Button, Toasts } from 'components/common';
+import { Button, Toasts, Tooltip } from 'components/common';
+import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
 import { copyToClipboard } from './helpers';
 import styles from './styles.module.scss';
@@ -15,7 +16,7 @@ interface Props {
   label: string;
   color: ButtonColors;
   variant: ButtonVarian;
-  isDisabled?: boolean;
+  disableMessage?: string;
   style?: CSSProperties;
 }
 
@@ -24,30 +25,38 @@ const ButtonCopy = ({
   color,
   variant,
   copyString,
-  isDisabled,
+  disableMessage,
   style,
 }: Props) => {
-  const wrappedLabel = (
-    <span className={styles.labelWrapper} style={style}>
-      <span>{label}</span>
-      {getIcon(Icons.FILE_COPY, COPY_ICON_STYLES)}
-    </span>
-  );
-
   const onClick = () => {
     copyToClipboard(copyString);
 
     Toasts.successToast('Successfully copied!');
   };
 
-  return (
+  const WrappedLabel = (
+    <span className={styles.labelWrapper} style={style}>
+      <span>{label}</span>
+      {getIcon(Icons.FILE_COPY, COPY_ICON_STYLES)}
+    </span>
+  );
+
+  const WrappedBtton = (
     <Button
       onClick={onClick}
-      label={wrappedLabel}
+      label={WrappedLabel}
       color={color}
       variant={variant}
-      disabled={isDisabled}
+      disabled={Boolean(disableMessage)}
     />
+  );
+
+  return disableMessage ? (
+    <Tooltip title={disableMessage} type={TooltipMessageTypes.INFO}>
+      <span>{WrappedBtton}</span>
+    </Tooltip>
+  ) : (
+    WrappedBtton
   );
 };
 
