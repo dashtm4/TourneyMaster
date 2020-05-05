@@ -7,7 +7,7 @@ const Header = () => (
   <header className={styles.header}>
     <div className={styles.headerWrapper}>
       <p className={styles.headerLogoWrapper}>
-        <Link to="/">
+        <Link to="/register">
           <img src={logo} width="157" height="122" alt="Tourneymaster logo" />
         </Link>
       </p>
