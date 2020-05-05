@@ -24,7 +24,7 @@ const getGamesStatistics = (games: ISchedulesGameWithNames[]) => {
     (acc, it) => {
       return {
         totalGames:
-          !it.awayTeamId && !it.homeTeamId
+          it.awayTeamId || it.homeTeamId
             ? (acc.totalGames = acc.totalGames + 1)
             : acc.totalGames,
         completedGames:
