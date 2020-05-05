@@ -29,7 +29,7 @@ interface Props {
   onEditBracket: (bracketId: string) => void;
 }
 
-const BraketsItem = ({
+const BracketsItem = ({
   eventId,
   schedule,
   bracket,
@@ -53,9 +53,10 @@ const BraketsItem = ({
         >
           <div
             style={{
-              display: 'inline',
+              // display: 'inline',
               marginLeft: '15px',
               padding: '10px 0',
+              display: 'none',
             }}
           >
             {bracketPublished ? (
@@ -150,4 +151,4 @@ const BraketsItem = ({
   </li>
 );
 
-export default BraketsItem;
+export default BracketsItem;
