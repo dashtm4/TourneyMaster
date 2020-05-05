@@ -9,6 +9,7 @@ export interface IRegistration {
   early_bird_discount: number;
   discount_enddate: string;
   specific_time_reg_open_YN: number;
+  specific_time_reg_open: string | null;
   registration_start: string;
   registration_end: string;
   enable_waitlist_YN: number;

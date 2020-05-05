@@ -1,10 +1,10 @@
 import React from 'react';
-import { Checkbox } from 'components/common';
+import { Checkbox, DatePicker } from 'components/common';
 import styles from '../styles.module.scss';
 import moment from 'moment';
 import { HashLink } from 'react-router-hash-link';
 import { IRegistration } from 'common/models/registration';
-import { stringToLink } from 'helpers';
+import { stringToLink, timeToDate } from 'helpers';
 
 interface IPricingAndCalendarProps {
   data: Partial<IRegistration>;
@@ -108,15 +108,27 @@ const PricingAndCalendar = ({
         />
       </div>
       <div className={styles.sectionItem}>
-        <Checkbox
-          options={[
-            {
-              label: 'Opens at a specific time',
-              checked: Boolean(data ? data.specific_time_reg_open_YN : false),
-              disabled: true,
-            },
-          ]}
-        />
+        <div className={styles.sectionItemWrapper}>
+          <Checkbox
+            options={[
+              {
+                label: 'Opens at a specific time',
+                checked: Boolean(data ? data.specific_time_reg_open_YN : false),
+                disabled: true,
+              },
+            ]}
+          />
+        </div>
+        {Boolean(data?.specific_time_reg_open) && (
+          <DatePicker
+            onChange={() => {}}
+            minWidth="100%"
+            label="First Game Start"
+            type="time"
+            value={timeToDate(data?.specific_time_reg_open || '')}
+            disabled={true}
+          />
+        )}
       </div>
       <div className={styles.sectionItem}>
         <Checkbox
