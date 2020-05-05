@@ -1,13 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import CodeIcon from '@material-ui/icons/Code';
 
 import {
   SectionDropdown,
   HeadingLevelThree,
   Input,
   Select,
-  Button,
   DatePicker,
   CardMessage,
 } from 'components/common';
@@ -39,7 +37,7 @@ enum sportsEnum {
   'Lacrosse' = 1,
   'Field Hockey' = 2,
   'Basketball' = 3,
-  'Soccer' = 4
+  'Soccer' = 4,
 }
 enum genderEnum {
   'Male' = 1,
@@ -308,12 +306,12 @@ const PrimaryInformationSection: React.FC<Props> = ({
             />
           </div>
         </div>
-        <Button
-          label="Embed Code"
-          icon={<CodeIcon />}
-          color="secondary"
-          variant="text"
-        />
+        {/* <Button
+          icon={getIcon(Icons.FILE_COPY, COPY_ICON_STYLES)}
+          color={ButtonColors.SECONDARY}
+          variant={ButtonVarian.TEXT}
+          label="Results Link"
+        /> */}
       </div>
     </SectionDropdown>
   );

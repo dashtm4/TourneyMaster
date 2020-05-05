@@ -2,20 +2,19 @@ import React from 'react';
 import {
   SectionDropdown,
   HeadingLevelThree,
-  Toasts,
   Button,
   Paper,
   Tooltip,
+  ButtonCopy,
 } from 'components/common';
 import PopupDeleteConfirm from 'components/common/delete-popup-confirm';
 import { IOrganization } from 'common/models';
-import { Icons } from 'common/enums';
+import { Icons, ButtonColors, ButtonVarian } from 'common/enums';
 import { getIcon } from 'helpers';
 import styles from './styles.module.scss';
 
 const COPY_ICON_STYLES = {
-  height: '23px',
-  marginLeft: '10px',
+  width: '140px',
 };
 
 interface Props {
@@ -23,17 +22,6 @@ interface Props {
   deleteOrganization: (organization: IOrganization) => void;
   isSectionExpand: boolean;
 }
-
-const copyToClipboard = (id: string) => {
-  const tempInput = document.createElement('input');
-  tempInput.value = id;
-  document.body.appendChild(tempInput);
-  tempInput.select();
-  document.execCommand('copy');
-  document.body.removeChild(tempInput);
-
-  Toasts.successToast('The invitation code was successfully copied');
-};
 
 const OrganizationsList = ({
   organizations,
@@ -109,15 +97,13 @@ const OrganizationsList = ({
                           <td>{organization.city}</td>
                           <td>{organization.state}</td>
                           <td>
-                            <button
-                              className={styles.codeBtn}
-                              onClick={() =>
-                                copyToClipboard(organization?.org_id)
-                              }
-                            >
-                              {organization.org_id}
-                              {getIcon(Icons.FILE_COPY, COPY_ICON_STYLES)}
-                            </button>
+                            <ButtonCopy
+                              copyString={organization.org_id}
+                              label={organization.org_id}
+                              color={ButtonColors.SECONDARY}
+                              variant={ButtonVarian.TEXT}
+                              style={COPY_ICON_STYLES}
+                            />
                           </td>
                           <td>
                             {organizations.length === 1 ? (
