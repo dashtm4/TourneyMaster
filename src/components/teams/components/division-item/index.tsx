@@ -3,6 +3,8 @@ import PoolItem from '../pool-item';
 import { SectionDropdown, Loader } from 'components/common';
 import { IDivision, IPool, ITeam } from 'common/models';
 import styles from './styles.module.scss';
+import { sortByField } from 'helpers';
+import { SortByFilesTypes } from 'common/enums';
 
 interface Props {
   division: IDivision;
@@ -37,6 +39,8 @@ const DivisionItem = ({
     team => team.division_id === division.division_id && !team.pool_id
   );
 
+  const sotedPools = sortByField(pools, SortByFilesTypes.POOLS);
+
   return (
     <li className={styles.divisionItem}>
       <SectionDropdown
@@ -47,7 +51,7 @@ const DivisionItem = ({
       >
         <span>Division: {division.long_name}</span>
         <ul className={styles.poolList}>
-          {pools.map(pool => {
+          {sotedPools.map(pool => {
             const filtredTeams = teams.filter(
               it => it.pool_id === pool.pool_id
             );
