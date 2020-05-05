@@ -13,6 +13,7 @@ interface ISelectProps {
   disabled?: boolean;
   align?: string;
   placeholder?: string;
+  isRequired?: boolean;
 }
 
 const Select: React.FC<ISelectProps> = ({
@@ -25,6 +26,7 @@ const Select: React.FC<ISelectProps> = ({
   disabled,
   align,
   placeholder,
+  isRequired,
 }) => (
   <div className={styles.container} style={{ alignItems: align || '' }}>
     <span className={styles.label}>{label}</span>
@@ -47,6 +49,7 @@ const Select: React.FC<ISelectProps> = ({
       fullWidth={true}
       name={name}
       disabled={disabled}
+      required={isRequired}
     >
       {options.map((option: ISelectOption, index: number) => (
         <MenuItem key={index} value={option.value}>

@@ -49,6 +49,7 @@ const CoachInfo = ({ data, onChange, fillCoachInfo }: ICoachInfoProps) => {
             label="First Name"
             value={data.coach_first_name || ''}
             onChange={onFirstNameChange}
+            isRequired={true}
           />
         </div>
         <div className={styles.sectionItem}>
@@ -57,6 +58,7 @@ const CoachInfo = ({ data, onChange, fillCoachInfo }: ICoachInfoProps) => {
             label="Last Name"
             value={data.coach_last_name || ''}
             onChange={onLastNameChange}
+            isRequired={true}
           />
         </div>
         <div className={styles.sectionItem}>
@@ -65,6 +67,7 @@ const CoachInfo = ({ data, onChange, fillCoachInfo }: ICoachInfoProps) => {
             label="Email"
             value={data.coach_email || ''}
             onChange={onEmailChange}
+            isRequired={true}
           />
         </div>
         <div className={styles.sectionItem}>
@@ -81,6 +84,7 @@ const CoachInfo = ({ data, onChange, fillCoachInfo }: ICoachInfoProps) => {
               borderRadius: '4px',
               width: '100%',
             }}
+            inputProps={{ required: true }}
           />
         </div>
       </div>

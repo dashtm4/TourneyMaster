@@ -35,6 +35,7 @@ const Team = ({ data, onChange, divisions }: ITeamProps) => {
             label="Team Name"
             value={data.team_name || ''}
             onChange={onTeamNameChange}
+            isRequired={true}
           />
         </div>
         <div className={styles.sectionItem}>
@@ -43,6 +44,7 @@ const Team = ({ data, onChange, divisions }: ITeamProps) => {
             label="City"
             value={data.team_city || ''}
             onChange={onTeamCityChange}
+            isRequired={true}
           />
         </div>
         <div className={styles.sectionItem}>
@@ -51,6 +53,7 @@ const Team = ({ data, onChange, divisions }: ITeamProps) => {
             label="State"
             value={data.team_state || ''}
             onChange={onTeamStateChange}
+            isRequired={true}
           />
         </div>
         <div className={styles.sectionItem}>
@@ -59,6 +62,7 @@ const Team = ({ data, onChange, divisions }: ITeamProps) => {
             label="Division"
             value={data.ext_sku || ''}
             onChange={onDivisionChange}
+            isRequired={true}
           />
         </div>
       </div>

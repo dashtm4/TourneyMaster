@@ -26,6 +26,7 @@ interface IDatePickerProps {
   viewType?: 'default' | 'input';
   fullWidth?: boolean;
   disabled?: boolean;
+  isRequired?: boolean;
 }
 
 const DatePicker: React.FC<IDatePickerProps> = ({
@@ -40,6 +41,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   viewType,
   fullWidth,
   disabled,
+  isRequired,
 }) => {
   const renderInputDatePicker = () => (
     <InputDatePicker
@@ -54,6 +56,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       format={dateFormat || 'MM/dd/yyyy'}
       onChange={onChange}
       disabled={disabled}
+      required={isRequired}
     />
   );
   const renderDatePicker = () => (
@@ -69,6 +72,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       format={dateFormat || 'MM/dd/yyyy'}
       onChange={onChange}
       disabled={disabled}
+      required={isRequired}
     />
   );
   const renderInputTimePicker = () => (
@@ -83,6 +87,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       value={value}
       onChange={onChange}
       disabled={disabled}
+      required={isRequired}
     />
   );
   const renderTimePicker = () => (
@@ -98,6 +103,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       value={value}
       onChange={onChange}
       disabled={disabled}
+      required={isRequired}
     />
   );
 
@@ -113,6 +119,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       value={value}
       onChange={onChange}
       disabled={disabled}
+      required={isRequired}
     />
   );
 
