@@ -169,24 +169,19 @@ const PricingAndCalendar = ({ data, onChange }: IPricingAndCalendarProps) => {
           />
         </div>
         <div className={styles.sectionItem}>
-          <div className={styles.sectionItemWrapper}>
-            <Checkbox
-              onChange={onSpecificTimeOpenChange}
-              options={[
-                {
-                  label: 'Opens at a specific time',
-                  checked: Boolean(
-                    data ? data.specific_time_reg_open_YN : false
-                  ),
-                },
-              ]}
-            />
-          </div>
+          <Checkbox
+            onChange={onSpecificTimeOpenChange}
+            options={[
+              {
+                label: 'Opens At a Specific Time',
+                checked: Boolean(data ? data.specific_time_reg_open_YN : false),
+              },
+            ]}
+          />
           {Boolean(data?.specific_time_reg_open_YN) && (
             <DatePicker
               onChange={onSpecificTimeRegOpen}
               minWidth="100%"
-              label="First Game Start"
               type="time"
               value={timeToDate(data?.specific_time_reg_open || '')}
             />
@@ -197,7 +192,7 @@ const PricingAndCalendar = ({ data, onChange }: IPricingAndCalendarProps) => {
             onChange={onEnableWaitListChange}
             options={[
               {
-                label: 'Enable waitlist',
+                label: 'Enable Waitlist',
                 checked: Boolean(data ? data.enable_waitlist_YN : false),
               },
             ]}
