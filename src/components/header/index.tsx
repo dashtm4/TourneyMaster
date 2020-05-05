@@ -8,8 +8,8 @@ import { Link } from 'react-router-dom';
 const Header: React.FC<RouteComponentProps> = ({ history }) => {
   const menuItems: any[] = [
     { title: 'Home', link: '/' },
-    { title: 'Event Production', link: '/' },
     { title: 'Event Search', link: 'https://results.tourneymaster.com' },
+    { title: 'Registations', link: 'https://staging.tourneymaster.org/register' },
     { title: 'Support', link: 'https://www.tourneymaster.org/support/' },
     { title: 'About', link: 'https://www.tourneymaster.org/about/' },
     { title: 'Contact', link: 'https://www.tourneymaster.org/contact/' },
