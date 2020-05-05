@@ -15,7 +15,7 @@ import styles from './style.module.scss';
 // const defaultWidth = 100;
 
 interface IDatePickerProps {
-  label: string;
+  label?: string;
   value?: string | Date;
   type: string;
   width?: string;

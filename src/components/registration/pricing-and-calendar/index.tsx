@@ -1,10 +1,10 @@
 import React from 'react';
-import { Checkbox, DatePicker } from 'components/common';
+import { Checkbox } from 'components/common';
 import styles from '../styles.module.scss';
 import moment from 'moment';
 import { HashLink } from 'react-router-hash-link';
 import { IRegistration } from 'common/models/registration';
-import { stringToLink, timeToDate } from 'helpers';
+import { stringToLink, formatTimeSlot } from 'helpers';
 
 interface IPricingAndCalendarProps {
   data: Partial<IRegistration>;
@@ -108,25 +108,26 @@ const PricingAndCalendar = ({
         />
       </div>
       <div className={styles.sectionItem}>
-        <div className={styles.sectionItemWrapper}>
+        {data?.specific_time_reg_open ? (
+          <div>
+            <span className={styles.sectionTitle}>
+              Opens At a Specific Time
+            </span>
+            <p>
+              {data.specific_time_reg_open
+                ? `${formatTimeSlot(data.specific_time_reg_open)}`
+                : '—'}
+            </p>
+          </div>
+        ) : (
           <Checkbox
             options={[
               {
-                label: 'Opens at a specific time',
+                label: 'Opens At a Specific Time',
                 checked: Boolean(data ? data.specific_time_reg_open_YN : false),
                 disabled: true,
               },
             ]}
-          />
-        </div>
-        {Boolean(data?.specific_time_reg_open) && (
-          <DatePicker
-            onChange={() => {}}
-            minWidth="100%"
-            label="First Game Start"
-            type="time"
-            value={timeToDate(data?.specific_time_reg_open || '')}
-            disabled={true}
           />
         )}
       </div>
@@ -134,7 +135,7 @@ const PricingAndCalendar = ({
         <Checkbox
           options={[
             {
-              label: 'Enable waitlist',
+              label: 'Enable Waitlist',
               checked: Boolean(data ? data.enable_waitlist_YN : false),
               disabled: true,
             },
