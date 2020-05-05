@@ -167,7 +167,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
 
-    margin: 0 0 0 -24px;
+    margin: 0;
     padding: 0;
 
     list-style: none;
@@ -210,11 +210,8 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-
-    width: 100%;
-    margin: 0 0 0 -24px;
+    margin: 0;
     padding: 0;
-
     list-style: none;
 
     .brackets {

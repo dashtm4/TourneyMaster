@@ -449,11 +449,6 @@ class Schedules extends Component<Props, State> {
     let teamcards: ITeamCard[] = [];
     let schedulerResult: Scheduler;
 
-    console.log(
-      'calculateSchedules - playoffTimeSlots:',
-      JSON.parse(JSON.stringify(playoffTimeSlots))
-    );
-
     /* Truncate gameslots and timeslots for the last day by the number of playoff timeslots */
 
     tournamentDays.forEach(day => {
@@ -818,6 +813,7 @@ class Schedules extends Component<Props, State> {
             onToggleFullScreen={onToggleFullScreen}
             playoffTimeSlots={playoffTimeSlots}
             onBracketGameUpdate={() => {}}
+            recalculateDiagnostics={this.calculateDiagnostics}
           />
         ) : (
           <div className={styles.loadingWrapper}>

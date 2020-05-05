@@ -42,7 +42,7 @@ const AddGameModal = ({
     string | ''
   >('');
 
-  useEffect(() => {
+  const calculateSourceValues = () => {
     const negativeRounds = bracketGames
       .map(item => item.round)
       .filter(item => item <= 0);
@@ -63,9 +63,62 @@ const AddGameModal = ({
       );
     }
 
+    console.log('calculateSourceValues');
+
+    return source;
+  };
+
+  useEffect(() => {
+    const source = calculateSourceValues();
     setAwaySourceOptions(source);
     setHomeSourceOptions(source);
   }, [bracketGames]);
+
+  useEffect(() => {
+    const awaySourceIndex = Number(awaySourceSelected);
+    const homeSourceIndex = Number(homeSourceSelected);
+
+    const source = calculateSourceValues();
+
+    const findGameIdsBySelectedSource = (
+      bracketGames: IBracketGame[],
+      selectedIndex: number
+    ) => {
+      const isWinningGame = selectedIndex > 0;
+      const selectedIndexAbs = Math.abs(selectedIndex);
+
+      const foundGameIds = bracketGames
+        .filter(
+          item =>
+            (item.awayDependsUpon === selectedIndexAbs ||
+              item.homeDependsUpon === selectedIndexAbs) &&
+            (isWinningGame ? item.round >= 0 : item.round < 0)
+        )
+        .map(item =>
+          item.awayDependsUpon === selectedIndexAbs
+            ? item.homeDependsUpon
+            : item.awayDependsUpon
+        )
+        .filter(item => item !== undefined && item >= 0);
+      foundGameIds.unshift(selectedIndexAbs);
+
+      return source.filter(
+        item => !foundGameIds.includes(Math.abs(item.value))
+      );
+    };
+
+    const newAwaySourceOptions = findGameIdsBySelectedSource(
+      bracketGames,
+      homeSourceIndex
+    );
+    const newHomeSourceOptions = findGameIdsBySelectedSource(
+      bracketGames,
+      awaySourceIndex
+    );
+
+    setAwaySourceOptions(newAwaySourceOptions);
+    setHomeSourceOptions(newHomeSourceOptions);
+  }, [awaySourceSelected, homeSourceSelected]);
 
   const onAwaySourceChange = (e: IInputEvent) =>
     setAwaySourceSelected(e.target.value);

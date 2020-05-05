@@ -48,6 +48,12 @@ class Diagnostics extends Component<Props, State> {
     tableData: this.props.tableData,
   };
 
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.tableData !== this.props.tableData) {
+      this.setState({ tableData: this.props.tableData });
+    }
+  }
+
   sortData = (sortByArg: string, sortOrderArg?: 'asc' | 'desc') => {
     const sortBy = this.state.tableData.header.indexOf(sortByArg);
 

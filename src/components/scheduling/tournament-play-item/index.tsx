@@ -74,9 +74,10 @@ const TournamentPlayItem = ({
           >
             <div
               style={{
-                display: 'inline',
+                // display: 'inline',
                 marginLeft: '15px',
                 padding: '10px 0',
+                display: 'none',
               }}
             >
               {schedulePublished ? (

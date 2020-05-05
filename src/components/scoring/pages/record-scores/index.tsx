@@ -3,6 +3,7 @@ import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import History from 'browserhistory';
+import { orderBy } from 'lodash-es';
 import { loadScoresData, saveGames } from './logic/actions';
 import Navigation from './components/navigation';
 import { Loader, PopupExposure, TableSchedule } from 'components/common';
@@ -38,6 +39,7 @@ import {
   getTimeValuesFromEventSchedule,
   calculateTimeSlots,
   calculateTournamentDays,
+  formatTimeSlot,
 } from 'helpers';
 import {
   sortFieldsByPremier,
@@ -68,6 +70,7 @@ import { mapGamesWithSchedulesGamesId } from 'components/scoring/helpers';
 import api from 'api/api';
 import { adjustPlayoffTimeOnLoadScoring } from 'components/schedules/definePlayoffs';
 import { IBracketGame } from 'components/playoffs/bracketGames';
+import ErrorModal from './components/error-modal';
 
 interface MatchParams {
   eventId?: string;
@@ -116,6 +119,8 @@ interface State {
   changesAreMade: boolean;
   playoffTimeSlots?: ITimeSlot[];
   bracketId?: string;
+  errorModalOpen: boolean;
+  errorModalMessage?: string;
 }
 
 class RecordScores extends React.Component<
@@ -130,6 +135,7 @@ class RecordScores extends React.Component<
       isEnterScores: false,
       neccessaryDataCalculated: false,
       changesAreMade: false,
+      errorModalOpen: false,
     };
   }
 
@@ -286,12 +292,57 @@ class RecordScores extends React.Component<
     }
 
     if (bracketGames?.length) {
+      const errorMessage = this.checkBracketGamesScores(bracketGames);
+      if (errorMessage) {
+        return this.setState({
+          errorModalOpen: true,
+          errorModalMessage: errorMessage,
+        });
+      }
       this.props.savePlayoff(bracketGames);
     }
 
     this.props.saveGames(schedulesGames);
 
     this.setState({ isExposurePopupOpen: false, changesAreMade: false });
+  };
+
+  closeErrorModal = () => {
+    this.setState({
+      errorModalOpen: false,
+      errorModalMessage: undefined,
+    });
+  };
+
+  checkBracketGamesScores = (bracketGames: IBracketGame[]) => {
+    const teamBracketGames = bracketGames.filter(
+      item => item.awayTeamId || item.homeTeamId
+    );
+
+    const unassignedGames = teamBracketGames.filter(
+      item =>
+        (item.awayTeamScore && item.homeTeamScore === undefined) ||
+        (item.awayTeamScore === undefined && item.homeTeamScore)
+    );
+
+    if (!unassignedGames.length) return;
+
+    const message = `Unaccomplished bracket games cannot be saved.\nComplete the scoring for the following games to continue:\n`;
+
+    const sortedUnassignedGames = orderBy(
+      unassignedGames,
+      ['index', 'divisionName'],
+      ['asc', 'asc']
+    );
+
+    const gamesStrings = sortedUnassignedGames.map(
+      item =>
+        `Game ${item.index} (${item.divisionName}) - ${
+          item.fieldName
+        }, ${formatTimeSlot(item.startTime!)}\n`
+    );
+
+    return message.concat(gamesStrings.join(''));
   };
 
   onChangeView = (flag: boolean) => this.setState({ isEnterScores: flag });
@@ -384,6 +435,8 @@ class RecordScores extends React.Component<
       isEnterScores,
       isExposurePopupOpen,
       playoffTimeSlots,
+      errorModalOpen,
+      errorModalMessage,
     } = this.state;
 
     const loadCondition = !!(
@@ -441,6 +494,12 @@ class RecordScores extends React.Component<
           onClose={this.onClosePopup}
           onExitClick={this.leavePage}
           onSaveClick={this.saveOnExit}
+        />
+        <ErrorModal
+          title="Warning"
+          isOpen={errorModalOpen}
+          message={errorModalMessage || ''}
+          onClose={this.closeErrorModal}
         />
       </div>
     );
