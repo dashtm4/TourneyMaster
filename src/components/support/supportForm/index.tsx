@@ -17,7 +17,7 @@ enum FormFilds {
   EMAIL = 'email',
   OPTION = 'option',
   MESSAGE = 'message',
-  HEADER = 'Support',
+  HEADER = 'Send us your feedback!',
   BUTTON_CONTAINED = 'contained',
   BUTTON_TEXT = 'text',
   BUTTON_OUTLINED = 'outlined',
@@ -37,7 +37,7 @@ interface Props {
   onSubmit: BindingCbWithThree<string, string, string>;
   isLoading: boolean;
 }
-const optValue = ['Bugs', 'Suggestions'];
+const optValue = ['Report a Bug', 'Feature Request', 'Other Suggestions'];
 const options = optValue.map((item, index) => (
   <MenuItem value={item} key={index}>{item}</MenuItem>
 ))
