@@ -18,11 +18,8 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
   const onLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('registrant_last_name', e.target.value);
 
-  const onPhoneNumberChange = (value: string) => {
+  const onPhoneNumberChange = (value: string) =>
     onChange('registrant_mobile', value);
-
-    console.log(value, value.length);
-  };
 
   const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('registrant_email', e.target.value);
