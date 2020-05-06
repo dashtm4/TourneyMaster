@@ -37,7 +37,7 @@ interface Props {
   onSubmit: BindingCbWithThree<string, string, string>;
   isLoading: boolean;
 }
-const optValue = ['Bugs', 'Feature Request', 'Other Suggestions'];
+const optValue = ['Report a Bug', 'Feature Request', 'Other Suggestions'];
 const options = optValue.map((item, index) => (
   <MenuItem value={item} key={index}>{item}</MenuItem>
 ))
