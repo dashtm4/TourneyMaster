@@ -48,13 +48,15 @@ const Seed = (props: IProps) => {
       <span className={styles.seedName}>
         {teamId && teamName ? teamName : `Seed ${seedId}`}
       </span>
-      <p
-        className={`${styles.scoreWrapper} ${
-          isWinner ? styles.winner : styles.loser
-        }`}
-      >
-        {score || ''}
-      </p>
+      {!!score && (
+        <p
+          className={`${styles.scoreWrapper} ${
+            isWinner ? styles.winner : styles.loser
+          }`}
+        >
+          {score}
+        </p>
+      )}
     </div>
   );
 };

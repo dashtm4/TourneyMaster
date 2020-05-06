@@ -459,6 +459,24 @@ class Playoffs extends Component<IProps> {
     this.setState({ bracketSeeds });
   };
 
+  updateGlobalSeeds = (
+    selectedDivision: string,
+    divisionSeeds: IBracketSeed[]
+  ) => {
+    const { bracketGames } = this.props;
+    const { bracketSeeds } = this.state;
+    const newBracketSeeds = { ...bracketSeeds };
+    newBracketSeeds[selectedDivision] = divisionSeeds;
+    this.setState({ bracketSeeds: newBracketSeeds });
+
+    const populatedBracketGames = advanceBracketGamesWithTeams(
+      bracketGames!,
+      newBracketSeeds
+    );
+
+    this.props.fetchBracketGames(populatedBracketGames);
+  };
+
   updateMergedGames = (gameId: string, slotId: number, originId?: number) => {
     const { bracketGames, fields, schedulesTeamCards } = this.props;
     const { tableGames } = this.state;
@@ -541,9 +559,8 @@ class Playoffs extends Component<IProps> {
 
   onSeedsUsed = () => {};
 
-  onSavePressed = () => {
+  saveBracketsData = () => {
     const { match, bracketGames } = this.props;
-    const { cancelConfirmationOpen } = this.state;
     const { bracketId } = match.params;
 
     if (bracketId) {
@@ -551,6 +568,11 @@ class Playoffs extends Component<IProps> {
     } else {
       this.props.createPlayoff(bracketGames!);
     }
+  };
+
+  onSavePressed = () => {
+    const { cancelConfirmationOpen } = this.state;
+    this.saveBracketsData();
 
     if (cancelConfirmationOpen) {
       this.closeCancelConfirmation();
@@ -595,6 +617,8 @@ class Playoffs extends Component<IProps> {
     } = this.state;
 
     const {
+      history,
+      match,
       bracket,
       event,
       divisions,
@@ -689,6 +713,8 @@ class Playoffs extends Component<IProps> {
               />
             ) : (
               <BracketManager
+                history={history}
+                match={match}
                 historyLength={historyLength}
                 divisions={divisions!}
                 seeds={bracketSeeds}
@@ -698,6 +724,8 @@ class Playoffs extends Component<IProps> {
                 removeGame={this.removeGame}
                 onUndoClick={onBracketsUndo}
                 advanceTeamsToBrackets={advanceTeamsToBrackets}
+                updateSeeds={this.updateGlobalSeeds}
+                saveBracketsData={this.saveBracketsData}
               />
             )}
           </section>
