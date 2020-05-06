@@ -4,7 +4,7 @@ import update from 'immutability-helper';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { getIcon } from 'helpers';
 import { Icons } from 'common/enums';
-import { Select, CardMessage, Button } from 'components/common';
+import { Select, CardMessage, Button, Tooltip } from 'components/common';
 import SeedsList from './seeds-list';
 import Brackets from 'components/playoffs/brackets';
 import { IBracketGame, IBracketSeed } from 'components/playoffs/bracketGames';
@@ -168,6 +168,7 @@ class BracketManager extends Component<IProps, IState> {
       historyLength,
       advanceTeamsToBrackets,
       advancingInProgress,
+      bracketGames,
     } = this.props;
 
     const {
@@ -185,6 +186,13 @@ class BracketManager extends Component<IProps, IState> {
       seedsLength -
       2 ** Math.floor(Math.log2(seedsLength))
     );
+
+    const advanceTeamsDisabled = bracketGames?.some(
+      item => item.awayTeamId || item.homeTeamId
+    );
+    const seedsReorderDisabled =
+      divisionGames?.some(item => item.awayTeamScore || item.homeTeamScore) ||
+      !advanceTeamsDisabled;
 
     return (
       <section className={styles.container}>
@@ -244,21 +252,38 @@ class BracketManager extends Component<IProps, IState> {
                 color="secondary"
                 icon={getIcon(Icons.EDIT)}
               />
-              <Button
-                label="Advance Teams to Brackets"
-                variant="contained"
-                color="primary"
-                disabled={advancingInProgress}
-                onClick={advanceTeamsToBrackets}
-              />
-              <div className={styles.reorderTeamsWrapper}>
-                {!reorderMode ? (
+              <Tooltip
+                disabled={!advanceTeamsDisabled}
+                type="info"
+                title="Teams are already advanced to the Brackets"
+              >
+                <div>
                   <Button
-                    label="Manually Reorder Team Rankings"
+                    label="Advance Teams to Brackets"
                     variant="contained"
                     color="primary"
-                    onClick={this.toggleReorderMode}
+                    disabled={advancingInProgress || advanceTeamsDisabled}
+                    onClick={advanceTeamsToBrackets}
                   />
+                </div>
+              </Tooltip>
+              <div className={styles.reorderTeamsWrapper}>
+                {!reorderMode ? (
+                  <Tooltip
+                    disabled={!seedsReorderDisabled}
+                    type="info"
+                    title="Reorder of Team Rankings is disabled due to the Non-Advanced / Scored teams reason"
+                  >
+                    <div>
+                      <Button
+                        label="Manually Reorder Team Rankings"
+                        variant="contained"
+                        color="primary"
+                        disabled={seedsReorderDisabled}
+                        onClick={this.toggleReorderMode}
+                      />
+                    </div>
+                  </Tooltip>
                 ) : (
                   <div className={styles.reorderTeamsButtons}>
                     <Button
