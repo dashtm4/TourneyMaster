@@ -7,11 +7,9 @@ import StepContent from '@material-ui/core/StepContent';
 import {
   Button,
   HeadingLevelThree,
-  Radio,
   Toasts,
   HeadingLevelTwo,
   Loader,
-  HeadingLevelFour,
 } from 'components/common';
 import styles from './styles.module.scss';
 import Paper from 'components/common/paper';
@@ -22,7 +20,7 @@ import Payment from './individuals/payment';
 import Team from './teams/team';
 import ContactInfo from './teams/contact-info';
 import CoachInfo from './teams/coach-info';
-import { Modal } from 'components/common';
+import PopupRegistrationType from './popup-registration-type';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Header from './header';
 import Footer from 'components/footer';
@@ -38,12 +36,12 @@ import { getVarcharEight } from 'helpers';
 import { IIndivisualsRegister, ITeamsRegister } from 'common/models/register';
 import { ButtonFormTypes } from 'common/enums';
 
-enum TypeOptions {
+export enum TypeOptions {
   'Individual' = 1,
   'Team' = 2,
 }
 
-const typeOptions = ['Individual', 'Team'];
+export const typeOptions = ['Individual', 'Team'];
 
 export interface RegisterMatchParams {
   match: {
@@ -409,34 +407,12 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           )}
         </div>
       </div>
-      <Modal isOpen={isOpenModalOpen} onClose={() => {}}>
-        <div className={styles.modalContainer}>
-          <div style={{ height: '190px' }}>
-            <HeadingLevelFour>
-              <span>Event Registration</span>
-            </HeadingLevelFour>
-            <p className={styles.message}>
-              Do you want to register as an individual or as a team?
-            </p>
-            <div className={styles.radioBtnsWrapper}>
-              <Radio
-                options={typeOptions}
-                formLabel=""
-                onChange={onTypeChange}
-                checked={TypeOptions[type] || ''}
-              />
-            </div>
-            <div className={styles.btnWrapper}>
-              <Button
-                label="Next"
-                color="primary"
-                variant="contained"
-                onClick={onTypeSelect}
-              />
-            </div>
-          </div>
-        </div>
-      </Modal>
+      <PopupRegistrationType
+        isOpenModalOpen={isOpenModalOpen}
+        onTypeChange={onTypeChange}
+        onTypeSelect={onTypeSelect}
+        type={type}
+      />
       <div style={{ marginTop: '50px' }}>
         <Footer />
       </div>
