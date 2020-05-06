@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import styles from '../../styles.module.scss';
 import { Input, Select, DatePicker } from 'components/common';
-import { BindingCbWithTwo } from 'common/models';
+import { BindingCbWithTwo, ISelectOption } from 'common/models';
 import 'react-phone-input-2/lib/high-res.css';
 import PhoneInput from 'react-phone-input-2';
 import { IIndivisualsRegister } from 'common/models/register';
@@ -11,7 +11,8 @@ interface IPlayerInfoProps {
   data: Partial<IIndivisualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
   fillParticipantInfo: any;
-  divisions: { label: string; value: string }[];
+  divisions: ISelectOption[];
+  states: ISelectOption[];
 }
 
 const playerLevelOptions = [{ label: 'Level1', value: 'Level1' }];
@@ -21,6 +22,7 @@ const PlayerInfo = ({
   onChange,
   fillParticipantInfo,
   divisions,
+  states,
 }: IPlayerInfoProps) => {
   useEffect(() => {
     if (data.registrant_is_the_participant) {
@@ -123,12 +125,12 @@ const PlayerInfo = ({
           />
         </div>
         <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
+          <Select
+            options={states}
             label="State"
             value={data.player_state || ''}
-            isRequired={true}
             onChange={onPlayerStateChange}
+            isRequired={true}
           />
         </div>
         <div className={styles.sectionItem}>
