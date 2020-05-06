@@ -10,7 +10,10 @@ import { Button, Paper, PopupExposure, PopupConfirm } from 'components/common';
 import styles from './styles.module.scss';
 import BracketManager from './tabs/brackets';
 import ResourceMatrix from './tabs/resources';
-import { fetchSchedulesDetails } from 'components/schedules/logic/actions';
+import {
+  fetchSchedulesDetails,
+  schedulesDetailsClear,
+} from 'components/schedules/logic/actions';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
 import { ITournamentData } from 'common/models/tournament';
@@ -117,6 +120,7 @@ interface IMapDispatchToProps {
   advanceTeamsToBrackets: () => void;
   clearSortedTeams: () => void;
   updateExistingBracket: (data: Partial<IBracket>) => void;
+  schedulesDetailsClear: () => void;
 }
 
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
@@ -155,13 +159,14 @@ class Playoffs extends Component<IProps> {
     highlightedGameId: undefined,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     const { event, match } = this.props;
     const eventId = event?.event_id!;
     const { scheduleId, bracketId } = match.params;
 
     this.props.clearBracketGames();
     this.props.clearSchedulesTable();
+    this.props.schedulesDetailsClear();
     this.props.clearSortedTeams();
     this.props.fetchEventSummary(eventId);
     this.props.fetchSchedulesDetails(scheduleId);
@@ -206,9 +211,6 @@ class Playoffs extends Component<IProps> {
       this.calculateBracketGames();
     }
 
-    // if (prevProps.sortedTeams !== this.props.sortedTeams || !bracketSeeds) {
-    //   this.calculateBracketSeeds();
-    // }
     if (
       (!prevProps.sortedTeams && this.props.sortedTeams) ||
       (!bracketSeeds && this.props.bracketGames)
@@ -264,8 +266,8 @@ class Playoffs extends Component<IProps> {
   retrieveBracketsData = () => {
     const { match } = this.props;
     const { bracketId } = match.params;
-    this.props.retrieveBracketsGames(bracketId);
     this.props.retrieveBrackets(bracketId);
+    this.props.retrieveBracketsGames(bracketId);
   };
 
   calculatePlayoffTimeSlots = () => {
@@ -796,6 +798,7 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       advanceTeamsToBrackets,
       clearSortedTeams,
       updateExistingBracket,
+      schedulesDetailsClear,
     },
     dispatch
   );
