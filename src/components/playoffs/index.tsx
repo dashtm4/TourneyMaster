@@ -459,6 +459,24 @@ class Playoffs extends Component<IProps> {
     this.setState({ bracketSeeds });
   };
 
+  updateGlobalSeeds = (
+    selectedDivision: string,
+    divisionSeeds: IBracketSeed[]
+  ) => {
+    const { bracketGames } = this.props;
+    const { bracketSeeds } = this.state;
+    const newBracketSeeds = { ...bracketSeeds };
+    newBracketSeeds[selectedDivision] = divisionSeeds;
+    this.setState({ bracketSeeds: newBracketSeeds });
+
+    const populatedBracketGames = advanceBracketGamesWithTeams(
+      bracketGames!,
+      newBracketSeeds
+    );
+
+    this.props.fetchBracketGames(populatedBracketGames);
+  };
+
   updateMergedGames = (gameId: string, slotId: number, originId?: number) => {
     const { bracketGames, fields, schedulesTeamCards } = this.props;
     const { tableGames } = this.state;
@@ -698,6 +716,7 @@ class Playoffs extends Component<IProps> {
                 removeGame={this.removeGame}
                 onUndoClick={onBracketsUndo}
                 advanceTeamsToBrackets={advanceTeamsToBrackets}
+                updateSeeds={this.updateGlobalSeeds}
               />
             )}
           </section>

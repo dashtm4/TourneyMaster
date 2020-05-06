@@ -29,29 +29,6 @@
         color: #1c315f;
         padding: 15px 0;
       }
-
-      .seedsList {
-        margin-top: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-direction: column;
-
-        .singleSeedWrapper {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 4px;
-
-          span {
-            font-size: 12px;
-            color: #575757;
-            margin-right: 5px;
-            width: 25px;
-          }
-        }
-      }
     }
   }
 
@@ -77,6 +54,17 @@
 
         > button {
           margin-left: 15px;
+        }
+
+        .reorderTeamsWrapper {
+          margin-left: 15px;
+
+          .reorderTeamsButtons {
+            display: flex;
+            width: 230px;
+            justify-content: space-between;
+            padding-left: 10px;
+          }
         }
       }
     }
