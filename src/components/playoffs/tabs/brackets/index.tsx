@@ -45,6 +45,7 @@ interface IState {
   removeGameIndex: number | null;
   divisionSeeds?: IBracketSeed[];
   bracketsSetupOpen: boolean;
+  bracketsScoringOpen: boolean;
 }
 
 class BracketManager extends Component<IProps, IState> {
@@ -53,6 +54,7 @@ class BracketManager extends Component<IProps, IState> {
     reorderMode: false,
     addGameModalOpen: false,
     bracketsSetupOpen: false,
+    bracketsScoringOpen: false,
     removeGameIndex: null,
   };
 
@@ -121,15 +123,34 @@ class BracketManager extends Component<IProps, IState> {
     this.setState({ removeGameIndex: null });
   };
 
-  openBracketsSetupModal = () => this.setState({ bracketsSetupOpen: true });
+  scoreGamesPressed = () => this.setState({ bracketsScoringOpen: true });
 
-  closeBracketsSetupModal = () => this.setState({ bracketsSetupOpen: false });
+  openBracketsModal = () => this.setState({ bracketsSetupOpen: true });
 
-  navigateToBracketsSetupWithSaving = () => {
-    this.props.saveBracketsData();
-    setTimeout(() => this.navigateToBracketsSetup(), 500);
+  closeBracketsModal = () =>
+    this.setState({ bracketsSetupOpen: false, bracketsScoringOpen: false });
+
+  bracketsModalOnSecondary = () => {
+    const { bracketsSetupOpen, bracketsScoringOpen } = this.state;
+    switch (true) {
+      case bracketsSetupOpen:
+        return this.navigateToBracketsSetup();
+      case bracketsScoringOpen:
+        return this.navigateToScoringBrackets();
+    }
   };
 
+  bracketsModalOnPrimary = () => {
+    const { bracketsSetupOpen, bracketsScoringOpen } = this.state;
+    switch (true) {
+      case bracketsSetupOpen:
+        return this.navigateToBracketsSetupWithSaving();
+      case bracketsScoringOpen:
+        return this.navigateToScoringBracketsWithSaving();
+    }
+  };
+
+  /* BRACKETS SETUP NAVIGATION */
   navigateToBracketsSetup = () => {
     const { match, history } = this.props;
     const { eventId } = match.params;
@@ -140,6 +161,28 @@ class BracketManager extends Component<IProps, IState> {
 
     const url = `/event/event-details/${eventId}#playoffs`;
     history?.push(url);
+  };
+
+  navigateToBracketsSetupWithSaving = () => {
+    this.props.saveBracketsData();
+    setTimeout(() => this.navigateToBracketsSetup(), 500);
+  };
+
+  /* SCORING BRACKETS NAVIGATION */
+  navigateToScoringBrackets = () => {
+    const { eventId } = this.props.match?.params;
+
+    if (!eventId) {
+      return errorToast('Cannot navigate to the scoring page');
+    }
+
+    const url = `/event/scoring/${eventId}`;
+    this.props.history.push(url);
+  };
+
+  navigateToScoringBracketsWithSaving = () => {
+    this.props.saveBracketsData();
+    setTimeout(() => this.navigateToScoringBrackets(), 500);
   };
 
   onChangeSelect = (e: any) => {
@@ -209,6 +252,7 @@ class BracketManager extends Component<IProps, IState> {
       reorderMode,
       divisionSeeds,
       bracketsSetupOpen,
+      bracketsScoringOpen,
     } = this.state;
 
     const seedsLength = divisionSeeds?.length || 0;
@@ -266,6 +310,14 @@ class BracketManager extends Component<IProps, IState> {
                 color="secondary"
                 onClick={this.addGamePressed}
               />
+              <Button
+                btnStyles={{ marginLeft: 20 }}
+                label="Score Games"
+                variant="text"
+                color="secondary"
+                icon={getIcon(Icons.EDIT)}
+                onClick={this.scoreGamesPressed}
+              />
             </div>
             <div className={styles.buttonsWrapper}>
               <Button
@@ -281,7 +333,7 @@ class BracketManager extends Component<IProps, IState> {
                 variant="text"
                 color="secondary"
                 icon={getIcon(Icons.EDIT)}
-                onClick={this.openBracketsSetupModal}
+                onClick={this.openBracketsModal}
               />
               <Tooltip
                 disabled={!advanceTeamsDisabled}
@@ -351,12 +403,19 @@ class BracketManager extends Component<IProps, IState> {
               onRemoveGame={this.onRemoveGame}
             />
           )}
-          {bracketsSetupOpen && (
+          {(bracketsSetupOpen || bracketsScoringOpen) && (
             <BracketsSetupModal
-              isOpen={bracketsSetupOpen}
-              onClose={this.closeBracketsSetupModal}
-              onSecondary={this.navigateToBracketsSetup}
-              onPrimary={this.navigateToBracketsSetupWithSaving}
+              isOpen={bracketsSetupOpen || bracketsScoringOpen}
+              title={
+                bracketsSetupOpen
+                  ? 'Brackets Setup'
+                  : bracketsScoringOpen
+                  ? 'Scoring Brackets'
+                  : ''
+              }
+              onClose={this.closeBracketsModal}
+              onSecondary={this.bracketsModalOnSecondary}
+              onPrimary={this.bracketsModalOnPrimary}
             />
           )}
           {divisionGames && divisionSeeds && (

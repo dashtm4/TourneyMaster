@@ -16,13 +16,14 @@ const ICON_CARD_STYLES = {
 };
 
 interface IProps {
+  title?: string;
   isOpen: boolean;
   onClose: BindingAction;
   onSecondary: BindingAction;
   onPrimary: BindingAction;
 }
 
-export default ({ isOpen, onClose, onSecondary, onPrimary }: IProps) => (
+export default ({ title, isOpen, onClose, onSecondary, onPrimary }: IProps) => (
   <Modal isOpen={isOpen} onClose={onClose}>
     <section className={styles.popupWrapper}>
       <CardMessage
@@ -30,12 +31,18 @@ export default ({ isOpen, onClose, onSecondary, onPrimary }: IProps) => (
         style={CARD_MESSAGE_STYLES}
         iconStyle={ICON_CARD_STYLES}
       >
-        You will navigate to the Brackets Setup page.
+        {`You will navigate to the ${title || ''} page.`}
       </CardMessage>
       <p className={styles.popupText}>
         Your changes will be saved automatically. Continue?
       </p>
       <p className={styles.btnsWrapper}>
+        <Button
+          label="Cancel"
+          variant="text"
+          color="secondary"
+          onClick={onClose}
+        />
         <span className={styles.exitBtnWrapper}>
           <Button
             label="Continue Without Saving"
