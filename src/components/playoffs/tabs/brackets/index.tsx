@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { orderBy } from 'lodash-es';
+import { History } from 'history';
 import update from 'immutability-helper';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { getIcon } from 'helpers';
@@ -12,9 +13,13 @@ import { IDivision } from 'common/models';
 import AddGameModal, { IOnAddGame } from '../../add-game-modal';
 import RemoveGameModal from '../../remove-game-modal';
 import { ISeedDictionary } from 'components/playoffs';
+import BracketsSetupModal from '../../brackets-setup-modal';
+import { errorToast } from 'components/common/toastr/showToasts';
 import styles from './styles.module.scss';
 
 interface IProps {
+  match: any;
+  history: History;
   divisions: IDivision[];
   historyLength: number;
   seeds?: ISeedDictionary;
@@ -28,6 +33,7 @@ interface IProps {
     selectedDivision: string,
     divisionSeeds: IBracketSeed[]
   ) => void;
+  saveBracketsData: () => void;
 }
 
 interface IState {
@@ -38,6 +44,7 @@ interface IState {
   addGameModalOpen: boolean;
   removeGameIndex: number | null;
   divisionSeeds?: IBracketSeed[];
+  bracketsSetupOpen: boolean;
 }
 
 class BracketManager extends Component<IProps, IState> {
@@ -45,6 +52,7 @@ class BracketManager extends Component<IProps, IState> {
   state: IState = {
     reorderMode: false,
     addGameModalOpen: false,
+    bracketsSetupOpen: false,
     removeGameIndex: null,
   };
 
@@ -113,6 +121,27 @@ class BracketManager extends Component<IProps, IState> {
     this.setState({ removeGameIndex: null });
   };
 
+  openBracketsSetupModal = () => this.setState({ bracketsSetupOpen: true });
+
+  closeBracketsSetupModal = () => this.setState({ bracketsSetupOpen: false });
+
+  navigateToBracketsSetupWithSaving = () => {
+    this.props.saveBracketsData();
+    setTimeout(() => this.navigateToBracketsSetup(), 500);
+  };
+
+  navigateToBracketsSetup = () => {
+    const { match, history } = this.props;
+    const { eventId } = match.params;
+
+    if (!eventId) {
+      return errorToast("Can't navigate to the brackets setup.");
+    }
+
+    const url = `/event/event-details/${eventId}#playoffs`;
+    history?.push(url);
+  };
+
   onChangeSelect = (e: any) => {
     this.setState({
       selectedDivision: e.target.value,
@@ -179,6 +208,7 @@ class BracketManager extends Component<IProps, IState> {
       removeGameIndex,
       reorderMode,
       divisionSeeds,
+      bracketsSetupOpen,
     } = this.state;
 
     const seedsLength = divisionSeeds?.length || 0;
@@ -251,6 +281,7 @@ class BracketManager extends Component<IProps, IState> {
                 variant="text"
                 color="secondary"
                 icon={getIcon(Icons.EDIT)}
+                onClick={this.openBracketsSetupModal}
               />
               <Tooltip
                 disabled={!advanceTeamsDisabled}
@@ -318,6 +349,14 @@ class BracketManager extends Component<IProps, IState> {
               gameIndex={removeGameIndex}
               onClose={() => this.setState({ removeGameIndex: null })}
               onRemoveGame={this.onRemoveGame}
+            />
+          )}
+          {bracketsSetupOpen && (
+            <BracketsSetupModal
+              isOpen={bracketsSetupOpen}
+              onClose={this.closeBracketsSetupModal}
+              onSecondary={this.navigateToBracketsSetup}
+              onPrimary={this.navigateToBracketsSetupWithSaving}
             />
           )}
           {divisionGames && divisionSeeds && (

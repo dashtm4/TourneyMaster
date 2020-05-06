@@ -559,9 +559,8 @@ class Playoffs extends Component<IProps> {
 
   onSeedsUsed = () => {};
 
-  onSavePressed = () => {
+  saveBracketsData = () => {
     const { match, bracketGames } = this.props;
-    const { cancelConfirmationOpen } = this.state;
     const { bracketId } = match.params;
 
     if (bracketId) {
@@ -569,6 +568,11 @@ class Playoffs extends Component<IProps> {
     } else {
       this.props.createPlayoff(bracketGames!);
     }
+  };
+
+  onSavePressed = () => {
+    const { cancelConfirmationOpen } = this.state;
+    this.saveBracketsData();
 
     if (cancelConfirmationOpen) {
       this.closeCancelConfirmation();
@@ -613,6 +617,8 @@ class Playoffs extends Component<IProps> {
     } = this.state;
 
     const {
+      history,
+      match,
       bracket,
       event,
       divisions,
@@ -707,6 +713,8 @@ class Playoffs extends Component<IProps> {
               />
             ) : (
               <BracketManager
+                history={history}
+                match={match}
                 historyLength={historyLength}
                 divisions={divisions!}
                 seeds={bracketSeeds}
@@ -717,6 +725,7 @@ class Playoffs extends Component<IProps> {
                 onUndoClick={onBracketsUndo}
                 advanceTeamsToBrackets={advanceTeamsToBrackets}
                 updateSeeds={this.updateGlobalSeeds}
+                saveBracketsData={this.saveBracketsData}
               />
             )}
           </section>
