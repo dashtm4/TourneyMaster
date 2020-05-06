@@ -20,6 +20,7 @@ import {
   ADD_NEW_BRACKET,
   FETCH_EVENT_BRACKETS,
   FETCH_BRACKETS_SUCCESS,
+  UPDATE_EXISTING_BRACKET,
 } from './actionTypes';
 import { EMPTY_SCHEDULE } from './constants';
 import { scheduleSchema, updatedScheduleSchema } from 'validations';
@@ -66,6 +67,7 @@ import {
   IFetchedBracket,
 } from 'common/models/playoffs/bracket';
 import { BracketStatuses, ScheduleStatuses } from 'common/enums';
+import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
 
 type GetState = () => IAppState;
 
@@ -104,6 +106,11 @@ const fetchBracketsSuccess = (payload: IFetchedBracket[]) => ({
 
 export const addNewBracket = (payload: ICreateBracketModalOutput) => ({
   type: ADD_NEW_BRACKET,
+  payload,
+});
+
+export const updateExistingBracket = (payload: Partial<IBracket>) => ({
+  type: UPDATE_EXISTING_BRACKET,
   payload,
 });
 
@@ -323,8 +330,8 @@ const getGamesByScheduleId = async (scheduleId: string) => {
   return games;
 };
 
-const showError = () => {
-  errorToast('Something happened during the saving process');
+const showError = (errorMessage?: string) => {
+  errorToast(errorMessage || 'Something happened during the saving process');
 };
 
 const getSchedulesData = async (
@@ -619,8 +626,21 @@ export const updateBracketStatus = (
 
   const bracket = brackets.find(bracket => bracket.bracket_id === bracketId);
 
+  const bracketGames: (
+    | IPlayoffGame
+    | undefined
+  )[] = await api.get('/games_brackets', { bracket_id: bracketId });
+
+  const allGamesAssigned = bracketGames.every(
+    item => item?.field_id && item.start_time
+  );
+
+  if (!allGamesAssigned && !isDraft) {
+    return showError('All bracket games should be assigned before publishing');
+  }
+
   if (!bracket) {
-    return showError();
+    return showError('Failed to load playoff data');
   }
 
   /* PUT Bracket */

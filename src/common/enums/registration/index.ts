@@ -5,6 +5,8 @@ enum IRegistrationFields {
   ENTRY_DEPOSIT = 'entry_deposit',
   EARLY_BIRD_DISCOUNT = 'early_bird_discount',
   DISCOUNT_ENDDATE = 'discount_enddate',
+  SPECIFIC_TIME_REG_OPEN_YN = 'specific_time_reg_open_YN',
+  SPECIFIC_TIME_REG_OPEN = 'specific_time_reg_open',
   REGISTRATION_START = 'registration_start',
   REGISTRATION_END = 'registration_end',
   ENTRY_NAME_LABEL = 'entry_name_label',

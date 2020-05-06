@@ -1,15 +1,18 @@
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { RouteComponentProps, withRouter, Link } from 'react-router-dom';
+import { getLinkByApp } from 'helpers';
 import logo from 'assets/logo.png';
 import UserInfo from './user-info';
 import styles from './style.module.scss';
-import { Link } from 'react-router-dom';
 
 const Header: React.FC<RouteComponentProps> = ({ history }) => {
-  const menuItems: any[] = [
+  const menuItems = [
     { title: 'Home', link: '/' },
-    { title: 'Event Production', link: '/' },
     { title: 'Event Search', link: 'https://results.tourneymaster.com' },
+    {
+      title: 'Registations',
+      link: getLinkByApp('register'),
+    },
     { title: 'Support', link: 'https://www.tourneymaster.org/support/' },
     { title: 'About', link: 'https://www.tourneymaster.org/about/' },
     { title: 'Contact', link: 'https://www.tourneymaster.org/contact/' },
@@ -40,7 +43,7 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
                 // onClick={onMenuClick.bind(undefined, item.title)}
                 key={index}
               >
-                {index < 2 ? (
+                {!item.link.includes('http') ? (
                   <Link to={item.link}>{item.title}</Link>
                 ) : (
                   <a

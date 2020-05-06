@@ -87,7 +87,7 @@ const calculateTimeSlotsBetweenGames = (
 ) => {
   const resultObject: Partial<ITimeSlotsBtwnGames> = {};
 
-  [...Array(5)].map((_, index) => {
+  [...Array(5)].forEach((_, index) => {
     resultObject[`timeSlotsIn${index}`] = teamCards
       .map(item => calculateNumOfTimeSlots(index, item, games))
       .filter(v => v)

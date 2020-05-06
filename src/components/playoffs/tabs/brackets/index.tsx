@@ -1,19 +1,25 @@
 import React, { Component } from 'react';
 import { orderBy } from 'lodash-es';
+import { History } from 'history';
+import update from 'immutability-helper';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { getIcon } from 'helpers';
 import { Icons } from 'common/enums';
-import { Select, CardMessage, Button } from 'components/common';
-import Seed from 'components/playoffs/dnd/seed';
+import { Select, CardMessage, Button, Tooltip } from 'components/common';
+import SeedsList from './seeds-list';
 import Brackets from 'components/playoffs/brackets';
-import { IBracketGame } from 'components/playoffs/bracketGames';
+import { IBracketGame, IBracketSeed } from 'components/playoffs/bracketGames';
 import { IDivision } from 'common/models';
 import AddGameModal, { IOnAddGame } from '../../add-game-modal';
 import RemoveGameModal from '../../remove-game-modal';
 import { ISeedDictionary } from 'components/playoffs';
+import BracketsSetupModal from '../../brackets-setup-modal';
+import { errorToast } from 'components/common/toastr/showToasts';
 import styles from './styles.module.scss';
 
 interface IProps {
+  match: any;
+  history: History;
   divisions: IDivision[];
   historyLength: number;
   seeds?: ISeedDictionary;
@@ -23,20 +29,32 @@ interface IProps {
   removeGame: (selectedDivision: string, data: number) => void;
   onUndoClick: () => void;
   advanceTeamsToBrackets: () => void;
+  updateSeeds: (
+    selectedDivision: string,
+    divisionSeeds: IBracketSeed[]
+  ) => void;
+  saveBracketsData: () => void;
 }
 
 interface IState {
+  reorderMode: boolean;
   selectedDivision?: string;
   divisionsOptions?: { label: string; value: string }[];
   divisionGames?: IBracketGame[];
   addGameModalOpen: boolean;
   removeGameIndex: number | null;
+  divisionSeeds?: IBracketSeed[];
+  bracketsSetupOpen: boolean;
+  bracketsScoringOpen: boolean;
 }
 
-class BracketManager extends Component<IProps> {
+class BracketManager extends Component<IProps, IState> {
   dragType = 'seed';
   state: IState = {
+    reorderMode: false,
     addGameModalOpen: false,
+    bracketsSetupOpen: false,
+    bracketsScoringOpen: false,
     removeGameIndex: null,
   };
 
@@ -55,8 +73,20 @@ class BracketManager extends Component<IProps> {
   }
 
   componentDidUpdate(prevProps: IProps, prevState: IState) {
-    const { bracketGames } = this.props;
-    const { selectedDivision } = this.state;
+    const { bracketGames, seeds } = this.props;
+    const { selectedDivision, divisionSeeds } = this.state;
+
+    if (
+      seeds &&
+      selectedDivision &&
+      (!divisionSeeds ||
+        prevProps.seeds !== seeds ||
+        prevState.selectedDivision !== selectedDivision)
+    ) {
+      this.setState({
+        divisionSeeds: seeds[selectedDivision],
+      });
+    }
 
     if (
       prevProps.bracketGames !== bracketGames ||
@@ -68,6 +98,9 @@ class BracketManager extends Component<IProps> {
       this.setState({ divisionGames });
     }
   }
+
+  toggleReorderMode = () =>
+    this.setState(({ reorderMode }) => ({ reorderMode: !reorderMode }));
 
   addGamePressed = () => {
     this.setState({ addGameModalOpen: true });
@@ -90,37 +123,124 @@ class BracketManager extends Component<IProps> {
     this.setState({ removeGameIndex: null });
   };
 
+  scoreGamesPressed = () => this.setState({ bracketsScoringOpen: true });
+
+  openBracketsModal = () => this.setState({ bracketsSetupOpen: true });
+
+  closeBracketsModal = () =>
+    this.setState({ bracketsSetupOpen: false, bracketsScoringOpen: false });
+
+  bracketsModalOnSecondary = () => {
+    const { bracketsSetupOpen, bracketsScoringOpen } = this.state;
+    switch (true) {
+      case bracketsSetupOpen:
+        return this.navigateToBracketsSetup();
+      case bracketsScoringOpen:
+        return this.navigateToScoringBrackets();
+    }
+  };
+
+  bracketsModalOnPrimary = () => {
+    const { bracketsSetupOpen, bracketsScoringOpen } = this.state;
+    switch (true) {
+      case bracketsSetupOpen:
+        return this.navigateToBracketsSetupWithSaving();
+      case bracketsScoringOpen:
+        return this.navigateToScoringBracketsWithSaving();
+    }
+  };
+
+  /* BRACKETS SETUP NAVIGATION */
+  navigateToBracketsSetup = () => {
+    const { match, history } = this.props;
+    const { eventId } = match.params;
+
+    if (!eventId) {
+      return errorToast("Can't navigate to the brackets setup.");
+    }
+
+    const url = `/event/event-details/${eventId}#playoffs`;
+    history?.push(url);
+  };
+
+  navigateToBracketsSetupWithSaving = () => {
+    this.props.saveBracketsData();
+    setTimeout(() => this.navigateToBracketsSetup(), 500);
+  };
+
+  /* SCORING BRACKETS NAVIGATION */
+  navigateToScoringBrackets = () => {
+    const { eventId } = this.props.match?.params;
+
+    if (!eventId) {
+      return errorToast('Cannot navigate to the scoring page');
+    }
+
+    const url = `/event/scoring/${eventId}`;
+    this.props.history.push(url);
+  };
+
+  navigateToScoringBracketsWithSaving = () => {
+    this.props.saveBracketsData();
+    setTimeout(() => this.navigateToScoringBrackets(), 500);
+  };
+
   onChangeSelect = (e: any) => {
     this.setState({
       selectedDivision: e.target.value,
     });
   };
 
-  renderSeed = (item: any, index: number) => {
-    return (
-      <div key={`${index}-renderSeed`} className={styles.singleSeedWrapper}>
-        <span>{index + 1}.</span>
-        <Seed
-          key={item.id}
-          seedId={item.id}
-          name={item.name}
-          type={this.dragType}
-          teamId={item.teamId}
-          teamName={item.teamName}
-          isHighlighted={false}
-          setHighlightedTeamId={() => {}}
-        />
-      </div>
-    );
+  moveSeed = (dragIndex: number, hoverIndex: number) => {
+    const { divisionSeeds } = this.state;
+
+    if (!divisionSeeds) return;
+
+    const dragCard = divisionSeeds[dragIndex];
+    const updatedCards = update(divisionSeeds, {
+      $splice: [
+        [dragIndex, 1],
+        [hoverIndex, 0, dragCard],
+      ],
+    });
+
+    this.setState({ divisionSeeds: updatedCards });
+  };
+
+  cancelReorder = () => {
+    const { seeds } = this.props;
+    const { selectedDivision } = this.state;
+
+    if (seeds && selectedDivision) {
+      this.setState({
+        divisionSeeds: seeds[selectedDivision],
+      });
+    }
+
+    this.setState({ reorderMode: false });
+  };
+
+  saveReorder = () => {
+    const { updateSeeds } = this.props;
+    const { divisionSeeds, selectedDivision } = this.state;
+
+    const newDivisionSeeds = divisionSeeds?.map((item, index) => ({
+      ...item,
+      id: index + 1,
+      name: `Seed ${index + 1}`,
+    }));
+
+    updateSeeds(selectedDivision!, newDivisionSeeds!);
+    this.setState({ reorderMode: false });
   };
 
   render() {
     const {
-      seeds,
       onUndoClick,
       historyLength,
       advanceTeamsToBrackets,
       advancingInProgress,
+      bracketGames,
     } = this.props;
 
     const {
@@ -129,16 +249,24 @@ class BracketManager extends Component<IProps> {
       selectedDivision,
       addGameModalOpen,
       removeGameIndex,
+      reorderMode,
+      divisionSeeds,
+      bracketsSetupOpen,
+      bracketsScoringOpen,
     } = this.state;
-
-    const divisionSeeds =
-      seeds && selectedDivision ? seeds[selectedDivision] : undefined;
 
     const seedsLength = divisionSeeds?.length || 0;
     const playInGamesExist = !!(
       seedsLength -
       2 ** Math.floor(Math.log2(seedsLength))
     );
+
+    const advanceTeamsDisabled = bracketGames?.some(
+      item => item.awayTeamId || item.homeTeamId
+    );
+    const seedsReorderDisabled =
+      divisionGames?.some(item => item.awayTeamScore || item.homeTeamScore) ||
+      !advanceTeamsDisabled;
 
     return (
       <section className={styles.container}>
@@ -157,9 +285,12 @@ class BracketManager extends Component<IProps> {
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
               Seeds list
             </CardMessage>
-            <div className={styles.seedsList}>
-              {divisionSeeds?.map((v, i) => this.renderSeed(v, i))}
-            </div>
+            <SeedsList
+              accept={this.dragType}
+              reorderMode={reorderMode}
+              seeds={divisionSeeds || []}
+              moveSeed={this.moveSeed}
+            />
           </div>
         </div>
 
@@ -179,6 +310,14 @@ class BracketManager extends Component<IProps> {
                 color="secondary"
                 onClick={this.addGamePressed}
               />
+              <Button
+                btnStyles={{ marginLeft: 20 }}
+                label="Score Games"
+                variant="text"
+                color="secondary"
+                icon={getIcon(Icons.EDIT)}
+                onClick={this.scoreGamesPressed}
+              />
             </div>
             <div className={styles.buttonsWrapper}>
               <Button
@@ -190,24 +329,61 @@ class BracketManager extends Component<IProps> {
                 onClick={onUndoClick}
               />
               <Button
-                label="Go to Bracket Setup"
+                label="Go to Brackets Setup"
                 variant="text"
                 color="secondary"
                 icon={getIcon(Icons.EDIT)}
+                onClick={this.openBracketsModal}
               />
-              <Button
-                label="See Team Lineup"
-                variant="text"
-                color="secondary"
-                icon={getIcon(Icons.EYE)}
-              />
-              <Button
-                label="Advance Division Teams to Brackets"
-                variant="contained"
-                color="primary"
-                disabled={advancingInProgress}
-                onClick={advanceTeamsToBrackets}
-              />
+              <Tooltip
+                disabled={!advanceTeamsDisabled}
+                type="info"
+                title="Teams are already advanced to the Brackets"
+              >
+                <div>
+                  <Button
+                    label="Advance Teams to Brackets"
+                    variant="contained"
+                    color="primary"
+                    disabled={advancingInProgress || advanceTeamsDisabled}
+                    onClick={advanceTeamsToBrackets}
+                  />
+                </div>
+              </Tooltip>
+              <div className={styles.reorderTeamsWrapper}>
+                {!reorderMode ? (
+                  <Tooltip
+                    disabled={!seedsReorderDisabled}
+                    type="info"
+                    title="Reorder of Team Rankings is disabled due to the Non-Advanced / Scored teams reason"
+                  >
+                    <div>
+                      <Button
+                        label="Manually Reorder Team Rankings"
+                        variant="contained"
+                        color="primary"
+                        disabled={seedsReorderDisabled}
+                        onClick={this.toggleReorderMode}
+                      />
+                    </div>
+                  </Tooltip>
+                ) : (
+                  <div className={styles.reorderTeamsButtons}>
+                    <Button
+                      label="Cancel"
+                      variant="text"
+                      color="secondary"
+                      onClick={this.cancelReorder}
+                    />
+                    <Button
+                      label="Save Changes"
+                      variant="outlined"
+                      color="secondary"
+                      onClick={this.saveReorder}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           {addGameModalOpen && (
@@ -225,6 +401,21 @@ class BracketManager extends Component<IProps> {
               gameIndex={removeGameIndex}
               onClose={() => this.setState({ removeGameIndex: null })}
               onRemoveGame={this.onRemoveGame}
+            />
+          )}
+          {(bracketsSetupOpen || bracketsScoringOpen) && (
+            <BracketsSetupModal
+              isOpen={bracketsSetupOpen || bracketsScoringOpen}
+              title={
+                bracketsSetupOpen
+                  ? 'Brackets Setup'
+                  : bracketsScoringOpen
+                  ? 'Scoring Brackets'
+                  : ''
+              }
+              onClose={this.closeBracketsModal}
+              onSecondary={this.bracketsModalOnSecondary}
+              onPrimary={this.bracketsModalOnPrimary}
             />
           )}
           {divisionGames && divisionSeeds && (

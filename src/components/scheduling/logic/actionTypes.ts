@@ -22,7 +22,7 @@ export const DELETE_SCHEDULE_FAILURE = 'DELETE_SCHEDULE_FAILURE';
 
 export const ADD_NEW_BRACKET = 'ADD_NEW_BRACKET';
 export const FETCH_EVENT_BRACKETS = 'FETCH_EVENT_BRACKETS';
-
+export const UPDATE_EXISTING_BRACKET = 'UPDATE_EXISTING_BRACKET';
 export const FETCH_BRACKETS_SUCCESS = 'FETCH_BRACKETS_SUCCESS';
 
 interface IScheduleFetchInProgress {
@@ -83,6 +83,11 @@ interface IFetchBracketsSuccess {
   payload: IFetchedBracket[];
 }
 
+interface IUpdateExistingBracket {
+  type: 'UPDATE_EXISTING_BRACKET';
+  payload: Partial<IBracket>;
+}
+
 export type ScheduleActionType =
   | IScheduleFetchInProgress
   | IScheduleFetchSuccess
@@ -93,4 +98,5 @@ export type ScheduleActionType =
   | ISIScheduleDeleteSchedule
   | IAddNewBracket
   | IFetchEventBrackets
-  | IFetchBracketsSuccess;
+  | IFetchBracketsSuccess
+  | IUpdateExistingBracket;

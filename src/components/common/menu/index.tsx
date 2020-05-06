@@ -44,7 +44,6 @@ const Menu = ({
   const [hideDashboard, hideDashboardChange] = React.useState(false);
   const [isCollapsed, onCollapse] = React.useState(false);
   const [isCollapsible, onSetCollapsibility] = React.useState(false);
-  const [activeItem, setActiveItem] = React.useState(list[0].title);
 
   useEffect(() => {
     const value = !!hideOnList?.filter(el => location?.pathname.includes(el))
@@ -70,8 +69,6 @@ const Menu = ({
             menuItem={menuItem}
             isAllowEdit={isAllowEdit}
             isCollapsed={isCollapsed}
-            isActiveItem={activeItem === menuItem.title}
-            setActiveItem={setActiveItem}
             key={menuItem.title}
           />
         ))}

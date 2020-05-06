@@ -24,6 +24,7 @@ import {
   IField,
   IUploadFile,
   BindingCbWithOne,
+  BindingCbWithTwo,
 } from 'common/models';
 import styles from './styles.module.scss';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -81,6 +82,7 @@ interface Props {
   uploadFileMap: (facility: IFacility, files: IUploadFile[]) => void;
   isSectionExpand: boolean;
   deleteFacility: BindingCbWithOne<string>;
+  deleteField: BindingCbWithTwo<IFacility, IField>;
 }
 
 class FacilityDetails extends React.Component<Props, State> {
@@ -120,15 +122,10 @@ class FacilityDetails extends React.Component<Props, State> {
     });
   };
 
-  onChangeField = (
-    field: IField,
-    {
-      target: { name, type, value, checked },
-    }: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  onChangeField = (field: IField) => {
     const { updateField } = this.props;
 
-    updateField({ ...field, [name]: type === 'checkbox' ? +checked : value });
+    updateField(field);
   };
 
   onChangeFieldsCount = ({ target }: IInputEvent) => {
@@ -317,9 +314,11 @@ class FacilityDetails extends React.Component<Props, State> {
                 <li key={it.field_id}>
                   <Field
                     field={it}
+                    facility={facility}
                     fieldNumber={idx + 1}
                     isEdit={isEdit}
-                    onChange={this.onChangeField}
+                    onChangeField={this.onChangeField}
+                    deleteField={this.props.deleteField}
                   />
                 </li>
               ))

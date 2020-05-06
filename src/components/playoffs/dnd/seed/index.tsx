@@ -10,6 +10,7 @@ interface IProps {
   teamId?: string;
   teamName?: string;
   score?: number;
+  isWinner?: boolean;
   isHighlighted: boolean;
   setHighlightedTeamId: (teamId: string) => void;
 }
@@ -22,6 +23,7 @@ const Seed = (props: IProps) => {
     dropped,
     teamName,
     score,
+    isWinner,
     isHighlighted,
     setHighlightedTeamId,
   } = props;
@@ -46,7 +48,15 @@ const Seed = (props: IProps) => {
       <span className={styles.seedName}>
         {teamId && teamName ? teamName : `Seed ${seedId}`}
       </span>
-      <p className={styles.scoreWrapper}>{score || ''}</p>
+      {!!score && (
+        <p
+          className={`${styles.scoreWrapper} ${
+            isWinner ? styles.winner : styles.loser
+          }`}
+        >
+          {score}
+        </p>
+      )}
     </div>
   );
 };

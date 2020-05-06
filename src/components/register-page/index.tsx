@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -26,15 +27,18 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Header from './header';
 import Footer from 'components/footer';
 import axios from 'axios';
-import { IEventDetails, IRegistration } from 'common/models';
+import { IEventDetails, IRegistration, ISelectOption } from 'common/models';
 import SideBar from './side-bar';
 import { getVarcharEight } from 'helpers';
 import { IIndivisualsRegister, ITeamsRegister } from 'common/models/register';
+import { ButtonFormTypes } from 'common/enums';
 
 enum TypeOptions {
   'Individual' = 1,
   'Team' = 2,
 }
+
+const typeOptions = ['Individual', 'Team'];
 
 export interface RegisterMatchParams {
   match: {
@@ -43,7 +47,6 @@ export interface RegisterMatchParams {
     };
   };
 }
-const typeOptions = ['Individual', 'Team'];
 
 const RegisterPage = ({ match }: RegisterMatchParams) => {
   const [event, setEvent] = useState<IEventDetails | null>(null);
@@ -52,6 +55,24 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     setEventRegistration,
   ] = useState<IRegistration | null>(null);
   const [divisions, setDivisions] = useState([]);
+  const [type, setType] = React.useState(1);
+  const [isOpenModalOpen, toggleModal] = React.useState(true);
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [purchasing, setPurchasing] = useState<boolean>(false);
+  const [processing, setProcessing] = useState<boolean>(false);
+  const [clientSecret, setClientSecret] = useState<string>('');
+  const stripe = useStripe()!;
+  const elements = useElements();
+
+  const getSteps = () => {
+    if (type === 1) {
+      return ['Registrant Name', 'Player Info', 'Player Stats', 'Payment'];
+    } else {
+      return ['Team', 'Contact Info', 'Coach Info', 'Payment'];
+    }
+  };
+
+  const steps = getSteps();
 
   useEffect(() => {
     const eventId = match.params.eventId;
@@ -76,32 +97,104 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         `https://api.tourneymaster.org/public/skus?product_id=evn_${eventId}`
       )
       .then(response => {
-        const divisions = response.data.map((sku: any) => ({
-          label: sku['sku_name​'],
+        const divs = response.data.map((sku: any) => ({
+          label: sku.sku_name,
           value: sku.sku_id,
         }));
 
-        setDivisions(divisions);
+        const sortedDivs = divs.sort((a: ISelectOption, b: ISelectOption) =>
+          a.label.localeCompare(b.label, undefined, { numeric: true })
+        );
+
+        setDivisions(sortedDivs);
       });
+
+    // axios.get('https://api.tourneymaster.org/v2/states').then(response => {
+    //   console.log(response);
+    // });
   }, []);
 
-  const [type, setType] = React.useState(1);
-  const [isOpenModalOpen, toggleModal] = React.useState(true);
+  const getPaymentIntent = (order: any) => {
+    return axios.post(
+      'https://api.tourneymaster.org/public/payments/create-payment-intent',
+      order
+    );
+  };
 
-  const getSteps = () => {
-    if (type === 1) {
-      return ['Registrant Name', 'Player Info', 'Player Stats', 'Payment'];
-    } else {
-      return ['Team', 'Contact Info', 'Coach Info', 'Payment'];
+  const saveRegistrationResponse = async () => {
+    const updatedRegistration: any = {
+      ...registration,
+      reg_response_id: getVarcharEight(),
+      registration_id: eventRegistration?.registration_id,
+    };
+    setRegistration(updatedRegistration);
+
+    // if (!data.payment_method) {
+    //   throw new Error('Please, specify payment method');
+    // }
+
+    try {
+      let url;
+      if (type === 1) {
+        url = 'https://api.tourneymaster.org/public/reg_individuals';
+      } else {
+        url = 'https://api.tourneymaster.org/public/reg_teams';
+      }
+
+      await axios.post(url, updatedRegistration);
+      return updatedRegistration;
+    } catch (err) {
+      return Toasts.errorToast(err.message);
     }
   };
 
-  const [activeStep, setActiveStep] = React.useState(0);
-  const steps = getSteps();
+  const handleProceedToPayment = async () => {
+    setProcessing(true);
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
 
-  const handleNext = () => {
+    const updatedRegistration = await saveRegistrationResponse();
+
+    const order = {
+      reg_type: type === 1 ? 'individual' : 'team',
+      reg_response_id: updatedRegistration.reg_response_id,
+      registration_id: updatedRegistration.registration_id,
+      order: {
+        email:
+          updatedRegistration.registrant_email ||
+          updatedRegistration.contact_email,
+        items: [{ sku_id: updatedRegistration.ext_sku, quantity: 1 }],
+      },
+    };
+
+    // if (!clientSecret || !amountDue) {
+    const data = await getPaymentIntent(order);
+
+    if (data.data.success!) {
+      setClientSecret(data.data.clientSecret);
+      // setStripeOrder(data.data.order);
+      const updatedAmountDue = +data.data.order.amount / 100;
+      onChange('payment_amount', updatedAmountDue);
+      onChange('payment_selection', 'Full');
+      onChange('payment_method', 'Credit Card');
+
+      setPurchasing(true);
+      setProcessing(false);
+    } else {
+      setProcessing(false);
+      setActiveStep(prevActiveStep => prevActiveStep - 1);
+
+      Toasts.errorToast(data.data.message!);
+    }
+  };
+
+  const handleNext = (evt: React.FormEvent) => {
+    evt.preventDefault();
+
     if (activeStep === steps.length - 1) {
       handleSubmit();
+    } else if (activeStep === steps.length - 2) {
+      // TODO: Change step ids to constants
+      handleProceedToPayment();
     } else {
       setActiveStep(prevActiveStep => prevActiveStep + 1);
     }
@@ -116,7 +209,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   >({});
 
   const onChange = (name: string, value: string | number) => {
-    setRegistration({ ...registration, [name]: value });
+    setRegistration(prevRegistration => ({
+      ...prevRegistration,
+      [name]: value,
+    }));
   };
 
   const fillParticipantInfo = (info: any) => {
@@ -152,7 +248,14 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         case 2:
           return <PlayerStats onChange={onChange} data={registration} />;
         default:
-          return <Payment onChange={onChange} data={registration} />;
+          return (
+            <Payment
+              onChange={onChange}
+              data={registration}
+              processing={processing}
+              purchasing={purchasing}
+            />
+          );
       }
     } else {
       switch (step) {
@@ -175,65 +278,47 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
             />
           );
         default:
-          return <Payment onChange={onChange} data={registration} />;
+          return (
+            <Payment
+              onChange={onChange}
+              data={registration}
+              processing={processing}
+              purchasing={purchasing}
+            />
+          );
       }
     }
   };
 
-  // Stripe
-  const stripe = useStripe();
-  const elements = useElements();
-
   const handleSubmit = async () => {
     try {
+      // setProcessing(true);
       if (!stripe || !elements) {
-        return Toasts.errorToast('Something went wrong');
+        return Toasts.errorToast('Rats. Something went wrong. Please retry.');
       }
 
-      const card = elements.getElement(CardElement)!;
+      // setProcessing(true);
 
-      let data: any = {
-        ...registration,
-        reg_response_id: getVarcharEight(),
-        registration_id: eventRegistration?.registration_id,
-      };
+      const payload = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement)!,
+          billing_details: {
+            // name: ev.target; // ev.target.name.value,
+          },
+        },
+      });
 
-      if (registration.payment_method === 'Credit Card') {
-        const { token, error } = await stripe.createToken(card);
-
-        const { paymentMethod } = await stripe.createPaymentMethod({
-          type: 'card',
-          card,
-        });
-
-        if (error) {
-          throw new Error(error.message);
-        }
-
-        data = {
-          ...data,
-          ext_payment_id: paymentMethod?.id,
-          ext_payment_token: token && token.id,
-        };
-      }
-
-      if (!data.payment_method) {
-        throw new Error('Please, specify payment method');
-      }
-
-      let url;
-      if (type === 1) {
-        url = 'https://api.tourneymaster.org/public/reg_individuals';
+      if (payload.error) {
+        throw new Error(`Payment failed ${payload.error.message}`);
       } else {
-        url = 'https://api.tourneymaster.org/public/reg_teams';
+        setProcessing(false);
+        Toasts.successToast('Registration is successfully saved!');
+        setActiveStep(prevActiveStep => prevActiveStep + 1);
       }
-
-      await axios.post(url, data);
     } catch (e) {
+      setProcessing(false);
       return Toasts.errorToast(e.message);
     }
-    Toasts.successToast('Registration is successfully saved.');
-    setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
   return (
@@ -261,26 +346,28 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                       </HeadingLevelThree>
                     </StepLabel>
                     <StepContent>
-                      <div>{getStepContent(index)}</div>
-                      <div className={styles.buttonsWrapper}>
-                        <Button
-                          disabled={activeStep === 0}
-                          onClick={handleBack}
-                          label="Back"
-                          variant="text"
-                          color="secondary"
-                        />
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={handleNext}
-                          label={
-                            activeStep === steps.length - 1
-                              ? 'Register'
-                              : 'Next'
-                          }
-                        />
-                      </div>
+                      <form onSubmit={handleNext}>
+                        <div>{getStepContent(index)}</div>
+                        <div className={styles.buttonsWrapper}>
+                          <Button
+                            disabled={activeStep === 0}
+                            onClick={handleBack}
+                            label="Back"
+                            variant="text"
+                            color="secondary"
+                          />
+                          <Button
+                            btnType={ButtonFormTypes.SUBMIT}
+                            variant="contained"
+                            color="primary"
+                            label={
+                              activeStep === steps.length - 1
+                                ? 'Register'
+                                : 'Next'
+                            }
+                          />
+                        </div>
+                      </form>
                     </StepContent>
                   </Step>
                 ))}
@@ -288,7 +375,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               {activeStep === steps.length && (
                 <div className={styles.section}>
                   <div className={styles.successMessage}>
-                    Registration is successfully completed!
+                    Registration completed successfully! A confirmation email
+                    has also been sent. Thanks!
                   </div>
                 </div>
               )}
@@ -310,7 +398,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               <span>Event Registration</span>
             </HeadingLevelFour>
             <p className={styles.message}>
-              Do you want to register an individual or a team?
+              Do you want to register as an individual or as a team?
             </p>
             <div className={styles.radioBtnsWrapper}>
               <Radio

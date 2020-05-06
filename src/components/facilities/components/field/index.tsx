@@ -1,14 +1,17 @@
 import React from 'react';
-import TextField from '../../../common/input';
-import Checkbox from '../../../common/buttons/checkbox';
-import { IField } from '../../../../common/models';
+import { Input, Checkbox, Button, DeletePopupConfrim } from 'components/common';
+import { IField, IFacility, BindingCbWithTwo } from 'common/models';
+import { IInputEvent } from 'common/types';
+import { ButtonVarian, ButtonColors, ButtonTypes } from 'common/enums';
 import styles from './styles.module.scss';
 
 interface Props {
   field: IField;
+  facility: IFacility;
   fieldNumber: number;
   isEdit: boolean;
-  onChange: (field: IField, evt: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeField: (field: IField) => void;
+  deleteField: BindingCbWithTwo<IFacility, IField>;
 }
 
 enum FormFields {
@@ -17,7 +20,26 @@ enum FormFields {
   IS_PREMIER_YN = 'is_premier_YN',
 }
 
-const Field = ({ field, fieldNumber, isEdit, onChange }: Props) => {
+const Field = ({
+  facility,
+  field,
+  fieldNumber,
+  isEdit,
+  onChangeField,
+  deleteField,
+}: Props) => {
+  const [isDeletePopupOpen, toggleDeletePopup] = React.useState<boolean>(false);
+
+  const onToggleDeletePopup = () => {
+    toggleDeletePopup(!isDeletePopupOpen);
+  };
+
+  const onDeleteField = () => {
+    deleteField(facility, field);
+
+    onToggleDeletePopup();
+  };
+
   const FIELD_OPTIONS = [
     {
       label: 'Illuminated',
@@ -33,26 +55,48 @@ const Field = ({ field, fieldNumber, isEdit, onChange }: Props) => {
     },
   ];
 
+  const onChange = ({
+    target: { name, value, type, checked },
+  }: IInputEvent) => {
+    const updetedField = {
+      ...field,
+      [name]: type === 'checkbox' ? +checked : value,
+    };
+
+    onChangeField(updetedField);
+  };
+
   return (
-    <fieldset className={styles.field}>
-      <legend>Field {fieldNumber} Name</legend>
-      <TextField
-        onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
-          onChange(field, evt)
-        }
-        value={field.field_name || ''}
-        name={FormFields.FIELD_NAME}
-        width="250px"
-        placeholder={`Field ${fieldNumber}`}
-        disabled={!isEdit}
+    <>
+      <fieldset className={styles.field}>
+        <legend className={styles.fieldTitleWrapper}>
+          <span>Field {fieldNumber} Name</span>
+          <Button
+            onClick={onToggleDeletePopup}
+            variant={ButtonVarian.TEXT}
+            color={ButtonColors.SECONDARY}
+            type={ButtonTypes.DANGER_LINK}
+            label="Delete"
+          />
+        </legend>
+        <Input
+          onChange={onChange}
+          value={field.field_name || ''}
+          name={FormFields.FIELD_NAME}
+          width="250px"
+          placeholder={`Field ${fieldNumber}`}
+          disabled={!isEdit}
+        />
+        <Checkbox onChange={onChange} options={FIELD_OPTIONS} />
+      </fieldset>
+      <DeletePopupConfrim
+        type="Field"
+        deleteTitle={field.field_name}
+        isOpen={isDeletePopupOpen}
+        onClose={onToggleDeletePopup}
+        onDeleteClick={onDeleteField}
       />
-      <Checkbox
-        onChange={(evt: React.ChangeEvent<HTMLInputElement>) =>
-          onChange(field, evt)
-        }
-        options={FIELD_OPTIONS}
-      />
-    </fieldset>
+    </>
   );
 };
 

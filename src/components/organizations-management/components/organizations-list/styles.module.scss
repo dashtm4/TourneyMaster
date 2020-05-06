@@ -39,23 +39,9 @@
   th,
   td {
     &:nth-of-type(2) {
-      width: 15%;
+      width: 25%;
     }
   }
-}
-
-.codeBtn {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  width: 140px;
-
-  background-color: transparent;
-
-  border: 0;
-
-  cursor: pointer;
 }
 
 .delBtnWrapper {

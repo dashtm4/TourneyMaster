@@ -1,16 +1,16 @@
 import React from 'react';
 import styles from './styles.module.scss';
-import { Button, HeadingLevelFour } from 'components/common';
+import { Button, HeadingLevelFour, ZoomControls } from 'components/common';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import ITimeSlot from 'common/models/schedule/timeSlots';
-import { IField, IFacility } from 'common/models';
+import { IField, IFacility, IPinchProps } from 'common/models';
 import { IField as IScheduleField } from 'common/models/schedule/fields';
 import { formatTimeSlot } from 'helpers';
 import { mapFieldsData } from 'components/schedules/mapTournamentData';
 import { sortFieldsByPremier } from 'components/common/matrix-table/helper';
 
 const TRANSFORM_WRAPPER_OPTIONS = {
-  minScale: 0.3,
+  minScale: 0.2,
   limitToWrapper: false,
   centerContent: true,
   limitToBounds: false,
@@ -57,22 +57,26 @@ const ViewMatrix = (props: IProps) => {
       <div className={styles.tableWrapper}>
         <TransformWrapper
           defaultScale={0.3}
-          defaultPositionX={0.01}
           defaultPositionY={20}
           options={{ ...TRANSFORM_WRAPPER_OPTIONS, disabled: false }}
-          wheel={{ step: 100 }}
+          wheel={{ step: 10 }}
         >
-          <TransformComponent>
-            <table>
-              <tbody>
-                <tr>
-                  <td />
-                  {sortedFields.map(item => renderField(item))}
-                </tr>
-                {timeSlots.map(item => renderTimeSlot(item.time))}
-              </tbody>
-            </table>
-          </TransformComponent>
+          {({ zoomIn, zoomOut }: IPinchProps) => (
+            <>
+              <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} />
+              <TransformComponent>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td />
+                      {sortedFields.map(item => renderField(item))}
+                    </tr>
+                    {timeSlots.map(item => renderTimeSlot(item.time))}
+                  </tbody>
+                </table>
+              </TransformComponent>
+            </>
+          )}
         </TransformWrapper>
       </div>
       <div className={styles.btnsWrapper}>

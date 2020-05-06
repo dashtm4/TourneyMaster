@@ -74,9 +74,10 @@ const TournamentPlayItem = ({
           >
             <div
               style={{
-                display: 'inline',
+                // display: 'inline',
                 marginLeft: '15px',
                 padding: '10px 0',
+                display: 'none',
               }}
             >
               {schedulePublished ? (
@@ -100,8 +101,8 @@ const TournamentPlayItem = ({
           </Tooltip>
         </div>
         <p className={styles.textWrapper}>
-          <b>Status:</b>{' '}
-          <span>{ScheduleStatuses[schedule.is_published_YN] || '—'}</span>{' '}
+          <b>Status:</b>
+          <span>{ScheduleStatuses[schedule.is_published_YN] || '—'}</span>
           <span
             className={styles.scheduleStatus}
             style={{
@@ -110,24 +111,34 @@ const TournamentPlayItem = ({
           />
         </p>
         <p className={styles.textWrapper}>
-          <b>Created by:</b>
-          <span className={styles.textNameWrapper}>
+          <span className={styles.nameWrapper}>
+            <b>Created by:</b>
             <span> {schedule.createdByName}</span>
-            <span>{moment(schedule.created_datetime).format('LLL')}</span>
           </span>
+          <time
+            className={styles.dateWrapper}
+            dateTime={schedule.created_datetime}
+          >
+            {moment(schedule.created_datetime).format('LLL')}
+          </time>
         </p>
         <p className={styles.textWrapper}>
-          <b>Last Updated By:</b>
-          <span className={styles.textNameWrapper}>
+          <span className={styles.nameWrapper}>
+            <b>Last Updated By:</b>
             {schedule.updated_by ? (
-              <>
-                <span>{schedule.updatedByName}</span>
-                <span>{moment(schedule.updated_datetime).format('LLL')}</span>
-              </>
+              <span>{schedule.updatedByName}</span>
             ) : (
               DEFAULT_UPDATED_VALUE
             )}
           </span>
+          {schedule.updated_by && (
+            <time
+              className={styles.dateWrapper}
+              dateTime={schedule.updated_datetime}
+            >
+              {moment(schedule.updated_datetime).format('LLL')}
+            </time>
+          )}
         </p>
         <div className={styles.btnsWrapper}>
           <Button

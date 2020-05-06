@@ -5,14 +5,20 @@ import Diagnostics, { IDiagnosticsInput } from '..';
 
 interface IProps {
   divisionsDiagnostics: IDiagnosticsInput;
+  recalculateDiagnostics?: () => void;
 }
 
 export default (props: IProps) => {
-  const { divisionsDiagnostics } = props;
+  const { divisionsDiagnostics, recalculateDiagnostics } = props;
 
   const [dianosticsOpen, setDiagnosticsOpen] = useState(false);
 
-  const openDianostics = () => setDiagnosticsOpen(true);
+  const openDianostics = () => {
+    if (recalculateDiagnostics) {
+      recalculateDiagnostics();
+    }
+    setDiagnosticsOpen(true);
+  };
   const closeDiagnostics = () => setDiagnosticsOpen(false);
 
   return (

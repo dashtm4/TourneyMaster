@@ -47,6 +47,13 @@ const BracketGameSlot = (props: IProps) => {
     };
   };
 
+  const getWinner = (game: IBracketGame, position: 'away' | 'home') => {
+    if (!game.awayTeamScore || !game.homeTeamScore) return false;
+    return position === 'away'
+      ? game.awayTeamScore > game.homeTeamScore
+      : game.homeTeamScore > game.awayTeamScore;
+  };
+
   return (
     <div className={`${styles.bracketGame} ${game?.hidden && styles.hidden}`}>
       <SeedsContext.Consumer>
@@ -70,6 +77,7 @@ const BracketGameSlot = (props: IProps) => {
                   teamId={getSeedData(game, seeds).awayTeamId}
                   teamName={getSeedData(game, seeds).awayTeamName}
                   score={game.awayTeamScore}
+                  isWinner={getWinner(game, 'away')}
                   type="seed"
                   dropped={true}
                   isHighlighted={
@@ -125,6 +133,7 @@ const BracketGameSlot = (props: IProps) => {
                   teamId={getSeedData(game, seeds).homeTeamId}
                   teamName={getSeedData(game, seeds).homeTeamName}
                   score={game.homeTeamScore}
+                  isWinner={getWinner(game, 'home')}
                   type="seed"
                   dropped={true}
                   isHighlighted={

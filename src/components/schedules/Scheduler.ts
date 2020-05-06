@@ -196,7 +196,7 @@ export default class Scheduler {
     }
   };
 
-  // this function iterates through the team cards array in order to see if premier teams and/or game num are satisfied 
+  // this function iterates through the team cards array in order to see if premier teams and/or game num are satisfied
   // this also
   getUnsatisfiedTeams = (options?: {
     isPremier?: boolean;
@@ -231,7 +231,6 @@ export default class Scheduler {
     this.handleRegularGames();
   };
 
-
   // "rearrangeTeamsByConstraints" and "manageGamesByTeamSets" are two of the 'core' utilities within the scheduling algorithm
   // Takes teams and iterates through using the pool, is_premier, and not the same team constraint
   // Finds pairs....
@@ -262,7 +261,7 @@ export default class Scheduler {
     options?: IFindGameOptions
   ) => {
     const foundGames: IGame[] = [];
-    keys(teamSets).map(key => {
+    keys(teamSets).forEach(key => {
       const teamOne = teamSets[key];
       const teamTwo = this.teamCards.find(tc => tc.id === key);
 
@@ -273,7 +272,7 @@ export default class Scheduler {
       if (foundGame) {
         foundGames.push(foundGame);
 
-        [teamOne, teamTwo].map(team => {
+        [teamOne, teamTwo].forEach(team => {
           const foundUpdatedGame = this.updatedGames.find(
             game => game.id === foundGame.id
           );
@@ -345,12 +344,12 @@ export default class Scheduler {
     this.updatedGames = this.updatedGames.map(game =>
       game.id === foundGame.id
         ? {
-          ...game,
-          [TeamPositionEnum[
-            teamCard.games?.find(teamGame => teamGame.id === game.id)
-              ?.teamPosition!
-          ]]: teamCard,
-        }
+            ...game,
+            [TeamPositionEnum[
+              teamCard.games?.find(teamGame => teamGame.id === game.id)
+                ?.teamPosition!
+            ]]: teamCard,
+          }
         : game
     );
   };
@@ -361,7 +360,7 @@ export default class Scheduler {
   };
 
   setTeamsPerPools = () => {
-    this.teamCards.map(teamCard => {
+    this.teamCards.forEach(teamCard => {
       if (!teamCard.poolId) return;
       this.poolsData[teamCard.poolId] = [
         ...(this.poolsData[teamCard.poolId] || []),
@@ -465,12 +464,12 @@ export default class Scheduler {
     this.teamCards = this.teamCards.map(teamCard =>
       teamCard.id === updatedTeamCard.id
         ? {
-          ...teamCard,
-          games: unionBy(
-            [...(teamCard.games || []), ...updatedTeamCard.games],
-            'id'
-          ),
-        }
+            ...teamCard,
+            games: unionBy(
+              [...(teamCard.games || []), ...updatedTeamCard.games],
+              'id'
+            ),
+          }
         : teamCard
     );
   };
@@ -567,7 +566,6 @@ export default class Scheduler {
       };
     });
   };
-
 
   calculateAvgStartTime = () => {
     const timeStarts = this.teamCards.map(tc => tc.startTime);

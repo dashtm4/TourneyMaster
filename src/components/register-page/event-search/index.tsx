@@ -31,14 +31,14 @@ const EventSearch = () => {
       <Header />
       <section className={styles.mainSearch}>
         <div className={styles.mainSearchWrapper}>
-          <h2 className={styles.mainSearchTitle}>Find your Tournament</h2>
+          <h2 className={styles.mainSearchTitle}>Event Search: </h2>
           <form className={styles.mainSearchForm}>
             <label className={styles.mainSearchFormSearch}>
               <input
                 value={searchValue}
                 onChange={onSearch}
                 type="search"
-                placeholder="Tournament Name"
+                placeholder="Tournament/Event Name"
               />
             </label>
             <div className={styles.mainSearchListWrapper}>

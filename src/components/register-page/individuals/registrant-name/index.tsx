@@ -37,6 +37,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
             label="First Name"
             value={data.registrant_first_name || ''}
             onChange={onFirstNameChange}
+            isRequired={true}
           />
         </div>
         <div className={styles.sectionItem}>
@@ -44,6 +45,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
             fullWidth={true}
             label="Last Name"
             value={data.registrant_last_name || ''}
+            isRequired={true}
             onChange={onLastNameChange}
           />
         </div>
@@ -52,6 +54,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
             fullWidth={true}
             label="Email"
             value={data.registrant_email || ''}
+            isRequired={true}
             onChange={onEmailChange}
           />
         </div>
@@ -69,6 +72,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
               borderRadius: '4px',
               width: '100%',
             }}
+            inputProps={{ required: true }}
           />
         </div>
       </div>
