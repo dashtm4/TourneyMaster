@@ -188,6 +188,8 @@ const formatDivisionsDiagnostics = (
     calculateDivisionDiagnostics(divisionId, diagnosticsProps)
   );
 
+  const orderedData = orderBy(divisionsArr, arr => [arr[0]]);
+
   const header = [
     'Division Name',
     '# of Teams',
@@ -206,7 +208,7 @@ const formatDivisionsDiagnostics = (
 
   return {
     header,
-    body: divisionsArr,
+    body: orderedData,
   };
 };
 

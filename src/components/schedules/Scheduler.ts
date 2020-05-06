@@ -1,4 +1,4 @@
-import { union, findKey, find, keys, unionBy } from 'lodash-es';
+import { union, findKey, find, keys, unionBy, orderBy } from 'lodash-es';
 import { getTimeFromString } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
@@ -176,7 +176,7 @@ export default class Scheduler {
       isPremier: false,
       gamesNum: recursor,
     });
-    this.settleMinGameTeams(unsatisfiedTeams);
+    this.settleMinGameTeams(orderBy(unsatisfiedTeams, 'games'));
 
     // settle unsatisfied regular teams on regular fields with back-to-back
     // adds the "IF" section vs the above to settle the min games teams for unsatisfied teams
@@ -237,8 +237,10 @@ export default class Scheduler {
   rearrangeTeamsByConstraints = (teamCards?: ITeamCard[]) => {
     const teamCardsArr = teamCards || this.teamCards;
     const teams = {};
+    const thisTeamCards = [...this.teamCards];
+
     teamCardsArr.forEach(teamCard => {
-      teams[teamCard.id] = this.teamCards.find(
+      teams[teamCard.id] = orderBy(thisTeamCards, 'games').find(
         tc =>
           teamCard.id !== tc.id &&
           teamCard.isPremier === tc.isPremier &&

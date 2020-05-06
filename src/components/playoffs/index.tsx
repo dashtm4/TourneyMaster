@@ -10,7 +10,10 @@ import { Button, Paper, PopupExposure, PopupConfirm } from 'components/common';
 import styles from './styles.module.scss';
 import BracketManager from './tabs/brackets';
 import ResourceMatrix from './tabs/resources';
-import { fetchSchedulesDetails } from 'components/schedules/logic/actions';
+import {
+  fetchSchedulesDetails,
+  schedulesDetailsClear,
+} from 'components/schedules/logic/actions';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
 import { ITournamentData } from 'common/models/tournament';
@@ -77,6 +80,7 @@ import {
 } from './helper';
 import { IOnAddGame } from './add-game-modal';
 import { updateExistingBracket } from 'components/scheduling/logic/actions';
+import SaveBracketsModal from './save-brackets-modal';
 
 export interface ISeedDictionary {
   [key: string]: IBracketSeed[];
@@ -117,6 +121,7 @@ interface IMapDispatchToProps {
   advanceTeamsToBrackets: () => void;
   clearSortedTeams: () => void;
   updateExistingBracket: (data: Partial<IBracket>) => void;
+  schedulesDetailsClear: () => void;
 }
 
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
@@ -137,6 +142,7 @@ interface IState {
   bracketSeeds?: ISeedDictionary;
   playoffTimeSlots?: ITimeSlot[];
   tableGames?: IGame[];
+  saveBracketsModalOpen: boolean;
   cancelConfirmationOpen: boolean;
   highlightedGameId?: number;
   replacementBracketGames?: IBracketGame[];
@@ -152,16 +158,18 @@ class Playoffs extends Component<IProps> {
   state: IState = {
     activeTab: PlayoffsTabsEnum.ResourceMatrix,
     cancelConfirmationOpen: false,
+    saveBracketsModalOpen: false,
     highlightedGameId: undefined,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     const { event, match } = this.props;
     const eventId = event?.event_id!;
     const { scheduleId, bracketId } = match.params;
 
     this.props.clearBracketGames();
     this.props.clearSchedulesTable();
+    this.props.schedulesDetailsClear();
     this.props.clearSortedTeams();
     this.props.fetchEventSummary(eventId);
     this.props.fetchSchedulesDetails(scheduleId);
@@ -206,9 +214,6 @@ class Playoffs extends Component<IProps> {
       this.calculateBracketGames();
     }
 
-    // if (prevProps.sortedTeams !== this.props.sortedTeams || !bracketSeeds) {
-    //   this.calculateBracketSeeds();
-    // }
     if (
       (!prevProps.sortedTeams && this.props.sortedTeams) ||
       (!bracketSeeds && this.props.bracketGames)
@@ -264,8 +269,8 @@ class Playoffs extends Component<IProps> {
   retrieveBracketsData = () => {
     const { match } = this.props;
     const { bracketId } = match.params;
-    this.props.retrieveBracketsGames(bracketId);
     this.props.retrieveBrackets(bracketId);
+    this.props.retrieveBracketsGames(bracketId);
   };
 
   calculatePlayoffTimeSlots = () => {
@@ -410,6 +415,7 @@ class Playoffs extends Component<IProps> {
 
     const updatedGames = definedGames.map(item => {
       const foundBracketGame = find(bracketGames, {
+        hidden: false,
         fieldId: item.fieldId,
         startTime: item.startTime,
       });
@@ -570,8 +576,29 @@ class Playoffs extends Component<IProps> {
     }
   };
 
+  openBracketsModal = () => this.setState({ saveBracketsModalOpen: true });
+
+  closeBracketsModal = () => this.setState({ saveBracketsModalOpen: false });
+
+  canSaveBracketsData = () => {
+    const { bracket, bracketGames } = this.props;
+    return Boolean(
+      bracket &&
+        bracket.published &&
+        bracketGames?.every(
+          item => item.hidden || (item.fieldId && item.startTime)
+        )
+    );
+  };
+
   onSavePressed = () => {
     const { cancelConfirmationOpen } = this.state;
+    const canSaveBracketsData = this.canSaveBracketsData();
+
+    if (!canSaveBracketsData) {
+      return this.openBracketsModal();
+    }
+
     this.saveBracketsData();
 
     if (cancelConfirmationOpen) {
@@ -614,6 +641,7 @@ class Playoffs extends Component<IProps> {
       replacementBracketGames,
       replacementMessage,
       playoffTimeSlots,
+      saveBracketsModalOpen,
     } = this.state;
 
     const {
@@ -715,6 +743,7 @@ class Playoffs extends Component<IProps> {
               <BracketManager
                 history={history}
                 match={match}
+                bracket={bracket!}
                 historyLength={historyLength}
                 divisions={divisions!}
                 seeds={bracketSeeds}
@@ -735,6 +764,11 @@ class Playoffs extends Component<IProps> {
           onClose={this.closeCancelConfirmation}
           onExitClick={this.onExit}
           onSaveClick={this.onSavePressed}
+        />
+        <SaveBracketsModal
+          isOpen={saveBracketsModalOpen}
+          onClose={this.closeBracketsModal}
+          onPrimaryClick={this.closeBracketsModal}
         />
         <PopupConfirm
           type="warning"
@@ -795,6 +829,7 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       advanceTeamsToBrackets,
       clearSortedTeams,
       updateExistingBracket,
+      schedulesDetailsClear,
     },
     dispatch
   );

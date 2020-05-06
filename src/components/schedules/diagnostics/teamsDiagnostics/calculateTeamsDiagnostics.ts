@@ -129,6 +129,8 @@ const formatTeamsDiagnostics = (diagnosticsProps: ITeamsDiagnosticsProps) => {
     calculateTeamDiagnostics(teamCard, diagnosticsProps)
   );
 
+  const orderedData = orderBy(teamsArr, arr => [arr[1], arr[0]]);
+
   const header = [
     'Team Name',
     'Division Name',
@@ -145,7 +147,7 @@ const formatTeamsDiagnostics = (diagnosticsProps: ITeamsDiagnosticsProps) => {
 
   return {
     header,
-    body: teamsArr,
+    body: orderedData,
   };
 };
 

@@ -105,7 +105,9 @@ const Brackets = (props: IProps) => {
       Object.keys(newGrids[gridKey])
         .sort((a, b) => +a - +b)
         .forEach((key, i, arr) => {
-          const thisRound = newGrids[gridKey][key];
+          const thisRound = newGrids[gridKey][key].filter(
+            (v: IBracketGame) => !v.hidden
+          );
           const nextRound = newGrids[gridKey][arr[i + 1]];
 
           if (
