@@ -35,13 +35,14 @@ import SideBar from './side-bar';
 import { getVarcharEight } from 'helpers';
 import { IIndivisualsRegister, ITeamsRegister } from 'common/models/register';
 import { ButtonFormTypes } from 'common/enums';
+import { eventTypeOptions } from 'components/event-details/event-structure';
 
 export enum TypeOptions {
-  'Individual' = 1,
-  'Team' = 2,
+  'Player' = 1,
+  'Parent/Guardian' = 2,
+  'Team Admin' = 3,
+  'Coach' = 4,
 }
-
-export const typeOptions = ['Individual', 'Team'];
 
 export interface RegisterMatchParams {
   match: {
@@ -69,7 +70,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   const elements = useElements();
 
   const getSteps = () => {
-    if (type === 1) {
+    if (
+      type === TypeOptions.Player ||
+      type === TypeOptions['Parent/Guardian']
+    ) {
       return ['Registrant Name', 'Player Info', 'Player Stats', 'Payment'];
     } else {
       return ['Team', 'Contact Info', 'Coach Info', 'Payment'];
@@ -81,10 +85,16 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   useEffect(() => {
     const eventId = match.params.eventId;
     axios.get('https://api.tourneymaster.org/public/events').then(response => {
-      const eventData = response.data.filter(
+      const eventData: IEventDetails = response.data.filter(
         (e: IEventDetails) => e.event_id === eventId
       )[0];
+
       setEvent(eventData);
+      setType(
+        eventTypeOptions[eventData.event_type] === eventTypeOptions.Showcase
+          ? TypeOptions.Player
+          : TypeOptions['Team Admin']
+      );
     });
 
     axios
@@ -149,7 +159,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
     try {
       let url;
-      if (type === 1) {
+      if (
+        type === TypeOptions.Player ||
+        type === TypeOptions['Parent/Guardian']
+      ) {
         url = 'https://api.tourneymaster.org/public/reg_individuals';
       } else {
         url = 'https://api.tourneymaster.org/public/reg_teams';
@@ -169,7 +182,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     const updatedRegistration = await saveRegistrationResponse();
 
     const order = {
-      reg_type: type === 1 ? 'individual' : 'team',
+      reg_type: TypeOptions[type],
       reg_response_id: updatedRegistration.reg_response_id,
       registration_id: updatedRegistration.registration_id,
       order: {
@@ -246,7 +259,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   };
 
   const getStepContent = (step: number) => {
-    if (type === 1) {
+    if (
+      type === TypeOptions.Player ||
+      type === TypeOptions['Parent/Guardian']
+    ) {
       switch (step) {
         case 0:
           return <RegistrantName onChange={onChange} data={registration} />;
@@ -407,12 +423,15 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           )}
         </div>
       </div>
-      <PopupRegistrationType
-        isOpenModalOpen={isOpenModalOpen}
-        onTypeChange={onTypeChange}
-        onTypeSelect={onTypeSelect}
-        type={type}
-      />
+      {event && (
+        <PopupRegistrationType
+          event={event}
+          isOpenModalOpen={isOpenModalOpen}
+          onTypeChange={onTypeChange}
+          onTypeSelect={onTypeSelect}
+          type={type}
+        />
+      )}
       <div style={{ marginTop: '50px' }}>
         <Footer />
       </div>

@@ -1,11 +1,12 @@
 import React from 'react';
 import { Modal, HeadingLevelFour, Radio, Button } from 'components/common';
 import styles from '../styles.module.scss';
-import { BindingAction, BindingCbWithOne } from 'common/models';
+import { BindingAction, BindingCbWithOne, IEventDetails } from 'common/models';
 import { IInputEvent } from 'common/types';
-import { TypeOptions, typeOptions } from '../index';
-
+import { TypeOptions } from '../index';
+import { eventTypeOptions } from 'components/event-details/event-structure';
 interface Props {
+  event: IEventDetails;
   isOpenModalOpen: boolean;
   onTypeSelect: BindingAction;
   type: number;
@@ -13,11 +14,20 @@ interface Props {
 }
 
 const PopupRegistrationType = ({
+  event,
   type,
   onTypeChange,
   isOpenModalOpen,
   onTypeSelect,
 }: Props) => {
+  const showcaseTypeOptions = [TypeOptions[1], TypeOptions[2]];
+  const tournamentTypeOptions = [TypeOptions[3], TypeOptions[4]];
+
+  const options =
+    event && eventTypeOptions[event.event_type] === eventTypeOptions.Showcase
+      ? showcaseTypeOptions
+      : tournamentTypeOptions;
+
   return (
     <Modal isOpen={isOpenModalOpen} onClose={() => {}}>
       <div className={styles.modalContainer}>
@@ -30,7 +40,7 @@ const PopupRegistrationType = ({
           </p>
           <div className={styles.radioBtnsWrapper}>
             <Radio
-              options={typeOptions}
+              options={options}
               formLabel=""
               onChange={onTypeChange}
               checked={TypeOptions[type] || ''}

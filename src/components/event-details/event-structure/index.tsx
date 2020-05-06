@@ -35,15 +35,25 @@ enum ResultsDisplayEnum {
   'Allow Ties' = 'tie_breaker_format_id',
 }
 
+export enum eventTypeOptions {
+  'Tournament' = 0,
+  'Showcase' = 1,
+  'League' = 3,
+}
+
+const eventTypeRadioOptions = [
+  eventTypeOptions[0],
+  eventTypeOptions[1],
+  eventTypeOptions[3],
+];
+
 interface Props {
-  eventTypeOptions: string[];
   eventData: Partial<IEventDetails>;
   onChange: (name: string, value: string | number, ignore?: boolean) => void;
   isSectionExpand: boolean;
 }
 
 const EventStructureSection: React.FC<Props> = ({
-  eventTypeOptions,
   eventData,
   onChange,
   isSectionExpand,
@@ -147,7 +157,7 @@ const EventStructureSection: React.FC<Props> = ({
         <div className={styles.esDetailsFirst}>
           <div className={styles.column}>
             <Radio
-              options={eventTypeOptions}
+              options={eventTypeRadioOptions}
               formLabel="Event Type"
               onChange={onEventTypeChange}
               checked={event_type || ''}
