@@ -30,11 +30,11 @@ export default ({ isOpen, onClose, onPrimaryClick }: Props) => (
         style={CARD_MESSAGE_STYLES}
         iconStyle={ICON_CARD_STYLES}
       >
-        Brackets data cannot be saved
+        Complete Assigning Games! Data is not yet saved.
       </CardMessage>
       <p className={styles.popupText}>
-        The Playoff is published. <br />
-        You cannot save the data until you have assigned bracket games.
+        Status: The Playoffs are currently "published", and your attendees need to know where to be.<br />
+        Solution: Assign all "Unassigned Games" on the left to fields and timeslots.
       </p>
       <p className={styles.btnsWrapper}>
         <Button
