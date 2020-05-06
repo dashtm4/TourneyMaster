@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { maxBy } from 'lodash-es';
 import { Button, Modal, Select } from 'components/common';
