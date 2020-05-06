@@ -13,6 +13,11 @@ interface Props {
   onTypeChange: BindingCbWithOne<IInputEvent>;
 }
 
+const MESSAGE_SHOWCAST =
+  'Do you want to register as a player or as parent/guardian?';
+
+const MESSAGE_TOURNAMENT = 'Are you registering as a team admin or as a coach?';
+
 const PopupRegistrationType = ({
   event,
   type,
@@ -23,10 +28,10 @@ const PopupRegistrationType = ({
   const showcaseTypeOptions = [TypeOptions[1], TypeOptions[2]];
   const tournamentTypeOptions = [TypeOptions[3], TypeOptions[4]];
 
-  const options =
-    event && eventTypeOptions[event.event_type] === eventTypeOptions.Showcase
-      ? showcaseTypeOptions
-      : tournamentTypeOptions;
+  const isShowCastType =
+    event && eventTypeOptions[event.event_type] === eventTypeOptions.Showcase;
+
+  const options = isShowCastType ? showcaseTypeOptions : tournamentTypeOptions;
 
   return (
     <Modal isOpen={isOpenModalOpen} onClose={() => {}}>
@@ -36,7 +41,7 @@ const PopupRegistrationType = ({
             <span>Event Registration</span>
           </HeadingLevelFour>
           <p className={styles.message}>
-            Do you want to register as an individual or as a team?
+            {isShowCastType ? MESSAGE_SHOWCAST : MESSAGE_TOURNAMENT}
           </p>
           <div className={styles.radioBtnsWrapper}>
             <Radio
