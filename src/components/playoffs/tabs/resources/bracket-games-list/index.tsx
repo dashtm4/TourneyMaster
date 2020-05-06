@@ -41,13 +41,13 @@ export default (props: IProps) => {
   );
 
   const orderedUnassignedBracketGames = orderBy(unassignedBracketGames, [
-    'divisionId',
+    'divisionName',
     'index',
     'round',
   ]);
 
   const orderedBracketGames = orderBy(currentBracketGames, [
-    'divisionId',
+    'divisionName',
     'index',
     'round',
   ]);

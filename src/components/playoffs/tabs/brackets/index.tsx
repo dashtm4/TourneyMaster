@@ -270,7 +270,7 @@ class BracketManager extends Component<IProps, IState> {
       divisionGames?.some(item => item.awayTeamScore || item.homeTeamScore) ||
       !advanceTeamsDisabled;
 
-    const publishedBracket = bracket.published;
+    const publishedBracket = bracket?.published;
 
     return (
       <section className={styles.container}>
@@ -338,7 +338,7 @@ class BracketManager extends Component<IProps, IState> {
                 label="Go to Brackets Setup"
                 variant="text"
                 color="secondary"
-                icon={getIcon(Icons.EDIT)}
+                icon={getIcon(Icons.SETTINGS)}
                 onClick={this.openBracketsModal}
               />
               <Tooltip

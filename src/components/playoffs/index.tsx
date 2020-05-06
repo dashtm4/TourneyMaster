@@ -80,6 +80,7 @@ import {
 } from './helper';
 import { IOnAddGame } from './add-game-modal';
 import { updateExistingBracket } from 'components/scheduling/logic/actions';
+import SaveBracketsModal from './save-brackets-modal';
 
 export interface ISeedDictionary {
   [key: string]: IBracketSeed[];
@@ -141,6 +142,7 @@ interface IState {
   bracketSeeds?: ISeedDictionary;
   playoffTimeSlots?: ITimeSlot[];
   tableGames?: IGame[];
+  saveBracketsModalOpen: boolean;
   cancelConfirmationOpen: boolean;
   highlightedGameId?: number;
   replacementBracketGames?: IBracketGame[];
@@ -156,6 +158,7 @@ class Playoffs extends Component<IProps> {
   state: IState = {
     activeTab: PlayoffsTabsEnum.ResourceMatrix,
     cancelConfirmationOpen: false,
+    saveBracketsModalOpen: false,
     highlightedGameId: undefined,
   };
 
@@ -572,8 +575,27 @@ class Playoffs extends Component<IProps> {
     }
   };
 
+  openBracketsModal = () => this.setState({ saveBracketsModalOpen: true });
+
+  closeBracketsModal = () => this.setState({ saveBracketsModalOpen: false });
+
+  canSaveBracketsData = () => {
+    const { bracket, bracketGames } = this.props;
+    return Boolean(
+      bracket &&
+        bracket.published &&
+        bracketGames?.every(item => item.fieldId && item.startTime)
+    );
+  };
+
   onSavePressed = () => {
     const { cancelConfirmationOpen } = this.state;
+    const canSaveBracketsData = this.canSaveBracketsData();
+
+    if (!canSaveBracketsData) {
+      return this.openBracketsModal();
+    }
+
     this.saveBracketsData();
 
     if (cancelConfirmationOpen) {
@@ -616,6 +638,7 @@ class Playoffs extends Component<IProps> {
       replacementBracketGames,
       replacementMessage,
       playoffTimeSlots,
+      saveBracketsModalOpen,
     } = this.state;
 
     const {
@@ -738,6 +761,11 @@ class Playoffs extends Component<IProps> {
           onClose={this.closeCancelConfirmation}
           onExitClick={this.onExit}
           onSaveClick={this.onSavePressed}
+        />
+        <SaveBracketsModal
+          isOpen={saveBracketsModalOpen}
+          onClose={this.closeBracketsModal}
+          onPrimaryClick={this.closeBracketsModal}
         />
         <PopupConfirm
           type="warning"
