@@ -39,7 +39,6 @@ const Select: React.FC<ISelectProps> = ({
       </span>
     ) : null}
     <TextField
-      id="select"
       style={{ width }}
       variant="outlined"
       size="small"

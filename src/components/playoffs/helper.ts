@@ -28,6 +28,81 @@ export const updateGameBracketInfo = (game: IGame, withGame?: IGame) => ({
   playoffIndex: withGame?.playoffIndex,
 });
 
+export const advanceTeamsIntoAnotherBracket = (
+  bracketGame: IBracketGame,
+  bracketGames: IBracketGame[]
+) => {
+  const whoIsWinner =
+    (bracketGame.homeTeamScore || 0) > (bracketGame.awayTeamScore || 0)
+      ? bracketGame.homeTeamId
+      : bracketGame.awayTeamId;
+
+  const whoIsLoser =
+    (bracketGame.homeTeamScore || 0) < (bracketGame.awayTeamScore || 0)
+      ? bracketGame.homeTeamId
+      : bracketGame.awayTeamId;
+
+  const newBracketGames = bracketGames.map(item => {
+    if (
+      item.divisionId === bracketGame.divisionId &&
+      (item.awayDependsUpon === bracketGame.index ||
+        item.homeDependsUpon === bracketGame.index)
+    ) {
+      const isAwayTeam = item.awayDependsUpon === bracketGame.index;
+      const positionedTeam = isAwayTeam ? 'awayTeamId' : 'homeTeamId';
+
+      return {
+        ...item,
+        [positionedTeam]: item.round >= 0 ? whoIsWinner : whoIsLoser,
+      };
+    }
+
+    if (item.id === bracketGame.id) return bracketGame;
+
+    return item;
+  });
+
+  return newBracketGames;
+};
+
+export const advanceTeamsFromBrackets = (
+  bracketGame: IBracketGame,
+  bracketGames: IBracketGame[]
+) => {
+  const divisionGames = bracketGames.filter(
+    item => item.divisionId === bracketGame.divisionId
+  );
+  const awayBracketGame = divisionGames.find(
+    item => item.index === bracketGame.awayDependsUpon
+  );
+  const homeBracketGame = divisionGames.find(
+    item => item.index === bracketGame.homeDependsUpon
+  );
+
+  const findTeamId = (bracket: IBracketGame, isWinner: boolean) => {
+    if (!bracket.awayTeamScore || !bracket.homeTeamScore) return null;
+    if ((bracket.awayTeamScore || 0) > (bracket.homeTeamScore || 0)) {
+      return isWinner ? bracket.awayTeamId : bracket.homeTeamId;
+    } else {
+      return isWinner ? bracket.homeTeamId : bracket.awayTeamId;
+    }
+  };
+
+  const awayWinner = awayBracketGame ? findTeamId(awayBracketGame, true) : null;
+  const awayLoser = awayBracketGame ? findTeamId(awayBracketGame, false) : null;
+  const homeWinner = homeBracketGame ? findTeamId(homeBracketGame, true) : null;
+  const homeLoser = homeBracketGame ? findTeamId(homeBracketGame, false) : null;
+
+  const awayTeamId = bracketGame.round > 0 ? awayWinner : awayLoser;
+  const homeTeamId = bracketGame.round > 0 ? homeWinner : homeLoser;
+
+  return {
+    ...bracketGame,
+    awayTeamId,
+    homeTeamId,
+  } as IBracketGame;
+};
+
 export const addGameToExistingBracketGames = (
   data: IOnAddGame,
   bracketGames: IBracketGame[],
@@ -105,7 +180,12 @@ export const addGameToExistingBracketGames = (
     return item;
   });
 
-  newBracketGames.push(newBracketGame);
+  const newAdvancedBracketGame = advanceTeamsFromBrackets(
+    newBracketGame,
+    newBracketGames
+  );
+
+  newBracketGames.push(newAdvancedBracketGame);
 
   return newBracketGames;
 };
