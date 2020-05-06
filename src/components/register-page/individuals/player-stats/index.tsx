@@ -1,8 +1,9 @@
 import React from 'react';
-import styles from '../../styles.module.scss';
-import { Input, Select } from 'components/common';
+import { Input, Select, CardMessage } from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import { BindingCbWithTwo } from 'common/models';
 import { IIndivisualsRegister } from 'common/models/register';
+import styles from '../../styles.module.scss';
 
 interface IPlayerStatsProps {
   data: Partial<IIndivisualsRegister>;
@@ -77,7 +78,6 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
             fullWidth={true}
             label="Club Name"
             value={data.player_club_name || ''}
-            isRequired={true}
             onChange={onClubNameChange}
           />
         </div>
@@ -204,6 +204,12 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
           />
         </div>
         <div className={styles.sectionItem} />
+      </div>
+      <div className={styles.toolTipMessage}>
+        <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+          Omitting data will eliminate it from any coaches books that might be
+          distributed.
+        </CardMessage>
       </div>
     </div>
   );
