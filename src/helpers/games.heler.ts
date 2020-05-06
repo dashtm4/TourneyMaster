@@ -12,7 +12,7 @@ const getAllTeamCardGames = (
 ) => {
   const allGamesByTeamCards = eventDays
     .map((_, idx) =>
-      settleTeamsPerGames(games, teamCards, eventDays, `Day ${idx + 1}`)
+      settleTeamsPerGames(games, teamCards, eventDays, `${idx + 1}`)
     )
     .flat();
 
