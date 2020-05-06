@@ -715,6 +715,7 @@ class Playoffs extends Component<IProps> {
               <BracketManager
                 history={history}
                 match={match}
+                bracket={bracket!}
                 historyLength={historyLength}
                 divisions={divisions!}
                 seeds={bracketSeeds}

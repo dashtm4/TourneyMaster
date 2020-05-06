@@ -9,7 +9,7 @@ import { Select, CardMessage, Button, Tooltip } from 'components/common';
 import SeedsList from './seeds-list';
 import Brackets from 'components/playoffs/brackets';
 import { IBracketGame, IBracketSeed } from 'components/playoffs/bracketGames';
-import { IDivision } from 'common/models';
+import { IDivision, IBracket } from 'common/models';
 import AddGameModal, { IOnAddGame } from '../../add-game-modal';
 import RemoveGameModal from '../../remove-game-modal';
 import { ISeedDictionary } from 'components/playoffs';
@@ -20,6 +20,7 @@ import styles from './styles.module.scss';
 interface IProps {
   match: any;
   history: History;
+  bracket: IBracket;
   divisions: IDivision[];
   historyLength: number;
   seeds?: ISeedDictionary;
@@ -241,6 +242,7 @@ class BracketManager extends Component<IProps, IState> {
       advanceTeamsToBrackets,
       advancingInProgress,
       bracketGames,
+      bracket,
     } = this.props;
 
     const {
@@ -267,6 +269,8 @@ class BracketManager extends Component<IProps, IState> {
     const seedsReorderDisabled =
       divisionGames?.some(item => item.awayTeamScore || item.homeTeamScore) ||
       !advanceTeamsDisabled;
+
+    const publishedBracket = bracket.published;
 
     return (
       <section className={styles.container}>
@@ -310,14 +314,16 @@ class BracketManager extends Component<IProps, IState> {
                 color="secondary"
                 onClick={this.addGamePressed}
               />
-              <Button
-                btnStyles={{ marginLeft: 20 }}
-                label="Score Games"
-                variant="text"
-                color="secondary"
-                icon={getIcon(Icons.EDIT)}
-                onClick={this.scoreGamesPressed}
-              />
+              {publishedBracket && (
+                <Button
+                  btnStyles={{ marginLeft: 20 }}
+                  label="Score Games"
+                  variant="text"
+                  color="secondary"
+                  icon={getIcon(Icons.EDIT)}
+                  onClick={this.scoreGamesPressed}
+                />
+              )}
             </div>
             <div className={styles.buttonsWrapper}>
               <Button
