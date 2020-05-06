@@ -95,19 +95,19 @@ class ResourceMatrix extends Component<IProps> {
       const filteredGames = this.props.games?.map(game =>
         divisionIds.includes(
           game.awayTeam?.divisionId! ||
-            game.homeTeam?.divisionId! ||
-            game.divisionId!
+          game.homeTeam?.divisionId! ||
+          game.divisionId!
         )
           ? game
           : {
-              ...game,
-              awayTeam: undefined,
-              homeTeam: undefined,
-              awayDependsUpon: undefined,
-              homeDependsUpon: undefined,
-              awaySeedId: undefined,
-              homeSeedId: undefined,
-            }
+            ...game,
+            awayTeam: undefined,
+            homeTeam: undefined,
+            awayDependsUpon: undefined,
+            homeDependsUpon: undefined,
+            awaySeedId: undefined,
+            homeSeedId: undefined,
+          }
       );
 
       this.setState({
@@ -198,11 +198,11 @@ class ResourceMatrix extends Component<IProps> {
               </fieldset>
             )}
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Bracket games are painted in dark colors
+              Bracket timeslots are designed by the dark background
             </CardMessage>
             <div className={styles.moveBrackets}>
               <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-                Move Playoff Start Time Up & Down
+                Move playoff timeslots up & down
               </CardMessage>
               <div className={styles.moveBracketsBtns}>
                 <Button
@@ -245,39 +245,39 @@ class ResourceMatrix extends Component<IProps> {
           </div>
 
           {event &&
-          divisions &&
-          pools &&
-          teamCards &&
-          filteredGames &&
-          fields &&
-          timeSlots &&
-          facilities &&
-          eventSummary &&
-          onTeamCardsUpdate &&
-          scheduleData &&
-          onTeamCardUpdate &&
-          onUndo ? (
-            <MatrixTable
-              tableType={TableScheduleTypes.BRACKETS}
-              games={filteredGames}
-              fields={fields}
-              timeSlots={timeSlots}
-              facilities={facilities}
-              showHeatmap={true}
-              isEnterScores={false}
-              moveCard={this.onMoveCard}
-              disableZooming={isDnd}
-              onTeamCardUpdate={onTeamCardUpdate}
-              onTeamCardsUpdate={onTeamCardsUpdate}
-              teamCards={teamCards}
-              isFullScreen={isFullScreen}
-              onToggleFullScreen={onToggleFullScreen}
-              highlightedGameId={highlightedGameId}
-              onGameUpdate={() => {}}
-            />
-          ) : (
-            <Loader styles={{ height: '100%' }} />
-          )}
+            divisions &&
+            pools &&
+            teamCards &&
+            filteredGames &&
+            fields &&
+            timeSlots &&
+            facilities &&
+            eventSummary &&
+            onTeamCardsUpdate &&
+            scheduleData &&
+            onTeamCardUpdate &&
+            onUndo ? (
+              <MatrixTable
+                tableType={TableScheduleTypes.BRACKETS}
+                games={filteredGames}
+                fields={fields}
+                timeSlots={timeSlots}
+                facilities={facilities}
+                showHeatmap={true}
+                isEnterScores={false}
+                moveCard={this.onMoveCard}
+                disableZooming={isDnd}
+                onTeamCardUpdate={onTeamCardUpdate}
+                onTeamCardsUpdate={onTeamCardsUpdate}
+                teamCards={teamCards}
+                isFullScreen={isFullScreen}
+                onToggleFullScreen={onToggleFullScreen}
+                highlightedGameId={highlightedGameId}
+                onGameUpdate={() => { }}
+              />
+            ) : (
+              <Loader styles={{ height: '100%' }} />
+            )}
         </div>
       </section>
     );
