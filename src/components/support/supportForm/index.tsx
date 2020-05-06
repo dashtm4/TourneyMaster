@@ -58,7 +58,7 @@ const SupportForm = ({
       <h2 className={styles.supportHeader}>{FormFilds.HEADER}</h2>
       <Grid container spacing={3}>
         <Grid item xs={6} className={styles.inputField}>
-          <span className={styles.label}>Email</span>
+          <span className={styles.label}>Your email (so we can write you back when its resolved!):</span>
           <TextField
             id="email"
             className={styles.FormField}
@@ -72,7 +72,7 @@ const SupportForm = ({
             required />
         </Grid>
         <Grid item xs={6} className={styles.inputField}>
-          <span className={styles.label}>Subject</span>
+          <span className={styles.label}>Subject:</span>
           <Select
             id="option"
             className={styles.selectField}
@@ -87,7 +87,7 @@ const SupportForm = ({
         </Grid>
       </Grid>
       <div className={styles.inputField}>
-        <span className={styles.label}>Content</span>
+        <span className={styles.label}>Tell us your thoughts:</span>
         <TextField
           id="message"
           className={styles.FormField}
@@ -97,7 +97,7 @@ const SupportForm = ({
           value={message}
           name={FormFilds.MESSAGE}
           inputMode="text"
-          placeholder="Insert Message here"
+          placeholder="Insert your message here..."
           required
           variant={"outlined"}
         />
