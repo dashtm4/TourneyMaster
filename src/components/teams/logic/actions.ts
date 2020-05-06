@@ -168,8 +168,12 @@ export const createTeams: ActionCreator<ThunkAction<
     const mappedDivisionTeams = Object.values(
       [...allTeams, ...teams].reduce((acc, it: ITeam) => {
         const divisionId = it.division_id;
+        const mappedTeam = {
+          ...it,
+          phone_num: it.phone_num ? it.phone_num : '',
+        };
 
-        acc[divisionId] = [...(acc[divisionId] || []), it];
+        acc[divisionId] = [...(acc[divisionId] || []), mappedTeam];
 
         return acc;
       }, {})

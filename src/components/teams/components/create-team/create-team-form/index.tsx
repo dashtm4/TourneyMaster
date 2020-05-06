@@ -178,7 +178,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
               />
             </div>
             <div className={styles.sectionItem}>
-              <div className={styles.title}>Phone Number</div>
+              <div className={styles.title}>Mobile Number</div>
               <PhoneInput
                 country={'us'}
                 value={phone_num || ''}
