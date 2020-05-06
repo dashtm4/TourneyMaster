@@ -1,16 +1,17 @@
 import React from 'react';
 import styles from '../../styles.module.scss';
 import { Input, Select } from 'components/common';
-import { BindingCbWithTwo } from 'common/models';
+import { BindingCbWithTwo, ISelectOption } from 'common/models';
 import { ITeamsRegister } from 'common/models/register';
 
 interface ITeamProps {
   data: Partial<ITeamsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
-  divisions: { label: string; value: string }[];
+  divisions: ISelectOption[];
+  states: ISelectOption[];
 }
 
-const Team = ({ data, onChange, divisions }: ITeamProps) => {
+const Team = ({ data, onChange, divisions, states }: ITeamProps) => {
   const onTeamNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('team_name', e.target.value);
 
@@ -48,8 +49,8 @@ const Team = ({ data, onChange, divisions }: ITeamProps) => {
           />
         </div>
         <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
+          <Select
+            options={states}
             label="State"
             value={data.team_state || ''}
             onChange={onTeamStateChange}

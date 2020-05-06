@@ -27,7 +27,12 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Header from './header';
 import Footer from 'components/footer';
 import axios from 'axios';
-import { IEventDetails, IRegistration, ISelectOption } from 'common/models';
+import {
+  IEventDetails,
+  IRegistration,
+  ISelectOption,
+  IUSAState,
+} from 'common/models';
 import SideBar from './side-bar';
 import { getVarcharEight } from 'helpers';
 import { IIndivisualsRegister, ITeamsRegister } from 'common/models/register';
@@ -55,6 +60,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     setEventRegistration,
   ] = useState<IRegistration | null>(null);
   const [divisions, setDivisions] = useState([]);
+  const [states, setStates] = useState<ISelectOption[]>([]);
   const [type, setType] = React.useState(1);
   const [isOpenModalOpen, toggleModal] = React.useState(true);
   const [activeStep, setActiveStep] = React.useState(0);
@@ -109,9 +115,19 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         setDivisions(sortedDivs);
       });
 
-    // axios.get('https://api.tourneymaster.org/v2/states').then(response => {
-    //   console.log(response);
-    // });
+    axios.get('https://api.tourneymaster.org/public/states').then(response => {
+      const selectStateOptions = response.data.map((it: IUSAState) => ({
+        label: it.state_id,
+        value: it.state_name,
+      }));
+
+      const sortedSelectStateOptions = selectStateOptions.sort(
+        (a: ISelectOption, b: ISelectOption) =>
+          a.label.localeCompare(b.label, undefined, { numeric: true })
+      );
+
+      setStates(sortedSelectStateOptions);
+    });
   }, []);
 
   const getPaymentIntent = (order: any) => {
@@ -243,6 +259,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               data={registration}
               fillParticipantInfo={fillParticipantInfo}
               divisions={divisions}
+              states={states}
             />
           );
         case 2:
@@ -265,6 +282,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               onChange={onChange}
               data={registration}
               divisions={divisions}
+              states={states}
             />
           );
         case 1:
