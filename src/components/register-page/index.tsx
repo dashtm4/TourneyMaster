@@ -27,10 +27,11 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Header from './header';
 import Footer from 'components/footer';
 import axios from 'axios';
-import { IEventDetails, IRegistration } from 'common/models';
+import { IEventDetails, IRegistration, ISelectOption } from 'common/models';
 import SideBar from './side-bar';
 import { getVarcharEight } from 'helpers';
 import { IIndivisualsRegister, ITeamsRegister } from 'common/models/register';
+import { ButtonFormTypes } from 'common/enums';
 
 enum TypeOptions {
   'Individual' = 1,
@@ -101,8 +102,16 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           value: sku.sku_id,
         }));
 
-        setDivisions(divs);
+        const sortedDivs = divs.sort((a: ISelectOption, b: ISelectOption) =>
+          a.label.localeCompare(b.label, undefined, { numeric: true })
+        );
+
+        setDivisions(sortedDivs);
       });
+
+    // axios.get('https://api.tourneymaster.org/v2/states').then(response => {
+    //   console.log(response);
+    // });
   }, []);
 
   const getPaymentIntent = (order: any) => {
@@ -178,7 +187,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = (evt: React.FormEvent) => {
+    evt.preventDefault();
+
     if (activeStep === steps.length - 1) {
       handleSubmit();
     } else if (activeStep === steps.length - 2) {
@@ -335,26 +346,28 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                       </HeadingLevelThree>
                     </StepLabel>
                     <StepContent>
-                      <div>{getStepContent(index)}</div>
-                      <div className={styles.buttonsWrapper}>
-                        <Button
-                          disabled={activeStep === 0}
-                          onClick={handleBack}
-                          label="Back"
-                          variant="text"
-                          color="secondary"
-                        />
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={handleNext}
-                          label={
-                            activeStep === steps.length - 1
-                              ? 'Register'
-                              : 'Next'
-                          }
-                        />
-                      </div>
+                      <form onSubmit={handleNext}>
+                        <div>{getStepContent(index)}</div>
+                        <div className={styles.buttonsWrapper}>
+                          <Button
+                            disabled={activeStep === 0}
+                            onClick={handleBack}
+                            label="Back"
+                            variant="text"
+                            color="secondary"
+                          />
+                          <Button
+                            btnType={ButtonFormTypes.SUBMIT}
+                            variant="contained"
+                            color="primary"
+                            label={
+                              activeStep === steps.length - 1
+                                ? 'Register'
+                                : 'Next'
+                            }
+                          />
+                        </div>
+                      </form>
                     </StepContent>
                   </Step>
                 ))}

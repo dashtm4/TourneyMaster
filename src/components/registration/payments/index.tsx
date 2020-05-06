@@ -12,7 +12,7 @@ const Payments = ({ data }: { data: Partial<IRegistration> }) => (
             <span className={styles.sectionTitle}>
               Upcharge Processing Fees
             </span>
-            <p>{data.upcharge_fee ? `$${data.upcharge_fee}` : '—'}</p>
+            <p>{data.upcharge_fee ? `%${data.upcharge_fee}` : '—'}</p>
           </div>
         ) : (
           <Checkbox
