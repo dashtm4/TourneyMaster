@@ -415,6 +415,7 @@ class Playoffs extends Component<IProps> {
 
     const updatedGames = definedGames.map(item => {
       const foundBracketGame = find(bracketGames, {
+        hidden: false,
         fieldId: item.fieldId,
         startTime: item.startTime,
       });
@@ -584,7 +585,9 @@ class Playoffs extends Component<IProps> {
     return Boolean(
       bracket &&
         bracket.published &&
-        bracketGames?.every(item => item.fieldId && item.startTime)
+        bracketGames?.every(
+          item => item.hidden || (item.fieldId && item.startTime)
+        )
     );
   };
 
