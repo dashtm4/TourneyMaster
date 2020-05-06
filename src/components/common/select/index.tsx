@@ -54,16 +54,21 @@ const Select: React.FC<ISelectProps> = ({
         native: Boolean(isRequired),
       }}
     >
-      {options.map((option: ISelectOption, index: number) =>
-        isRequired ? (
-          <option key={index} value={option.value}>
-            {option.label}
-          </option>
-        ) : (
+      {isRequired ? (
+        <>
+          <option />
+          {options.map((option: ISelectOption, index: number) => (
+            <option key={index} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </>
+      ) : (
+        options.map((option: ISelectOption, index: number) => (
           <MenuItem key={index} value={option.value}>
             {option.label}
           </MenuItem>
-        )
+        ))
       )}
     </TextField>
   </div>
