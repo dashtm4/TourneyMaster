@@ -18,8 +18,11 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
   const onLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('registrant_last_name', e.target.value);
 
-  const onPhoneNumberChange = (value: string) =>
+  const onPhoneNumberChange = (value: string) => {
     onChange('registrant_mobile', value);
+
+    console.log(value, value.length);
+  };
 
   const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('registrant_email', e.target.value);
@@ -72,7 +75,10 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
               borderRadius: '4px',
               width: '100%',
             }}
-            inputProps={{ required: true }}
+            inputProps={{
+              required: true,
+              minLength: 17,
+            }}
           />
         </div>
       </div>

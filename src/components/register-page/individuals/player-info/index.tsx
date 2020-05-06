@@ -105,7 +105,10 @@ const PlayerInfo = ({
               borderRadius: '4px',
               width: '100%',
             }}
-            inputProps={{ required: true }}
+            inputProps={{
+              required: true,
+              minLength: 17,
+            }}
           />
         </div>
       </div>
