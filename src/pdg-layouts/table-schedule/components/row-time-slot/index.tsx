@@ -53,28 +53,39 @@ const RowTimeSlot = ({
     divisionName?: string,
     round?: number,
     dependsUpon?: number,
-    seedId?: number,
-    divisionHex?: string
+    seedId?: number
   ) => {
     return (
       <View
         style={{
           ...styles.gameTeamName,
-          ...getTeamColorStyles(divisionHex),
-          color: `${isHeatMap ? '#ffffff' : '#000000'}`,
+          backgroundColor: '#000000',
+          color: '#ffffff',
         }}
       >
-        <Text style={styles.teamNameWrapper}>
-          {teamName
-            ? `${teamName} ${
-                divisionName ? `(${getDivisionCutName(divisionName)})` : ''
-              }`
-            : seedId
-            ? `Seed ${seedId} ${
-                divisionName ? `(${getDivisionCutName(divisionName)})` : ''
-              }`
-            : getDisplayName(round, dependsUpon)}
-        </Text>
+        {teamName ? (
+          <>
+            <Text style={styles.teamNameWrapper}>{teamName}</Text>
+            {divisionName && (
+              <Text style={styles.divisionNameWrapper}>
+                {`(${getDivisionCutName(divisionName)})`}
+              </Text>
+            )}
+          </>
+        ) : seedId ? (
+          <>
+            <Text style={styles.teamNameWrapper}>{`Seed ${seedId}`}</Text>
+            {divisionName && (
+              <Text style={styles.divisionNameWrapper}>
+                {`(${getDivisionCutName(divisionName)})`}
+              </Text>
+            )}
+          </>
+        ) : (
+          <Text style={styles.teamNameWrapper}>
+            {getDisplayName(round, dependsUpon)}
+          </Text>
+        )}
       </View>
     );
   };
@@ -85,7 +96,6 @@ const RowTimeSlot = ({
       homeSeedId,
       playoffRound,
       divisionName,
-      divisionHex,
       awayDependsUpon,
       homeDependsUpon,
     } = game;
@@ -103,8 +113,7 @@ const RowTimeSlot = ({
             divisionName,
             playoffRound,
             awayDependsUpon,
-            awaySeedId,
-            divisionHex
+            awaySeedId
           )}
         </>
         <>
@@ -113,8 +122,7 @@ const RowTimeSlot = ({
             divisionName,
             playoffRound,
             homeDependsUpon,
-            homeSeedId,
-            divisionHex
+            homeSeedId
           )}
         </>
       </View>

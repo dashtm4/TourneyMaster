@@ -6,6 +6,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 15,
+    padding: '0 15px',
   },
   headerWrapper: {
     flexGrow: 1,
