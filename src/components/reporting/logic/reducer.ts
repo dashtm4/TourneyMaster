@@ -10,9 +10,10 @@ import {
   IEventDetails,
   IField,
   ISchedule,
-  ISchedulesDetails,
   IPool,
+  ISchedulesGame,
 } from 'common/models';
+import { IBracketGame } from 'components/playoffs/bracketGames';
 
 export interface IReportingState {
   event: IEventDetails | null;
@@ -21,8 +22,9 @@ export interface IReportingState {
   divisions: IDivision[];
   teams: ITeam[];
   schedule: ISchedule | null;
-  schedulesDetails: ISchedulesDetails[];
+  schedulesGames: ISchedulesGame[];
   pools: IPool[];
+  bracketGames: IBracketGame[];
   isLoading: boolean;
   isLoaded: boolean;
 }
@@ -33,8 +35,9 @@ const initialState = {
   fields: [],
   divisions: [],
   teams: [],
-  schedulesDetails: [],
+  schedulesGames: [],
   pools: [],
+  bracketGames: [],
   schedule: null,
   isLoading: false,
   isLoaded: false,
@@ -56,8 +59,9 @@ const reportingReducer = (
         schedule,
         divisions,
         teams,
-        schedulesDetails,
+        schedulesGames,
         pools,
+        bracketGames,
       } = action.payload;
 
       return {
@@ -70,8 +74,9 @@ const reportingReducer = (
         schedule,
         divisions,
         teams,
-        schedulesDetails,
+        schedulesGames,
         pools,
+        bracketGames,
       };
     }
 

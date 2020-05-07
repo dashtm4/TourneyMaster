@@ -9,6 +9,7 @@ import {
   stringToLink,
   getTimeValuesFromEventSchedule,
   calculateTimeSlots,
+  calculateTournamentDays,
 } from 'helpers';
 import { HeadingLevelTwo, Loader, HazardList } from 'components/common';
 import {
@@ -18,10 +19,10 @@ import {
   IEventDetails,
   IField,
   ISchedule,
-  ISchedulesDetails,
   IMenuItem,
   IPool,
   BindingAction,
+  ISchedulesGame,
 } from 'common/models';
 import { EventMenuTitles } from 'common/enums';
 import { IAppState } from 'reducers/root-reducer.types';
@@ -41,7 +42,7 @@ import {
   ITeam as IScheduleTeam,
   ITeamCard,
 } from 'common/models/schedule/teams';
-import { mapTeamsFromSchedulesDetails } from 'components/schedules/mapScheduleData';
+import { mapTeamsFromShedulesGames } from 'components/schedules/mapScheduleData';
 import {
   fillSchedulesTable,
   clearSchedulesTable,
@@ -50,6 +51,9 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IScheduleDivision } from 'common/models/schedule/divisions';
 import { IField as IScheduleField } from 'common/models/schedule/fields';
+import { mapGamesWithSchedulesGamesId } from 'components/scoring/helpers';
+import { adjustPlayoffTimeOnLoadScoring } from 'components/schedules/definePlayoffs';
+import { IBracketGame } from 'components/playoffs/bracketGames';
 
 interface MatchParams {
   eventId: string;
@@ -63,10 +67,11 @@ interface Props {
   divisions: IDivision[];
   fields: IField[];
   teams: ITeam[];
-  schedulesDetails: ISchedulesDetails[];
+  schedulesGames: ISchedulesGame[];
   pools: IPool[];
   schedule: ISchedule | null;
   schedulesTeamCards?: ITeamCard[];
+  bracketGames: IBracketGame[];
   loadReportingData: (eventId: string) => void;
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
   clearSchedulesTable: BindingAction;
@@ -79,6 +84,7 @@ interface State {
   fields?: IScheduleField[];
   facilities?: IScheduleFacility[];
   divisions?: IScheduleDivision[];
+  playoffTimeSlots?: ITimeSlot[];
   neccessaryDataCalculated: boolean;
 }
 
@@ -102,16 +108,41 @@ class Reporting extends React.Component<
   }
 
   componentDidUpdate() {
-    const { schedule, schedulesDetails, schedulesTeamCards } = this.props;
-    const { teams, neccessaryDataCalculated } = this.state;
+    const { schedule, schedulesGames, schedulesTeamCards, event } = this.props;
+    const { teams, games, timeSlots, neccessaryDataCalculated } = this.state;
 
     if (!neccessaryDataCalculated && schedule) {
       this.calculateNeccessaryData();
       return;
     }
 
-    if (!schedulesTeamCards && schedulesDetails && teams && schedule) {
-      const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
+    if (
+      event &&
+      !schedulesTeamCards &&
+      schedulesGames.length &&
+      games?.length &&
+      teams &&
+      schedule
+    ) {
+      const days = calculateTournamentDays(event);
+      const lastDay = days[days.length - 1];
+
+      const mappedGames = mapGamesWithSchedulesGamesId(games, schedulesGames);
+
+      const playoffTimeSlots = adjustPlayoffTimeOnLoadScoring(
+        schedulesGames,
+        timeSlots!,
+        event,
+        lastDay
+      );
+
+      this.setState({ games: mappedGames, playoffTimeSlots });
+
+      const mappedTeams = mapTeamsFromShedulesGames(
+        schedulesGames,
+        teams,
+        mappedGames
+      );
 
       this.props.fillSchedulesTable(mappedTeams);
     }
@@ -183,16 +214,23 @@ class Reporting extends React.Component<
       schedule,
       schedulesTeamCards,
       pools,
+      bracketGames,
     } = this.props;
 
-    const { fields, timeSlots, games, facilities } = this.state;
+    const {
+      fields,
+      timeSlots,
+      games,
+      facilities,
+      playoffTimeSlots,
+    } = this.state;
 
     const loadCondition = !!(
+      event &&
       fields?.length &&
       games?.length &&
       timeSlots?.length &&
       facilities?.length &&
-      event &&
       Boolean(divisions.length) &&
       schedulesTeamCards?.length
     );
@@ -214,6 +252,9 @@ class Reporting extends React.Component<
               games={games!}
               teamCards={schedulesTeamCards!}
               pools={pools}
+              bracketGames={bracketGames}
+              playoffTimeSlots={playoffTimeSlots}
+              divisions={divisions}
             />
           </ul>
         ) : (
@@ -235,8 +276,9 @@ export default connect(
     teams: reporting.teams,
     schedule: reporting.schedule,
     schedulesTeamCards: schedulesTable?.current,
-    schedulesDetails: reporting.schedulesDetails,
+    schedulesGames: reporting.schedulesGames,
     pools: reporting.pools,
+    bracketGames: reporting.bracketGames,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
