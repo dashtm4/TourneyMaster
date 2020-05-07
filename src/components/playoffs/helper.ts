@@ -568,6 +568,8 @@ export const moveBracketGames = (
     return bracketGames;
 
   return bracketGames.map(item => {
+    if (!item.startTime || !item.fieldId) return item;
+
     const timeSlotId = timeSlots.find(v => v.time === item.startTime)?.id || 0;
     const previousTimeSlot = timeSlots.find(
       (_, index) => timeSlotId - index === 1
