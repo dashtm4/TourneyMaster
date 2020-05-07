@@ -370,6 +370,7 @@ const TableSchedule = ({
               schedule={scheduleData}
               eventDays={days}
               isOpen={isPopupSaveReportOpen}
+              teamCards={teamCards}
               onClose={togglePopupSaveReport}
             />
           </>

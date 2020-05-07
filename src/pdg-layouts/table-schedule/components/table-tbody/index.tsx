@@ -5,15 +5,23 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IGame } from 'components/common/matrix-table/helper';
 import { selectProperGamesPerTimeSlot } from 'components/common/matrix-table/helper';
 import { DEFAUL_COLUMNS_COUNT } from '../../common';
+import { ITeamCard } from 'common/models/schedule/teams';
 
 interface Props {
   timeSlots: ITimeSlot[];
   games: IGame[];
+  teamCards: ITeamCard[];
   splitIdx: number;
   isHeatMap?: boolean;
 }
 
-const TableTbody = ({ timeSlots, games, splitIdx, isHeatMap }: Props) => {
+const TableTbody = ({
+  timeSlots,
+  games,
+  teamCards,
+  splitIdx,
+  isHeatMap,
+}: Props) => {
   const timeSlotsWithGames = timeSlots.map((timeSlot, idx) => {
     const gamesPerTimeSlot = selectProperGamesPerTimeSlot(
       timeSlot,
@@ -23,6 +31,7 @@ const TableTbody = ({ timeSlots, games, splitIdx, isHeatMap }: Props) => {
     return (
       <RowTimeSlot
         games={gamesPerTimeSlot}
+        teamCards={teamCards}
         timeSlot={timeSlot}
         isEven={(idx + 1) % 2 === 0}
         isHeatMap={isHeatMap}
