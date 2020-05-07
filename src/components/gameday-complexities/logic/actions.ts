@@ -15,6 +15,7 @@ import { IFacility, IField, IEventDetails } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
 import { getVarcharEight } from 'helpers';
 import { stringifyBackupPlan } from '../helper';
+import { EventStatuses } from 'common/enums';
 
 export const eventsFetchSuccess = (
   payload: IEventDetails[]
@@ -75,7 +76,12 @@ export const getEvents: ActionCreator<ThunkAction<
   if (!events) {
     return Toasts.errorToast("Couldn't load tournaments");
   }
-  dispatch(eventsFetchSuccess(events));
+
+  const publishedEvents = events.filter(
+    (it: IEventDetails) => it.is_published_YN === EventStatuses.Published
+  );
+
+  dispatch(eventsFetchSuccess(publishedEvents));
 };
 
 export const getFacilities: ActionCreator<ThunkAction<
