@@ -30,18 +30,20 @@ interface IFilterValues {
 
 const getUnsatisfiedTeams = (
   teamCards: ITeamCard[],
-  minGamesNum: number | null
+  minGamesNum: number | null,
+  daysNum: number
 ) =>
   teamCards.filter(
-    teamCard => (teamCard.games?.length || 0) < (minGamesNum || 3)
+    teamCard => (teamCard.games?.length || 0) < daysNum * (minGamesNum || 3)
   );
 
 const getSatisfiedTeams = (
   teamCards: ITeamCard[],
-  minGamesNum: number | null
+  minGamesNum: number | null,
+  daysNum: number
 ) =>
   teamCards.filter(
-    teamCard => (teamCard.games?.length || 0) >= (minGamesNum || 3)
+    teamCard => (teamCard.games?.length || 0) >= daysNum * (minGamesNum || 3)
   );
 
 const mapCheckedValues = (values: IMultiSelectOption[]) =>
