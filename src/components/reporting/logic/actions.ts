@@ -49,8 +49,8 @@ const loadReportingData: ActionCreator<ThunkAction<
       (it: ISchedule) => it.is_published_YN === ScheduleStatuses.Published
     );
 
-    const schedulesDetails = await Api.get(
-      `/schedules_details?schedule_id=${activeSchedule.schedule_id}`
+    const schedulesGames = await Api.get(
+      `/games?schedule_id=${activeSchedule.schedule_id}`
     );
 
     dispatch({
@@ -62,7 +62,7 @@ const loadReportingData: ActionCreator<ThunkAction<
         fields,
         divisions,
         teams,
-        schedulesDetails,
+        schedulesGames,
         pools,
       },
     });
