@@ -7,8 +7,16 @@ import {
   LOAD_REPORTING_DATA_FAILURE,
 } from './action-types';
 import Api from 'api/api';
-import { IFacility, IEventDetails, ISchedule, IDivision } from 'common/models';
-import { ScheduleStatuses } from 'common/enums';
+import {
+  IFacility,
+  IEventDetails,
+  ISchedule,
+  IDivision,
+  IFetchedBracket,
+} from 'common/models';
+import { ScheduleStatuses, BracketStatuses } from 'common/enums';
+import { mapFetchedBracketGames } from 'components/playoffs/mapBracketsData';
+import { Toasts } from 'components/common';
 
 const loadReportingData: ActionCreator<ThunkAction<
   void,
@@ -26,6 +34,7 @@ const loadReportingData: ActionCreator<ThunkAction<
     const teams = await Api.get(`/teams?event_id=${eventId}`);
     const schedules = await Api.get(`/schedules?event_id=${eventId}`);
     const facilities = await Api.get(`/facilities?event_id=${eventId}`);
+    const brackets = await Api.get(`/brackets_details?event_id=${eventId}`);
     const fields = (
       await Promise.all(
         facilities.map((it: IFacility) =>
@@ -48,10 +57,19 @@ const loadReportingData: ActionCreator<ThunkAction<
     const activeSchedule = schedules.find(
       (it: ISchedule) => it.is_published_YN === ScheduleStatuses.Published
     );
+    const publishedBraket = brackets.find(
+      (it: IFetchedBracket) => it.is_published_YN === BracketStatuses.Published
+    );
 
     const schedulesGames = await Api.get(
       `/games?schedule_id=${activeSchedule.schedule_id}`
     );
+
+    const fetchedBracketGames = publishedBraket
+      ? await Api.get(`games_brackets?bracket_id=${publishedBraket.bracket_id}`)
+      : [];
+
+    const bracketGames = mapFetchedBracketGames(fetchedBracketGames, fields);
 
     dispatch({
       type: LOAD_REPORTING_DATA_SUCCESS,
@@ -64,12 +82,17 @@ const loadReportingData: ActionCreator<ThunkAction<
         teams,
         schedulesGames,
         pools,
+        bracketGames,
       },
     });
   } catch {
     dispatch({
       type: LOAD_REPORTING_DATA_FAILURE,
     });
+
+    Toasts.errorToast(
+      'Couldn not load the reporting data. Please, try load the page'
+    );
   }
 };
 

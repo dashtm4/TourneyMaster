@@ -8,6 +8,7 @@ import {
   IPool,
   ISchedulesGame,
 } from 'common/models';
+import { IBracketGame } from 'components/playoffs/bracketGames';
 
 const LOAD_REPORTING_DATA_START = 'LOAD_REPORTING_DATA_START';
 const LOAD_REPORTING_DATA_SUCCESS = 'LOAD_REPORTING_DATA_SUCCESS';
@@ -28,6 +29,7 @@ export interface LoadReportingDataSuccess {
     schedule: ISchedule;
     schedulesGames: ISchedulesGame[];
     pools: IPool[];
+    bracketGames: IBracketGame[];
   };
 }
 

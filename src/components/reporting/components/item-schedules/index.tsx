@@ -16,7 +16,7 @@ import {
   getGamesByDays,
 } from 'helpers';
 import { ButtonVarian, ButtonColors, DefaultSelectValues } from 'common/enums';
-import { IEventDetails, ISchedule, IPool } from 'common/models';
+import { IEventDetails, ISchedule, IPool, IDivision } from 'common/models';
 import { getScheduleTableXLSX } from '../../helpers';
 import { IGame, calculateDays } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
@@ -24,6 +24,7 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard } from 'common/models/schedule/teams';
 import styles from './styles.module.scss';
+import { IBracketGame } from 'components/playoffs/bracketGames';
 
 const STYLES_ICOM_WARNING = {
   fill: '#FFCB00',
@@ -39,7 +40,10 @@ interface Props {
   fields: IField[];
   schedule: ISchedule;
   teamCards: ITeamCard[];
+  bracketGames: IBracketGame[];
   pools: IPool[];
+  playoffTimeSlots?: ITimeSlot[];
+  divisions: IDivision[];
 }
 
 const ItemSchedules = ({
@@ -51,6 +55,9 @@ const ItemSchedules = ({
   schedule,
   teamCards,
   pools,
+  bracketGames,
+  playoffTimeSlots,
+  divisions,
 }: Props) => {
   const [isAllowDownload, changeAllowDownload] = React.useState<boolean>(true);
   const [activeDay, changeActiveDay] = React.useState<string[]>([
@@ -62,7 +69,14 @@ const ItemSchedules = ({
   }, [activeDay]);
 
   const eventDays = calculateDays(teamCards);
-  const allTeamCardGames = getAllTeamCardGames(teamCards, games, eventDays);
+  const allTeamCardGames = getAllTeamCardGames(
+    teamCards,
+    games,
+    eventDays,
+    bracketGames,
+    playoffTimeSlots,
+    divisions
+  );
   const gamesByDay = getGamesByDays(allTeamCardGames, activeDay);
   const selectDayOptions = getSelectDayOptions(eventDays);
 
@@ -81,6 +95,7 @@ const ItemSchedules = ({
         timeSlots={timeSlots}
         facilities={facilities}
         schedule={schedule}
+        teamCards={teamCards}
       />,
       event.event_name ? `${event.event_name} Master Schedule` : 'Schedule'
     );
@@ -94,6 +109,7 @@ const ItemSchedules = ({
         timeSlots={timeSlots}
         facilities={facilities}
         schedule={schedule}
+        teamCards={teamCards}
         isHeatMap={true}
       />,
       event.event_name

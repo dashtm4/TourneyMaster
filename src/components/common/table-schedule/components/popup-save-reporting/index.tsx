@@ -19,6 +19,7 @@ import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import styles from './styles.module.scss';
+import { ITeamCard } from 'common/models/schedule/teams';
 
 const STYLES_ICOM_WARNING = {
   fill: '#FFCB00',
@@ -33,6 +34,7 @@ interface Props {
   games: IGame[];
   fields: IField[];
   schedule: ISchedule;
+  teamCards: ITeamCard[];
   eventDays: string[];
   isOpen: boolean;
   onClose: BindingAction;
@@ -42,6 +44,7 @@ const PopupSaveReporting = ({
   event,
   facilities,
   timeSlots,
+  teamCards,
   games,
   fields,
   schedule,
@@ -76,6 +79,7 @@ const PopupSaveReporting = ({
         timeSlots={timeSlots}
         facilities={facilities}
         schedule={schedule}
+        teamCards={teamCards}
       />,
       event.event_name ? `${event.event_name} Master Schedule` : 'Schedule'
     );
@@ -89,6 +93,7 @@ const PopupSaveReporting = ({
         timeSlots={timeSlots}
         facilities={facilities}
         schedule={schedule}
+        teamCards={teamCards}
         isHeatMap={true}
       />,
       event.event_name
