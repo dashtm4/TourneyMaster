@@ -35,7 +35,7 @@ export interface IEventDetails {
   wellness_via_waiverhub: number | null;
   tie_breaker_format_id: number | null;
   min_num_of_games: number | null;
-  event_type: string | null;
+  event_type: string;
   playoffs_exist: number | null;
   max_num_of_divisions: number | null;
   bracket_type: string | null;

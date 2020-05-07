@@ -211,7 +211,6 @@ class EventDetails extends Component<Props, State> {
   };
 
   render() {
-    const eventTypeOptions = ['Tournament', 'Showcase', 'League'];
     const { event } = this.state;
     const { isEventLoading } = this.props.event;
     const deleteMessage = `You are about to delete this event and this cannot be undone. All related data to this event will be deleted too.
@@ -261,7 +260,6 @@ class EventDetails extends Component<Props, State> {
         />
         <EventStructureSection
           eventData={event}
-          eventTypeOptions={eventTypeOptions}
           onChange={this.onChange}
           isSectionExpand={this.state.isSectionsExpand}
         />
