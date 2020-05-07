@@ -413,9 +413,10 @@ class Playoffs extends Component<IProps> {
       playoffTimeSlots
     );
 
+    const existingBracketGames = bracketGames?.filter(v => !v.hidden);
+
     const updatedGames = definedGames.map(item => {
-      const foundBracketGame = find(bracketGames, {
-        hidden: false,
+      const foundBracketGame = find(existingBracketGames, {
         fieldId: item.fieldId,
         startTime: item.startTime,
       });
@@ -582,13 +583,14 @@ class Playoffs extends Component<IProps> {
 
   canSaveBracketsData = () => {
     const { bracket, bracketGames } = this.props;
-    return Boolean(
-      bracket &&
-        bracket.published &&
-        bracketGames?.every(
-          item => item.hidden || (item.fieldId && item.startTime)
-        )
+
+    const bracketExists = Boolean(bracket);
+    const bracketPublished = bracket?.published;
+    const allGamesAssigned = bracketGames?.every(
+      game => game.hidden || (game.fieldId && game.startTime)
     );
+
+    return bracketExists && (!bracketPublished || allGamesAssigned);
   };
 
   onSavePressed = () => {

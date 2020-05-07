@@ -105,7 +105,8 @@ const TableSchedule = ({
   onBracketGameUpdate,
   recalculateDiagnostics,
 }: Props) => {
-  const minGamesNum = event.min_num_of_games;
+  const minGamesNum =
+    Number(scheduleData?.min_num_games) || event.min_num_of_games;
 
   const [filterValues, changeFilterValues] = useState<IScheduleFilter>(
     applyFilters({ divisions, pools, teamCards, eventSummary })
@@ -308,6 +309,7 @@ const TableSchedule = ({
           {tableType === TableScheduleTypes.SCHEDULES && (
             <ListUnassigned
               pools={pools}
+              event={event}
               tableType={tableType}
               teamCards={teamCards}
               minGamesNum={minGamesNum}
