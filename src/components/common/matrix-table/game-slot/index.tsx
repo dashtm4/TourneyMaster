@@ -6,6 +6,7 @@ import styles from '../styles.module.scss';
 import { IGame } from '../helper';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { TableScheduleTypes } from 'common/enums';
+import chainIcon from 'assets/chainIcon.png';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -15,6 +16,7 @@ interface Props {
   isEnterScores?: boolean;
   teamCards: ITeamCard[];
   highlightedGamedId?: number;
+  simultaneousDnd?: boolean;
   onDrop: (dropParams: IDropParams) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onGameUpdate: (game: IGame) => void;
@@ -32,6 +34,7 @@ const RenderGameSlot = (props: Props) => {
     teamCards,
     highlightedGamedId,
     onGameUpdate,
+    simultaneousDnd,
   } = props;
 
   const {
@@ -121,6 +124,21 @@ const RenderGameSlot = (props: Props) => {
             )}
           </>
         </DropContainer>
+        {!!simultaneousDnd && !!awayTeam && !!homeTeam && (
+          <div
+            className={styles.chainWrapper}
+            style={{ backgroundColor: awayTeam?.divisionHex }}
+          >
+            <img
+              src={chainIcon}
+              style={{
+                width: '18px',
+                height: '18px',
+              }}
+              alt=""
+            />
+          </div>
+        )}
         <DropContainer
           acceptType={acceptType}
           gameId={game.id}
