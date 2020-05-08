@@ -530,7 +530,13 @@ export default class Scheduler {
         ({ allocatedGamesPercent }) => [allocatedGamesPercent]
       );
 
-      return orderedPremierFacilities[0]?.id;
+      return (
+        orderedPremierFacilities.find(
+          item =>
+            (item.sizePercent || 0) - (item.allocatedGamesPercent || 0) >
+            (division.sizePercent || 0)
+        )?.id || orderedPremierFacilities[0]?.id
+      );
     } else {
       const facilities = facilityIds.map(item => ({
         ...this.facilityData[item],
@@ -545,7 +551,13 @@ export default class Scheduler {
         ]
       );
 
-      return orderedFacilities[0]?.id;
+      return (
+        orderedFacilities.find(
+          item =>
+            (item.sizePercent || 0) - (item.allocatedGamesPercent || 0) >
+            (division.sizePercent || 0)
+        )?.id || orderedFacilities[0]?.id
+      );
     }
   };
 
