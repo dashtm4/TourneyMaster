@@ -20,8 +20,8 @@ popd
 
 aws lambda update-function-code --function-name "TourneyMasterPayments-SyncProductsFunction" --zip-file "fileb://dist/bundle.zip"
 aws lambda update-function-configuration --function-name "TourneyMasterPayments-SyncProductsFunction" \
-  --environment "Variables={STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY}"
+  --environment "Variables={STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY,PUBLIC_API_BASE_URL=$PUBLIC_API_BASE_URL}"
 
 aws lambda update-function-code --function-name "TourneyMasterPayments-PaymentsApiFunction" --zip-file "fileb://dist/bundle.zip"
 aws lambda update-function-configuration --function-name "TourneyMasterPayments-PaymentsApiFunction" \
-  --environment "Variables={STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY,STRIPE_WEBHOOK_SIGNING_SECRET=$STRIPE_WEBHOOK_SIGNING_SECRET}"
+  --environment "Variables={STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY,PUBLIC_API_BASE_URL=$PUBLIC_API_BASE_URL,STRIPE_WEBHOOK_SIGNING_SECRET=$STRIPE_WEBHOOK_SIGNING_SECRET}"

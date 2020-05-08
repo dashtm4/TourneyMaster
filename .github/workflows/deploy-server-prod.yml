@@ -31,3 +31,4 @@ jobs:
           AWS_DEFAULT_REGION: 'us-east-1'
           STRIPE_PUBLISHABLE_KEY: ${{secrets.STRIPE_PUBLISHABLE_KEY}}
           STRIPE_SECRET_KEY: ${{secrets.STRIPE_SECRET_KEY}}
+          PUBLIC_API_BASE_URL: 'https://api.tourneymaster.org/public'
