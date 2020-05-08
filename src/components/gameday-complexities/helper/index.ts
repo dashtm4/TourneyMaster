@@ -1,4 +1,7 @@
 import { IFacility, IField } from 'common/models';
+import { IMultiSelectOption } from 'components/common/multi-select';
+import { sortByField } from 'helpers';
+import { SortByFilesTypes } from 'common/enums';
 
 export const mapFacilitiesToOptions = (
   allFacilities: IFacility[],
@@ -60,13 +63,29 @@ export const getFacilitiesOptionsForEvent = (
 
 export const getFieldsOptionsForFacilities = (
   fields: IField[],
-  facilities: { label: string; value: string }[]
+  facilitiesOptions: IMultiSelectOption[],
+  fieldOptions: IMultiSelectOption[] | undefined
 ) => {
-  return fields
+  const fieldOptionsForFacilities = fields
     .filter(field =>
-      facilities.map(fac => fac.value).includes(field.facilities_id)
+      facilitiesOptions.map(fac => fac.value).includes(field.facilities_id)
     )
-    .map(field => ({ label: field.field_name, value: field.field_id }));
+    .map(field => ({
+      label: field.field_name,
+      value: field.field_id,
+      checked: fieldOptions
+        ? fieldOptions.some(
+            it => it.value === field.field_id && Boolean(it.checked)
+          )
+        : false,
+    }));
+
+  const sortedFieldOptions = sortByField(
+    fieldOptionsForFacilities,
+    SortByFilesTypes.SELECT
+  );
+
+  return sortedFieldOptions;
 };
 
 export const stringifyBackupPlan = (backupPlan: any) => {

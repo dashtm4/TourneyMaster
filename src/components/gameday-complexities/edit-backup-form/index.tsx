@@ -6,6 +6,7 @@ import {
   BindingAction,
   IEventDetails,
 } from 'common/models';
+import MultiSelect from 'components/common/multi-select';
 import { IField } from 'common/models';
 import MultipleSearch from 'components/common/multiple-search-select';
 import styles from '../create-backup-modal/styles.module.scss';
@@ -95,10 +96,8 @@ class CreateBackupForm extends React.Component<Props, State> {
     this.onChange('facilities_impacted', values);
   };
 
-  onFieldsChange = (
-    _event: InputTargetValue,
-    values: IMultipleSelectOption[]
-  ) => this.onChange('fields_impacted', values);
+  onFieldsChange = (name: string, values: IMultipleSelectOption[]) =>
+    this.onChange(name, values);
 
   onTimeslotsChange = (
     _event: InputTargetValue,
@@ -215,7 +214,12 @@ class CreateBackupForm extends React.Component<Props, State> {
 
     const fieldsOptions =
       facilities_impacted &&
-      getFieldsOptionsForFacilities(allFields, facilities_impacted);
+      getFieldsOptionsForFacilities(
+        allFields,
+        facilities_impacted,
+        fields_impacted
+      );
+
     return (
       <div className={styles.container}>
         <div className={styles.title}>Edit Backup</div>
@@ -269,12 +273,12 @@ class CreateBackupForm extends React.Component<Props, State> {
 
             {facilities_impacted?.length ? (
               <div className={styles.item}>
-                <MultipleSearch
+                <MultiSelect
                   label="Fields Impacted"
-                  width={'282px'}
-                  options={fieldsOptions}
+                  name="fields_impacted"
+                  width="282px"
+                  selectOptions={fieldsOptions}
                   onChange={this.onFieldsChange}
-                  value={fields_impacted || []}
                 />
               </div>
             ) : null}

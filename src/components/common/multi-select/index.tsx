@@ -21,12 +21,14 @@ interface IProps {
   placeholder?: string;
   selectOptions: IMultiSelectOption[];
   onChange: (name: string, options: IMultiSelectOption[]) => void;
+  width?: string;
 }
 
 const MultiSelect = (props: IProps) => {
   const {
     label,
     placeholder = 'Select',
+    width,
     selectOptions,
     name,
     onChange,
@@ -186,13 +188,14 @@ const MultiSelect = (props: IProps) => {
       onClick={openList}
       onKeyDown={onKeyDown}
       className={styles.container}
+      style={{ width }}
     >
       <div className={styles.inputWrapper}>
         <Input
           label={label}
           value={inputValue}
           placeholder={inputPlaceholder}
-          width="170px"
+          width={width ? width : '170px'}
           onChange={updateInputValue}
         />
         <div className={styles.iconWrapper}>
