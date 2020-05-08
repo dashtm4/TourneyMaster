@@ -73,6 +73,8 @@ const getTimeValuesFromSchedule = (
   gamesStartOn: schedule.games_start_on,
 });
 
+
+// This is the function that calculates the time slots for all screens... Very important function.
 const calculateTimeSlots = (timeValues: ITimeValues) => {
   if (!timeValues) return;
 

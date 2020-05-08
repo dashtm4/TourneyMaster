@@ -552,22 +552,27 @@ export const moveBracketGames = (
   } = getMinMaxGameTimeSlots(schedulesDetails, timeSlots, day);
 
   const minGameStartTime = minBy(bracketGames, 'startTime')?.startTime;
-  const minGameTimeSlot = timeSlots.find(item => item.time === minGameStartTime)
-    ?.id;
+  const minGameTimeSlot =
+    timeSlots.find(item => item.time === minGameStartTime)?.id ||
+    minGameTimeSlotAvailable;
 
   const maxGameStartTime = maxBy(bracketGames, 'startTime')?.startTime;
-  const maxGameTimeSlot = timeSlots.find(item => item.time === maxGameStartTime)
-    ?.id;
+  const maxGameTimeSlot =
+    timeSlots.find(item => item.time === maxGameStartTime)?.id ||
+    maxGameTimeSlotAvailable;
 
   if (
-    (minGameTimeSlotAvailable >= (minGameTimeSlot || 0) &&
+    (minGameTimeSlotAvailable >= minGameTimeSlot &&
       direction === MovePlayoffWindowEnum.UP) ||
-    (maxGameTimeSlotAvailable <= (maxGameTimeSlot || 0) &&
+    (maxGameTimeSlotAvailable <= maxGameTimeSlot &&
       direction === MovePlayoffWindowEnum.DOWN)
-  )
-    return bracketGames;
+  ) {
+    return [...bracketGames];
+  }
 
   return bracketGames.map(item => {
+    if (!item.startTime || !item.fieldId) return item;
+
     const timeSlotId = timeSlots.find(v => v.time === item.startTime)?.id || 0;
     const previousTimeSlot = timeSlots.find(
       (_, index) => timeSlotId - index === 1
@@ -612,7 +617,12 @@ export const getPlayoffMovementAvailability = (
   const upDisabled = Boolean(
     playoffTimeSlots[0].id <= minGameTimeSlotAvailable
   );
-  const downDisabled = Boolean(lastGameTimeSlotId >= maxGameTimeSlotAvailable);
+
+  const bracketTimeSlotNumExceeded = playoffTimeSlots.length <= 1;
+
+  const downDisabled = Boolean(
+    lastGameTimeSlotId >= maxGameTimeSlotAvailable || bracketTimeSlotNumExceeded
+  );
 
   return {
     upDisabled,

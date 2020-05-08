@@ -130,6 +130,10 @@ const updateEventStatus = (isDraft: boolean) => async (
     dispatch({
       type: PUBLISH_EVENT_FAILURE,
     });
+
+    Toasts.errorToast(
+      'Could not update event status. Please, try to reload the page.'
+    );
   }
 };
 

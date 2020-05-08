@@ -10,9 +10,11 @@ import { getUnsatisfiedTeams, getSatisfiedTeams } from '../../helpers';
 import Checkbox from 'components/common/buttons/checkbox';
 import { TableSortLabel } from '@material-ui/core';
 import { orderBy } from 'lodash-es';
-import { IPool } from 'common/models';
+import { IPool, IEventDetails } from 'common/models';
+import { calculateTournamentDays } from 'helpers';
 
 interface IProps {
+  event: IEventDetails;
   pools: IPool[];
   tableType: TableScheduleTypes;
   teamCards: ITeamCard[];
@@ -81,8 +83,17 @@ const UnassignedList = (props: IProps) => {
   });
 
   useEffect(() => {
-    const newUnsatisfiedTeamCards = getUnsatisfiedTeams(teamCards, minGamesNum);
-    const newSatisfiedTeamCards = getSatisfiedTeams(teamCards, minGamesNum);
+    const daysNum = calculateTournamentDays(props.event).length;
+    const newUnsatisfiedTeamCards = getUnsatisfiedTeams(
+      teamCards,
+      minGamesNum,
+      daysNum
+    );
+    const newSatisfiedTeamCards = getSatisfiedTeams(
+      teamCards,
+      minGamesNum,
+      daysNum
+    );
 
     const orderedUnsatisfiedTeamCards = orderBy(
       newUnsatisfiedTeamCards,

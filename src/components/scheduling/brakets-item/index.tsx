@@ -9,11 +9,8 @@ import styles from '../styles.module.scss';
 import { ISchedulingBracket } from 'common/models/playoffs/bracket';
 import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 import { getTournamentStatusColor } from 'helpers';
-import {
-  faEdit,
-  faCalendar,
-  faExclamationCircle,
-} from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faCalendar } from '@fortawesome/free-regular-svg-icons';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 const DEFAULT_UPDATED_VALUE = 'Not updated yet.';
 

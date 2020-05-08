@@ -103,9 +103,7 @@ const ConfirmSection = ({
         )}
       </form>
       <div className={styles.inputWrapper}>
-        <p className={styles.inputDesc}>
-          Enter event name to confirm publication:
-        </p>
+        <p className={styles.inputDesc}>Please type event name to confirm.</p>
         <Input
           value={confirmValue}
           onChange={onChangeConfirmValue}

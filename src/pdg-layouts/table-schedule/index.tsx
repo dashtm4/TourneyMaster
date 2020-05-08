@@ -16,6 +16,7 @@ import {
 } from '../helpers';
 import { DEFAUL_COLUMNS_COUNT } from './common';
 import { styles } from './styles';
+import { ITeamCard } from 'common/models/schedule/teams';
 
 interface IPDFProps {
   event: IEventDetails;
@@ -24,6 +25,7 @@ interface IPDFProps {
   timeSlots: ITimeSlot[];
   facilities: IScheduleFacility[];
   schedule: ISchedule;
+  teamCards: ITeamCard[];
   isHeatMap?: boolean;
 }
 
@@ -34,6 +36,7 @@ const PDFScheduleTable = ({
   games,
   timeSlots,
   schedule,
+  teamCards,
   isHeatMap,
 }: IPDFProps) => {
   const gamesByDays = getGamesByDays(games);
@@ -80,6 +83,7 @@ const PDFScheduleTable = ({
                       <TableTbody
                         timeSlots={timeSlots}
                         games={gamesByFacility}
+                        teamCards={teamCards}
                         splitIdx={splitIdx}
                         isHeatMap={isHeatMap}
                       />

@@ -25,6 +25,12 @@ interface Props {
   onGameUpdate: (gameChanges: Partial<IGame>) => void;
 }
 
+export const getDisplayName = (round?: number, depends?: number) => {
+  if (!round || !depends) return;
+  const key = round >= 0 ? 'Winner' : 'Loser';
+  return `${key} Game ${depends}`;
+};
+
 export default (props: Props) => {
   const {
     position,
@@ -59,12 +65,6 @@ export default (props: Props) => {
     onGameUpdate({
       [positionedTeam]: Number(e.target.value),
     });
-  };
-
-  const getDisplayName = (round?: number, depends?: number) => {
-    if (!round || !depends) return;
-    const key = round >= 0 ? 'Winner' : 'Loser';
-    return `${key} Game ${depends}`;
   };
 
   const renderScoringInput = () => (

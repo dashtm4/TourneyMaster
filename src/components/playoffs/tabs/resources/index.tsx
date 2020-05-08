@@ -198,11 +198,11 @@ class ResourceMatrix extends Component<IProps> {
               </fieldset>
             )}
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Bracket games are painted in dark colors
+              Bracket timeslots are designed by the dark background
             </CardMessage>
             <div className={styles.moveBrackets}>
               <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-                Move Playoff Start Time Up & Down
+                Move playoff timeslots up & down
               </CardMessage>
               <div className={styles.moveBracketsBtns}>
                 <Button

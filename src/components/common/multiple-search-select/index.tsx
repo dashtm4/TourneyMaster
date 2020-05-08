@@ -11,7 +11,6 @@ export type MultipleSelectionField = { label: string; value: string };
 
 interface IProps {
   options: MultipleSelectionField[];
-  placeholder?: string;
   width?: string;
   label?: string;
   onChange: any;
@@ -25,7 +24,6 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const MultipleSearchSelect = ({
   options,
-  placeholder,
   width,
   label,
   onChange,
@@ -33,6 +31,9 @@ const MultipleSearchSelect = ({
   onKeyDown,
   onInputChange,
 }: IProps) => {
+  const placeholder =
+    value.length !== 0 ? value.map(it => it.label).join(',') : 'Select';
+
   return (
     <Autocomplete
       onKeyDown={onKeyDown}

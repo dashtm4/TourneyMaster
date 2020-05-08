@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { Modal, HeadingLevelTwo, Input, Button } from 'components/common';
+import React, { useState, useEffect } from 'react';
+import {
+  Modal,
+  HeadingLevelTwo,
+  Input,
+  Button,
+  Tooltip,
+} from 'components/common';
 import { getIcon, getTimeFromString } from 'helpers';
 import {
   Icons,
@@ -30,6 +36,9 @@ const PopupEditBracket = ({ bracket, onClose, onSubmit, onDelete }: Props) => {
   );
 
   const [isDeleteModalOpen, onDeleteModal] = useState(false);
+  const [deleteBracketDisabled, setDeleteBracketState] = useState(false);
+
+  useEffect(() => setDeleteBracketState(Boolean(bracket.published)), [bracket]);
 
   const onModalClose = () => {
     onDeleteModal(false);
@@ -78,14 +87,6 @@ const PopupEditBracket = ({ bracket, onClose, onSubmit, onDelete }: Props) => {
               autofocus={true}
               width="220px"
             />
-            {/* <Input
-              onChange={localChange}
-              value={editedBracket.schedule_tag || ''}
-              name={ArchitectFormFields.SCHEDULT_TAG}
-              label="Tag"
-              width="220px"
-              startAdornment="@"
-            /> */}
           </div>
           <table className={styles.infoTable}>
             <tbody>
@@ -102,16 +103,24 @@ const PopupEditBracket = ({ bracket, onClose, onSubmit, onDelete }: Props) => {
             </tbody>
           </table>
           <div className={styles.btnsWrapper}>
-            <p className={styles.dellBtnWrapper}>
-              <Button
-                onClick={onDeleteClick}
-                icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
-                variant={ButtonVarian.TEXT}
-                color={ButtonColors.INHERIT}
-                btnType={ButtonFormTypes.BUTTON}
-                label="Delete Bracket"
-              />
-            </p>
+            <Tooltip
+              type="info"
+              title="This bracket has been published and therefore cannot be deleted."
+              disabled={!deleteBracketDisabled}
+            >
+              <p className={styles.dellBtnWrapper}>
+                <Button
+                  onClick={onDeleteClick}
+                  icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
+                  variant={ButtonVarian.TEXT}
+                  color={ButtonColors.INHERIT}
+                  btnType={ButtonFormTypes.BUTTON}
+                  btnStyles={{ color: '#ff0f19' }}
+                  disabled={deleteBracketDisabled}
+                  label="Delete Bracket"
+                />
+              </p>
+            </Tooltip>
             <div className={styles.navBtnWrapper}>
               <p className={styles.cancelBtnWrapper}>
                 <Button

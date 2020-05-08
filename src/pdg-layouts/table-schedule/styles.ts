@@ -2,7 +2,7 @@ import { StyleSheet } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
   page: {
-    padding: 15,
+    padding: '15px 0',
 
     fontSize: 9,
   },

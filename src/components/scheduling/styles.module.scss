@@ -166,11 +166,10 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-
     margin: 0;
     padding: 0;
-
     list-style: none;
+    width: 100%;
 
     .tournamentPlay {
       width: 49%;
@@ -223,6 +222,7 @@
     margin: 0;
     padding: 0;
     list-style: none;
+    width: 100%;
 
     .brackets {
       width: 49%;
