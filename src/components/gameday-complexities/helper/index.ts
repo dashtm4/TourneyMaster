@@ -1,4 +1,4 @@
-import { IFacility, IField } from 'common/models';
+import { IFacility, IField, IEventDetails } from 'common/models';
 import { IMultiSelectOption } from 'components/common/multi-select';
 import { sortByField } from 'helpers';
 import { SortByFilesTypes } from 'common/enums';
@@ -26,6 +26,7 @@ export const mapFieldsToOptions = (
     .map(field => ({
       label: field.field_name,
       value: field.field_id,
+      checked: true,
     }));
 };
 
@@ -47,6 +48,17 @@ export const mapTimeslotsToOptions = (
     default:
       return [{ label: 'default', value: 'default' }];
   }
+};
+
+export const getEventOptions = (events: IEventDetails[]) => {
+  const eventOptions = events.map(event => ({
+    label: event.event_name,
+    value: event.event_id,
+  }));
+
+  const sortedEventOptions = sortByField(eventOptions, SortByFilesTypes.SELECT);
+
+  return sortedEventOptions;
 };
 
 export const getFacilitiesOptionsForEvent = (

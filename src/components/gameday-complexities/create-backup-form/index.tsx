@@ -7,10 +7,13 @@ import MultipleSearch from 'components/common/multiple-search-select';
 import {
   getFacilitiesOptionsForEvent,
   getFieldsOptionsForFacilities,
+  getEventOptions,
 } from '../helper';
 import { CardMessageTypes } from 'components/common/card-message/types';
 
-import MultiSelect from 'components/common/multi-select';
+import MultiSelect, {
+  IMultiSelectOption,
+} from 'components/common/multi-select';
 
 const options = [{ value: '05:00 PM', label: '05:00 PM' }];
 const optionsTimeslots = [
@@ -72,10 +75,10 @@ class CreateBackupForm extends React.Component<Props> {
     this.props.onChange('facilities_impacted', values, this.props.index);
   };
 
-  onFieldsChange = (name: string, values: IMultipleSelectOption[]) => {
-    console.log(values);
+  onFieldsChange = (name: string, values: IMultiSelectOption[]) => {
+    const checkedField = values.filter(it => Boolean(it.checked));
 
-    this.props.onChange(name, values, this.props.index);
+    this.props.onChange(name, checkedField, this.props.index);
   };
 
   onTimeslotsChange = (
@@ -160,10 +163,7 @@ class CreateBackupForm extends React.Component<Props> {
 
     const { events, facilities: allFacilities, fields: allFields } = this.props;
 
-    const eventsOptions = events.map(event => ({
-      label: event.event_name,
-      value: event.event_id,
-    }));
+    const eventsOptions = getEventOptions(events)
 
     const facilitiesOptions = getFacilitiesOptionsForEvent(
       allFacilities,
