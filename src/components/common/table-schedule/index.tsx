@@ -108,6 +108,8 @@ const TableSchedule = ({
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
 
+  const [simultaneousDnd, setSimultaneousDnd] = useState(false);
+
   const [filterValues, changeFilterValues] = useState<IScheduleFilter>(
     applyFilters({ divisions, pools, teamCards, eventSummary })
   );
@@ -127,6 +129,8 @@ const TableSchedule = ({
     string | undefined
   >();
   const [days, setDays] = useState(calculateDays(teamCards));
+
+  const toggleSimultaneousDnd = () => setSimultaneousDnd(v => !v);
 
   const manageGamesData = useCallback(() => {
     let definedGames = [...games];
@@ -200,6 +204,7 @@ const TableSchedule = ({
       teamCards,
       tableGames,
       dropParams,
+      simultaneousDnd,
       days?.length ? days[+day - 1] : undefined
     );
 
@@ -319,10 +324,13 @@ const TableSchedule = ({
           )}
           <div className={styles.tableWrapper}>
             <Filter
+              tableType={tableType}
               warnings={warnings}
               days={days.length}
               filterValues={filterValues}
               onChangeFilterValue={onFilterChange}
+              simultaneousDnd={simultaneousDnd}
+              toggleSimultaneousDnd={toggleSimultaneousDnd}
             />
             <MatrixTable
               tableType={tableType}
@@ -338,6 +346,7 @@ const TableSchedule = ({
               onTeamCardsUpdate={onTeamCardsUpdate}
               teamCards={teamCards}
               isFullScreen={isFullScreen}
+              simultaneousDnd={simultaneousDnd}
               onToggleFullScreen={onToggleFullScreen}
               onGameUpdate={onGameUpdate}
             />

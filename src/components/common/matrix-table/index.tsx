@@ -35,6 +35,7 @@ interface IProps {
   isFullScreen?: boolean;
   onToggleFullScreen?: BindingAction;
   highlightedGameId?: number;
+  simultaneousDnd?: boolean;
   onGameUpdate: (game: IGame) => void;
 }
 
@@ -56,6 +57,7 @@ const SchedulesMatrix = (props: IProps) => {
     onToggleFullScreen,
     highlightedGameId,
     onGameUpdate,
+    simultaneousDnd,
   } = props;
 
   const takeFacilityByFieldId = (facilityId: string) =>
@@ -110,6 +112,7 @@ const SchedulesMatrix = (props: IProps) => {
                         isEnterScores={isEnterScores}
                         onTeamCardUpdate={onTeamCardUpdate}
                         teamCards={teamCards}
+                        simultaneousDnd={simultaneousDnd}
                         onTeamCardsUpdate={onTeamCardsUpdate}
                         isDndMode={disableZooming}
                         highlightedGamedId={highlightedGameId}
