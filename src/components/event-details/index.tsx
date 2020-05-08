@@ -27,6 +27,8 @@ import {
   BindingCbWithOne,
   IEventDetails,
   BindingCbWithTwo,
+  ISchedule,
+  IFetchedBracket,
 } from 'common/models';
 import { uploadFile } from 'helpers';
 import styles from './styles.module.scss';
@@ -39,6 +41,8 @@ import CsvLoader from 'components/common/csv-loader';
 import { IEntity } from 'common/types';
 import { EntryPoints, LibraryStates } from 'common/enums';
 import WellnessStatement from './wellness-statement';
+import EventWarningModal from './warning-modal';
+import api from 'api/api';
 
 interface IMapStateProps {
   event: IEventState;
@@ -65,6 +69,7 @@ type State = {
   isCsvLoaderOpen: boolean;
   isSectionsExpand: boolean;
   changesAreMade: boolean;
+  warningModalOpen: boolean;
 };
 
 class EventDetails extends Component<Props, State> {
@@ -77,6 +82,7 @@ class EventDetails extends Component<Props, State> {
     isCsvLoaderOpen: false,
     isSectionsExpand: true,
     changesAreMade: false,
+    warningModalOpen: false,
   };
 
   componentDidMount() {
@@ -110,6 +116,17 @@ class EventDetails extends Component<Props, State> {
     });
   };
 
+  checkSchedulingExistence = async () => {
+    const { event_id } = this.state.event || {};
+    const schedules = await api.get('/schedules', { event_id });
+    const brackets = await api.get('/brackets_details', { event_id });
+
+    const schedulesExist = schedules?.filter((v?: ISchedule) => v)?.length;
+    const bracketsExist = brackets?.filter((v?: IFetchedBracket) => v)?.length;
+
+    return Boolean(schedulesExist || bracketsExist);
+  };
+
   onChange = (name: string, value: any, ignore?: boolean) => {
     this.setState(({ event }) => ({
       event: {
@@ -135,10 +152,22 @@ class EventDetails extends Component<Props, State> {
     this.props.removeFiles(files);
   };
 
+  onSavePressed = async () => {
+    const schedulingExist = await this.checkSchedulingExistence();
+
+    if (schedulingExist) {
+      this.openWarningModal();
+      return;
+    }
+
+    this.onSave();
+  };
+
   onSave = () => {
     const { event, eventId } = this.state;
-
-    this.setState({ isModalOpen: false });
+    this.closeWarningModal();
+    this.onModalClose();
+    this.setState({ changesAreMade: false });
 
     if (!event) return;
 
@@ -178,6 +207,10 @@ class EventDetails extends Component<Props, State> {
     history.push('/');
   };
 
+  openWarningModal = () => this.setState({ warningModalOpen: true });
+
+  closeWarningModal = () => this.setState({ warningModalOpen: false });
+
   onCsvLoaderBtn = () => {
     this.setState({ isCsvLoaderOpen: true });
   };
@@ -211,7 +244,7 @@ class EventDetails extends Component<Props, State> {
   };
 
   render() {
-    const { event } = this.state;
+    const { event, isModalOpen, warningModalOpen } = this.state;
     const { isEventLoading } = this.props.event;
     const deleteMessage = `You are about to delete this event and this cannot be undone. All related data to this event will be deleted too.
       Please, enter the name of the event to continue.`;
@@ -227,7 +260,7 @@ class EventDetails extends Component<Props, State> {
           onCancelClick={this.onCancelClick}
           onCsvLoaderBtn={this.onCsvLoaderBtn}
           onAddToLibraryManager={this.onAddToLibraryManager}
-          onSave={this.onSave}
+          onSave={this.onSavePressed}
         />
         <div className={styles.headingContainer}>
           <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
@@ -296,8 +329,14 @@ class EventDetails extends Component<Props, State> {
           }}
         />
         <PopupExposure
-          isOpen={this.state.isModalOpen}
+          isOpen={isModalOpen}
           onClose={this.onModalClose}
+          onExitClick={this.onCancel}
+          onSaveClick={this.onSavePressed}
+        />
+        <EventWarningModal
+          isOpen={warningModalOpen}
+          onClose={this.closeWarningModal}
           onExitClick={this.onCancel}
           onSaveClick={this.onSave}
         />

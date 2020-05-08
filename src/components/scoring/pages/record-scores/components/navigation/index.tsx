@@ -29,7 +29,7 @@ const Navigation = ({
           <Button
             onClick={onFalseView}
             type={
-              isEnterScores ? ButtonTypes.SQUARED : ButtonTypes.SQUARED_OUTLINED
+              isEnterScores ? ButtonTypes.SQUARED_OUTLINED : ButtonTypes.SQUARED
             }
             variant={ButtonVarian.CONTAINED}
             color={ButtonColors.PRIMARY}
@@ -39,7 +39,7 @@ const Navigation = ({
         <Button
           onClick={onTrueView}
           type={
-            isEnterScores ? ButtonTypes.SQUARED_OUTLINED : ButtonTypes.SQUARED
+            isEnterScores ? ButtonTypes.SQUARED : ButtonTypes.SQUARED_OUTLINED
           }
           variant={ButtonVarian.CONTAINED}
           color={ButtonColors.PRIMARY}

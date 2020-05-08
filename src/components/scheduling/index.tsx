@@ -341,7 +341,6 @@ class Scheduling extends Component<IProps, IState> {
           onChange={this.onChange}
         />
         <CreateNewBracket
-          timeSlots={timeSlots!}
           fields={fields!}
           divisions={divisions!}
           event={event!}
