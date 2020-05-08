@@ -17,6 +17,8 @@ import {
   timeToString,
   getIcon,
   getVarcharEight,
+  getTimeValuesFromEventSchedule,
+  calculateTimeSlots,
 } from 'helpers';
 import { Icons } from 'common/enums';
 import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
@@ -53,7 +55,6 @@ export interface ICreateBracketModalOutput {
 
 interface IProps {
   fields: IField[];
-  timeSlots: ITimeSlot[];
   divisions: IDivision[];
   event?: IEventDetails;
   isOpen: boolean;
@@ -78,17 +79,9 @@ const CreateNewBracket = (props: IProps) => {
     schedules,
     onCreateBracket,
     fields,
-    timeSlots,
     divisions,
     event,
   } = props;
-
-  const playoffTimeSlots = predictPlayoffTimeSlots(
-    fields,
-    timeSlots,
-    divisions,
-    event!
-  );
 
   const ModeOptions = ['Use Scheduler', 'Create Manually'];
 
@@ -101,12 +94,32 @@ const CreateNewBracket = (props: IProps) => {
     getWarmupFromSchedule(schedules, selectedSchedule)
   );
   const [mode, setModeOptions] = useState(ModeOptionEnum['Use Scheduler']);
-  // const [overrideTimeSlots, setOverrideTimeSlots] = useState(false);
-  const [selectedTimeSlotsNum /*, selectTimeSlotsNum*/] = useState('0');
+  const [selectedTimeSlotsNum] = useState('0');
+  const [playoffTimeSlots, setPlayoffTimeSlots] = useState<
+    ITimeSlot[] | undefined
+  >();
 
   useEffect(() => {
     const data = getWarmupFromSchedule(schedules, selectedSchedule);
     setLocalWarmup(data);
+
+    const schedule = schedules.find(
+      item => item.schedule_id === selectedSchedule
+    );
+
+    if (!schedule || !event) return;
+
+    const timeValues = getTimeValuesFromEventSchedule(event, schedule);
+    const timeSlots: ITimeSlot[] = calculateTimeSlots(timeValues)!;
+
+    const newPlayoffTimeSlots = predictPlayoffTimeSlots(
+      fields,
+      timeSlots,
+      divisions,
+      event!
+    );
+
+    setPlayoffTimeSlots(newPlayoffTimeSlots);
   }, [selectedSchedule]);
 
   const onChange = (e: InputTargetValue) => setBracketName(e.target.value);
@@ -142,12 +155,11 @@ const CreateNewBracket = (props: IProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const { event } = props;
-
-    if (!event)
+    if (!event) {
       return errorToast(
         "Couldn't process the Bracket data. Please, try again."
       );
+    }
 
     const eventId = event.event_id;
     const bracketDate = event.event_enddate;
@@ -178,11 +190,6 @@ const CreateNewBracket = (props: IProps) => {
     onCreateBracket(scheduleData);
   };
 
-  // const selectTimeSlotsNumChange = (e: InputTargetValue) =>
-  // selectTimeSlotsNum(e.target.value);
-
-  // const overrideTimeSlotsChange = () => setOverrideTimeSlots(v => !v);
-
   const schedulesOptions = schedules.map(item => ({
     label: item.schedule_name!,
     value: item.schedule_id,
@@ -202,25 +209,11 @@ const CreateNewBracket = (props: IProps) => {
       name: 'adjustTime',
     },
   ];
-  // const timeSlotsOverrideOptions = [
-  //   {
-  //     label: 'Manually select # of Time Slots for Brackets',
-  //     checked: overrideTimeSlots,
-  //     name: 'overrideTimeSlots',
-  //   },
-  // ];
-
-  // const overrideTimeSlotsOptions = [...Array(4)].map((_, i) => ({
-  //   label: `${i + playoffTimeSlots.length} Time Slots`,
-  //   value: String(i),
-  // }));
 
   const alignItemsTooltip =
     'Early morning TP games will be moved adjacent to brackets';
   const adjustTimeTooltip =
     'Provides a larger rest between games for advancing teams';
-  // const overrideTimeSlotsTooltip =
-  //   'Increases the number of time slots used by Brackets Games';
 
   const onModeChange = (e: InputTargetValue) => {
     setModeOptions(ModeOptions.findIndex(v => v === e.target.value));
@@ -283,27 +276,6 @@ const CreateNewBracket = (props: IProps) => {
           disabled={!(adjustTime && localWarmup)}
           endAdornment="Minutes"
         />
-        {/* <div className={styles.checkboxWrapper}>
-              <Checkbox
-                options={timeSlotsOverrideOptions}
-                onChange={overrideTimeSlotsChange}
-              />
-              <Tooltip
-                title={overrideTimeSlotsTooltip}
-                type={TooltipMessageTypes.INFO}
-              >
-                <div className={styles.tooltipIcon}>{getIcon(Icons.INFO)}</div>
-              </Tooltip>
-            </div>
-            <Select
-              name="Name"
-              width="220px"
-              placeholder="Select # of Time Slots"
-              disabled={!overrideTimeSlots}
-              options={overrideTimeSlotsOptions}
-              value={selectedTimeSlotsNum}
-              onChange={selectTimeSlotsNumChange}
-            /> */}
       </div>
     </div>
   );
