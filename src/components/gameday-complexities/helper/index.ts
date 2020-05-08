@@ -65,12 +65,19 @@ export const getFacilitiesOptionsForEvent = (
   facilities: IFacility[],
   eventId: string
 ) => {
-  return facilities
+  const facilityOptions = facilities
     .filter(facility => facility.event_id === eventId)
     .map(facility => ({
       label: facility.facilities_description,
       value: facility.facilities_id,
     }));
+
+  const sortedFacilityOptions = sortByField(
+    facilityOptions,
+    SortByFilesTypes.SELECT
+  );
+
+  return sortedFacilityOptions;
 };
 
 export const getFieldsOptionsForFacilities = (
