@@ -175,7 +175,7 @@ class CreateBackupForm extends React.Component<Props> {
       <div className={styles.formContainer}>
         <div style={{ paddingTop: '15px' }}>
           <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-            Modifications only apply to the Published Schedules for each event.
+            Modifications only allowed to Published Schedules for each event.
           </CardMessage>
         </div>
         <div className={styles.row}>
