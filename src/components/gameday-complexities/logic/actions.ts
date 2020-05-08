@@ -13,9 +13,9 @@ import api from 'api/api';
 import { Toasts } from 'components/common';
 import { IFacility, IField, IEventDetails, ISchedule } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
-import { getVarcharEight } from 'helpers';
+import { getVarcharEight, sortByField } from 'helpers';
 import { stringifyBackupPlan } from '../helper';
-import { ScheduleStatuses } from 'common/enums';
+import { ScheduleStatuses, SortByFilesTypes } from 'common/enums';
 
 export const eventsFetchSuccess = (
   payload: IEventDetails[]
@@ -128,7 +128,13 @@ export const getBackupPlans: ActionCreator<ThunkAction<
   if (!backupPlans) {
     return Toasts.errorToast("Couldn't load backup plans");
   }
-  dispatch(backupPlansFetchSuccess(backupPlans));
+
+  const sortedBackup = sortByField(
+    backupPlans,
+    SortByFilesTypes.BACKUP_PLAN
+  ) as IBackupPlan[];
+
+  dispatch(backupPlansFetchSuccess(sortedBackup));
 };
 
 export const saveBackupPlans: ActionCreator<ThunkAction<
