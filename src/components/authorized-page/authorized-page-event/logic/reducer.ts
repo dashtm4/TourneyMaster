@@ -15,6 +15,7 @@ import {
   RegistrationAction,
 } from 'components/registration/registration-edit/logic/actionTypes';
 import {
+  LOAD_FACILITIES_SUCCESS,
   SAVE_FACILITIES_SUCCESS,
   FacilitiesAction,
 } from 'components/facilities/logic/action-types';
@@ -200,8 +201,8 @@ const pageEventReducer = (
         ),
       };
     }
-    case SAVE_FACILITIES_SUCCESS: {
-      const { facilities, fields } = action.payload;
+    case LOAD_FACILITIES_SUCCESS: {
+      const { facilities } = action.payload;
 
       return {
         ...state,
@@ -222,6 +223,16 @@ const pageEventReducer = (
         tournamentData: {
           ...state.tournamentData,
           facilities,
+        },
+      };
+    }
+    case SAVE_FACILITIES_SUCCESS: {
+      const { fields } = action.payload;
+
+      return {
+        ...state,
+        tournamentData: {
+          ...state.tournamentData,
           fields,
         },
       };

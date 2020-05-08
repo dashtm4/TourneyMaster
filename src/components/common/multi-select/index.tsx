@@ -21,12 +21,14 @@ interface IProps {
   placeholder?: string;
   selectOptions: IMultiSelectOption[];
   onChange: (name: string, options: IMultiSelectOption[]) => void;
+  width?: string;
 }
 
 const MultiSelect = (props: IProps) => {
   const {
     label,
     placeholder = 'Select',
+    width,
     selectOptions,
     name,
     onChange,
@@ -186,16 +188,20 @@ const MultiSelect = (props: IProps) => {
       onClick={openList}
       onKeyDown={onKeyDown}
       className={styles.container}
+      style={{ width }}
     >
       <div className={styles.inputWrapper}>
         <Input
           label={label}
           value={inputValue}
           placeholder={inputPlaceholder}
-          width="170px"
+          width={width ? width : '170px'}
           onChange={updateInputValue}
         />
-        <div className={styles.iconWrapper}>
+        <div
+          className={styles.iconWrapper}
+          style={{ top: label ? '35px' : undefined }}
+        >
           <div className={styles.cancelButton} onClick={onClear}>
             {getIcon(Icons.CLEAR)}
           </div>
@@ -205,14 +211,15 @@ const MultiSelect = (props: IProps) => {
       <div
         className={`${styles.selectList} ${listOpen &&
           styles.selectListExpanded}`}
+        style={{ width }}
       >
         <List
-          width={159}
+          width={width ? parseInt(width) : 159}
           height={260}
           rowCount={rowCount || 0}
           rowHeight={50}
           rowRenderer={rowRenderer}
-          style={{ outline: 'none' }}
+          style={{ outline: 'none', width }}
         />
         <Button
           label="Select"

@@ -62,7 +62,7 @@ export default (
     case ADD_BACKUP_PLAN_SUCCESS: {
       return {
         ...state,
-        backupPlans: [...state.backupPlans, action.payload],
+        backupPlans: [action.payload, ...state.backupPlans],
       };
     }
     case DELETE_BACKUP_PLAN: {
