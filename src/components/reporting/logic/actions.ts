@@ -90,7 +90,9 @@ const loadReportingData: ActionCreator<ThunkAction<
       type: LOAD_REPORTING_DATA_FAILURE,
     });
 
-    Toasts.errorToast('Could not load the reporting data.');
+    Toasts.errorToast(
+      'Could not load the reporting data. Please, try to reload the page.'
+    );
   }
 };
 
