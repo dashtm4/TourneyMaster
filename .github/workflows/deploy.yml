@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - development
+    paths-ignore:
+      - 'server/**'
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -26,6 +29,8 @@ jobs:
           REACT_APP_AWS_IDENTITY_POOL_ID: ${{ secrets.REACT_APP_AWS_IDENTITY_POOL_ID }}
           REACT_APP_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           REACT_APP_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          REACT_APP_API_BASE_URL: 'https://api.tourneymaster.org/v2'
+          REACT_APP_PUBLIC_API_BASE_URL: 'https://api.tourneymaster.org/public'
           CI: 'false'
       - name: Enable Amazon
         uses: chrislennon/action-aws-cli@v1.1
