@@ -31,12 +31,14 @@ import {
   LibraryStates,
   EventPublishTypes,
   EventModifyTypes,
+  MobileEventStatuses,
 } from 'common/enums';
 import { IEntity } from 'common/types';
 import {
   sentToServerByRoute,
   removeObjKeysByEntryPoint,
   CheckEventDrafts,
+  updateMobileEventStatus,
 } from 'helpers';
 import {
   updateScheduleStatus,
@@ -154,6 +156,13 @@ const publishEventData = (
   switch (publishType) {
     case EventPublishTypes.DETAILS: {
       dispatch<any>(updateEventStatus(isDraft));
+
+      await updateMobileEventStatus(
+        event!.event_id,
+        MobileEventStatuses.EVENT,
+        isDraft
+      );
+
       break;
     }
     case EventPublishTypes.DETAILS_AND_TOURNAMENT_PLAY:
@@ -167,6 +176,13 @@ const publishEventData = (
       dispatch<any>(
         updateScheduleStatus(publishedSchedule.schedule_id, isDraft)
       );
+
+      await updateMobileEventStatus(
+        event!.event_id,
+        isDraft ? MobileEventStatuses.EVENT : MobileEventStatuses.EVENT_TP,
+        isDraft
+      );
+
       break;
     }
 
@@ -189,6 +205,14 @@ const publishEventData = (
       }
 
       dispatch<any>(updateBracketStatus(publishedBracket.bracket_id, isDraft));
+
+      await updateMobileEventStatus(
+        event!.event_id,
+        isDraft
+          ? MobileEventStatuses.EVENT_TP
+          : MobileEventStatuses.EVENT_TP_BRACKETS,
+        isDraft
+      );
       break;
     }
   }
