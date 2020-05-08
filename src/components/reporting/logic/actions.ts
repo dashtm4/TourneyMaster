@@ -61,9 +61,9 @@ const loadReportingData: ActionCreator<ThunkAction<
       (it: IFetchedBracket) => it.is_published_YN === BracketStatuses.Published
     );
 
-    const schedulesGames = await Api.get(
-      `/games?schedule_id=${activeSchedule.schedule_id}`
-    );
+    const schedulesGames = activeSchedule
+      ? await Api.get(`/games?schedule_id=${activeSchedule.schedule_id}`)
+      : [];
 
     const fetchedBracketGames = publishedBraket
       ? await Api.get(`games_brackets?bracket_id=${publishedBraket.bracket_id}`)
@@ -90,9 +90,7 @@ const loadReportingData: ActionCreator<ThunkAction<
       type: LOAD_REPORTING_DATA_FAILURE,
     });
 
-    Toasts.errorToast(
-      'Could not load the reporting data. Please, try to reload the page.'
-    );
+    Toasts.errorToast('Could not load the reporting data.');
   }
 };
 
