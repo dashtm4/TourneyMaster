@@ -1,14 +1,19 @@
 import React from 'react';
 import styles from '../create-backup-modal/styles.module.scss';
-import { Input, Select, Radio, Button, CardMessage } from 'components/common';
+import { Input, Select, Radio, CardMessage } from 'components/common';
 import { BindingCbWithThree, IFacility, IEventDetails } from 'common/models';
 import { IField } from 'common/models';
 import MultipleSearch from 'components/common/multiple-search-select';
 import {
   getFacilitiesOptionsForEvent,
   getFieldsOptionsForFacilities,
+  getEventOptions,
 } from '../helper';
 import { CardMessageTypes } from 'components/common/card-message/types';
+
+import MultiSelect, {
+  IMultiSelectOption,
+} from 'components/common/multi-select';
 
 const options = [{ value: '05:00 PM', label: '05:00 PM' }];
 const optionsTimeslots = [
@@ -70,10 +75,11 @@ class CreateBackupForm extends React.Component<Props> {
     this.props.onChange('facilities_impacted', values, this.props.index);
   };
 
-  onFieldsChange = (
-    _event: InputTargetValue,
-    values: IMultipleSelectOption[]
-  ) => this.props.onChange('fields_impacted', values, this.props.index);
+  onFieldsChange = (name: string, values: IMultiSelectOption[]) => {
+    const checkedField = values.filter(it => Boolean(it.checked));
+
+    this.props.onChange(name, checkedField, this.props.index);
+  };
 
   onTimeslotsChange = (
     _event: InputTargetValue,
@@ -157,10 +163,7 @@ class CreateBackupForm extends React.Component<Props> {
 
     const { events, facilities: allFacilities, fields: allFields } = this.props;
 
-    const eventsOptions = events.map(event => ({
-      label: event.event_name,
-      value: event.event_id,
-    }));
+    const eventsOptions = getEventOptions(events)
 
     const facilitiesOptions = getFacilitiesOptionsForEvent(
       allFacilities,
@@ -169,13 +172,17 @@ class CreateBackupForm extends React.Component<Props> {
 
     const fieldsOptions =
       facilities_impacted &&
-      getFieldsOptionsForFacilities(allFields, facilities_impacted);
+      getFieldsOptionsForFacilities(
+        allFields,
+        facilities_impacted,
+        fields_impacted
+      );
 
     return (
       <div className={styles.formContainer}>
         <div style={{ paddingTop: '15px' }}>
           <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-            Modifications only apply to the Published Schedules for each event.
+            Modifications only allowed to Published Schedules for each event.
           </CardMessage>
         </div>
         <div className={styles.row}>
@@ -227,12 +234,12 @@ class CreateBackupForm extends React.Component<Props> {
 
           {facilities_impacted?.length ? (
             <div className={styles.item}>
-              <MultipleSearch
+              <MultiSelect
                 label="Fields Impacted"
-                width={'282px'}
-                options={fieldsOptions}
+                name="fields_impacted"
+                width="282px"
+                selectOptions={fieldsOptions}
                 onChange={this.onFieldsChange}
-                value={fields_impacted || []}
               />
             </div>
           ) : null}
@@ -245,7 +252,7 @@ class CreateBackupForm extends React.Component<Props> {
               )
             : null}
 
-          {event_id && (
+          {/* {event_id && (
             <div className={styles.item}>
               <>
                 <span>or</span>
@@ -256,7 +263,7 @@ class CreateBackupForm extends React.Component<Props> {
                 />
               </>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     );

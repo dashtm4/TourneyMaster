@@ -105,11 +105,11 @@ class CreateBackupModal extends React.Component<Props, State> {
             color="primary"
             onClick={this.onSaveToLibrary}
           />
-          <Button
+          {/* <Button
             label="Activate and Publish Backup Plan"
             variant="contained"
             color="primary"
-          />
+          /> */}
         </div>
         <PopupExposure
           isOpen={this.state.isConfirmModalOpen}
