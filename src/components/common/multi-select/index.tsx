@@ -198,7 +198,10 @@ const MultiSelect = (props: IProps) => {
           width={width ? width : '170px'}
           onChange={updateInputValue}
         />
-        <div className={styles.iconWrapper}>
+        <div
+          className={styles.iconWrapper}
+          style={{ top: label ? '35px' : undefined }}
+        >
           <div className={styles.cancelButton} onClick={onClear}>
             {getIcon(Icons.CLEAR)}
           </div>
@@ -208,14 +211,15 @@ const MultiSelect = (props: IProps) => {
       <div
         className={`${styles.selectList} ${listOpen &&
           styles.selectListExpanded}`}
+        style={{ width }}
       >
         <List
-          width={159}
+          width={width ? parseInt(width) : 159}
           height={260}
           rowCount={rowCount || 0}
           rowHeight={50}
           rowRenderer={rowRenderer}
-          style={{ outline: 'none' }}
+          style={{ outline: 'none', width }}
         />
         <Button
           label="Select"

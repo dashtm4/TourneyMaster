@@ -66,12 +66,13 @@ export const getFieldsOptionsForFacilities = (
   facilitiesOptions: IMultiSelectOption[],
   fieldOptions: IMultiSelectOption[] | undefined
 ) => {
-  const fieldOptionsForFacilities = fields
-    .filter(field =>
-      facilitiesOptions.map(fac => fac.value).includes(field.facilities_id)
-    )
-    .map(field => ({
-      label: field.field_name,
+  const fieldOptionsForFacilities = facilitiesOptions.reduce((acc, option) => {
+    const fieldsByFacilityId = fields.filter(
+      field => field.facilities_id === option.value
+    );
+
+    const options = fieldsByFacilityId.map(field => ({
+      label: `${field.field_name} (${option.label})`,
       value: field.field_id,
       checked: fieldOptions
         ? fieldOptions.some(
@@ -79,6 +80,9 @@ export const getFieldsOptionsForFacilities = (
           )
         : false,
     }));
+
+    return [...acc, ...options];
+  }, [] as IMultiSelectOption[]);
 
   const sortedFieldOptions = sortByField(
     fieldOptionsForFacilities,

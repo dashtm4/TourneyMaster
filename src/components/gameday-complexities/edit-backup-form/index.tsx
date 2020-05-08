@@ -220,6 +220,8 @@ class CreateBackupForm extends React.Component<Props, State> {
         fields_impacted
       );
 
+    console.log(fields_impacted, fieldsOptions);
+
     return (
       <div className={styles.container}>
         <div className={styles.title}>Edit Backup</div>
