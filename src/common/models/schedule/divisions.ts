@@ -34,4 +34,5 @@ export interface IScheduleDivision {
   isPremier: boolean;
   size?: number;
   sizePercent?: number;
+  preferredFacilityId?: string;
 }

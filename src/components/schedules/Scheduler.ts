@@ -520,6 +520,10 @@ export default class Scheduler {
   findFacilityForDivision = (division: IScheduleDivision) => {
     const facilityIds = Object.keys(this.facilityData);
 
+    if (division.preferredFacilityId) {
+      return division.preferredFacilityId;
+    }
+
     if (division.isPremier) {
       const premierFacilities = facilityIds
         .map(item => ({ ...this.facilityData[item], id: item }))
