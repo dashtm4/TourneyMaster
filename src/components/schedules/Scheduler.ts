@@ -648,8 +648,6 @@ export default class Scheduler {
         },
       };
     });
-
-    console.log('facilityData:', JSON.parse(JSON.stringify(this.facilityData)));
   };
 
   calculateAvgStartTime = () => {
