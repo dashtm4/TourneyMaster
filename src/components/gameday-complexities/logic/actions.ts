@@ -11,11 +11,11 @@ import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import api from 'api/api';
 import { Toasts } from 'components/common';
-import { IFacility, IField, IEventDetails } from 'common/models';
+import { IFacility, IField, IEventDetails, ISchedule } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
 import { getVarcharEight } from 'helpers';
 import { stringifyBackupPlan } from '../helper';
-import { EventStatuses } from 'common/enums';
+import { ScheduleStatuses } from 'common/enums';
 
 export const eventsFetchSuccess = (
   payload: IEventDetails[]
@@ -73,15 +73,23 @@ export const getEvents: ActionCreator<ThunkAction<
   { type: string }
 >> = () => async (dispatch: Dispatch) => {
   const events = await api.get('/events');
-  if (!events) {
+  const schedules = await api.get('/schedules');
+
+  if (!events || !schedules) {
     return Toasts.errorToast("Couldn't load tournaments");
   }
 
-  const publishedEvents = events.filter(
-    (it: IEventDetails) => it.is_published_YN === EventStatuses.Published
-  );
+  const allowdEvents = events.filter((event: IEventDetails) => {
+    const isPublishedSchedule = schedules.some(
+      (schedule: ISchedule) =>
+        schedule.event_id === event.event_id &&
+        schedule.is_published_YN === ScheduleStatuses.Published
+    );
 
-  dispatch(eventsFetchSuccess(publishedEvents));
+    return isPublishedSchedule;
+  });
+
+  dispatch(eventsFetchSuccess(allowdEvents));
 };
 
 export const getFacilities: ActionCreator<ThunkAction<
