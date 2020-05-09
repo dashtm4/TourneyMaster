@@ -93,7 +93,7 @@ export const mapDivisionsData = (divisions: IDivision[]) => {
     id: division.division_id,
     name: division.short_name,
     isPremier: Boolean(division.is_premier_YN),
-    preferredFacilityId: Boolean(division.plays_at_spec_facility) && division.spec_facilities_id,
+    preferredFacilityId: Boolean(division.plays_at_spec_facility) ? division.spec_facilities_id : undefined,
   }));
 
   return mappedDivisions;
