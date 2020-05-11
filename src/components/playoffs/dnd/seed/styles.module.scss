@@ -11,6 +11,7 @@
   align-items: center;
   transition: background-color 0.25s ease-in-out, border 0.3s ease-in-out,
     color 0.3s ease-in-out;
+  position: relative;
 
   &.highlighted {
     background-color: #1c315f;
@@ -25,6 +26,24 @@
     text-overflow: ellipsis;
   }
 
+  .iconWrapper {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 1px;
+    right: 5px;
+    opacity: 0.4;
+    transition: opacity 0.2s ease-in-out;
+
+    &:hover {
+      cursor: grab;
+      opacity: 0.9;
+    }
+  }
+
   .scoreWrapper {
     width: 20px;
     height: 20px;
@@ -33,6 +52,8 @@
     color: inherit;
     font-size: 12px;
     text-align: center;
+    background: white;
+    border-radius: 100%;
 
     &.winner {
       font-weight: bold;

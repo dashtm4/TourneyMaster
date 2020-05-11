@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { Modal, HeadingLevelTwo, Input, Button } from 'components/common';
+import React, { useState, useEffect } from 'react';
+import {
+  Modal,
+  HeadingLevelTwo,
+  Input,
+  Button,
+  Tooltip,
+} from 'components/common';
 import { BindingAction, BindingCbWithOne } from 'common/models';
 import { getIcon } from 'helpers';
 import {
@@ -35,6 +41,11 @@ const PopupEditSchedule = ({
   );
 
   const [isDeleteModalOpen, onDeleteModal] = useState(false);
+  const [deleteScheduleDisabled, setDeleteScheduleState] = useState(false);
+
+  useEffect(() => {
+    setDeleteScheduleState(Boolean(schedule?.is_published_YN));
+  }, [schedule]);
 
   const onModalClose = () => {
     onDeleteModal(false);
@@ -117,16 +128,24 @@ const PopupEditSchedule = ({
             </tbody>
           </table>
           <div className={styles.btnsWrapper}>
-            <p className={styles.dellBtnWrapper}>
-              <Button
-                onClick={onDeleteClick}
-                icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
-                variant={ButtonVarian.TEXT}
-                color={ButtonColors.INHERIT}
-                btnType={ButtonFormTypes.BUTTON}
-                label="Delete Schedule &amp; Associated Brackets"
-              />
-            </p>
+            <Tooltip
+              disabled={!deleteScheduleDisabled}
+              title="This schedule has been published and therefore cannot be deleted."
+              type="info"
+            >
+              <p className={styles.dellBtnWrapper}>
+                <Button
+                  onClick={onDeleteClick}
+                  icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
+                  variant={ButtonVarian.TEXT}
+                  color={ButtonColors.INHERIT}
+                  btnType={ButtonFormTypes.BUTTON}
+                  btnStyles={{ color: '#ff0f19' }}
+                  disabled={deleteScheduleDisabled}
+                  label="Delete Schedule &amp; Associated Brackets"
+                />
+              </p>
+            </Tooltip>
             <div className={styles.navBtnWrapper}>
               <p className={styles.cancelBtnWrapper}>
                 <Button

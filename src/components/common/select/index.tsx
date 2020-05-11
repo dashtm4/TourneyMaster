@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField } from '@material-ui/core';
+import { TextField, MenuItem } from '@material-ui/core';
 import { ISelectOption } from 'common/models';
 import styles from './style.module.scss';
 
@@ -39,7 +39,6 @@ const Select: React.FC<ISelectProps> = ({
       </span>
     ) : null}
     <TextField
-      id="select"
       style={{ width }}
       variant="outlined"
       size="small"
@@ -51,14 +50,25 @@ const Select: React.FC<ISelectProps> = ({
       disabled={disabled}
       required={isRequired}
       SelectProps={{
-        native: true,
+        native: Boolean(isRequired),
       }}
     >
-      {options.map((option: ISelectOption, index: number) => (
-        <option key={index} value={option.value}>
-          {option.label}
-        </option>
-      ))}
+      {isRequired ? (
+        <>
+          <option />
+          {options.map((option: ISelectOption, index: number) => (
+            <option key={index} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </>
+      ) : (
+        options.map((option: ISelectOption, index: number) => (
+          <MenuItem key={index} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))
+      )}
     </TextField>
   </div>
 );

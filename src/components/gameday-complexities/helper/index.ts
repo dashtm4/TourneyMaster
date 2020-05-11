@@ -1,4 +1,7 @@
-import { IFacility, IField } from 'common/models';
+import { IFacility, IField, IEventDetails } from 'common/models';
+import { IMultiSelectOption } from 'components/common/multi-select';
+import { sortByField } from 'helpers';
+import { SortByFilesTypes } from 'common/enums';
 
 export const mapFacilitiesToOptions = (
   allFacilities: IFacility[],
@@ -23,6 +26,7 @@ export const mapFieldsToOptions = (
     .map(field => ({
       label: field.field_name,
       value: field.field_id,
+      checked: true,
     }));
 };
 
@@ -46,27 +50,65 @@ export const mapTimeslotsToOptions = (
   }
 };
 
+export const getEventOptions = (events: IEventDetails[]) => {
+  const eventOptions = events.map(event => ({
+    label: event.event_name,
+    value: event.event_id,
+  }));
+
+  const sortedEventOptions = sortByField(eventOptions, SortByFilesTypes.SELECT);
+
+  return sortedEventOptions;
+};
+
 export const getFacilitiesOptionsForEvent = (
   facilities: IFacility[],
   eventId: string
 ) => {
-  return facilities
+  const facilityOptions = facilities
     .filter(facility => facility.event_id === eventId)
     .map(facility => ({
       label: facility.facilities_description,
       value: facility.facilities_id,
     }));
+
+  const sortedFacilityOptions = sortByField(
+    facilityOptions,
+    SortByFilesTypes.SELECT
+  );
+
+  return sortedFacilityOptions;
 };
 
 export const getFieldsOptionsForFacilities = (
   fields: IField[],
-  facilities: { label: string; value: string }[]
+  facilitiesOptions: IMultiSelectOption[],
+  fieldOptions: IMultiSelectOption[] | undefined
 ) => {
-  return fields
-    .filter(field =>
-      facilities.map(fac => fac.value).includes(field.facilities_id)
-    )
-    .map(field => ({ label: field.field_name, value: field.field_id }));
+  const fieldOptionsForFacilities = facilitiesOptions.reduce((acc, option) => {
+    const fieldsByFacilityId = fields.filter(
+      field => field.facilities_id === option.value
+    );
+
+    const options = fieldsByFacilityId.map(field => ({
+      label: `${field.field_name} (${option.label})`,
+      value: field.field_id,
+      checked: fieldOptions
+        ? fieldOptions.some(
+            it => it.value === field.field_id && Boolean(it.checked)
+          )
+        : false,
+    }));
+
+    return [...acc, ...options];
+  }, [] as IMultiSelectOption[]);
+
+  const sortedFieldOptions = sortByField(
+    fieldOptionsForFacilities,
+    SortByFilesTypes.SELECT
+  );
+
+  return sortedFieldOptions;
 };
 
 export const stringifyBackupPlan = (backupPlan: any) => {

@@ -79,6 +79,7 @@ const PopupPublishEvent = ({
       <section className={styles.section}>
         <div className={styles.titleWrapper}>
           <HeadingLevelTwo>Modify Published Status</HeadingLevelTwo>
+          <p className={styles.eventName}>Event: {event.event_name}</p>
         </div>
         {isConfrimOpen && publishType ? (
           <SectionConfirm

@@ -1,4 +1,12 @@
-import { union, findKey, find, keys, unionBy } from 'lodash-es';
+import {
+  union,
+  findKey,
+  find,
+  keys,
+  unionBy,
+  orderBy,
+  groupBy,
+} from 'lodash-es';
 import { getTimeFromString } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IField } from 'common/models/schedule/fields';
@@ -6,8 +14,6 @@ import {
   IGame,
   TeamPositionEnum,
   arrayAverageOccurrence,
-  getSortedByGamesNum,
-  getSortedDesc,
 } from 'components/common/matrix-table/helper';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
@@ -37,6 +43,9 @@ interface IFacilityData {
     divisionIds?: string[];
     gamesPerTeam?: number;
     gamesNum?: number;
+    sizePercent?: number;
+    hasPremierFields?: boolean;
+    allocatedGamesPercent?: number;
   };
 }
 
@@ -176,7 +185,7 @@ export default class Scheduler {
       isPremier: false,
       gamesNum: recursor,
     });
-    this.settleMinGameTeams(unsatisfiedTeams);
+    this.settleMinGameTeams(orderBy(unsatisfiedTeams, 'games'));
 
     // settle unsatisfied regular teams on regular fields with back-to-back
     // adds the "IF" section vs the above to settle the min games teams for unsatisfied teams
@@ -237,8 +246,10 @@ export default class Scheduler {
   rearrangeTeamsByConstraints = (teamCards?: ITeamCard[]) => {
     const teamCardsArr = teamCards || this.teamCards;
     const teams = {};
+    const thisTeamCards = [...this.teamCards];
+
     teamCardsArr.forEach(teamCard => {
-      teams[teamCard.id] = this.teamCards.find(
+      teams[teamCard.id] = orderBy(thisTeamCards, 'games').find(
         tc =>
           teamCard.id !== tc.id &&
           teamCard.isPremier === tc.isPremier &&
@@ -506,6 +517,54 @@ export default class Scheduler {
     return this.facilityData[facilityId!]?.divisionIds;
   };
 
+  findFacilityForDivision = (division: IScheduleDivision) => {
+    const facilityIds = Object.keys(this.facilityData);
+
+    if (division.preferredFacilityId) {
+      return division.preferredFacilityId;
+    }
+
+    if (division.isPremier) {
+      const premierFacilities = facilityIds
+        .map(item => ({ ...this.facilityData[item], id: item }))
+        .filter(v => v.hasPremierFields);
+
+      const orderedPremierFacilities = orderBy(
+        premierFacilities,
+        ({ allocatedGamesPercent }) => [allocatedGamesPercent]
+      );
+
+      return (
+        orderedPremierFacilities.find(
+          item =>
+            (item.sizePercent || 0) - (item.allocatedGamesPercent || 0) >
+            (division.sizePercent || 0)
+        )?.id || orderedPremierFacilities[0]?.id
+      );
+    } else {
+      const facilities = facilityIds.map(item => ({
+        ...this.facilityData[item],
+        id: item,
+      }));
+
+      const orderedFacilities = orderBy(
+        facilities,
+        ({ allocatedGamesPercent, hasPremierFields }) => [
+          allocatedGamesPercent,
+          hasPremierFields,
+        ]
+      );
+
+      return (
+        orderedFacilities.find(
+          item =>
+            (item.sizePercent || 0) - (item.allocatedGamesPercent || 0) >
+            (division.sizePercent || 0)
+        )?.id || orderedFacilities[0]?.id
+      );
+    }
+  };
+
   calculateGamesForFacilities = () => {
     const facilities: string[] = [];
     const facilitiesFields = {};
@@ -535,34 +594,62 @@ export default class Scheduler {
           teamsInDivisions[teamCard.divisionId] + 1 || 1)
     );
 
-    const sortedFacilities = getSortedByGamesNum(this.facilityData);
-    const sortedDivisions = getSortedDesc(teamsInDivisions);
+    /* CALCULATING DIMENSIONS AND PERCENTAGE FOR FACILITIES AND DIVISIONS */
+    Object.keys(this.facilityData).forEach(key => {
+      const thisFacilitySize = this.facilityData[key]?.gamesNum || 0;
+      const total: number = Object.keys(this.facilityData)
+        .map(key2 => this.facilityData[key2]?.gamesNum || 0)
+        .reduce((a, b) => a + b, 0);
 
-    const numberOfAllTeams = this.teamCards.filter(
-      teamCard => !teamCard.isPremier
-    ).length;
-
-    // If all teams can fit in one biggest facility then let it be
-    if (
-      numberOfAllTeams * this.minGameNum <=
-      this.facilityData[sortedFacilities[0]]?.gamesNum!
-    ) {
-      this.facilityData[sortedFacilities[0]] = {
-        ...this.facilityData[sortedFacilities[0]],
-        divisionIds: [...sortedDivisions],
+      this.facilityData = {
+        ...this.facilityData,
+        [key]: {
+          ...this.facilityData[key],
+          hasPremierFields: this.fields
+            .filter(item => item.facilityId === key)
+            .some(item => item.isPremier),
+          sizePercent: (thisFacilitySize * 100) / total,
+        },
       };
-      return;
-    }
+    });
 
-    // Put divisions in facilities by number of games and teams
-    sortedDivisions.forEach((divisionId, index) => {
-      const facilityId = sortedFacilities[index] || sortedFacilities[0];
-      this.facilityData[facilityId] = {
-        ...this.facilityData[facilityId],
-        divisionIds: [
-          ...(this.facilityData[facilityId]?.divisionIds || []),
-          divisionId,
-        ],
+    this.divisions = orderBy(this.divisions, 'name')
+      .map(item => {
+        const divisionTeams = this.teamCards.filter(
+          v => v.divisionId === item.id
+        );
+        const groupedPools = groupBy(divisionTeams, 'poolId');
+        const poolLengths = Object.keys(groupedPools).map(
+          poolKey => groupedPools[poolKey].length
+        );
+
+        return {
+          ...item,
+          size: poolLengths.reduce((a, b) => a + (b * (b - 1)) / 2, 0),
+        };
+      })
+      .map((item, _, arr) => {
+        const total = arr.reduce((a, b) => a + b.size, 0);
+
+        return {
+          ...item,
+          sizePercent: Math.round((item.size * 100) / total),
+        };
+      });
+
+    this.divisions.forEach(item => {
+      const facilityId = this.findFacilityForDivision(item);
+      const thisFacilityData = this.facilityData[facilityId];
+
+      this.facilityData = {
+        ...this.facilityData,
+        [facilityId]: {
+          ...thisFacilityData,
+          divisionIds: [...(thisFacilityData?.divisionIds || []), item.id],
+          allocatedGamesPercent:
+            (thisFacilityData?.allocatedGamesPercent || 0) +
+            (item.sizePercent || 0),
+        },
       };
     });
   };

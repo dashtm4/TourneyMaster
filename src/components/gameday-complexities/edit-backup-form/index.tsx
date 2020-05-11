@@ -6,6 +6,9 @@ import {
   BindingAction,
   IEventDetails,
 } from 'common/models';
+import MultiSelect, {
+  IMultiSelectOption,
+} from 'components/common/multi-select';
 import { IField } from 'common/models';
 import MultipleSearch from 'components/common/multiple-search-select';
 import styles from '../create-backup-modal/styles.module.scss';
@@ -16,6 +19,7 @@ import {
   mapTimeslotsToOptions,
   getFacilitiesOptionsForEvent,
   getFieldsOptionsForFacilities,
+  getEventOptions,
 } from '../helper';
 import { IBackupPlan } from 'common/models/backup_plan';
 import { IMultipleSelectOption } from '../create-backup-form';
@@ -95,10 +99,11 @@ class CreateBackupForm extends React.Component<Props, State> {
     this.onChange('facilities_impacted', values);
   };
 
-  onFieldsChange = (
-    _event: InputTargetValue,
-    values: IMultipleSelectOption[]
-  ) => this.onChange('fields_impacted', values);
+  onFieldsChange = (name: string, values: IMultiSelectOption[]) => {
+    const checkedField = values.filter(it => Boolean(it.checked));
+
+    this.onChange(name, checkedField);
+  };
 
   onTimeslotsChange = (
     _event: InputTargetValue,
@@ -203,10 +208,7 @@ class CreateBackupForm extends React.Component<Props, State> {
 
     const { events, facilities: allFacilities, fields: allFields } = this.props;
 
-    const eventsOptions = events.map(event => ({
-      label: event.event_name,
-      value: event.event_id,
-    }));
+    const eventsOptions = getEventOptions(events);
 
     const facilitiesOptions = getFacilitiesOptionsForEvent(
       allFacilities,
@@ -215,7 +217,12 @@ class CreateBackupForm extends React.Component<Props, State> {
 
     const fieldsOptions =
       facilities_impacted &&
-      getFieldsOptionsForFacilities(allFields, facilities_impacted);
+      getFieldsOptionsForFacilities(
+        allFields,
+        facilities_impacted,
+        fields_impacted
+      );
+
     return (
       <div className={styles.container}>
         <div className={styles.title}>Edit Backup</div>
@@ -269,12 +276,12 @@ class CreateBackupForm extends React.Component<Props, State> {
 
             {facilities_impacted?.length ? (
               <div className={styles.item}>
-                <MultipleSearch
+                <MultiSelect
                   label="Fields Impacted"
-                  width={'282px'}
-                  options={fieldsOptions}
+                  name="fields_impacted"
+                  width="282px"
+                  selectOptions={fieldsOptions}
                   onChange={this.onFieldsChange}
-                  value={fields_impacted || []}
                 />
               </div>
             ) : null}
@@ -287,7 +294,7 @@ class CreateBackupForm extends React.Component<Props, State> {
                 )
               : null}
 
-            {event_id && (
+            {/* {event_id && (
               <div className={styles.item}>
                 <>
                   <span>or</span>
@@ -298,7 +305,7 @@ class CreateBackupForm extends React.Component<Props, State> {
                   />
                 </>
               </div>
-            )}
+            )} */}
           </div>
         </div>
         <div className={styles.buttonsGroup}>

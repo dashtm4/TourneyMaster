@@ -71,6 +71,7 @@ import api from 'api/api';
 import { adjustPlayoffTimeOnLoadScoring } from 'components/schedules/definePlayoffs';
 import { IBracketGame } from 'components/playoffs/bracketGames';
 import ErrorModal from './components/error-modal';
+import { advanceTeamsIntoAnotherBracket } from 'components/playoffs/helper';
 
 interface MatchParams {
   eventId?: string;
@@ -380,35 +381,10 @@ class RecordScores extends React.Component<
 
     if (!bracketGames) return;
 
-    const whoIsWinner =
-      (bracketGame.homeTeamScore || 0) > (bracketGame.awayTeamScore || 0)
-        ? bracketGame.homeTeamId
-        : bracketGame.awayTeamId;
-
-    const whoIsLoser =
-      (bracketGame.homeTeamScore || 0) < (bracketGame.awayTeamScore || 0)
-        ? bracketGame.homeTeamId
-        : bracketGame.awayTeamId;
-
-    const newBracketGames = bracketGames.map(item => {
-      if (
-        item.divisionId === bracketGame.divisionId &&
-        (item.awayDependsUpon === bracketGame.index ||
-          item.homeDependsUpon === bracketGame.index)
-      ) {
-        const isAwayTeam = item.awayDependsUpon === bracketGame.index;
-        const positionedTeam = isAwayTeam ? 'awayTeamId' : 'homeTeamId';
-
-        return {
-          ...item,
-          [positionedTeam]: item.round >= 0 ? whoIsWinner : whoIsLoser,
-        };
-      }
-
-      if (item.id === bracketGame.id) return bracketGame;
-
-      return item;
-    });
+    const newBracketGames = advanceTeamsIntoAnotherBracket(
+      bracketGame,
+      bracketGames
+    );
 
     this.props.fetchBracketGames(newBracketGames, true);
   };

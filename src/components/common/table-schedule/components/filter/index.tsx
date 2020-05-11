@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from 'components/common';
-import { ButtonTypes } from 'common/enums';
+import { Button, Tooltip } from 'components/common';
+import { ButtonTypes, TableScheduleTypes } from 'common/enums';
 import { IScheduleFilter } from '../../types';
 import styles from './styles.module.scss';
 import MultiSelect, {
@@ -9,16 +9,27 @@ import MultiSelect, {
 import InteractiveTooltip, {
   IModalItem,
 } from 'components/common/interactive-tooltip';
+import chainIcon from 'assets/chainIcon.png';
 
 interface IProps {
+  tableType: TableScheduleTypes;
   days: number;
   warnings?: IModalItem[];
   filterValues: IScheduleFilter;
+  simultaneousDnd: boolean;
+  toggleSimultaneousDnd: () => void;
   onChangeFilterValue: (values: IScheduleFilter) => void;
 }
 
 const ScoringFilter = (props: IProps) => {
-  const { filterValues, onChangeFilterValue, warnings } = props;
+  const {
+    tableType,
+    filterValues,
+    onChangeFilterValue,
+    warnings,
+    simultaneousDnd,
+    toggleSimultaneousDnd,
+  } = props;
 
   const {
     divisionsOptions,
@@ -101,6 +112,29 @@ const ScoringFilter = (props: IProps) => {
           {warnings?.length ? (
             <InteractiveTooltip title="Scheduling Warning" items={warnings} />
           ) : null}
+          {tableType === TableScheduleTypes.SCHEDULES && (
+            <Tooltip type="info" title="Move both teams simultaneously">
+              <div style={{ marginLeft: '15px', marginBottom: '2px' }}>
+                <Button
+                  icon={
+                    <img
+                      src={chainIcon}
+                      style={{
+                        width: '18px',
+                        height: '18px',
+                        filter: 'invert(1)',
+                      }}
+                      alt=""
+                    />
+                  }
+                  label={simultaneousDnd ? 'On' : 'Off'}
+                  variant="contained"
+                  color="primary"
+                  onClick={toggleSimultaneousDnd}
+                />
+              </div>
+            </Tooltip>
+          )}
         </div>
       </form>
     </section>
