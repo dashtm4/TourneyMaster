@@ -10,6 +10,7 @@ import {
   getTimeValuesFromEventSchedule,
   calculateTimeSlots,
   calculateTournamentDays,
+  timeSlotsEntityTypes,
 } from 'helpers';
 import { HeadingLevelTwo, Loader, HazardList } from 'components/common';
 import {
@@ -156,6 +157,7 @@ class Reporting extends React.Component<
       teams,
       divisions,
       facilities,
+      schedulesGames,
     } = this.props;
 
     if (
@@ -171,7 +173,15 @@ class Reporting extends React.Component<
 
     const timeValues = getTimeValuesFromEventSchedule(event, schedule);
 
-    const timeSlots = calculateTimeSlots(timeValues);
+    // const eventTimeSlots = calculateTimeSlots(timeValues);
+
+    const timeSlots = calculateTimeSlots(
+      timeValues,
+      schedulesGames,
+      timeSlotsEntityTypes.SCHEDULE_GAMES
+    );
+
+    // console.log(eventTimeSlots, timeSlots);
 
     const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);

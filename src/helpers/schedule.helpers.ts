@@ -1,6 +1,13 @@
 import { getTimeFromString, timeToString } from 'helpers';
-import { IEventDetails, IConfigurableSchedule, ISchedule } from 'common/models';
+import {
+  IEventDetails,
+  IConfigurableSchedule,
+  ISchedule,
+  ISchedulesGame,
+  ISchedulesDetails,
+} from 'common/models';
 import moment from 'moment';
+import { orderBy } from 'lodash-es';
 
 interface ITimeValues {
   firstGameTime: string;
@@ -73,10 +80,68 @@ const getTimeValuesFromSchedule = (
   gamesStartOn: schedule.games_start_on,
 });
 
+export enum timeSlotsEntityTypes {
+  SCHEDULE_DETAILS = 'scheduleDetails',
+  SCHEDULE_GAMES = 'scheduleGames',
+}
+
+const getTimeSlotsFromEntities = (
+  timeSlotsEntities: ISchedulesDetails[] | ISchedulesGame[],
+  timeSlotsEntity: timeSlotsEntityTypes
+) => {
+  let timeValues = [];
+
+  switch (timeSlotsEntity) {
+    case timeSlotsEntityTypes.SCHEDULE_DETAILS: {
+      timeValues = (timeSlotsEntities as ISchedulesDetails[]).reduce(
+        (acc, scheduleDetails) => {
+          const { game_time } = scheduleDetails;
+
+          return game_time ? [...acc, game_time] : acc;
+        },
+        [] as string[]
+      );
+
+      break;
+    }
+    case timeSlotsEntityTypes.SCHEDULE_GAMES: {
+      timeValues = (timeSlotsEntities as ISchedulesGame[]).reduce(
+        (acc, scheduleGame) => {
+          const { start_time } = scheduleGame;
+
+          return start_time ? [...acc, start_time] : acc;
+        },
+        [] as string[]
+      );
+      break;
+    }
+  }
+
+  const uniqueTimeValues = Array.from(new Set(timeValues));
+
+  const sortedTimeValues = orderBy(uniqueTimeValues);
+
+  const mappedTimeSlots = sortedTimeValues.map((it, idx) => ({
+    id: idx,
+    time: it,
+  }));
+
+  return mappedTimeSlots;
+};
 
 // This is the function that calculates the time slots for all screens... Very important function.
-const calculateTimeSlots = (timeValues: ITimeValues) => {
+const calculateTimeSlots = (
+  timeValues: ITimeValues,
+  timeSlotsEntities?: ISchedulesGame[] | ISchedulesDetails[],
+  entityType?: timeSlotsEntityTypes
+) => {
   if (!timeValues) return;
+
+  if (timeSlotsEntities && entityType && timeSlotsEntities?.length !== 0) {
+    const timeSlots = getTimeSlotsFromEntities(timeSlotsEntities, entityType);
+
+    return timeSlots;
+  }
 
   const {
     firstGameTime,
