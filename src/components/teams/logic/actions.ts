@@ -52,7 +52,7 @@ const loadTeamsData: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
     );
 
     const schedulesGames = publishedSchedule
-      ? await Api.get(`/games?schedule_id=${publishedSchedule}`)
+      ? await Api.get(`/games?schedule_id=${publishedSchedule.schedule_id}`)
       : [];
 
     const mappedGames = mapScheduleGamesWithNames(
