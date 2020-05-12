@@ -33,12 +33,14 @@ import {
   ITeam,
   IDivision,
   IFacility,
+  ISchedulesDetails,
 } from 'common/models';
 import {
   getVarcharEight,
   getTimeValuesFromEventSchedule,
   calculateTimeSlots,
   calculateTournamentDays,
+  timeSlotsEntityTypes,
 } from 'helpers';
 import { gameStartOnOptions, ISchedulingSchedule } from '../types';
 import {
@@ -339,17 +341,22 @@ const getSchedulesData = async (
   tournamentInfo: TournamentInfo
 ) => {
   const { event, fields, teams, divisions, facilities } = tournamentInfo;
+
+  const loadedSchedulesDetails = (await api.get('/schedules_details', {
+    schedule_id: schedule.schedule_id,
+  })) as ISchedulesDetails[];
+
   const timeValues = getTimeValuesFromEventSchedule(event, schedule);
-  const timeSlots = calculateTimeSlots(timeValues);
+  const timeSlots = calculateTimeSlots(
+    timeValues,
+    loadedSchedulesDetails,
+    timeSlotsEntityTypes.SCHEDULE_DETAILS
+  );
 
   const mappedFields = mapFieldsData(fields, facilities);
   const sortedFields = sortFieldsByPremier(mappedFields);
 
   const { games } = defineGames(sortedFields, timeSlots!);
-
-  const loadedSchedulesDetails = await api.get('/schedules_details', {
-    schedule_id: schedule.schedule_id,
-  });
 
   const mappedTeams = mapTeamsData(teams, divisions);
   const tableTeams = mapTeamsFromSchedulesDetails(
