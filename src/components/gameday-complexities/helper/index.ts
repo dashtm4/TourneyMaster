@@ -1,7 +1,8 @@
 import { IFacility, IField, IEventDetails } from 'common/models';
 import { IMultiSelectOption } from 'components/common/multi-select';
-import { sortByField } from 'helpers';
+import { sortByField, formatTimeSlot } from 'helpers';
 import { SortByFilesTypes } from 'common/enums';
+import { IComplexityTimeslot } from '../common';
 
 export const mapFacilitiesToOptions = (
   allFacilities: IFacility[],
@@ -127,4 +128,17 @@ export const stringifyBackupPlan = (backupPlan: any) => {
           )
         : backupPlan.timeslots_impacted,
   };
+};
+
+export const getTimeSlotOptions = (timeSlots: IComplexityTimeslot) => {
+  if (!timeSlots.eventTimeSlots) {
+    return [];
+  }
+
+  const timeSlotOptions = timeSlots.eventTimeSlots.map(it => ({
+    value: it.time,
+    label: formatTimeSlot(it.time) as string,
+  }));
+
+  return timeSlotOptions;
 };

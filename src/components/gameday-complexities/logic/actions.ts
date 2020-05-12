@@ -248,7 +248,7 @@ export const loadTimeSlots = (eventId: string) => async (
     const { complexities } = getState();
 
     const currentSchedule = complexities.schedules.find(
-      it => it.event_id === eventId
+      (it: ISchedule) => it.event_id === eventId
     );
 
     if (!currentSchedule) {
@@ -258,12 +258,12 @@ export const loadTimeSlots = (eventId: string) => async (
     dispatch({
       type: LOAD_TIMESLOTS_START,
       payload: {
-        schedule: currentSchedule,
+        eventId,
       },
     });
 
     const schedulDetails = await api.get(
-      `/schedules_details?=schedule_id${currentSchedule.schedule_id}`
+      `/schedules_details?schedule_id=${currentSchedule.schedule_id}`
     );
 
     const timeSlots = getTimeSlotsFromEntities(
@@ -274,8 +274,8 @@ export const loadTimeSlots = (eventId: string) => async (
     dispatch({
       type: LOAD_TIMESLOTS_SUCCESS,
       payload: {
-        schedule: currentSchedule,
-        scheduleTimeSlots: timeSlots,
+        eventId,
+        eventTimeSlots: timeSlots,
       },
     });
   } catch (err) {

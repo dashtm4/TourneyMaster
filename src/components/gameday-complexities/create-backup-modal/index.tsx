@@ -11,12 +11,15 @@ import Button from 'components/common/buttons/button';
 import { IField } from 'common/models';
 import { PopupExposure } from 'components/common';
 import { IBackupPlan } from 'common/models/backup_plan';
+import { IComplexityTimeslots } from '../common';
 
 interface Props {
+  loadTimeSlots: (eventId: string) => void;
   onCancel: BindingAction;
   events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
+  timeSlots: IComplexityTimeslots;
   saveBackupPlans: BindingCbWithOne<Partial<IBackupPlan>[]>;
 }
 
@@ -84,6 +87,8 @@ class CreateBackupModal extends React.Component<Props, State> {
             events={this.props.events}
             facilities={this.props.facilities}
             fields={this.props.fields}
+            timeSlots={this.props.timeSlots}
+            loadTimeSlots={this.props.loadTimeSlots}
           />
         ))}
         <Button

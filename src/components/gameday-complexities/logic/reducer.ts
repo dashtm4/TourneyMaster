@@ -11,6 +11,7 @@ import {
 } from './actionTypes';
 import { IFacility, IField, IEventDetails, ISchedule } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
+import { IComplexityTimeslots } from '../common';
 
 export interface IGamedayComplexitiesState {
   data: IEventDetails[];
@@ -18,7 +19,7 @@ export interface IGamedayComplexitiesState {
   fields: IField[];
   schedules: ISchedule[];
   backupPlans: IBackupPlan[];
-  timeSlots: Object;
+  timeSlots: IComplexityTimeslots;
   isLoading: boolean;
 }
 
@@ -93,29 +94,29 @@ export default (
       };
     }
     case LOAD_TIMESLOTS_START: {
-      const { schedule } = action.payload;
+      const { eventId } = action.payload;
 
       return {
         ...state,
         timeSlots: {
           ...state.timeSlots,
-          [schedule.schedule_id]: {
+          [eventId]: {
             isLoading: true,
           },
         },
       };
     }
     case LOAD_TIMESLOTS_SUCCESS: {
-      const { schedule, scheduleTimeSlots } = action.payload;
+      const { eventId, eventTimeSlots } = action.payload;
 
       return {
         ...state,
         timeSlots: {
           ...state.timeSlots,
-          [schedule.schedule_id]: {
+          [eventId]: {
             isLoading: false,
             isLoaded: true,
-            scheduleTimeSlots,
+            eventTimeSlots,
           },
         },
       };
