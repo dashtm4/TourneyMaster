@@ -12,6 +12,7 @@ import { ITeamsState } from 'components/teams/logic/reducer';
 import { IScoringState } from 'components/scoring/logic/reducer';
 import { ICalendarState } from 'components/calendar/logic/reducer';
 import { IPlayoffState } from 'components/playoffs/logic/reducer';
+import { IGamedayComplexitiesState } from 'components/gameday-complexities/logic/reducer';
 
 export interface IAppState {
   pageEvent: IPageEventState;
@@ -28,4 +29,5 @@ export interface IAppState {
   scoring: IScoringState;
   calendar: ICalendarState;
   playoffs: IPlayoffState;
+  complexities: IGamedayComplexitiesState;
 }

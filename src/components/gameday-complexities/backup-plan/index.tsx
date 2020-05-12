@@ -13,26 +13,24 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Modal from 'components/common/modal';
 import EditBackupForm from '../edit-backup-form';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import { IComplexityTimeslots, TypeOptionsEnum } from '../common';
 
 interface Props {
   events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
   data: IBackupPlan;
+  timeSlots: IComplexityTimeslots;
   deleteBackupPlan: BindingCbWithOne<string>;
   updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
+  loadTimeSlots: (eventId: string) => void;
+
   isSectionExpand: boolean;
 }
 
 interface State {
   isEditOpen: boolean;
   isDeleteOpen: boolean;
-}
-
-enum TypeOptionsEnum {
-  'cancel_games' = 'Cancel Games',
-  'modify_start_time' = 'Modify Start Times',
-  'modify_game_lengths' = 'Modify Game Lengths',
 }
 
 class BackupPlan extends React.Component<Props, State> {
@@ -160,8 +158,10 @@ class BackupPlan extends React.Component<Props, State> {
             events={this.props.events}
             facilities={this.props.facilities}
             fields={this.props.fields}
+            timeSlots={this.props.timeSlots}
             updateBackupPlan={this.props.updateBackupPlan}
             onEditClose={this.onEditClose}
+            loadTimeSlots={this.props.loadTimeSlots}
           />
         </Modal>
         <DeletePopupConfrim

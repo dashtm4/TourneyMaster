@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Select, Radio, Button } from 'components/common';
+import { Input, Select, Radio, Button, Loader } from 'components/common';
 import {
   IFacility,
   BindingCbWithOne,
@@ -12,7 +12,6 @@ import MultiSelect, {
 import { IField } from 'common/models';
 import MultipleSearch from 'components/common/multiple-search-select';
 import styles from '../create-backup-modal/styles.module.scss';
-import { OptionsEnum, TypeOptionsEnum } from '../create-backup-form';
 import {
   mapFacilitiesToOptions,
   mapFieldsToOptions,
@@ -20,16 +19,12 @@ import {
   getFacilitiesOptionsForEvent,
   getFieldsOptionsForFacilities,
   getEventOptions,
+  getTimeSlotOptions,
 } from '../helper';
 import { IBackupPlan } from 'common/models/backup_plan';
 import { IMultipleSelectOption } from '../create-backup-form';
 import { PopupExposure } from 'components/common';
-
-const options = [{ value: '05:00 PM', label: '05:00 PM' }];
-const optionsTimeslots = [
-  { value: '05:00 PM', label: '05:00 PM' },
-  { value: '06:00 PM', label: '06:00 PM' },
-];
+import { IComplexityTimeslots, OptionsEnum, TypeOptionsEnum } from '../common';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -38,7 +33,9 @@ interface Props {
   events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
+  timeSlots: IComplexityTimeslots;
   updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
+  loadTimeSlots: (eventId: string) => void;
   onEditClose: BindingAction;
 }
 
@@ -51,6 +48,14 @@ class CreateBackupForm extends React.Component<Props, State> {
   state = { backupPlan: {}, isModalConfirmOpen: false };
 
   componentDidMount() {
+    const { backupPlan, timeSlots } = this.props;
+    const { event_id } = backupPlan;
+    const eventTimeSlots = timeSlots[event_id];
+
+    if (event_id && !eventTimeSlots) {
+      this.props.loadTimeSlots(event_id);
+    }
+
     this.setState({
       backupPlan: {
         ...this.props.backupPlan,
@@ -85,11 +90,14 @@ class CreateBackupForm extends React.Component<Props, State> {
     this.onChange('event_id', e.target.value);
     this.onChange('facilities_impacted', '');
     this.onChange('fields_impacted', '');
+    this.onChange('timeslots_impacted', undefined);
+    this.onChange('change_value', undefined);
   };
 
   onTypeChange = (e: InputTargetValue) => {
     this.onChange('backup_type', OptionsEnum[e.target.value]);
     this.onChange('timeslots_impacted', '');
+    this.onChange('change_value', undefined);
   };
 
   onFacilitiesChange = (
@@ -140,44 +148,58 @@ class CreateBackupForm extends React.Component<Props, State> {
   };
 
   renderTimeslots = (type: string, timeslots: any, changeTo: string) => {
+    const { backupPlan, timeSlots } = this.props;
+    const { event_id } = backupPlan;
+    const eventTimeSlots = timeSlots[event_id];
+
+    if (
+      eventTimeSlots &&
+      eventTimeSlots.isLoaded &&
+      eventTimeSlots.eventTimeSlots.length === 0
+    ) {
+      return null;
+    }
+
+    const timeSlotOptions = getTimeSlotOptions(eventTimeSlots);
+
     switch (String(type)) {
-      case 'cancel_games':
+      case OptionsEnum['Cancel Games']:
         return (
           <div className={styles.item}>
             <MultipleSearch
               label="Timeslots"
               width={'282px'}
-              options={optionsTimeslots}
+              options={timeSlotOptions}
               onChange={this.onTimeslotsChange}
               value={timeslots || []}
             />
           </div>
         );
-      case 'modify_start_time':
+      case OptionsEnum['Close Fields & Move Games']:
         return (
           <div className={styles.itemDouble}>
             <Select
               label="Timeslot"
-              options={options}
+              options={timeSlotOptions}
               width={'131px'}
               value={timeslots || ''}
               onChange={this.onTimeslotChange}
             />
             <Select
               label="Change To"
-              options={options}
+              options={timeSlotOptions}
               width={'131px'}
               value={changeTo || ''}
               onChange={this.onChangeToChange}
             />
           </div>
         );
-      case 'modify_game_lengths':
+      case OptionsEnum['Modify Game & Subsequent TimeSlots']:
         return (
           <div className={styles.itemDouble}>
             <Select
               label="Timeslot"
-              options={options}
+              options={timeSlotOptions}
               width={'131px'}
               value={timeslots || ''}
               onChange={this.onTimeslotChange}
@@ -197,6 +219,13 @@ class CreateBackupForm extends React.Component<Props, State> {
 
   render() {
     const {
+      events,
+      facilities: allFacilities,
+      fields: allFields,
+      timeSlots,
+    } = this.props;
+
+    const {
       backup_name,
       event_id,
       backup_type,
@@ -205,8 +234,6 @@ class CreateBackupForm extends React.Component<Props, State> {
       timeslots_impacted,
       change_value,
     }: any = this.state.backupPlan;
-
-    const { events, facilities: allFacilities, fields: allFields } = this.props;
 
     const eventsOptions = getEventOptions(events);
 
@@ -222,6 +249,8 @@ class CreateBackupForm extends React.Component<Props, State> {
         facilities_impacted,
         fields_impacted
       );
+
+    const eventTimeSlots = timeSlots[event_id];
 
     return (
       <div className={styles.container}>
@@ -248,11 +277,7 @@ class CreateBackupForm extends React.Component<Props, State> {
             <div className={styles.itemLarge}>
               <Radio
                 row={true}
-                options={[
-                  'Cancel Games',
-                  'Modify Start Times',
-                  'Modify Game Lengths',
-                ]}
+                options={Object.values(TypeOptionsEnum)}
                 formLabel="Type"
                 onChange={this.onTypeChange}
                 checked={
@@ -286,13 +311,15 @@ class CreateBackupForm extends React.Component<Props, State> {
               </div>
             ) : null}
 
-            {fields_impacted?.length
-              ? this.renderTimeslots(
-                  backup_type,
-                  timeslots_impacted,
-                  change_value
-                )
-              : null}
+            {eventTimeSlots && eventTimeSlots.isLoading ? (
+              <Loader />
+            ) : fields_impacted?.length ? (
+              this.renderTimeslots(
+                backup_type,
+                timeslots_impacted,
+                change_value
+              )
+            ) : null}
 
             {/* {event_id && (
               <div className={styles.item}>

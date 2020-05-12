@@ -81,7 +81,7 @@ const getTimeValuesFromSchedule = (
   gamesStartOn: schedule.games_start_on,
 });
 
-const getTimeSlotsFromEntities = (
+export const getTimeSlotsFromEntities = (
   timeSlotsEntities: ISchedulesDetails[] | ISchedulesGame[],
   timeSlotsEntity: TimeSlotsEntityTypes
 ) => {
