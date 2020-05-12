@@ -81,7 +81,11 @@ import {
 } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
-import { TableScheduleTypes, ScheduleStatuses } from 'common/enums';
+import {
+  TableScheduleTypes,
+  ScheduleStatuses,
+  TimeSlotsEntityTypes,
+} from 'common/enums';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import SchedulesLoader, { LoaderTypeEnum } from './loader';
@@ -336,6 +340,7 @@ class Schedules extends Component<Props, State> {
       divisions,
       facilities,
       match,
+      schedulesDetails,
     } = this.props;
 
     const { scheduleId } = match.params;
@@ -359,7 +364,11 @@ class Schedules extends Component<Props, State> {
         ? getTimeValuesFromEventSchedule(event, schedule)
         : getTimeValuesFromSchedule(scheduleData!);
 
-    const timeSlots = calculateTimeSlots(timeValues);
+    const timeSlots = calculateTimeSlots(
+      timeValues,
+      schedulesDetails,
+      TimeSlotsEntityTypes.SCHEDULE_DETAILS
+    );
 
     const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);
