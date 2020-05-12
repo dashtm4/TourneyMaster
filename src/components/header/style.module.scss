@@ -6,15 +6,15 @@ $transition: 0.20s ease-in-out;
   width: 100%;
   height: 60px;
   display: flex;
-  color: #FFFFFF; 
+  color: #FFFFFF;
   align-items: center;
   justify-content: center;
-  background: #c6c8cc8a;
   padding: 0;
   font-family: 'Open Sans';
   font-weight: bold;
   box-shadow: 0px 3px 20px -14px #00000070;
   flex: 0 0 auto;
+  background: linear-gradient(121deg,#073b65 38%,#0079ae);
 
   @media screen and (min-width: 1920px) {
     padding: 0 21%;
@@ -49,13 +49,13 @@ $transition: 0.20s ease-in-out;
       padding: 0 $horizontalPadding / 2;
 
       .listItem {
-        color: #6a6a6a;
+        color: #fff;
         padding-right: 10px;
         white-space: nowrap;
         transition: color $transition, text-shadow $transition;
         a {
           text-decoration: none;
-          color: #6a6a6a;
+          color: #fff;
         }
 
         &:hover {
