@@ -95,6 +95,8 @@ class CreateBackupForm extends React.Component<Props> {
     this.props.onChange('change_value', e.target.value, this.props.index);
 
   renderTimeslots = (type: string, timeslots: any, changeTo: string) => {
+    console.log(timeslots);
+
     switch (type) {
       case 'cancel_games':
         return (
@@ -163,7 +165,7 @@ class CreateBackupForm extends React.Component<Props> {
 
     const { events, facilities: allFacilities, fields: allFields } = this.props;
 
-    const eventsOptions = getEventOptions(events)
+    const eventsOptions = getEventOptions(events);
 
     const facilitiesOptions = getFacilitiesOptionsForEvent(
       allFacilities,

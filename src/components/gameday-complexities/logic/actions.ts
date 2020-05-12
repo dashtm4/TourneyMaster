@@ -6,6 +6,9 @@ import {
   ADD_BACKUP_PLAN_SUCCESS,
   DELETE_BACKUP_PLAN,
   UPDATE_BACKUP_PLAN,
+  LOAD_TIMESLOTS_START,
+  LOAD_TIMESLOTS_SUCCESS,
+  LOAD_TIMESLOTS_FAILURE,
 } from './actionTypes';
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
@@ -13,13 +16,29 @@ import api from 'api/api';
 import { Toasts } from 'components/common';
 import { IFacility, IField, IEventDetails, ISchedule } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
-import { getVarcharEight, sortByField } from 'helpers';
+import {
+  getVarcharEight,
+  sortByField,
+  getTimeSlotsFromEntities,
+} from 'helpers';
 import { stringifyBackupPlan } from '../helper';
-import { ScheduleStatuses, SortByFilesTypes } from 'common/enums';
+import {
+  ScheduleStatuses,
+  SortByFilesTypes,
+  TimeSlotsEntityTypes,
+} from 'common/enums';
+import { IAppState } from 'reducers/root-reducer.types';
 
-export const eventsFetchSuccess = (
-  payload: IEventDetails[]
-): { type: string; payload: IEventDetails[] } => ({
+export const eventsFetchSuccess = (payload: {
+  events: IEventDetails[];
+  schedules: ISchedule[];
+}): {
+  type: string;
+  payload: {
+    events: IEventDetails[];
+    schedules: ISchedule[];
+  };
+} => ({
   type: EVENTS_FETCH_SUCCESS,
   payload,
 });
@@ -79,17 +98,25 @@ export const getEvents: ActionCreator<ThunkAction<
     return Toasts.errorToast("Couldn't load tournaments");
   }
 
+  const publishedSchedules = schedules.filter(
+    (schedule: ISchedule) =>
+      schedule.is_published_YN === ScheduleStatuses.Published
+  );
+
   const allowdEvents = events.filter((event: IEventDetails) => {
-    const isPublishedSchedule = schedules.some(
-      (schedule: ISchedule) =>
-        schedule.event_id === event.event_id &&
-        schedule.is_published_YN === ScheduleStatuses.Published
+    const isPublishedSchedule = publishedSchedules.some(
+      (schedule: ISchedule) => schedule.event_id === event.event_id
     );
 
     return isPublishedSchedule;
   });
 
-  dispatch(eventsFetchSuccess(allowdEvents));
+  dispatch(
+    eventsFetchSuccess({
+      events: allowdEvents,
+      schedules: publishedSchedules,
+    })
+  );
 };
 
 export const getFacilities: ActionCreator<ThunkAction<
@@ -211,4 +238,51 @@ export const updateBackupPlan: ActionCreator<ThunkAction<
   }
   dispatch(updateBackupPlanSuccess(data));
   Toasts.successToast('Backup Plan is successfully updated');
+};
+
+export const loadTimeSlots = (eventId: string) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
+  try {
+    const { complexities } = getState();
+
+    const currentSchedule = complexities.schedules.find(
+      it => it.event_id === eventId
+    );
+
+    if (!currentSchedule) {
+      throw new Error('Could not load time slots!');
+    }
+
+    dispatch({
+      type: LOAD_TIMESLOTS_START,
+      payload: {
+        schedule: currentSchedule,
+      },
+    });
+
+    const schedulDetails = await api.get(
+      `/schedules_details?=schedule_id${currentSchedule.schedule_id}`
+    );
+
+    const timeSlots = getTimeSlotsFromEntities(
+      schedulDetails,
+      TimeSlotsEntityTypes.SCHEDULE_DETAILS
+    );
+
+    dispatch({
+      type: LOAD_TIMESLOTS_SUCCESS,
+      payload: {
+        schedule: currentSchedule,
+        scheduleTimeSlots: timeSlots,
+      },
+    });
+  } catch (err) {
+    dispatch({
+      type: LOAD_TIMESLOTS_FAILURE,
+    });
+
+    Toasts.errorToast(err.message);
+  }
 };

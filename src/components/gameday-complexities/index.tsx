@@ -15,6 +15,7 @@ import {
   deleteBackupPlan,
   updateBackupPlan,
 } from './logic/actions';
+import { IAppState } from 'reducers/root-reducer.types';
 import {
   BindingAction,
   IFacility,
@@ -145,17 +146,7 @@ class GamedayComplexities extends React.Component<Props, State> {
   }
 }
 
-interface IState {
-  complexities: {
-    data: IEventDetails[];
-    facilities: IFacility[];
-    fields: IField[];
-    backupPlans: IBackupPlan[];
-    isLoading: boolean;
-  };
-}
-
-const mapStateToProps = (state: IState) => ({
+const mapStateToProps = (state: IAppState) => ({
   events: state.complexities.data,
   facilities: state.complexities.facilities,
   fields: state.complexities.fields,
