@@ -55,7 +55,7 @@ class CreateBackupForm extends React.Component<Props> {
     this.props.onChange('event_id', e.target.value, this.props.index);
     this.props.onChange('facilities_impacted', '', this.props.index);
     this.props.onChange('fields_impacted', '', this.props.index);
-    this.props.onChange('timeslots_impacted', '', this.props.index);
+    this.props.onChange('timeslots_impacted', undefined, this.props.index);
   };
 
   onTypeChange = (e: InputTargetValue) => {

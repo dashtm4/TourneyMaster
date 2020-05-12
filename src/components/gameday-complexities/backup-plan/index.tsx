@@ -13,14 +13,18 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Modal from 'components/common/modal';
 import EditBackupForm from '../edit-backup-form';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import { IComplexityTimeslots } from '../common';
 
 interface Props {
   events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
   data: IBackupPlan;
+  timeSlots: IComplexityTimeslots;
   deleteBackupPlan: BindingCbWithOne<string>;
   updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
+  loadTimeSlots: (eventId: string) => void;
+
   isSectionExpand: boolean;
 }
 
@@ -160,8 +164,10 @@ class BackupPlan extends React.Component<Props, State> {
             events={this.props.events}
             facilities={this.props.facilities}
             fields={this.props.fields}
+            timeSlots={this.props.timeSlots}
             updateBackupPlan={this.props.updateBackupPlan}
             onEditClose={this.onEditClose}
+            loadTimeSlots={this.props.loadTimeSlots}
           />
         </Modal>
         <DeletePopupConfrim

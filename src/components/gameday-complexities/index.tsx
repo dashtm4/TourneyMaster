@@ -130,6 +130,8 @@ class GamedayComplexities extends React.Component<Props, State> {
                     data={plan}
                     deleteBackupPlan={this.props.deleteBackupPlan}
                     updateBackupPlan={this.props.updateBackupPlan}
+                    timeSlots={this.props.timeSlots}
+                    loadTimeSlots={this.props.loadTimeSlots}
                     isSectionExpand={this.state.isSectionsExpand}
                   />
                 )
