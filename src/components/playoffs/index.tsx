@@ -29,7 +29,11 @@ import {
   clearSchedulesTable,
 } from 'components/schedules/logic/schedules-table/actions';
 import { IBracket } from 'common/models/playoffs/bracket';
-import { getTimeValuesFromEventSchedule, calculateTimeSlots } from 'helpers';
+import {
+  getTimeValuesFromEventSchedule,
+  calculateTimeSlots,
+  timeSlotsEntityTypes,
+} from 'helpers';
 import {
   sortFieldsByPremier,
   defineGames,
@@ -241,13 +245,19 @@ class Playoffs extends Component<IProps> {
       teams,
       divisions,
       facilities,
+      schedulesDetails,
     } = this.props;
 
     if (!event || !schedule || !fields || !teams || !divisions || !facilities)
       return;
 
     const timeValues = getTimeValuesFromEventSchedule(event, schedule);
-    const timeSlots = calculateTimeSlots(timeValues);
+
+    const timeSlots = calculateTimeSlots(
+      timeValues,
+      schedulesDetails,
+      timeSlotsEntityTypes.SCHEDULE_DETAILS
+    );
 
     const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);

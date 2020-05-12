@@ -49,6 +49,7 @@ import {
   calculateTotalGameTime,
   calculateTournamentDays,
   getTimeValuesFromSchedule,
+  timeSlotsEntityTypes,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IDiagnosticsInput } from './diagnostics';
@@ -336,6 +337,7 @@ class Schedules extends Component<Props, State> {
       divisions,
       facilities,
       match,
+      schedulesDetails,
     } = this.props;
 
     const { scheduleId } = match.params;
@@ -359,7 +361,11 @@ class Schedules extends Component<Props, State> {
         ? getTimeValuesFromEventSchedule(event, schedule)
         : getTimeValuesFromSchedule(scheduleData!);
 
-    const timeSlots = calculateTimeSlots(timeValues);
+    const timeSlots = calculateTimeSlots(
+      timeValues,
+      schedulesDetails,
+      timeSlotsEntityTypes.SCHEDULE_DETAILS
+    );
 
     const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);

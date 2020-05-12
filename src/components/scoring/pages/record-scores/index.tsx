@@ -40,6 +40,7 @@ import {
   calculateTimeSlots,
   calculateTournamentDays,
   formatTimeSlot,
+  timeSlotsEntityTypes,
 } from 'helpers';
 import {
   sortFieldsByPremier,
@@ -218,6 +219,7 @@ class RecordScores extends React.Component<
       teams,
       divisions,
       facilities,
+      schedulesGames,
     } = this.props;
 
     if (
@@ -233,7 +235,11 @@ class RecordScores extends React.Component<
 
     const timeValues = getTimeValuesFromEventSchedule(event, schedule);
 
-    const timeSlots = calculateTimeSlots(timeValues);
+    const timeSlots = calculateTimeSlots(
+      timeValues,
+      schedulesGames,
+      timeSlotsEntityTypes.SCHEDULE_GAMES
+    );
 
     const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);

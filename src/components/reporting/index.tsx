@@ -173,15 +173,11 @@ class Reporting extends React.Component<
 
     const timeValues = getTimeValuesFromEventSchedule(event, schedule);
 
-    // const eventTimeSlots = calculateTimeSlots(timeValues);
-
     const timeSlots = calculateTimeSlots(
       timeValues,
       schedulesGames,
       timeSlotsEntityTypes.SCHEDULE_GAMES
     );
-
-    // console.log(eventTimeSlots, timeSlots);
 
     const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);
