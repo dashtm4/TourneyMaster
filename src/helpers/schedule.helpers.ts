@@ -8,6 +8,7 @@ import {
 } from 'common/models';
 import moment from 'moment';
 import { orderBy } from 'lodash-es';
+import { TimeSlotsEntityTypes } from 'common/enums';
 
 interface ITimeValues {
   firstGameTime: string;
@@ -80,19 +81,14 @@ const getTimeValuesFromSchedule = (
   gamesStartOn: schedule.games_start_on,
 });
 
-export enum timeSlotsEntityTypes {
-  SCHEDULE_DETAILS = 'scheduleDetails',
-  SCHEDULE_GAMES = 'scheduleGames',
-}
-
 const getTimeSlotsFromEntities = (
   timeSlotsEntities: ISchedulesDetails[] | ISchedulesGame[],
-  timeSlotsEntity: timeSlotsEntityTypes
+  timeSlotsEntity: TimeSlotsEntityTypes
 ) => {
   let timeValues = [];
 
   switch (timeSlotsEntity) {
-    case timeSlotsEntityTypes.SCHEDULE_DETAILS: {
+    case TimeSlotsEntityTypes.SCHEDULE_DETAILS: {
       timeValues = (timeSlotsEntities as ISchedulesDetails[]).reduce(
         (acc, scheduleDetails) => {
           const { game_time } = scheduleDetails;
@@ -104,7 +100,7 @@ const getTimeSlotsFromEntities = (
 
       break;
     }
-    case timeSlotsEntityTypes.SCHEDULE_GAMES: {
+    case TimeSlotsEntityTypes.SCHEDULE_GAMES: {
       timeValues = (timeSlotsEntities as ISchedulesGame[]).reduce(
         (acc, scheduleGame) => {
           const { start_time } = scheduleGame;
@@ -133,7 +129,7 @@ const getTimeSlotsFromEntities = (
 const calculateTimeSlots = (
   timeValues: ITimeValues,
   timeSlotsEntities?: ISchedulesGame[] | ISchedulesDetails[],
-  entityType?: timeSlotsEntityTypes
+  entityType?: TimeSlotsEntityTypes
 ) => {
   if (!timeValues) return;
 

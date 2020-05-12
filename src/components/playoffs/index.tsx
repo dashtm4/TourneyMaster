@@ -29,11 +29,7 @@ import {
   clearSchedulesTable,
 } from 'components/schedules/logic/schedules-table/actions';
 import { IBracket } from 'common/models/playoffs/bracket';
-import {
-  getTimeValuesFromEventSchedule,
-  calculateTimeSlots,
-  timeSlotsEntityTypes,
-} from 'helpers';
+import { getTimeValuesFromEventSchedule, calculateTimeSlots } from 'helpers';
 import {
   sortFieldsByPremier,
   defineGames,
@@ -90,6 +86,7 @@ import { IOnAddGame } from './add-game-modal';
 import { updateExistingBracket } from 'components/scheduling/logic/actions';
 import SaveBracketsModal from './save-brackets-modal';
 import { ICreateBracketModalOutput } from 'components/scheduling/create-new-bracket';
+import { TimeSlotsEntityTypes } from 'common/enums';
 
 export interface ISeedDictionary {
   [key: string]: IBracketSeed[];
@@ -262,7 +259,7 @@ class Playoffs extends Component<IProps> {
     const timeSlots = calculateTimeSlots(
       timeValues,
       schedulesDetails,
-      timeSlotsEntityTypes.SCHEDULE_DETAILS
+      TimeSlotsEntityTypes.SCHEDULE_DETAILS
     );
 
     const mappedFields = mapFieldsData(fields, facilities);

@@ -49,7 +49,6 @@ import {
   calculateTotalGameTime,
   calculateTournamentDays,
   getTimeValuesFromSchedule,
-  timeSlotsEntityTypes,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IDiagnosticsInput } from './diagnostics';
@@ -82,7 +81,11 @@ import {
 } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
-import { TableScheduleTypes, ScheduleStatuses } from 'common/enums';
+import {
+  TableScheduleTypes,
+  ScheduleStatuses,
+  TimeSlotsEntityTypes,
+} from 'common/enums';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import SchedulesLoader, { LoaderTypeEnum } from './loader';
@@ -364,7 +367,7 @@ class Schedules extends Component<Props, State> {
     const timeSlots = calculateTimeSlots(
       timeValues,
       schedulesDetails,
-      timeSlotsEntityTypes.SCHEDULE_DETAILS
+      TimeSlotsEntityTypes.SCHEDULE_DETAILS
     );
 
     const mappedFields = mapFieldsData(fields, facilities);

@@ -40,7 +40,6 @@ import {
   getTimeValuesFromEventSchedule,
   calculateTimeSlots,
   calculateTournamentDays,
-  timeSlotsEntityTypes,
 } from 'helpers';
 import { gameStartOnOptions, ISchedulingSchedule } from '../types';
 import {
@@ -68,7 +67,11 @@ import {
   ISchedulingBracket,
   IFetchedBracket,
 } from 'common/models/playoffs/bracket';
-import { BracketStatuses, ScheduleStatuses } from 'common/enums';
+import {
+  BracketStatuses,
+  ScheduleStatuses,
+  TimeSlotsEntityTypes,
+} from 'common/enums';
 import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
 
 type GetState = () => IAppState;
@@ -350,7 +353,7 @@ const getSchedulesData = async (
   const timeSlots = calculateTimeSlots(
     timeValues,
     loadedSchedulesDetails,
-    timeSlotsEntityTypes.SCHEDULE_DETAILS
+    TimeSlotsEntityTypes.SCHEDULE_DETAILS
   );
 
   const mappedFields = mapFieldsData(fields, facilities);
