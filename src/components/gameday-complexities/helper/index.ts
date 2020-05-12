@@ -39,7 +39,7 @@ export const mapTimeslotsToOptions = (
     case 'cancel_games': {
       const parsedTimeslots = JSON.parse(timeslots);
       return parsedTimeslots.map((timeslot: string) => ({
-        label: timeslot,
+        label: formatTimeSlot(timeslot) as string,
         value: timeslot,
       }));
     }
