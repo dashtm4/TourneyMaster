@@ -27,7 +27,7 @@ import {
   savePlayoff,
   retrieveBrackets,
 } from 'components/playoffs/logic/actions';
-import { Routes, TableScheduleTypes } from 'common/enums';
+import { Routes, TableScheduleTypes, TimeSlotsEntityTypes } from 'common/enums';
 import styles from './styles.module.scss';
 import {
   mapFacilitiesData,
@@ -218,6 +218,7 @@ class RecordScores extends React.Component<
       teams,
       divisions,
       facilities,
+      schedulesGames,
     } = this.props;
 
     if (
@@ -233,7 +234,11 @@ class RecordScores extends React.Component<
 
     const timeValues = getTimeValuesFromEventSchedule(event, schedule);
 
-    const timeSlots = calculateTimeSlots(timeValues);
+    const timeSlots = calculateTimeSlots(
+      timeValues,
+      schedulesGames,
+      TimeSlotsEntityTypes.SCHEDULE_GAMES
+    );
 
     const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);
