@@ -2,7 +2,7 @@ import { IFacility, IField, IEventDetails } from 'common/models';
 import { IMultiSelectOption } from 'components/common/multi-select';
 import { sortByField, formatTimeSlot } from 'helpers';
 import { SortByFilesTypes } from 'common/enums';
-import { IComplexityTimeslot } from '../common';
+import { IComplexityTimeslot, OptionsEnum } from '../common';
 
 export const mapFacilitiesToOptions = (
   allFacilities: IFacility[],
@@ -36,15 +36,15 @@ export const mapTimeslotsToOptions = (
   backupType: string
 ) => {
   switch (backupType) {
-    case 'cancel_games': {
+    case OptionsEnum['Cancel Games']: {
       const parsedTimeslots = JSON.parse(timeslots);
       return parsedTimeslots.map((timeslot: string) => ({
         label: formatTimeSlot(timeslot) as string,
         value: timeslot,
       }));
     }
-    case 'modify_start_time':
-    case 'modify_game_lengths':
+    case OptionsEnum['Close Fields & Move Games']:
+    case OptionsEnum['Modify Game & Subsequent TimeSlots']:
       return timeslots;
     default:
       return [{ label: 'default', value: 'default' }];
@@ -122,7 +122,7 @@ export const stringifyBackupPlan = (backupPlan: any) => {
       backupPlan.fields_impacted.map((field: any) => field.value)
     ),
     timeslots_impacted:
-      backupPlan.backup_type === 'cancel_games'
+      backupPlan.backup_type === OptionsEnum['Cancel Games']
         ? JSON.stringify(
             backupPlan.timeslots_impacted.map((timeslot: any) => timeslot.value)
           )

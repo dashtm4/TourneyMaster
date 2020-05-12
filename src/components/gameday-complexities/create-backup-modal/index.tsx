@@ -11,7 +11,7 @@ import Button from 'components/common/buttons/button';
 import { IField } from 'common/models';
 import { PopupExposure } from 'components/common';
 import { IBackupPlan } from 'common/models/backup_plan';
-import { IComplexityTimeslots } from '../common';
+import { IComplexityTimeslots, OptionsEnum } from '../common';
 
 interface Props {
   loadTimeSlots: (eventId: string) => void;
@@ -30,7 +30,7 @@ interface State {
 
 class CreateBackupModal extends React.Component<Props, State> {
   state = {
-    backupPlans: [{ backup_type: 'cancel_games' }],
+    backupPlans: [{ backup_type: OptionsEnum['Cancel Games'] }],
     isConfirmModalOpen: false,
   };
 
@@ -57,7 +57,10 @@ class CreateBackupModal extends React.Component<Props, State> {
 
   onAddAdditionalPlan = () => {
     this.setState({
-      backupPlans: [...this.state.backupPlans, { backup_type: 'cancel_games' }],
+      backupPlans: [
+        ...this.state.backupPlans,
+        { backup_type: OptionsEnum['Cancel Games'] },
+      ],
     });
   };
 

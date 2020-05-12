@@ -12,7 +12,6 @@ import MultiSelect, {
 import { IField } from 'common/models';
 import MultipleSearch from 'components/common/multiple-search-select';
 import styles from '../create-backup-modal/styles.module.scss';
-import { OptionsEnum, TypeOptionsEnum } from '../create-backup-form';
 import {
   mapFacilitiesToOptions,
   mapFieldsToOptions,
@@ -25,7 +24,7 @@ import {
 import { IBackupPlan } from 'common/models/backup_plan';
 import { IMultipleSelectOption } from '../create-backup-form';
 import { PopupExposure } from 'components/common';
-import { IComplexityTimeslots } from '../common';
+import { IComplexityTimeslots, OptionsEnum, TypeOptionsEnum } from '../common';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -92,11 +91,13 @@ class CreateBackupForm extends React.Component<Props, State> {
     this.onChange('facilities_impacted', '');
     this.onChange('fields_impacted', '');
     this.onChange('timeslots_impacted', undefined);
+    this.onChange('change_value', undefined);
   };
 
   onTypeChange = (e: InputTargetValue) => {
     this.onChange('backup_type', OptionsEnum[e.target.value]);
     this.onChange('timeslots_impacted', '');
+    this.onChange('change_value', undefined);
   };
 
   onFacilitiesChange = (
@@ -162,7 +163,7 @@ class CreateBackupForm extends React.Component<Props, State> {
     const timeSlotOptions = getTimeSlotOptions(eventTimeSlots);
 
     switch (String(type)) {
-      case 'cancel_games':
+      case OptionsEnum['Cancel Games']:
         return (
           <div className={styles.item}>
             <MultipleSearch
@@ -174,7 +175,7 @@ class CreateBackupForm extends React.Component<Props, State> {
             />
           </div>
         );
-      case 'modify_start_time':
+      case OptionsEnum['Close Fields & Move Games']:
         return (
           <div className={styles.itemDouble}>
             <Select
@@ -193,7 +194,7 @@ class CreateBackupForm extends React.Component<Props, State> {
             />
           </div>
         );
-      case 'modify_game_lengths':
+      case OptionsEnum['Modify Game & Subsequent TimeSlots']:
         return (
           <div className={styles.itemDouble}>
             <Select
@@ -276,11 +277,7 @@ class CreateBackupForm extends React.Component<Props, State> {
             <div className={styles.itemLarge}>
               <Radio
                 row={true}
-                options={[
-                  'Cancel Games',
-                  'Modify Start Times',
-                  'Modify Game Lengths',
-                ]}
+                options={Object.values(TypeOptionsEnum)}
                 formLabel="Type"
                 onChange={this.onTypeChange}
                 checked={

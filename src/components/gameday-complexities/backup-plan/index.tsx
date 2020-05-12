@@ -13,7 +13,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Modal from 'components/common/modal';
 import EditBackupForm from '../edit-backup-form';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
-import { IComplexityTimeslots } from '../common';
+import { IComplexityTimeslots, TypeOptionsEnum } from '../common';
 
 interface Props {
   events: IEventDetails[];
@@ -31,12 +31,6 @@ interface Props {
 interface State {
   isEditOpen: boolean;
   isDeleteOpen: boolean;
-}
-
-enum TypeOptionsEnum {
-  'cancel_games' = 'Cancel Games',
-  'modify_start_time' = 'Modify Start Times',
-  'modify_game_lengths' = 'Modify Game Lengths',
 }
 
 class BackupPlan extends React.Component<Props, State> {
