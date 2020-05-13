@@ -158,9 +158,23 @@ const checkPools = (game: IGame, poolIds: string[]) => {
 };
 
 const checkTeams = (game: IGame, teamIds: string[]) => {
-  const { awayTeam, homeTeam, isPlayoff } = game;
+  const {
+    awayTeam,
+    homeTeam,
+    isPlayoff,
+    homeTeamId,
+    awayTeamId,
+    awaySeedId,
+    homeSeedId,
+    homeDependsUpon,
+    awayDependsUpon,
+  } = game;
+
   return (
-    isPlayoff ||
+    (isPlayoff && awayTeamId && teamIds.includes(awayTeamId)) ||
+    (isPlayoff && homeTeamId && teamIds.includes(homeTeamId)) ||
+    (isPlayoff && (awaySeedId || awayDependsUpon) && !awayTeamId) ||
+    (isPlayoff && (homeSeedId || homeDependsUpon) && !homeTeamId) ||
     teamIds.includes(awayTeam?.id!) ||
     teamIds.includes(homeTeam?.id!)
   );

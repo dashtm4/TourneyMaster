@@ -48,9 +48,7 @@ const ConfirmSection = ({
   publishEventData,
 }: Props) => {
   const DEFAULT_SELECTED_SCHEDULE =
-    modifyModValue === EventModifyTypes.UNPUBLISH
-      ? getPublishedSchedule(schedules)
-      : schedules[0] || null;
+    getPublishedSchedule(schedules) || schedules[0] || null;
   const DEFAULT_SELECTED_BRACKET =
     modifyModValue === EventModifyTypes.UNPUBLISH
       ? getPublishedBracket(brackets)
