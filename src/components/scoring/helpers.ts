@@ -1,5 +1,8 @@
 import { ISchedulesGame } from 'common/models';
 import { IGame } from 'components/common/matrix-table/helper';
+import { IBracketGame } from 'components/playoffs/bracketGames';
+import { orderBy } from 'lodash-es';
+import { formatTimeSlot } from 'helpers';
 
 const mapGamesWithSchedulesGamesId = (
   games: IGame[],
@@ -17,4 +20,25 @@ const mapGamesWithSchedulesGamesId = (
   return mappedGames;
 };
 
-export { mapGamesWithSchedulesGamesId };
+const getSortedWarnGames = (games: IBracketGame[]) => {
+  const sortedWarnGames = orderBy(
+    games,
+    ['index', 'divisionName'],
+    ['asc', 'asc']
+  );
+
+  return sortedWarnGames;
+};
+
+const getGamesWartString = (message: string, games: IBracketGame[]) => {
+  const gameWarnString = games.map(
+    item =>
+      `Game ${item.index} (${item.divisionName}) - ${
+        item.fieldName
+      }, ${formatTimeSlot(item.startTime!)}\n`
+  );
+
+  return message.concat(gameWarnString.join(''));
+};
+
+export { mapGamesWithSchedulesGamesId, getSortedWarnGames, getGamesWartString };

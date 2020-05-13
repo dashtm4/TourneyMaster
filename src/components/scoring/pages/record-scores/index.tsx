@@ -3,7 +3,6 @@ import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import History from 'browserhistory';
-import { orderBy } from 'lodash-es';
 import { loadScoresData, saveGames } from './logic/actions';
 import Navigation from './components/navigation';
 import { Loader, PopupExposure, TableSchedule } from 'components/common';
@@ -39,7 +38,6 @@ import {
   getTimeValuesFromEventSchedule,
   calculateTimeSlots,
   calculateTournamentDays,
-  formatTimeSlot,
 } from 'helpers';
 import {
   sortFieldsByPremier,
@@ -66,7 +64,11 @@ import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IScheduleDivision } from 'common/models/schedule/divisions';
 import { IField as IScheduleField } from 'common/models/schedule/fields';
 import { errorToast } from 'components/common/toastr/showToasts';
-import { mapGamesWithSchedulesGamesId } from 'components/scoring/helpers';
+import {
+  mapGamesWithSchedulesGamesId,
+  getSortedWarnGames,
+  getGamesWartString,
+} from 'components/scoring/helpers';
 import api from 'api/api';
 import { adjustPlayoffTimeOnLoadScoring } from 'components/schedules/definePlayoffs';
 import { IBracketGame } from 'components/playoffs/bracketGames';
@@ -331,24 +333,35 @@ class RecordScores extends React.Component<
         (item.awayTeamScore === undefined && item.homeTeamScore)
     );
 
-    if (!unassignedGames.length) return;
-
-    const message = `Unaccomplished bracket games cannot be saved.\nComplete the scoring for the following games to continue:\n`;
-
-    const sortedUnassignedGames = orderBy(
-      unassignedGames,
-      ['index', 'divisionName'],
-      ['asc', 'asc']
-    );
-
-    const gamesStrings = sortedUnassignedGames.map(
+    const tieGames = teamBracketGames.filter(
       item =>
-        `Game ${item.index} (${item.divisionName}) - ${
-          item.fieldName
-        }, ${formatTimeSlot(item.startTime!)}\n`
+        item.awayTeamScore &&
+        item.homeTeamScore &&
+        item.awayTeamScore === item.homeTeamScore
     );
 
-    return message.concat(gamesStrings.join(''));
+    if (!unassignedGames.length && !tieGames.length) return;
+
+    const unassignedGamesMessage = `Unaccomplished bracket games cannot be saved.\nComplete the scoring for the following games to continue:\n`;
+    const tieGamesMessage = `Bracket games with a tie score cannot be saved. \n`;
+
+    const sortedUnassignedGames = getSortedWarnGames(unassignedGames);
+    const sortedTieGames = getSortedWarnGames(tieGames);
+
+    const unassignedGamesWarnStrings = getGamesWartString(
+      unassignedGamesMessage,
+      sortedUnassignedGames
+    );
+    const tieGamesWarnString = getGamesWartString(
+      tieGamesMessage,
+      sortedTieGames
+    );
+
+    return unassignedGames.length && tieGames.length
+      ? unassignedGamesWarnStrings.concat(tieGamesWarnString)
+      : unassignedGames.length
+      ? unassignedGamesWarnStrings
+      : tieGamesWarnString;
   };
 
   onChangeView = (flag: boolean) => this.setState({ isEnterScores: flag });
