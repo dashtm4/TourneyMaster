@@ -120,12 +120,12 @@ export const stringifyBackupPlan = (backupPlan: any) => {
     fields_impacted: JSON.stringify(
       backupPlan.fields_impacted.map((field: any) => field.value)
     ),
-    timeslots_impacted:
-      backupPlan.backup_type === OptionsEnum['Cancel Games']
-        ? JSON.stringify(
-            backupPlan.timeslots_impacted.map((timeslot: any) => timeslot.value)
-          )
-        : backupPlan.timeslots_impacted,
+    timeslots_impacted: JSON.stringify(
+      backupPlan.timeslots_impacted.map((timeslot: any) => timeslot.value)
+    ),
+    change_value: backupPlan.change_value
+      ? JSON.stringify(backupPlan.change_value)
+      : null,
   };
 };
 
