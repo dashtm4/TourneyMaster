@@ -280,7 +280,7 @@ export const loadTimeSlots = (eventId: string) => async (
       TimeSlotsEntityTypes.SCHEDULE_GAMES
     );
 
-    const gameDates = Array.from(
+    const eventDays = Array.from(
       new Set(scheduleGames.map(it => it.game_date))
     );
 
@@ -288,7 +288,7 @@ export const loadTimeSlots = (eventId: string) => async (
       type: LOAD_TIMESLOTS_SUCCESS,
       payload: {
         eventId,
-        gameDates,
+        eventDays,
         eventTimeSlots: timeSlots,
       },
     });

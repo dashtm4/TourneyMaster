@@ -11,7 +11,7 @@ export enum TypeOptionsEnum {
 }
 export interface IComplexityTimeslot {
   eventId: string;
-  eventDays: string;
+  eventDays: string[];
   eventTimeSlots: ITimeSlot[];
   isLoading: boolean;
   isLoaded: boolean;

@@ -257,7 +257,6 @@ class CreateBackupForm extends React.Component<Props> {
               />
             </div>
           ) : null}
-
           {backup_type === OptionsEnum['Cancel Games'] &&
           eventTimeSlots &&
           eventTimeSlots.isLoading ? (
@@ -266,6 +265,20 @@ class CreateBackupForm extends React.Component<Props> {
             fields_impacted?.length ? (
             this.renderTimeslots(timeslots_impacted)
           ) : null}
+
+          {eventTimeSlots &&
+            eventTimeSlots.eventDays &&
+            Boolean(timeslots_impacted?.length) && (
+              <Select
+                value={eventTimeSlots.eventDays[0]}
+                options={eventTimeSlots.eventDays.map((day, idx) => ({
+                  label: `Day ${idx + 1}`,
+                  value: day,
+                }))}
+                width="282px"
+                label="Event Day"
+              />
+            )}
         </div>
         <div className={styles.row}>
           {backup_type ===

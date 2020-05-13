@@ -108,7 +108,7 @@ export default (
       };
     }
     case LOAD_TIMESLOTS_SUCCESS: {
-      const { eventId, gameDates, eventTimeSlots } = action.payload;
+      const { eventId, eventDays, eventTimeSlots } = action.payload;
 
       return {
         ...state,
@@ -117,7 +117,7 @@ export default (
           [eventId]: {
             eventId,
             eventTimeSlots,
-            gameDates,
+            eventDays,
             isLoading: false,
             isLoaded: true,
           },

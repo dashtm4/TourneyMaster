@@ -137,6 +137,7 @@ class BackupPlan extends React.Component<Props, State> {
             <div className={styles.buttonsContainer}>
               <div>
                 <Button
+                  disabled={OptionsEnum['Cancel Games'] !== backup_type}
                   label="Edit Backup"
                   variant="text"
                   color="secondary"
