@@ -19,6 +19,7 @@ interface Props {
   onDataLoaded: BindingCbWithOne<any>;
   dataLoaded: Boolean;
   onPreview: BindingAction;
+  onCommit: any;
   completed: any;
 }
 
@@ -31,6 +32,7 @@ const TourneyImport: React.FC<Props> = ({
   onDataLoaded,
   dataLoaded,
   onPreview,
+  onCommit,
   completed,
 }) => {
   const [showData, setShowData] = React.useState(false);
@@ -109,6 +111,7 @@ const TourneyImport: React.FC<Props> = ({
                   />
                   <Button
                     label="Commit"
+                    onClick={onCommit}
                     variant={ButtonVarian.CONTAINED}
                     color={ButtonColors.PRIMARY}
                     btnType={ButtonFormTypes.SUBMIT}
