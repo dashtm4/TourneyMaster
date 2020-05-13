@@ -7,6 +7,7 @@ import {
   IFacility,
   IField,
   IEventDetails,
+  BindingCbWithTwo,
 } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -14,6 +15,7 @@ import Modal from 'components/common/modal';
 import EditBackupForm from '../edit-backup-form';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
 import { IComplexityTimeslots, TypeOptionsEnum } from '../common';
+import { BackUpActiveStatuses } from 'common/enums';
 
 interface Props {
   events: IEventDetails[];
@@ -24,7 +26,7 @@ interface Props {
   deleteBackupPlan: BindingCbWithOne<string>;
   updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
   loadTimeSlots: (eventId: string) => void;
-
+  toggleBackUpStatus: BindingCbWithTwo<IBackupPlan, BackUpActiveStatuses>;
   isSectionExpand: boolean;
 }
 
@@ -106,6 +108,12 @@ class BackupPlan extends React.Component<Props, State> {
     const deleteMessage = `You are about to delete this backup plan and this cannot be undone.
       Please, enter the name of the backup plan to continue.`;
 
+    const onToggleBackupStatus = () => {
+      const { data } = this.props;
+
+      this.props.toggleBackUpStatus(data, BackUpActiveStatuses.Avtive);
+    };
+
     return (
       <div className={styles.container}>
         <SectionDropdown expanded={this.props.isSectionExpand}>
@@ -145,6 +153,7 @@ class BackupPlan extends React.Component<Props, State> {
                 />
               </div>
               <Button
+                onClick={onToggleBackupStatus}
                 label="Activate Backup Plan"
                 variant="contained"
                 color="primary"

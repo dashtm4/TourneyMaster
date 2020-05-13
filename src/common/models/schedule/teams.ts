@@ -44,12 +44,14 @@ export interface ITeamCard extends ITeam {
     id: number;
     teamPosition: TeamPositionEnum;
     isTeamLocked?: boolean;
+    isCancelled?: boolean;
     teamScore?: string | number | null;
     date?: string;
   }[];
   fieldId?: string;
   timeSlotId?: number;
   teamPosition?: number;
+  isCancelled?: boolean;
 
   //
   errors?: string[];

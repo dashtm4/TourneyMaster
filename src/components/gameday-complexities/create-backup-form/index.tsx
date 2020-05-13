@@ -118,7 +118,7 @@ class CreateBackupForm extends React.Component<Props> {
             />
           </div>
         );
-      case OptionsEnum['Close Fields & Move Games']:
+      case OptionsEnum['Weather Interruption: Modify Game Timeslots']:
         return (
           <div className={styles.itemDouble}>
             <Select
@@ -134,26 +134,6 @@ class CreateBackupForm extends React.Component<Props> {
               width={'131px'}
               value={changeTo || ''}
               onChange={this.onChangeToChange}
-            />
-          </div>
-        );
-      case OptionsEnum['Modify Game & Subsequent TimeSlots']:
-        return (
-          <div className={styles.itemDouble}>
-            <Select
-              label="Timeslot"
-              options={timeSlotOptions}
-              width={'131px'}
-              value={timeslots || ''}
-              onChange={this.onTimeslotChange}
-            />
-            <Input
-              width={'131px'}
-              type={'number'}
-              label="Change To"
-              placeholder="Minutes"
-              onChange={this.onChangeToChange}
-              value={changeTo || ''}
             />
           </div>
         );
