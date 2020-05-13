@@ -12,6 +12,9 @@ const endpointSecret =
 export default api => {
   api.post('/create-payment-intent', async (req, res) => {
     try {
+      if (req.body.reg_type !== 'individual' || req.body.reg_type !== 'team') {
+        throw new Error('Reg_type must be "individual" or "team"');
+      }
       const order = {
         items: req.body.order.items.map(x => ({
           type: 'sku',
@@ -64,7 +67,11 @@ export default api => {
 
     try {
       try {
-        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+        event = stripe.webhooks.constructEvent(
+          req.rawBody,
+          sig,
+          endpointSecret
+        );
       } catch (err) {
         throw new Error(`Webhook Error: ${err.message}`);
       }

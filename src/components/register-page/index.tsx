@@ -48,6 +48,18 @@ export enum TypeOptions {
   'Coach' = 4,
 }
 
+const getInternalRegType = (type: TypeOptions) => {
+  if (type === TypeOptions.Player || type === TypeOptions['Parent/Guardian']) {
+    return 'individual';
+  } else {
+    return 'team';
+  }
+};
+
+const getApiEndpointByRegType = (type: TypeOptions) => {
+  return '/reg_' + getInternalRegType(type) + 's';
+};
+
 export interface RegisterMatchParams {
   match: {
     params: {
@@ -153,17 +165,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     // }
 
     try {
-      let url;
-      if (
-        type === TypeOptions.Player ||
-        type === TypeOptions['Parent/Guardian']
-      ) {
-        url = '/reg_individuals';
-      } else {
-        url = '/reg_teams';
-      }
-
-      await axios.post(url, updatedRegistration);
+      await axios.post(getApiEndpointByRegType(type), updatedRegistration);
       return updatedRegistration;
     } catch (err) {
       return Toasts.errorToast(err.message);
@@ -177,7 +179,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     const updatedRegistration = await saveRegistrationResponse();
 
     const order = {
-      reg_type: TypeOptions[type],
+      reg_type: getInternalRegType(type),
       reg_response_id: updatedRegistration.reg_response_id,
       registration_id: updatedRegistration.registration_id,
       order: {
