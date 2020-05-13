@@ -14,7 +14,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Modal from 'components/common/modal';
 import EditBackupForm from '../edit-backup-form';
 import DeletePopupConfrim from 'components/common/delete-popup-confirm';
-import { IComplexityTimeslots, TypeOptionsEnum } from '../common';
+import { IComplexityTimeslots, TypeOptionsEnum, OptionsEnum } from '../common';
 import { BackUpActiveStatuses } from 'common/enums';
 
 interface Props {
@@ -153,6 +153,7 @@ class BackupPlan extends React.Component<Props, State> {
                 />
               </div>
               <Button
+                disabled={OptionsEnum['Cancel Games'] !== backup_type}
                 onClick={onToggleBackupStatus}
                 label="Activate Backup Plan"
                 variant="contained"

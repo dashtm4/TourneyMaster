@@ -50,6 +50,12 @@ export const mapTimeslotsToOptions = (
   }
 };
 
+export const mapChangeValueOptions = (changeValue: string) => {
+  const parsedChangeValue = JSON.parse(changeValue);
+
+  return parsedChangeValue;
+};
+
 export const getEventOptions = (events: IEventDetails[]) => {
   const eventOptions = events.map(event => ({
     label: event.event_name,
