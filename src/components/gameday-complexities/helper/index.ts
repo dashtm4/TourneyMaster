@@ -43,8 +43,7 @@ export const mapTimeslotsToOptions = (
         value: timeslot,
       }));
     }
-    case OptionsEnum['Close Fields & Move Games']:
-    case OptionsEnum['Modify Game & Subsequent TimeSlots']:
+    case OptionsEnum['Weather Interruption: Modify Game Timeslots']:
       return timeslots;
     default:
       return [{ label: 'default', value: 'default' }];

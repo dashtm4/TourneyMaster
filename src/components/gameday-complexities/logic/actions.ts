@@ -14,7 +14,13 @@ import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import api from 'api/api';
 import { Toasts } from 'components/common';
-import { IFacility, IField, IEventDetails, ISchedule } from 'common/models';
+import {
+  IFacility,
+  IField,
+  IEventDetails,
+  ISchedule,
+  ISchedulesGame,
+} from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
 import {
   getVarcharEight,
@@ -262,19 +268,24 @@ export const loadTimeSlots = (eventId: string) => async (
       },
     });
 
-    const schedulDetails = await api.get(
-      `/schedules_details?schedule_id=${currentSchedule.schedule_id}`
-    );
+    const scheduleGames = (await api.get(
+      `/games?schedule_id=${currentSchedule.schedule_id}`
+    )) as ISchedulesGame[];
 
     const timeSlots = getTimeSlotsFromEntities(
-      schedulDetails,
-      TimeSlotsEntityTypes.SCHEDULE_DETAILS
+      scheduleGames,
+      TimeSlotsEntityTypes.SCHEDULE_GAMES
+    );
+
+    const gameDates = Array.from(
+      new Set(scheduleGames.map(it => it.game_date))
     );
 
     dispatch({
       type: LOAD_TIMESLOTS_SUCCESS,
       payload: {
         eventId,
+        gameDates,
         eventTimeSlots: timeSlots,
       },
     });
