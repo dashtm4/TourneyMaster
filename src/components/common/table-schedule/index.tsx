@@ -160,6 +160,7 @@ const TableSchedule = ({
       days,
       filterValues.selectedDay!
     );
+
     const filteredGames = mapGamesByFilter([...filledGames], filterValues);
     return filteredGames;
   }, [games, teamCards, days, filterValues, playoffTimeSlots, bracketGames]);

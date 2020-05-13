@@ -226,6 +226,7 @@ export const mapTeamsFromShedulesGames = (
     startTime: item.start_time,
     fieldId: item.field_id,
     date: item.game_date,
+    isCancelled: Boolean(item.is_cancelled_YN),
   }));
 
   const runGamesSelection = (team: ITeam) => {
@@ -242,6 +243,7 @@ export const mapTeamsFromShedulesGames = (
               game.fieldId === scheduleGame.fieldId
           )?.id!,
           date: scheduleGame.date,
+          isCancelled: scheduleGame.isCancelled,
           teamPosition: scheduleGame.awayTeamId === team.id ? 1 : 2,
           teamScore:
             scheduleGame.awayTeamId === team.id

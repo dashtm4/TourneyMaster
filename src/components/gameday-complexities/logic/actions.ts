@@ -341,6 +341,8 @@ export const toggleBackUpStatus = (
         backUp,
       },
     });
+
+    Toasts.successToast('Changes successfully saved');
   } catch (err) {
     dispatch({
       type: TOGGLE_BACK_UP_STATUS_FAILURE,
