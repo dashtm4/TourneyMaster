@@ -15,6 +15,7 @@ import {
   deleteBackupPlan,
   updateBackupPlan,
   loadTimeSlots,
+  toggleBackUpStatus,
 } from './logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
 import {
@@ -22,12 +23,14 @@ import {
   IFacility,
   BindingCbWithOne,
   IEventDetails,
+  BindingCbWithTwo,
 } from 'common/models';
 import { IField } from 'common/models';
 import BackupPlan from './backup-plan';
 import { IBackupPlan } from 'common/models/backup_plan';
 import { Loader } from 'components/common';
 import { IComplexityTimeslots } from './common';
+import { BackUpActiveStatuses } from 'common/enums';
 
 interface Props {
   getEvents: BindingAction;
@@ -38,6 +41,7 @@ interface Props {
   deleteBackupPlan: BindingCbWithOne<string>;
   updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
   loadTimeSlots: (eventId: string) => void;
+  toggleBackUpStatus: BindingCbWithTwo<IBackupPlan, BackUpActiveStatuses>;
   events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
@@ -130,6 +134,7 @@ class GamedayComplexities extends React.Component<Props, State> {
                     data={plan}
                     deleteBackupPlan={this.props.deleteBackupPlan}
                     updateBackupPlan={this.props.updateBackupPlan}
+                    toggleBackUpStatus={this.props.toggleBackUpStatus}
                     timeSlots={this.props.timeSlots}
                     loadTimeSlots={this.props.loadTimeSlots}
                     isSectionExpand={this.state.isSectionsExpand}
@@ -172,6 +177,7 @@ const mapDispatchToProps = {
   deleteBackupPlan,
   updateBackupPlan,
   loadTimeSlots,
+  toggleBackUpStatus,
 };
 
 export default connect(

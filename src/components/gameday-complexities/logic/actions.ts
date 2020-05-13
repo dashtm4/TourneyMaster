@@ -9,6 +9,8 @@ import {
   LOAD_TIMESLOTS_START,
   LOAD_TIMESLOTS_SUCCESS,
   LOAD_TIMESLOTS_FAILURE,
+  TOGGLE_BACK_UP_STATUS_SECCESS,
+  TOGGLE_BACK_UP_STATUS_FAILURE,
 } from './actionTypes';
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
@@ -32,6 +34,7 @@ import {
   ScheduleStatuses,
   SortByFilesTypes,
   TimeSlotsEntityTypes,
+  BackUpActiveStatuses,
 } from 'common/enums';
 import { IAppState } from 'reducers/root-reducer.types';
 
@@ -292,6 +295,55 @@ export const loadTimeSlots = (eventId: string) => async (
   } catch (err) {
     dispatch({
       type: LOAD_TIMESLOTS_FAILURE,
+    });
+
+    Toasts.errorToast(err.message);
+  }
+};
+
+export const toggleBackUpStatus = (
+  backUp: IBackupPlan,
+  status: BackUpActiveStatuses
+) => async (dispatch: Dispatch, getState: () => IAppState) => {
+  try {
+    const { complexities } = getState();
+
+    const currentSchedule = complexities.schedules.find(
+      (it: ISchedule) => it.event_id === backUp.event_id
+    );
+
+    if (!currentSchedule) {
+      throw new Error('Could not change back up status!');
+    }
+    const { fields_impacted, timeslots_impacted } = backUp;
+
+    const parsedFields = JSON.parse(fields_impacted) as Array<string>;
+    const parsedTimeSlots = JSON.parse(timeslots_impacted) as Array<string>;
+
+    const scheduleGames = (await api.get(
+      `/games?schedule_id=${currentSchedule.schedule_id}`
+    )) as ISchedulesGame[];
+
+    const currentGames = scheduleGames.reduce((acc, game) => {
+      const willChange =
+        game.start_time &&
+        parsedFields.includes(game.field_id) &&
+        parsedTimeSlots.includes(game.start_time);
+
+      return willChange ? [...acc, { ...game, is_cancelled_YN: status }] : acc;
+    }, [] as ISchedulesGame[]);
+
+    await api.put(`/games`, currentGames);
+
+    dispatch({
+      type: TOGGLE_BACK_UP_STATUS_SECCESS,
+      payload: {
+        backUp,
+      },
+    });
+  } catch (err) {
+    dispatch({
+      type: TOGGLE_BACK_UP_STATUS_FAILURE,
     });
 
     Toasts.errorToast(err.message);

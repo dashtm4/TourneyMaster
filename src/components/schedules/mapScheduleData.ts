@@ -159,6 +159,7 @@ export const mapTeamCardsToSchedulesGames = async (
     finalized_by: null,
     finalized_datetime: null,
     is_bracket_YN: null,
+    is_cancelled_YN: null,
     created_by: memberId,
     created_datetime: game.createDate || new Date().toISOString(),
     updated_by: memberId,

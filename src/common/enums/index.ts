@@ -18,3 +18,4 @@ export * from './select';
 export * from './bracket';
 export * from './tournament';
 export * from './app';
+export * from './backup';
