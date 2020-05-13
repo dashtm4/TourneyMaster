@@ -81,6 +81,8 @@ Resources:
       Environment:
         Variables:
           STRIPE_SECRET_KEY: ''
+          STRIPE_PUBLISHABLE_KEY: ''
+          PUBLIC_API_BASE_URL: ''
 
   PaymentsApiFunction:
     Type: AWS::Lambda::Function
@@ -95,8 +97,11 @@ Resources:
       Timeout: 10
       Environment:
         Variables:
-          SMParameterName: '/TourneyMasterAPIv2'
+          SMParameterName: 'TourneyMasterAPIv2'
           STRIPE_SECRET_KEY: ''
+          STRIPE_PUBLISHABLE_KEY: ''
+          STRIPE_WEBHOOK_SIGNING_SECRET: ''
+          PUBLIC_API_BASE_URL: ''
 
   Permission:
     Type: 'AWS::Lambda::Permission'
