@@ -13,8 +13,8 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
       title: 'Registations',
       link: getLinkByApp('register'),
     },
+    { title: 'Mobile Scoring', link: getLinkByApp('mob-scoring') },
     { title: 'Support', link: 'https://www.tourneymaster.org/support/' },
-    { title: 'About', link: 'https://www.tourneymaster.org/about/' },
     { title: 'Contact', link: 'https://www.tourneymaster.org/contact/' },
   ];
 

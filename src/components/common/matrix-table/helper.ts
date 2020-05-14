@@ -37,6 +37,7 @@ export interface IGame {
   gameDate?: string;
   scheduleVersionId?: string;
   createDate?: string;
+  isCancelled?: boolean;
   //
   awayTeamScore?: number;
   homeTeamScore?: number;

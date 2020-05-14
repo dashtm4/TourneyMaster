@@ -3,6 +3,7 @@ import { ITeam } from 'common/models/schedule/teams';
 import { IField as IFetchedField } from 'common/models/field';
 import { IField } from 'common/models/schedule/fields';
 import { IFacility as IFetchedFacility } from 'common/models';
+import { IScheduleDivision } from 'common/models/schedule/divisions';
 
 const teamPremierByDivision = (team: IFetchedTeam, divisions: IDivision[]) => {
   const division = divisions.find(
@@ -88,10 +89,11 @@ export const mapFacilitiesData = (facilities: IFetchedFacility[]) => {
 };
 
 export const mapDivisionsData = (divisions: IDivision[]) => {
-  const mappedDivisions = divisions.map(division => ({
+  const mappedDivisions: IScheduleDivision[] = divisions.map(division => ({
     id: division.division_id,
     name: division.short_name,
     isPremier: Boolean(division.is_premier_YN),
+    preferredFacilityId: Boolean(division.plays_at_spec_facility) ? division.spec_facilities_id : undefined,
   }));
 
   return mappedDivisions;

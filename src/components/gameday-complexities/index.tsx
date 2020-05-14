@@ -14,17 +14,23 @@ import {
   saveBackupPlans,
   deleteBackupPlan,
   updateBackupPlan,
+  loadTimeSlots,
+  toggleBackUpStatus,
 } from './logic/actions';
+import { IAppState } from 'reducers/root-reducer.types';
 import {
   BindingAction,
   IFacility,
   BindingCbWithOne,
   IEventDetails,
+  BindingCbWithTwo,
 } from 'common/models';
 import { IField } from 'common/models';
 import BackupPlan from './backup-plan';
 import { IBackupPlan } from 'common/models/backup_plan';
 import { Loader } from 'components/common';
+import { IComplexityTimeslots } from './common';
+import { BackUpActiveStatuses } from 'common/enums';
 
 interface Props {
   getEvents: BindingAction;
@@ -34,10 +40,13 @@ interface Props {
   saveBackupPlans: BindingCbWithOne<Partial<IBackupPlan>[]>;
   deleteBackupPlan: BindingCbWithOne<string>;
   updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
+  loadTimeSlots: (eventId: string) => void;
+  toggleBackUpStatus: BindingCbWithTwo<IBackupPlan, BackUpActiveStatuses>;
   events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
   backupPlans: IBackupPlan[];
+  timeSlots: IComplexityTimeslots;
   isLoading: boolean;
 }
 
@@ -125,6 +134,9 @@ class GamedayComplexities extends React.Component<Props, State> {
                     data={plan}
                     deleteBackupPlan={this.props.deleteBackupPlan}
                     updateBackupPlan={this.props.updateBackupPlan}
+                    toggleBackUpStatus={this.props.toggleBackUpStatus}
+                    timeSlots={this.props.timeSlots}
+                    loadTimeSlots={this.props.loadTimeSlots}
                     isSectionExpand={this.state.isSectionsExpand}
                   />
                 )
@@ -137,7 +149,9 @@ class GamedayComplexities extends React.Component<Props, State> {
             events={this.props.events}
             facilities={this.props.facilities}
             fields={this.props.fields}
+            timeSlots={this.props.timeSlots}
             saveBackupPlans={this.props.saveBackupPlans}
+            loadTimeSlots={this.props.loadTimeSlots}
           />
         </Modal>
       </>
@@ -145,21 +159,12 @@ class GamedayComplexities extends React.Component<Props, State> {
   }
 }
 
-interface IState {
-  complexities: {
-    data: IEventDetails[];
-    facilities: IFacility[];
-    fields: IField[];
-    backupPlans: IBackupPlan[];
-    isLoading: boolean;
-  };
-}
-
-const mapStateToProps = (state: IState) => ({
+const mapStateToProps = (state: IAppState) => ({
   events: state.complexities.data,
   facilities: state.complexities.facilities,
   fields: state.complexities.fields,
   backupPlans: state.complexities.backupPlans,
+  timeSlots: state.complexities.timeSlots,
   isLoading: state.complexities.isLoading,
 });
 
@@ -171,6 +176,8 @@ const mapDispatchToProps = {
   saveBackupPlans,
   deleteBackupPlan,
   updateBackupPlan,
+  loadTimeSlots,
+  toggleBackUpStatus,
 };
 
 export default connect(

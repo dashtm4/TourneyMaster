@@ -24,7 +24,7 @@ import {
   BindingAction,
   ISchedulesGame,
 } from 'common/models';
-import { EventMenuTitles } from 'common/enums';
+import { EventMenuTitles, TimeSlotsEntityTypes } from 'common/enums';
 import { IAppState } from 'reducers/root-reducer.types';
 import styles from './styles.module.scss';
 import {
@@ -156,6 +156,7 @@ class Reporting extends React.Component<
       teams,
       divisions,
       facilities,
+      schedulesGames,
     } = this.props;
 
     if (
@@ -171,7 +172,11 @@ class Reporting extends React.Component<
 
     const timeValues = getTimeValuesFromEventSchedule(event, schedule);
 
-    const timeSlots = calculateTimeSlots(timeValues);
+    const timeSlots = calculateTimeSlots(
+      timeValues,
+      schedulesGames,
+      TimeSlotsEntityTypes.SCHEDULE_GAMES
+    );
 
     const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);

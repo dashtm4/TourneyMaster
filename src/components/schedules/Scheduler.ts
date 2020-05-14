@@ -520,6 +520,10 @@ export default class Scheduler {
   findFacilityForDivision = (division: IScheduleDivision) => {
     const facilityIds = Object.keys(this.facilityData);
 
+    if (division.preferredFacilityId) {
+      return division.preferredFacilityId;
+    }
+
     if (division.isPremier) {
       const premierFacilities = facilityIds
         .map(item => ({ ...this.facilityData[item], id: item }))
@@ -530,7 +534,13 @@ export default class Scheduler {
         ({ allocatedGamesPercent }) => [allocatedGamesPercent]
       );
 
-      return orderedPremierFacilities[0]?.id;
+      return (
+        orderedPremierFacilities.find(
+          item =>
+            (item.sizePercent || 0) - (item.allocatedGamesPercent || 0) >
+            (division.sizePercent || 0)
+        )?.id || orderedPremierFacilities[0]?.id
+      );
     } else {
       const facilities = facilityIds.map(item => ({
         ...this.facilityData[item],
@@ -545,7 +555,13 @@ export default class Scheduler {
         ]
       );
 
-      return orderedFacilities[0]?.id;
+      return (
+        orderedFacilities.find(
+          item =>
+            (item.sizePercent || 0) - (item.allocatedGamesPercent || 0) >
+            (division.sizePercent || 0)
+        )?.id || orderedFacilities[0]?.id
+      );
     }
   };
 

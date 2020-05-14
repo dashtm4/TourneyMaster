@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 
@@ -22,18 +23,18 @@ import {
   getTimeValuesFromSchedule,
 } from 'helpers';
 
+import {
+  IConfigurableSchedule,
+  IEventDetails,
+  BindingAction,
+} from 'common/models';
 import { EventMenuTitles, Icons } from 'common/enums';
-import { IConfigurableSchedule, IEventDetails } from 'common/models';
-import { BindingAction } from 'common/models';
+import { IInputEvent } from 'common/types';
 import { ArchitectFormFields, gameStartOnOptions } from '../types';
-import moment from 'moment';
+import { getIconStyles } from './helpers';
 
-const STYLES_INFO_ICON = {
-  marginLeft: '5px',
-  fill: '#00A3EA',
-};
-
-type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
+const WARNING_GAME_NUMBER_MESSAGE =
+  'Note: Average number of games per team less than min number of games.';
 
 interface IProps {
   schedule: IConfigurableSchedule;
@@ -57,11 +58,19 @@ const TourneyArchitect = (props: IProps) => {
 
   const totalGameSlots = scheduleTimeSlots?.length! * schedule.num_fields;
 
-  const localChange = ({ target: { name, value } }: InputTargetValue) => {
+  const avgNumGamesPerTeam = (
+    (totalGameSlots * 2) /
+    schedule.num_teams
+  ).toFixed(1);
+
+  const isAvgGamesLessMinGames =
+    Number(avgNumGamesPerTeam) < Number(schedule.min_num_games);
+
+  const localChange = ({ target: { name, value } }: IInputEvent) => {
     onChange(name, value);
   };
 
-  const onTimeChage = ({ target: { name, value } }: InputTargetValue) => {
+  const onTimeChage = ({ target: { name, value } }: IInputEvent) => {
     onChange(name, timeToString(Number(value)));
   };
 
@@ -69,16 +78,16 @@ const TourneyArchitect = (props: IProps) => {
     name: string,
     tooltipTitle: string,
     value: any,
-    infoIcon?: boolean
+    icon?: Icons | null
   ) => (
     <div className={styles.sectionCell}>
       <p>
         <b>{`${name}: `}</b>
         {value}
       </p>
-      {infoIcon && (
+      {icon && (
         <Tooltip type="info" title={tooltipTitle}>
-          {getIcon(Icons.INFO, STYLES_INFO_ICON)}
+          {getIcon(icon, getIconStyles(icon))}
         </Tooltip>
       )}
     </div>
@@ -102,7 +111,7 @@ const TourneyArchitect = (props: IProps) => {
             'Number of Fields',
             'Inherited from Facilities and a constant (does not change)',
             `${schedule.num_fields}`,
-            true
+            Icons.INFO
           )}
           {renderSectionCell(
             'Play Time Window',
@@ -112,13 +121,13 @@ const TourneyArchitect = (props: IProps) => {
                 'LT'
               )} - ${schedule.last_game_end_time &&
               moment(timeToDate(schedule.last_game_end_time)).format('LT')}`,
-            true
+            Icons.INFO
           )}
           {renderSectionCell(
             'Teams Registered/Max',
             'Current # / Max # if timeslots are all full',
             `${schedule.num_teams}/${schedule.num_teams}`,
-            true
+            Icons.INFO
           )}
         </div>
         <div className={styles.taSecond}>
@@ -207,8 +216,9 @@ const TourneyArchitect = (props: IProps) => {
           {renderSectionCell('Game Slots/Day', '', `${totalGameSlots}`)}
           {renderSectionCell(
             'AVG # Games/Team',
-            '',
-            `${((totalGameSlots * 2) / schedule.num_teams).toFixed(1)}`
+            `${isAvgGamesLessMinGames ? WARNING_GAME_NUMBER_MESSAGE : ''}`,
+            `${avgNumGamesPerTeam}`,
+            isAvgGamesLessMinGames ? Icons.WARNING : null
           )}
           {event &&
             renderSectionCell(

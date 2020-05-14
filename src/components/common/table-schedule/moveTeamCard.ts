@@ -1,12 +1,13 @@
 import { findIndex, find } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IDropParams } from '../matrix-table/dnd/drop';
-import { IGame } from '../matrix-table/helper';
+import { IGame, TeamPositionEnum } from '../matrix-table/helper';
 
 export default (
   teamCards: ITeamCard[],
   filledGames: IGame[],
   dropParams: IDropParams,
+  simultaneousDnd: boolean,
   day?: string
 ) => {
   const { teamId, position, gameId, originGameId, originGameDate } = dropParams;
@@ -30,11 +31,13 @@ export default (
           date: day,
         }) >= 0
     );
+
     const incomingTeamFiltered = {
       ...incomingTeam,
       games: [...incomingTeam?.games?.filter(item => item.id !== originGameId)],
     };
 
+    const originGamePlace = filledGames.find(item => item.id === originGameId);
     const gamePlace = filledGames.find(item => item.id === gameId);
     const incomingTeamGames = filledGames.filter(
       item =>
@@ -79,12 +82,16 @@ export default (
       };
     }
 
-    /* When divisions do not match */
     if (incomingTeam !== undefined) {
       const oppositeDivisionId =
         outcomingTeam?.divisionId || pairTeam?.divisionId || undefined;
 
+      const oppositePoolId =
+        outcomingTeam?.poolId || pairTeam?.poolId || undefined;
+
+      /* When divisions do not match */
       if (
+        !simultaneousDnd &&
         oppositeDivisionId &&
         incomingTeam.divisionId !== oppositeDivisionId
       ) {
@@ -93,14 +100,13 @@ export default (
           divisionUnmatch: true,
         };
       }
-    }
 
-    /* When pools do not match */
-    if (incomingTeam !== undefined) {
-      const oppositePoolId =
-        outcomingTeam?.poolId || pairTeam?.poolId || undefined;
-
-      if (oppositePoolId && incomingTeam.poolId !== oppositePoolId) {
+      /* When pools do not match */
+      if (
+        incomingTeam.divisionId === oppositeDivisionId &&
+        oppositePoolId &&
+        incomingTeam.poolId !== oppositePoolId
+      ) {
         result = {
           ...result,
           poolUnmatch: true,
@@ -109,7 +115,12 @@ export default (
     }
 
     /* 1. Handle dropping inside the table */
-    if (gameId && position && teamId === teamCard.id) {
+    if (
+      gameId &&
+      position &&
+      teamId === teamCard.id &&
+      !(simultaneousDnd && originGameId)
+    ) {
       let games = [
         ...teamCard.games?.filter(
           item => item.id !== originGameId || item.date !== originGameDate
@@ -145,8 +156,55 @@ export default (
       };
     }
 
+    if (
+      simultaneousDnd &&
+      (originGamePlace?.awayTeam?.id === teamCard.id ||
+        originGamePlace?.homeTeam?.id === teamCard.id)
+    ) {
+      const originPosition =
+        originGamePlace?.awayTeam?.id === teamCard.id
+          ? TeamPositionEnum.awayTeam
+          : TeamPositionEnum.homeTeam;
+
+      const games = [
+        ...teamCard.games?.filter(
+          item => item.id !== originGameId || item.date !== originGameDate
+        ),
+      ];
+
+      if (gameId) {
+        games.push({
+          id: gameId,
+          isTeamLocked: false,
+          teamPosition: originPosition,
+          date: day,
+        });
+      }
+
+      return {
+        ...teamCard,
+        games,
+      };
+    }
+
+    if (
+      simultaneousDnd &&
+      originGameId &&
+      findIndex(teamCard.games, {
+        id: gameId,
+        date: day,
+      }) >= 0
+    ) {
+      return {
+        ...teamCard,
+        games: teamCard.games?.filter(
+          item => item.id !== gameId || item.date !== day
+        ),
+      };
+    }
+
     /* 2. Handle dropping into the Unassigned table */
-    if (!gameId && !position && teamId === teamCard.id) {
+    if (!simultaneousDnd && !gameId && !position && teamId === teamCard.id) {
       const games = [
         ...teamCard.games?.filter(
           item => item.id !== originGameId || item.date !== originGameDate
@@ -160,6 +218,7 @@ export default (
 
     /* 3. Remove replaced team game */
     if (
+      !simultaneousDnd &&
       findIndex(teamCard.games, {
         id: gameId,
         teamPosition: position,

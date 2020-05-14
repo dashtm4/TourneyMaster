@@ -37,12 +37,28 @@ import { IIndivisualsRegister, ITeamsRegister } from 'common/models/register';
 import { ButtonFormTypes } from 'common/enums';
 import { eventTypeOptions } from 'components/event-details/event-structure';
 
+axios.defaults.baseURL =
+  process.env.REACT_APP_PUBLIC_API_BASE_URL ||
+  'https://api.tourneymaster.org/public'; // TODO: Remove the hardcoded link when everyone is ok
+
 export enum TypeOptions {
   'Player' = 1,
   'Parent/Guardian' = 2,
   'Team Admin' = 3,
   'Coach' = 4,
 }
+
+const getInternalRegType = (type: TypeOptions) => {
+  if (type === TypeOptions.Player || type === TypeOptions['Parent/Guardian']) {
+    return 'individual';
+  } else {
+    return 'team';
+  }
+};
+
+const getApiEndpointByRegType = (type: TypeOptions) => {
+  return '/reg_' + getInternalRegType(type) + 's';
+};
 
 export interface RegisterMatchParams {
   match: {
@@ -84,7 +100,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
   useEffect(() => {
     const eventId = match.params.eventId;
-    axios.get('https://api.tourneymaster.org/public/events').then(response => {
+    axios.get('/events').then(response => {
       const eventData: IEventDetails = response.data.filter(
         (e: IEventDetails) => e.event_id === eventId
       )[0];
@@ -97,33 +113,27 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
       );
     });
 
-    axios
-      .get('https://api.tourneymaster.org/public/registrations')
-      .then(response => {
-        const registrationData = response.data.filter(
-          (reg: IRegistration) => reg.event_id === eventId
-        )[0];
-        setEventRegistration(registrationData);
-      });
+    axios.get('/registrations').then(response => {
+      const registrationData = response.data.filter(
+        (reg: IRegistration) => reg.event_id === eventId
+      )[0];
+      setEventRegistration(registrationData);
+    });
 
-    axios
-      .get(
-        `https://api.tourneymaster.org/public/skus?product_id=evn_${eventId}`
-      )
-      .then(response => {
-        const divs = response.data.map((sku: any) => ({
-          label: sku.sku_name,
-          value: sku.sku_id,
-        }));
+    axios.get(`/skus?product_id=evn_${eventId}`).then(response => {
+      const divs = response.data.map((sku: any) => ({
+        label: sku.sku_name,
+        value: sku.sku_id,
+      }));
 
-        const sortedDivs = divs.sort((a: ISelectOption, b: ISelectOption) =>
-          a.label.localeCompare(b.label, undefined, { numeric: true })
-        );
+      const sortedDivs = divs.sort((a: ISelectOption, b: ISelectOption) =>
+        a.label.localeCompare(b.label, undefined, { numeric: true })
+      );
 
-        setDivisions(sortedDivs);
-      });
+      setDivisions(sortedDivs);
+    });
 
-    axios.get('https://api.tourneymaster.org/public/states').then(response => {
+    axios.get('/states').then(response => {
       const selectStateOptions = response.data.map((it: IUSAState) => ({
         label: it.state_id,
         value: it.state_name,
@@ -139,10 +149,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   }, []);
 
   const getPaymentIntent = (order: any) => {
-    return axios.post(
-      'https://api.tourneymaster.org/public/payments/create-payment-intent',
-      order
-    );
+    return axios.post('/payments/create-payment-intent', order);
   };
 
   const saveRegistrationResponse = async () => {
@@ -158,17 +165,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     // }
 
     try {
-      let url;
-      if (
-        type === TypeOptions.Player ||
-        type === TypeOptions['Parent/Guardian']
-      ) {
-        url = 'https://api.tourneymaster.org/public/reg_individuals';
-      } else {
-        url = 'https://api.tourneymaster.org/public/reg_teams';
-      }
-
-      await axios.post(url, updatedRegistration);
+      await axios.post(getApiEndpointByRegType(type), updatedRegistration);
       return updatedRegistration;
     } catch (err) {
       return Toasts.errorToast(err.message);
@@ -182,7 +179,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     const updatedRegistration = await saveRegistrationResponse();
 
     const order = {
-      reg_type: TypeOptions[type],
+      reg_type: getInternalRegType(type),
       reg_response_id: updatedRegistration.reg_response_id,
       registration_id: updatedRegistration.registration_id,
       order: {

@@ -1,18 +1,18 @@
 import React from 'react';
-import { Input, Select, Radio, Button } from 'components/common';
+import { Input, Select, Radio, Button, Loader } from 'components/common';
 import {
   IFacility,
   BindingCbWithOne,
   BindingAction,
   IEventDetails,
 } from 'common/models';
+import TableChangeTime from '../table-change-time';
 import MultiSelect, {
   IMultiSelectOption,
 } from 'components/common/multi-select';
 import { IField } from 'common/models';
 import MultipleSearch from 'components/common/multiple-search-select';
 import styles from '../create-backup-modal/styles.module.scss';
-import { OptionsEnum, TypeOptionsEnum } from '../create-backup-form';
 import {
   mapFacilitiesToOptions,
   mapFieldsToOptions,
@@ -20,16 +20,19 @@ import {
   getFacilitiesOptionsForEvent,
   getFieldsOptionsForFacilities,
   getEventOptions,
+  getTimeSlotOptions,
+  mapChangeValueOptions,
 } from '../helper';
 import { IBackupPlan } from 'common/models/backup_plan';
 import { IMultipleSelectOption } from '../create-backup-form';
 import { PopupExposure } from 'components/common';
-
-const options = [{ value: '05:00 PM', label: '05:00 PM' }];
-const optionsTimeslots = [
-  { value: '05:00 PM', label: '05:00 PM' },
-  { value: '06:00 PM', label: '06:00 PM' },
-];
+import {
+  IComplexityTimeslots,
+  OptionsEnum,
+  TypeOptionsEnum,
+  IChangedTimeSlot,
+} from '../common';
+import { formatTimeSlot } from 'helpers';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -38,7 +41,9 @@ interface Props {
   events: IEventDetails[];
   facilities: IFacility[];
   fields: IField[];
+  timeSlots: IComplexityTimeslots;
   updateBackupPlan: BindingCbWithOne<Partial<IBackupPlan>>;
+  loadTimeSlots: (eventId: string) => void;
   onEditClose: BindingAction;
 }
 
@@ -51,6 +56,14 @@ class CreateBackupForm extends React.Component<Props, State> {
   state = { backupPlan: {}, isModalConfirmOpen: false };
 
   componentDidMount() {
+    const { backupPlan, timeSlots } = this.props;
+    const { event_id } = backupPlan;
+    const eventTimeSlots = timeSlots[event_id];
+
+    if (event_id && !eventTimeSlots) {
+      this.props.loadTimeSlots(event_id);
+    }
+
     this.setState({
       backupPlan: {
         ...this.props.backupPlan,
@@ -68,6 +81,9 @@ class CreateBackupForm extends React.Component<Props, State> {
             this.props.backupPlan.timeslots_impacted,
             this.props.backupPlan.backup_type
           ),
+        change_value:
+          this.props.backupPlan.change_value &&
+          mapChangeValueOptions(this.props.backupPlan.change_value),
       },
     });
   }
@@ -85,11 +101,16 @@ class CreateBackupForm extends React.Component<Props, State> {
     this.onChange('event_id', e.target.value);
     this.onChange('facilities_impacted', '');
     this.onChange('fields_impacted', '');
+    this.onChange('timeslots_impacted', undefined);
+    this.onChange('change_value', undefined);
+    this.onChange('event_date_impacted', undefined);
   };
 
   onTypeChange = (e: InputTargetValue) => {
     this.onChange('backup_type', OptionsEnum[e.target.value]);
     this.onChange('timeslots_impacted', '');
+    this.onChange('change_value', undefined);
+    this.onChange('event_date_impacted', undefined);
   };
 
   onFacilitiesChange = (
@@ -115,8 +136,44 @@ class CreateBackupForm extends React.Component<Props, State> {
   onTimeslotChange = (e: InputTargetValue) =>
     this.onChange('timeslots_impacted', e.target.value);
 
-  onChangeToChange = (e: InputTargetValue) =>
-    this.onChange('change_value', e.target.value);
+  onChangeEventDateImpacted = (e: InputTargetValue) => {
+    this.onChange('event_date_impacted', e.target.value);
+  };
+
+  onChangeToChange = (timeSlot: IChangedTimeSlot, flag: boolean) => {
+    const { backupPlan }: any = this.state;
+    const { change_value } = backupPlan;
+
+    const changedTimeSlots = change_value
+      ? [...change_value, timeSlot]
+      : [timeSlot];
+
+    const newChangedTimeSlots = flag
+      ? changedTimeSlots
+      : change_value.filter(
+          (it: IChangedTimeSlot) => it.timeSlotTime !== timeSlot.timeSlotTime
+        );
+
+    const timeSlotOptions = newChangedTimeSlots.map((it: IChangedTimeSlot) => ({
+      label: formatTimeSlot(it.timeSlotTime),
+      value: it.timeSlotTime,
+    }));
+
+    this.onChange('change_value', newChangedTimeSlots);
+
+    this.onChange('timeslots_impacted', timeSlotOptions);
+  };
+
+  onChangeChangedTimeSlot = (timeSlot: IChangedTimeSlot) => {
+    const { backupPlan }: any = this.state;
+
+    const updatedTimeSlots = backupPlan.change_value.map(
+      (it: IChangedTimeSlot) =>
+        it.timeSlotTime === timeSlot.timeSlotTime ? timeSlot : it
+    );
+
+    this.onChange('change_value', updatedTimeSlots);
+  };
 
   onSave = () => {
     if (this.state.isModalConfirmOpen) {
@@ -139,63 +196,54 @@ class CreateBackupForm extends React.Component<Props, State> {
     this.props.onEditClose();
   };
 
-  renderTimeslots = (type: string, timeslots: any, changeTo: string) => {
-    switch (String(type)) {
-      case 'cancel_games':
-        return (
-          <div className={styles.item}>
-            <MultipleSearch
-              label="Timeslots"
-              width={'282px'}
-              options={optionsTimeslots}
-              onChange={this.onTimeslotsChange}
-              value={timeslots || []}
-            />
-          </div>
-        );
-      case 'modify_start_time':
-        return (
-          <div className={styles.itemDouble}>
-            <Select
-              label="Timeslot"
-              options={options}
-              width={'131px'}
-              value={timeslots || ''}
-              onChange={this.onTimeslotChange}
-            />
-            <Select
-              label="Change To"
-              options={options}
-              width={'131px'}
-              value={changeTo || ''}
-              onChange={this.onChangeToChange}
-            />
-          </div>
-        );
-      case 'modify_game_lengths':
-        return (
-          <div className={styles.itemDouble}>
-            <Select
-              label="Timeslot"
-              options={options}
-              width={'131px'}
-              value={timeslots || ''}
-              onChange={this.onTimeslotChange}
-            />
-            <Input
-              width={'131px'}
-              type={'number'}
-              label="Change To"
-              placeholder="Minutes"
-              onChange={this.onChangeToChange}
-              value={changeTo || ''}
-            />
-          </div>
-        );
+  renderTimeslots = (timeslots: any, event_date_impacted: any) => {
+    const { backupPlan, timeSlots } = this.props;
+    const { event_id } = backupPlan;
+    const eventTimeSlots = timeSlots[event_id];
+
+    if (
+      eventTimeSlots &&
+      !eventTimeSlots.isLoaded &&
+      eventTimeSlots.eventTimeSlots.length === 0
+    ) {
+      return null;
     }
+
+    const timeSlotOptions = getTimeSlotOptions(eventTimeSlots);
+
+    return (
+      <div className={styles.itemTimeSlotsWrapper}>
+        <div className={styles.itemTimeSlots}>
+          <MultipleSearch
+            label="Timeslots"
+            width={'282px'}
+            options={timeSlotOptions}
+            onChange={this.onTimeslotsChange}
+            value={timeslots || []}
+          />
+        </div>
+        <Select
+          onChange={this.onChangeEventDateImpacted}
+          value={event_date_impacted || ''}
+          options={eventTimeSlots.eventDays.map((day, idx) => ({
+            label: `Day ${idx + 1}`,
+            value: day,
+          }))}
+          width="282px"
+          label="Event Day"
+        />
+      </div>
+    );
   };
 
   render() {
+    const {
+      events,
+      facilities: allFacilities,
+      fields: allFields,
+      timeSlots,
+    } = this.props;
+
     const {
       backup_name,
       event_id,
@@ -204,9 +252,8 @@ class CreateBackupForm extends React.Component<Props, State> {
       fields_impacted,
       timeslots_impacted,
       change_value,
+      event_date_impacted,
     }: any = this.state.backupPlan;
-
-    const { events, facilities: allFacilities, fields: allFields } = this.props;
 
     const eventsOptions = getEventOptions(events);
 
@@ -222,6 +269,8 @@ class CreateBackupForm extends React.Component<Props, State> {
         facilities_impacted,
         fields_impacted
       );
+
+    const eventTimeSlots = timeSlots[event_id];
 
     return (
       <div className={styles.container}>
@@ -248,11 +297,7 @@ class CreateBackupForm extends React.Component<Props, State> {
             <div className={styles.itemLarge}>
               <Radio
                 row={true}
-                options={[
-                  'Cancel Games',
-                  'Modify Start Times',
-                  'Modify Game Lengths',
-                ]}
+                options={Object.values(TypeOptionsEnum)}
                 formLabel="Type"
                 onChange={this.onTypeChange}
                 checked={
@@ -286,26 +331,31 @@ class CreateBackupForm extends React.Component<Props, State> {
               </div>
             ) : null}
 
-            {fields_impacted?.length
-              ? this.renderTimeslots(
-                  backup_type,
-                  timeslots_impacted,
-                  change_value
-                )
-              : null}
-
-            {/* {event_id && (
-              <div className={styles.item}>
-                <>
-                  <span>or</span>
-                  <Button
-                    label="Open Scheduler"
-                    variant="text"
-                    color="secondary"
-                  />
-                </>
-              </div>
-            )} */}
+            {backup_type === OptionsEnum['Cancel Games'] &&
+            eventTimeSlots &&
+            eventTimeSlots.isLoading ? (
+              <Loader />
+            ) : backup_type === OptionsEnum['Cancel Games'] &&
+              fields_impacted?.length ? (
+              this.renderTimeslots(timeslots_impacted, event_date_impacted)
+            ) : null}
+          </div>
+          <div className={styles.row}>
+            {backup_type ===
+              OptionsEnum['Weather Interruption: Modify Game Timeslots'] &&
+            eventTimeSlots &&
+            eventTimeSlots.isLoading ? (
+              <Loader />
+            ) : backup_type ===
+                OptionsEnum['Weather Interruption: Modify Game Timeslots'] &&
+              fields_impacted?.length ? (
+              <TableChangeTime
+                timeSlots={eventTimeSlots.eventTimeSlots}
+                changedTimeSlots={change_value || []}
+                onChangeToChange={this.onChangeToChange}
+                onChangeChangedTimeSlot={this.onChangeChangedTimeSlot}
+              />
+            ) : null}
           </div>
         </div>
         <div className={styles.buttonsGroup}>

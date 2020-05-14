@@ -3,7 +3,7 @@ import { IGame } from 'components/common/matrix-table/helper';
 import { IBracketGame } from './bracketGames';
 import { IOnAddGame } from './add-game-modal';
 import { getVarcharEight } from 'helpers';
-import { IDivision, IField, ISchedulesDetails, IBracket } from 'common/models';
+import { IDivision, IField, ISchedulesDetails } from 'common/models';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { MovePlayoffWindowEnum } from '.';
 import ITimeSlot from 'common/models/schedule/timeSlots';
@@ -171,6 +171,7 @@ export const addGameToExistingBracketGames = (
     startTime: undefined,
     gameDate: divisionGames[0].gameDate,
     hidden: false,
+    isCancelled: false,
     createDate: new Date().toISOString(),
   };
 
@@ -297,6 +298,7 @@ export const updateGameSlot = (
     playoffIndex: bracketGame?.index,
     awayTeamScore: bracketGame?.awayTeamScore,
     homeTeamScore: bracketGame?.homeTeamScore,
+    isCancelled: bracketGame?.isCancelled,
   };
 };
 
@@ -468,20 +470,6 @@ export const updateBracketGamesDndResult = (
   );
 
   return { bracketGames, warnings };
-};
-
-export const getPlayoffTimeSlotsFromBracket = (
-  bracket: IBracket,
-  timeSlots: ITimeSlot[]
-) => {
-  const initialStartTimeSlot = bracket.startTimeSlot;
-
-  const playoffTimeSlots = timeSlots.slice(
-    Number(initialStartTimeSlot),
-    timeSlots.length
-  );
-
-  return playoffTimeSlots;
 };
 
 const getMinMaxGameTimeSlots = (

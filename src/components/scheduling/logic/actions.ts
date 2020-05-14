@@ -33,6 +33,7 @@ import {
   ITeam,
   IDivision,
   IFacility,
+  ISchedulesDetails,
 } from 'common/models';
 import {
   getVarcharEight,
@@ -66,7 +67,11 @@ import {
   ISchedulingBracket,
   IFetchedBracket,
 } from 'common/models/playoffs/bracket';
-import { BracketStatuses, ScheduleStatuses } from 'common/enums';
+import {
+  BracketStatuses,
+  ScheduleStatuses,
+  TimeSlotsEntityTypes,
+} from 'common/enums';
 import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
 
 type GetState = () => IAppState;
@@ -339,17 +344,22 @@ const getSchedulesData = async (
   tournamentInfo: TournamentInfo
 ) => {
   const { event, fields, teams, divisions, facilities } = tournamentInfo;
+
+  const loadedSchedulesDetails = (await api.get('/schedules_details', {
+    schedule_id: schedule.schedule_id,
+  })) as ISchedulesDetails[];
+
   const timeValues = getTimeValuesFromEventSchedule(event, schedule);
-  const timeSlots = calculateTimeSlots(timeValues);
+  const timeSlots = calculateTimeSlots(
+    timeValues,
+    loadedSchedulesDetails,
+    TimeSlotsEntityTypes.SCHEDULE_DETAILS
+  );
 
   const mappedFields = mapFieldsData(fields, facilities);
   const sortedFields = sortFieldsByPremier(mappedFields);
 
   const { games } = defineGames(sortedFields, timeSlots!);
-
-  const loadedSchedulesDetails = await api.get('/schedules_details', {
-    schedule_id: schedule.schedule_id,
-  });
 
   const mappedTeams = mapTeamsData(teams, divisions);
   const tableTeams = mapTeamsFromSchedulesDetails(

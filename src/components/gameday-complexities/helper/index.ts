@@ -1,7 +1,8 @@
 import { IFacility, IField, IEventDetails } from 'common/models';
 import { IMultiSelectOption } from 'components/common/multi-select';
-import { sortByField } from 'helpers';
+import { sortByField, formatTimeSlot } from 'helpers';
 import { SortByFilesTypes } from 'common/enums';
+import { IComplexityTimeslot, OptionsEnum, IChangedTimeSlot } from '../common';
 
 export const mapFacilitiesToOptions = (
   allFacilities: IFacility[],
@@ -35,19 +36,29 @@ export const mapTimeslotsToOptions = (
   backupType: string
 ) => {
   switch (backupType) {
-    case 'cancel_games': {
+    case OptionsEnum['Cancel Games']:
+    case OptionsEnum['Weather Interruption: Modify Game Timeslots']: {
       const parsedTimeslots = JSON.parse(timeslots);
+
       return parsedTimeslots.map((timeslot: string) => ({
-        label: timeslot,
+        label: formatTimeSlot(timeslot) as string,
         value: timeslot,
       }));
     }
-    case 'modify_start_time':
-    case 'modify_game_lengths':
-      return timeslots;
     default:
       return [{ label: 'default', value: 'default' }];
   }
+};
+
+export const mapChangeValueOptions = (changeValue: string) => {
+  const parsedChangeValue = JSON.parse(changeValue) as IChangedTimeSlot[];
+
+  const mappedChangedValues = parsedChangeValue.map(it => ({
+    ...it,
+    newTimeSlotTime: it.newTimeSlotTime.slice(0, 5),
+  }));
+
+  return mappedChangedValues;
 };
 
 export const getEventOptions = (events: IEventDetails[]) => {
@@ -112,6 +123,8 @@ export const getFieldsOptionsForFacilities = (
 };
 
 export const stringifyBackupPlan = (backupPlan: any) => {
+  const MILLISECONDS_VALUE = ':00';
+
   return {
     ...backupPlan,
     facilities_impacted: JSON.stringify(
@@ -120,11 +133,51 @@ export const stringifyBackupPlan = (backupPlan: any) => {
     fields_impacted: JSON.stringify(
       backupPlan.fields_impacted.map((field: any) => field.value)
     ),
-    timeslots_impacted:
-      backupPlan.backup_type === 'cancel_games'
-        ? JSON.stringify(
-            backupPlan.timeslots_impacted.map((timeslot: any) => timeslot.value)
-          )
-        : backupPlan.timeslots_impacted,
+    timeslots_impacted: JSON.stringify(
+      backupPlan.timeslots_impacted.map((timeslot: any) => timeslot.value)
+    ),
+    change_value: backupPlan.change_value
+      ? JSON.stringify(
+          backupPlan.change_value.map((it: IChangedTimeSlot) => ({
+            ...it,
+            newTimeSlotTime: it.newTimeSlotTime + MILLISECONDS_VALUE,
+          }))
+        )
+      : null,
   };
+};
+
+export const getTimeSlotOptions = (timeSlots: IComplexityTimeslot) => {
+  if (!timeSlots.eventTimeSlots) {
+    return [];
+  }
+
+  const timeSlotOptions = timeSlots.eventTimeSlots.map(it => ({
+    value: it.time,
+    label: formatTimeSlot(it.time) as string,
+  }));
+
+  return timeSlotOptions;
+};
+
+export const getMapNewTimeSlots = (changedTimeSlots: IChangedTimeSlot[]) => {
+  const mappedNewTimeSlots = changedTimeSlots.reduce((acc, timeslot) => {
+    acc[timeslot.timeSlotTime] = timeslot.newTimeSlotTime;
+
+    return acc;
+  }, {});
+
+  return mappedNewTimeSlots;
+};
+
+export const checkNewTimeSlots = (changedTimeSlot: IChangedTimeSlot[]) => {
+  const rgx2 = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+
+  const isCorrectTimeValues =
+    changedTimeSlot &&
+    changedTimeSlot.every((it: IChangedTimeSlot) =>
+      rgx2.test(it.newTimeSlotTime)
+    );
+
+  return isCorrectTimeValues;
 };

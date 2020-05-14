@@ -38,6 +38,7 @@ enum Routes {
   RECORD_SCORES = '/event/record-scores/',
   RECORD_SCORES_ID = '/event/record-scores/:eventId?',
   SUPPORT = '/support',
+  MOBILE_SCORING = '/mob-scoring',
 }
 
 export { Routes };

@@ -1,0 +1,201 @@
+# ClubSportsPayments.yaml
+#
+# Date: 04/28/2020
+
+Parameters:
+  ProjectName:
+    Type: String
+    Description: Name of the project to be used in naming everything else
+  ApiGatewayId:
+    Type: String
+    Description: API Gateway Api ID
+  RootResource:
+    Type: String
+    Description: API Gateway Root Resource ID
+
+Resources:
+  EventNotificationsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${ProjectName}-EventNotificationsTopic
+
+  LambdaExecRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub LambdaExecRole${ProjectName}
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: '/'
+      Policies:
+        - PolicyName: AWSLambdaBasicExecutionRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+        - PolicyName: PublishMessagesToSNS
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: sns:*
+                Resource:
+                  - !Ref EventNotificationsTopic
+        - PolicyName: GetSecretValue
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${ProjectName}*
+        - PolicyName: GetSMParameter
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ssm:GetParameter
+                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/TourneyMasterAPIv2
+
+  SyncProductsFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-SyncProductsFunction
+      Description: !Sub ${ProjectName}-SyncProductsFunction
+      Handler: syncProducts.handler
+      Role: !GetAtt LambdaExecRole.Arn
+      Code:
+        ZipFile: 'exports.handler = function(event, context) { console.log("Hello World")}'
+      Runtime: nodejs12.x
+      Timeout: 60
+      Environment:
+        Variables:
+          STRIPE_SECRET_KEY: ''
+          STRIPE_PUBLISHABLE_KEY: ''
+          PUBLIC_API_BASE_URL: ''
+
+  PaymentsApiFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-PaymentsApiFunction
+      Description: Create PaymentIntent
+      Handler: index.handler
+      Role: !GetAtt LambdaExecRole.Arn
+      Code:
+        ZipFile: 'import json'
+      Runtime: nodejs12.x
+      Timeout: 10
+      Environment:
+        Variables:
+          SMParameterName: 'TourneyMasterAPIv2'
+          STRIPE_SECRET_KEY: ''
+          STRIPE_PUBLISHABLE_KEY: ''
+          STRIPE_WEBHOOK_SIGNING_SECRET: ''
+          PUBLIC_API_BASE_URL: ''
+
+  Permission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt PaymentsApiFunction.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGatewayId}/*/*/*
+
+  PaymentsApiResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref ApiGatewayId
+      ParentId: !Ref RootResource
+      PathPart: 'payments'
+
+  ProxyResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      RestApiId: !Ref ApiGatewayId
+      ParentId: !Ref PaymentsApiResource
+      PathPart: '{proxy+}'
+
+  PostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: False
+      AuthorizationType: NONE
+      #      AuthorizerId: !Ref Authorizer
+      HttpMethod: POST
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Join
+          - ''
+          - - !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/'
+            - !GetAtt PaymentsApiFunction.Arn
+            - '/invocations' # :${stageVariables.lambdaAlias}
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseTemplates:
+              application/json: ''
+      MethodResponses:
+        - StatusCode: 200
+      ResourceId: !Ref ProxyResource
+      RestApiId: !Ref ApiGatewayId
+
+  OptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      RestApiId: !Ref ApiGatewayId
+      ResourceId: !Ref ProxyResource
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ''
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
+
+  EventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub ${ProjectName}-runSyncProducts
+      ScheduleExpression: 'rate(1 minute)'
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt SyncProductsFunction.Arn
+          Id: 'SyncProductsFunction'
+    DependsOn:
+      - SyncProductsFunction
+
+  PermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref SyncProductsFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: 'events.amazonaws.com'
+      SourceArn: !GetAtt EventRule.Arn
+    DependsOn:
+      - SyncProductsFunction

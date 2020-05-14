@@ -159,6 +159,11 @@ export const mapTeamCardsToSchedulesGames = async (
     finalized_by: null,
     finalized_datetime: null,
     is_bracket_YN: null,
+    is_cancelled_YN: game.awayTeam?.games?.find(
+      g => g.id === game.id && game.gameDate === g.date
+    )?.isCancelled
+      ? 1
+      : 0,
     created_by: memberId,
     created_datetime: game.createDate || new Date().toISOString(),
     updated_by: memberId,
@@ -225,6 +230,7 @@ export const mapTeamsFromShedulesGames = (
     startTime: item.start_time,
     fieldId: item.field_id,
     date: item.game_date,
+    isCancelled: Boolean(item.is_cancelled_YN),
   }));
 
   const runGamesSelection = (team: ITeam) => {
@@ -241,6 +247,7 @@ export const mapTeamsFromShedulesGames = (
               game.fieldId === scheduleGame.fieldId
           )?.id!,
           date: scheduleGame.date,
+          isCancelled: scheduleGame.isCancelled,
           teamPosition: scheduleGame.awayTeamId === team.id ? 1 : 2,
           teamScore:
             scheduleGame.awayTeamId === team.id

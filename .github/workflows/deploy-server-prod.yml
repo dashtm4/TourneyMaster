@@ -1,0 +1,36 @@
+name: Payments Server deployment
+
+on:
+  push:
+    branches:
+      - master
+      - development
+      - autodeploy
+    paths:
+      - 'server/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: development
+      - name: Enable Amazon
+        uses: chrislennon/action-aws-cli@v1.1
+      - name: Build and Deploy Server
+        run: |
+          cd server/functions
+          npm install --no-save inherits
+          npm install --only=dev
+          source ./uploadLambdaCode.sh
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
+          STRIPE_PUBLISHABLE_KEY: ${{secrets.STRIPE_PUBLISHABLE_KEY}}
+          STRIPE_SECRET_KEY: ${{secrets.STRIPE_SECRET_KEY}}
+          STRIPE_WEBHOOK_SIGNING_SECRET: ${{secrets.STRIPE_WEBHOOK_SIGNING_SECRET}}
+          PUBLIC_API_BASE_URL: 'https://api.tourneymaster.org/public'
+          SM_PARAMETER_NAME: 'TourneyMasterAPIv2'

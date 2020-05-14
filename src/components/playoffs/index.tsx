@@ -56,7 +56,10 @@ import {
   createBracketGames,
   advanceBracketGamesWithTeams,
 } from './bracketGames';
-import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
+import {
+  populateDefinedGamesWithPlayoffState,
+  predictPlayoffTimeSlots,
+} from 'components/schedules/definePlayoffs';
 import {
   createPlayoff,
   savePlayoff,
@@ -69,6 +72,7 @@ import {
   IPlayoffSortedTeams,
   clearSortedTeams,
 } from './logic/actions';
+import { addNewBracket } from 'components/scheduling/logic/actions';
 import {
   addGameToExistingBracketGames,
   removeGameFromBracketGames,
@@ -81,6 +85,8 @@ import {
 import { IOnAddGame } from './add-game-modal';
 import { updateExistingBracket } from 'components/scheduling/logic/actions';
 import SaveBracketsModal from './save-brackets-modal';
+import { ICreateBracketModalOutput } from 'components/scheduling/create-new-bracket';
+import { TimeSlotsEntityTypes } from 'common/enums';
 
 export interface ISeedDictionary {
   [key: string]: IBracketSeed[];
@@ -122,6 +128,7 @@ interface IMapDispatchToProps {
   clearSortedTeams: () => void;
   updateExistingBracket: (data: Partial<IBracket>) => void;
   schedulesDetailsClear: () => void;
+  addNewBracket: (bracket: ICreateBracketModalOutput) => void;
 }
 
 interface IProps extends IMapStateToProps, IMapDispatchToProps {
@@ -241,13 +248,19 @@ class Playoffs extends Component<IProps> {
       teams,
       divisions,
       facilities,
+      schedulesDetails,
     } = this.props;
 
     if (!event || !schedule || !fields || !teams || !divisions || !facilities)
       return;
 
     const timeValues = getTimeValuesFromEventSchedule(event, schedule);
-    const timeSlots = calculateTimeSlots(timeValues);
+
+    const timeSlots = calculateTimeSlots(
+      timeValues,
+      schedulesDetails,
+      TimeSlotsEntityTypes.SCHEDULE_DETAILS
+    );
 
     const mappedFields = mapFieldsData(fields, facilities);
     const sortedFields = sortFieldsByPremier(mappedFields);
@@ -274,16 +287,47 @@ class Playoffs extends Component<IProps> {
   };
 
   calculatePlayoffTimeSlots = () => {
-    const { schedulesDetails, event, bracket } = this.props;
+    const { schedulesDetails, event, bracket, fields, divisions } = this.props;
     const { timeSlots } = this.state;
     // const { bracketId } = match?.params;
 
     const day = moment(event?.event_enddate).toISOString();
 
-    if (!schedulesDetails || !timeSlots || !event || !day || !bracket) return;
+    if (
+      !schedulesDetails ||
+      !timeSlots ||
+      !event ||
+      !day ||
+      !bracket ||
+      !fields ||
+      !divisions
+    )
+      return;
 
-    const initialStartTimeSlot = bracket.startTimeSlot;
-    // const initialEndTimeSlot = bracket.endTimeSlot;
+    const predicteDplayoffTimeSlots = predictPlayoffTimeSlots(
+      fields,
+      timeSlots,
+      divisions,
+      event!
+    );
+
+    const firstTimeSlot = predicteDplayoffTimeSlots?.length
+      ? predicteDplayoffTimeSlots[0].id
+      : -1;
+    const lastTimeSlot = predicteDplayoffTimeSlots?.length
+      ? predicteDplayoffTimeSlots[predicteDplayoffTimeSlots.length - 1].id
+      : -1;
+
+    const bracketWithNewTimeSlots = {
+      ...bracket,
+      startTimeSlot: String(firstTimeSlot),
+      endTimeSlot: String(lastTimeSlot),
+    };
+
+    this.props.addNewBracket(bracketWithNewTimeSlots);
+
+    const initialStartTimeSlot = bracketWithNewTimeSlots.startTimeSlot;
+    // const initialEndTimeSlot = bracketWithNewTimeSlots.endTimeSlot;
 
     const playoffTimeSlots = timeSlots.slice(
       Number(initialStartTimeSlot),
@@ -832,6 +876,7 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
       clearSortedTeams,
       updateExistingBracket,
       schedulesDetailsClear,
+      addNewBracket,
     },
     dispatch
   );

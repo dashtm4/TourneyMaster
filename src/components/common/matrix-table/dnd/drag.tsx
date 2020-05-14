@@ -7,6 +7,7 @@ import { Tooltip } from 'components/common';
 import { getIcon } from 'helpers';
 import { Icons, TableScheduleTypes } from 'common/enums';
 import { IInputEvent } from 'common/types';
+import cancelIcon from 'assets/canceled.png';
 import styles from './styles.module.scss';
 import { getContrastingColor } from '../helper';
 
@@ -153,6 +154,15 @@ export default (props: Props) => {
       }}
     >
       {teamCard && renderTeamCard(teamCard)}
+      {game?.isCancelled && (
+        <img
+          className={styles.cancelIcon}
+          src={cancelIcon}
+          width="60"
+          height="22"
+          alt="Cancel icon"
+        />
+      )}
     </div>
   );
 };
