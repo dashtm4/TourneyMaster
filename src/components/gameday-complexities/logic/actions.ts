@@ -405,21 +405,35 @@ export const modifyGameTimeSlots = (backUp: IBackupPlan) => async (
     if (!currentSchedule) {
       throw new Error('Could not change back up status!');
     }
-    const { fields_impacted, change_value, event_date_impacted } = backUp;
-
-    const parsedFields = JSON.parse(fields_impacted) as Array<string>;
-    const parsedChangeValue = JSON.parse(change_value) as IChangedTimeSlot[];
 
     const scheduleGames = (await api.get(
       `/games?schedule_id=${currentSchedule.schedule_id}`
     )) as ISchedulesGame[];
+
+    const brackets = await api.get(
+      `/brackets_details?event_id=${currentSchedule.event_id}`
+    );
+
+    const publishedBraket = brackets.find(
+      (it: IFetchedBracket) => it.is_published_YN === BracketStatuses.Published
+    );
+
+    const bracketGames = publishedBraket
+      ? ((await api.get(
+          `/games_brackets?bracket_id=${publishedBraket.bracket_id}`
+        )) as IPlayoffGame[])
+      : [];
+
+    const { fields_impacted, change_value } = backUp;
+
+    const parsedFields = JSON.parse(fields_impacted) as Array<string>;
+    const parsedChangeValue = JSON.parse(change_value) as IChangedTimeSlot[];
 
     const mappedNewTimeSlots = getMapNewTimeSlots(parsedChangeValue);
     const oldTimeSlots = Object.keys(mappedNewTimeSlots);
 
     const updatedGames = scheduleGames.reduce((acc, game) => {
       const willChange =
-        game.game_date === event_date_impacted &&
         game.start_time &&
         oldTimeSlots.includes(game.start_time) &&
         parsedFields.includes(game.field_id);
@@ -436,7 +450,32 @@ export const modifyGameTimeSlots = (backUp: IBackupPlan) => async (
       }
     }, [] as ISchedulesGame[]);
 
-    await api.put(`/games`, updatedGames);
+    const updatedBrackets = bracketGames.reduce((acc, game) => {
+      const willChange =
+        game.start_time &&
+        game.field_id &&
+        oldTimeSlots.includes(game.start_time) &&
+        parsedFields.includes(game.field_id);
+
+      if (willChange) {
+        const updatedGame = {
+          ...game,
+          start_time: mappedNewTimeSlots[game.start_time as string],
+        };
+
+        return [...acc, updatedGame];
+      } else {
+        return acc;
+      }
+    }, [] as IPlayoffGame[]);
+
+    if (updatedGames.length !== 0) {
+      await api.put(`/games`, updatedGames);
+    }
+
+    if (updatedBrackets.length !== 0) {
+      await api.put(`/games_brackets`, updatedBrackets);
+    }
 
     dispatch({
       type: TOGGLE_BACK_UP_STATUS_SECCESS,
