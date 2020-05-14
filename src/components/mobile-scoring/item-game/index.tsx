@@ -18,6 +18,7 @@ enum GameScoreTypes {
 }
 
 const ItemGame = ({ gameWithNames, originGame }: Props) => {
+  const [wasSaved, changeSavedState] = useState<boolean>(false);
   const [chanedOriginGame, changeOriginGame] = useState<ISchedulesGame>(
     originGame
   );
@@ -36,6 +37,8 @@ const ItemGame = ({ gameWithNames, originGame }: Props) => {
     };
 
     await Api.put('/games', unpdetedGame);
+
+    changeSavedState(true);
 
     Toasts.successToast('Changes successfully saved.');
   };
@@ -74,7 +77,7 @@ const ItemGame = ({ gameWithNames, originGame }: Props) => {
           onClick={onSave}
           variant={ButtonVarian.TEXT}
           color={ButtonColors.SECONDARY}
-          label="Save"
+          label={wasSaved ? 'Edit' : 'Save'}
         />
       </div>
     </li>
