@@ -185,9 +185,10 @@ export const saveBackupPlans: ActionCreator<ThunkAction<
 >> = (backupPlans: IBackupPlan[]) => async (dispatch: Dispatch) => {
   for await (const backupPlan of backupPlans) {
     if (
+      (backupPlan.backup_type === OptionsEnum['Cancel Games'] &&
+        !backupPlan.event_date_impacted) ||
       !backupPlan.backup_name ||
       !backupPlan.event_id ||
-      !backupPlan.event_date_impacted ||
       !backupPlan.facilities_impacted?.length ||
       !backupPlan.fields_impacted?.length ||
       !backupPlan.timeslots_impacted?.length
@@ -232,9 +233,10 @@ export const updateBackupPlan: ActionCreator<ThunkAction<
   { type: string }
 >> = (backupPlan: IBackupPlan) => async (dispatch: Dispatch) => {
   if (
+    (backupPlan.backup_type === OptionsEnum['Cancel Games'] &&
+      !backupPlan.event_date_impacted) ||
     !backupPlan.backup_name ||
     !backupPlan.event_id ||
-    !backupPlan.event_date_impacted ||
     !backupPlan.facilities_impacted?.length ||
     !backupPlan.fields_impacted?.length ||
     !backupPlan.timeslots_impacted?.length

@@ -140,7 +140,7 @@ class CreateBackupForm extends React.Component<Props> {
     );
   };
 
-  renderTimeslots = (timeslots: any) => {
+  renderTimeslots = (renderTimeslots: any, event_date_impacted: any) => {
     const { backupPlan, timeSlots } = this.props;
     const { event_id } = backupPlan;
     const eventTimeSlots = timeSlots[event_id];
@@ -156,13 +156,25 @@ class CreateBackupForm extends React.Component<Props> {
     const timeSlotOptions = getTimeSlotOptions(eventTimeSlots);
 
     return (
-      <div className={styles.item}>
-        <MultipleSearch
-          label="Timeslots"
-          width={'282px'}
-          options={timeSlotOptions}
-          onChange={this.onTimeslotsChange}
-          value={timeslots || []}
+      <div className={styles.itemTimeSlotsWrapper}>
+        <div className={styles.itemTimeSlots}>
+          <MultipleSearch
+            label="Timeslots"
+            width={'282px'}
+            options={timeSlotOptions}
+            onChange={this.onTimeslotsChange}
+            value={renderTimeslots || []}
+          />
+        </div>
+        <Select
+          onChange={this.onChangeEventDateImpacted}
+          value={event_date_impacted || ''}
+          options={eventTimeSlots.eventDays.map((day, idx) => ({
+            label: `Day ${idx + 1}`,
+            value: day,
+          }))}
+          width="282px"
+          label="Event Day"
         />
       </div>
     );
@@ -272,23 +284,8 @@ class CreateBackupForm extends React.Component<Props> {
             <Loader />
           ) : backup_type === OptionsEnum['Cancel Games'] &&
             fields_impacted?.length ? (
-            this.renderTimeslots(timeslots_impacted)
+            this.renderTimeslots(timeslots_impacted, event_date_impacted)
           ) : null}
-
-          {eventTimeSlots &&
-            eventTimeSlots.eventDays &&
-            Boolean(timeslots_impacted?.length) && (
-              <Select
-                onChange={this.onChangeEventDateImpacted}
-                value={event_date_impacted || ''}
-                options={eventTimeSlots.eventDays.map((day, idx) => ({
-                  label: `Day ${idx + 1}`,
-                  value: day,
-                }))}
-                width="282px"
-                label="Event Day"
-              />
-            )}
         </div>
         <div className={styles.row}>
           {backup_type ===
