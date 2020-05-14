@@ -2,6 +2,7 @@ import React from 'react';
 import { getContrastingColor, IGame } from '../helper';
 import { useDrag } from 'react-dnd';
 import { TableScheduleTypes } from 'common/enums';
+import cancelIcon from 'assets/canceled.png';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
   type: string;
   teamName?: string;
   teamScore?: number;
+  isCancelled?: boolean;
   isEnterScores?: boolean;
   onGameUpdate: (gameChanges: Partial<IGame>) => void;
 }
@@ -48,6 +50,7 @@ export default (props: Props) => {
     teamName,
     teamScore,
     isEnterScores,
+    isCancelled,
     onGameUpdate,
     tableType,
   } = props;
@@ -106,6 +109,15 @@ export default (props: Props) => {
       {tableType === TableScheduleTypes.SCORES &&
         teamId &&
         renderScoringInput()}
+      {isCancelled && (
+        <img
+          className={styles.cancelIcon}
+          src={cancelIcon}
+          width="60"
+          height="22"
+          alt="Cancel icon"
+        />
+      )}
     </div>
   );
 };

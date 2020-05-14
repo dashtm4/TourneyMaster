@@ -53,8 +53,6 @@ export const mapTimeslotsToOptions = (
 export const mapChangeValueOptions = (changeValue: string) => {
   const parsedChangeValue = JSON.parse(changeValue);
 
-  console.log(parsedChangeValue);
-
   return parsedChangeValue;
 };
 
@@ -120,8 +118,6 @@ export const getFieldsOptionsForFacilities = (
 };
 
 export const stringifyBackupPlan = (backupPlan: any) => {
-  console.log(backupPlan.timeslots_impacted);
-
   return {
     ...backupPlan,
     facilities_impacted: JSON.stringify(

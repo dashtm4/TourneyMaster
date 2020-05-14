@@ -159,7 +159,11 @@ export const mapTeamCardsToSchedulesGames = async (
     finalized_by: null,
     finalized_datetime: null,
     is_bracket_YN: null,
-    is_cancelled_YN: null,
+    is_cancelled_YN: game.awayTeam?.games?.find(
+      g => g.id === game.id && game.gameDate === g.date
+    )?.isCancelled
+      ? 1
+      : 0,
     created_by: memberId,
     created_datetime: game.createDate || new Date().toISOString(),
     updated_by: memberId,

@@ -57,6 +57,7 @@ const RenderGameSlot = (props: Props) => {
     homeTeamId,
     awayTeamScore,
     homeTeamScore,
+    isCancelled,
   } = game;
 
   const acceptType = [MatrixTableDropEnum.TeamDrop];
@@ -116,6 +117,7 @@ const RenderGameSlot = (props: Props) => {
                 bracketGameId={bracketGameId}
                 divisionId={divisionId!}
                 playoffIndex={playoffIndex!}
+                isCancelled={isCancelled}
                 isEnterScores={isEnterScores}
                 onGameUpdate={(changes: any) =>
                   onGameUpdate({ ...game, ...changes })
@@ -179,6 +181,7 @@ const RenderGameSlot = (props: Props) => {
                 divisionId={divisionId!}
                 playoffIndex={playoffIndex!}
                 isEnterScores={isEnterScores}
+                isCancelled={isCancelled}
                 onGameUpdate={(changes: any) =>
                   onGameUpdate({ ...game, ...changes })
                 }
