@@ -2,9 +2,58 @@ import {
   ISchedulesGameWithNames,
   ISelectOption,
   IEventDetails,
+  IFacility,
+  IField,
 } from 'common/models';
 import { orderBy } from 'lodash-es';
 import moment from 'moment';
+import { IMobileScoringGame, ScoresRaioOptions } from './common';
+
+const getGamesByScoreMode = (
+  games: IMobileScoringGame[],
+  scoreMode: ScoresRaioOptions
+) => {
+  let gamesByScoreMode;
+
+  switch (scoreMode) {
+    case ScoresRaioOptions.UNSCORED_GAMES:
+      gamesByScoreMode = games.filter(
+        it => !it.awayTeamScore && !it.homeTeamScore
+      );
+
+      break;
+
+    case ScoresRaioOptions.ALL:
+      return games;
+
+    default:
+      return games;
+  }
+
+  return gamesByScoreMode;
+};
+
+const getTeamWithFacility = (
+  games: ISchedulesGameWithNames[],
+  facilities: IFacility[],
+  fields: IField[]
+): IMobileScoringGame[] => {
+  const teamWithFacility = games.map(game => {
+    const currentField = fields.find(field => field.field_id === game.fieldId);
+
+    const currentFacility = facilities.find(
+      facility => facility.facilities_id === currentField?.facilities_id
+    );
+
+    return {
+      ...game,
+      facilityId: currentFacility?.facilities_id || null,
+      facilityName: currentFacility?.facilities_description || null,
+    };
+  });
+
+  return teamWithFacility;
+};
 
 const getEventOptions = (events: IEventDetails[]) => {
   const eventOptions = events.map(it => ({
@@ -51,4 +100,11 @@ const getTabTimes = (
   return sortedTimeSlots;
 };
 
-export { getDayOptions, getTabTimes, geEventDates, getEventOptions };
+export {
+  getGamesByScoreMode,
+  getDayOptions,
+  getTabTimes,
+  geEventDates,
+  getEventOptions,
+  getTeamWithFacility,
+};

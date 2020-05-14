@@ -1,20 +1,30 @@
 import React from 'react';
-import { ISchedulesGameWithNames, ISchedulesGame } from 'common/models';
+import { ISchedulesGame, BindingCbWithOne } from 'common/models';
 import ItemGame from '../item-game';
 import styles from './styles.module.scss';
+import { IMobileScoringGame } from '../common';
 
 interface Props {
-  gamesWithName: ISchedulesGameWithNames[];
+  gamesWithName: IMobileScoringGame[];
   originGames: ISchedulesGame[];
+  changeGameWithName: BindingCbWithOne<IMobileScoringGame>;
 }
 
-const TabGame = ({ gamesWithName, originGames }: Props) => {
-  const sortedTeamWithNames = gamesWithName.sort((a, b) =>
-    a.fieldName.localeCompare(b.fieldName, undefined, { numeric: true })
+const TabGame = ({ gamesWithName, originGames, changeGameWithName }: Props) => {
+  const sortedTeamWithNames = gamesWithName.sort(
+    (a, b) =>
+      (a.facilityName || '').localeCompare(b.facilityName || '', undefined, {
+        numeric: true,
+      }) || a.fieldName.localeCompare(b.fieldName, undefined, { numeric: true })
   );
 
   return (
     <ul className={styles.teamList}>
+      {!sortedTeamWithNames || sortedTeamWithNames.length === 0 ? (
+        <span style={{ display: 'flex', justifyContent: 'center' }}>
+          {'Nothing to show'}
+        </span>
+      ) : null}
       {sortedTeamWithNames.map(gameWithName => (
         <ItemGame
           gameWithNames={gameWithName}
@@ -23,6 +33,7 @@ const TabGame = ({ gamesWithName, originGames }: Props) => {
               originGame => originGame.game_id === gameWithName.id
             )!
           }
+          changeGameWithName={changeGameWithName}
           key={gameWithName.id}
         />
       ))}

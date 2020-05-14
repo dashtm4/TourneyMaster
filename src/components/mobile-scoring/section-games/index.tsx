@@ -5,7 +5,7 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import Api from 'api/api';
 import TabGames from '../tab-games';
 import { mapScheduleGamesWithNames, formatTimeSlot } from 'helpers';
-import { Loader, Select } from 'components/common';
+import { Loader, Select, Radio } from 'components/common';
 import {
   IEventDetails,
   ISchedule,
@@ -13,12 +13,18 @@ import {
   IField,
   ISchedulesGame,
   ITeam,
-  ISchedulesGameWithNames,
 } from 'common/models';
 import { ScheduleStatuses } from 'common/enums';
-import { getTabTimes, getDayOptions, geEventDates } from '../helpers';
+import {
+  getTabTimes,
+  getDayOptions,
+  geEventDates,
+  getTeamWithFacility,
+  getGamesByScoreMode,
+} from '../helpers';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
+import { IMobileScoringGame, ScoresRaioOptions } from '../common';
 
 const DEFAULT_TAB = 0;
 
@@ -38,10 +44,13 @@ const SectionGames = ({ event }: Props) => {
   const [isLoaded, changeLoaded] = useState<boolean>(false);
   const [activeDay, changeActiveDay] = useState<string | null>(null);
   const [activeTab, changeActiveTab] = useState<number>(DEFAULT_TAB);
+  const [scoreMode, changeScoreMode] = useState<ScoresRaioOptions>(
+    ScoresRaioOptions.ALL
+  );
   const [originGames, changeOriginGames] = useState<ISchedulesGame[]>([]);
-  const [gamesWithNames, setGamesWithTames] = useState<
-    ISchedulesGameWithNames[]
-  >([]);
+  const [gamesWithNames, setGamesWithTames] = useState<IMobileScoringGame[]>(
+    []
+  );
 
   useEffect(() => {
     (async () => {
@@ -51,6 +60,7 @@ const SectionGames = ({ event }: Props) => {
       setGamesWithTames([]);
       changeLoading(true);
       changeLoaded(false);
+      changeScoreMode(ScoresRaioOptions.ALL);
 
       const schedules = (await Api.get(
         `/schedules?event_id=${event.event_id}`
@@ -89,13 +99,39 @@ const SectionGames = ({ event }: Props) => {
         gamesWithTeams
       );
 
-      setGamesWithTames(gamesWithNames);
+      const gameWithFacility = getTeamWithFacility(
+        gamesWithNames,
+        facilities,
+        fields
+      );
+
+      setGamesWithTames(gameWithFacility);
       changeOriginGames(gamesWithTeams);
 
       changeLoading(false);
       changeLoaded(true);
     })();
   }, [event]);
+
+  const changeGameWithName = (changedGame: IMobileScoringGame) => {
+    const changedGamesWithGames = gamesWithNames.map(it =>
+      it.id === changedGame.id ? changedGame : it
+    );
+
+    const changedOriginGames = originGames.map(game =>
+      game.game_id === changedGame.id
+        ? {
+            ...game,
+            away_team_score: changedGame.awayTeamScore,
+            home_team_score: changedGame.homeTeamScore,
+          }
+        : game
+    );
+
+    setGamesWithTames(changedGamesWithGames);
+
+    changeOriginGames(changedOriginGames);
+  };
 
   const onChangeActiveTimeSlot = (
     _evt: React.ChangeEvent<{}>,
@@ -107,6 +143,10 @@ const SectionGames = ({ event }: Props) => {
   const onChangeActiveDay = (evt: IInputEvent) => {
     changeActiveDay(evt.target.value);
     changeActiveTab(DEFAULT_TAB);
+  };
+
+  const onChangeScoreMode = (evt: IInputEvent) => {
+    changeScoreMode(evt.target.value as ScoresRaioOptions);
   };
 
   if (isLoading || !isLoaded) {
@@ -125,6 +165,8 @@ const SectionGames = ({ event }: Props) => {
     it => it.gameDate === activeDay && it.startTime === activeTime
   );
 
+  const gameByScoreMode = getGamesByScoreMode(gamesWithNamesByTime, scoreMode);
+
   return (
     <section>
       <div className={styles.dayWrapper}>
@@ -133,7 +175,16 @@ const SectionGames = ({ event }: Props) => {
           onChange={onChangeActiveDay}
           value={activeDay || ''}
           options={eventDayOptions}
-          width="180px"
+          width="100%"
+          isFullWith={true}
+        />
+      </div>
+      <div className={styles.radionWrapper}>
+        <Radio
+          row={true}
+          checked={scoreMode}
+          onChange={onChangeScoreMode}
+          options={Object.values(ScoresRaioOptions)}
         />
       </div>
       {activeDay && (
@@ -150,8 +201,9 @@ const SectionGames = ({ event }: Props) => {
             ))}
           </Tabs>
           <TabGames
-            gamesWithName={gamesWithNamesByTime}
+            gamesWithName={gameByScoreMode}
             originGames={originGamesByTime}
+            changeGameWithName={changeGameWithName}
           />
         </div>
       )}
