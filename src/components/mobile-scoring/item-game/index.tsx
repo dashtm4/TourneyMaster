@@ -18,7 +18,9 @@ enum GameScoreTypes {
 }
 
 const ItemGame = ({ gameWithNames, originGame }: Props) => {
-  const [wasSaved, changeSavedState] = useState<boolean>(false);
+  const [wasSaved, changeSavedState] = useState<boolean>(
+    Boolean(originGame.away_team_score && originGame.home_team_score)
+  );
   const [chanedOriginGame, changeOriginGame] = useState<ISchedulesGame>(
     originGame
   );
