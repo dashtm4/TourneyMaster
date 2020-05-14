@@ -59,7 +59,8 @@ const MobileScoring = () => {
               onChange={onChangeActiveEvent}
               value={activeEvent?.event_id || ''}
               options={eventOptions}
-              width="180px"
+              width="100%"
+              isFullWith={true}
             />
           </section>
           {activeEvent && <SectionGames event={activeEvent} />}

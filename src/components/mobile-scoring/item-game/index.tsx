@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Button, Toasts } from 'components/common';
-import { ISchedulesGameWithNames, ISchedulesGame } from 'common/models';
+import { ISchedulesGame } from 'common/models';
 import { ButtonVarian, ButtonColors } from 'common/enums';
-import styles from './styles.module.scss';
+import { IMobileScoringGame } from '../common';
 import { IInputEvent } from 'common/types';
 import Api from 'api/api';
+import styles from './styles.module.scss';
 
 interface Props {
-  gameWithNames: ISchedulesGameWithNames;
+  gameWithNames: IMobileScoringGame;
   originGame: ISchedulesGame;
 }
 
@@ -17,6 +18,7 @@ enum GameScoreTypes {
 }
 
 const ItemGame = ({ gameWithNames, originGame }: Props) => {
+  const [wasSaved, changeSavedState] = useState<boolean>(false);
   const [chanedOriginGame, changeOriginGame] = useState<ISchedulesGame>(
     originGame
   );
@@ -36,12 +38,18 @@ const ItemGame = ({ gameWithNames, originGame }: Props) => {
 
     await Api.put('/games', unpdetedGame);
 
+    changeSavedState(true);
+
     Toasts.successToast('Changes successfully saved.');
   };
 
   return (
     <li className={styles.gameWrapper}>
-      <b className={styles.fieldName}>{gameWithNames.fieldName}</b>
+      <b className={styles.fieldName}>
+        {gameWithNames.facilityName
+          ? `${gameWithNames.facilityName} - ${gameWithNames.fieldName}`
+          : gameWithNames.fieldName}
+      </b>
       <div className={styles.teamNames}>
         <p className={styles.teamNameWrapper}>
           <span className={styles.teamName}>{gameWithNames.awayTeamName}</span>
@@ -69,7 +77,7 @@ const ItemGame = ({ gameWithNames, originGame }: Props) => {
           onClick={onSave}
           variant={ButtonVarian.TEXT}
           color={ButtonColors.SECONDARY}
-          label="Save"
+          label={wasSaved ? 'Edit' : 'Save'}
         />
       </div>
     </li>
