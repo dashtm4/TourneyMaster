@@ -7,6 +7,7 @@ export interface IBackupPlan {
   fields_impacted: string;
   timeslots_impacted: string;
   change_value: any;
+  event_date_impacted: string;
   is_active_YN: number;
   created_by: string;
   created_datetime: string;

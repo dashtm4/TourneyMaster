@@ -94,12 +94,12 @@ class CreateBackupModal extends React.Component<Props, State> {
             loadTimeSlots={this.props.loadTimeSlots}
           />
         ))}
-        <Button
+        {/* <Button
           label="+ Add Additional Game Impacted"
           variant="text"
           color="secondary"
           onClick={this.onAddAdditionalPlan}
-        />
+        /> */}
         <div className={styles.buttonsGroup}>
           <Button
             label="Cancel"

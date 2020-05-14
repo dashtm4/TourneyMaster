@@ -183,6 +183,7 @@ export const saveBackupPlans: ActionCreator<ThunkAction<
     if (
       !backupPlan.backup_name ||
       !backupPlan.event_id ||
+      !backupPlan.event_date_impacted ||
       !backupPlan.facilities_impacted?.length ||
       !backupPlan.fields_impacted?.length ||
       !backupPlan.timeslots_impacted?.length

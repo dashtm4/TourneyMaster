@@ -103,12 +103,14 @@ class CreateBackupForm extends React.Component<Props, State> {
     this.onChange('fields_impacted', '');
     this.onChange('timeslots_impacted', undefined);
     this.onChange('change_value', undefined);
+    this.onChange('event_date_impacted', undefined);
   };
 
   onTypeChange = (e: InputTargetValue) => {
     this.onChange('backup_type', OptionsEnum[e.target.value]);
     this.onChange('timeslots_impacted', '');
     this.onChange('change_value', undefined);
+    this.onChange('event_date_impacted', undefined);
   };
 
   onFacilitiesChange = (
@@ -133,6 +135,10 @@ class CreateBackupForm extends React.Component<Props, State> {
 
   onTimeslotChange = (e: InputTargetValue) =>
     this.onChange('timeslots_impacted', e.target.value);
+
+  onChangeEventDateImpacted = (e: InputTargetValue) => {
+    this.onChange('event_date_impacted', e.target.value);
+  };
 
   onChangeToChange = (timeSlot: IChangedTimeSlot, flag: boolean) => {
     const { backupPlan } = this.props;
@@ -234,6 +240,7 @@ class CreateBackupForm extends React.Component<Props, State> {
       fields_impacted,
       timeslots_impacted,
       change_value,
+      event_date_impacted,
     }: any = this.state.backupPlan;
 
     const eventsOptions = getEventOptions(events);
@@ -320,6 +327,21 @@ class CreateBackupForm extends React.Component<Props, State> {
               fields_impacted?.length ? (
               this.renderTimeslots(timeslots_impacted)
             ) : null}
+
+            {eventTimeSlots &&
+              eventTimeSlots.eventDays &&
+              Boolean(timeslots_impacted?.length) && (
+                <Select
+                  onChange={this.onChangeEventDateImpacted}
+                  value={event_date_impacted || ''}
+                  options={eventTimeSlots.eventDays.map((day, idx) => ({
+                    label: `Day ${idx + 1}`,
+                    value: day,
+                  }))}
+                  width="282px"
+                  label="Event Day"
+                />
+              )}
           </div>
           <div className={styles.row}>
             {backup_type ===

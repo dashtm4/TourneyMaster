@@ -52,6 +52,7 @@ class CreateBackupForm extends React.Component<Props> {
     this.props.onChange('fields_impacted', '', this.props.index);
     this.props.onChange('timeslots_impacted', undefined, this.props.index);
     this.props.onChange('change_value', undefined, this.props.index);
+    this.props.onChange('event_date_impacted', undefined, this.props.index);
   };
 
   onTypeChange = (e: InputTargetValue) => {
@@ -62,6 +63,7 @@ class CreateBackupForm extends React.Component<Props> {
     );
     this.props.onChange('timeslots_impacted', '', this.props.index);
     this.props.onChange('change_value', undefined, this.props.index);
+    this.props.onChange('event_date_impacted', undefined, this.props.index);
   };
 
   onFacilitiesChange = (
@@ -88,8 +90,6 @@ class CreateBackupForm extends React.Component<Props> {
     _event: InputTargetValue,
     values: IMultipleSelectOption[]
   ) => {
-    console.log(values);
-
     this.props.onChange('timeslots_impacted', values, this.props.index);
   };
 
@@ -130,6 +130,14 @@ class CreateBackupForm extends React.Component<Props> {
     );
 
     this.props.onChange('change_value', updatedTimeSlots, this.props.index);
+  };
+
+  onChangeEventDateImpacted = (e: InputTargetValue) => {
+    this.props.onChange(
+      'event_date_impacted',
+      e.target.value,
+      this.props.index
+    );
   };
 
   renderTimeslots = (timeslots: any) => {
@@ -177,6 +185,7 @@ class CreateBackupForm extends React.Component<Props> {
       fields_impacted,
       timeslots_impacted,
       change_value,
+      event_date_impacted,
     } = backupPlan;
 
     const eventsOptions = getEventOptions(events);
@@ -270,7 +279,8 @@ class CreateBackupForm extends React.Component<Props> {
             eventTimeSlots.eventDays &&
             Boolean(timeslots_impacted?.length) && (
               <Select
-                value={eventTimeSlots.eventDays[0]}
+                onChange={this.onChangeEventDateImpacted}
+                value={event_date_impacted || ''}
                 options={eventTimeSlots.eventDays.map((day, idx) => ({
                   label: `Day ${idx + 1}`,
                   value: day,
