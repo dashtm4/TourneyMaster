@@ -1,0 +1,43 @@
+.gameWrapper {
+  margin: 0 0 15px;
+}
+
+.fieldName {
+  display: block;
+
+  margin: 0 0 5px;
+
+  text-align: center;
+  color: #6a6a6a;
+}
+
+.teamNames {
+  display: flex;
+
+  margin: 0 0 10px;
+}
+
+.teamNameWrapper {
+  flex-grow: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.teamNameWrapper input {
+  width: 50px;
+
+  text-align: center;
+
+  border: 0;
+}
+
+.teamName {
+  margin: 0 0 10px;
+}
+
+.updateBtnWrapper {
+  display: flex;
+  justify-content: center;
+}

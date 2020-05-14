@@ -50,6 +50,7 @@ const App: React.FC = () => {
             Routes.UTILITIES,
             Routes.EVENT_DAY_COMPLEXITIES,
             Routes.ORGANIZATIONS_MANAGEMENT,
+            Routes.MOBILE_SCORING,
           ]}
           component={AuthorizedPageWrapped}
         />

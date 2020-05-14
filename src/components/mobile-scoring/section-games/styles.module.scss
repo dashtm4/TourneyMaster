@@ -1,0 +1,18 @@
+.tabsWrapper {
+  display: flex;
+  width: 100%;
+}
+
+.dayWrapper {
+  display: flex;
+  align-items: center;
+
+  margin: 0 0 30px;
+  padding: 0 15px;
+}
+
+.dayTitle {
+  margin: 0 35px 0 0;
+
+  color: #6a6a6a;
+}
