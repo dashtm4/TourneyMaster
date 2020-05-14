@@ -113,6 +113,26 @@ const SectionGames = ({ event }: Props) => {
     })();
   }, [event]);
 
+  const changeGameWithName = (changedGame: IMobileScoringGame) => {
+    const changedGamesWithGames = gamesWithNames.map(it =>
+      it.id === changedGame.id ? changedGame : it
+    );
+
+    const changedOriginGames = originGames.map(game =>
+      game.game_id === changedGame.id
+        ? {
+            ...game,
+            away_team_score: changedGame.awayTeamScore,
+            home_team_score: changedGame.homeTeamScore,
+          }
+        : game
+    );
+
+    setGamesWithTames(changedGamesWithGames);
+
+    changeOriginGames(changedOriginGames);
+  };
+
   const onChangeActiveTimeSlot = (
     _evt: React.ChangeEvent<{}>,
     newValue: number
@@ -183,6 +203,7 @@ const SectionGames = ({ event }: Props) => {
           <TabGames
             gamesWithName={gameByScoreMode}
             originGames={originGamesByTime}
+            changeGameWithName={changeGameWithName}
           />
         </div>
       )}

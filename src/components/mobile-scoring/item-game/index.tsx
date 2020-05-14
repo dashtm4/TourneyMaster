@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Toasts } from 'components/common';
-import { ISchedulesGame } from 'common/models';
+import { ISchedulesGame, BindingCbWithOne } from 'common/models';
 import { ButtonVarian, ButtonColors } from 'common/enums';
 import { IMobileScoringGame } from '../common';
 import { IInputEvent } from 'common/types';
@@ -10,6 +10,7 @@ import styles from './styles.module.scss';
 interface Props {
   gameWithNames: IMobileScoringGame;
   originGame: ISchedulesGame;
+  changeGameWithName: BindingCbWithOne<IMobileScoringGame>;
 }
 
 enum GameScoreTypes {
@@ -17,7 +18,7 @@ enum GameScoreTypes {
   HOME_TEAM_SCORE = 'home_team_score',
 }
 
-const ItemGame = ({ gameWithNames, originGame }: Props) => {
+const ItemGame = ({ gameWithNames, originGame, changeGameWithName }: Props) => {
   const [wasSaved, changeSavedState] = useState<boolean>(
     Boolean(originGame.away_team_score && originGame.home_team_score)
   );
@@ -32,15 +33,23 @@ const ItemGame = ({ gameWithNames, originGame }: Props) => {
   };
 
   const onSave = async () => {
-    const unpdetedGame: ISchedulesGame = {
+    const updetedGame: ISchedulesGame = {
       ...chanedOriginGame,
       away_team_score: chanedOriginGame.away_team_score || null,
       home_team_score: chanedOriginGame.home_team_score || null,
     };
 
-    await Api.put('/games', unpdetedGame);
+    await Api.put('/games', updetedGame);
 
     changeSavedState(true);
+
+    const updateGamesWithName: IMobileScoringGame = {
+      ...gameWithNames,
+      awayTeamScore: updetedGame.away_team_score,
+      homeTeamScore: updetedGame.home_team_score,
+    };
+
+    changeGameWithName(updateGamesWithName);
 
     Toasts.successToast('Changes successfully saved.');
   };
