@@ -49,7 +49,7 @@ const ItemGame = ({ gameWithNames, originGame }: Props) => {
             onChange={onChangeOriginTeam}
             value={chanedOriginGame?.away_team_score || ''}
             name={GameScoreTypes.AWAY_TEAM_SCORE}
-            type="numbet"
+            type="number"
           />
         </p>
         <p className={styles.teamNameWrapper}>
@@ -58,7 +58,7 @@ const ItemGame = ({ gameWithNames, originGame }: Props) => {
             onChange={onChangeOriginTeam}
             value={chanedOriginGame?.home_team_score || ''}
             name={GameScoreTypes.HOME_TEAM_SCORE}
-            type="numbet"
+            type="number"
           />
         </p>
       </div>
