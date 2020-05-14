@@ -10,8 +10,15 @@ interface Props {
 }
 
 const TabGame = ({ gamesWithName, originGames }: Props) => {
-  const sortedTeamWithNames = gamesWithName.sort((a, b) =>
-    a.fieldName.localeCompare(b.fieldName, undefined, { numeric: true })
+  const sortedTeamWithNames = gamesWithName.sort(
+    (a, b) =>
+      a.facilityName?.localeCompare(
+        b.facilityName ? b.facilityName : String(Number(b.facilityName)),
+        undefined,
+        {
+          numeric: true,
+        }
+      ) || a.fieldName.localeCompare(b.fieldName, undefined, { numeric: true })
   );
 
   return (
