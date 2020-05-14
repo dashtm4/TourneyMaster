@@ -7,7 +7,31 @@ import {
 } from 'common/models';
 import { orderBy } from 'lodash-es';
 import moment from 'moment';
-import { IMobileScoringGame } from './common';
+import { IMobileScoringGame, ScoresRaioOptions } from './common';
+
+const getGamesByScoreMode = (
+  games: IMobileScoringGame[],
+  scoreMode: ScoresRaioOptions
+) => {
+  let gamesByScoreMode;
+
+  switch (scoreMode) {
+    case ScoresRaioOptions.UNSCORED_GAMES:
+      gamesByScoreMode = games.filter(
+        it => !it.awayTeamScore && !it.homeTeamScore
+      );
+
+      break;
+
+    case ScoresRaioOptions.ALL:
+      return games;
+
+    default:
+      return games;
+  }
+
+  return gamesByScoreMode;
+};
 
 const getTeamWithFacility = (
   games: ISchedulesGameWithNames[],
@@ -77,6 +101,7 @@ const getTabTimes = (
 };
 
 export {
+  getGamesByScoreMode,
   getDayOptions,
   getTabTimes,
   geEventDates,

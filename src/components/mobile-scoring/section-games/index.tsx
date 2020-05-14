@@ -5,7 +5,7 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import Api from 'api/api';
 import TabGames from '../tab-games';
 import { mapScheduleGamesWithNames, formatTimeSlot } from 'helpers';
-import { Loader, Select } from 'components/common';
+import { Loader, Select, Radio } from 'components/common';
 import {
   IEventDetails,
   ISchedule,
@@ -20,10 +20,11 @@ import {
   getDayOptions,
   geEventDates,
   getTeamWithFacility,
+  getGamesByScoreMode,
 } from '../helpers';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
-import { IMobileScoringGame } from '../common';
+import { IMobileScoringGame, ScoresRaioOptions } from '../common';
 
 const DEFAULT_TAB = 0;
 
@@ -43,6 +44,9 @@ const SectionGames = ({ event }: Props) => {
   const [isLoaded, changeLoaded] = useState<boolean>(false);
   const [activeDay, changeActiveDay] = useState<string | null>(null);
   const [activeTab, changeActiveTab] = useState<number>(DEFAULT_TAB);
+  const [scoreMode, changeScoreMode] = useState<ScoresRaioOptions>(
+    ScoresRaioOptions.ALL
+  );
   const [originGames, changeOriginGames] = useState<ISchedulesGame[]>([]);
   const [gamesWithNames, setGamesWithTames] = useState<IMobileScoringGame[]>(
     []
@@ -56,6 +60,7 @@ const SectionGames = ({ event }: Props) => {
       setGamesWithTames([]);
       changeLoading(true);
       changeLoaded(false);
+      changeScoreMode(ScoresRaioOptions.ALL);
 
       const schedules = (await Api.get(
         `/schedules?event_id=${event.event_id}`
@@ -120,6 +125,10 @@ const SectionGames = ({ event }: Props) => {
     changeActiveTab(DEFAULT_TAB);
   };
 
+  const onChangeScoreMode = (evt: IInputEvent) => {
+    changeScoreMode(evt.target.value as ScoresRaioOptions);
+  };
+
   if (isLoading || !isLoaded) {
     return <Loader />;
   }
@@ -136,6 +145,8 @@ const SectionGames = ({ event }: Props) => {
     it => it.gameDate === activeDay && it.startTime === activeTime
   );
 
+  const gameByScoreMode = getGamesByScoreMode(gamesWithNamesByTime, scoreMode);
+
   return (
     <section>
       <div className={styles.dayWrapper}>
@@ -145,6 +156,14 @@ const SectionGames = ({ event }: Props) => {
           value={activeDay || ''}
           options={eventDayOptions}
           width="180px"
+        />
+      </div>
+      <div className={styles.radionWrapper}>
+        <Radio
+          row={true}
+          checked={scoreMode}
+          onChange={onChangeScoreMode}
+          options={Object.values(ScoresRaioOptions)}
         />
       </div>
       {activeDay && (
@@ -161,7 +180,7 @@ const SectionGames = ({ event }: Props) => {
             ))}
           </Tabs>
           <TabGames
-            gamesWithName={gamesWithNamesByTime}
+            gamesWithName={gameByScoreMode}
             originGames={originGamesByTime}
           />
         </div>
