@@ -53,6 +53,8 @@ export const mapTimeslotsToOptions = (
 export const mapChangeValueOptions = (changeValue: string) => {
   const parsedChangeValue = JSON.parse(changeValue);
 
+  console.log(parsedChangeValue);
+
   return parsedChangeValue;
 };
 

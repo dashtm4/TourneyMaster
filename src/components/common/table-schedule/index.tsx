@@ -105,6 +105,8 @@ const TableSchedule = ({
   onBracketGameUpdate,
   recalculateDiagnostics,
 }: Props) => {
+  console.log(timeSlots);
+
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
 

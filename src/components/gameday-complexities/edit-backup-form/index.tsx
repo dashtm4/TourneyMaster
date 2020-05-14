@@ -141,7 +141,7 @@ class CreateBackupForm extends React.Component<Props, State> {
   };
 
   onChangeToChange = (timeSlot: IChangedTimeSlot, flag: boolean) => {
-    const { backupPlan } = this.props;
+    const { backupPlan }: any = this.state;
     const { change_value } = backupPlan;
 
     const changedTimeSlots = change_value
@@ -165,11 +165,11 @@ class CreateBackupForm extends React.Component<Props, State> {
   };
 
   onChangeChangedTimeSlot = (timeSlot: IChangedTimeSlot) => {
-    const { backupPlan } = this.props;
-    const { change_value } = backupPlan;
+    const { backupPlan }: any = this.state;
 
-    const updatedTimeSlots = change_value.map((it: IChangedTimeSlot) =>
-      it.timeSlotTime === timeSlot.timeSlotTime ? timeSlot : it
+    const updatedTimeSlots = backupPlan.change_value.map(
+      (it: IChangedTimeSlot) =>
+        it.timeSlotTime === timeSlot.timeSlotTime ? timeSlot : it
     );
 
     this.onChange('change_value', updatedTimeSlots);
