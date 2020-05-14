@@ -1,5 +1,5 @@
 import React from 'react';
-import { ISchedulesGame } from 'common/models';
+import { ISchedulesGame, BindingCbWithOne } from 'common/models';
 import ItemGame from '../item-game';
 import styles from './styles.module.scss';
 import { IMobileScoringGame } from '../common';
@@ -7,9 +7,10 @@ import { IMobileScoringGame } from '../common';
 interface Props {
   gamesWithName: IMobileScoringGame[];
   originGames: ISchedulesGame[];
+  changeGameWithName: BindingCbWithOne<IMobileScoringGame>;
 }
 
-const TabGame = ({ gamesWithName, originGames }: Props) => {
+const TabGame = ({ gamesWithName, originGames, changeGameWithName }: Props) => {
   const sortedTeamWithNames = gamesWithName.sort(
     (a, b) =>
       (a.facilityName || '').localeCompare(b.facilityName || '', undefined, {
@@ -27,6 +28,7 @@ const TabGame = ({ gamesWithName, originGames }: Props) => {
               originGame => originGame.game_id === gameWithName.id
             )!
           }
+          changeGameWithName={changeGameWithName}
           key={gameWithName.id}
         />
       ))}
