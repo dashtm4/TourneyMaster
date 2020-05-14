@@ -128,7 +128,7 @@ const SectionGames = ({ event }: Props) => {
   return (
     <section>
       <div className={styles.dayWrapper}>
-        <h2 className={styles.dayTitle}>Days:</h2>
+        <h2 className={styles.dayTitle}>Date:</h2>
         <Select
           onChange={onChangeActiveDay}
           value={activeDay || ''}
