@@ -50,6 +50,7 @@ const ItemGame = ({ gameWithNames, originGame }: Props) => {
             value={chanedOriginGame?.away_team_score || ''}
             name={GameScoreTypes.AWAY_TEAM_SCORE}
             type="number"
+            min="0"
           />
         </p>
         <p className={styles.teamNameWrapper}>
@@ -59,6 +60,7 @@ const ItemGame = ({ gameWithNames, originGame }: Props) => {
             value={chanedOriginGame?.home_team_score || ''}
             name={GameScoreTypes.HOME_TEAM_SCORE}
             type="number"
+            min="0"
           />
         </p>
       </div>
