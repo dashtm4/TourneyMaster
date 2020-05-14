@@ -155,7 +155,7 @@ const AuthorizedPageEvent = ({
   return (
     <div className={styles.container}>
       {!isFullScreen && <Header />}
-      <div className={styles.page}>
+      <div className={styles.eventPage}>
         <Menu
           list={menuList}
           event={event || undefined}
@@ -166,7 +166,7 @@ const AuthorizedPageEvent = ({
           togglePublishPopup={onTogglePublishPopup}
         />
         <main
-          className={`${styles.content} ${
+          className={`${styles.eventPageContent} ${
             isFullScreen ? styles.contentFullScreen : ''
           }`}
         >

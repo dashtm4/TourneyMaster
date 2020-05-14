@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { connect } from 'react-redux';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, useLocation } from 'react-router-dom';
 import Header from '../header';
 import Menu from '../common/menu';
 import { MenuList } from './logic/constants';
@@ -27,6 +27,7 @@ import {
 } from 'components/calendar/logic/helper';
 import { BindingAction, ICalendarEvent } from 'common/models';
 import CreateMessage from 'components/event-link/create-message';
+import MobileScoring from 'components/mobile-scoring';
 
 interface Props {
   getCalendarEvents: BindingAction;
@@ -39,6 +40,16 @@ const AuthorizedPage = ({
   calendarEvents,
   updateCalendarEvent,
 }: Props) => {
+  const location = useLocation();
+  const [isFullScreent, changeFullScreen] = React.useState(false);
+  const hideOnList = [Routes.MOBILE_SCORING];
+
+  React.useEffect(() => {
+    const value = !!hideOnList?.filter(el => location?.pathname.includes(el))
+      ?.length;
+    changeFullScreen(value);
+  }, [location]);
+
   React.useEffect(() => {
     getCalendarEvents();
   }, []);
@@ -55,10 +66,23 @@ const AuthorizedPage = ({
 
   return (
     <div className={styles.container}>
-      <Header />
-      <div className={styles.page}>
-        <Menu list={MenuList} isAllowEdit={true} />
-        <main className={styles.content}>
+      {!isFullScreent && <Header />}
+      <div
+        className={styles.page}
+        style={{
+          display: !isFullScreent ? 'flex' : 'unset',
+          flexGrow: !isFullScreent ? 1 : undefined,
+          padding: !isFullScreent ? '15px 10% 0' : undefined,
+        }}
+      >
+        <Menu list={MenuList} isAllowEdit={true} hideOnList={hideOnList} />
+        <main
+          className={styles.content}
+          style={{
+            flexGrow: !isFullScreent ? 1 : undefined,
+            paddingLeft: !isFullScreent ? '30px' : undefined,
+          }}
+        >
           <Switch>
             <Route path={Routes.DASHBOARD} component={Dashboard} />
             <Route path={Routes.LIBRARY_MANAGER} component={LibraryManager} />
@@ -79,12 +103,13 @@ const AuthorizedPage = ({
               component={OrganizationsManagement}
             />
             <Route path={Routes.SUPPORT} component={Support} />
+            <Route path={Routes.MOBILE_SCORING} component={MobileScoring} />
             <Route path={Routes.DEFAULT} component={Dashboard} />
           </Switch>
-          <ScrollTopButton />
+          {!isFullScreent && <ScrollTopButton />}
         </main>
       </div>
-      <Footer />
+      {!isFullScreent && <Footer />}
     </div>
   );
 };
