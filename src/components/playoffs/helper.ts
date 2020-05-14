@@ -171,6 +171,7 @@ export const addGameToExistingBracketGames = (
     startTime: undefined,
     gameDate: divisionGames[0].gameDate,
     hidden: false,
+    isCancelled: false,
     createDate: new Date().toISOString(),
   };
 
@@ -297,6 +298,7 @@ export const updateGameSlot = (
     playoffIndex: bracketGame?.index,
     awayTeamScore: bracketGame?.awayTeamScore,
     homeTeamScore: bracketGame?.homeTeamScore,
+    isCancelled: bracketGame?.isCancelled,
   };
 };
 

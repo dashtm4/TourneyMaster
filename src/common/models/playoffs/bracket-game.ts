@@ -19,6 +19,7 @@ export interface IPlayoffGame {
   away_team_score: number | null;
   home_team_score: number | null;
   is_active_YN: 1 | 0;
+  is_cancelled_YN: 1 | 0;
   created_by: string;
   created_datetime: string;
   updated_by: string | null;

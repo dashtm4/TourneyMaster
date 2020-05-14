@@ -22,6 +22,7 @@ import {
   IEventDetails,
   ISchedule,
   ISchedulesGame,
+  IFetchedBracket,
 } from 'common/models';
 import { IBackupPlan } from 'common/models/backup_plan';
 import {
@@ -29,14 +30,21 @@ import {
   sortByField,
   getTimeSlotsFromEntities,
 } from 'helpers';
-import { stringifyBackupPlan } from '../helper';
+import {
+  stringifyBackupPlan,
+  getMapNewTimeSlots,
+  checkNewTimeSlots,
+} from '../helper';
 import {
   ScheduleStatuses,
   SortByFilesTypes,
   TimeSlotsEntityTypes,
   BackUpActiveStatuses,
+  BracketStatuses,
 } from 'common/enums';
 import { IAppState } from 'reducers/root-reducer.types';
+import { OptionsEnum, IChangedTimeSlot } from '../common';
+import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
 
 export const eventsFetchSuccess = (payload: {
   events: IEventDetails[];
@@ -181,13 +189,20 @@ export const saveBackupPlans: ActionCreator<ThunkAction<
 >> = (backupPlans: IBackupPlan[]) => async (dispatch: Dispatch) => {
   for await (const backupPlan of backupPlans) {
     if (
+      (backupPlan.backup_type === OptionsEnum['Cancel Games'] &&
+        !backupPlan.event_date_impacted) ||
+      (backupPlan.backup_type ===
+        OptionsEnum['Weather Interruption: Modify Game Timeslots'] &&
+        !checkNewTimeSlots(backupPlan.change_value)) ||
       !backupPlan.backup_name ||
       !backupPlan.event_id ||
       !backupPlan.facilities_impacted?.length ||
       !backupPlan.fields_impacted?.length ||
       !backupPlan.timeslots_impacted?.length
     ) {
-      return Toasts.errorToast('All fields are required!');
+      return Toasts.errorToast(
+        'All fields are required and filled in the correct format.'
+      );
     }
 
     const stringifiedBackupPlan = stringifyBackupPlan(backupPlan);
@@ -227,13 +242,20 @@ export const updateBackupPlan: ActionCreator<ThunkAction<
   { type: string }
 >> = (backupPlan: IBackupPlan) => async (dispatch: Dispatch) => {
   if (
+    (backupPlan.backup_type === OptionsEnum['Cancel Games'] &&
+      !backupPlan.event_date_impacted) ||
+    (backupPlan.backup_type ===
+      OptionsEnum['Weather Interruption: Modify Game Timeslots'] &&
+      !checkNewTimeSlots(backupPlan.change_value)) ||
     !backupPlan.backup_name ||
     !backupPlan.event_id ||
     !backupPlan.facilities_impacted?.length ||
     !backupPlan.fields_impacted?.length ||
     !backupPlan.timeslots_impacted?.length
   ) {
-    return Toasts.errorToast('All fields are required!');
+    return Toasts.errorToast(
+      'All fields are required and filled in the correct format.'
+    );
   }
 
   const data = stringifyBackupPlan(backupPlan);
@@ -280,7 +302,7 @@ export const loadTimeSlots = (eventId: string) => async (
       TimeSlotsEntityTypes.SCHEDULE_GAMES
     );
 
-    const gameDates = Array.from(
+    const eventDays = Array.from(
       new Set(scheduleGames.map(it => it.game_date))
     );
 
@@ -288,7 +310,7 @@ export const loadTimeSlots = (eventId: string) => async (
       type: LOAD_TIMESLOTS_SUCCESS,
       payload: {
         eventId,
-        gameDates,
+        eventDays,
         eventTimeSlots: timeSlots,
       },
     });
@@ -301,7 +323,7 @@ export const loadTimeSlots = (eventId: string) => async (
   }
 };
 
-export const toggleBackUpStatus = (
+export const cancelGames = (
   backUp: IBackupPlan,
   status: BackUpActiveStatuses
 ) => async (dispatch: Dispatch, getState: () => IAppState) => {
@@ -315,17 +337,33 @@ export const toggleBackUpStatus = (
     if (!currentSchedule) {
       throw new Error('Could not change back up status!');
     }
-    const { fields_impacted, timeslots_impacted } = backUp;
-
-    const parsedFields = JSON.parse(fields_impacted) as Array<string>;
-    const parsedTimeSlots = JSON.parse(timeslots_impacted) as Array<string>;
 
     const scheduleGames = (await api.get(
       `/games?schedule_id=${currentSchedule.schedule_id}`
     )) as ISchedulesGame[];
 
-    const currentGames = scheduleGames.reduce((acc, game) => {
+    const brackets = await api.get(
+      `/brackets_details?event_id=${currentSchedule.event_id}`
+    );
+
+    const publishedBraket = brackets.find(
+      (it: IFetchedBracket) => it.is_published_YN === BracketStatuses.Published
+    );
+
+    const bracketGames = publishedBraket
+      ? ((await api.get(
+          `/games_brackets?bracket_id=${publishedBraket.bracket_id}`
+        )) as IPlayoffGame[])
+      : [];
+
+    const { fields_impacted, timeslots_impacted, event_date_impacted } = backUp;
+
+    const parsedFields = JSON.parse(fields_impacted) as Array<string>;
+    const parsedTimeSlots = JSON.parse(timeslots_impacted) as Array<string>;
+
+    const updatedGames = scheduleGames.reduce((acc, game) => {
       const willChange =
+        game.game_date === event_date_impacted &&
         game.start_time &&
         parsedFields.includes(game.field_id) &&
         parsedTimeSlots.includes(game.start_time);
@@ -333,7 +371,24 @@ export const toggleBackUpStatus = (
       return willChange ? [...acc, { ...game, is_cancelled_YN: status }] : acc;
     }, [] as ISchedulesGame[]);
 
-    await api.put(`/games`, currentGames);
+    const updatedBrackets = bracketGames.reduce((acc, game) => {
+      const willChange =
+        game.game_date === event_date_impacted &&
+        game.start_time &&
+        game.field_id &&
+        parsedFields.includes(game.field_id) &&
+        parsedTimeSlots.includes(game.start_time);
+
+      return willChange ? [...acc, { ...game, is_cancelled_YN: status }] : acc;
+    }, [] as IPlayoffGame[]);
+
+    if (updatedGames.length !== 0) {
+      await api.put(`/games`, updatedGames);
+    }
+
+    if (updatedBrackets.length !== 0) {
+      await api.put(`/games_brackets`, updatedBrackets);
+    }
 
     dispatch({
       type: TOGGLE_BACK_UP_STATUS_SECCESS,
@@ -349,5 +404,124 @@ export const toggleBackUpStatus = (
     });
 
     Toasts.errorToast(err.message);
+  }
+};
+
+export const modifyGameTimeSlots = (backUp: IBackupPlan) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
+  try {
+    const { complexities } = getState();
+
+    const currentSchedule = complexities.schedules.find(
+      (it: ISchedule) => it.event_id === backUp.event_id
+    );
+
+    if (!currentSchedule) {
+      throw new Error('Could not change back up status!');
+    }
+
+    const scheduleGames = (await api.get(
+      `/games?schedule_id=${currentSchedule.schedule_id}`
+    )) as ISchedulesGame[];
+
+    const brackets = await api.get(
+      `/brackets_details?event_id=${currentSchedule.event_id}`
+    );
+
+    const publishedBraket = brackets.find(
+      (it: IFetchedBracket) => it.is_published_YN === BracketStatuses.Published
+    );
+
+    const bracketGames = publishedBraket
+      ? ((await api.get(
+          `/games_brackets?bracket_id=${publishedBraket.bracket_id}`
+        )) as IPlayoffGame[])
+      : [];
+
+    const { fields_impacted, change_value } = backUp;
+
+    const parsedFields = JSON.parse(fields_impacted) as Array<string>;
+    const parsedChangeValue = JSON.parse(change_value) as IChangedTimeSlot[];
+
+    const mappedNewTimeSlots = getMapNewTimeSlots(parsedChangeValue);
+    const oldTimeSlots = Object.keys(mappedNewTimeSlots);
+
+    const updatedGames = scheduleGames.reduce((acc, game) => {
+      const willChange =
+        game.start_time &&
+        oldTimeSlots.includes(game.start_time) &&
+        parsedFields.includes(game.field_id);
+
+      if (willChange) {
+        const updatedGame = {
+          ...game,
+          start_time: mappedNewTimeSlots[game.start_time as string],
+        };
+
+        return [...acc, updatedGame];
+      } else {
+        return acc;
+      }
+    }, [] as ISchedulesGame[]);
+
+    const updatedBrackets = bracketGames.reduce((acc, game) => {
+      const willChange =
+        game.start_time &&
+        game.field_id &&
+        oldTimeSlots.includes(game.start_time) &&
+        parsedFields.includes(game.field_id);
+
+      if (willChange) {
+        const updatedGame = {
+          ...game,
+          start_time: mappedNewTimeSlots[game.start_time as string],
+        };
+
+        return [...acc, updatedGame];
+      } else {
+        return acc;
+      }
+    }, [] as IPlayoffGame[]);
+
+    if (updatedGames.length !== 0) {
+      await api.put(`/games`, updatedGames);
+    }
+
+    if (updatedBrackets.length !== 0) {
+      await api.put(`/games_brackets`, updatedBrackets);
+    }
+
+    dispatch({
+      type: TOGGLE_BACK_UP_STATUS_SECCESS,
+      payload: {
+        backUp,
+      },
+    });
+
+    Toasts.successToast('Changes successfully saved');
+  } catch (err) {
+    dispatch({
+      type: TOGGLE_BACK_UP_STATUS_FAILURE,
+    });
+
+    Toasts.errorToast(err.message);
+  }
+};
+
+export const toggleBackUpStatus = (
+  backUp: IBackupPlan,
+  status: BackUpActiveStatuses
+) => async (dispatch: Dispatch) => {
+  switch (backUp.backup_type) {
+    case OptionsEnum['Cancel Games']: {
+      dispatch<any>(cancelGames(backUp, status));
+      break;
+    }
+    case OptionsEnum['Weather Interruption: Modify Game Timeslots']: {
+      dispatch<any>(modifyGameTimeSlots(backUp));
+      break;
+    }
   }
 };

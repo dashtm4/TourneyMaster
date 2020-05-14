@@ -335,6 +335,7 @@ const TableSchedule = ({
             />
             <MatrixTable
               tableType={tableType}
+              eventDay={filterValues.selectedDay!}
               games={tableGames}
               fields={updatedFields}
               timeSlots={timeSlots}

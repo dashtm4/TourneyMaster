@@ -35,6 +35,7 @@ export interface IBracketGame {
   gameDate?: string;
   //
   hidden?: boolean;
+  isCancelled: boolean;
   createDate: string;
 }
 
@@ -276,6 +277,7 @@ export const createBracketGames = (
       divisionName: division.short_name,
       divisionId: division.division_id,
       createDate: new Date().toISOString(),
+      isCancelled: false,
     }));
 
     games.push(rearrangeSeedForGames(bracketTeamsNum, localGames));

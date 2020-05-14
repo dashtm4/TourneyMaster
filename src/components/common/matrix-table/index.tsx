@@ -36,6 +36,7 @@ interface IProps {
   onToggleFullScreen?: BindingAction;
   highlightedGameId?: number;
   simultaneousDnd?: boolean;
+  eventDay?: string;
   onGameUpdate: (game: IGame) => void;
 }
 

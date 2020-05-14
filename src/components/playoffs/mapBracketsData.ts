@@ -71,6 +71,7 @@ export const mapBracketGames = async (
       home_team_id: game.homeTeamId || null,
       away_team_score: game.awayTeamScore || null,
       home_team_score: game.homeTeamScore || null,
+      is_cancelled_YN: game.isCancelled ? 1 : 0,
       is_active_YN: 1,
       created_by: memberId,
       created_datetime: game.createDate || new Date().toISOString(),
@@ -128,6 +129,7 @@ export const mapFetchedBracketGames = (
       startTime: game.start_time || undefined,
       gameDate: game.game_date.toString(),
       hidden: !game.is_active_YN,
+      isCancelled: Boolean(game.is_cancelled_YN),
       createDate: game.created_datetime,
     })
   );
