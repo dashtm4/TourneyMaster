@@ -14,6 +14,7 @@ interface ISelectProps {
   align?: string;
   placeholder?: string;
   isRequired?: boolean;
+  isFullWith?: boolean;
 }
 
 const Select: React.FC<ISelectProps> = ({
@@ -27,8 +28,12 @@ const Select: React.FC<ISelectProps> = ({
   align,
   placeholder,
   isRequired,
+  isFullWith,
 }) => (
-  <div className={styles.container} style={{ alignItems: align || '' }}>
+  <div
+    className={styles.container}
+    style={{ alignItems: align || '', width: isFullWith ? '100%' : undefined }}
+  >
     <span className={styles.label}>{label}</span>
     {!value ? (
       <span

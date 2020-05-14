@@ -155,7 +155,8 @@ const SectionGames = ({ event }: Props) => {
           onChange={onChangeActiveDay}
           value={activeDay || ''}
           options={eventDayOptions}
-          width="180px"
+          width="100%"
+          isFullWith={true}
         />
       </div>
       <div className={styles.radionWrapper}>
