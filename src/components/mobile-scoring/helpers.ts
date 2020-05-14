@@ -2,9 +2,34 @@ import {
   ISchedulesGameWithNames,
   ISelectOption,
   IEventDetails,
+  IFacility,
+  IField,
 } from 'common/models';
 import { orderBy } from 'lodash-es';
 import moment from 'moment';
+import { IMobileScoringGame } from './common';
+
+const getTeamWithFacility = (
+  games: ISchedulesGameWithNames[],
+  facilities: IFacility[],
+  fields: IField[]
+): IMobileScoringGame[] => {
+  const teamWithFacility = games.map(game => {
+    const currentField = fields.find(field => field.field_id === game.fieldId);
+
+    const currentFacility = facilities.find(
+      facility => facility.facilities_id === currentField?.facilities_id
+    );
+
+    return {
+      ...game,
+      facilityId: currentFacility?.facilities_id || null,
+      facilityName: currentFacility?.facilities_description || null,
+    };
+  });
+
+  return teamWithFacility;
+};
 
 const getEventOptions = (events: IEventDetails[]) => {
   const eventOptions = events.map(it => ({
@@ -51,4 +76,10 @@ const getTabTimes = (
   return sortedTimeSlots;
 };
 
-export { getDayOptions, getTabTimes, geEventDates, getEventOptions };
+export {
+  getDayOptions,
+  getTabTimes,
+  geEventDates,
+  getEventOptions,
+  getTeamWithFacility,
+};

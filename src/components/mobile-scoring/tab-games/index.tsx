@@ -1,10 +1,11 @@
 import React from 'react';
-import { ISchedulesGameWithNames, ISchedulesGame } from 'common/models';
+import { ISchedulesGame } from 'common/models';
 import ItemGame from '../item-game';
 import styles from './styles.module.scss';
+import { IMobileScoringGame } from '../common';
 
 interface Props {
-  gamesWithName: ISchedulesGameWithNames[];
+  gamesWithName: IMobileScoringGame[];
   originGames: ISchedulesGame[];
 }
 

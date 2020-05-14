@@ -13,12 +13,17 @@ import {
   IField,
   ISchedulesGame,
   ITeam,
-  ISchedulesGameWithNames,
 } from 'common/models';
 import { ScheduleStatuses } from 'common/enums';
-import { getTabTimes, getDayOptions, geEventDates } from '../helpers';
+import {
+  getTabTimes,
+  getDayOptions,
+  geEventDates,
+  getTeamWithFacility,
+} from '../helpers';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
+import { IMobileScoringGame } from '../common';
 
 const DEFAULT_TAB = 0;
 
@@ -39,9 +44,9 @@ const SectionGames = ({ event }: Props) => {
   const [activeDay, changeActiveDay] = useState<string | null>(null);
   const [activeTab, changeActiveTab] = useState<number>(DEFAULT_TAB);
   const [originGames, changeOriginGames] = useState<ISchedulesGame[]>([]);
-  const [gamesWithNames, setGamesWithTames] = useState<
-    ISchedulesGameWithNames[]
-  >([]);
+  const [gamesWithNames, setGamesWithTames] = useState<IMobileScoringGame[]>(
+    []
+  );
 
   useEffect(() => {
     (async () => {
@@ -89,7 +94,13 @@ const SectionGames = ({ event }: Props) => {
         gamesWithTeams
       );
 
-      setGamesWithTames(gamesWithNames);
+      const gameWithFacility = getTeamWithFacility(
+        gamesWithNames,
+        facilities,
+        fields
+      );
+
+      setGamesWithTames(gameWithFacility);
       changeOriginGames(gamesWithTeams);
 
       changeLoading(false);
