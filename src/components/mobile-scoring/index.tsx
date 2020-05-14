@@ -47,14 +47,14 @@ const MobileScoring = () => {
 
   return (
     <div className={styles.main}>
-      <h1 className={styles.mainTitle}>Sroing</h1>
+      <h1 className={styles.mainTitle}>Mobile Scoring</h1>
 
       {isLoadingEvent ? (
         <Loader />
       ) : (
         <>
           <section className={styles.eventSelectWrapper}>
-            <h2 className={styles.eventSelectTitle}>Events:</h2>
+            <h2 className={styles.eventSelectTitle}>Event:</h2>
             <Select
               onChange={onChangeActiveEvent}
               value={activeEvent?.event_id || ''}
