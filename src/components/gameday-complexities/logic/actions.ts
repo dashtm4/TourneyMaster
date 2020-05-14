@@ -29,7 +29,7 @@ import {
   sortByField,
   getTimeSlotsFromEntities,
 } from 'helpers';
-import { stringifyBackupPlan } from '../helper';
+import { stringifyBackupPlan, getMapNewTimeSlots } from '../helper';
 import {
   ScheduleStatuses,
   SortByFilesTypes,
@@ -37,6 +37,7 @@ import {
   BackUpActiveStatuses,
 } from 'common/enums';
 import { IAppState } from 'reducers/root-reducer.types';
+import { OptionsEnum, IChangedTimeSlot } from '../common';
 
 export const eventsFetchSuccess = (payload: {
   events: IEventDetails[];
@@ -230,6 +231,7 @@ export const updateBackupPlan: ActionCreator<ThunkAction<
   if (
     !backupPlan.backup_name ||
     !backupPlan.event_id ||
+    !backupPlan.event_date_impacted ||
     !backupPlan.facilities_impacted?.length ||
     !backupPlan.fields_impacted?.length ||
     !backupPlan.timeslots_impacted?.length
@@ -302,7 +304,7 @@ export const loadTimeSlots = (eventId: string) => async (
   }
 };
 
-export const toggleBackUpStatus = (
+export const cancelGames = (
   backUp: IBackupPlan,
   status: BackUpActiveStatuses
 ) => async (dispatch: Dispatch, getState: () => IAppState) => {
@@ -316,7 +318,7 @@ export const toggleBackUpStatus = (
     if (!currentSchedule) {
       throw new Error('Could not change back up status!');
     }
-    const { fields_impacted, timeslots_impacted } = backUp;
+    const { fields_impacted, timeslots_impacted, event_date_impacted } = backUp;
 
     const parsedFields = JSON.parse(fields_impacted) as Array<string>;
     const parsedTimeSlots = JSON.parse(timeslots_impacted) as Array<string>;
@@ -327,6 +329,7 @@ export const toggleBackUpStatus = (
 
     const currentGames = scheduleGames.reduce((acc, game) => {
       const willChange =
+        game.game_date === event_date_impacted &&
         game.start_time &&
         parsedFields.includes(game.field_id) &&
         parsedTimeSlots.includes(game.start_time);
@@ -350,5 +353,85 @@ export const toggleBackUpStatus = (
     });
 
     Toasts.errorToast(err.message);
+  }
+};
+
+export const modifyGameTimeSlots = (backUp: IBackupPlan) => async (
+  dispatch: Dispatch,
+  getState: () => IAppState
+) => {
+  try {
+    const { complexities } = getState();
+
+    const currentSchedule = complexities.schedules.find(
+      (it: ISchedule) => it.event_id === backUp.event_id
+    );
+
+    if (!currentSchedule) {
+      throw new Error('Could not change back up status!');
+    }
+    const { fields_impacted, change_value, event_date_impacted } = backUp;
+
+    const parsedFields = JSON.parse(fields_impacted) as Array<string>;
+    const parsedChangeValue = JSON.parse(change_value) as IChangedTimeSlot[];
+
+    const scheduleGames = (await api.get(
+      `/games?schedule_id=${currentSchedule.schedule_id}`
+    )) as ISchedulesGame[];
+
+    const mappedNewTimeSlots = getMapNewTimeSlots(parsedChangeValue);
+    const oldTimeSlots = Object.keys(mappedNewTimeSlots);
+
+    const updatedGames = scheduleGames.reduce((acc, game) => {
+      const willChange =
+        game.game_date === event_date_impacted &&
+        game.start_time &&
+        oldTimeSlots.includes(game.start_time) &&
+        parsedFields.includes(game.field_id);
+
+      if (willChange) {
+        const updatedGame = {
+          ...game,
+          start_time: mappedNewTimeSlots[game.start_time as string],
+        };
+
+        return [...acc, updatedGame];
+      } else {
+        return acc;
+      }
+    }, [] as ISchedulesGame[]);
+
+    await api.put(`/games`, updatedGames);
+
+    dispatch({
+      type: TOGGLE_BACK_UP_STATUS_SECCESS,
+      payload: {
+        backUp,
+      },
+    });
+
+    Toasts.successToast('Changes successfully saved');
+  } catch (err) {
+    dispatch({
+      type: TOGGLE_BACK_UP_STATUS_FAILURE,
+    });
+
+    Toasts.errorToast(err.message);
+  }
+};
+
+export const toggleBackUpStatus = (
+  backUp: IBackupPlan,
+  status: BackUpActiveStatuses
+) => async (dispatch: Dispatch) => {
+  switch (backUp.backup_type) {
+    case OptionsEnum['Cancel Games']: {
+      dispatch<any>(cancelGames(backUp, status));
+      break;
+    }
+    case OptionsEnum['Weather Interruption: Modify Game Timeslots']: {
+      dispatch<any>(modifyGameTimeSlots(backUp));
+      break;
+    }
   }
 };

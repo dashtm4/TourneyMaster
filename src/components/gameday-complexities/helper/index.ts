@@ -2,7 +2,7 @@ import { IFacility, IField, IEventDetails } from 'common/models';
 import { IMultiSelectOption } from 'components/common/multi-select';
 import { sortByField, formatTimeSlot } from 'helpers';
 import { SortByFilesTypes } from 'common/enums';
-import { IComplexityTimeslot, OptionsEnum } from '../common';
+import { IComplexityTimeslot, OptionsEnum, IChangedTimeSlot } from '../common';
 
 export const mapFacilitiesToOptions = (
   allFacilities: IFacility[],
@@ -36,15 +36,15 @@ export const mapTimeslotsToOptions = (
   backupType: string
 ) => {
   switch (backupType) {
-    case OptionsEnum['Cancel Games']: {
+    case OptionsEnum['Cancel Games']:
+    case OptionsEnum['Weather Interruption: Modify Game Timeslots']: {
       const parsedTimeslots = JSON.parse(timeslots);
+
       return parsedTimeslots.map((timeslot: string) => ({
         label: formatTimeSlot(timeslot) as string,
         value: timeslot,
       }));
     }
-    case OptionsEnum['Weather Interruption: Modify Game Timeslots']:
-      return timeslots;
     default:
       return [{ label: 'default', value: 'default' }];
   }
@@ -118,6 +118,8 @@ export const getFieldsOptionsForFacilities = (
 };
 
 export const stringifyBackupPlan = (backupPlan: any) => {
+  console.log(backupPlan.timeslots_impacted);
+
   return {
     ...backupPlan,
     facilities_impacted: JSON.stringify(
@@ -146,4 +148,14 @@ export const getTimeSlotOptions = (timeSlots: IComplexityTimeslot) => {
   }));
 
   return timeSlotOptions;
+};
+
+export const getMapNewTimeSlots = (changedTimeSlots: IChangedTimeSlot[]) => {
+  const mappedNewTimeSlots = changedTimeSlots.reduce((acc, timeslot) => {
+    acc[timeslot.timeSlotTime] = timeslot.newTimeSlotTime;
+
+    return acc;
+  }, {});
+
+  return mappedNewTimeSlots;
 };

@@ -203,7 +203,7 @@ class CreateBackupForm extends React.Component<Props, State> {
 
     if (
       eventTimeSlots &&
-      eventTimeSlots.isLoaded &&
+      !eventTimeSlots.isLoaded &&
       eventTimeSlots.eventTimeSlots.length === 0
     ) {
       return null;
