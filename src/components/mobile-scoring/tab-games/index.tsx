@@ -20,6 +20,11 @@ const TabGame = ({ gamesWithName, originGames, changeGameWithName }: Props) => {
 
   return (
     <ul className={styles.teamList}>
+      {!sortedTeamWithNames || sortedTeamWithNames.length === 0 ? (
+        <span style={{ display: 'flex', justifyContent: 'center' }}>
+          {'Nothing to show'}
+        </span>
+      ) : null}
       {sortedTeamWithNames.map(gameWithName => (
         <ItemGame
           gameWithNames={gameWithName}
