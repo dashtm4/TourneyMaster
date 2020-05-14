@@ -30,7 +30,11 @@ import {
   sortByField,
   getTimeSlotsFromEntities,
 } from 'helpers';
-import { stringifyBackupPlan, getMapNewTimeSlots } from '../helper';
+import {
+  stringifyBackupPlan,
+  getMapNewTimeSlots,
+  checkNewTimeSlots,
+} from '../helper';
 import {
   ScheduleStatuses,
   SortByFilesTypes,
@@ -187,13 +191,18 @@ export const saveBackupPlans: ActionCreator<ThunkAction<
     if (
       (backupPlan.backup_type === OptionsEnum['Cancel Games'] &&
         !backupPlan.event_date_impacted) ||
+      (backupPlan.backup_type ===
+        OptionsEnum['Weather Interruption: Modify Game Timeslots'] &&
+        !checkNewTimeSlots(backupPlan.change_value)) ||
       !backupPlan.backup_name ||
       !backupPlan.event_id ||
       !backupPlan.facilities_impacted?.length ||
       !backupPlan.fields_impacted?.length ||
       !backupPlan.timeslots_impacted?.length
     ) {
-      return Toasts.errorToast('All fields are required!');
+      return Toasts.errorToast(
+        'All fields are required and filled in the correct format.'
+      );
     }
 
     const stringifiedBackupPlan = stringifyBackupPlan(backupPlan);
@@ -235,13 +244,18 @@ export const updateBackupPlan: ActionCreator<ThunkAction<
   if (
     (backupPlan.backup_type === OptionsEnum['Cancel Games'] &&
       !backupPlan.event_date_impacted) ||
+    (backupPlan.backup_type ===
+      OptionsEnum['Weather Interruption: Modify Game Timeslots'] &&
+      !checkNewTimeSlots(backupPlan.change_value)) ||
     !backupPlan.backup_name ||
     !backupPlan.event_id ||
     !backupPlan.facilities_impacted?.length ||
     !backupPlan.fields_impacted?.length ||
     !backupPlan.timeslots_impacted?.length
   ) {
-    return Toasts.errorToast('All fields are required!');
+    return Toasts.errorToast(
+      'All fields are required and filled in the correct format.'
+    );
   }
 
   const data = stringifyBackupPlan(backupPlan);

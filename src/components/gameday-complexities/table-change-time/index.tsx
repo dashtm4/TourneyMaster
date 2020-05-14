@@ -1,9 +1,11 @@
 import React from 'react';
 import RowChangeTime from '../row-change-time';
+import { CardMessage } from 'components/common';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import ITimeSlot from 'common/models/schedule/timeSlots';
-import styles from './styles.module.scss';
 import { IChangedTimeSlot } from '../common';
 import { BindingCbWithOne } from 'common/models';
+import styles from './styles.module.scss';
 
 interface Props {
   timeSlots: ITimeSlot[];
@@ -32,6 +34,11 @@ const TableChangeTime = ({
 
   return (
     <div className={styles.tableWrapper}>
+      <div className={styles.cardMessageWrapper}>
+        <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+          Please, change time slots in such format: HH:MM(24 hour format)
+        </CardMessage>
+      </div>
       <table className={styles.table}>
         <thead>
           <tr>

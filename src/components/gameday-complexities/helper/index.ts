@@ -51,9 +51,14 @@ export const mapTimeslotsToOptions = (
 };
 
 export const mapChangeValueOptions = (changeValue: string) => {
-  const parsedChangeValue = JSON.parse(changeValue);
+  const parsedChangeValue = JSON.parse(changeValue) as IChangedTimeSlot[];
 
-  return parsedChangeValue;
+  const mappedChangedValues = parsedChangeValue.map(it => ({
+    ...it,
+    newTimeSlotTime: it.newTimeSlotTime.slice(0, 5),
+  }));
+
+  return mappedChangedValues;
 };
 
 export const getEventOptions = (events: IEventDetails[]) => {
@@ -118,6 +123,8 @@ export const getFieldsOptionsForFacilities = (
 };
 
 export const stringifyBackupPlan = (backupPlan: any) => {
+  const MILLISECONDS_VALUE = ':00';
+
   return {
     ...backupPlan,
     facilities_impacted: JSON.stringify(
@@ -130,7 +137,12 @@ export const stringifyBackupPlan = (backupPlan: any) => {
       backupPlan.timeslots_impacted.map((timeslot: any) => timeslot.value)
     ),
     change_value: backupPlan.change_value
-      ? JSON.stringify(backupPlan.change_value)
+      ? JSON.stringify(
+          backupPlan.change_value.map((it: IChangedTimeSlot) => ({
+            ...it,
+            newTimeSlotTime: it.newTimeSlotTime + MILLISECONDS_VALUE,
+          }))
+        )
       : null,
   };
 };
@@ -156,4 +168,16 @@ export const getMapNewTimeSlots = (changedTimeSlots: IChangedTimeSlot[]) => {
   }, {});
 
   return mappedNewTimeSlots;
+};
+
+export const checkNewTimeSlots = (changedTimeSlot: IChangedTimeSlot[]) => {
+  const rgx2 = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+
+  const isCorrectTimeValues =
+    changedTimeSlot &&
+    changedTimeSlot.every((it: IChangedTimeSlot) =>
+      rgx2.test(it.newTimeSlotTime)
+    );
+
+  return isCorrectTimeValues;
 };

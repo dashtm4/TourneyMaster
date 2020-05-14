@@ -34,9 +34,11 @@ const RowChangeTime = ({
   const onChangeNewTime = ({ target }: IInputEvent) => {
     const { checked } = target;
 
+    const formattedTimeSlotValue = timeSlot.time.slice(0, 5);
+
     const changedTimeSlot = {
       timeSlotTime: timeSlot.time,
-      newTimeSlotTime: timeSlot.time,
+      newTimeSlotTime: formattedTimeSlotValue,
     };
 
     onChangeToChange(changedTimeSlot, checked);
