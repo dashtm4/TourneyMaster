@@ -5,12 +5,20 @@ import {
   IFacility,
   IField,
   ITeam,
+  IFetchedBracket,
 } from 'common/models';
 import { orderBy } from 'lodash-es';
 import moment from 'moment';
 import { IMobileScoringGame, ScoresRaioOptions } from './common';
 import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
 import { findTeam } from 'helpers';
+import {
+  mapFetchedBracketGame,
+  mapFetchedBracketGames,
+  mapBracketGames,
+  mapFetchedBracket,
+} from 'components/playoffs/mapBracketsData';
+import { advanceTeamsIntoAnotherBracket } from 'components/playoffs/helper';
 
 const getGamesByScoreMode = (
   games: IMobileScoringGame[],
@@ -149,6 +157,26 @@ const mapScoringBracketsWithNames = (
   return getMapBracketGames;
 };
 
+const getNewBracketGames = (
+  bracketGame: IPlayoffGame,
+  bracketGames: IPlayoffGame[],
+  fields: IField[],
+  bracket: IFetchedBracket
+) => {
+  const mappedBraket = mapFetchedBracket(bracket);
+  const mappedBraketGame = mapFetchedBracketGame(bracketGame, fields);
+  const mappedBracketGames = mapFetchedBracketGames(bracketGames, fields);
+
+  const newBracketGames = advanceTeamsIntoAnotherBracket(
+    mappedBraketGame,
+    mappedBracketGames
+  );
+
+  const mapOriginBracketGames = mapBracketGames(newBracketGames, mappedBraket);
+
+  return mapOriginBracketGames;
+};
+
 export {
   getGamesByScoreMode,
   getDayOptions,
@@ -157,4 +185,5 @@ export {
   getEventOptions,
   getTeamWithFacility,
   mapScoringBracketsWithNames,
+  getNewBracketGames,
 };

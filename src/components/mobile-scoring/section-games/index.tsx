@@ -23,6 +23,7 @@ import {
   getTeamWithFacility,
   getGamesByScoreMode,
   mapScoringBracketsWithNames,
+  getNewBracketGames,
 } from '../helpers';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
@@ -50,6 +51,13 @@ const SectionGames = ({ event }: Props) => {
   const [scoreMode, changeScoreMode] = useState<ScoresRaioOptions>(
     ScoresRaioOptions.ALL
   );
+  const [teams, setTeams] = useState<ITeam[]>([]);
+  const [facilities, setFacilities] = useState<IFacility[]>([]);
+  const [fields, setFields] = useState<IField[]>([]);
+  const [
+    publishedBracket,
+    setPublishedBracket,
+  ] = useState<IFetchedBracket | null>(null);
   const [originGames, setOriginGames] = useState<ISchedulesGame[]>([]);
   const [originBracktGames, setOriginBracktGames] = useState<IPlayoffGame[]>(
     []
@@ -57,14 +65,22 @@ const SectionGames = ({ event }: Props) => {
   const [gamesWithNames, setGamesWithTames] = useState<IMobileScoringGame[]>(
     []
   );
+  const [scheduleGamesWithNames, setScheduleGamesWithNames] = useState<
+    IMobileScoringGame[]
+  >([]);
 
   useEffect(() => {
     (async () => {
       changeActiveDay(null);
       changeActiveTab(0);
+      setPublishedBracket(null);
+      setTeams([]);
+      setFacilities([]);
+      setFields([]);
       setOriginGames([]);
       setOriginBracktGames([]);
       setGamesWithTames([]);
+      setScheduleGamesWithNames([]);
       changeLoading(true);
       changeLoaded(false);
       changeScoreMode(ScoresRaioOptions.ALL);
@@ -132,26 +148,81 @@ const SectionGames = ({ event }: Props) => {
 
       const allGames = [...gameWithFacility, ...mappedBracketGames];
 
+      setTeams(teams);
+      setFacilities(facilities);
+      setFields(fields);
       setGamesWithTames(allGames);
+      setScheduleGamesWithNames(gameWithFacility);
       setOriginGames(games);
       setOriginBracktGames(bracketGames);
+      setPublishedBracket(publishedBracket || null);
 
       changeLoading(false);
       changeLoaded(true);
     })();
   }, [event]);
 
-  const changeGameWithName = (changedGame: IMobileScoringGame) => {
-    // const changedOriginGames = originGames.map(it =>
-    //   it.game_id === changedGame.game_id ? changedGame : it
-    // );
-    // setOriginGames(changedOriginGames);
+  const saveBracketGames = async (bracketGames: IPlayoffGame[]) => {
+    await Api.put(`/games_brackets`, bracketGames);
+  };
 
-    const changedGamesWithGames = gamesWithNames.map(game =>
-      game.id === changedGame.id ? changedGame : game
-    );
+  const changeGameWithName = async (changedGame: IMobileScoringGame) => {
+    if (changedGame.isPlayoff) {
+      const changedOriginBracketGame = originBracktGames.find(
+        game => game.game_id === changedGame.id
+      ) as IPlayoffGame;
 
-    setGamesWithTames(changedGamesWithGames);
+      const originBracketGameWithScore: IPlayoffGame = {
+        ...changedOriginBracketGame,
+        away_team_score:
+          changedGame.awayTeamScore === null
+            ? null
+            : Number(changedGame.awayTeamScore),
+        home_team_score:
+          changedGame.homeTeamScore === null
+            ? null
+            : Number(changedGame.homeTeamScore),
+      };
+
+      const newOriginBracketGames = await getNewBracketGames(
+        originBracketGameWithScore,
+        originBracktGames,
+        fields,
+        publishedBracket as IFetchedBracket
+      );
+
+      const newBracketGamesWithNames = mapScoringBracketsWithNames(
+        teams,
+        facilities,
+        fields,
+        newOriginBracketGames
+      );
+
+      const allGames = [...scheduleGamesWithNames, ...newBracketGamesWithNames];
+
+      await saveBracketGames(newOriginBracketGames);
+
+      setOriginBracktGames(newOriginBracketGames);
+      setGamesWithTames(allGames);
+    } else {
+      const changedGamesWithGames = gamesWithNames.map(game =>
+        game.id === changedGame.id ? changedGame : game
+      );
+
+      const changedOriginGames = originGames.map(game =>
+        game.game_id === changedGame.id
+          ? {
+              ...game,
+              away_team_score: changedGame.awayTeamScore,
+              home_team_score: changedGame.homeTeamScore,
+            }
+          : game
+      );
+
+      setOriginGames(changedOriginGames);
+
+      setGamesWithTames(changedGamesWithGames);
+    }
   };
 
   const onChangeActiveTimeSlot = (

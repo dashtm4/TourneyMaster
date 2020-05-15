@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Toasts } from 'components/common';
 import { ISchedulesGame, BindingCbWithOne } from 'common/models';
 import { ButtonVarian, ButtonColors } from 'common/enums';
 import { IMobileScoringGame } from '../common';
 import { IInputEvent } from 'common/types';
-// import Api from 'api/api';
+import Api from 'api/api';
 import styles from './styles.module.scss';
 import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
 import { getDisplayName } from 'components/common/matrix-table/dnd/seed';
@@ -34,26 +34,50 @@ const ItemGame = ({ gameWithNames, originGame, changeGameWithName }: Props) => {
     changeOriginGame({ ...chanedOriginGame, [name]: value });
   };
 
+  useEffect(() => {
+    changeSavedState(
+      Boolean(originGame.away_team_score && originGame.home_team_score)
+    );
+    changeOriginGame(originGame);
+  }, [gameWithNames, originGame]);
+
   const onSave = async () => {
-    const updetedGame = {
-      ...chanedOriginGame,
-      away_team_score: chanedOriginGame.away_team_score || null,
-      home_team_score: chanedOriginGame.home_team_score || null,
-    } as ISchedulesGame | IPlayoffGame;
+    try {
+      if (gameWithNames.isPlayoff) {
+        if (
+          !chanedOriginGame.away_team_score ||
+          !chanedOriginGame.home_team_score ||
+          Number(chanedOriginGame.away_team_score) ===
+            Number(chanedOriginGame.home_team_score)
+        ) {
+          throw new Error(
+            'Bracket games score must be filled and can not have tie scores'
+          );
+        }
+      } else {
+        const updetedGame = {
+          ...chanedOriginGame,
+          away_team_score: chanedOriginGame.away_team_score || null,
+          home_team_score: chanedOriginGame.home_team_score || null,
+        } as ISchedulesGame;
 
-    // await Api.put('/games', updetedGame);
+        await Api.put('/games', updetedGame);
+      }
 
-    const updatedGameWithName: IMobileScoringGame = {
-      ...gameWithNames,
-      awayTeamScore: updetedGame.away_team_score,
-      homeTeamScore: updetedGame.home_team_score,
-    };
+      const updatedGameWithName: IMobileScoringGame = {
+        ...gameWithNames,
+        awayTeamScore: chanedOriginGame.away_team_score,
+        homeTeamScore: chanedOriginGame.home_team_score,
+      };
 
-    changeSavedState(true);
+      await changeGameWithName(updatedGameWithName);
 
-    changeGameWithName(updatedGameWithName);
+      changeSavedState(true);
 
-    Toasts.successToast('Changes successfully saved.');
+      Toasts.successToast('Changes successfully saved.');
+    } catch (err) {
+      Toasts.errorToast(err.message);
+    }
   };
 
   return (
