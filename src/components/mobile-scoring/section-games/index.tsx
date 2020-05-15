@@ -13,18 +13,21 @@ import {
   IField,
   ISchedulesGame,
   ITeam,
+  IFetchedBracket,
 } from 'common/models';
-import { ScheduleStatuses } from 'common/enums';
+import { ScheduleStatuses, BracketStatuses } from 'common/enums';
 import {
   getTabTimes,
   getDayOptions,
   geEventDates,
   getTeamWithFacility,
   getGamesByScoreMode,
+  mapScoringBracketsWithNames,
 } from '../helpers';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
 import { IMobileScoringGame, ScoresRaioOptions } from '../common';
+import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
 
 const DEFAULT_TAB = 0;
 
@@ -47,7 +50,10 @@ const SectionGames = ({ event }: Props) => {
   const [scoreMode, changeScoreMode] = useState<ScoresRaioOptions>(
     ScoresRaioOptions.ALL
   );
-  const [originGames, changeOriginGames] = useState<ISchedulesGame[]>([]);
+  const [originGames, setOriginGames] = useState<ISchedulesGame[]>([]);
+  const [originBracktGames, setOriginBracktGames] = useState<IPlayoffGame[]>(
+    []
+  );
   const [gamesWithNames, setGamesWithTames] = useState<IMobileScoringGame[]>(
     []
   );
@@ -56,7 +62,8 @@ const SectionGames = ({ event }: Props) => {
     (async () => {
       changeActiveDay(null);
       changeActiveTab(0);
-      changeOriginGames([]);
+      setOriginGames([]);
+      setOriginBracktGames([]);
       setGamesWithTames([]);
       changeLoading(true);
       changeLoaded(false);
@@ -65,6 +72,9 @@ const SectionGames = ({ event }: Props) => {
       const schedules = (await Api.get(
         `/schedules?event_id=${event.event_id}`
       )) as ISchedule[];
+      const brackets = (await Api.get(
+        `brackets_details?event_id=${event.event_id}`
+      )) as IFetchedBracket[];
       const teams = (await Api.get(
         `/teams?event_id=${event.event_id}`
       )) as ITeam[];
@@ -82,11 +92,19 @@ const SectionGames = ({ event }: Props) => {
       const publishedSchedule = schedules.find(
         it => it.is_published_YN === ScheduleStatuses.Published
       );
+      const publishedBracket = brackets.find(
+        it => it.is_published_YN === BracketStatuses.Published
+      );
 
       const games = publishedSchedule
         ? ((await Api.get(
             `/games?schedule_id=${publishedSchedule.schedule_id}`
           )) as ISchedulesGame[])
+        : [];
+      const bracketGames = publishedBracket
+        ? ((await Api.get(
+            `/games_brackets?bracket_id=${publishedBracket.bracket_id}`
+          )) as IPlayoffGame[])
         : [];
 
       const gamesWithTeams = games.filter(
@@ -105,8 +123,18 @@ const SectionGames = ({ event }: Props) => {
         fields
       );
 
-      setGamesWithTames(gameWithFacility);
-      changeOriginGames(gamesWithTeams);
+      const mappedBracketGames = mapScoringBracketsWithNames(
+        teams,
+        facilities,
+        fields,
+        bracketGames
+      );
+
+      const allGames = [...gameWithFacility, ...mappedBracketGames];
+
+      setGamesWithTames(allGames);
+      setOriginGames(games);
+      setOriginBracktGames(bracketGames);
 
       changeLoading(false);
       changeLoaded(true);
@@ -114,23 +142,16 @@ const SectionGames = ({ event }: Props) => {
   }, [event]);
 
   const changeGameWithName = (changedGame: IMobileScoringGame) => {
-    const changedGamesWithGames = gamesWithNames.map(it =>
-      it.id === changedGame.id ? changedGame : it
-    );
+    // const changedOriginGames = originGames.map(it =>
+    //   it.game_id === changedGame.game_id ? changedGame : it
+    // );
+    // setOriginGames(changedOriginGames);
 
-    const changedOriginGames = originGames.map(game =>
-      game.game_id === changedGame.id
-        ? {
-            ...game,
-            away_team_score: changedGame.awayTeamScore,
-            home_team_score: changedGame.homeTeamScore,
-          }
-        : game
+    const changedGamesWithGames = gamesWithNames.map(game =>
+      game.id === changedGame.id ? changedGame : game
     );
 
     setGamesWithTames(changedGamesWithGames);
-
-    changeOriginGames(changedOriginGames);
   };
 
   const onChangeActiveTimeSlot = (
@@ -203,6 +224,7 @@ const SectionGames = ({ event }: Props) => {
           <TabGames
             gamesWithName={gameByScoreMode}
             originGames={originGamesByTime}
+            originBracktGames={originBracktGames}
             changeGameWithName={changeGameWithName}
           />
         </div>

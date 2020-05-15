@@ -4,10 +4,13 @@ import {
   IEventDetails,
   IFacility,
   IField,
+  ITeam,
 } from 'common/models';
 import { orderBy } from 'lodash-es';
 import moment from 'moment';
 import { IMobileScoringGame, ScoresRaioOptions } from './common';
+import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
+import { findTeam } from 'helpers';
 
 const getGamesByScoreMode = (
   games: IMobileScoringGame[],
@@ -100,6 +103,52 @@ const getTabTimes = (
   return sortedTimeSlots;
 };
 
+const mapScoringBracketsWithNames = (
+  teams: ITeam[],
+  facilities: IFacility[],
+  fields: IField[],
+  bracketGames: IPlayoffGame[]
+): IMobileScoringGame[] => {
+  const getMapBracketGames = bracketGames.map(bracketGame => {
+    const currentField = fields.find(
+      field => field.field_id === bracketGame.field_id
+    );
+    const currentFacility = facilities.find(
+      facility => facility.facilities_id === currentField?.facilities_id
+    );
+
+    return {
+      id: bracketGame.game_id,
+      facilityId: currentFacility?.facilities_id || null,
+      facilityName: currentFacility?.facilities_description || null,
+      fieldId: bracketGame.field_id || '',
+      fieldName: currentField?.field_name || 'Field',
+      awayTeamId: bracketGame.away_team_id,
+      awayTeamName: bracketGame.away_team_id
+        ? findTeam(bracketGame.away_team_id, teams)!.short_name
+        : null,
+      awayTeamScore: bracketGame.away_team_score,
+      homeTeamId: bracketGame.home_team_id,
+      homeTeamName: bracketGame.home_team_id
+        ? findTeam(bracketGame.home_team_id, teams)!.short_name
+        : null,
+      homeTeamScore: bracketGame.home_team_score,
+      gameDate: bracketGame.game_date as string,
+      startTime: bracketGame.start_time || '',
+      createTime: bracketGame.created_datetime,
+      updatedTime: bracketGame.updated_datetime,
+      isPlayoff: true,
+      awaySeedId: bracketGame.seed_num_away || null,
+      homeSeedId: bracketGame.seed_num_home || null,
+      awayDependsUpon: bracketGame.away_depends_upon || null,
+      homeDependsUpon: bracketGame.home_depends_upon || null,
+      round: bracketGame.round_num || null,
+    };
+  });
+
+  return getMapBracketGames;
+};
+
 export {
   getGamesByScoreMode,
   getDayOptions,
@@ -107,4 +156,5 @@ export {
   geEventDates,
   getEventOptions,
   getTeamWithFacility,
+  mapScoringBracketsWithNames,
 };
