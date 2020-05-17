@@ -22,7 +22,7 @@ const TabGame = ({ gamesWithName, originGames, changeGameWithName }: Props) => {
     <ul className={styles.teamList}>
       {!sortedTeamWithNames || sortedTeamWithNames.length === 0 ? (
         <span style={{ display: 'flex', justifyContent: 'center' }}>
-          {'Nothing to show'}
+          {'All Games Within This Timeslot Have Scores'}
         </span>
       ) : null}
       {sortedTeamWithNames.map(gameWithName => (
