@@ -12,6 +12,6 @@ export interface IMobileScoringGame extends ISchedulesGameWithNames {
 }
 
 export enum ScoresRaioOptions {
-  ALL = 'All',
-  UNSCORED_GAMES = 'Unscored games',
+  ALL = 'All Games',
+  UNSCORED_GAMES = 'Unscored Only',
 }
