@@ -5,7 +5,7 @@ import {
   ISchedulesGameWithNames,
 } from 'common/models';
 
-const findTeam = (teamId: string, teams: ITeam[]) => {
+export const findTeam = (teamId: string, teams: ITeam[]) => {
   const currentTeam = teams.find(team => team.team_id === teamId);
 
   return currentTeam;

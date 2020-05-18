@@ -12,7 +12,7 @@ const endpointSecret =
 export default api => {
   api.post('/create-payment-intent', async (req, res) => {
     try {
-      if (req.body.reg_type !== 'individual' || req.body.reg_type !== 'team') {
+      if (req.body.reg_type !== 'individual' && req.body.reg_type !== 'team') {
         throw new Error('Reg_type must be "individual" or "team"');
       }
       const order = {
