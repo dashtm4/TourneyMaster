@@ -9,7 +9,7 @@ const updateMobileEventStatus = async (
   const method = isDraft ? MethodTypes.PUT : MethodTypes.POST;
 
   await Axios[method](
-    `https://api.tourneymaster.org/v2/pub_to_csports?event_id=${eventId}&level=${mobileStatus}`
+    `${process.env.REACT_APP_API_BASE_URL}/pub_to_csports?event_id=${eventId}&level=${mobileStatus}`
   );
 };
 

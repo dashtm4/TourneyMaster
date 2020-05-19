@@ -37,9 +37,7 @@ import { IIndivisualsRegister, ITeamsRegister } from 'common/models/register';
 import { ButtonFormTypes } from 'common/enums';
 import { eventTypeOptions } from 'components/event-details/event-structure';
 
-axios.defaults.baseURL =
-  process.env.REACT_APP_PUBLIC_API_BASE_URL ||
-  'https://api.tourneymaster.org/public'; // TODO: Remove the hardcoded link when everyone is ok
+axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
 export enum TypeOptions {
   'Player' = 1,

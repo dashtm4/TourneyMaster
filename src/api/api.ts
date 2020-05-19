@@ -2,8 +2,7 @@ import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import { Auth } from 'aws-amplify';
 import { getToken } from './api.helpers';
 
-const BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || 'https://api.tourneymaster.org/v2'; // TODO: Remove the hardcoded link
+const BASE_URL = process.env.REACT_APP_API_BASE_URL!;
 
 class Api {
   baseUrl: string;
