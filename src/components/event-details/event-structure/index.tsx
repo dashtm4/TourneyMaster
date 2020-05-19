@@ -219,7 +219,7 @@ const EventStructureSection: React.FC<Props> = ({
           <Input
             fullWidth={true}
             endAdornment="Minutes"
-            label="Pregame Warmup"
+            label="Pregame Warmup *"
             type="number"
             value={getTimeFromString(pre_game_warmup!, 'minutes').toString()}
             onChange={onPregameWarmupChange}
@@ -228,7 +228,7 @@ const EventStructureSection: React.FC<Props> = ({
           <Input
             fullWidth={true}
             endAdornment="Minutes"
-            label="Time Selection Duration"
+            label="Time Selection Duration *"
             type="number"
             value={getTimeFromString(period_duration!, 'minutes').toString()}
             onChange={onTimeDivisionDuration}
@@ -239,7 +239,7 @@ const EventStructureSection: React.FC<Props> = ({
           <Input
             fullWidth={true}
             endAdornment="Minutes"
-            label="Time Between Periods"
+            label="Time Btwn Periods *"
             type="number"
             value={getTimeFromString(time_btwn_periods!, 'minutes').toString()}
             onChange={onTimeBtwnPeriodsDuration}
