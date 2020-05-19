@@ -153,6 +153,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   const saveRegistrationResponse = async () => {
     const updatedRegistration: any = {
       ...registration,
+      division_id:
+        registration.ext_sku && registration.ext_sku.startsWith('div_')
+          ? registration.ext_sku.slice(4)
+          : null,
       reg_response_id: getVarcharEight(),
       registration_id: eventRegistration?.registration_id,
     };

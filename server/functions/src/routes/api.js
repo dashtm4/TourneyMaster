@@ -5,9 +5,7 @@ import mysql from 'promise-mysql';
 
 const ssm = new SSM({ region: 'us-east-1' });
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
-const endpointSecret =
-  process.env.STRIPE_WEBHOOK_SIGNING_SECRET ||
-  'whsec_pqHQrhQL4qZPhzniRAaB4W7SYuBKpaWn';
+const endpointSecret = process.env.STRIPE_WEBHOOK_SIGNING_SECRET;
 
 export default api => {
   api.post('/create-payment-intent', async (req, res) => {
@@ -32,6 +30,7 @@ export default api => {
       // 	order.email = req.body.order.email;
       // }
       const stripeOrder = await stripe.orders.create(order);
+      console.log(`Stripe Order ${stripeOrder.id} created`);
 
       if (stripeOrder.amount > process.env.MAX_PAYMENT_AMOUNT * 100) {
         console.error(
@@ -60,8 +59,11 @@ export default api => {
           reg_type: req.body.reg_type,
           reg_response_id: req.body.reg_response_id,
           sku_id: req.body.order.items.map(x => x.sku_id).join(','),
+          sku_name: req.body.order.items.map(x => x.sku_name).join(','),
         },
       });
+      console.log(`Stripe PaymentIntent ${paymentIntent.id} created`);
+
       res.json({
         success: true,
         clientSecret: paymentIntent.client_secret,
@@ -102,9 +104,12 @@ export default api => {
           sig,
           endpointSecret
         );
+        console.log('Webhook Stripe signature verification: OK');
       } catch (err) {
+        console.log('Webhook Stripe signature verification: FAILED');
         throw new Error(`Webhook Error: ${err.message}`);
       }
+      console.log('Payment success processing...');
 
       if (event.type === 'payment_intent.succeeded') {
         const fromParams = await getParams(
@@ -116,6 +121,10 @@ export default api => {
 
         const reg_type = event.data.object.metadata.reg_type;
         const reg_response_id = event.data.object.metadata.reg_response_id;
+        console.log(
+          `Registration type: ${reg_type}. Reg_response_id: ${reg_response_id}`
+        );
+
         const tableName =
           reg_type === 'team'
             ? 'registrations_responses_teams'
@@ -158,6 +167,9 @@ export default api => {
         const toConn = await mysql.createConnection(toParams.db);
         await toConn.query(sql, params);
         await toConn.end();
+        console.log(
+          `Successfully processed. Registration data copied to main database`
+        );
       }
       res.json({
         success: true,

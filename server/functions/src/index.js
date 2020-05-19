@@ -25,7 +25,7 @@ app.use((req, res, next) => {
   );
   next();
 });
-app.use('/public/payments', api(router));
+app.use('/:publicapi/payments', api(router));
 
 const isInLambda = !!process.env.LAMBDA_TASK_ROOT;
 let handler = null;
