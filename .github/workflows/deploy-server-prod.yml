@@ -1,4 +1,4 @@
-name: Payments Server deployment
+name: Payments Server PROD
 
 on:
   push:
@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          ref: development
       - name: Enable Amazon
         uses: chrislennon/action-aws-cli@v1.1
       - name: Build and Deploy Server
