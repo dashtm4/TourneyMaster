@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - development
-      - rz
     paths:
       - 'server/**'
       - '.github/workflows/deploy-server*'
