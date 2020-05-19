@@ -3,7 +3,7 @@ name: Payments Server deployment
 on:
   push:
     branches:
-      - master
+      - development
       - rz
     paths:
       - 'server/**'
@@ -29,10 +29,10 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-east-1'
-          STRIPE_PUBLISHABLE_KEY: ${{secrets.STRIPE_PUBLISHABLE_KEY_PROD}}
-          STRIPE_SECRET_KEY: ${{secrets.STRIPE_SECRET_KEY_PROD}}
-          STRIPE_WEBHOOK_SIGNING_SECRET: ${{secrets.STRIPE_WEBHOOK_SIGNING_SECRET_PROD}}
-          STACK_NAME: 'TMPaymentsPROD'
-          PUBLIC_API_BASE_URL: 'https://api.tourneymaster.org/publicprod'
+          STRIPE_PUBLISHABLE_KEY: ${{secrets.STRIPE_PUBLISHABLE_KEY}}
+          STRIPE_SECRET_KEY: ${{secrets.STRIPE_SECRET_KEY}}
+          STRIPE_WEBHOOK_SIGNING_SECRET: ${{secrets.STRIPE_WEBHOOK_SIGNING_SECRET}}
+          STACK_NAME: 'TourneyMasterPayments'
+          PUBLIC_API_BASE_URL: 'https://api.tourneymaster.org/public'
           PRIVATE_API_SM_PARAMETER_NAME: 'TourneyMasterAPIv2'
-          PUBLIC_API_SM_PARAMETER_NAME: 'TMPublicApiPROD'
+          PUBLIC_API_SM_PARAMETER_NAME: 'TMPublicAPIv2'
