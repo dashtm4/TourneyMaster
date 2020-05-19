@@ -166,20 +166,20 @@ const AddGameModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.popupWrapper}>
-        <h2 className={styles.title}>Add Game</h2>
+        <h2 className={styles.title}>Add Bracket Game;</h2>
         <div className={styles.bodyWrapper}>
           <Select
             options={awaySourceOptions}
             value={awaySourceSelected}
             placeholder="Select"
-            label="Select First Game Source"
+            label="Away Team; Select First Game Source"
             onChange={onAwaySourceChange}
           />
           <Select
             options={homeSourceOptions}
             value={homeSourceSelected}
             placeholder="Select"
-            label="Select Second Game Source"
+            label="Home Team; Select Second Game Source"
             onChange={onHomeSourceChange}
           />
         </div>

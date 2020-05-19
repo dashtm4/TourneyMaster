@@ -221,7 +221,7 @@ class CreateBackupForm extends React.Component<Props> {
       <div className={styles.formContainer}>
         <div style={{ paddingTop: '15px' }}>
           <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-            Modifications only allowed to Published Schedules for each event.
+            Creating/Modifying Backup Plans Only Apply to Schedules that are Currently Published!
           </CardMessage>
         </div>
         <div className={styles.row}>
