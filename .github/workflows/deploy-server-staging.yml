@@ -34,3 +34,4 @@ jobs:
           PUBLIC_API_BASE_URL: 'https://api.tourneymaster.org/public'
           PRIVATE_API_SM_PARAMETER_NAME: 'TourneyMasterAPIv2'
           PUBLIC_API_SM_PARAMETER_NAME: 'TMPublicAPIv2'
+          MAX_PAYMENT_AMOUNT: '10000'

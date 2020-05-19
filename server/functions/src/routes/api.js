@@ -33,6 +33,23 @@ export default api => {
       // }
       const stripeOrder = await stripe.orders.create(order);
 
+      if (stripeOrder.amount > process.env.MAX_PAYMENT_AMOUNT * 100) {
+        console.error(
+          `Payment amount ${stripeOrder.amount /
+            100} is higher than MAX_PAYMENT_AMOUNT=${
+            process.env.MAX_PAYMENT_AMOUNT
+          }`
+        );
+        res.json({
+          success: false,
+          clientSecret: null,
+          order: null,
+          message: `Payment amount ${stripeOrder.amount /
+            100} cannot be processed online. Plese contact the event organizer.`,
+        });
+        return;
+      }
+
       // Create a PaymentIntent with the order amount and currency
       const paymentIntent = await stripe.paymentIntents.create({
         amount: stripeOrder.amount,
@@ -91,9 +108,11 @@ export default api => {
 
       if (event.type === 'payment_intent.succeeded') {
         const fromParams = await getParams(
-          process.env.PublicApiSMParameterName
+          process.env.PUBLIC_API_SM_PARAMETER_NAME
         );
-        const toParams = await getParams(process.env.PrivateApiSMParameterName);
+        const toParams = await getParams(
+          process.env.PRIVATE_API_SM_PARAMETER_NAME
+        );
 
         const reg_type = event.data.object.metadata.reg_type;
         const reg_response_id = event.data.object.metadata.reg_response_id;
