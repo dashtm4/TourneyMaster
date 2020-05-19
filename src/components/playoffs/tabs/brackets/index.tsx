@@ -285,9 +285,9 @@ class BracketManager extends Component<IProps, IState> {
           )}
 
           <div className={styles.seedsWrapper}>
-            <h4>Seeds</h4>
+            <h3>Seeds</h3>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Seeds list
+              Ordered List
             </CardMessage>
             <SeedsList
               accept={this.dragType}
