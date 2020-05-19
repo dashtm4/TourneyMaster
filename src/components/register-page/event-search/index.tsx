@@ -6,9 +6,7 @@ import axios from 'axios';
 import { IEventDetails } from 'common/models';
 import IteamSearch from './item-search';
 
-axios.defaults.baseURL =
-  process.env.REACT_APP_PUBLIC_API_BASE_URL ||
-  'https://api.tourneymaster.org/public'; // TODO: Remove the hardcoded link when everyone is ok
+axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
 const EventSearch = () => {
   const [events, setEvents] = useState([]);

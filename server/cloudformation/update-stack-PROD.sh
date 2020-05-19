@@ -1,7 +1,7 @@
 AWS_PROFILE=clubsports
 
 aws cloudformation update-stack \
-	--stack-name ClubSportsPaymentsStack \
+	--stack-name TMPaymentsPROD \
 	--template-body file://templates/ClubSportsPayments.yaml \
 	--capabilities CAPABILITY_NAMED_IAM \
-	--parameters file://stack-params.json
+	--parameters file://templates/stack-params-PROD.json
