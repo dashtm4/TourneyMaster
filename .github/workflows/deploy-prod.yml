@@ -30,6 +30,7 @@ jobs:
           REACT_APP_AWS_IDENTITY_POOL_ID: ${{ secrets.REACT_APP_AWS_IDENTITY_POOL_ID }}
           REACT_APP_API_BASE_URL: 'https://api.tourneymaster.org/v2'
           REACT_APP_PUBLIC_API_BASE_URL: 'https://api.tourneymaster.org/publicprod'
+          REACT_APP_STRIPE_PUBLISHABLE_KEY: ${{secrets.STRIPE_PUBLISHABLE_KEY_PROD}}
           CI: 'false'
       - name: Enable Amazon
         uses: chrislennon/action-aws-cli@v1.1
