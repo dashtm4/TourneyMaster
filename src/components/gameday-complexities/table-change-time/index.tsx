@@ -36,15 +36,15 @@ const TableChangeTime = ({
     <div className={styles.tableWrapper}>
       <div className={styles.cardMessageWrapper}>
         <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-          Please, change time slots in such format: HH:MM(24 hour format)
+          Please enter timeslots in the format: HH:MM (24 hour format)
         </CardMessage>
       </div>
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Existing Time Slots</th>
-            <th>Time Slot Impacted</th>
-            <th>New Suggested Time Slots</th>
+            <th>Existing Timeslots</th>
+            <th>Timeslot Impacted</th>
+            <th>Enter New Start Time</th>
           </tr>
         </thead>
         <tbody>
