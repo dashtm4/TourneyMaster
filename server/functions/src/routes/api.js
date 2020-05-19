@@ -62,6 +62,19 @@ export default api => {
   });
 
   api.post('/payment-success', async (req, res) => {
+    const getParams = async paramName => {
+      return JSON.parse(
+        (
+          await ssm
+            .getParameter({
+              Name: paramName,
+              WithDecryption: true,
+            })
+            .promise()
+        ).Parameter.Value
+      );
+    };
+
     const sig = req.headers['stripe-signature'];
     let event;
 
@@ -77,16 +90,10 @@ export default api => {
       }
 
       if (event.type === 'payment_intent.succeeded') {
-        const appParams = JSON.parse(
-          (
-            await ssm
-              .getParameter({
-                Name: process.env.SMParameterName,
-                WithDecryption: true,
-              })
-              .promise()
-          ).Parameter.Value
+        const fromParams = await getParams(
+          process.env.PublicApiSMParameterName
         );
+        const toParams = await getParams(process.env.PrivateApiSMParameterName);
 
         const reg_type = event.data.object.metadata.reg_type;
         const reg_response_id = event.data.object.metadata.reg_response_id;
@@ -95,13 +102,14 @@ export default api => {
             ? 'registrations_responses_teams'
             : 'registrations_responses_individuals';
 
-        const conn = await mysql.createConnection(appParams.db);
+        const fromConn = await mysql.createConnection(fromParams.db);
         const reg_response = (
-          await conn.query(
-            `select * from registrations.${tableName} where reg_response_id=?`,
+          await fromConn.query(
+            `select * from ${fromParams.db.database}.${tableName} where reg_response_id=?`,
             [reg_response_id]
           )
         )[0];
+        await fromConn.end();
 
         // Add Stripe stuff here
         reg_response.ext_payment_system = 'stripe';
@@ -121,12 +129,16 @@ export default api => {
           values += '?,';
           params.push(reg_response[fieldName]);
         }
-        sql = `INSERT INTO events.${tableName}\n   (${sql.slice(
+        sql = `INSERT INTO ${
+          toParams.db.database
+        }.${tableName}\n   (${sql.slice(0, -1)}) \nVALUES (${values.slice(
           0,
           -1
-        )}) \nVALUES (${values.slice(0, -1)})`;
+        )})`;
 
-        await conn.query(sql, params);
+        const toConn = await mysql.createConnection(toParams.db);
+        await toConn.query(sql, params);
+        await toConn.end();
       }
       res.json({
         success: true,
