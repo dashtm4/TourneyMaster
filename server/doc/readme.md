@@ -50,3 +50,14 @@ Runs every 1 minute and synchronizes /products and /skus PublicAPI endpoints wit
 Implements PublicAPI's /payments endpoint as a Lambda Proxy.
 
 POST /payments/create-payment-intent
+
+### Environment Variables
+
+- STRIPE_PUBLISHABLE_KEY:
+- STRIPE_SECRET_KEY:
+- STRIPE_WEBHOOK_SIGNING_SECRET:
+- STACK_NAME: Example: 'TMPaymentsPROD'
+- PUBLIC_API_BASE_URL: Example: 'https://api.tourneymaster.org/publicprod'
+- PRIVATE_API_SM_PARAMETER_NAME: Example: 'TourneyMasterAPIv2'
+- PUBLIC_API_SM_PARAMETER_NAME: Example: 'TMPublicApiPROD'
+- MAX_PAYMENT_AMOUNT: The server will refuse payments above MAX_PAYMENT_AMOUNT. For PROD the parameter is set in .github/workflows/deploy-server-prod.yml

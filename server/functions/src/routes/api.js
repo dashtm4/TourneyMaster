@@ -33,6 +33,23 @@ export default api => {
       // }
       const stripeOrder = await stripe.orders.create(order);
 
+      if (stripeOrder.amount > process.env.MAX_PAYMENT_AMOUNT * 100) {
+        console.error(
+          `Payment amount ${stripeOrder.amount /
+            100} is higher than MAX_PAYMENT_AMOUNT=${
+            process.env.MAX_PAYMENT_AMOUNT
+          }`
+        );
+        res.json({
+          success: false,
+          clientSecret: null,
+          order: null,
+          message: `Payment amount ${stripeOrder.amount /
+            100} cannot be processed online. Plese contact the event organizer.`,
+        });
+        return;
+      }
+
       // Create a PaymentIntent with the order amount and currency
       const paymentIntent = await stripe.paymentIntents.create({
         amount: stripeOrder.amount,
@@ -62,6 +79,19 @@ export default api => {
   });
 
   api.post('/payment-success', async (req, res) => {
+    const getParams = async paramName => {
+      return JSON.parse(
+        (
+          await ssm
+            .getParameter({
+              Name: paramName,
+              WithDecryption: true,
+            })
+            .promise()
+        ).Parameter.Value
+      );
+    };
+
     const sig = req.headers['stripe-signature'];
     let event;
 
@@ -77,15 +107,11 @@ export default api => {
       }
 
       if (event.type === 'payment_intent.succeeded') {
-        const appParams = JSON.parse(
-          (
-            await ssm
-              .getParameter({
-                Name: process.env.SMParameterName,
-                WithDecryption: true,
-              })
-              .promise()
-          ).Parameter.Value
+        const fromParams = await getParams(
+          process.env.PUBLIC_API_SM_PARAMETER_NAME
+        );
+        const toParams = await getParams(
+          process.env.PRIVATE_API_SM_PARAMETER_NAME
         );
 
         const reg_type = event.data.object.metadata.reg_type;
@@ -95,13 +121,14 @@ export default api => {
             ? 'registrations_responses_teams'
             : 'registrations_responses_individuals';
 
-        const conn = await mysql.createConnection(appParams.db);
+        const fromConn = await mysql.createConnection(fromParams.db);
         const reg_response = (
-          await conn.query(
-            `select * from registrations.${tableName} where reg_response_id=?`,
+          await fromConn.query(
+            `select * from ${fromParams.db.database}.${tableName} where reg_response_id=?`,
             [reg_response_id]
           )
         )[0];
+        await fromConn.end();
 
         // Add Stripe stuff here
         reg_response.ext_payment_system = 'stripe';
@@ -121,12 +148,16 @@ export default api => {
           values += '?,';
           params.push(reg_response[fieldName]);
         }
-        sql = `INSERT INTO events.${tableName}\n   (${sql.slice(
+        sql = `INSERT INTO ${
+          toParams.db.database
+        }.${tableName}\n   (${sql.slice(0, -1)}) \nVALUES (${values.slice(
           0,
           -1
-        )}) \nVALUES (${values.slice(0, -1)})`;
+        )})`;
 
-        await conn.query(sql, params);
+        const toConn = await mysql.createConnection(toParams.db);
+        await toConn.query(sql, params);
+        await toConn.end();
       }
       res.json({
         success: true,
