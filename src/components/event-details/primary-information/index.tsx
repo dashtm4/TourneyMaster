@@ -29,7 +29,7 @@ import { getIdByGenderAndSport, getGenderAndSportById } from './helper';
 import { timeToDate, dateToTime } from 'helpers';
 
 const CONTACT_TOOLTIP_MESSAGE =
-  'Contact details will be included when printing schedules and fields by field datails';
+  'Contact details; included when printing the Master Schedule and Fields-by-Field details';
 const RESULTS_DISABLE_MESSAGE =
   'Link will be available after the publication of the event';
 
