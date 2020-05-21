@@ -97,7 +97,7 @@ const PopupSaveReporting = ({
         isHeatMap={true}
       />,
       event.event_name
-        ? `${event.event_name} Master Schedule(HeatMap)`
+        ? `${event.event_name} Master Schedule (HeatMap)`
         : 'Schedule'
     );
 
@@ -135,7 +135,7 @@ const PopupSaveReporting = ({
             <h3>Schedule:</h3>
             <ul className={styles.downloadLinkList}>
               <li className={styles.dowloadLinkWrapper}>
-                <b>Schedule table</b>
+                <b>Master Schedule (no colors)</b>
                 <ButtonLoad
                   loadFunc={onScheduleTableSave}
                   variant={ButtonVarian.TEXT}
@@ -145,7 +145,7 @@ const PopupSaveReporting = ({
                 />
               </li>
               <li className={styles.dowloadLinkWrapper}>
-                <b>Schedule table (with Heatmap)</b>
+                <b>Master Schedule (Colored Heatmap)</b>
                 <ButtonLoad
                   loadFunc={onHeatmapScheduleTableSave}
                   variant={ButtonVarian.TEXT}
@@ -160,7 +160,7 @@ const PopupSaveReporting = ({
             <h3>Fields' schedule: </h3>
             <ul className={styles.downloadLinkList}>
               <li className={styles.dowloadLinkWrapper}>
-                <b>Fields' schedule table</b>
+                <b>Field-by-Field Schedule</b>
                 <ButtonLoad
                   loadFunc={onScheduleFieldsSave}
                   variant={ButtonVarian.TEXT}
