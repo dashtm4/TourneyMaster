@@ -25,6 +25,7 @@ export default api => {
         },
         email: req.body.order.email,
         currency: config.DEFAULT_CURRENCY,
+        expand: ['items.parent'],
       };
       // if (req.body.order.email) {
       // 	order.email = req.body.order.email;
@@ -60,6 +61,7 @@ export default api => {
           reg_response_id: req.body.reg_response_id,
           sku_id: req.body.order.items.map(x => x.sku_id).join(','),
           sku_name: req.body.order.items.map(x => x.sku_name).join(','),
+          owner_id: stripeOrder.items[0].parent.metadata.owner_id,
         },
       });
       console.log(`Stripe PaymentIntent ${paymentIntent.id} created`);
@@ -121,6 +123,7 @@ export default api => {
 
         const reg_type = event.data.object.metadata.reg_type;
         const reg_response_id = event.data.object.metadata.reg_response_id;
+        const owner_id = event.data.object.metadata.owner_id;
         console.log(
           `Registration type: ${reg_type}. Reg_response_id: ${reg_response_id}`
         );
@@ -148,6 +151,7 @@ export default api => {
         );
         reg_response.payment_method =
           event.data.object.charges.data[0].payment_method_details.type;
+        reg_response.created_by = owner_id;
 
         let sql = '';
         let values = '';
