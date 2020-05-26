@@ -19,7 +19,7 @@ const Payments = ({ data }: { data: Partial<IRegistration> }) => (
             <span className={styles.sectionTitle}>
               Upcharge Processing Fees
             </span>
-            <p>{data.upcharge_fee ? `%${data.upcharge_fee}` : '—'}</p>
+            <p>{data.upcharge_fee ? `${data.upcharge_fee}%` : '—'}</p>
           </div>
         ) : (
           <Checkbox
@@ -39,7 +39,7 @@ const Payments = ({ data }: { data: Partial<IRegistration> }) => (
         {data?.include_sales_tax_YN ? (
           <div>
             <span className={styles.sectionTitle}>Sales Tax Rate</span>
-            <p>{data.sales_tax_rate ? `%${data.sales_tax_rate}` : '—'}</p>
+            <p>{data.sales_tax_rate ? `${data.sales_tax_rate}%` : '—'}</p>
           </div>
         ) : (
           <Checkbox
@@ -58,14 +58,14 @@ const Payments = ({ data }: { data: Partial<IRegistration> }) => (
       <div className={styles.sectionItem}>
         {data?.installment_payments_YN ? (
           <div>
-            <span className={styles.sectionTitle}>Installment Payments</span>
+            <span className={styles.sectionTitle}>Monthly Installment Payments</span>
             <p>{data.num_installments ? `${data.num_installments}` : '—'}</p>
           </div>
         ) : (
           <Checkbox
             options={[
               {
-                label: 'Installment Payments',
+                label: 'Monthly Installment Payments',
                 checked: Boolean(data ? data.installment_payments_YN : false),
                 disabled: true,
               },
