@@ -36,6 +36,10 @@ export interface IRegistration {
 
   upcharge_fees_on_registrations: number;
   upcharge_fee: number;
+  include_sales_tax_YN: number;
+  sales_tax_rate: number;
+  num_installments: number;
+  installment_payments_YN: number;
   payments_enabled_YN: number;
   checks_accepted_YN: number;
   promo_code: string;
