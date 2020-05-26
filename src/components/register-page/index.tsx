@@ -73,13 +73,14 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     setEventRegistration,
   ] = useState<IRegistration | null>(null);
   const [divisions, setDivisions] = useState([]);
+  const [paymentPlans, setPaymentPlans] = useState([]);
   const [states, setStates] = useState<ISelectOption[]>([]);
   const [type, setType] = React.useState(1);
   const [isOpenModalOpen, toggleModal] = React.useState(true);
   const [activeStep, setActiveStep] = React.useState(0);
-  const [purchasing, setPurchasing] = useState<boolean>(false);
+  const [purchasing] = useState<boolean>(false);
   const [processing, setProcessing] = useState<boolean>(false);
-  const [clientSecret, setClientSecret] = useState<string>('');
+  // const [clientSecret, setClientSecret] = useState<string>('');
   const stripe = useStripe()!;
   const elements = useElements();
 
@@ -146,9 +147,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     });
   }, []);
 
-  const getPaymentIntent = (order: any) => {
-    return axios.post('/payments/create-payment-intent', order);
-  };
+  // const getPaymentIntent = (order: any) => {
+  //   return axios.post('/payments/create-payment-intent', order);
+  // };
 
   const saveRegistrationResponse = async () => {
     const updatedRegistration: any = {
@@ -175,42 +176,29 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   };
 
   const handleProceedToPayment = async () => {
-    setProcessing(true);
+    axios
+      .get(`/payment_plans?sku_id=${registration.ext_sku}`)
+      .then(response => {
+        const plans = response.data.map((plan: any) => ({
+          label: plan.payment_plan_name,
+          value: plan.payment_plan_id,
+          iterations: plan.iterations,
+          interval: plan.interval,
+          interval_count: plan.interval_count,
+          price: plan.price,
+        }));
+        setPaymentPlans(plans);
+
+        const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
+          prev.iterations < cur.iterations ? prev : cur
+        );
+        setRegistration({
+          ...registration,
+          payment_selection: planWithMinIterations.value,
+          payment_method: 'Credit Card',
+        });
+      });
     setActiveStep(prevActiveStep => prevActiveStep + 1);
-
-    const updatedRegistration = await saveRegistrationResponse();
-
-    const order = {
-      reg_type: getInternalRegType(type),
-      reg_response_id: updatedRegistration.reg_response_id,
-      registration_id: updatedRegistration.registration_id,
-      order: {
-        email:
-          updatedRegistration.registrant_email ||
-          updatedRegistration.contact_email,
-        items: [{ sku_id: updatedRegistration.ext_sku, quantity: 1 }],
-      },
-    };
-
-    // if (!clientSecret || !amountDue) {
-    const data = await getPaymentIntent(order);
-
-    if (data.data.success!) {
-      setClientSecret(data.data.clientSecret);
-      // setStripeOrder(data.data.order);
-      const updatedAmountDue = +data.data.order.amount / 100;
-      onChange('payment_amount', updatedAmountDue);
-      onChange('payment_selection', 'Full');
-      onChange('payment_method', 'Credit Card');
-
-      setPurchasing(true);
-      setProcessing(false);
-    } else {
-      setProcessing(false);
-      setActiveStep(prevActiveStep => prevActiveStep - 1);
-
-      Toasts.errorToast(data.data.message!);
-    }
   };
 
   const handleNext = (evt: React.FormEvent) => {
@@ -284,6 +272,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               data={registration}
               processing={processing}
               purchasing={purchasing}
+              paymentSelectionOptions={paymentPlans}
             />
           );
       }
@@ -315,40 +304,216 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               data={registration}
               processing={processing}
               purchasing={purchasing}
+              paymentSelectionOptions={paymentPlans}
             />
           );
       }
     }
   };
 
+  const handleCustomerActionRequired = async ({
+    subscription,
+    invoice,
+    priceId,
+    paymentMethodId,
+    isRetry,
+  }: any) => {
+    if (subscription && subscription.status === 'active') {
+      // Subscription is active, no customer actions required.
+      return { subscription, priceId, paymentMethodId };
+    }
+
+    // If it's a first payment attempt, the payment intent is on the subscription latest invoice.
+    // If it's a retry, the payment intent will be on the invoice itself.
+    const paymentIntent = invoice
+      ? invoice.payment_intent
+      : subscription.latest_invoice.payment_intent;
+
+    if (
+      paymentIntent.status === 'requires_action' ||
+      (isRetry === true && paymentIntent.status === 'requires_payment_method')
+    ) {
+      return stripe
+        .confirmCardPayment(paymentIntent.client_secret, {
+          payment_method: paymentMethodId,
+        })
+        .then(result => {
+          if (result.error) {
+            // Start code flow to handle updating the payment details.
+            // Display error message in your UI.
+            // The card was declined (i.e. insufficient funds, card has expired, etc).
+            throw result.error;
+          } else {
+            if (result.paymentIntent!.status === 'succeeded') {
+              // Show a success message to your customer.
+              // There's a risk of the customer closing the window before the callback.
+              // We recommend setting up webhook endpoints later in this guide.
+              return {
+                priceId,
+                subscription,
+                invoice,
+                paymentMethodId,
+              };
+            }
+          }
+        })
+        .catch(error => {
+          throw error;
+          // Toasts.errorToast(error.message!);
+        });
+    } else {
+      // No customer action needed.
+      return { subscription, priceId, paymentMethodId };
+    }
+  };
+
+  const handlePaymentMethodRequired = ({
+    subscription,
+    paymentMethodId,
+    priceId,
+  }: any) => {
+    if (subscription.status === 'active') {
+      // subscription is active, no customer actions required.
+      return { subscription, priceId, paymentMethodId };
+    } else if (
+      subscription.latest_invoice.payment_intent.status ===
+      'requires_payment_method'
+    ) {
+      // Using localStorage to manage the state of the retry here,
+      // feel free to replace with what you prefer.
+      // Store the latest invoice ID and status.
+      localStorage.setItem('latestInvoiceId', subscription.latest_invoice.id);
+      localStorage.setItem(
+        'latestInvoicePaymentIntentStatus',
+        subscription.latest_invoice.payment_intent.status
+      );
+      throw new Error('Your card was declined.');
+    } else {
+      return { subscription, priceId, paymentMethodId };
+    }
+  };
+
+  const createSubscription = async (subscriptionData: any) => {
+    return (
+      axios
+        .post('/payments/create-subscription', subscriptionData)
+        // If the card is declined, display an error to the user.
+        .then(result => {
+          if (!result.data.success) {
+            // The card had an error when trying to attach it to a customer.
+            throw new Error(result.data.message);
+          }
+          return result.data.subscription;
+        })
+        // Normalize the result to contain the object returned by Stripe.
+        // Add the addional details we need.
+        .then(result => {
+          return {
+            paymentMethodId: subscriptionData.paymentMethodId,
+            priceId: subscriptionData.items[0].payment_plan_id,
+            subscription: result,
+          };
+        })
+        // Some payment methods require a customer to be on session
+        // to complete the payment process. Check the status of the
+        // payment intent to handle these actions.
+        .then(handleCustomerActionRequired)
+        // If attaching this card to a Customer object succeeds,
+        // but attempts to charge the customer fail, you
+        // get a requires_payment_method error.
+        .then(handlePaymentMethodRequired)
+        // No more actions required. Provision your service for the user.
+        .then(onSubscriptionComplete)
+        .catch(error => {
+          // An error has happened. Display the failure to the user here.
+          // We utilize the HTML element we created.
+          throw error;
+        })
+    );
+  };
+
+  const onSubscriptionComplete = async (result: any) => {
+    // Payment was successful.
+    if (result.subscription.status === 'active') {
+      // Change your UI to show a success message to your customer.
+      // Call your backend to grant access to your service based on
+      // `result.subscription.items.data[0].price.product` the customer subscribed to.
+    }
+    return result.subscription;
+  };
+
   const handleSubmit = async () => {
     try {
-      // setProcessing(true);
       if (!stripe || !elements) {
         return Toasts.errorToast('Rats. Something went wrong. Please retry.');
       }
+      setProcessing(true);
 
-      // setProcessing(true);
+      const updatedRegistration = await saveRegistrationResponse();
 
-      const payload = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement)!,
-          billing_details: {
-            // name: ev.target; // ev.target.name.value,
-          },
+      const customer = {
+        name:
+          updatedRegistration.registrant_first_name ||
+          updatedRegistration.contact_first_name +
+            ' ' +
+            updatedRegistration.registrant_last_name ||
+          updatedRegistration.contact_last_name,
+        email:
+          updatedRegistration.registrant_email ||
+          updatedRegistration.contact_email,
+        phone:
+          updatedRegistration.registrant_mobile ||
+          updatedRegistration.contact_mobile,
+        address: {
+          line1: '',
+          line2: '',
+          city:
+            updatedRegistration.player_city || updatedRegistration.team_city,
+          state:
+            updatedRegistration.player_state || updatedRegistration.team_state,
+          country: 'US',
+          postal_code: '',
         },
+      };
+
+      const result = await stripe.createPaymentMethod({
+        type: 'card',
+        card: elements.getElement(CardElement)!,
+        billing_details: customer,
       });
 
-      if (payload.error) {
-        throw new Error(`Payment failed ${payload.error.message}`);
+      let paymentMethod;
+      if (result.error) {
+        throw new Error(result.error.message!);
       } else {
-        setProcessing(false);
-        Toasts.successToast('Registration is successfully saved!');
-        setActiveStep(prevActiveStep => prevActiveStep + 1);
+        paymentMethod = result.paymentMethod;
       }
-    } catch (e) {
+
+      const subscriptionData = {
+        reg_type: getInternalRegType(type),
+        reg_response_id: updatedRegistration.reg_response_id,
+        registration_id: updatedRegistration.registration_id,
+        customer,
+        items: [
+          {
+            sku_id: registration.ext_sku,
+            payment_plan_id: registration.payment_selection,
+            quantity: 1,
+          },
+        ],
+        paymentMethodId: paymentMethod!.id,
+      };
+
+      subscriptionData.customer.address.postal_code = paymentMethod?.billing_details.address?.postal_code!;
+
+      await createSubscription(subscriptionData);
+      Toasts.successToast(`Registration processed!`);
+
       setProcessing(false);
-      return Toasts.errorToast(e.message);
+      setActiveStep(prevActiveStep => prevActiveStep + 1);
+    } catch (error) {
+      setProcessing(false);
+      return Toasts.errorToast(error.message);
     }
   };
 
@@ -390,15 +555,17 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                           <Button
                             btnType={ButtonFormTypes.SUBMIT}
                             variant="contained"
+                            disabled={processing}
                             color="primary"
                             label={
                               activeStep === steps.length - 1
-                                ? 'Register'
+                                ? 'Agree and Pay'
                                 : 'Next'
                             }
                           />
                         </div>
                       </form>
+                      {processing ? <Loader /> : null}
                     </StepContent>
                   </Step>
                 ))}
