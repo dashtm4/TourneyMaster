@@ -1,12 +1,18 @@
 import React from 'react';
 import styles from '../styles.module.scss';
 import { IRegistration, BindingCbWithTwo } from 'common/models';
-import { Checkbox, Input } from 'components/common';
+import { Checkbox, Input, Select } from 'components/common';
 
 interface IPaymentsProps {
   data?: IRegistration;
   onChange: BindingCbWithTwo<string, string | number>;
 }
+
+const installmentOptions = [
+  { label: '2', value: 2 },
+  { label: '3', value: 3 },
+  { label: '4', value: 4 },
+];
 
 const Payments = ({ data, onChange }: IPaymentsProps) => {
   const onUpchargeProcessingFeesChange = (
@@ -121,10 +127,9 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
             ]}
           />
           {data?.installment_payments_YN ? (
-            <Input
-              fullWidth={true}
-              type="number"
-              value={data ? data.num_installments : ''}
+            <Select
+              options={installmentOptions}
+              value={data ? String(data.num_installments) : ''}
               onChange={onNumInstallmentsChange}
             />
           ) : null}
