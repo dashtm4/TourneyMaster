@@ -18,7 +18,7 @@ touch package.json
 zip -r ../bundle.zip *
 popd
 
-STACK_NAME="TourneyMasterPayments"
+# STACK_NAME="TourneyMasterPayments"
 
 if [ -z "$STACK_NAME" ] 
 then
