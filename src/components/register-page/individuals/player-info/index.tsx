@@ -15,7 +15,7 @@ interface IPlayerInfoProps {
   states: ISelectOption[];
 }
 
-const playerLevelOptions = [{ label: 'Level1', value: 'Level1' }];
+// const playerLevelOptions = [{ label: 'Level1', value: 'Level1' }];
 
 const PlayerInfo = ({
   data,
@@ -56,8 +56,8 @@ const PlayerInfo = ({
   const onDivisionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('ext_sku', e.target.value);
 
-  const onPlayerLevelSelect = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('player_level', e.target.value);
+  // const onPlayerLevelSelect = (e: React.ChangeEvent<HTMLInputElement>) =>
+  //   onChange('player_level', e.target.value);
 
   const onPlayerBirthdayChange = (e: Date | string) =>
     !isNaN(Number(e)) &&
@@ -84,6 +84,29 @@ const PlayerInfo = ({
             onChange={onLastNameChange}
           />
         </div>
+
+        <div className={styles.sectionItem}>
+          <DatePicker
+            fullWidth={true}
+            label="Birthdate and Year"
+            type="date"
+            value={data.player_birthdate || new Date()}
+            isRequired={true}
+            onChange={onPlayerBirthdayChange}
+          />
+        </div>
+
+        <div className={styles.sectionItem}>
+          <Select
+            options={divisions}
+            label="Division"
+            value={data.ext_sku || ''}
+            isRequired={true}
+            onChange={onDivisionChange}
+          />
+        </div>
+      </div>
+      <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
@@ -113,8 +136,6 @@ const PlayerInfo = ({
             }}
           />
         </div>
-      </div>
-      <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
@@ -133,16 +154,7 @@ const PlayerInfo = ({
             isRequired={true}
           />
         </div>
-        <div className={styles.sectionItem}>
-          <Select
-            options={divisions}
-            label="Division"
-            value={data.ext_sku || ''}
-            isRequired={true}
-            onChange={onDivisionChange}
-          />
-        </div>
-        <div className={styles.sectionItem}>
+        {/* <div className={styles.sectionItem}>
           <Select
             options={playerLevelOptions}
             label="Player Level"
@@ -150,20 +162,9 @@ const PlayerInfo = ({
             isRequired={true}
             onChange={onPlayerLevelSelect}
           />
-        </div>
+        </div> */}
       </div>
-      <div className={styles.sectionRow}>
-        <div className={styles.sectionItem}>
-          <DatePicker
-            fullWidth={true}
-            label="Birthdate and Year"
-            type="date"
-            value={data.player_birthdate || new Date()}
-            isRequired={true}
-            onChange={onPlayerBirthdayChange}
-          />
-        </div>
-      </div>
+      <div className={styles.sectionRow}></div>
     </div>
   );
 };
