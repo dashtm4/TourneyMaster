@@ -119,6 +119,7 @@ class CsvLoader extends React.Component<Props, State> {
 
     if (files[0]) {
       Papa.parse(files[0], {
+        skipEmptyLines: true,
         complete: ({ data }) => {
           const isCsvValid = checkCsvForValidity(
             data,
