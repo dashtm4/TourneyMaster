@@ -198,7 +198,7 @@ class ResourceMatrix extends Component<IProps> {
               </fieldset>
             )}
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Bracket timeslots are designed by the dark background
+              Bracket timeslots are designated with the dark background
             </CardMessage>
             <div className={styles.moveBrackets}>
               <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>

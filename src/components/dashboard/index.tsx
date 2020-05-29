@@ -302,7 +302,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
         <Paper sticky={true}>
           <div className={styles.mainMenu}>
             <Button
-              label="Create Tournament"
+              label="Create Event"
               variant="contained"
               color="primary"
               onClick={this.onCreateTournament}
