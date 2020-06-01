@@ -101,6 +101,7 @@ class Teams extends React.Component<
     const { teams } = this.state;
 
     if (eventId) {
+      console.log('[on save]', teams);
       saveTeams(teams);
     }
     this.setState({ isConfirmModalOpen: false });
