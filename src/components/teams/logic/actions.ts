@@ -242,6 +242,17 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
         (div: IDivision) =>
           div.long_name.toLowerCase() === team.division_id?.toLowerCase()
       )?.division_id;
+        
+      let orgin: any = team.phone_num;
+      const regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
+      let str = orgin.replace(regex, "");
+      str = str.replace(/\s/g, "");
+
+      if (str && str.indexOf('1') === 0) {
+        str = str.substring(1);
+      }
+
+      team.phone_num = str;
 
       return { ...team, division_id: divisionId };
     });
