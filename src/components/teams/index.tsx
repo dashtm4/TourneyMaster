@@ -120,6 +120,7 @@ class Teams extends React.Component<
       ),
     }));
 
+    this.onSaveClick();
     this.onCloseModal();
   };
 
