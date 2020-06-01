@@ -186,10 +186,10 @@ export const createTeams: ActionCreator<ThunkAction<
           team => team.long_name,
           'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
         )
-        .unique(
-          team => team.short_name,
-          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
-        )
+//        .unique(
+//          team => team.short_name,
+//          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+//        )
         .validate(mappedTeams);
     }
 
@@ -262,10 +262,10 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
           t => t.long_name,
           'You already have a team with the same long name. The team must have a unique long name.'
         )
-        .unique(
-          t => t.short_name,
-          'You already have team with the same short name. The team must have a unique short name.'
-        )
+//        .unique(
+//         t => t.short_name,
+//          'You already have team with the same short name. The team must have a unique short name.'
+//       )
         .validate([...teamsInDivision, team]);
     }
 
