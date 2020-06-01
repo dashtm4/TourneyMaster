@@ -117,10 +117,10 @@ const saveTeams = (teams: ITeam[]) => async (
           team => team.long_name,
           'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
         )
-        .unique(
-          team => team.short_name,
-          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
-        )
+ //       .unique(
+ //        team => team.short_name,
+ //         'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+ //       )
         .validate(
           teams.filter(team => team.division_id === division.division_id)
         );
