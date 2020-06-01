@@ -9,7 +9,7 @@ const teamSchema = Yup.object({
 //  phone_num: Yup.string().matches(
 //   /^\+?[1-9]\d{1,14}$/,
 //  'Invalid format for phone number'
-  ),
+//  ),
 });
 
 export { teamSchema };
