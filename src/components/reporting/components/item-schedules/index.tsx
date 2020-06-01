@@ -97,7 +97,7 @@ const ItemSchedules = ({
         schedule={schedule}
         teamCards={teamCards}
       />,
-      event.event_name ? `${event.event_name} Master Schedule` : 'Schedule'
+      event.event_name ? `${event.event_name} Master Schedule - PDF` : 'Schedule'
     );
 
   const onHeatmapScheduleTableSave = () =>
@@ -113,7 +113,7 @@ const ItemSchedules = ({
         isHeatMap={true}
       />,
       event.event_name
-        ? `${event.event_name} Master Schedule (HeatMap)`
+        ? `${event.event_name} Master Schedule (HeatMap) - PDF`
         : 'Schedule'
     );
 
@@ -159,7 +159,7 @@ const ItemSchedules = ({
             onChange={onChangeActiveDay}
             primaryValue={DefaultSelectValues.ALL}
             isFormControlRow={true}
-            label="Event day: "
+            label="Day Selection: "
           />
         </header>
         <ul className={styles.scheduleList}>
@@ -169,7 +169,7 @@ const ItemSchedules = ({
               variant={ButtonVarian.TEXT}
               color={ButtonColors.SECONDARY}
               isDisabled={!isAllowDownload}
-              label="Master Schedule"
+              label="Master Schedule - PDF"
             />
           </li>
           <li>
@@ -178,7 +178,7 @@ const ItemSchedules = ({
               variant={ButtonVarian.TEXT}
               color={ButtonColors.SECONDARY}
               isDisabled={!isAllowDownload}
-              label="Master Schedule (with Heatmap)"
+              label="Master Schedule (with Heatmap) - PDF"
             />
           </li>
           <li>
@@ -187,7 +187,7 @@ const ItemSchedules = ({
               variant={ButtonVarian.TEXT}
               color={ButtonColors.SECONDARY}
               isDisabled={!isAllowDownload}
-              label="Master Schedule (by fields)"
+              label="Master Schedule (Field by Field) - PDF"
             />
           </li>
           <li>
@@ -195,7 +195,7 @@ const ItemSchedules = ({
               loadFunc={onScheduleTableXLSXSave}
               variant={ButtonVarian.TEXT}
               color={ButtonColors.SECONDARY}
-              label="Master Schedule (XLSX)"
+              label="Master Schedule - XLSX"
             />
           </li>
         </ul>
