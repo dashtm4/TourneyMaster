@@ -120,8 +120,8 @@ class Teams extends React.Component<
       ),
     }));
 
-    this.onSaveClick();
     this.onCloseModal();
+    this.onSaveClick();
   };
 
   onEditPopupOpen = (team: ITeam, divisionName: string, poolName: string) =>
