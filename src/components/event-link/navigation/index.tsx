@@ -34,14 +34,14 @@ const Navigation = ({ onAddToLibraryManager }: Props) => (
           color={ButtonColors.PRIMARY}
           variant={ButtonVarian.CONTAINED}
           onClick={() => {}}
-          label="Create Schedule Review"
+          label="+ Create Schedule Review"
         />
         <Link to={Routes.CREATE_MESSAGE}>
           <Button
             color={ButtonColors.PRIMARY}
             variant={ButtonVarian.CONTAINED}
             onClick={() => {}}
-            label="Create Message"
+            label="+ Create Message"
           />
         </Link>
       </div>
