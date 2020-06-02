@@ -68,7 +68,7 @@ const Brackets = (props: IProps) => {
         </HeadingLevelThree>
         <Button
           btnStyles={{ float: 'right' }}
-          label="Create New Bracket Version"
+          label="+ Create New Bracket Version"
           color="primary"
           variant="contained"
           onClick={onCreateBracket}

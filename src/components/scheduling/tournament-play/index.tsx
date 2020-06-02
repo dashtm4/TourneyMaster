@@ -85,7 +85,7 @@ export default (props: IProps) => {
         </HeadingLevelThree>
         <Button
           btnStyles={{ float: 'right' }}
-          label="Create New Schedule Version"
+          label="+ Create New Schedule Version"
           color="primary"
           variant="contained"
           onClick={onCreatePressed}
