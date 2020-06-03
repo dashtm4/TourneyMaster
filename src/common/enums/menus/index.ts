@@ -42,6 +42,7 @@ enum EventMenuRegistrationTitles {
   PRICING_AND_CALENDAR = 'Pricing & Calendar',
   REGISTRATION_DETAILS = 'Registration Details',
   PAYMENTS = 'Payments',
+  REGISTRANTS = 'Registrants',
 }
 
 enum RequiredMenuKeys {

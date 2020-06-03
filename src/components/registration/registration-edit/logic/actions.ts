@@ -4,6 +4,8 @@ import {
   REGISTRATION_UPDATE_SUCCESS,
   REGISTRATION_FETCH_START,
   DIVISIONS_FETCH_SUCCESS,
+  REGISTRANTS_FETCH_SUCCESS,
+  REGISTRANTS_PAYMENTS_FETCH_SUCCESS,
   EVENT_FETCH_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
@@ -44,6 +46,7 @@ export const getRegistration: ActionCreator<ThunkAction<
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   dispatch(registrationFetchStart());
   const data = await api.get(`/registrations?event_id=${eventId}`);
+  dispatch<any>(getRegistrants(data[0].registration_id));
   const event = await api.get(`/events?event_id=${eventId}`);
   dispatch(registrationFetchSuccess(data));
   dispatch({
@@ -102,5 +105,49 @@ export const divisionsFetchSuccess = (
   payload: IDivision
 ): { type: string; payload: IDivision } => ({
   type: DIVISIONS_FETCH_SUCCESS,
+  payload,
+});
+
+export const getRegistrants: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (registrationId: string) => async (dispatch: Dispatch) => {
+  const [teams, individuals] = await Promise.all([
+    api.get(`/reg_responses_teams?registration_id=${registrationId}`),
+    api.get(`/reg_responses_individuals?registration_id=${registrationId}`),
+  ]); // TODO
+
+  const data = teams.concat(individuals);
+
+  dispatch(registrantsFetchSuccess(data));
+};
+
+export const registrantsFetchSuccess = (
+  payload: any[]
+): { type: string; payload: any[] } => ({
+  type: REGISTRANTS_FETCH_SUCCESS,
+  payload,
+});
+
+export const getRegistrantPayments: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (regResponseId: string) => async (dispatch: Dispatch) => {
+  dispatch(registrantsPaymentsFetchSuccess([]));
+  const data = await api.get(
+    `/registrations_payments?reg_response_id=${regResponseId}`
+  ); // TODO
+
+  dispatch(registrantsPaymentsFetchSuccess(data));
+};
+
+export const registrantsPaymentsFetchSuccess = (
+  payload: any[]
+): { type: string; payload: any[] } => ({
+  type: REGISTRANTS_PAYMENTS_FETCH_SUCCESS,
   payload,
 });
