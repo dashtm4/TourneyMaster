@@ -70,6 +70,11 @@ export default () =>
           },
         },
       },
+      MuiTableCell: {
+        head: {
+          fontWeight: 600,
+        },
+      },
       MuiRadio: {
         root: {
           '&:hover': {

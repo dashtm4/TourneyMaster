@@ -6,6 +6,7 @@ export * from './facilities';
 export * from './pool';
 export * from './teams';
 export * from './registration';
+export * from './registrant';
 export * from './field';
 export * from './menu-list';
 export * from './upload-file';
