@@ -46,7 +46,9 @@ export const getRegistration: ActionCreator<ThunkAction<
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   dispatch(registrationFetchStart());
   const data = await api.get(`/registrations?event_id=${eventId}`);
-  dispatch<any>(getRegistrants(data[0].registration_id));
+  if (data && data.length > 0) {
+    dispatch<any>(getRegistrants(data[0].registration_id));
+  }
   const event = await api.get(`/events?event_id=${eventId}`);
   dispatch(registrationFetchSuccess(data));
   dispatch({
