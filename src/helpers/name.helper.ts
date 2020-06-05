@@ -3,7 +3,7 @@ const generateAbbrName = (title: string) =>
 
 const getDivisionCutName = (divisionName: string) =>
   Boolean(Number(divisionName))
-    ? divisionName.slice(-2)
-    : divisionName.slice(0, 3);
+    ? divisionName.slice(-1)
+    : divisionName.slice(0, 4);
 
 export { generateAbbrName, getDivisionCutName };
