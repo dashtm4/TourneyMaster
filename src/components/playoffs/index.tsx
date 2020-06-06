@@ -154,6 +154,7 @@ interface IState {
 }
 
 enum PlayoffsTabsEnum {
+  None = 0,
   ResourceMatrix = 1,
   BracketManager = 2,
 }
@@ -341,6 +342,11 @@ class Playoffs extends Component<IProps> {
 
     this.props.fetchBracketGames(newBracketGames);
     this.props.updateExistingBracket({ startTimeSlot, endTimeSlot });
+    // force update of dnd layer. just call a re-render
+    const prevActiveTab = this.state.activeTab;
+    this.setState({ activeTab: PlayoffsTabsEnum.None }, () => {
+      this.setState({ activeTab: prevActiveTab });
+    });
   };
 
   /* CALCULATE BRACKET GAMES */
