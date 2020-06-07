@@ -111,7 +111,7 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
           <Input
             fullWidth={true}
             type="number"
-            label="Height (feet)"
+            label="Height (Feet)"
             value={data.height_feet || ''}
             onChange={onHeightFeetChange}
           />
@@ -120,7 +120,7 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
           <Input
             fullWidth={true}
             type="number"
-            label="Height (inches)"
+            label="Height (Inches)"
             value={data.height_inches || ''}
             onChange={onHeightInchesChange}
           />
