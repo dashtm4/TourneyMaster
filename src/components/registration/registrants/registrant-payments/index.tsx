@@ -54,7 +54,7 @@ const RegistrantPayments: React.SFC<RegistrantPaymentsProps> = (
                 <TableCell align="right">
                   ${payment.amount_net.toFixed(2)}
                 </TableCell>
-                <TableCell>{payment.payment_details}</TableCell>
+                <TableCell>{payment.payment_details?.slice(0, 20)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

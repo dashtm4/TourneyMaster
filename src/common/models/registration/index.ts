@@ -40,6 +40,7 @@ export interface IRegistration {
   sales_tax_rate: number;
   num_installments: number;
   installment_payments_YN: number;
+  payment_schedule_json: string;
   payments_enabled_YN: number;
   checks_accepted_YN: number;
   promo_code: string;

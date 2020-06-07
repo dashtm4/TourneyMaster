@@ -3,6 +3,7 @@ import SSM from 'aws-sdk/clients/ssm.js';
 
 import config from '../config.js';
 import Stripe from 'stripe';
+import { getPaymentPlans } from '../services/activeProducts.js';
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 const ssm = new SSM({ region: 'us-east-1' });
 const endpointSecret = process.env.STRIPE_WEBHOOK_SIGNING_SECRET;
@@ -57,57 +58,88 @@ const attachPaymentMethod = async (customer, paymentMethodId) => {
   return paymentMethod;
 };
 
-const validateSubscriptionData = async (subData, price) => {
+const validateSubscriptionData = async (subData /* price */) => {
   if (subData.reg_type !== 'individual' && subData.reg_type !== 'team') {
     throw new Error('Reg_type must be "individual" or "team"');
   }
 
-  if (price.unit_amount > process.env.MAX_PAYMENT_AMOUNT * 100) {
-    console.error(
-      `Payment amount ${price.unit_amount /
-        100} is higher than MAX_PAYMENT_AMOUNT=${
-        process.env.MAX_PAYMENT_AMOUNT
-      }`
+  // if (price.unit_amount > process.env.MAX_PAYMENT_AMOUNT * 100) {
+  //   console.error(
+  //     `Payment amount ${price.unit_amount /
+  //       100} is higher than MAX_PAYMENT_AMOUNT=${
+  //       process.env.MAX_PAYMENT_AMOUNT
+  //     }`
+  //   );
+  //   throw new Error(
+  //     `Payment amount ${price.unit_amount /
+  //       100} cannot be processed online. Please contact the event organizer.`
+  //   );
+  // }
+};
+
+const createSubscription = async (customer, paymentPlan, subData) => {
+  const getPrice = async ({ sku_id, payment_plan_id }) => {
+    const prices = (await stripe.prices.list({ product: sku_id, active: true }))
+      .data;
+    console.log(prices);
+    const price = prices.find(x => x.metadata.externalId === payment_plan_id);
+    console.log(price);
+    return price;
+  };
+
+  let phases = [];
+  if (paymentPlan.type === 'installment') {
+    const price = await getPrice(paymentPlan);
+
+    phases.push({
+      plans: [{ price: price.id, quantity: subData.items[0].quantity }],
+      iterations: paymentPlan.iterations,
+      proration_behavior: 'none',
+    });
+  } else if (paymentPlan.type === 'schedule') {
+    phases = paymentPlan.schedule.sort(
+      (a, b) => a.date > b.date || b.date === 'now'
     );
-    throw new Error(
-      `Payment amount ${price.unit_amount /
-        100} cannot be processed online. Please contact the event organizer.`
+
+    phases = await Promise.all(
+      phases.map(async (phase, i) => {
+        const price = await getPrice({
+          sku_id: paymentPlan.sku_id,
+          payment_plan_id: phase.price_external_id,
+        });
+        const t = {
+          plans: [{ price: price.id, quantity: subData.items[0].quantity }],
+          end_date: Math.round(
+            (i < phases.length - 1
+              ? new Date(phases[i + 1].date)
+              : phase.date === 'now'
+              ? new Date(new Date().setDate(new Date().getDate() + 1))
+              : new Date(new Date().setDate(new Date(phase.date).getDate() + 1))
+            ).getTime() /
+              1000 +
+              60 * 60 * 5
+          ),
+          proration_behavior: 'none',
+        };
+        return t;
+      })
     );
+    console.log();
   }
-};
 
-const getPrice = async subData => {
-  const { sku_id, payment_plan_id } = subData.items[0];
-  const prices = (await stripe.prices.list({ product: sku_id, active: true }))
-    .data;
-  console.log(prices);
-  const price = prices.find(x => x.metadata.externalId === payment_plan_id);
-  console.log(price);
-  return price;
-};
-
-const createSubscription = async (customer, subData, price) => {
   const subscriptionScheduleData = {
     customer: customer.id,
     start_date: 'now',
     end_behavior: 'cancel',
-    phases: [
-      {
-        plans: [
-          {
-            price: price.id,
-            quantity: subData.items[0].quantity,
-          },
-        ],
-        iterations: price.metadata.iterations,
-      },
-    ],
+    phases,
     metadata: {
       reg_type: subData.reg_type,
       reg_response_id: subData.reg_response_id,
-      owner_id: price.metadata.owner_id,
-      event_id: price.metadata.event_id,
-      division_id: price.metadata.division_id,
+      owner_id: paymentPlan.owner_id,
+      event_id: paymentPlan.event_id,
+      division_id: paymentPlan.division_id,
+      sku_id: paymentPlan.sku_id,
+      payment_plan_id: paymentPlan.payment_plan_id,
     },
     expand: ['subscription.latest_invoice.payment_intent'],
   };
@@ -118,13 +150,7 @@ const createSubscription = async (customer, subData, price) => {
 
   console.log(`Stripe Schedule ${schedule.id} created`);
 
-  const invoice = await stripe.invoices.pay(
-    schedule.subscription.latest_invoice.id
-  );
-
-  console.log(`Invoice ${invoice.id} attempted payment`);
-
-  const subscription = await stripe.subscriptions.update(
+  let subscription = await stripe.subscriptions.update(
     schedule.subscription.id,
     {
       metadata: { ...subscriptionScheduleData.metadata },
@@ -132,20 +158,37 @@ const createSubscription = async (customer, subData, price) => {
   );
 
   console.log(`Stripe Subscription ${subscription.id} added metadata`);
+
+  const invoice = await stripe.invoices.pay(
+    schedule.subscription.latest_invoice.id
+  );
+
+  console.log(`Invoice ${invoice.id} attempted payment`);
+
+  subscription = await stripe.subscriptions.retrieve(subscription.id, {
+    expand: ['latest_invoice.payment_intent'],
+  });
+
   return subscription;
 };
 
 export const processCreateSubscription = async subData => {
   console.log(subData);
-  const price = await getPrice(subData);
-  await validateSubscriptionData(subData, price);
+
+  const paymentPlan = (await getPaymentPlans(subData.items[0]))[0];
+  // const price = await getPrice(subData);
+  await validateSubscriptionData(subData /*, price */);
   const customer = await createOrUpdateCustomer(subData);
   const paymentMethod = await attachPaymentMethod(
     customer,
     subData.paymentMethodId
   );
 
-  const subscription = await createSubscription(customer, subData, price);
+  const subscription = await createSubscription(
+    customer,
+    paymentPlan,
+    subData /*, price */
+  );
 
   return subscription;
 };
@@ -186,11 +229,15 @@ export const paymentSuccessWebhook = async req => {
       event.data.object.subscription
     );
 
-    const reg_type = subscription.metadata.reg_type;
-    const reg_response_id = subscription.metadata.reg_response_id;
-    const owner_id = subscription.metadata.owner_id;
+    const {
+      reg_type,
+      reg_response_id,
+      owner_id,
+      sku_id,
+      payment_plan_id,
+    } = subscription.metadata;
     console.log(
-      `Registration type: ${reg_type}. Reg_response_id: ${reg_response_id}`
+      `Registration type: ${reg_type}. Reg_response_id: ${reg_response_id}. Payment_plan_id: ${payment_plan_id}`
     );
 
     const tableName =
@@ -200,8 +247,12 @@ export const paymentSuccessWebhook = async req => {
 
     const toConn = await mysql.createConnection(toParams.db);
 
-    const existingRecords = await toConn.query(
+    const dbResponses = await toConn.query(
       `select * from ${toParams.db.database}.${tableName} where reg_response_id=?`,
+      [reg_response_id]
+    );
+    const dbPayments = await toConn.query(
+      `select * from ${toParams.db.database}.registrations_payments where reg_response_id=?`,
       [reg_response_id]
     );
 
@@ -209,19 +260,9 @@ export const paymentSuccessWebhook = async req => {
     const newPaymentDate = new Date(
       +event.data.object.status_transitions.paid_at * 1000
     );
-    // If registration response already exists in the target database then add the payment amount
-    if (existingRecords.length > 0) {
-      await toConn.query(
-        `update ${toParams.db.database}.${tableName} set payment_amount=payment_amount+?, 
-           payment_date=?,ext_payment_id=? where reg_response_id=?`,
-        [
-          newPaymentAmount,
-          newPaymentDate,
-          event.data.object.id,
-          reg_response_id,
-        ]
-      );
-    } else {
+
+    // If registration response does not exist in the target database then create one
+    if (dbResponses.length === 0) {
       const fromConn = await mysql.createConnection(fromParams.db);
       const reg_response = (
         await fromConn.query(
@@ -253,6 +294,66 @@ export const paymentSuccessWebhook = async req => {
 
       await toConn.query(sql, params);
     }
+
+    // If there is no payment schedule in the database create one
+    if (dbPayments.length === 0) {
+      console.log(`sku_id: ${sku_id}, payment_plan_id: ${payment_plan_id}`);
+      const paymentPlan = (
+        await getPaymentPlans({ sku_id, payment_plan_id })
+      )[0];
+      console.log('paymentPlan', paymentPlan);
+
+      const sql = `INSERT INTO ${toParams.db.database}.registrations_payments 
+      (reg_response_id, installment_id, payment_date, payment_status, amount_due, is_active_YN, created_by)
+      VALUES (?, ?, ?, 'scheduled', ?, 1, ?)`;
+      let params;
+      if (paymentPlan.type === 'schedule') {
+        params = paymentPlan.schedule.map(phase => [
+          reg_type,
+          reg_response_id,
+          phase.price_external_id,
+          phase.date,
+          phase.amount,
+          owner_id,
+        ]);
+      } else if (paymentPlan.type === 'installment') {
+        params = [
+          reg_type,
+          reg_response_id,
+          paymentPlan.payment_plan_id,
+          new Date(),
+          paymentPlan.price,
+          owner_id,
+        ];
+      }
+      console.log(`Sql: ${sql}. Params: ${params}`);
+      for (let param of params) {
+        const res = await toConn.query(sql, param);
+        console.log(res);
+      }
+    }
+
+    await toConn.query(
+      `update ${toParams.db.database}.${tableName} set payment_amount=payment_amount+?, 
+           payment_date=?,ext_payment_id=? where reg_response_id=?`,
+      [newPaymentAmount, newPaymentDate, event.data.object.id, reg_response_id]
+    );
+
+    await toConn.query(
+      `update ${toParams.db.database}.registrations_payments set amount_paid=amount_paid+?, 
+           payment_date=?,ext_payment_system=?, ext_payment_id=?, payment_status=?, payment_details=? where reg_response_id=? and installment_id=?`,
+      [
+        newPaymentAmount,
+        newPaymentDate,
+        'stripe',
+        event.data.object.id,
+        'paid',
+        JSON.stringify(event),
+        reg_response_id,
+        event.data.object.lines.data[0].price.metadata.externalId,
+      ]
+    );
+
     await toConn.end();
     console.log(
       `Successfully processed. Registration data copied to main database`

@@ -177,20 +177,22 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
   const handleProceedToPayment = async () => {
     axios
-      .get(`/payment_plans?sku_id=${registration.ext_sku}`)
+      .get(`/payments/payment-plans?sku_id=${registration.ext_sku}`)
       .then(response => {
         const plans = response.data.map((plan: any) => ({
           label: plan.payment_plan_name,
           value: plan.payment_plan_id,
-          iterations: plan.iterations,
-          interval: plan.interval,
-          interval_count: plan.interval_count,
           price: plan.price,
+          type: plan.type,
+          notice: plan.payment_plan_notice,
         }));
         setPaymentPlans(plans);
 
         const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
-          prev.iterations < cur.iterations ? prev : cur
+          !cur.iterations ||
+          (cur.type === 'installment' && prev.iterations < cur.iterations)
+            ? prev
+            : cur
         );
         setRegistration({
           ...registration,
