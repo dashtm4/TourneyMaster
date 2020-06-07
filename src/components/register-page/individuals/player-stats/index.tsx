@@ -23,6 +23,25 @@ const sizeOptions = [
   { label: 'YM', value: 'YM' },
   { label: 'YS', value: 'YS' },
 ];
+const heightFeetOptions = [
+  { label: '4', value: '4' },
+  { label: '5', value: '5' },
+  { label: '6', value: '6' },
+];
+const heightInchesOptions = [
+  { label: '1', value: '1' },
+  { label: '2', value: '2' },
+  { label: '3', value: '3' },
+  { label: '4', value: '4' },
+  { label: '5', value: '5' },
+  { label: '6', value: '6' },
+  { label: '7', value: '7' },
+  { label: '8', value: '8' },
+  { label: '9', value: '9' },
+  { label: '10', value: '10' },
+  { label: '11', value: '11' },
+  { label: '12', value: '12' },
+];
 
 const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
   const onClubNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -92,7 +111,7 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="School Attending"
+            label="High School"
             value={data.school_attending || ''}
             onChange={onSchoolAttendingChange}
           />
@@ -108,19 +127,17 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
       </div>
       <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            type="number"
-            label="Height (feet)"
+          <Select
+            options={heightFeetOptions}
+            label="Height (Feet)"
             value={data.height_feet || ''}
             onChange={onHeightFeetChange}
           />
         </div>
         <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            type="number"
-            label="Height (inches)"
+          <Select
+            options={heightInchesOptions}
+            label="Height (Inches)"
             value={data.height_inches || ''}
             onChange={onHeightInchesChange}
           />
