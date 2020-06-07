@@ -30,8 +30,8 @@ export interface IIndivisualsRegister {
   player_highlight_URL: string;
   school_attending: string;
   dominant_hand: string;
-  height_feet: number;
-  height_inches: number;
+  height_feet: string;
+  height_inches: string;
   short_size: string;
   shirt_size: string;
   position: string;
