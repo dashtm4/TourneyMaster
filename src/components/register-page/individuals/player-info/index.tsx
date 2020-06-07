@@ -90,7 +90,7 @@ const PlayerInfo = ({
             fullWidth={true}
             label="Birthdate and Year"
             type="date"
-            value={data.player_birthdate || new Date()}
+            value={data.player_birthdate || "01-01-2000"}
             isRequired={true}
             onChange={onPlayerBirthdayChange}
           />
