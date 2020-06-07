@@ -1,4 +1,4 @@
-export interface IIndivisualsRegister {
+export interface IIndividualsRegister {
   reg_response_id: string;
   registration_id: string;
   registrant_first_name: string;

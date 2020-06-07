@@ -30,7 +30,7 @@ enum EventMenuTitles {
   TEAMS = 'Teams',
   TEAM_MANAGEMENT = 'Team Management',
   REQUEST_MANAGER = 'Request Manager',
-  TOURNAMENT_PLAY = 'Tournament Play',
+  TOURNAMENT_PLAY = 'Pool Play',
   BRACKETS = 'Brackets',
   SCHEDULING = 'Scheduling',
   TOURNEY_ARCHITECT = 'Tourney Architect',
@@ -42,6 +42,7 @@ enum EventMenuRegistrationTitles {
   PRICING_AND_CALENDAR = 'Pricing & Calendar',
   REGISTRATION_DETAILS = 'Registration Details',
   PAYMENTS = 'Payments',
+  REGISTRANTS = 'Registrants',
 }
 
 enum RequiredMenuKeys {

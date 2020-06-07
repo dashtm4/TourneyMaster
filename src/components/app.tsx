@@ -18,7 +18,8 @@ const AuthorizedPageWrapped = withProtectedRoute(AuthorizedPage);
 const AuthorizedPageEventWrapped = withProtectedRoute(AuthorizedPageEvent);
 const wrappedRegister = ({ match }: RegisterMatchParams) => {
   const stripePromise = loadStripe(
-    'pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh'
+    process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY ||
+      'pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh' // TODO: Remove the hardcoded key after initial deployment
   );
 
   return (

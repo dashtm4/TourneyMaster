@@ -6,12 +6,15 @@ import styles from './styles.module.scss';
 import Navigation from './navigation';
 import PricingAndCalendar from './pricing-and-calendar';
 import RegistrationDetails from './registration-details';
+import Registrants from './registrants';
 import Payments from './payments';
 import { connect } from 'react-redux';
 import {
   getRegistration,
   saveRegistration,
   getDivisions,
+  getRegistrants,
+  getRegistrantPayments,
 } from './registration-edit/logic/actions';
 import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import RegistrationEdit from 'components/registration/registration-edit';
@@ -21,6 +24,7 @@ import {
   BindingCbWithTwo,
   IDivision,
   IEventDetails,
+  IRegistrant,
 } from 'common/models';
 import {
   EventMenuRegistrationTitles,
@@ -37,15 +41,20 @@ interface IRegistrationState {
   isEdit: boolean;
   isSectionsExpand: boolean;
   changesAreMade: boolean;
+  selectedRegistrant: string | null;
 }
 
 interface IRegistrationProps {
   getRegistration: BindingCbWithOne<string>;
   saveRegistration: BindingCbWithTwo<string | undefined, string>;
   getDivisions: BindingCbWithOne<string>;
+  getRegistrants: BindingCbWithOne<string>;
+  getRegistrantPayments: BindingCbWithOne<string>;
   addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
   registration: IRegistration;
   divisions: IDivision[];
+  registrants: IRegistrant[];
+  payments: any[];
   match: any;
   history: History;
   isLoading: boolean;
@@ -62,6 +71,7 @@ class RegistrationView extends React.Component<
     isEdit: false,
     isSectionsExpand: true,
     changesAreMade: false,
+    selectedRegistrant: null,
   };
 
   componentDidMount() {
@@ -117,6 +127,14 @@ class RegistrationView extends React.Component<
     }
     return null;
   }
+
+  handleRegistrantClick = (regResponseId: string) => {
+    this.props.getRegistrantPayments(regResponseId);
+    this.setState(prevState => ({
+      selectedRegistrant:
+        prevState.selectedRegistrant === regResponseId ? null : regResponseId,
+    }));
+  };
 
   onAddToLibraryManager = () => {
     const { registration } = this.state;
@@ -220,6 +238,22 @@ class RegistrationView extends React.Component<
                     <Payments data={registration} />
                   </SectionDropdown>
                 </li>
+                <li>
+                  <SectionDropdown
+                    id={EventMenuRegistrationTitles.REGISTRANTS}
+                    type="section"
+                    panelDetailsType="flat"
+                    expanded={this.state.isSectionsExpand}
+                  >
+                    <span>Registrants</span>
+                    <Registrants
+                      registrants={this.props.registrants}
+                      registrantPayments={this.props.payments}
+                      onRegistrantClick={this.handleRegistrantClick}
+                      selectedRegistrant={this.state.selectedRegistrant}
+                    />
+                  </SectionDropdown>
+                </li>
               </ul>
             ) : (
               !this.props.isLoading && (
@@ -246,6 +280,8 @@ interface IState {
   registration: {
     data: IRegistration;
     divisions: IDivision[];
+    registrants: IRegistrant[];
+    payments: any[];
     isLoading: boolean;
     event: IEventDetails;
   };
@@ -255,6 +291,8 @@ const mapStateToProps = (state: IState) => ({
   registration: state.registration.data,
   isLoading: state.registration.isLoading,
   divisions: state.registration.divisions,
+  registrants: state.registration.registrants,
+  payments: state.registration.payments,
   event: state.registration.event,
 });
 
@@ -262,6 +300,8 @@ const mapDispatchToProps = {
   getRegistration,
   saveRegistration,
   getDivisions,
+  getRegistrants,
+  getRegistrantPayments,
   addEntityToLibrary,
 };
 

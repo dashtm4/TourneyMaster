@@ -56,10 +56,7 @@ import {
   createBracketGames,
   advanceBracketGamesWithTeams,
 } from './bracketGames';
-import {
-  populateDefinedGamesWithPlayoffState,
-  predictPlayoffTimeSlots,
-} from 'components/schedules/definePlayoffs';
+import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
 import {
   createPlayoff,
   savePlayoff,
@@ -157,6 +154,7 @@ interface IState {
 }
 
 enum PlayoffsTabsEnum {
+  None = 0,
   ResourceMatrix = 1,
   BracketManager = 2,
 }
@@ -303,57 +301,12 @@ class Playoffs extends Component<IProps> {
       !divisions
     )
       return;
-
-    const predicteDplayoffTimeSlots = predictPlayoffTimeSlots(
-      fields,
-      timeSlots,
-      divisions,
-      event!
-    );
-
-    const firstTimeSlot = predicteDplayoffTimeSlots?.length
-      ? predicteDplayoffTimeSlots[0].id
-      : -1;
-    const lastTimeSlot = predicteDplayoffTimeSlots?.length
-      ? predicteDplayoffTimeSlots[predicteDplayoffTimeSlots.length - 1].id
-      : -1;
-
-    const bracketWithNewTimeSlots = {
-      ...bracket,
-      startTimeSlot: String(firstTimeSlot),
-      endTimeSlot: String(lastTimeSlot),
-    };
-
-    this.props.addNewBracket(bracketWithNewTimeSlots);
-
-    const initialStartTimeSlot = bracketWithNewTimeSlots.startTimeSlot;
-    // const initialEndTimeSlot = bracketWithNewTimeSlots.endTimeSlot;
+    const initialStartTimeSlot = bracket.startTimeSlot;
 
     const playoffTimeSlots = timeSlots.slice(
       Number(initialStartTimeSlot),
       timeSlots.length
     );
-
-    // if (!bracketId) {
-    //   playoffTimeSlots = adjustPlayoffTimeOnLoad(
-    //     schedulesDetails,
-    //     timeSlots,
-    //     event,
-    //     day
-    //   );
-
-    //   const startTimeSlot = playoffTimeSlots?.length
-    //     ? String(playoffTimeSlots[0].id)
-    //     : initialStartTimeSlot;
-    //   const endTimeSlot = playoffTimeSlots?.length
-    //     ? String(playoffTimeSlots[playoffTimeSlots.length - 1].id)
-    //     : initialEndTimeSlot;
-
-    //   this.props.updateExistingBracket({
-    //     startTimeSlot,
-    //     endTimeSlot,
-    //   });
-    // }
 
     if (playoffTimeSlots) {
       this.setState({ playoffTimeSlots });
@@ -389,6 +342,11 @@ class Playoffs extends Component<IProps> {
 
     this.props.fetchBracketGames(newBracketGames);
     this.props.updateExistingBracket({ startTimeSlot, endTimeSlot });
+    // force update of dnd layer. just call a re-render
+    const prevActiveTab = this.state.activeTab;
+    this.setState({ activeTab: PlayoffsTabsEnum.None }, () => {
+      this.setState({ activeTab: prevActiveTab });
+    });
   };
 
   /* CALCULATE BRACKET GAMES */
@@ -449,7 +407,6 @@ class Playoffs extends Component<IProps> {
   populateBracketGamesData = () => {
     const { bracketGames, divisions } = this.props;
     const { games, playoffTimeSlots } = this.state;
-
     if (!games || !playoffTimeSlots || !divisions) return;
 
     const definedGames = populateDefinedGamesWithPlayoffState(
@@ -608,7 +565,7 @@ class Playoffs extends Component<IProps> {
     this.props.fetchBracketGames(newBracketGames);
   };
 
-  onSeedsUsed = () => {};
+  onSeedsUsed = () => { };
 
   saveBracketsData = () => {
     const { match, bracketGames } = this.props;
@@ -774,9 +731,9 @@ class Playoffs extends Component<IProps> {
                 scheduleData={schedule}
                 eventSummary={eventSummary}
                 schedulesDetails={schedulesDetails}
-                onTeamCardsUpdate={() => {}}
-                onTeamCardUpdate={() => {}}
-                onUndo={() => {}}
+                onTeamCardsUpdate={() => { }}
+                onTeamCardUpdate={() => { }}
+                onUndo={() => { }}
                 playoffTimeSlots={playoffTimeSlots}
                 isFullScreen={isFullScreen}
                 updateGame={this.updateMergedGames}
@@ -786,23 +743,23 @@ class Playoffs extends Component<IProps> {
                 movePlayoffWindow={this.movePlayoffWindow}
               />
             ) : (
-              <BracketManager
-                history={history}
-                match={match}
-                bracket={bracket!}
-                historyLength={historyLength}
-                divisions={divisions!}
-                seeds={bracketSeeds}
-                bracketGames={bracketGames!}
-                advancingInProgress={advancingInProgress}
-                addGame={this.addGame}
-                removeGame={this.removeGame}
-                onUndoClick={onBracketsUndo}
-                advanceTeamsToBrackets={advanceTeamsToBrackets}
-                updateSeeds={this.updateGlobalSeeds}
-                saveBracketsData={this.saveBracketsData}
-              />
-            )}
+                <BracketManager
+                  history={history}
+                  match={match}
+                  bracket={bracket!}
+                  historyLength={historyLength}
+                  divisions={divisions!}
+                  seeds={bracketSeeds}
+                  bracketGames={bracketGames!}
+                  advancingInProgress={advancingInProgress}
+                  addGame={this.addGame}
+                  removeGame={this.removeGame}
+                  onUndoClick={onBracketsUndo}
+                  advanceTeamsToBrackets={advanceTeamsToBrackets}
+                  updateSeeds={this.updateGlobalSeeds}
+                  saveBracketsData={this.saveBracketsData}
+                />
+              )}
           </section>
         </DndProvider>
         <PopupExposure

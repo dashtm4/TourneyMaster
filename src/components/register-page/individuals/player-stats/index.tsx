@@ -2,11 +2,11 @@ import React from 'react';
 import { Input, Select, CardMessage } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { BindingCbWithTwo } from 'common/models';
-import { IIndivisualsRegister } from 'common/models/register';
+import { IIndividualsRegister } from 'common/models/register';
 import styles from '../../styles.module.scss';
 
 interface IPlayerStatsProps {
-  data: Partial<IIndivisualsRegister>;
+  data: Partial<IIndividualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
 }
 

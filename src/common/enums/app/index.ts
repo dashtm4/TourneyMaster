@@ -3,7 +3,7 @@ enum ApplicationTypes {
   MEMBERS = 'members',
 }
 
-// TP - Tournament play
+// TP - Pool play
 enum MobileEventStatuses {
   EVENT = '1',
   EVENT_TP = '2',

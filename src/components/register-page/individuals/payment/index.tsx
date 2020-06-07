@@ -1,31 +1,40 @@
 import React from 'react';
 import styles from '../../styles.module.scss';
-import { Input, Select, Loader } from 'components/common';
-import { BindingCbWithTwo } from 'common/models';
-import { IIndivisualsRegister } from 'common/models/register';
+import { Input, Select } from 'components/common';
+import { BindingCbWithTwo, ISelectOption } from 'common/models';
+import { IIndividualsRegister } from 'common/models/register';
 import { CardElement } from '@stripe/react-stripe-js';
 import stripeLogo from 'assets/stripeLogo.png';
 // import CardHelp from '../../card-help';
 
+interface IPaymentSelectionOptions extends ISelectOption {
+  price: number;
+  payment_plan_id: string;
+  iterations: number;
+  interval: string;
+  interval_count: number;
+}
+
 interface IPaymentProps {
-  data: Partial<IIndivisualsRegister>;
+  data: Partial<IIndividualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
   processing: boolean;
   purchasing: boolean;
+  paymentSelectionOptions: IPaymentSelectionOptions[];
 }
 
 const paymentMethodOptions = [
-  { label: 'Check', value: 'Check' },
   { label: 'Credit Card', value: 'Credit Card' },
+  { label: 'Check', value: 'Check' },
   { label: 'ACH', value: 'ACH' },
 ];
-const paymentSelectionOptions = [
-  { label: 'Full', value: 'Full' },
-  { label: 'Partial', value: 'Partial' },
-  { label: 'Deposit', value: 'Deposit' },
-];
 
-const Payment = ({ data, onChange, processing }: IPaymentProps) => {
+const Payment = ({
+  data,
+  onChange,
+  processing,
+  paymentSelectionOptions,
+}: IPaymentProps) => {
   const onPaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('payment_method', e.target.value);
 
@@ -35,49 +44,77 @@ const Payment = ({ data, onChange, processing }: IPaymentProps) => {
   const onPaymentSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('payment_selection', e.target.value);
 
-  const onPaymentAmountChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('payment_amount', e.target.value);
+  let totalAmountNotice;
+  if (data.payment_selection) {
+    const selectedPlan = paymentSelectionOptions.find(
+      x => x.value === data.payment_selection
+    )!;
+    const totalAmount = selectedPlan?.price * selectedPlan?.iterations;
+
+    const recurringPayments =
+      selectedPlan.iterations > 1
+        ? `$${selectedPlan.price.toFixed(2)} for ${
+        selectedPlan.iterations
+        } times every ${
+        selectedPlan.interval_count > 1 ? selectedPlan.interval_count : ''
+        } ${selectedPlan.interval}${
+        selectedPlan.interval_count > 1 ? 's' : ''
+        } for `
+        : '';
+
+    totalAmountNotice = (
+      <div>
+        You will be charged {recurringPayments}the total amount of $
+        {totalAmount.toFixed(2)}
+      </div>
+    );
+  }
 
   const paymentForm = (
     <div className={styles.section}>
       <div className={styles.sectionRow}>
-        <div className={styles.sectionItem}>
+        <div
+          className={styles.sectionItem}
+          style={{ maxWidth: '30%', flexGrow: 1 }}
+        >
+          <Select
+            options={paymentSelectionOptions}
+            label="Payment Options"
+            disabled={processing}
+            value={data.payment_selection || ''}
+            onChange={onPaymentSelectionChange}
+          />
+        </div>
+        <div
+          className={styles.sectionItem}
+          style={{ maxWidth: '30%', flexGrow: 1 }}
+        >
           <Select
             options={paymentMethodOptions}
             label="Payment Method"
+            disabled={true}
             value={data.payment_method || ''}
             onChange={onPaymentMethodChange}
             isRequired={true}
           />
         </div>
-        <div className={styles.sectionItem}>
+        <div
+          className={styles.sectionItem}
+          style={{ maxWidth: '30%', flexGrow: 1 }}
+        >
           <Input
             fullWidth={true}
             label="Discount Code"
+            disabled={processing}
             value={data.discount_code || ''}
             onChange={onDiscountCodeChange}
           />
         </div>
-        <div className={styles.sectionItem}>
-          <Select
-            options={paymentSelectionOptions}
-            label="Payment Selection"
-            value={data.payment_selection || ''}
-            disabled={true}
-            onChange={onPaymentSelectionChange}
-          />
-        </div>
-        <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            type="number"
-            label="Payment Amount"
-            value={data.payment_amount || ''}
-            disabled={true}
-            onChange={onPaymentAmountChange}
-          />
-        </div>
       </div>
+      <div className={styles.sectionRow}>
+        <strong>{totalAmountNotice}</strong>
+      </div>
+      <div className={styles.sectionRow}>&nbsp;</div>
       <div style={{ display: 'flex' }}>
         <div style={{ display: 'flex', flexDirection: 'column', width: '48%' }}>
           <div className={styles.sectionTitle}>Card Details</div>
@@ -118,7 +155,7 @@ const Payment = ({ data, onChange, processing }: IPaymentProps) => {
     </div>
   );
 
-  return processing ? <Loader /> : paymentForm;
+  return paymentForm;
 };
 
 export default Payment;

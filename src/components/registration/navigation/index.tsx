@@ -41,7 +41,7 @@ const Navigation = ({
         variant={ButtonVarian.CONTAINED}
         color={ButtonColors.PRIMARY}
         onClick={onRegistrationEdit}
-        label={registration ? 'Edit' : 'Add'}
+        label={registration ? 'Edit' : '+ Add Regsistration Details'}
       />
     </div>
   </Paper>

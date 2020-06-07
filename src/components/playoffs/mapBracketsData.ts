@@ -106,31 +106,38 @@ export const mapFetchedBracketGames = (
   fields: IField[]
 ) => {
   return bracketGames.map(
-    (game): IBracketGame => ({
-      id: game.game_id,
-      index: game.game_num,
-      round: game.round_num,
-      gridNum: game.grid_num || 1,
-      divisionId: game.division_id,
-      divisionName: game.bracket_year || undefined,
-      awaySeedId: game.seed_num_away || undefined,
-      homeSeedId: game.seed_num_home || undefined,
-      awayTeamId: game.away_team_id || undefined,
-      homeTeamId: game.home_team_id || undefined,
-      awayTeamScore: game.away_team_score || undefined,
-      homeTeamScore: game.home_team_score || undefined,
-      awayDependsUpon: game.away_depends_upon || undefined,
-      homeDependsUpon: game.home_depends_upon || undefined,
-      awayDisplayName: '',
-      homeDisplayName: '',
-      fieldId: game.field_id || undefined,
-      fieldName: fields.find(item => item.field_id === game.field_id)
-        ?.field_name,
-      startTime: game.start_time || undefined,
-      gameDate: game.game_date.toString(),
-      hidden: !game.is_active_YN,
-      isCancelled: Boolean(game.is_cancelled_YN),
-      createDate: game.created_datetime,
-    })
+    (game): IBracketGame => mapFetchedBracketGame(game, fields)
   );
+};
+
+export const mapFetchedBracketGame = (
+  bracketGames: IPlayoffGame,
+  fields: IField[]
+) => {
+  return {
+    id: bracketGames.game_id,
+    index: bracketGames.game_num,
+    round: bracketGames.round_num,
+    gridNum: bracketGames.grid_num || 1,
+    divisionId: bracketGames.division_id,
+    divisionName: bracketGames.bracket_year || undefined,
+    awaySeedId: bracketGames.seed_num_away || undefined,
+    homeSeedId: bracketGames.seed_num_home || undefined,
+    awayTeamId: bracketGames.away_team_id || undefined,
+    homeTeamId: bracketGames.home_team_id || undefined,
+    awayTeamScore: bracketGames.away_team_score || undefined,
+    homeTeamScore: bracketGames.home_team_score || undefined,
+    awayDependsUpon: bracketGames.away_depends_upon || undefined,
+    homeDependsUpon: bracketGames.home_depends_upon || undefined,
+    awayDisplayName: '',
+    homeDisplayName: '',
+    fieldId: bracketGames.field_id || undefined,
+    fieldName: fields.find(item => item.field_id === bracketGames.field_id)
+      ?.field_name,
+    startTime: bracketGames.start_time || undefined,
+    gameDate: bracketGames.game_date.toString(),
+    hidden: !bracketGames.is_active_YN,
+    isCancelled: Boolean(bracketGames.is_cancelled_YN),
+    createDate: bracketGames.created_datetime,
+  };
 };

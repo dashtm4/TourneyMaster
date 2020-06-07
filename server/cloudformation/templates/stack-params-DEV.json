@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "ProjectName",
+    "ParameterValue": "TMPaymentsDEV"
+  },
+  {
+    "ParameterKey": "ApiGatewayId",
+    "ParameterValue": "h07bgbfxf7"
+  },
+  {
+    "ParameterKey": "RootResource",
+    "ParameterValue": "r8la7ul4pg"
+  }
+]

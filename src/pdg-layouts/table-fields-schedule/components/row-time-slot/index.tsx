@@ -15,6 +15,16 @@ interface Props {
 }
 
 const RowTimeSlot = ({ timeSlot, games, isEven }: Props) => {
+  const formatPhoneNumber = (phoneNumberString: string) => {
+    const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+    const match = cleaned.match(/^(1|)?(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      const intlCode = match[1] ? '+1 ' : '';
+      return [intlCode, '(', match[2], ') ', match[3], '-', match[4]].join('');
+    }
+    return phoneNumberString;
+  };
+
   const getTeam = (team: ITeamCard) => (
     <View style={styles.team}>
       <Text style={styles.teamName}>
@@ -25,7 +35,7 @@ const RowTimeSlot = ({ timeSlot, games, isEven }: Props) => {
           ? `${team.contactFirstName} ${team.contactLastName || ''}`
           : ''}
         {team.teamPhoneNum
-          ? ` - ${team.teamPhoneNum}`
+          ? ` - ${formatPhoneNumber(team.teamPhoneNum)}`
           : 'Team phone number is missing.'}
       </Text>
     </View>

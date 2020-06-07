@@ -117,10 +117,10 @@ const saveTeams = (teams: ITeam[]) => async (
           team => team.long_name,
           'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
         )
- //       .unique(
- //        team => team.short_name,
- //         'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
- //       )
+        //       .unique(
+        //        team => team.short_name,
+        //         'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+        //       )
         .validate(
           teams.filter(team => team.division_id === division.division_id)
         );
@@ -186,10 +186,10 @@ export const createTeams: ActionCreator<ThunkAction<
           team => team.long_name,
           'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
         )
-//        .unique(
-//          team => team.short_name,
-//          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
-//        )
+        //        .unique(
+        //          team => team.short_name,
+        //          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+        //        )
         .validate(mappedTeams);
     }
 
@@ -242,17 +242,21 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
         (div: IDivision) =>
           div.long_name.toLowerCase() === team.division_id?.toLowerCase()
       )?.division_id;
-        
-      let orgin: any = team.phone_num;
-      const regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
-      let str = orgin.replace(regex, "");
-      str = str.replace(/\s/g, "");
 
-      if (str && str.indexOf('1') === 0) {
-        str = str.substring(1);
+      if (team.phone_num) {
+        const orgin: any = team.phone_num;
+        const regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
+        let str = orgin.replace(regex, '');
+        str = str.replace(/\s/g, '');
+
+        if (str && str.indexOf('1') === 0) {
+          str = str.substring(1);
+        }
+
+        team.phone_num = str;
+      } else {
+        team.phone_num = '';
       }
-
-      team.phone_num = str;
 
       return { ...team, division_id: divisionId };
     });
@@ -273,10 +277,10 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
           t => t.long_name,
           'You already have a team with the same long name. The team must have a unique long name.'
         )
-//        .unique(
-//         t => t.short_name,
-//          'You already have team with the same short name. The team must have a unique short name.'
-//       )
+        //        .unique(
+        //         t => t.short_name,
+        //          'You already have team with the same short name. The team must have a unique short name.'
+        //       )
         .validate([...teamsInDivision, team]);
     }
 
@@ -299,9 +303,14 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
     const successMsg = `Teams are successfully created (${data.length})`;
     Toasts.successToast(successMsg);
   } catch (err) {
-    const invalidTeam = err.value[err.value.length - 1];
-    const index = teams.findIndex(team => team.team_id === invalidTeam.team_id);
-    const errMessage = `Record ${index + 1}: ${err.message}`;
+    let errMessage = err.message;
+    if (err.value) {
+      const invalidTeam = err.value[err.value.length - 1];
+      const index = teams.findIndex(
+        team => team.team_id === invalidTeam.team_id
+      );
+      errMessage = `Record ${index + 1}: ${err.message}`;
+    }
     return Toasts.errorToast(errMessage);
   }
 };
