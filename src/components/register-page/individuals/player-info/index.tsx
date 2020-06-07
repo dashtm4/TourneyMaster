@@ -5,10 +5,10 @@ import { Input, Select, DatePicker } from 'components/common';
 import { BindingCbWithTwo, ISelectOption } from 'common/models';
 import 'react-phone-input-2/lib/high-res.css';
 import PhoneInput from 'react-phone-input-2';
-import { IIndivisualsRegister } from 'common/models/register';
+import { IIndividualsRegister } from 'common/models/register';
 
 interface IPlayerInfoProps {
-  data: Partial<IIndivisualsRegister>;
+  data: Partial<IIndividualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
   fillParticipantInfo: any;
   divisions: ISelectOption[];

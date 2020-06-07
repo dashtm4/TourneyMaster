@@ -2,7 +2,7 @@ import React from 'react';
 import styles from '../../styles.module.scss';
 import { Input, Select } from 'components/common';
 import { BindingCbWithTwo, ISelectOption } from 'common/models';
-import { IIndivisualsRegister } from 'common/models/register';
+import { IIndividualsRegister } from 'common/models/register';
 import { CardElement } from '@stripe/react-stripe-js';
 import stripeLogo from 'assets/stripeLogo.png';
 // import CardHelp from '../../card-help';
@@ -16,7 +16,7 @@ interface IPaymentSelectionOptions extends ISelectOption {
 }
 
 interface IPaymentProps {
-  data: Partial<IIndivisualsRegister>;
+  data: Partial<IIndividualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
   processing: boolean;
   purchasing: boolean;
@@ -54,12 +54,12 @@ const Payment = ({
     const recurringPayments =
       selectedPlan.iterations > 1
         ? `$${selectedPlan.price.toFixed(2)} for ${
-            selectedPlan.iterations
-          } times every ${
-            selectedPlan.interval_count > 1 ? selectedPlan.interval_count : ''
-          } ${selectedPlan.interval}${
-            selectedPlan.interval_count > 1 ? 's' : ''
-          } for `
+        selectedPlan.iterations
+        } times every ${
+        selectedPlan.interval_count > 1 ? selectedPlan.interval_count : ''
+        } ${selectedPlan.interval}${
+        selectedPlan.interval_count > 1 ? 's' : ''
+        } for `
         : '';
 
     totalAmountNotice = (

@@ -33,7 +33,7 @@ import {
 } from 'common/models';
 import SideBar from './side-bar';
 import { getVarcharEight } from 'helpers';
-import { IIndivisualsRegister, ITeamsRegister } from 'common/models/register';
+import { IIndividualsRegister, ITeamsRegister } from 'common/models/register';
 import { ButtonFormTypes } from 'common/enums';
 import { eventTypeOptions } from 'components/event-details/event-structure';
 
@@ -219,7 +219,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   };
 
   const [registration, setRegistration] = useState<
-    Partial<IIndivisualsRegister> | Partial<ITeamsRegister>
+    Partial<IIndividualsRegister> | Partial<ITeamsRegister>
   >({});
 
   const onChange = (name: string, value: string | number) => {
@@ -455,8 +455,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         name:
           updatedRegistration.registrant_first_name ||
           updatedRegistration.contact_first_name +
-            ' ' +
-            updatedRegistration.registrant_last_name ||
+          ' ' +
+          updatedRegistration.registrant_last_name ||
           updatedRegistration.contact_last_name,
         email:
           updatedRegistration.registrant_email ||
@@ -585,8 +585,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           {event && eventRegistration ? (
             <SideBar event={event} eventRegistration={eventRegistration} />
           ) : (
-            <Loader />
-          )}
+              <Loader />
+            )}
         </div>
       </div>
       {event && (

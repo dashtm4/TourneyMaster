@@ -4,10 +4,10 @@ import { Input, Checkbox } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/high-res.css';
-import { IIndivisualsRegister } from 'common/models/register';
+import { IIndividualsRegister } from 'common/models/register';
 
 interface IRegistrantNameProps {
-  data: Partial<IIndivisualsRegister>;
+  data: Partial<IIndividualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
 }
 
