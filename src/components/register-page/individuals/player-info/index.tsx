@@ -156,9 +156,9 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <DatePicker
             fullWidth={true}
-            label="Birthdate and Year"
+            label="Birthdate"
             type="date"
-            value={data.player_birthdate || new Date()}
+            value={data.player_birthdate || "01-01-2000"}
             isRequired={true}
             onChange={onPlayerBirthdayChange}
           />
