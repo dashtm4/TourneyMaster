@@ -103,9 +103,9 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="Highlight Film URL"
-            value={data.player_highlight_URL || ''}
-            onChange={onHighlightUrlChange}
+            label="Club Head Coach Name"
+            value={data.player_club_coach_name || ''}
+            onChange={onClubNameChange}
           />
         </div>
         <div className={styles.sectionItem}>
@@ -202,6 +202,14 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
             label="Instagram"
             value={data.player_instagram || ''}
             onChange={onInstagramChange}
+          />
+        </div>
+        <div className={styles.sectionItem}>
+          <Input
+            fullWidth={true}
+            label="Highlight Film URL"
+            value={data.player_highlight_URL || ''}
+            onChange={onHighlightUrlChange}
           />
         </div>
         <div className={styles.sectionItem}>

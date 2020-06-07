@@ -27,6 +27,7 @@ export interface IIndividualsRegister {
   ext_payment_id: string;
   ext_sku: string;
   player_club_name: string;
+  player_club_coach_name: string;
   player_highlight_URL: string;
   school_attending: string;
   dominant_hand: string;
