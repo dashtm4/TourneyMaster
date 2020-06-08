@@ -48,6 +48,10 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
   const onPromocodeDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('promo_code_discount', e.target.value);
 
+  const onPaymentScheduleJsonChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => onChange('payment_schedule_json', e.target.value);
+
   const onCheckAcceptedChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('checks_accepted_YN', Number(e.target.checked));
 
@@ -163,6 +167,17 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
               onChange={onPromocodeDiscountChange}
             />
           ) : null}
+        </div>
+      </div>
+      <div className={styles.sectionRow}>
+        <div className={styles.sectionItem}>
+          <Input
+            fullWidth={true}
+            label="Payment Schedule"
+            type="text"
+            value={data ? data.payment_schedule_json : ''}
+            onChange={onPaymentScheduleJsonChange}
+          />
         </div>
       </div>
     </div>

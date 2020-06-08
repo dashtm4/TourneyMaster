@@ -10,9 +10,7 @@ import stripeLogo from 'assets/stripeLogo.png';
 interface IPaymentSelectionOptions extends ISelectOption {
   price: number;
   payment_plan_id: string;
-  iterations: number;
-  interval: string;
-  interval_count: number;
+  notice: string;
 }
 
 interface IPaymentProps {
@@ -49,25 +47,8 @@ const Payment = ({
     const selectedPlan = paymentSelectionOptions.find(
       x => x.value === data.payment_selection
     )!;
-    const totalAmount = selectedPlan?.price * selectedPlan?.iterations;
 
-    const recurringPayments =
-      selectedPlan.iterations > 1
-        ? `$${selectedPlan.price.toFixed(2)} for ${
-        selectedPlan.iterations
-        } times every ${
-        selectedPlan.interval_count > 1 ? selectedPlan.interval_count : ''
-        } ${selectedPlan.interval}${
-        selectedPlan.interval_count > 1 ? 's' : ''
-        } for `
-        : '';
-
-    totalAmountNotice = (
-      <div>
-        You will be charged {recurringPayments}the total amount of $
-        {totalAmount.toFixed(2)}
-      </div>
-    );
+    totalAmountNotice = <div>{selectedPlan.notice}</div>;
   }
 
   const paymentForm = (
