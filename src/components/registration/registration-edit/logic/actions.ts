@@ -77,6 +77,7 @@ export const saveRegistration: ActionCreator<ThunkAction<
     }
     dispatch(registrationUpdateSuccess(registration));
     Toasts.successToast('Registration is successfully updated');
+    dispatch<any>(getRegistrants(registration.registration_id));
   } else {
     const data = {
       ...registration,

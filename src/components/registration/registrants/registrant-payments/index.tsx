@@ -23,7 +23,7 @@ const RegistrantPayments: React.SFC<RegistrantPaymentsProps> = (
   return props.payments.length > 0 ? (
     <React.Fragment>
       <TableContainer>
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>Date</TableCell>
@@ -32,14 +32,16 @@ const RegistrantPayments: React.SFC<RegistrantPaymentsProps> = (
               <TableCell align="right">Paid</TableCell>
               <TableCell align="right">Fees</TableCell>
               <TableCell align="right">Net</TableCell>
-              <TableCell>Details</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {props.payments.map(payment => (
               <TableRow key={payment.reg_payment_id}>
                 <TableCell>
-                  {moment(payment.payment_date).format('MM/DD/YYYY')}
+                  {moment(payment.payment_date)
+                    .utcOffset('+05.00')
+                    .format('MM/DD/YYYY')}
                 </TableCell>
                 <TableCell>{payment.payment_status}</TableCell>
                 <TableCell align="right">
@@ -54,7 +56,9 @@ const RegistrantPayments: React.SFC<RegistrantPaymentsProps> = (
                 <TableCell align="right">
                   ${payment.amount_net.toFixed(2)}
                 </TableCell>
-                <TableCell>{payment.payment_details?.slice(0, 20)}</TableCell>
+                <TableCell>
+                  details{/* {payment.payment_details?.slice(0, 20)}*/}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -8,7 +8,7 @@ export default class StripePricesHandler {
   map = paymentPlan => {
     if (paymentPlan.type === 'installment') {
       const stripePrice = {
-        currency: config.DEFAULT_CURRENCY,
+        currency: paymentPlan.currency,
         unit_amount: Math.round(+paymentPlan.price * 100, 0),
         active: true,
         nickname: paymentPlan.payment_plan_name,
@@ -20,6 +20,7 @@ export default class StripePricesHandler {
         metadata: {
           externalId: paymentPlan.payment_plan_id,
           name: paymentPlan.sku_name,
+          total_price: paymentPlan.total_price,
           event_id: paymentPlan.event_id,
           division_id: paymentPlan.division_id,
           owner_id: paymentPlan.owner_id,
@@ -32,7 +33,7 @@ export default class StripePricesHandler {
       const stripePrices = [];
       for (let phase of paymentPlan.schedule) {
         const stripePrice = {
-          currency: config.DEFAULT_CURRENCY,
+          currency: paymentPlan.currency,
           unit_amount: Math.round(+phase.amount * 100, 0),
           active: true,
           nickname: paymentPlan.payment_plan_name,
@@ -44,6 +45,7 @@ export default class StripePricesHandler {
           metadata: {
             externalId: phase.price_external_id,
             payment_plan_id: paymentPlan.payment_plan_id,
+            total_price: paymentPlan.total_price,
             name: paymentPlan.sku_name,
             event_id: paymentPlan.event_id,
             division_id: paymentPlan.division_id,
@@ -78,6 +80,7 @@ export default class StripePricesHandler {
       price.recurring?.interval_count ===
         +stripePrice.recurring?.interval_count &&
       price.metadata.externalId === stripePrice.metadata.externalId &&
+      price.metadata.total_price === +stripePrice.metadata.total_price &&
       price.metadata.event_id === stripePrice.metadata.event_id &&
       price.metadata.division_id === stripePrice.metadata.division_id &&
       price.metadata.name === stripePrice.metadata.name &&
