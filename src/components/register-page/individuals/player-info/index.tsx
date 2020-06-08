@@ -88,7 +88,7 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <DatePicker
             fullWidth={true}
-            label="Birthdate and Year"
+            label="Birthdate"
             type="date"
             value={data.player_birthdate || "01-01-2000"}
             isRequired={true}
@@ -152,15 +152,6 @@ const PlayerInfo = ({
             value={data.player_state || ''}
             onChange={onPlayerStateChange}
             isRequired={true}
-          />
-        </div>
-        {/* <div className={styles.sectionItem}>
-          <Select
-            options={playerLevelOptions}
-            label="Player Level"
-            value={data.player_level || ''}
-            isRequired={true}
-            onChange={onPlayerLevelSelect}
           />
         </div>
       </div>
