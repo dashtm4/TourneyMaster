@@ -77,10 +77,10 @@ const getEventOptions = (events: IEventDetails[]) => {
   return sortedEventOptions;
 };
 
-const geEventDates = (games: ISchedulesGameWithNames[]) => {
+const getEventDates = (games: ISchedulesGameWithNames[]) => {
   const dates = Array.from(new Set(games.map(it => it.gameDate)));
-
-  return dates;
+  const sortedDates = orderBy(dates, 'gameDate', 'asc')
+  return sortedDates;
 };
 
 const getDayOptions = (days: string[]): ISelectOption[] => {
@@ -181,7 +181,7 @@ export {
   getGamesByScoreMode,
   getDayOptions,
   getTabTimes,
-  geEventDates,
+  getEventDates,
   getEventOptions,
   getTeamWithFacility,
   mapScoringBracketsWithNames,
