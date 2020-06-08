@@ -148,26 +148,13 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <Select
             options={states}
-            label="State"
+            label="State/Province"
             value={data.player_state || ''}
             onChange={onPlayerStateChange}
             isRequired={true}
           />
         </div>
       </div>
-      <div className={styles.sectionRow}>
-        <div className={styles.sectionItem}>
-          <DatePicker
-            fullWidth={true}
-            label="Birthdate"
-            type="date"
-            value={data.player_birthdate || "01-01-2000"}
-            isRequired={true}
-            onChange={onPlayerBirthdayChange}
-          />
-        </div>
-      </div>
-      <div className={styles.sectionRow}></div>
     </div>
   );
 };
