@@ -9,7 +9,7 @@ const Payments = ({ data }: { data: Partial<IRegistration> }) => (
       <div className={styles.sectionItem}>
         <div>
           <span className={styles.sectionTitle}>Accept Payments</span>
-          <p>{data.payments_enabled_YN ? 'YES' : 'NO'}</p>
+          <p>{data.payments_enabled_YN ? 'Yes' : 'No'}</p>
         </div>
       </div>
 
@@ -22,18 +22,18 @@ const Payments = ({ data }: { data: Partial<IRegistration> }) => (
             <p>{data.upcharge_fee ? `${data.upcharge_fee}%` : '—'}</p>
           </div>
         ) : (
-          <Checkbox
-            options={[
-              {
-                label: 'Upcharge Processing Fees',
-                checked: Boolean(
-                  data ? data.upcharge_fees_on_registrations : false
-                ),
-                disabled: true,
-              },
-            ]}
-          />
-        )}
+            <Checkbox
+              options={[
+                {
+                  label: 'Upcharge Processing Fees',
+                  checked: Boolean(
+                    data ? data.upcharge_fees_on_registrations : false
+                  ),
+                  disabled: true,
+                },
+              ]}
+            />
+          )}
       </div>
       <div className={styles.sectionItem}>
         {data?.include_sales_tax_YN ? (
@@ -42,16 +42,16 @@ const Payments = ({ data }: { data: Partial<IRegistration> }) => (
             <p>{data.sales_tax_rate ? `${data.sales_tax_rate}%` : '—'}</p>
           </div>
         ) : (
-          <Checkbox
-            options={[
-              {
-                label: 'Include Sales Tax',
-                checked: Boolean(data ? data.include_sales_tax_YN : false),
-                disabled: true,
-              },
-            ]}
-          />
-        )}
+            <Checkbox
+              options={[
+                {
+                  label: 'Include Sales Tax',
+                  checked: Boolean(data ? data.include_sales_tax_YN : false),
+                  disabled: true,
+                },
+              ]}
+            />
+          )}
       </div>
     </div>
     <div className={styles.sectionRow}>
@@ -62,16 +62,16 @@ const Payments = ({ data }: { data: Partial<IRegistration> }) => (
             <p>{data.num_installments ? `${data.num_installments}` : '—'}</p>
           </div>
         ) : (
-          <Checkbox
-            options={[
-              {
-                label: 'Monthly Installment Payments',
-                checked: Boolean(data ? data.installment_payments_YN : false),
-                disabled: true,
-              },
-            ]}
-          />
-        )}
+            <Checkbox
+              options={[
+                {
+                  label: 'Monthly Installment Payments',
+                  checked: Boolean(data ? data.installment_payments_YN : false),
+                  disabled: true,
+                },
+              ]}
+            />
+          )}
       </div>
 
       <div className={styles.sectionItem}>
