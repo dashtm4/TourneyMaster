@@ -215,7 +215,7 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="Sportrecruits Url"
+            label="Sportrecruits URL"
             value={data.player_sportrecruits_url || ''}
             onChange={onSportRecruitsUrlChange}
           />
@@ -223,7 +223,7 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="Connectlax Url"
+            label="Connectlax URL"
             value={data.player_connectlax_url || ''}
             onChange={onConnectLaxUrlChange}
           />
