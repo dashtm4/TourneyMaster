@@ -24,6 +24,7 @@ export default class StripePricesHandler {
           event_id: paymentPlan.event_id,
           division_id: paymentPlan.division_id,
           owner_id: paymentPlan.owner_id,
+          sales_tax_rate: paymentPlan.sales_tax_rate,
           iterations: +paymentPlan.iterations,
           discount: +paymentPlan.discount,
         },
@@ -50,6 +51,7 @@ export default class StripePricesHandler {
             event_id: paymentPlan.event_id,
             division_id: paymentPlan.division_id,
             owner_id: paymentPlan.owner_id,
+            sales_tax_rate: paymentPlan.sales_tax_rate,
             iterations: 1,
             discount: +paymentPlan.discount,
             paymentDate: phase.date,
@@ -84,6 +86,7 @@ export default class StripePricesHandler {
       price.metadata.event_id === stripePrice.metadata.event_id &&
       price.metadata.division_id === stripePrice.metadata.division_id &&
       price.metadata.name === stripePrice.metadata.name &&
+      price.metadata.sales_tax_rate === +stripePrice.metadata.sales_tax_rate &&
       price.metadata.iterations === +stripePrice.metadata.iterations &&
       price.metadata.discount === +stripePrice.metadata.discount &&
       price.metadata.owner_id === stripePrice.metadata.owner_id

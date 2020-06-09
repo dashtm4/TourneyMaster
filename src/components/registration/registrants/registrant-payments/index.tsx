@@ -31,6 +31,7 @@ const RegistrantPayments: React.SFC<RegistrantPaymentsProps> = (
               <TableCell align="right">Due</TableCell>
               <TableCell align="right">Paid</TableCell>
               <TableCell align="right">Fees</TableCell>
+              <TableCell align="right">Tax</TableCell>
               <TableCell align="right">Net</TableCell>
               <TableCell></TableCell>
             </TableRow>
@@ -54,6 +55,9 @@ const RegistrantPayments: React.SFC<RegistrantPaymentsProps> = (
                   ${payment.amount_fees.toFixed(2)}
                 </TableCell>
                 <TableCell align="right">
+                  ${payment.amount_tax.toFixed(2)}
+                </TableCell>
+                <TableCell align="right">
                   ${payment.amount_net.toFixed(2)}
                 </TableCell>
                 <TableCell>
@@ -68,6 +72,7 @@ const RegistrantPayments: React.SFC<RegistrantPaymentsProps> = (
               <TableCell align="right">${sum('amount_due')}</TableCell>
               <TableCell align="right">${sum('amount_paid')}</TableCell>
               <TableCell align="right">${sum('amount_fees')}</TableCell>
+              <TableCell align="right">${sum('amount_tax')}</TableCell>
               <TableCell align="right">${sum('amount_net')}</TableCell>
               <TableCell />
             </TableRow>
