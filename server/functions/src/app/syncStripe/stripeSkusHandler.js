@@ -39,7 +39,7 @@ export default class StripeSkusHandler {
 
   equal = (sku, stripeSku) => {
     return (
-      sku.currency === stripeSku.currency &&
+      sku.currency === stripeSku.currency.toUpperCase() &&
       sku.active === stripeSku.active &&
       sku.product === stripeSku.product &&
       sku.price === +stripeSku.price &&
