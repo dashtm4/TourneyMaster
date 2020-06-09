@@ -56,11 +56,12 @@ export const getPaymentPlans = async ({
               const { payment_schedule_json, ...paymentPlan } = {
                 ...sku,
                 price: installmentPrice,
+                total_price: installmentPrice * rawPaymentPlan.iterations,
                 discount: 0,
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
                 payment_plan_notice: `You will be charged ${recurringPayments}the total amount of $${(
-                  installmentPrice * 3
+                  installmentPrice * rawPaymentPlan.iterations
                 ).toFixed(2)}`,
                 type: rawPaymentPlan.type,
                 iterations: rawPaymentPlan.iterations,
@@ -75,7 +76,7 @@ export const getPaymentPlans = async ({
                   phase.amountType === 'fixed'
                     ? +phase.amount
                     : phase.amountType === 'percent'
-                    ? Math.round(+sku.price * +phase.amount * 100) / 100
+                    ? Math.round(+sku.price * +phase.amount) / 100
                     : null;
                 if (!amount) {
                   throw new Error('Incorrect amount specified.');
@@ -113,6 +114,7 @@ export const getPaymentPlans = async ({
 
               const { payment_schedule_json, ...paymentPlan } = {
                 ...sku,
+                total_price: sku.price,
                 discount: 0,
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
@@ -135,9 +137,12 @@ export const getPaymentPlans = async ({
       if (!paymentPlans || paymentPlans.length === 0) {
         const { payment_schedule_json, ...paymentPlan } = {
           ...sku,
+          total_price: sku.price,
           payment_plan_id: sku.sku_id + '_FP',
           payment_plan_name: 'Pay in full',
-          payment_plan_notice: `Your credit card will be charged ${sku.price} now.`,
+          payment_plan_notice: `Your credit card will be charged $${sku.price.toFixed(
+            2
+          )} now.`,
           type: 'installment',
           discount: 0,
           iterations: 1,

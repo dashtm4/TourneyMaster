@@ -24,7 +24,7 @@ export interface IRegistrantsProps {
 const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
   return (
     <TableContainer>
-      <Table>
+      <Table size="small">
         <TableHead>
           <TableRow>
             <TableCell>Date</TableCell>

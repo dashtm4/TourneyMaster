@@ -2,6 +2,7 @@ import React from 'react';
 import styles from '../styles.module.scss';
 import { IRegistration, BindingCbWithTwo } from 'common/models';
 import { Checkbox, Input, Select } from 'components/common';
+import PaymentSchedule from './payment-schedule';
 
 interface IPaymentsProps {
   data?: IRegistration;
@@ -33,8 +34,25 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
       onChange('num_installments', 1);
     }
   };
-  const onNumInstallmentsChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onNumInstallmentsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange('num_installments', e.target.value);
+    const plans = [];
+    for (let i = 1; i <= +e.target.value; i++) {
+      const plan = {
+        id: i === 1 ? 'FP' : `${i}M`,
+        name: i === 1 ? 'Pay in full' : `${i} installments`,
+        type: 'installment',
+        iterations: i,
+        interval: 'day',
+        intervalCount: '1',
+      };
+      plans.push(plan);
+    }
+    if (scheduleIsPresent) {
+      plans.push(paymentSchedule);
+    }
+    onChange('payment_schedule_json', JSON.stringify(plans));
+  };
 
   const onUpchargeFeeChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('upcharge_fee', e.target.value);
@@ -52,8 +70,49 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
     e: React.ChangeEvent<HTMLInputElement>
   ) => onChange('payment_schedule_json', e.target.value);
 
-  const onCheckAcceptedChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('checks_accepted_YN', Number(e.target.checked));
+  const onPaymentScheduleCheckboxChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (e.target.checked) {
+      const newPaymentScheduleJson = JSON.parse(
+        data?.payment_schedule_json ? data?.payment_schedule_json! : '[]'
+      );
+      newPaymentScheduleJson.push({
+        id: 'S',
+        type: 'schedule',
+        name: 'Pay later',
+        schedule: [{ date: new Date(), amount: 100, amountType: 'percent' }],
+      });
+
+      onChange('payment_schedule_json', JSON.stringify(newPaymentScheduleJson));
+    } else {
+      const newPaymentScheduleJson = JSON.parse(
+        data?.payment_schedule_json ? data?.payment_schedule_json! : '[]'
+      ).filter((x: any) => x.type !== 'schedule');
+      onChange('payment_schedule_json', JSON.stringify(newPaymentScheduleJson));
+    }
+  };
+
+  const paymentSchedule = JSON.parse(data?.payment_schedule_json!)?.find(
+    (x: any) => x.type === 'schedule'
+  );
+
+  const onScheduleChange = (schedule: any) => {
+    const newPaymentScheduleJson = JSON.parse(
+      data?.payment_schedule_json!
+    ).map((paymentOption: any) =>
+      paymentOption.type === 'schedule' ? schedule : paymentOption
+    );
+    onChange('payment_schedule_json', JSON.stringify(newPaymentScheduleJson));
+  };
+
+  const scheduleIsPresent =
+    data?.payment_schedule_json &&
+    JSON.parse(data?.payment_schedule_json).find(
+      (x: any) => x.type === 'schedule'
+    )
+      ? true
+      : false;
 
   return (
     <div className={styles.section}>
@@ -115,6 +174,25 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
             />
           ) : null}
         </div>
+
+        <div className={styles.sectionItem}>
+          <Input
+            fullWidth={true}
+            label="Promo Code"
+            value={data ? data.promo_code : ''}
+            onChange={onPromocodeChange}
+          />
+          {data?.promo_code ? (
+            <Input
+              fullWidth={true}
+              startAdornment="%"
+              label="Promo Code Discount"
+              type="number"
+              value={data ? data.promo_code_discount : ''}
+              onChange={onPromocodeDiscountChange}
+            />
+          ) : null}
+        </div>
       </div>
       <div className={styles.sectionRow}>
         <div
@@ -138,38 +216,19 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
             />
           ) : null}
         </div>
-
+      </div>
+      <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
           <Checkbox
-            onChange={onCheckAcceptedChange}
+            onChange={onPaymentScheduleCheckboxChange}
             options={[
               {
-                label: 'Checks Accepted',
-                checked: Boolean(data ? data.checks_accepted_YN : false),
+                label: 'Payment Schedule',
+                checked: Boolean(scheduleIsPresent),
               },
             ]}
           />
         </div>
-        <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            label="Promo Code"
-            value={data ? data.promo_code : ''}
-            onChange={onPromocodeChange}
-          />
-          {data?.promo_code ? (
-            <Input
-              fullWidth={true}
-              startAdornment="%"
-              label="Promo Code Discount"
-              type="number"
-              value={data ? data.promo_code_discount : ''}
-              onChange={onPromocodeDiscountChange}
-            />
-          ) : null}
-        </div>
-      </div>
-      <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
@@ -179,6 +238,14 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
             onChange={onPaymentScheduleJsonChange}
           />
         </div>
+      </div>
+      <div className={styles.sectionRow}>
+        {paymentSchedule ? (
+          <PaymentSchedule
+            schedule={paymentSchedule}
+            onScheduleChange={onScheduleChange}
+          />
+        ) : null}
       </div>
     </div>
   );

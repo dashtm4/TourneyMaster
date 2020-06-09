@@ -8,7 +8,7 @@ export default class StripeSkusHandler {
   map = sku => {
     const stripeSku = {
       id: sku.sku_id,
-      currency: config.DEFAULT_CURRENCY,
+      currency: sku.currency,
       inventory: {
         type: config.DEFAULT_SKU_INVENTORY_TYPE,
         quantity: config.DEFAULT_SKU_INVENTORY_QUANTITY,
@@ -43,6 +43,7 @@ export default class StripeSkusHandler {
       sku.active === stripeSku.active &&
       sku.product === stripeSku.product &&
       sku.price === +stripeSku.price &&
+      sku.currency === stripeSku.currency &&
       sku.inventory.type === stripeSku.inventory.type &&
       sku.metadata.externalId === stripeSku.metadata.externalId &&
       sku.metadata.name === stripeSku.metadata.name &&

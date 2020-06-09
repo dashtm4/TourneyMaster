@@ -86,7 +86,7 @@ const RegistrationDetails = ({
           <Input
             fullWidth={true}
             label="Group Name"
-            value={data ? data.division_name_label : ''}
+            value={data?.division_name_label ? data.division_name_label : ''}
             onChange={onDivisionNameLabelChange}
           />
         </div>
@@ -163,7 +163,7 @@ const RegistrationDetails = ({
             label="Disclaimer"
             multiline={true}
             rows="4"
-            value={data ? data.disclaimer : ''}
+            value={data?.disclaimer ? data.disclaimer : ''}
             onChange={onDisclaimerChange}
           />
         </div>
