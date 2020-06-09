@@ -71,7 +71,7 @@ export default class StripePricesHandler {
 
   equal = (price, stripePrice) => {
     return (
-      price.currency === stripePrice.currency &&
+      price.currency === stripePrice.currency.toUpperCase() &&
       price.active === stripePrice.active &&
       price.product === stripePrice.product &&
       price.unit_amount === +stripePrice.unit_amount &&
