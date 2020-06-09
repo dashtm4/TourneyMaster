@@ -154,7 +154,6 @@ export const getPaymentPlans = async ({
         return paymentPlans;
       }
     });
-    console.log('paymentPlans:', paymentPlans);
     if (payment_plan_id) {
       return paymentPlans.filter(p => p.payment_plan_id === payment_plan_id);
     } else {

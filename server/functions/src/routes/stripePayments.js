@@ -91,6 +91,15 @@ const createSubscription = async (customer, paymentPlan, subData) => {
     return price;
   };
 
+  const salesTaxRate = paymentPlan.sales_tax_rate
+    ? (
+        await stripe.taxRates.list({
+          active: true,
+          limit: 100,
+        })
+      ).data.find(tax => +tax.percentage === paymentPlan.sales_tax_rate)
+    : null;
+
   let phases = [];
   if (paymentPlan.type === 'installment') {
     const price = await getPrice(paymentPlan);
@@ -99,6 +108,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
       plans: [{ price: price.id, quantity: subData.items[0].quantity }],
       iterations: paymentPlan.iterations,
       proration_behavior: 'none',
+      default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
     });
   } else if (paymentPlan.type === 'schedule') {
     phases = paymentPlan.schedule.sort(
@@ -130,6 +140,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
               60 * 60 * 5
           ),
           proration_behavior: 'none',
+          default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
         };
         return t;
       })
@@ -271,6 +282,9 @@ export const paymentSuccessWebhook = async req => {
     );
 
     const newPaymentAmount = +event.data.object.amount_paid / 100;
+    const newPaymentTax = +event.data.object.tax / 100;
+    const newPaymentFees =
+      Math.round(+event.data.object.amount_paid * 0.029 + 0.3) / 100;
     const newPaymentDate = new Date(
       +event.data.object.status_transitions.paid_at * 1000
     );
@@ -289,6 +303,7 @@ export const paymentSuccessWebhook = async req => {
       // Add Stripe stuff here
       reg_response.ext_payment_system = 'stripe';
       reg_response.ext_payment_id = event.data.object.id;
+      reg_response.currency = paymentPlan.currency;
       reg_response.amount_due = paymentPlan.total_price;
       reg_response.payment_amount = 0;
       reg_response.payment_date = newPaymentDate;
@@ -313,14 +328,15 @@ export const paymentSuccessWebhook = async req => {
     // If there is no payment schedule in the database create one
     if (dbPayments.length === 0) {
       const sql = `INSERT INTO ${toParams.db.database}.registrations_payments 
-      (reg_response_id, installment_id, payment_date, payment_status, amount_due, is_active_YN, created_by)
-      VALUES (?, ?, ?, 'scheduled', ?, 1, ?)`;
+      (reg_response_id, installment_id, payment_date, payment_status, currency, amount_due, is_active_YN, created_by)
+      VALUES (?, ?, ?, 'scheduled', ?, ?, 1, ?)`;
       let params = [];
       if (paymentPlan.type === 'schedule') {
         params = paymentPlan.schedule.map(phase => [
           reg_response_id,
           phase.price_external_id,
           phase.date,
+          paymentPlan.currency,
           phase.amount,
           owner_id,
         ]);
@@ -352,6 +368,7 @@ export const paymentSuccessWebhook = async req => {
           reg_response_id,
           paymentPlan.payment_plan_id,
           date,
+          paymentPlan.currency,
           paymentPlan.price,
           owner_id,
         ]);
@@ -406,12 +423,13 @@ export const paymentSuccessWebhook = async req => {
     if (availableForAllocation) {
       console.log(`Allocating to: ${JSON.stringify(availableForAllocation)}`);
       await toConn.query(
-        `update ${toParams.db.database}.registrations_payments set amount_paid=amount_paid+?, amount_fees=amount_fees+?, amount_net=amount_net+?,
+        `update ${toParams.db.database}.registrations_payments set amount_paid=amount_paid+?, amount_fees=amount_fees+?, amount_tax=amount_tax+?, amount_net=amount_net+?,
            payment_date=?,ext_payment_system=?, ext_payment_id=?, payment_status=?, payment_details=? where reg_payment_id=?`,
         [
           newPaymentAmount,
-          0,
-          newPaymentAmount,
+          newPaymentFees,
+          newPaymentTax,
+          newPaymentAmount - newPaymentFees - newPaymentTax,
           newPaymentDate,
           'stripe',
           event.data.object.id,
