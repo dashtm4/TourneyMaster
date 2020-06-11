@@ -11,13 +11,9 @@ const Payments = ({ data }: { data: Partial<IRegistration> }) => {
       (x: any) => x.type === 'schedule'
     );
     if (decodedSchedule?.schedule) {
-      paymentSchedule =
-        'Payment Schedule: ' +
-        decodedSchedule.schedule
-          .map(
-            (x: any) => `${moment(x.date).format('YYYY-MM-DD')}: ${x.amount}%`
-          )
-          .join(', ');
+      paymentSchedule = decodedSchedule.schedule
+        .map((x: any) => `${moment(x.date).format('YYYY-MM-DD')}: ${x.amount}%`)
+        .join(', ');
     }
   }
   return (
@@ -87,27 +83,14 @@ const Payments = ({ data }: { data: Partial<IRegistration> }) => {
       </div>
       <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
-          {data?.installment_payments_YN ? (
-            <div>
-              <span className={styles.sectionTitle}>
-                Monthly Installment Payments
-              </span>
-              <p>{data.num_installments ? `${data.num_installments}` : '—'}</p>
-            </div>
-          ) : (
-            <Checkbox
-              options={[
-                {
-                  label: 'Monthly Installment Payments',
-                  checked: Boolean(data ? data.installment_payments_YN : false),
-                  disabled: true,
-                },
-              ]}
-            />
-          )}
-        </div>
-        <div className={styles.sectionItem}>
-          <span className={styles.sectionTitle}>{paymentSchedule}</span>
+          <span className={styles.sectionTitle}>Installments</span>
+          <p>
+            {data?.payment_schedule_json
+              ? paymentSchedule
+                ? paymentSchedule
+                : `${data.num_installments} monthly payments`
+              : 'No'}
+          </p>
         </div>
       </div>
     </div>
