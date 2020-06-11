@@ -812,6 +812,7 @@ class Schedules extends Component<Props, State> {
             scheduleData={
               scheduleData?.schedule_name ? scheduleData : schedule!
             }
+            schedulesDetails={this.props.schedulesDetails}
             historyLength={schedulesHistoryLength}
             teamsDiagnostics={teamsDiagnostics}
             divisionsDiagnostics={divisionsDiagnostics}

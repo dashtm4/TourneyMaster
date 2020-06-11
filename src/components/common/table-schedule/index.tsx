@@ -16,6 +16,7 @@ import {
   ISchedule,
   IPool,
   BindingAction,
+  ISchedulesDetails,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes } from './types';
 import { getAllTeamCardGames, calculateTournamentDays } from 'helpers';
@@ -39,7 +40,7 @@ import {
 } from './helpers';
 
 import { IScheduleFacility } from 'common/models/schedule/facilities';
-import { ITeamCard } from 'common/models/schedule/teams';
+import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 import { IDropParams } from '../matrix-table/dnd/drop';
 import moveTeamCard from './moveTeamCard';
 import { Button } from 'components/common';
@@ -51,6 +52,7 @@ import { IDiagnosticsInput } from 'components/schedules/diagnostics';
 import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
 import { IBracketGame } from 'components/playoffs/bracketGames';
 import { updateGameSlot } from 'components/playoffs/helper';
+import PopupAdvanced from './components/popup-advanced';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -63,6 +65,7 @@ interface Props {
   timeSlots: ITimeSlot[];
   facilities: IScheduleFacility[];
   scheduleData: ISchedule;
+  schedulesDetails?: ISchedulesDetails[] | undefined;
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
   historyLength?: number;
@@ -89,6 +92,7 @@ const TableSchedule = ({
   fields,
   facilities,
   scheduleData,
+  schedulesDetails,
   timeSlots,
   eventSummary,
   isEnterScores,
@@ -332,6 +336,13 @@ const TableSchedule = ({
               onChangeFilterValue={onFilterChange}
               simultaneousDnd={simultaneousDnd}
               toggleSimultaneousDnd={toggleSimultaneousDnd}
+            />
+            <PopupAdvanced
+              buttonTitle="Advanced"
+              modalHeader="Advanced Workflow"
+              divisions={divisions}
+              teams={teamCards as ITeam[]}
+              schedulesDetails={schedulesDetails}
             />
             <MatrixTable
               tableType={tableType}
