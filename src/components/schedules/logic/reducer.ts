@@ -47,7 +47,6 @@ const initialState: ISchedulesState = {
 };
 
 const SchedulesReducer = (state = initialState, action: IScheduleAction) => {
-  console.log("action", action.type);
   switch (action.type) {
     case FETCH_EVENT_SUMMARY_SUCCESS:
       return {

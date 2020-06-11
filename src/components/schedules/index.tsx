@@ -829,7 +829,7 @@ class Schedules extends Component<Props, State> {
             playoffTimeSlots={playoffTimeSlots}
             onBracketGameUpdate={() => {}}
             recalculateDiagnostics={this.calculateDiagnostics}
-            swapTeamsInSchedulesDetails={swapTeamsInSchedulesDetails}
+            swapTeamsInSchedulesDetails={this.props.swapTeamsInSchedulesDetails}
           />
         ) : (
           <div className={styles.loadingWrapper}>

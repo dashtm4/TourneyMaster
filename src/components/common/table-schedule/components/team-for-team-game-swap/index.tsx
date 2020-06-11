@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { IDivision, ISchedulesDetails } from 'common/models';
 import Select from 'components/common/select';
 import { ITeam } from 'common/models/schedule/teams';
@@ -22,14 +22,6 @@ const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails, swapTeamsInSc
   );
   const [selectedFirstTeamID, setSelectedFirstTeamID] = useState('');
   const [selectedSecondTeamID, setSelectedSecondTeamID] = useState('');
-
-  // console.log(schedulesDetails);
-
-  useEffect(() => {
-    console.log(`Division ID ${selectedDivisionID}`);
-    console.log(`First team ID ${selectedFirstTeamID}`);
-    console.log(`Second team ID ${selectedSecondTeamID}`);
-  })
 
   const onDivisionChange = async (e: any) => {
     const selectedDivisionIDFromSelect = e.target.value;
@@ -56,37 +48,35 @@ const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails, swapTeamsInSc
 
   const swapTeams = () => {
     const modifiedSchedulesDetails = schedulesDetails?.map(v => {
-      const scheduleDetails = { ...v };
+        const scheduleDetails = { ...v };
 
-      if (scheduleDetails.division_id === selectedDivisionID) {
-        switch (scheduleDetails.home_team_id) {
-          case selectedFirstTeamID:
-            scheduleDetails.home_team_id = selectedSecondTeamID;
-            break;
-          case selectedSecondTeamID:
-            scheduleDetails.home_team_id = selectedFirstTeamID;
-            break;
+        if (scheduleDetails.division_id === selectedDivisionID) {
+          switch (scheduleDetails.home_team_id) {
+            case selectedFirstTeamID:
+              scheduleDetails.home_team_id = selectedSecondTeamID;
+              break;
+            case selectedSecondTeamID:
+              scheduleDetails.home_team_id = selectedFirstTeamID;
+              break;
+          }
+
+          switch (scheduleDetails.away_team_id) {
+            case selectedFirstTeamID:
+              scheduleDetails.away_team_id = selectedSecondTeamID;
+              break;
+            case selectedSecondTeamID:
+              scheduleDetails.away_team_id = selectedFirstTeamID;
+              break;
+          }
         }
 
-        switch (scheduleDetails.away_team_id) {
-          case selectedFirstTeamID:
-            scheduleDetails.away_team_id = selectedSecondTeamID;
-            break;
-          case selectedSecondTeamID:
-            scheduleDetails.away_team_id = selectedFirstTeamID;
-            break;
-        }
-      }
-
-      return scheduleDetails;
-    }) || [];
+        return scheduleDetails;
+      }) || [];
 
     const schedulesDetailsToModify = modifiedSchedulesDetails?.filter(
-      v => v.division_id === selectedDivisionID
+      v => v.division_id === selectedDivisionID && (v.home_team_id === selectedFirstTeamID || v.away_team_id === selectedSecondTeamID || v.home_team_id === selectedSecondTeamID || v.away_team_id === selectedFirstTeamID)
     );
 
-    console.log("src", schedulesDetails?.filter(v => v.division_id === selectedDivisionID));
-    console.log("swap", schedulesDetailsToModify?.filter(v => v.division_id === selectedDivisionID));
     swapTeamsInSchedulesDetails(modifiedSchedulesDetails, schedulesDetailsToModify);
   };
 
