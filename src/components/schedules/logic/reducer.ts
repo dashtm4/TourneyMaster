@@ -13,6 +13,9 @@ import {
   ANOTHER_SCHEDULE_PUBLISHED,
   SCHEDULES_GAMES_ALREADY_EXIST,
   SCHEDULES_DETAILS_CLEAR,
+  TEAM_FOR_TEAM_GAME_SWAP_IN_PROGRESS,
+  TEAM_FOR_TEAM_GAME_SWAP_SUCCESS,
+  TEAM_FOR_TEAM_GAME_SWAP_FAILURE,
 } from './actionTypes';
 import { IEventSummary } from 'common/models/event-summary';
 import { ISchedule } from 'common/models';
@@ -27,6 +30,7 @@ export interface ISchedulesState {
   schedulesPublished: boolean;
   gamesAlreadyExist: boolean;
   savingInProgress: boolean;
+  teamForTeamGameSwapInProgress: boolean;
   fetchError: boolean;
   error: boolean;
 }
@@ -35,6 +39,7 @@ const initialState: ISchedulesState = {
   error: false,
   fetchError: false,
   savingInProgress: false,
+  teamForTeamGameSwapInProgress: false,
   draftIsAlreadySaved: false,
   schedulesPublished: false,
   anotherSchedulePublished: false,
@@ -42,6 +47,7 @@ const initialState: ISchedulesState = {
 };
 
 const SchedulesReducer = (state = initialState, action: IScheduleAction) => {
+  console.log("action", action.type);
   switch (action.type) {
     case FETCH_EVENT_SUMMARY_SUCCESS:
       return {
@@ -113,6 +119,22 @@ const SchedulesReducer = (state = initialState, action: IScheduleAction) => {
         schedule: undefined,
         schedulesDetails: undefined,
       };
+    case TEAM_FOR_TEAM_GAME_SWAP_IN_PROGRESS:
+      return {
+        ...state,
+        teamForTeamGameSwapInProgress: true,
+      };
+    case TEAM_FOR_TEAM_GAME_SWAP_SUCCESS:
+      return {
+        ...state,
+        ...action.payload,
+        teamForTeamGameSwapInProgress: false,
+      }
+    case TEAM_FOR_TEAM_GAME_SWAP_FAILURE:
+      return {
+        ...state,
+        teamForTeamGameSwapInProgress: false,
+      }
     default:
       return state;
   }

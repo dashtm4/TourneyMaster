@@ -12,7 +12,11 @@ interface Props {
   modalHeader: string;
   divisions: IDivision[];
   teams: ITeam[];
-  schedulesDetails: ISchedulesDetails[] | undefined;
+  schedulesDetails: ISchedulesDetails[];
+  swapTeamsInSchedulesDetails: (
+    modifiedSchedulesDetails: ISchedulesDetails[],
+    schedulesDetailsToModify: ISchedulesDetails[]
+  ) => void;
 }
 
 const PopupAdvanced = ({
@@ -21,6 +25,7 @@ const PopupAdvanced = ({
   divisions,
   teams,
   schedulesDetails,
+  swapTeamsInSchedulesDetails,
 }: Props) => {
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(
@@ -35,6 +40,7 @@ const PopupAdvanced = ({
             divisions={divisions}
             teams={teams}
             schedulesDetails={schedulesDetails}
+            swapTeamsInSchedulesDetails={swapTeamsInSchedulesDetails}
           />
         );
       case AdvancedWorkflowOptionTypes.UPDATE_TIMESLOTS:
