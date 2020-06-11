@@ -51,22 +51,16 @@ const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails, updateSchedul
         const scheduleDetails = { ...v };
 
         if (scheduleDetails.division_id === selectedDivisionID) {
-          switch (scheduleDetails.home_team_id) {
-            case selectedFirstTeamID:
-              scheduleDetails.home_team_id = selectedSecondTeamID;
-              break;
-            case selectedSecondTeamID:
-              scheduleDetails.home_team_id = selectedFirstTeamID;
-              break;
+          if (scheduleDetails.home_team_id === selectedFirstTeamID) {
+            scheduleDetails.home_team_id = selectedSecondTeamID;
+          } else if (scheduleDetails.home_team_id === selectedSecondTeamID) {
+            scheduleDetails.home_team_id = selectedFirstTeamID;
           }
 
-          switch (scheduleDetails.away_team_id) {
-            case selectedFirstTeamID:
-              scheduleDetails.away_team_id = selectedSecondTeamID;
-              break;
-            case selectedSecondTeamID:
-              scheduleDetails.away_team_id = selectedFirstTeamID;
-              break;
+          if (scheduleDetails.away_team_id === selectedFirstTeamID) {
+            scheduleDetails.away_team_id = selectedSecondTeamID;
+          } else if (scheduleDetails.away_team_id === selectedSecondTeamID) {
+            scheduleDetails.away_team_id = selectedFirstTeamID;
           }
         }
 
