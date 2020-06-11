@@ -52,7 +52,7 @@ const UpdateTimeslots = ({ schedulesDetails }: Props) => {
 
   const onTimeChange = (time: string) => {
     // setSelectedTimeDifference(
-     compareTime(time, selectedDateTimeslot?.toString() || '')
+    compareTime(time, selectedDateTimeslot?.toString() || '')
     // );
   };
 
@@ -71,7 +71,7 @@ const UpdateTimeslots = ({ schedulesDetails }: Props) => {
           return { value: index + 1, label: v };
         })}
         value={selectedDateId || ''}
-        placeholder="Select date"
+        placeholder="Select Date"
         onChange={onDateChange}
       />
       <Select

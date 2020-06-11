@@ -76,7 +76,7 @@ const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails }: Props) => {
           return { value: v.division_id, label: v.short_name };
         })}
         value={selectedDivisionID || ''}
-        placeholder="Select division"
+        placeholder="Select Division"
         onChange={onDivisionChange}
       />
       <div className={styles.teamsSelection}>

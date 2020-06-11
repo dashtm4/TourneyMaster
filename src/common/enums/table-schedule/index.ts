@@ -10,8 +10,8 @@ enum TimeSlotsEntityTypes {
 }
 
 enum AdvancedWorkflowOptionTypes {
-  TEAM_FOR_TEAM_GAME_SWAP = 'Team-for-team game swap',
-  UPDATE_TIMESLOTS = 'Update timeslots',
+  TEAM_FOR_TEAM_GAME_SWAP = 'Team-for-Team Game Swap',
+  UPDATE_TIMESLOTS = 'Update Timeslots',
 }
 
 export {

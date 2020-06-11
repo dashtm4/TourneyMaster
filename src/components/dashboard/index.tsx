@@ -126,11 +126,11 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   renderEvents = () => {
     const filteredEvents = this.state.filters.historical
       ? this.props.events.filter(
-          event => new Date(event.event_enddate) < new Date()
-        )
+        event => new Date(event.event_enddate) < new Date()
+      )
       : this.props.events.filter(event =>
-          this.state.filters.status.includes(event.is_published_YN)
-        );
+        this.state.filters.status.includes(event.is_published_YN)
+      );
 
     const numOfPublished = this.props.events?.filter(
       event => event.is_published_YN === EventStatuses.Published
@@ -163,7 +163,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
               color="primary"
               type={
                 this.state.filters.status.includes(EventStatuses.Published) &&
-                !this.state.filters.historical
+                  !this.state.filters.historical
                   ? 'squared'
                   : 'squaredOutlined'
               }
@@ -175,7 +175,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
               color="primary"
               type={
                 this.state.filters.status.includes(EventStatuses.Draft) &&
-                !this.state.filters.historical
+                  !this.state.filters.historical
                   ? 'squared'
                   : 'squaredOutlined'
               }
@@ -200,40 +200,40 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
           )}
           {filteredEvents?.length && !this.props.isLoading
             ? filteredEvents.map((event: IEventDetails) => (
-                <TournamentCard
-                  key={event.event_id}
-                  event={event}
-                  history={this.props.history}
-                  numOfTeams={
-                    this.props.teams.filter(
-                      team => team.event_id === event.event_id
-                    )?.length
-                  }
-                  numOfFields={
-                    this.props.fields.filter(
-                      field => field.event_id === event.event_id
-                    )?.length
-                  }
-                  numOfLocations={
-                    this.props.facilities.filter(
-                      facility => facility.event_id === event.event_id
-                    )?.length
-                  }
-                  lastScheduleRelease={
-                    this.props.schedules.filter(
-                      schedule =>
-                        schedule.event_id === event.event_id &&
-                        schedule.is_published_YN === ScheduleStatuses.Published
-                    )[0]?.updated_datetime
-                  }
-                  isDetailLoading={this.props.isDetailLoading}
-                />
-              ))
+              <TournamentCard
+                key={event.event_id}
+                event={event}
+                history={this.props.history}
+                numOfTeams={
+                  this.props.teams.filter(
+                    team => team.event_id === event.event_id
+                  )?.length
+                }
+                numOfFields={
+                  this.props.fields.filter(
+                    field => field.event_id === event.event_id
+                  )?.length
+                }
+                numOfLocations={
+                  this.props.facilities.filter(
+                    facility => facility.event_id === event.event_id
+                  )?.length
+                }
+                lastScheduleRelease={
+                  this.props.schedules.filter(
+                    schedule =>
+                      schedule.event_id === event.event_id &&
+                      schedule.is_published_YN === ScheduleStatuses.Published
+                  )[0]?.updated_datetime
+                }
+                isDetailLoading={this.props.isDetailLoading}
+              />
+            ))
             : !this.props.isLoading && (
-                <div className={styles.noFoundWrapper}>
-                  <span>There are no events yet.</span>
-                </div>
-              )}
+              <div className={styles.noFoundWrapper}>
+                <span>Create your first by using the above + Create Event button.</span>
+              </div>
+            )}
         </div>
       </div>
     );
@@ -328,7 +328,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
                   event.status_id === 1 &&
                   new Date(event.cal_event_datetime) > new Date()
               ).length
-            } Pending Reminders`}
+              } Pending Reminders`}
             order={2}
             changeOrder={this.onOrderChange}
           />
@@ -339,7 +339,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
                 event =>
                   event.cal_event_type === 'task' && event.status_id === 1
               ).length
-            } Pending/Open Tasks`}
+              } Pending/Open Tasks`}
             order={3}
             changeOrder={this.onOrderChange}
           />
