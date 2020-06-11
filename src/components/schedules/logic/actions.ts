@@ -17,12 +17,15 @@ import {
   ANOTHER_SCHEDULE_PUBLISHED,
   SCHEDULES_GAMES_ALREADY_EXIST,
   SCHEDULES_DETAILS_CLEAR,
+  TEAM_FOR_TEAM_GAME_SWAP_SUCCESS,
+  TEAM_FOR_TEAM_GAME_SWAP_FAILURE,
+  TEAM_FOR_TEAM_GAME_SWAP_IN_PROGRESS,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
 import { IAppState } from 'reducers/root-reducer.types';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
-import { successToast, errorToast } from 'components/common/toastr/showToasts';
+import { successToast, errorToast, infoToast } from 'components/common/toastr/showToasts';
 import { ISchedulesGame } from 'common/models/schedule/game';
 import { ScheduleStatuses } from 'common/enums';
 
@@ -91,6 +94,19 @@ const anotherSchedulePublished = (payload: boolean) => ({
 export const gamesAlreadyExist = (payload: boolean) => ({
   type: SCHEDULES_GAMES_ALREADY_EXIST,
   payload,
+});
+
+export const teamForTeamSwapGameInProgress = () => ({
+  type: TEAM_FOR_TEAM_GAME_SWAP_IN_PROGRESS,
+})
+
+export const teamForTeamSwapGameSuccess = (payload: ISchedulesDetails[]) => ({
+  type: TEAM_FOR_TEAM_GAME_SWAP_SUCCESS,
+  payload,
+});
+
+export const teamForTeamSwapGameFailure = () => ({
+  type: TEAM_FOR_TEAM_GAME_SWAP_FAILURE,
 });
 
 export const fetchFields = (
@@ -375,4 +391,30 @@ export const updateSchedule = (
   schedulesDetails: ISchedulesDetails[]
 ) => (dispatch: Dispatch) => {
   dispatch<any>(saveSchedule(schedule, schedulesDetails, false));
+};
+
+export const swapTeamsInSchedulesDetails = (
+  modifiedSchedulesDetails: ISchedulesDetails[],
+  schedulesDetailsToModify: ISchedulesDetails[]
+) => async (dispatch: Dispatch) => {
+  dispatch(teamForTeamSwapGameInProgress());
+  infoToast('Selected teams game swap in progress');
+
+  const schedulesDetailsChunk = chunk(schedulesDetailsToModify, 50);
+  const schedulesResponses = await Promise.all(
+    schedulesDetailsChunk.map(
+      async arr => await api.put('/schedules_details', arr)
+    )
+  );
+
+  const schedulesResponseOk = schedulesResponses.every(item => item);
+
+  if (schedulesResponseOk) {
+    dispatch(teamForTeamSwapGameSuccess(modifiedSchedulesDetails));
+    successToast('Selected teams successfully swapped');
+    return;
+  }
+
+  dispatch(teamForTeamSwapGameFailure());
+  errorToast('Something happened during swapping selected teams');
 };

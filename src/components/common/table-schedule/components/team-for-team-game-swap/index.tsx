@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IDivision, ISchedulesDetails } from 'common/models';
 import Select from 'components/common/select';
 import { ITeam } from 'common/models/schedule/teams';
@@ -8,10 +8,14 @@ import { Button } from 'components/common';
 interface Props {
   divisions: IDivision[];
   teams: ITeam[];
-  schedulesDetails: ISchedulesDetails[] | undefined;
+  schedulesDetails: ISchedulesDetails[];
+  swapTeamsInSchedulesDetails: (
+    modifiedSchedulesDetails: ISchedulesDetails[],
+    schedulesDetailsToModify: ISchedulesDetails[]
+  ) => void;
 }
 
-const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails }: Props) => {
+const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails, swapTeamsInSchedulesDetails }: Props) => {
   const [selectedDivisionID, setSelectedDivisionID] = useState('');
   const [selectedDivisionTeams, setSelectedDivisionTeams] = useState<ITeam[]>(
     []
@@ -19,32 +23,13 @@ const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails }: Props) => {
   const [selectedFirstTeamID, setSelectedFirstTeamID] = useState('');
   const [selectedSecondTeamID, setSelectedSecondTeamID] = useState('');
 
-  console.log(schedulesDetails);
-  // useEffect(() => {
-  //   if (schedulesDetails) {
-  //     console.log(schedulesDetails.map(v => v.game_date));
-  //     console.log("teams", selectedFirstTeamID, selectedSecondTeamID);
-  //     console.log("source", schedulesDetails.filter((v) => v.division_id && ((v.home_team_id === selectedFirstTeamID || v.away_team_id === selectedSecondTeamID) || (v.home_team_id === selectedSecondTeamID || v.away_team_id === selectedFirstTeamID))));
-  //     console.log("swapped", schedulesDetails
-  //       .filter((v) => v.division_id && ((v.home_team_id === selectedFirstTeamID || v.away_team_id === selectedSecondTeamID) || (v.home_team_id === selectedSecondTeamID || v.away_team_id === selectedFirstTeamID)))
-  //       .map((v) => {
-  //         const c = { ...v };
-  //         if (c.home_team_id === selectedFirstTeamID) {
-  //           c.home_team_id = selectedSecondTeamID;
-  //         } else if (v.home_team_id === selectedSecondTeamID) {
-  //           c.home_team_id = selectedFirstTeamID;
-  //         }
+  // console.log(schedulesDetails);
 
-  //         if (c.away_team_id === selectedFirstTeamID) {
-  //           c.away_team_id = selectedSecondTeamID;
-  //         } else if (v.away_team_id === selectedSecondTeamID) {
-  //           c.away_team_id = selectedFirstTeamID;
-  //         }
-
-  //         return c;
-  //       }));
-  //   }
-  // }, [selectedDivisionID, selectedFirstTeamID, selectedSecondTeamID]);
+  useEffect(() => {
+    console.log(`Division ID ${selectedDivisionID}`);
+    console.log(`First team ID ${selectedFirstTeamID}`);
+    console.log(`Second team ID ${selectedSecondTeamID}`);
+  })
 
   const onDivisionChange = async (e: any) => {
     const selectedDivisionIDFromSelect = e.target.value;
@@ -67,6 +52,42 @@ const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails }: Props) => {
     return selectedDivisionTeams
       .map(v => ({ value: v.id, label: v.name }))
       .filter(v => v.value !== selectedTeamID);
+  };
+
+  const swapTeams = () => {
+    const modifiedSchedulesDetails = schedulesDetails?.map(v => {
+      const scheduleDetails = { ...v };
+
+      if (scheduleDetails.division_id === selectedDivisionID) {
+        switch (scheduleDetails.home_team_id) {
+          case selectedFirstTeamID:
+            scheduleDetails.home_team_id = selectedSecondTeamID;
+            break;
+          case selectedSecondTeamID:
+            scheduleDetails.home_team_id = selectedFirstTeamID;
+            break;
+        }
+
+        switch (scheduleDetails.away_team_id) {
+          case selectedFirstTeamID:
+            scheduleDetails.away_team_id = selectedSecondTeamID;
+            break;
+          case selectedSecondTeamID:
+            scheduleDetails.away_team_id = selectedFirstTeamID;
+            break;
+        }
+      }
+
+      return scheduleDetails;
+    }) || [];
+
+    const schedulesDetailsToModify = modifiedSchedulesDetails?.filter(
+      v => v.division_id === selectedDivisionID
+    );
+
+    console.log("src", schedulesDetails?.filter(v => v.division_id === selectedDivisionID));
+    console.log("swap", schedulesDetailsToModify?.filter(v => v.division_id === selectedDivisionID));
+    swapTeamsInSchedulesDetails(modifiedSchedulesDetails, schedulesDetailsToModify);
   };
 
   return (
@@ -100,6 +121,7 @@ const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails }: Props) => {
           variant="text"
           color="default"
           disabled={!(selectedFirstTeamID && selectedSecondTeamID)}
+          onClick={swapTeams}
         >
           Swap
         </Button>

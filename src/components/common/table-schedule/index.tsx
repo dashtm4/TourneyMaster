@@ -65,7 +65,7 @@ interface Props {
   timeSlots: ITimeSlot[];
   facilities: IScheduleFacility[];
   scheduleData: ISchedule;
-  schedulesDetails?: ISchedulesDetails[] | undefined;
+  schedulesDetails?: ISchedulesDetails[];
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
   historyLength?: number;
@@ -80,6 +80,10 @@ interface Props {
   bracketGames?: IBracketGame[];
   onBracketGameUpdate: (bracketGame: IBracketGame) => void;
   recalculateDiagnostics?: () => void;
+  swapTeamsInSchedulesDetails?: (
+    modifiedSchedulesDetails: ISchedulesDetails[],
+    schedulesDetailsToModify: ISchedulesDetails[]
+  ) => void;
 }
 
 const TableSchedule = ({
@@ -108,6 +112,7 @@ const TableSchedule = ({
   bracketGames,
   onBracketGameUpdate,
   recalculateDiagnostics,
+  swapTeamsInSchedulesDetails,
 }: Props) => {
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
@@ -337,13 +342,17 @@ const TableSchedule = ({
               simultaneousDnd={simultaneousDnd}
               toggleSimultaneousDnd={toggleSimultaneousDnd}
             />
-            <PopupAdvanced
-              buttonTitle="Advanced"
-              modalHeader="Advanced Workflow"
-              divisions={divisions}
-              teams={teamCards as ITeam[]}
-              schedulesDetails={schedulesDetails}
-            />
+            {tableType === TableScheduleTypes.SCHEDULES && schedulesDetails && swapTeamsInSchedulesDetails && (
+                <PopupAdvanced
+                  buttonTitle="Advanced"
+                  modalHeader="Advanced Workflow"
+                  divisions={divisions}
+                  teams={teamCards as ITeam[]}
+                  schedulesDetails={schedulesDetails}
+                  swapTeamsInSchedulesDetails={swapTeamsInSchedulesDetails}
+                />
+              )}
+
             <MatrixTable
               tableType={tableType}
               eventDay={filterValues.selectedDay!}

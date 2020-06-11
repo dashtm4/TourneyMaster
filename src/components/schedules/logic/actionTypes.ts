@@ -24,6 +24,10 @@ export const SCHEDULES_GAMES_ALREADY_EXIST = 'SCHEDULES_GAMES_ALREADY_EXIST';
 
 export const SCHEDULES_DETAILS_CLEAR = 'SCHEDULES:SCHEDULES_DETAILS_CLEAR';
 
+export const TEAM_FOR_TEAM_GAME_SWAP_IN_PROGRESS = 'TEAM_FOR_TEAM_GAME_SWAP_IN_PROGRESS';
+export const TEAM_FOR_TEAM_GAME_SWAP_SUCCESS = 'TEAM_FOR_TEAM_GAME_SWAP_SUCCESS';
+export const TEAM_FOR_TEAM_GAME_SWAP_FAILURE = 'TEAM_FOR_TEAM_GAME_SWAP_FAILURE';
+
 interface IFetchFieldsSuccess {
   type: 'FETCH_FIELDS_SUCCESS';
   payload: IField[];
@@ -93,6 +97,19 @@ interface SchedulesDetailsClear {
   type: 'SCHEDULES:SCHEDULES_DETAILS_CLEAR';
 }
 
+interface TeamForTeamGameSwapInProgress {
+  type: 'TEAM_FOR_TEAM_GAME_SWAP_IN_PROGRESS';
+}
+
+interface TeamForTeamGameSwapSuccess {
+  type: 'TEAM_FOR_TEAM_GAME_SWAP_SUCCESS',
+  payload: ISchedulesDetails[];
+}
+
+interface TeamForTeamGameSwapFailure {
+  type: 'TEAM_FOR_TEAM_GAME_SWAP_FAILURE';
+}
+
 export type FieldsAction = IFetchFieldsSuccess | IFetchFieldsFailure;
 
 export type IScheduleAction =
@@ -108,4 +125,7 @@ export type IScheduleAction =
   | SchedulesPublishedClear
   | AnotherSchedulePublished
   | SchedulesGamesAlreadyExist
-  | SchedulesDetailsClear;
+  | SchedulesDetailsClear
+  | TeamForTeamGameSwapInProgress
+  | TeamForTeamGameSwapSuccess
+  | TeamForTeamGameSwapFailure;
