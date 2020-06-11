@@ -9,13 +9,13 @@ interface Props {
   divisions: IDivision[];
   teams: ITeam[];
   schedulesDetails: ISchedulesDetails[];
-  swapTeamsInSchedulesDetails: (
+  updateSchedulesDetails: (
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
   ) => void;
 }
 
-const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails, swapTeamsInSchedulesDetails }: Props) => {
+const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails, updateSchedulesDetails }: Props) => {
   const [selectedDivisionID, setSelectedDivisionID] = useState('');
   const [selectedDivisionTeams, setSelectedDivisionTeams] = useState<ITeam[]>(
     []
@@ -77,7 +77,14 @@ const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails, swapTeamsInSc
       v => v.division_id === selectedDivisionID && (v.home_team_id === selectedFirstTeamID || v.away_team_id === selectedSecondTeamID || v.home_team_id === selectedSecondTeamID || v.away_team_id === selectedFirstTeamID)
     );
 
-    swapTeamsInSchedulesDetails(modifiedSchedulesDetails, schedulesDetailsToModify);
+    // console.log(selectedFirstTeamID, selectedSecondTeamID);
+    // console.log(schedulesDetails?.filter(
+    //   v => v.division_id === selectedDivisionID && (v.home_team_id === selectedFirstTeamID || v.away_team_id === selectedSecondTeamID || v.home_team_id === selectedSecondTeamID || v.away_team_id === selectedFirstTeamID)
+    // ));
+
+    // console.log(schedulesDetailsToModify);
+
+    updateSchedulesDetails(modifiedSchedulesDetails, schedulesDetailsToModify);
   };
 
   return (

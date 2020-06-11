@@ -25,7 +25,7 @@ import {
   createSchedule,
   updateSchedule,
   schedulesDetailsClear,
-  swapTeamsInSchedulesDetails,
+  updateSchedulesDetails,
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
@@ -150,7 +150,7 @@ interface IMapDispatchToProps {
     schedulesDetails: ISchedulesDetails[]
   ) => void;
   schedulesDetailsClear: () => void;
-  swapTeamsInSchedulesDetails: (
+  updateSchedulesDetails: (
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
   ) => void;
@@ -368,7 +368,7 @@ class Schedules extends Component<Props, State> {
       scheduleId && schedule
         ? getTimeValuesFromEventSchedule(event, schedule)
         : getTimeValuesFromSchedule(scheduleData!);
-
+        console.log(timeValues, schedulesDetails);
     const timeSlots = calculateTimeSlots(
       timeValues,
       schedulesDetails,
@@ -829,7 +829,7 @@ class Schedules extends Component<Props, State> {
             playoffTimeSlots={playoffTimeSlots}
             onBracketGameUpdate={() => {}}
             recalculateDiagnostics={this.calculateDiagnostics}
-            swapTeamsInSchedulesDetails={this.props.swapTeamsInSchedulesDetails}
+            updateSchedulesDetails={this.props.updateSchedulesDetails}
           />
         ) : (
           <div className={styles.loadingWrapper}>
@@ -898,7 +898,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       updateSchedule,
       schedulesDetailsClear,
       //
-      swapTeamsInSchedulesDetails,
+      updateSchedulesDetails,
     },
     dispatch
   );

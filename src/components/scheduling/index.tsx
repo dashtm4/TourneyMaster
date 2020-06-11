@@ -277,7 +277,7 @@ class Scheduling extends Component<IProps, IState> {
 
     const timeValues = getTimeValuesFromSchedule(schedule);
     const timeSlots = calculateTimeSlots(timeValues);
-
+    console.log("component - scheduling")
     const actionName =
       componentAction === ComponentActionsEnum.SchedulePublish
         ? 'Publish'

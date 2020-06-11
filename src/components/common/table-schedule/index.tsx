@@ -80,7 +80,7 @@ interface Props {
   bracketGames?: IBracketGame[];
   onBracketGameUpdate: (bracketGame: IBracketGame) => void;
   recalculateDiagnostics?: () => void;
-  swapTeamsInSchedulesDetails?: (
+  updateSchedulesDetails?: (
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
   ) => void;
@@ -112,7 +112,7 @@ const TableSchedule = ({
   bracketGames,
   onBracketGameUpdate,
   recalculateDiagnostics,
-  swapTeamsInSchedulesDetails,
+  updateSchedulesDetails,
 }: Props) => {
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
@@ -342,14 +342,14 @@ const TableSchedule = ({
               simultaneousDnd={simultaneousDnd}
               toggleSimultaneousDnd={toggleSimultaneousDnd}
             />
-            {tableType === TableScheduleTypes.SCHEDULES && schedulesDetails && swapTeamsInSchedulesDetails && (
+            {tableType === TableScheduleTypes.SCHEDULES && schedulesDetails && updateSchedulesDetails && (
                 <PopupAdvanced
                   buttonTitle="Advanced"
                   modalHeader="Advanced Workflow"
                   divisions={divisions}
                   teams={teamCards as ITeam[]}
                   schedulesDetails={schedulesDetails}
-                  swapTeamsInSchedulesDetails={swapTeamsInSchedulesDetails}
+                  updateSchedulesDetails={updateSchedulesDetails}
                 />
               )}
 

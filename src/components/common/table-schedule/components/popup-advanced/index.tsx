@@ -13,7 +13,7 @@ interface Props {
   divisions: IDivision[];
   teams: ITeam[];
   schedulesDetails: ISchedulesDetails[];
-  swapTeamsInSchedulesDetails: (
+  updateSchedulesDetails: (
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
   ) => void;
@@ -25,7 +25,7 @@ const PopupAdvanced = ({
   divisions,
   teams,
   schedulesDetails,
-  swapTeamsInSchedulesDetails,
+  updateSchedulesDetails,
 }: Props) => {
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(
@@ -40,11 +40,11 @@ const PopupAdvanced = ({
             divisions={divisions}
             teams={teams}
             schedulesDetails={schedulesDetails}
-            swapTeamsInSchedulesDetails={swapTeamsInSchedulesDetails}
+            updateSchedulesDetails={updateSchedulesDetails}
           />
         );
       case AdvancedWorkflowOptionTypes.UPDATE_TIMESLOTS:
-        return <UpdateTimeslots schedulesDetails={schedulesDetails} />;
+        return <UpdateTimeslots schedulesDetails={schedulesDetails} updateSchedulesDetails={updateSchedulesDetails} />;
       default:
         return <></>;
     }
@@ -85,8 +85,8 @@ const PopupAdvanced = ({
           <div className={styles.btnsWrapper}>
             <Button
               label="Close"
-              variant="contained"
-              color="primary"
+              variant="text"
+              color="secondary"
               onClick={() => setOpen(false)}
             />
           </div>
