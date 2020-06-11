@@ -127,7 +127,7 @@ const PopupSaveReporting = ({
             onChange={onChangeActiveDay}
             primaryValue={DefaultSelectValues.ALL}
             isFormControlRow={true}
-            label="Days: "
+            label="Date Selection: "
           />
         </header>
         <ul className={styles.linkList}>
