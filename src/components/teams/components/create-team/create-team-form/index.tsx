@@ -167,7 +167,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
           </div>
           <div className={styles.sectionRow}>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Entering States allows for eliminating repetitive gamess when creating schedules! 2 Letter States (e.g., IL, NJ) or 3 for Canadian Provinces!
+              Entering States allows for eliminating repetitive games when creating schedules! 2 Letter States (e.g., IL, NJ) or 3 for Canadian Provinces!
               </CardMessage>
             <div className={styles.sectionItem} />
 
@@ -216,6 +216,12 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
                 onChange={this.onEmailChange}
               />
             </div>
+          </div>
+          <div className={styles.sectionRow}>
+            <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+              Mobile numbers are used by event staff to call coaches if their team is Missing In Action!
+              </CardMessage>
+
           </div>
           <div className={styles.sectionRow}>
             <div>
