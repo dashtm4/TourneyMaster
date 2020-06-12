@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from '../styles.module.scss';
 import { IRegistration, BindingCbWithTwo } from 'common/models';
-import { Checkbox, Input, Select } from 'components/common';
+import { Checkbox, Input, Select, Radio } from 'components/common';
 import PaymentSchedule from './payment-schedule';
 
 interface IPaymentsProps {
@@ -15,6 +15,16 @@ const installmentOptions = [
   { label: '4', value: 4 },
 ];
 
+export enum installmentTypeOptions {
+  'Equal Monthly Payments' = 0,
+  'Schedule' = 1,
+}
+
+const installmentTypeRadioOptions = [
+  installmentTypeOptions[0],
+  installmentTypeOptions[1],
+];
+
 const Payments = ({ data, onChange }: IPaymentsProps) => {
   const onUpchargeProcessingFeesChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -26,14 +36,52 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
   const onIncludeSalesTaxYNChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('include_sales_tax_YN', Number(e.target.checked));
 
-  const onInstallmentPaymentsYNChange = (
+  const onInstallmentPaymentsChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    onChange('installment_payments_YN', Number(e.target.checked));
-    if (!e.target.checked) {
+    if (Boolean(e.target.checked)) {
+      onChange('installment_payments_YN', 0);
+      onChange('num_installments', 0);
+      onChange('payment_schedule_json', '[]');
+    } else {
+      onChange('payment_schedule_json', '');
+      onChange('installment_payments_YN', 1);
       onChange('num_installments', 1);
     }
   };
+
+  const onInstallmentPaymentTypeChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    let newPaymentScheduleJson: any[] = [];
+    if (e.target.value === installmentTypeOptions[1]) {
+      newPaymentScheduleJson = [
+        {
+          id: 'FP',
+          name: 'Pay in full',
+          type: 'installment',
+          iterations: 1,
+          interval: 'month',
+          intervalCount: '1',
+        },
+        {
+          id: 'S',
+          type: 'schedule',
+          name: 'Pay later',
+          schedule: [{ date: new Date(), amount: 100, amountType: 'percent' }],
+        },
+      ];
+
+      onChange('payment_schedule_json', JSON.stringify(newPaymentScheduleJson));
+      onChange('installment_payments_YN', 0);
+      onChange('num_installments', 1);
+    } else if (e.target.value === installmentTypeOptions[0]) {
+      onChange('payment_schedule_json', JSON.stringify(newPaymentScheduleJson));
+      onChange('installment_payments_YN', 1);
+      onChange('num_installments', 1);
+    }
+  };
+
   const onNumInstallmentsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange('num_installments', e.target.value);
     const plans = [];
@@ -66,36 +114,15 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
   const onPromocodeDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('promo_code_discount', e.target.value);
 
-  const onPaymentScheduleJsonChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => onChange('payment_schedule_json', e.target.value);
+  // const onPaymentScheduleJsonChange = (
+  //   e: React.ChangeEvent<HTMLInputElement>
+  // ) => onChange('payment_schedule_json', e.target.value);
 
-  const onPaymentScheduleCheckboxChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (e.target.checked) {
-      const newPaymentScheduleJson = JSON.parse(
-        data?.payment_schedule_json ? data?.payment_schedule_json! : '[]'
-      );
-      newPaymentScheduleJson.push({
-        id: 'S',
-        type: 'schedule',
-        name: 'Pay later',
-        schedule: [{ date: new Date(), amount: 100, amountType: 'percent' }],
-      });
-
-      onChange('payment_schedule_json', JSON.stringify(newPaymentScheduleJson));
-    } else {
-      const newPaymentScheduleJson = JSON.parse(
-        data?.payment_schedule_json ? data?.payment_schedule_json! : '[]'
-      ).filter((x: any) => x.type !== 'schedule');
-      onChange('payment_schedule_json', JSON.stringify(newPaymentScheduleJson));
-    }
-  };
-
-  const paymentSchedule = JSON.parse(data?.payment_schedule_json!)?.find(
-    (x: any) => x.type === 'schedule'
-  );
+  const paymentSchedule = data?.payment_schedule_json
+    ? JSON.parse(data?.payment_schedule_json!)?.find(
+        (x: any) => x.type === 'schedule'
+      )
+    : null;
 
   const onScheduleChange = (schedule: any) => {
     const newPaymentScheduleJson = JSON.parse(
@@ -200,51 +227,60 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
           style={{ flexGrow: 1, maxWidth: '30%' }}
         >
           <Checkbox
-            onChange={onInstallmentPaymentsYNChange}
+            onChange={onInstallmentPaymentsChange}
             options={[
               {
                 label: 'Installment Payments',
-                checked: Boolean(data ? data.installment_payments_YN : false),
+                checked: Boolean(data?.payment_schedule_json),
               },
             ]}
           />
-          {data?.installment_payments_YN ? (
-            <Select
-              options={installmentOptions}
-              value={data ? String(data.num_installments) : ''}
-              onChange={onNumInstallmentsChange}
+        </div>
+        <div
+          className={styles.sectionItem}
+          style={{ flexGrow: 1, maxWidth: '60%' }}
+        >
+          {data?.payment_schedule_json ? (
+            <Radio
+              options={installmentTypeRadioOptions}
+              checked={installmentTypeRadioOptions[Number(scheduleIsPresent)]}
+              onChange={onInstallmentPaymentTypeChange}
+              row={true}
             />
           ) : null}
         </div>
       </div>
       <div className={styles.sectionRow}>
-        <div className={styles.sectionItem}>
-          <Checkbox
-            onChange={onPaymentScheduleCheckboxChange}
-            options={[
-              {
-                label: 'Payment Schedule',
-                checked: Boolean(scheduleIsPresent),
-              },
-            ]}
-          />
-        </div>
-        <div className={styles.sectionItem}>
-          <Input
+        {!scheduleIsPresent && data?.payment_schedule_json ? (
+          <div
+            className={styles.sectionItem}
+            style={{ flexGrow: 1, maxWidth: '30%' }}
+          >
+            <Select
+              options={installmentOptions}
+              label="Number of monthly installments"
+              value={data ? String(data.num_installments) : ''}
+              onChange={onNumInstallmentsChange}
+            />
+          </div>
+        ) : null}
+        {/* <Input
             fullWidth={true}
             label="Payment Schedule"
             type="text"
             value={data ? data.payment_schedule_json : ''}
             onChange={onPaymentScheduleJsonChange}
-          />
-        </div>
-      </div>
-      <div className={styles.sectionRow}>
+          /> */}
         {paymentSchedule ? (
-          <PaymentSchedule
-            schedule={paymentSchedule}
-            onScheduleChange={onScheduleChange}
-          />
+          <div
+            className={styles.sectionItem}
+            style={{ flexGrow: 1, justifyItems: 'left', maxWidth: '100%' }}
+          >
+            <PaymentSchedule
+              schedule={paymentSchedule}
+              onScheduleChange={onScheduleChange}
+            />
+          </div>
         ) : null}
       </div>
     </div>

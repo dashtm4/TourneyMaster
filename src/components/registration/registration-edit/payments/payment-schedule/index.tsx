@@ -59,7 +59,7 @@ const PaymentSchedule: React.SFC<PaymentScheduleProps> = ({
           <TableHead>
             <TableCell>Payment Date</TableCell>
             <TableCell>Amount (%)</TableCell>
-            <TableCell></TableCell>
+            <TableCell />
           </TableHead>
           {schedule?.schedule?.map((phase: any, index: number) => (
             <ScheduleItem
@@ -70,7 +70,7 @@ const PaymentSchedule: React.SFC<PaymentScheduleProps> = ({
             />
           ))}
           <TableRow>
-            <TableCell colSpan={3}>
+            <TableCell colSpan={1}>
               <Button
                 variant="outlined"
                 color="primary"
@@ -78,6 +78,15 @@ const PaymentSchedule: React.SFC<PaymentScheduleProps> = ({
                 onClick={onPhaseAdd}
               />
             </TableCell>
+            <TableCell>
+              Total:{' '}
+              {schedule?.schedule?.reduce(
+                (sum: number, phase: any) => sum + Number(phase.amount),
+                0
+              )}
+              %
+            </TableCell>
+            <TableCell />
           </TableRow>
         </Table>
       </TableContainer>
