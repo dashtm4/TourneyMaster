@@ -350,7 +350,6 @@ const getSchedulesData = async (
   })) as ISchedulesDetails[];
 
   const timeValues = getTimeValuesFromEventSchedule(event, schedule);
-  console.log("component - scheduling")
   const timeSlots = calculateTimeSlots(
     timeValues,
     loadedSchedulesDetails,

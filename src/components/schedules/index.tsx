@@ -368,7 +368,6 @@ class Schedules extends Component<Props, State> {
       scheduleId && schedule
         ? getTimeValuesFromEventSchedule(event, schedule)
         : getTimeValuesFromSchedule(scheduleData!);
-        console.log(timeValues, schedulesDetails);
     const timeSlots = calculateTimeSlots(
       timeValues,
       schedulesDetails,

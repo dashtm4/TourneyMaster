@@ -36,14 +36,15 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
     return schedulesDetails.filter(v => v.game_date === dates[+dateId - 1]);
   };
 
-  const mapDatesToOptions = () => 
-    dates.map((v, i) => ({
+  const mapDatesToOptions = () => {
+    return dates.map((v, i) => ({
       value: i + 1,
       label: moment(v || '').format('ddd MMM D'),
     })) as ISelectOption[];
+  };
 
   const mapTimeSlotsToOptions = () => {
-    selectedDateTimeSlots.map(v => ({
+    return selectedDateTimeSlots.map(v => ({
       value: v.id + 1,
       label: moment(timeToDate(v.time))
         .locale('en')
