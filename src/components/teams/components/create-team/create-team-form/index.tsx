@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Select } from 'components/common/';
+import { Input, Select, CardMessage } from 'components/common/';
 import Checkbox from 'components/common/buttons/checkbox';
 import styles from '../styles.module.scss';
 import { sortByField } from 'helpers';
@@ -7,6 +7,7 @@ import { IDivision, ITeam } from 'common/models';
 import { SortByFilesTypes } from 'common/enums';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { CardMessageTypes } from 'components/common/card-message/types';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -96,6 +97,12 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
       <div className={styles.sectionContainer}>
         <div className={styles.section}>
           <div className={styles.sectionRow}>
+            <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+              Long Names do not render well on phones. Please enter both!
+              </CardMessage>
+            <div className={styles.sectionItem} />
+          </div>
+          <div className={styles.sectionRow}>
             <div className={styles.sectionItemLarge}>
               <Input
                 fullWidth={true}
@@ -157,6 +164,13 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
                 onChange={this.onLevelChange}
               />
             </div>
+          </div>
+          <div className={styles.sectionRow}>
+            <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+              Entering States allows for eliminating repetitive gamess when creating schedules! 2 Letter States (e.g., IL, NJ) or 3 for Canadian Provinces!
+              </CardMessage>
+            <div className={styles.sectionItem} />
+
           </div>
         </div>
         <div className={styles.section}>
