@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { ISchedulesDetails } from 'common/models';
-import { Select, DatePicker, PopupConfirm, Button } from 'components/common';
-import { getTimeSlotsFromEntities } from 'helpers/schedule.helpers';
-import { TimeSlotsEntityTypes } from 'common/enums';
-import { timeToDate, dateToTime } from 'helpers/date.helper';
-import styles from './styles.module.scss';
+import { ISchedulesDetails, ISelectOption } from 'common/models';
 import ITimeSlot from 'common/models/schedule/timeSlots';
+import { TimeSlotsEntityTypes } from 'common/enums';
+import { getTimeSlotsFromEntities } from 'helpers/schedule.helpers';
+import { timeToDate, dateToTime } from 'helpers/date.helper';
+import { Select, DatePicker, PopupConfirm, Button } from 'components/common';
+import styles from './styles.module.scss';
 
 interface Props {
   schedulesDetails: ISchedulesDetails[];
@@ -15,113 +15,104 @@ interface Props {
   ) => void;
 }
 
-const UpdateTimeslots = ({ schedulesDetails, updateSchedulesDetails }: Props) => {
+const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) => {
   const [selectedDateId, setSelectedDateId] = useState('');
-  const [selectedDateTimeslots, setSelectedDateTimeslots] = useState<
-    ITimeSlot[]
-  >([]);
-  const [selectedDateTimeslotId, setSelectedDateTimeslotId] = useState('');
-  const [selectedDateTimeslot, setSelectedDateTimeslot] = useState<Date>(
-    new Date()
-  );
-  const [selectedTimeDifference, setSelectedTimeDifference] = useState<number>(
-    0
-  );
-  const [inputedTimeslot, setInputedTimeslot] = useState<Date>();
+  const [selectedDateTimeSlots, setSelectedDateTimeSlots] = useState<ITimeSlot[]>([]);
+  const [selectedTimeSlotId, setSelectedTimeSlotId] = useState('');
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<Date>(new Date());
+  const [timeShift, setTimeShift] = useState<number>(0);
+  const [newTimeSlot, setNewTimeSlot] = useState<Date>();
   const [isOpenWarning, setIsOpenWarning] = useState<boolean>(false);
 
-  const dates = [
-    ...new Set(
-      schedulesDetails
-        ?.filter(item => item.game_date !== null)
-        .map(item => item.game_date)
-    ),
-  ] as string[];
+  const dates = [...new Set(schedulesDetails
+        .filter(v => v.game_date !== null)
+        .map(v => v.game_date)
+    )
+  ];
 
-  const cancel = () => setIsOpenWarning(false);
+  const mapDatesToOptions = () => dates.map((v, i) => ({ value: i + 1, label: v })) as ISelectOption[];
 
   const onDateChange = (e: any) => {
     const selectedDateFromSelect = e.target.value;
     setSelectedDateId(selectedDateFromSelect);
-    setSelectedDateTimeslots(
+    setSelectedDateTimeSlots(
       getTimeSlotsFromEntities(
-        schedulesDetails.filter(
-          item => item.game_date === dates[+selectedDateFromSelect - 1]
-        ),
+        schedulesDetails.filter(v => v.game_date === dates[+selectedDateFromSelect - 1]),
         TimeSlotsEntityTypes.SCHEDULE_DETAILS
       )
     );
   };
 
-  const onTimeslotChange = (e: any) => {
-    const selectedTimeslotFromSelect = e.target.value;
-    setSelectedDateTimeslotId((selectedTimeslotFromSelect - 1).toString());
+  const mapTimeSlotsToOptions = () => selectedDateTimeSlots.map(v => ({ value: v.id + 1, label: v.time }));
+
+  const onTimeSlotChange = (e: any) => {
+    const selectedTimeSlotFromSelect = e.target.value;
+    setSelectedTimeSlotId((selectedTimeSlotFromSelect - 1).toString());
     const timeslot = new Date(
-      timeToDate(
-        selectedDateTimeslots?.find(
-          item => item.id === selectedTimeslotFromSelect - 1
-        )?.time || ''
-      )
+      timeToDate(selectedDateTimeSlots.find(v => v.id === selectedTimeSlotFromSelect - 1)?.time || '')
     );
-    setSelectedDateTimeslot(timeslot);
-    setInputedTimeslot(timeslot);
+    setSelectedTimeSlot(timeslot);
+    setNewTimeSlot(timeslot);
   };
 
   const onTimeChange = (time: Date) => {
-    const timeDifference = +time - +selectedDateTimeslot;
+    const timeDifference = +time - +selectedTimeSlot;
     if (timeDifference < 0) {
       setIsOpenWarning(true);
       return;
     }
-    setSelectedTimeDifference(timeDifference);
-    setInputedTimeslot(time);
+    setTimeShift(timeDifference);
+    setNewTimeSlot(time);
   };
 
   const updateTimeSlots = () => {
-    const changingTimeslots = selectedDateTimeslots.slice(+selectedDateTimeslotId).map(timeslot => timeslot.time);
-    const filteredSchedulesDetailsByDate = schedulesDetails ?.filter(
-      item => item.game_date === dates[+selectedDateId - 1]
-    );
-    const swapMap = changingTimeslots.map(slot => {
-      return { prevTimeslot: slot, nextTimeslot: dateToTime(new Date(+(new Date(timeToDate(slot))) + selectedTimeDifference)) }
+    const changingTimeSlots = selectedDateTimeSlots
+      .slice(+selectedTimeSlotId)
+      .map(timeslot => timeslot.time);
+
+    const filteredSchedulesDetailsByDate = schedulesDetails.filter(v => v.game_date === dates[+selectedDateId - 1]);
+
+    const swapMap = changingTimeSlots.map(slot => {
+      return {
+        prevTimeSlot: slot,
+        nextTimeSlot: dateToTime(
+          new Date(+new Date(timeToDate(slot)) + timeShift)
+        ),
+      };
     });
+
     const updatedFilteredSchedulesDetails = filteredSchedulesDetailsByDate.map(
       detail => {
-        if (
-          changingTimeslots.includes(detail.game_time || '') &&
-          detail.game_time
-        ) {
-          const time = swapMap.find(
-            item => item.prevTimeslot === detail.game_time
-          );
-          detail.game_time = time ? time.nextTimeslot : detail.game_time;
+        const newDetail = { ...detail }
+        if (changingTimeSlots.includes(newDetail.game_time || '') && newDetail.game_time) {
+          const time = swapMap.find(v => v.prevTimeSlot === newDetail.game_time);
+          newDetail.game_time = time ? time.nextTimeSlot : newDetail.game_time;
         }
-        return detail;
+        return newDetail;
       }
     );
-    const updatedFilteredSchedulesDetailsIds = updatedFilteredSchedulesDetails.map(detail => {
-      return { id: detail.schedule_version_id, value: detail};
-    });
+
+    const updatedFilteredSchedulesDetailsWithIds = updatedFilteredSchedulesDetails.map(v => ({ id: v.schedule_version_id, value: v }));
+
     const updatedSchedulesDetails = schedulesDetails.map(detail => {
-      const itemForChange = updatedFilteredSchedulesDetailsIds.find((o) => o.id === detail.schedule_version_id);
+      const itemForChange = updatedFilteredSchedulesDetailsWithIds.find(detailWithID => detailWithID.id === detail.schedule_version_id);
       if (itemForChange) {
-        detail = itemForChange.value;
+        return itemForChange.value;
       }
       return detail;
     });
 
-    // console.log(updatedSchedulesDetails, updatedFilteredSchedulesDetails);
     updateSchedulesDetails(updatedSchedulesDetails, updatedFilteredSchedulesDetails);
   };
+
+  const cancel = () => setIsOpenWarning(false);
 
   return (
     <div>
       <div className={styles.selectContainer}>
         <div className={styles.selectWrapper}>
           <Select
-            options={dates.map((v, index) => {
-              return { value: index + 1, label: v };
-            })}
+            options={mapDatesToOptions()}
             label="Select Date:"
             value={selectedDateId}
             onChange={onDateChange}
@@ -129,12 +120,10 @@ const UpdateTimeslots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
         </div>
         <div className={styles.selectWrapper}>
           <Select
-            options={selectedDateTimeslots.map(timeslot => {
-              return { value: timeslot.id + 1, label: timeslot.time };
-            })}
-            value={(+selectedDateTimeslotId + 1).toString()}
+            options={mapTimeSlotsToOptions()}
+            value={(+selectedTimeSlotId + 1).toString()}
             label="Select Timeslot:"
-            onChange={onTimeslotChange}
+            onChange={onTimeSlotChange}
             disabled={!selectedDateId}
           />
         </div>
@@ -142,12 +131,12 @@ const UpdateTimeslots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
       <div className={styles.flexcontainer}>
         <DatePicker
           minWidth="calc(100% - 40px)"
-          value={inputedTimeslot}
+          value={newTimeSlot}
           type="time"
           viewType="input"
           label="Change Timeslot:"
           onChange={onTimeChange}
-          disabled={!selectedDateTimeslotId}
+          disabled={!selectedTimeSlotId}
         />
         <div className={styles.btnsWrapper}>
           <Button
@@ -155,7 +144,7 @@ const UpdateTimeslots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
             variant="contained"
             color="primary"
             onClick={updateTimeSlots}
-            disabled={!inputedTimeslot}
+            disabled={!newTimeSlot}
           />
         </div>
       </div>
@@ -172,4 +161,4 @@ const UpdateTimeslots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
   );
 };
 
-export default UpdateTimeslots;
+export default UpdateTimeSlots;

@@ -52,7 +52,7 @@ import { IDiagnosticsInput } from 'components/schedules/diagnostics';
 import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
 import { IBracketGame } from 'components/playoffs/bracketGames';
 import { updateGameSlot } from 'components/playoffs/helper';
-import PopupAdvanced from './components/popup-advanced';
+import PopupAdvancedWorkflow from './components/popup-advanced-workflow';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -343,9 +343,7 @@ const TableSchedule = ({
               toggleSimultaneousDnd={toggleSimultaneousDnd}
             />
             {tableType === TableScheduleTypes.SCHEDULES && schedulesDetails && updateSchedulesDetails && (
-                <PopupAdvanced
-                  buttonTitle="Advanced"
-                  modalHeader="Advanced Workflow"
+                <PopupAdvancedWorkflow
                   divisions={divisions}
                   teams={teamCards as ITeam[]}
                   schedulesDetails={schedulesDetails}

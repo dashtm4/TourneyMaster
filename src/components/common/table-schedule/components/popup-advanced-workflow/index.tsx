@@ -3,13 +3,11 @@ import { Modal, Button, Radio } from 'components/common';
 import styles from './styles.module.scss';
 import { AdvancedWorkflowOptionTypes } from 'common/enums/table-schedule';
 import TeamForTeamGameSwap from 'components/common/table-schedule/components/team-for-team-game-swap';
-import UpdateTimeslots from 'components/common/table-schedule/components/update-timeslots';
+import UpdateTimeSlots from 'components/common/table-schedule/components/update-timeslots';
 import { IDivision, ISchedulesDetails } from 'common/models';
 import { ITeam } from 'common/models/schedule/teams';
 
 interface Props {
-  buttonTitle: string;
-  modalHeader: string;
   divisions: IDivision[];
   teams: ITeam[];
   schedulesDetails: ISchedulesDetails[];
@@ -19,18 +17,14 @@ interface Props {
   ) => void;
 }
 
-const PopupAdvanced = ({
-  buttonTitle,
-  modalHeader,
+const PopupAdvancedWorkflow = ({
   divisions,
   teams,
   schedulesDetails,
   updateSchedulesDetails,
 }: Props) => {
   const [open, setOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(
-    AdvancedWorkflowOptionTypes.TEAM_FOR_TEAM_GAME_SWAP
-  );
+  const [selectedOption, setSelectedOption] = useState(AdvancedWorkflowOptionTypes.TEAM_FOR_TEAM_GAME_SWAP);
 
   const renderSelectedOption = (option: string) => {
     switch (option) {
@@ -44,7 +38,7 @@ const PopupAdvanced = ({
           />
         );
       case AdvancedWorkflowOptionTypes.UPDATE_TIMESLOTS:
-        return <UpdateTimeslots schedulesDetails={schedulesDetails} updateSchedulesDetails={updateSchedulesDetails} />;
+        return <UpdateTimeSlots schedulesDetails={schedulesDetails} updateSchedulesDetails={updateSchedulesDetails} />;
       default:
         return <></>;
     }
@@ -59,7 +53,7 @@ const PopupAdvanced = ({
           marginLeft: '15px',
           marginBottom: '2px',
         }}
-        label={buttonTitle}
+        label="Advanced"
         variant="text"
         color="default"
         onClick={() => setOpen(open => !open)}
@@ -67,7 +61,7 @@ const PopupAdvanced = ({
       <Modal isOpen={open} onClose={() => setOpen(false)}>
         <div className={styles.modalContainer}>
           <div>
-            <h4 className={styles.title}>{modalHeader}</h4>
+            <h4 className={styles.title}>Advanced Workflow</h4>
           </div>
           <div className={styles.workflowOptions}>
             <Radio
@@ -96,4 +90,4 @@ const PopupAdvanced = ({
   );
 };
 
-export default PopupAdvanced;
+export default PopupAdvancedWorkflow;

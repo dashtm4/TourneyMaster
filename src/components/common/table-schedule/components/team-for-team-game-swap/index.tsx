@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { IDivision, ISchedulesDetails } from 'common/models';
-import Select from 'components/common/select';
 import { ITeam } from 'common/models/schedule/teams';
+import { Button, Select } from 'components/common';
 import styles from './styles.module.scss';
-import { Button } from 'components/common';
 
 interface Props {
   divisions: IDivision[];
@@ -17,11 +16,11 @@ interface Props {
 
 const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails, updateSchedulesDetails }: Props) => {
   const [selectedDivisionID, setSelectedDivisionID] = useState('');
-  const [selectedDivisionTeams, setSelectedDivisionTeams] = useState<ITeam[]>(
-    []
-  );
+  const [selectedDivisionTeams, setSelectedDivisionTeams] = useState<ITeam[]>([]);
   const [selectedFirstTeamID, setSelectedFirstTeamID] = useState('');
   const [selectedSecondTeamID, setSelectedSecondTeamID] = useState('');
+
+  const mapDivisionsToOptions = () => divisions.map(v => ({ value: v.division_id, label: v.short_name }));
 
   const onDivisionChange = async (e: any) => {
     const selectedDivisionIDFromSelect = e.target.value;
@@ -31,52 +30,45 @@ const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails, updateSchedul
     );
   };
 
-  const onTeamChange = (setTeamID: any, anotherTeamID: string) => {
-    return (e: any) => {
-      const selectedTeamID = e.target.value;
-      if (selectedTeamID !== anotherTeamID) {
-        setTeamID(selectedTeamID);
-      }
-    }
-  };
-
-  const mapTeamsForSelect = (selectedTeamID: string) => {
+  const mapTeamsToOptions = (anotherSelectedTeamID: string) => {
     return selectedDivisionTeams
       .map(v => ({ value: v.id, label: v.name }))
-      .filter(v => v.value !== selectedTeamID);
+      .filter(v => v.value !== anotherSelectedTeamID);
+  };
+
+  const onTeamChange = (setTeamID: any, anotherSelectedTeamID: string) => {
+    return (e: any) => {
+      const selectedTeamID = e.target.value;
+      if (selectedTeamID !== anotherSelectedTeamID) {
+        setTeamID(selectedTeamID);
+      }
+    };
   };
 
   const swapTeams = () => {
-    const modifiedSchedulesDetails = schedulesDetails?.map(v => {
-        const scheduleDetails = { ...v };
+    const modifiedSchedulesDetails = schedulesDetails.map(v => {
+      const scheduleDetails = { ...v };
 
-        if (scheduleDetails.division_id === selectedDivisionID) {
-          if (scheduleDetails.home_team_id === selectedFirstTeamID) {
-            scheduleDetails.home_team_id = selectedSecondTeamID;
-          } else if (scheduleDetails.home_team_id === selectedSecondTeamID) {
-            scheduleDetails.home_team_id = selectedFirstTeamID;
-          }
-
-          if (scheduleDetails.away_team_id === selectedFirstTeamID) {
-            scheduleDetails.away_team_id = selectedSecondTeamID;
-          } else if (scheduleDetails.away_team_id === selectedSecondTeamID) {
-            scheduleDetails.away_team_id = selectedFirstTeamID;
-          }
+      if (scheduleDetails.division_id === selectedDivisionID) {
+        if (scheduleDetails.home_team_id === selectedFirstTeamID) {
+          scheduleDetails.home_team_id = selectedSecondTeamID;
+        } else if (scheduleDetails.home_team_id === selectedSecondTeamID) {
+          scheduleDetails.home_team_id = selectedFirstTeamID;
         }
 
-        return scheduleDetails;
-      }) || [];
+        if (scheduleDetails.away_team_id === selectedFirstTeamID) {
+          scheduleDetails.away_team_id = selectedSecondTeamID;
+        } else if (scheduleDetails.away_team_id === selectedSecondTeamID) {
+          scheduleDetails.away_team_id = selectedFirstTeamID;
+        }
+      }
 
-    const schedulesDetailsToModify = modifiedSchedulesDetails?.filter(
+      return scheduleDetails;
+    });
+
+    const schedulesDetailsToModify = modifiedSchedulesDetails.filter(
       v => v.division_id === selectedDivisionID && (v.home_team_id === selectedFirstTeamID || v.away_team_id === selectedSecondTeamID || v.home_team_id === selectedSecondTeamID || v.away_team_id === selectedFirstTeamID)
     );
-
-    // console.log(selectedFirstTeamID, selectedSecondTeamID);
-    // console.log(schedulesDetails?.filter(
-    //   v => v.division_id === selectedDivisionID && (v.home_team_id === selectedFirstTeamID || v.away_team_id === selectedSecondTeamID || v.home_team_id === selectedSecondTeamID || v.away_team_id === selectedFirstTeamID)
-    // ));
-
-    // console.log(schedulesDetailsToModify);
 
     updateSchedulesDetails(modifiedSchedulesDetails, schedulesDetailsToModify);
   };
@@ -84,17 +76,15 @@ const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails, updateSchedul
   return (
     <div className={styles.container}>
       <Select
-        options={divisions.map(v => {
-          return { value: v.division_id, label: v.short_name };
-        })}
-        value={selectedDivisionID || ''}
+        options={mapDivisionsToOptions()}
+        value={selectedDivisionID}
         placeholder="Select Division"
         onChange={onDivisionChange}
       />
       <div className={styles.teamsSelection}>
         <div className={styles.teamSelectWrapper}>
           <Select
-            options={mapTeamsForSelect(selectedSecondTeamID)}
+            options={mapTeamsToOptions(selectedSecondTeamID)}
             value={selectedFirstTeamID}
             placeholder="Select first team"
             onChange={onTeamChange(setSelectedFirstTeamID, selectedSecondTeamID)}
@@ -119,7 +109,7 @@ const TeamForTeamGameSwap = ({ divisions, teams, schedulesDetails, updateSchedul
 
         <div className={styles.teamSelectWrapper}>
           <Select
-            options={mapTeamsForSelect(selectedFirstTeamID)}
+            options={mapTeamsToOptions(selectedFirstTeamID)}
             value={selectedSecondTeamID}
             placeholder="Select second team"
             onChange={onTeamChange(setSelectedSecondTeamID, selectedFirstTeamID)}
