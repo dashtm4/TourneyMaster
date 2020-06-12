@@ -99,7 +99,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItemLarge}>
               <Input
                 fullWidth={true}
-                label="Long Name"
+                label="Long Name (For Browser) *"
                 value={long_name || ''}
                 autofocus={true}
                 onChange={this.onLongNameChange}
@@ -108,7 +108,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Input
                 fullWidth={true}
-                label="Short Name"
+                label="Short Name (On Mobile) *"
                 value={short_name || ''}
                 onChange={this.onShortNameChange}
               />
@@ -116,7 +116,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Input
                 fullWidth={true}
-                label="Team Tag"
+                label="Team Tag (Social Media)"
                 startAdornment="@"
                 value={team_tag || ''}
                 onChange={this.onTagChange}
@@ -136,14 +136,14 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Input
                 fullWidth={true}
-                label="State"
+                label="State *"
                 value={state || ''}
                 onChange={this.onStateChange}
               />
             </div>
             <div className={styles.sectionItem}>
               <Select
-                label="Division"
+                label="Division *"
                 options={divisionsOptions}
                 value={division_id || ''}
                 onChange={this.onDivisionChange}
@@ -164,7 +164,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Input
                 fullWidth={true}
-                label="Contact First Name"
+                label="Coach First Name *"
                 value={contact_first_name || ''}
                 onChange={this.onFirstNameChange}
               />
@@ -172,13 +172,13 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Input
                 fullWidth={true}
-                label="Last Name"
+                label="Last Name *"
                 value={contact_last_name || ''}
                 onChange={this.onLastNameChange}
               />
             </div>
             <div className={styles.sectionItem}>
-              <div className={styles.title}>Mobile Number</div>
+              <div className={styles.title}>Mobile Number *</div>
               <PhoneInput
                 country={'us'}
                 value={phone_num || ''}
@@ -197,7 +197,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItemLarge}>
               <Input
                 fullWidth={true}
-                label="Email"
+                label="Email *"
                 value={contact_email || ''}
                 onChange={this.onEmailChange}
               />
