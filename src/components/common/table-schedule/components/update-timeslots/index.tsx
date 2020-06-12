@@ -6,6 +6,7 @@ import { getTimeSlotsFromEntities } from 'helpers/schedule.helpers';
 import { timeToDate, dateToTime } from 'helpers/date.helper';
 import { Select, DatePicker, PopupConfirm, Button } from 'components/common';
 import styles from './styles.module.scss';
+import moment from 'moment';
 
 interface Props {
   schedulesDetails: ISchedulesDetails[];
@@ -23,33 +24,50 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
   const [timeShift, setTimeShift] = useState<number>(0);
   const [newTimeSlot, setNewTimeSlot] = useState<Date>();
   const [isOpenWarning, setIsOpenWarning] = useState<boolean>(false);
+  const [isOpenConfirmation, setIsOpenConfirmation] = useState<boolean>(false);
 
-  const dates = [...new Set(schedulesDetails
-        .filter(v => v.game_date !== null)
-        .map(v => v.game_date)
-    )
+  const dates = [
+    ...new Set(
+      schedulesDetails.filter(v => v.game_date !== null).map(v => v.game_date)
+    ),
   ];
 
-  const mapDatesToOptions = () => dates.map((v, i) => ({ value: i + 1, label: v })) as ISelectOption[];
+  const filterScheduleDetailsByDate = (dateId: string) => {
+    return schedulesDetails.filter(v => v.game_date === dates[+dateId - 1]);
+  };
+
+  const mapDatesToOptions = () => 
+    dates.map((v, i) => ({
+      value: i + 1,
+      label: moment(v || '').format('ddd MMM D'),
+    })) as ISelectOption[];
+
+  const mapTimeSlotsToOptions = () => {
+    selectedDateTimeSlots.map(v => ({
+      value: v.id + 1,
+      label: moment(timeToDate(v.time))
+        .locale('en')
+        .format('hh:mm A'),
+    }));
+  };
 
   const onDateChange = (e: any) => {
     const selectedDateFromSelect = e.target.value;
     setSelectedDateId(selectedDateFromSelect);
     setSelectedDateTimeSlots(
       getTimeSlotsFromEntities(
-        schedulesDetails.filter(v => v.game_date === dates[+selectedDateFromSelect - 1]),
+        filterScheduleDetailsByDate(selectedDateFromSelect),
         TimeSlotsEntityTypes.SCHEDULE_DETAILS
       )
     );
   };
 
-  const mapTimeSlotsToOptions = () => selectedDateTimeSlots.map(v => ({ value: v.id + 1, label: v.time }));
-
   const onTimeSlotChange = (e: any) => {
-    const selectedTimeSlotFromSelect = e.target.value;
-    setSelectedTimeSlotId((selectedTimeSlotFromSelect - 1).toString());
+    const selectedTime = e.target.value;
+    setSelectedTimeSlotId((selectedTime - 1).toString());
     const timeslot = new Date(
-      timeToDate(selectedDateTimeSlots.find(v => v.id === selectedTimeSlotFromSelect - 1)?.time || '')
+      timeToDate(
+        selectedDateTimeSlots.find(v => v.id === selectedTime - 1)?.time || '')
     );
     setSelectedTimeSlot(timeslot);
     setNewTimeSlot(timeslot);
@@ -70,7 +88,7 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
       .slice(+selectedTimeSlotId)
       .map(timeslot => timeslot.time);
 
-    const filteredSchedulesDetailsByDate = schedulesDetails.filter(v => v.game_date === dates[+selectedDateId - 1]);
+    const filteredSchedulesDetailsByDate = filterScheduleDetailsByDate(selectedDateId);
 
     const swapMap = changingTimeSlots.map(slot => {
       return {
@@ -83,8 +101,8 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
 
     const updatedFilteredSchedulesDetails = filteredSchedulesDetailsByDate.map(
       detail => {
-        const newDetail = { ...detail }
-        if (changingTimeSlots.includes(newDetail.game_time || '') && newDetail.game_time) {
+        const newDetail = { ...detail };
+        if (newDetail.game_time && changingTimeSlots.includes(newDetail.game_time)) {
           const time = swapMap.find(v => v.prevTimeSlot === newDetail.game_time);
           newDetail.game_time = time ? time.nextTimeSlot : newDetail.game_time;
         }
@@ -105,7 +123,14 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
     updateSchedulesDetails(updatedSchedulesDetails, updatedFilteredSchedulesDetails);
   };
 
-  const cancel = () => setIsOpenWarning(false);
+  const closeWarning = () => setIsOpenWarning(false);
+  const closeConfirmation = () => setIsOpenConfirmation(false);
+
+  const openConfirmationPopup = () => setIsOpenConfirmation(true);
+  const onPopupConfirm = () => {
+    updateTimeSlots();
+    closeConfirmation();
+  };
 
   return (
     <div>
@@ -133,7 +158,6 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
           minWidth="calc(100% - 40px)"
           value={newTimeSlot}
           type="time"
-          viewType="input"
           label="Change Timeslot:"
           onChange={onTimeChange}
           disabled={!selectedTimeSlotId}
@@ -143,7 +167,7 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
             label="Save"
             variant="contained"
             color="primary"
-            onClick={updateTimeSlots}
+            onClick={openConfirmationPopup}
             disabled={!newTimeSlot}
           />
         </div>
@@ -152,10 +176,18 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
       <PopupConfirm
         type="warning"
         isOpen={isOpenWarning}
-        message={'Not correct'}
-        onClose={cancel}
-        onCanceClick={cancel}
-        onYesClick={cancel}
+        message="Not correct"
+        onClose={closeWarning}
+        onCanceClick={closeWarning}
+        onYesClick={closeWarning}
+      />
+
+      <PopupConfirm
+        isOpen={isOpenConfirmation}
+        message="Game time is outside of the event's time window. Are you sure?"
+        onClose={closeConfirmation}
+        onCanceClick={closeConfirmation}
+        onYesClick={onPopupConfirm}
       />
     </div>
   );

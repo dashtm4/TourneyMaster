@@ -47,7 +47,15 @@
 }
 
 .tableWrapper {
-  flex-grow: 1;
+
+  .headerWrapper {
+    display: flex;
+    align-items: flex-end;
+
+    .popupAdvanced {
+      margin: 10px;
+    }
+  }
 
   @media screen and (max-width: 1366px) {
     max-width: 1060px;

@@ -63,13 +63,11 @@ const PopupAdvancedWorkflow = ({
           <div>
             <h4 className={styles.title}>Advanced Workflow</h4>
           </div>
-          <div className={styles.workflowOptions}>
+          <div>
             <Radio
               options={Object.values(AdvancedWorkflowOptionTypes)}
               checked={selectedOption}
-              onChange={(e: any) =>
-                setSelectedOption(e.nativeEvent.target.value)
-              }
+              onChange={(e: any) => setSelectedOption(e.nativeEvent.target.value)}
               row={true}
             />
           </div>

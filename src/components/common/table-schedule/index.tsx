@@ -19,7 +19,11 @@ import {
   ISchedulesDetails,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes } from './types';
-import { getAllTeamCardGames, calculateTournamentDays } from 'helpers';
+import {
+  getAllTeamCardGames,
+  calculateTournamentDays,
+  getTimeSlotsFromEntities,
+} from 'helpers';
 import {
   IGame,
   settleTeamsPerGames,
@@ -44,7 +48,7 @@ import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 import { IDropParams } from '../matrix-table/dnd/drop';
 import moveTeamCard from './moveTeamCard';
 import { Button } from 'components/common';
-import { TableScheduleTypes } from 'common/enums';
+import { TableScheduleTypes, TimeSlotsEntityTypes } from 'common/enums';
 import { CardMessageTypes } from '../card-message/types';
 import TeamsDiagnostics from 'components/schedules/diagnostics/teamsDiagnostics';
 import DivisionsDiagnostics from 'components/schedules/diagnostics/divisionsDiagnostics';
@@ -278,6 +282,17 @@ const TableSchedule = ({
       ? undefined
       : getScheduleWarning(scheduleData, event, teamCards, teamsDiagnostics!);
 
+  const getTimeSlotsBySelectedDay = (): ITimeSlot[] => {
+    let date = '';
+    if (filterValues.selectedDay) {
+      date = days[+filterValues.selectedDay - 1] || '';
+    }
+    return getTimeSlotsFromEntities(
+      schedulesDetails!.filter(v => v.game_date === date),
+      TimeSlotsEntityTypes.SCHEDULE_DETAILS
+    );
+  };
+
   return (
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
@@ -333,30 +348,34 @@ const TableSchedule = ({
             />
           )}
           <div className={styles.tableWrapper}>
-            <Filter
-              tableType={tableType}
-              warnings={warnings}
-              days={days.length}
-              filterValues={filterValues}
-              onChangeFilterValue={onFilterChange}
-              simultaneousDnd={simultaneousDnd}
-              toggleSimultaneousDnd={toggleSimultaneousDnd}
-            />
-            {tableType === TableScheduleTypes.SCHEDULES && schedulesDetails && updateSchedulesDetails && (
-                <PopupAdvancedWorkflow
-                  divisions={divisions}
-                  teams={teamCards as ITeam[]}
-                  schedulesDetails={schedulesDetails}
-                  updateSchedulesDetails={updateSchedulesDetails}
-                />
-              )}
+            <div className={styles.headerWrapper}>
+              <Filter
+                tableType={tableType}
+                warnings={warnings}
+                days={days.length}
+                filterValues={filterValues}
+                onChangeFilterValue={onFilterChange}
+                simultaneousDnd={simultaneousDnd}
+                toggleSimultaneousDnd={toggleSimultaneousDnd}
+              />
+              {tableType === TableScheduleTypes.SCHEDULES &&
+                schedulesDetails &&
+                updateSchedulesDetails && (
+                  <PopupAdvancedWorkflow
+                    divisions={divisions}
+                    teams={teamCards as ITeam[]}
+                    schedulesDetails={schedulesDetails}
+                    updateSchedulesDetails={updateSchedulesDetails}
+                  />
+                )}
+            </div>
 
             <MatrixTable
               tableType={tableType}
               eventDay={filterValues.selectedDay!}
               games={tableGames}
               fields={updatedFields}
-              timeSlots={timeSlots}
+              timeSlots={getTimeSlotsBySelectedDay()!}
               facilities={facilities}
               showHeatmap={showHeatmap}
               isEnterScores={isEnterScores}
