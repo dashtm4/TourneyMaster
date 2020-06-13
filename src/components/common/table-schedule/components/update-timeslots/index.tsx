@@ -177,7 +177,7 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
       <PopupConfirm
         type="warning"
         isOpen={isOpenWarning}
-        message="Not correct"
+        message="Something is wrong. Please check your times."
         onClose={closeWarning}
         onCanceClick={closeWarning}
         onYesClick={closeWarning}

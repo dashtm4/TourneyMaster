@@ -97,8 +97,7 @@ export default (props: IProps) => {
           <CardMessage
             style={CARD_MESSAGE_STYLES}
             type={CardMessageTypes.EMODJI_OBJECTS}
-          >
-            Schedules are sorted first on Status then on Last Update Date
+          > Schedules are sorted first on Status (Published being first) then on Last Update Date
           </CardMessage>
           {sortedSchedules.map(it => (
             <TournamentPlayItem
@@ -118,14 +117,14 @@ export default (props: IProps) => {
           ))}
         </ul>
       ) : (
-        <CardMessage
-          style={CARD_MESSAGE_STYLES}
-          type={CardMessageTypes.EMODJI_OBJECTS}
-        >
-          Please create the first schedule by clicking on the button to
-          continue...
-        </CardMessage>
-      )}
+          <CardMessage
+            style={CARD_MESSAGE_STYLES}
+            type={CardMessageTypes.EMODJI_OBJECTS}
+          >
+            Please create the first schedule by clicking on the button to
+            continue...
+          </CardMessage>
+        )}
     </SectionDropdown>
   );
 };
