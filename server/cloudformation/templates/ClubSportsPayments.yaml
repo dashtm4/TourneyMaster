@@ -125,13 +125,13 @@ Resources:
       ParentId: !Ref PaymentsApiResource
       PathPart: '{proxy+}'
 
-  PostMethod:
+  AnyMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       ApiKeyRequired: False
       AuthorizationType: NONE
       #      AuthorizerId: !Ref Authorizer
-      HttpMethod: POST
+      HttpMethod: ANY
       Integration:
         Type: AWS_PROXY
         IntegrationHttpMethod: POST

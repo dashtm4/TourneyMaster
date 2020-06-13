@@ -2,11 +2,11 @@ import React from 'react';
 import { Input, Select, CardMessage } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { BindingCbWithTwo } from 'common/models';
-import { IIndivisualsRegister } from 'common/models/register';
+import { IIndividualsRegister } from 'common/models/register';
 import styles from '../../styles.module.scss';
 
 interface IPlayerStatsProps {
-  data: Partial<IIndivisualsRegister>;
+  data: Partial<IIndividualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
 }
 
@@ -22,6 +22,25 @@ const sizeOptions = [
   { label: 'YL', value: 'YL' },
   { label: 'YM', value: 'YM' },
   { label: 'YS', value: 'YS' },
+];
+const heightFeetOptions = [
+  { label: '4', value: '4' },
+  { label: '5', value: '5' },
+  { label: '6', value: '6' },
+];
+const heightInchesOptions = [
+  { label: '1', value: '1' },
+  { label: '2', value: '2' },
+  { label: '3', value: '3' },
+  { label: '4', value: '4' },
+  { label: '5', value: '5' },
+  { label: '6', value: '6' },
+  { label: '7', value: '7' },
+  { label: '8', value: '8' },
+  { label: '9', value: '9' },
+  { label: '10', value: '10' },
+  { label: '11', value: '11' },
+  { label: '12', value: '12' },
 ];
 
 const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
@@ -84,15 +103,15 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="Highlight Film URL"
-            value={data.player_highlight_URL || ''}
-            onChange={onHighlightUrlChange}
+            label="Club Head Coach Name"
+            value={data.player_club_coach_name || ''}
+            onChange={onClubNameChange}
           />
         </div>
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="School Attending"
+            label="High School"
             value={data.school_attending || ''}
             onChange={onSchoolAttendingChange}
           />
@@ -108,19 +127,17 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
       </div>
       <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            type="number"
-            label="Height (feet)"
+          <Select
+            options={heightFeetOptions}
+            label="Height (Feet)"
             value={data.height_feet || ''}
             onChange={onHeightFeetChange}
           />
         </div>
         <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            type="number"
-            label="Height (inches)"
+          <Select
+            options={heightInchesOptions}
+            label="Height (Inches)"
             value={data.height_inches || ''}
             onChange={onHeightInchesChange}
           />
@@ -190,7 +207,15 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="Sportrecruits Url"
+            label="Highlight Film URL"
+            value={data.player_highlight_URL || ''}
+            onChange={onHighlightUrlChange}
+          />
+        </div>
+        <div className={styles.sectionItem}>
+          <Input
+            fullWidth={true}
+            label="Sportrecruits URL"
             value={data.player_sportrecruits_url || ''}
             onChange={onSportRecruitsUrlChange}
           />
@@ -198,7 +223,7 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="Connectlax Url"
+            label="Connectlax URL"
             value={data.player_connectlax_url || ''}
             onChange={onConnectLaxUrlChange}
           />

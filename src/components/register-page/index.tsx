@@ -33,7 +33,7 @@ import {
 } from 'common/models';
 import SideBar from './side-bar';
 import { getVarcharEight } from 'helpers';
-import { IIndivisualsRegister, ITeamsRegister } from 'common/models/register';
+import { IIndividualsRegister, ITeamsRegister } from 'common/models/register';
 import { ButtonFormTypes } from 'common/enums';
 import { eventTypeOptions } from 'components/event-details/event-structure';
 
@@ -177,20 +177,22 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
   const handleProceedToPayment = async () => {
     axios
-      .get(`/payment_plans?sku_id=${registration.ext_sku}`)
+      .get(`/payments/payment-plans?sku_id=${registration.ext_sku}`)
       .then(response => {
         const plans = response.data.map((plan: any) => ({
           label: plan.payment_plan_name,
           value: plan.payment_plan_id,
-          iterations: plan.iterations,
-          interval: plan.interval,
-          interval_count: plan.interval_count,
           price: plan.price,
+          type: plan.type,
+          notice: plan.payment_plan_notice,
         }));
         setPaymentPlans(plans);
 
         const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
-          prev.iterations < cur.iterations ? prev : cur
+          !cur.iterations ||
+          (cur.type === 'installment' && prev.iterations < cur.iterations)
+            ? prev
+            : cur
         );
         setRegistration({
           ...registration,
@@ -219,7 +221,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   };
 
   const [registration, setRegistration] = useState<
-    Partial<IIndivisualsRegister> | Partial<ITeamsRegister>
+    Partial<IIndividualsRegister> | Partial<ITeamsRegister>
   >({});
 
   const onChange = (name: string, value: string | number) => {
@@ -455,8 +457,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         name:
           updatedRegistration.registrant_first_name ||
           updatedRegistration.contact_first_name +
-            ' ' +
-            updatedRegistration.registrant_last_name ||
+          ' ' +
+          updatedRegistration.registrant_last_name ||
           updatedRegistration.contact_last_name,
         email:
           updatedRegistration.registrant_email ||
@@ -585,8 +587,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           {event && eventRegistration ? (
             <SideBar event={event} eventRegistration={eventRegistration} />
           ) : (
-            <Loader />
-          )}
+              <Loader />
+            )}
         </div>
       </div>
       {event && (

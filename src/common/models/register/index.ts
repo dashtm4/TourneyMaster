@@ -1,4 +1,4 @@
-export interface IIndivisualsRegister {
+export interface IIndividualsRegister {
   reg_response_id: string;
   registration_id: string;
   registrant_first_name: string;
@@ -27,11 +27,12 @@ export interface IIndivisualsRegister {
   ext_payment_id: string;
   ext_sku: string;
   player_club_name: string;
+  player_club_coach_name: string;
   player_highlight_URL: string;
   school_attending: string;
   dominant_hand: string;
-  height_feet: number;
-  height_inches: number;
+  height_feet: string;
+  height_inches: string;
   short_size: string;
   shirt_size: string;
   position: string;

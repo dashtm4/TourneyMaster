@@ -30,7 +30,7 @@ enum EventMenuTitles {
   TEAMS = 'Teams',
   TEAM_MANAGEMENT = 'Team Management',
   REQUEST_MANAGER = 'Request Manager',
-  TOURNAMENT_PLAY = 'Tournament Play',
+  TOURNAMENT_PLAY = 'Pool Play',
   BRACKETS = 'Brackets',
   SCHEDULING = 'Scheduling',
   TOURNEY_ARCHITECT = 'Tourney Architect',

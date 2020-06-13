@@ -5,10 +5,10 @@ import { Input, Select, DatePicker } from 'components/common';
 import { BindingCbWithTwo, ISelectOption } from 'common/models';
 import 'react-phone-input-2/lib/high-res.css';
 import PhoneInput from 'react-phone-input-2';
-import { IIndivisualsRegister } from 'common/models/register';
+import { IIndividualsRegister } from 'common/models/register';
 
 interface IPlayerInfoProps {
-  data: Partial<IIndivisualsRegister>;
+  data: Partial<IIndividualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
   fillParticipantInfo: any;
   divisions: ISelectOption[];
@@ -88,9 +88,9 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <DatePicker
             fullWidth={true}
-            label="Birthdate and Year"
+            label="Birthdate"
             type="date"
-            value={data.player_birthdate || new Date()}
+            value={data.player_birthdate || "01-01-2000"}
             isRequired={true}
             onChange={onPlayerBirthdayChange}
           />
@@ -148,23 +148,13 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <Select
             options={states}
-            label="State"
+            label="State/Province"
             value={data.player_state || ''}
             onChange={onPlayerStateChange}
             isRequired={true}
           />
         </div>
-        {/* <div className={styles.sectionItem}>
-          <Select
-            options={playerLevelOptions}
-            label="Player Level"
-            value={data.player_level || ''}
-            isRequired={true}
-            onChange={onPlayerLevelSelect}
-          />
-        </div> */}
       </div>
-      <div className={styles.sectionRow}></div>
     </div>
   );
 };

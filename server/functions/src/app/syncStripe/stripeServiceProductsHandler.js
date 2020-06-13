@@ -17,6 +17,7 @@ export default class StripeServiceProductsHandler {
         price: +dbProd.price,
         event_startdate: dbProd.sale_startdate,
         event_enddate: dbProd.sale_enddate,
+        sales_tax_rate: dbProd.sales_tax_rate,
       },
     };
     // console.log(JSON.stringify(product, null, '  '));
@@ -41,6 +42,8 @@ export default class StripeServiceProductsHandler {
       product.metadata.price === +stripeProduct.metadata.price &&
       product.metadata.event_id === stripeProduct.metadata.event_id &&
       product.metadata.division_id === stripeProduct.metadata.division_id &&
+      product.metadata.sales_tax_rate ===
+        +stripeProduct.metadata.sales_tax_rate &&
       product.metadata.event_startdate ===
         stripeProduct.metadata.event_startdate &&
       product.metadata.event_enddate === stripeProduct.metadata.event_enddate

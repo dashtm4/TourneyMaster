@@ -19,7 +19,7 @@ import { ScheduleStatuses, BracketStatuses } from 'common/enums';
 import {
   getTabTimes,
   getDayOptions,
-  geEventDates,
+  getEventDates,
   getTeamWithFacility,
   getGamesByScoreMode,
   mapScoringBracketsWithNames,
@@ -114,13 +114,13 @@ const SectionGames = ({ event }: Props) => {
 
       const games = publishedSchedule
         ? ((await Api.get(
-            `/games?schedule_id=${publishedSchedule.schedule_id}`
-          )) as ISchedulesGame[])
+          `/games?schedule_id=${publishedSchedule.schedule_id}`
+        )) as ISchedulesGame[])
         : [];
       const bracketGames = publishedBracket
         ? ((await Api.get(
-            `/games_brackets?bracket_id=${publishedBracket.bracket_id}`
-          )) as IPlayoffGame[])
+          `/games_brackets?bracket_id=${publishedBracket.bracket_id}`
+        )) as IPlayoffGame[])
         : [];
 
       const gamesWithTeams = games.filter(
@@ -212,10 +212,10 @@ const SectionGames = ({ event }: Props) => {
       const changedOriginGames = originGames.map(game =>
         game.game_id === changedGame.id
           ? {
-              ...game,
-              away_team_score: changedGame.awayTeamScore,
-              home_team_score: changedGame.homeTeamScore,
-            }
+            ...game,
+            away_team_score: changedGame.awayTeamScore,
+            home_team_score: changedGame.homeTeamScore,
+          }
           : game
       );
 
@@ -245,7 +245,7 @@ const SectionGames = ({ event }: Props) => {
     return <Loader />;
   }
 
-  const eventDays = geEventDates(gamesWithNames);
+  const eventDays = getEventDates(gamesWithNames);
   const eventDayOptions = getDayOptions(eventDays);
   const tabTimes = getTabTimes(activeDay, gamesWithNames);
 

@@ -122,7 +122,7 @@ const PricingAndCalendar = ({ data, onChange }: IPricingAndCalendarProps) => {
             label="Early Bird Discount"
             startAdornment="$"
             type="number"
-            value={data ? data.early_bird_discount : ''}
+            value={data?.early_bird_discount ? data.early_bird_discount : ''}
             onChange={onEarlyBirdDiscountChange}
           />
         </div>

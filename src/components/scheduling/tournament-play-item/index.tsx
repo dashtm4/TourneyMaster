@@ -89,14 +89,14 @@ const TournamentPlayItem = ({
                   onClick={() => onUnpublish(schedule)}
                 />
               ) : (
-                <Button
-                  label="Publish"
-                  variant="text"
-                  color="secondary"
-                  disabled={anotherSchedulePublished || savingInProgress}
-                  onClick={() => onPublish(schedule)}
-                />
-              )}
+                  <Button
+                    label="Publish"
+                    variant="text"
+                    color="secondary"
+                    disabled={anotherSchedulePublished || savingInProgress}
+                    onClick={() => onPublish(schedule)}
+                  />
+                )}
             </div>
           </Tooltip>
         </div>
@@ -128,8 +128,8 @@ const TournamentPlayItem = ({
             {schedule.updated_by ? (
               <span>{schedule.updatedByName}</span>
             ) : (
-              DEFAULT_UPDATED_VALUE
-            )}
+                DEFAULT_UPDATED_VALUE
+              )}
           </span>
           {schedule.updated_by && (
             <time
@@ -151,7 +151,7 @@ const TournamentPlayItem = ({
           <Link to={`${Routes.SCHEDULES}/${eventId}/${schedule.schedule_id}`}>
             <Button
               icon={<FontAwesomeIcon icon={faCalendar} />}
-              label="Manage Tournament Play"
+              label="Manage Pool Play"
               color="secondary"
               variant="text"
             />

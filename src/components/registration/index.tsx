@@ -33,7 +33,7 @@ import {
   IRegistrationFields,
 } from 'common/enums';
 import { History } from 'history';
-import { Loader } from 'components/common';
+import { Loader, Toasts } from 'components/common';
 import { IEntity } from 'common/types';
 
 interface IRegistrationState {
@@ -111,9 +111,28 @@ class RegistrationView extends React.Component<
     });
   };
 
+  scheduleIsValid = (registration: any) => {
+    const schedule = registration.payment_schedule_json
+      ? JSON.parse(registration.payment_schedule_json!)?.find(
+          (x: any) => x.type === 'schedule'
+        )
+      : null;
+    return (
+      !schedule ||
+      schedule?.schedule?.reduce(
+        (sum: number, phase: any) => sum + Number(phase.amount),
+        0
+      ) === 100
+    );
+  };
+
   onSaveClick = () => {
-    this.props.saveRegistration(this.state.registration, this.eventId);
-    this.setState({ isEdit: false, changesAreMade: false });
+    if (this.scheduleIsValid(this.state.registration)) {
+      this.props.saveRegistration(this.state.registration, this.eventId);
+      this.setState({ isEdit: false, changesAreMade: false });
+    } else {
+      Toasts.errorToast('Total schedule amount must be equal to 100%');
+    }
   };
 
   static getDerivedStateFromProps(
