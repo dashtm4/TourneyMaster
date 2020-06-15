@@ -1,7 +1,13 @@
 .flexcontainer {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
+  margin-top: 4px;
+
+  p {
+    margin-right: 4px;
+    text-align: right;
+  }
 }
 
 .btnsWrapper {
@@ -11,8 +17,9 @@
 .selectContainer {
   width: 100%;
   display: flex;
+  justify-content: space-between;
 }
 
 .selectWrapper {
-  width: 50%;
+  width: 49.5%;
 }

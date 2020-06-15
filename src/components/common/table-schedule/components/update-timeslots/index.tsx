@@ -65,7 +65,7 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
 
   const onTimeSlotChange = (e: any) => {
     const selectedTime = e.target.value;
-    setSelectedTimeSlotId((selectedTime - 1).toString());
+    setSelectedTimeSlotId(selectedTime);
     const timeslot = new Date(
       timeToDate(
         selectedDateTimeSlots.find(v => v.id === selectedTime - 1)?.time || '')
@@ -86,7 +86,7 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
 
   const updateTimeSlots = () => {
     const changingTimeSlots = selectedDateTimeSlots
-      .slice(+selectedTimeSlotId)
+      .slice(+selectedTimeSlotId - 1)
       .map(timeslot => timeslot.time);
 
     const filteredSchedulesDetailsByDate = filterScheduleDetailsByDate(selectedDateId);
@@ -139,27 +139,26 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
         <div className={styles.selectWrapper}>
           <Select
             options={mapDatesToOptions()}
-            label="Select Date:"
+            placeholder="Select Date"
             value={selectedDateId}
             onChange={onDateChange}
           />
         </div>
         <div className={styles.selectWrapper}>
           <Select
+            placeholder="Select Timeslot"
             options={mapTimeSlotsToOptions()}
-            value={(+selectedTimeSlotId + 1).toString()}
-            label="Select Timeslot:"
+            value={selectedTimeSlotId}
             onChange={onTimeSlotChange}
             disabled={!selectedDateId}
           />
         </div>
       </div>
       <div className={styles.flexcontainer}>
+        <p>Change Timeslot:</p>
         <DatePicker
-          minWidth="calc(100% - 40px)"
           value={newTimeSlot}
           type="time"
-          label="Change Timeslot:"
           onChange={onTimeChange}
           disabled={!selectedTimeSlotId}
         />
@@ -175,11 +174,11 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
       </div>
 
       <PopupConfirm
-        type="warning"
         isOpen={isOpenWarning}
-        message="Something is wrong. Please check your times."
+        message="The new time can't be earlier than the selected timeslot."
         onClose={closeWarning}
         onCanceClick={closeWarning}
+        showYes={false}
         onYesClick={closeWarning}
       />
 
