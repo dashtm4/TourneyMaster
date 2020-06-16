@@ -104,9 +104,14 @@ const UpdateTimeSlots = ({
   };
 
   const updateTimeSlots = () => {
-    const changingTimeSlots = selectedDateTimeSlots
-      .slice(+selectedTimeSlotId - 1)
-      .map(timeslot => timeslot.time);
+    let changingTimeSlots: string[] = [];
+    if (doShiftAllSubsequentGames) {
+      changingTimeSlots = selectedDateTimeSlots
+        .slice(+selectedTimeSlotId - 1)
+        .map(timeslot => timeslot.time);
+    } else {
+      changingTimeSlots = [selectedDateTimeSlots[+selectedTimeSlotId - 1].time];
+    }
 
     const filteredSchedulesDetailsByDate = filterScheduleDetailsByDate(selectedDateId);
 
@@ -119,17 +124,16 @@ const UpdateTimeSlots = ({
       };
     });
 
-    const schedulesDetailsToSave = filteredSchedulesDetailsByDate.map(
-      detail => {
-        const newDetail = { ...detail };
-        if (newDetail.game_time && changingTimeSlots.includes(newDetail.game_time)) {
-          const time = swapMap.find(v => v.prevTimeSlot === newDetail.game_time);
-          newDetail.game_time = time ? time.nextTimeSlot : newDetail.game_time;
-          onScheduleGameUpdate(+newDetail.game_id, newDetail.game_time);
-        }
-        return newDetail;
+    const schedulesDetailsToSave: ISchedulesDetails[] = [];
+    filteredSchedulesDetailsByDate.forEach(detail => {
+      const newDetail = { ...detail };
+      if (newDetail.game_time && changingTimeSlots.includes(newDetail.game_time)) {
+        const time = swapMap.find(v => v.prevTimeSlot === newDetail.game_time);
+        newDetail.game_time = time ? time.nextTimeSlot : newDetail.game_time;
+        onScheduleGameUpdate(+newDetail.game_id, newDetail.game_time);
+        schedulesDetailsToSave.push(newDetail);
       }
-    );
+    });
 
     const detailsToState = schedulesDetails.map(detail => {
       const itemForChange = schedulesDetailsToSave.find(
@@ -137,6 +141,7 @@ const UpdateTimeSlots = ({
       );
       return itemForChange ? itemForChange : detail;
     });
+
     setSchedulesDetailsToState(detailsToState);
     updateSchedulesDetails(detailsToState, schedulesDetailsToSave);
   };
