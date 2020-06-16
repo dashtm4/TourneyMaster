@@ -26,7 +26,6 @@ const UpdateTimeSlots = ({
   const [selectedDateId, setSelectedDateId] = useState('');
   const [selectedDateTimeSlots, setSelectedDateTimeSlots] = useState<ITimeSlot[]>([]);
   const [selectedTimeSlotId, setSelectedTimeSlotId] = useState('');
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<Date>(new Date());
   const [timeShift, setTimeShift] = useState<number>(0);
   const [newTimeSlot, setNewTimeSlot] = useState<Date>();
   const [isOpenWarning, setIsOpenWarning] = useState<boolean>(false);
@@ -83,18 +82,21 @@ const UpdateTimeSlots = ({
   };
 
   const onTimeSlotChange = (e: any) => {
-    const selectedTime = e.target.value;
-    setSelectedTimeSlotId(selectedTime);
-    const timeslot = new Date(
-      timeToDate(
-        selectedDateTimeSlots.find(v => v.id === selectedTime - 1)?.time || '')
-    );
-    setSelectedTimeSlot(timeslot);
-    setNewTimeSlot(timeslot);
+    const selectedTimeslotId = e.target.value;
+    setSelectedTimeSlotId(selectedTimeslotId);
+    const selectedTimeslot = selectedDateTimeSlots.find(v => v.id === selectedTimeslotId - 1);
+    if (!selectedTimeslot) {
+      return;
+    }
+    const time = selectedTimeslot.time;
+    setNewTimeSlot(new Date(timeToDate(time)));
   };
 
   const onTimeChange = (time: Date) => {
-    const timeDifference = +time - +selectedTimeSlot;
+    if (!newTimeSlot) {
+      return;
+    }
+    const timeDifference = +time - +newTimeSlot;
     if (timeDifference === 0) {
       return;
     }
@@ -149,9 +151,6 @@ const UpdateTimeSlots = ({
 
   const openConfirmationPopup = () => setIsOpenConfirmation(true);
   const onPopupConfirm = () => {
-    if (newTimeSlot) {
-      setSelectedTimeSlot(newTimeSlot);
-    }
     updateTimeSlots();
     closeConfirmation();
     needUpdateTimeSlots.current = true;
