@@ -471,7 +471,8 @@ class RecordScores extends React.Component<
               scheduleData={schedule!}
               isEnterScores={isEnterScores}
               isFullScreen={isFullScreen}
-              onTeamCardsUpdate={() => {}}
+              onScheduleGameUpdate={() => { }}
+              onTeamCardsUpdate={() => { }}
               onTeamCardUpdate={this.onScheduleCardUpdate}
               onUndo={() => {}}
               onToggleFullScreen={onToggleFullScreen}

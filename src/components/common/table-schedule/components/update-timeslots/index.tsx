@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ISchedulesDetails, ISelectOption } from 'common/models';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { TimeSlotsEntityTypes } from 'common/enums';
@@ -8,15 +8,21 @@ import { Select, DatePicker, PopupConfirm, Button } from 'components/common';
 import styles from './styles.module.scss';
 import moment from 'moment';
 
-interface Props {
+interface IProps {
   schedulesDetails: ISchedulesDetails[];
+  onScheduleGameUpdate: (gameId: number, gameTime: string) => void;
   updateSchedulesDetails: (
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
   ) => void;
 }
 
-const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) => {
+const UpdateTimeSlots = ({
+  schedulesDetails,
+  onScheduleGameUpdate,
+  updateSchedulesDetails,
+}: IProps) => {
+  const [schedulesDetailsToState, setSchedulesDetailsToState] = useState<ISchedulesDetails[]>(schedulesDetails);
   const [selectedDateId, setSelectedDateId] = useState('');
   const [selectedDateTimeSlots, setSelectedDateTimeSlots] = useState<ITimeSlot[]>([]);
   const [selectedTimeSlotId, setSelectedTimeSlotId] = useState('');
@@ -26,14 +32,32 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
   const [isOpenWarning, setIsOpenWarning] = useState<boolean>(false);
   const [isOpenConfirmation, setIsOpenConfirmation] = useState<boolean>(false);
 
+  const needUpdateTimeSlots = useRef(true);
+
+  useEffect(() => {
+    if (needUpdateTimeSlots.current) {
+      fillTimeSlotsSelect(selectedDateId);
+      needUpdateTimeSlots.current = false;
+    }
+  });
+
   const dates = [
     ...new Set(
       schedulesDetails.filter(v => v.game_date !== null).map(v => v.game_date)
     ),
   ];
 
+  const fillTimeSlotsSelect = (selectedDateIndex: string) => {
+    setSelectedDateTimeSlots(
+      getTimeSlotsFromEntities(
+        filterScheduleDetailsByDate(selectedDateIndex),
+        TimeSlotsEntityTypes.SCHEDULE_DETAILS
+      )
+    );
+  };
+
   const filterScheduleDetailsByDate = (dateId: string) => {
-    return schedulesDetails.filter(v => v.game_date === dates[+dateId - 1]);
+    return schedulesDetailsToState.filter(v => v.game_date === dates[+dateId - 1]);
   };
 
   const mapDatesToOptions = () => {
@@ -55,12 +79,7 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
   const onDateChange = (e: any) => {
     const selectedDateFromSelect = e.target.value;
     setSelectedDateId(selectedDateFromSelect);
-    setSelectedDateTimeSlots(
-      getTimeSlotsFromEntities(
-        filterScheduleDetailsByDate(selectedDateFromSelect),
-        TimeSlotsEntityTypes.SCHEDULE_DETAILS
-      )
-    );
+    fillTimeSlotsSelect(selectedDateFromSelect);
   };
 
   const onTimeSlotChange = (e: any) => {
@@ -76,6 +95,9 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
 
   const onTimeChange = (time: Date) => {
     const timeDifference = +time - +selectedTimeSlot;
+    if (timeDifference === 0) {
+      return;
+    }
     if (timeDifference < 0) {
       setIsOpenWarning(true);
       return;
@@ -100,28 +122,26 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
       };
     });
 
-    const updatedFilteredSchedulesDetails = filteredSchedulesDetailsByDate.map(
+    const schedulesDetailsToSave = filteredSchedulesDetailsByDate.map(
       detail => {
         const newDetail = { ...detail };
         if (newDetail.game_time && changingTimeSlots.includes(newDetail.game_time)) {
           const time = swapMap.find(v => v.prevTimeSlot === newDetail.game_time);
           newDetail.game_time = time ? time.nextTimeSlot : newDetail.game_time;
+          onScheduleGameUpdate(+newDetail.game_id, newDetail.game_time);
         }
         return newDetail;
       }
     );
 
-    const updatedFilteredSchedulesDetailsWithIds = updatedFilteredSchedulesDetails.map(v => ({ id: v.schedule_version_id, value: v }));
-
-    const updatedSchedulesDetails = schedulesDetails.map(detail => {
-      const itemForChange = updatedFilteredSchedulesDetailsWithIds.find(detailWithID => detailWithID.id === detail.schedule_version_id);
-      if (itemForChange) {
-        return itemForChange.value;
-      }
-      return detail;
+    const detailsToState = schedulesDetails.map(detail => {
+      const itemForChange = schedulesDetailsToSave.find(
+        o => o.schedule_version_id === detail.schedule_version_id
+      );
+      return itemForChange ? itemForChange : detail;
     });
-
-    updateSchedulesDetails(updatedSchedulesDetails, updatedFilteredSchedulesDetails);
+    setSchedulesDetailsToState(detailsToState);
+    updateSchedulesDetails(detailsToState, schedulesDetailsToSave);
   };
 
   const closeWarning = () => setIsOpenWarning(false);
@@ -131,6 +151,7 @@ const UpdateTimeSlots = ({ schedulesDetails, updateSchedulesDetails }: Props) =>
   const onPopupConfirm = () => {
     updateTimeSlots();
     closeConfirmation();
+    needUpdateTimeSlots.current = true;
   };
 
   return (

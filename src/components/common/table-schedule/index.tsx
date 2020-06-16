@@ -76,6 +76,7 @@ interface Props {
   teamsDiagnostics?: IDiagnosticsInput;
   divisionsDiagnostics?: IDiagnosticsInput;
   isFullScreen?: boolean;
+  onScheduleGameUpdate: (gameId: number, gameTime: string) => void;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
@@ -104,6 +105,7 @@ const TableSchedule = ({
   timeSlots,
   eventSummary,
   isEnterScores,
+  onScheduleGameUpdate,
   onTeamCardsUpdate,
   onTeamCardUpdate,
   onUndo,
@@ -364,6 +366,7 @@ const TableSchedule = ({
                   <PopupAdvancedWorkflow
                     divisions={divisions}
                     teams={teamCards as ITeam[]}
+                    onScheduleGameUpdate={onScheduleGameUpdate}
                     schedulesDetails={schedulesDetails}
                     updateSchedulesDetails={updateSchedulesDetails}
                   />

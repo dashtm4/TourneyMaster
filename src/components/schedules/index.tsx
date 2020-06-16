@@ -669,6 +669,7 @@ class Schedules extends Component<Props, State> {
   };
 
   onSaveDraft = async () => {
+    // looks like this method isn't used
     const { draftSaved } = this.props;
     const { scheduleId, cancelConfirmationOpen } = this.state;
     const localSchedule = this.getSchedule();
@@ -733,6 +734,15 @@ class Schedules extends Component<Props, State> {
 
   onScheduleCardUpdate = (teamCard: ITeamCard) => {
     this.props.updateSchedulesTable(teamCard);
+  };
+
+  onScheduleGameUpdate = (gameId: number, gameTime: string) => {
+    // make it through redux
+    const { games } = this.state;
+    const foundGame = games?.find((g: IGame) => g.id === gameId);
+    if (foundGame) {
+      foundGame.startTime = gameTime;
+    }
   };
 
   render() {
@@ -821,6 +831,7 @@ class Schedules extends Component<Props, State> {
             teamsDiagnostics={teamsDiagnostics}
             divisionsDiagnostics={divisionsDiagnostics}
             isFullScreen={isFullScreen}
+            onScheduleGameUpdate={this.onScheduleGameUpdate}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
             onTeamCardUpdate={this.onScheduleCardUpdate}
             onUndo={onScheduleUndo}

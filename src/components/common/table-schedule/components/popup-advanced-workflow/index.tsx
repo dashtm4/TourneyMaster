@@ -7,10 +7,11 @@ import UpdateTimeSlots from 'components/common/table-schedule/components/update-
 import { IDivision, ISchedulesDetails } from 'common/models';
 import { ITeam } from 'common/models/schedule/teams';
 
-interface Props {
+interface IProps {
   divisions: IDivision[];
   teams: ITeam[];
   schedulesDetails: ISchedulesDetails[];
+  onScheduleGameUpdate: (gameId: number, gameTime: string) => void;
   updateSchedulesDetails: (
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
@@ -21,8 +22,9 @@ const PopupAdvancedWorkflow = ({
   divisions,
   teams,
   schedulesDetails,
+  onScheduleGameUpdate,
   updateSchedulesDetails,
-}: Props) => {
+}: IProps) => {
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(AdvancedWorkflowOptionTypes.TEAM_FOR_TEAM_GAME_SWAP);
 
@@ -38,7 +40,13 @@ const PopupAdvancedWorkflow = ({
           />
         );
       case AdvancedWorkflowOptionTypes.UPDATE_TIMESLOTS:
-        return <UpdateTimeSlots schedulesDetails={schedulesDetails} updateSchedulesDetails={updateSchedulesDetails} />;
+        return (
+          <UpdateTimeSlots
+            schedulesDetails={schedulesDetails}
+            onScheduleGameUpdate={onScheduleGameUpdate}
+            updateSchedulesDetails={updateSchedulesDetails}
+          />
+        );
       default:
         return <></>;
     }

@@ -128,12 +128,12 @@ const SchedulesReducer = (state = initialState, action: IScheduleAction) => {
         ...state,
         schedulesDetails: action.payload,
         updateSchedulesDetailsInProgress: false,
-      }
+      };
     case UPDATE_SCHEDULES_DETAILS_FAILURE:
       return {
         ...state,
         updateSchedulesDetailsInProgress: false,
-      }
+      };
     default:
       return state;
   }
