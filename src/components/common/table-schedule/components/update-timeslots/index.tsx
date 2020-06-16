@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ISchedulesDetails, ISelectOption } from 'common/models';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { TimeSlotsEntityTypes } from 'common/enums';
@@ -32,14 +32,9 @@ const UpdateTimeSlots = ({
   const [isOpenWarning, setIsOpenWarning] = useState<boolean>(false);
   const [isOpenConfirmation, setIsOpenConfirmation] = useState<boolean>(false);
 
-  const needUpdateTimeSlots = useRef(true);
-
   useEffect(() => {
-    if (needUpdateTimeSlots.current) {
-      fillTimeSlotsSelect(selectedDateId);
-      needUpdateTimeSlots.current = false;
-    }
-  });
+    fillTimeSlotsSelect(selectedDateId);
+  }, [schedulesDetailsToState]);
 
   const dates = [
     ...new Set(
@@ -154,7 +149,6 @@ const UpdateTimeSlots = ({
     }
     updateTimeSlots();
     closeConfirmation();
-    needUpdateTimeSlots.current = true;
   };
 
   return (
