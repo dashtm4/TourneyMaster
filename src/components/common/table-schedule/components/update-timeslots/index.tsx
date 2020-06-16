@@ -149,6 +149,9 @@ const UpdateTimeSlots = ({
 
   const openConfirmationPopup = () => setIsOpenConfirmation(true);
   const onPopupConfirm = () => {
+    if (newTimeSlot) {
+      setSelectedTimeSlot(newTimeSlot);
+    }
     updateTimeSlots();
     closeConfirmation();
     needUpdateTimeSlots.current = true;
