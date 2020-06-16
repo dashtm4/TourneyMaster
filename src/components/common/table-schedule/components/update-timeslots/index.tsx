@@ -4,7 +4,7 @@ import ITimeSlot from 'common/models/schedule/timeSlots';
 import { TimeSlotsEntityTypes } from 'common/enums';
 import { getTimeSlotsFromEntities } from 'helpers/schedule.helpers';
 import { timeToDate, dateToTime } from 'helpers/date.helper';
-import { Select, DatePicker, PopupConfirm, Button } from 'components/common';
+import { Select, DatePicker, PopupConfirm, Button, Checkbox } from 'components/common';
 import styles from './styles.module.scss';
 import moment from 'moment';
 
@@ -30,6 +30,7 @@ const UpdateTimeSlots = ({
   const [newTimeSlot, setNewTimeSlot] = useState<Date>();
   const [isOpenWarning, setIsOpenWarning] = useState<boolean>(false);
   const [isOpenConfirmation, setIsOpenConfirmation] = useState<boolean>(false);
+  const [doShiftAllSubsequentGames, setDoShiftAllSubsequentGames] = useState<boolean>(false);
 
   useEffect(() => {
     fillTimeSlotsSelect(selectedDateId);
@@ -150,6 +151,8 @@ const UpdateTimeSlots = ({
     closeConfirmation();
   };
 
+  const onShiftOptionChange = () => setDoShiftAllSubsequentGames(!doShiftAllSubsequentGames);
+
   return (
     <div>
       <div className={styles.selectContainer}>
@@ -171,23 +174,35 @@ const UpdateTimeSlots = ({
           />
         </div>
       </div>
-      <div className={styles.flexcontainer}>
-        <p>Change Timeslot:</p>
-        <DatePicker
-          value={newTimeSlot}
-          type="time"
-          onChange={onTimeChange}
-          disabled={!selectedTimeSlotId}
-        />
-        <div className={styles.btnsWrapper}>
-          <Button
-            label="Save"
-            variant="contained"
-            color="primary"
-            onClick={openConfirmationPopup}
-            disabled={!newTimeSlot}
+      <div className={styles.flexCol}>
+        <div className={styles.flexcontainer}>
+          <p>Change Timeslot:</p>
+          <DatePicker
+            value={newTimeSlot}
+            type="time"
+            onChange={onTimeChange}
+            disabled={!selectedTimeSlotId}
           />
+          <div className={styles.btnsWrapper}>
+            <Button
+              label="Save"
+              variant="contained"
+              color="primary"
+              onClick={openConfirmationPopup}
+              disabled={!newTimeSlot}
+            />
+          </div>
         </div>
+
+        <Checkbox
+          options={[
+            {
+              label: 'Shift all subsequent games',
+              checked: doShiftAllSubsequentGames,
+            },
+          ]}
+          onChange={onShiftOptionChange}
+        />
       </div>
 
       <PopupConfirm

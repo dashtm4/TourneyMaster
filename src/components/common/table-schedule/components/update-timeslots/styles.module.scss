@@ -23,3 +23,9 @@
 .selectWrapper {
   width: 49.5%;
 }
+
+.flexCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
