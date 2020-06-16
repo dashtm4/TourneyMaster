@@ -89,13 +89,12 @@ const UpdateTimeSlots = ({
   };
 
   const onTimeChange = (time: Date) => {
-    if (!newTimeSlot) {
-      return;
-    }
-    const timeDifference = +time - +newTimeSlot;
-    if (timeDifference === 0) {
-      return;
-    }
+    const minutes = time.getMinutes();
+    const remainder = minutes % 5;
+    time.setMinutes(remainder >= 3 ? minutes + (5 - remainder) : minutes - remainder);
+    const currentTimeSlotValue = Date.parse(time.toDateString() + ' ' + selectedDateTimeSlots.find(v => v.id === +selectedTimeSlotId - 1)!.time);
+    const timeDifference = +time - +currentTimeSlotValue;
+
     if (timeDifference < 0) {
       setIsOpenWarning(true);
       return;
@@ -180,6 +179,7 @@ const UpdateTimeSlots = ({
           <DatePicker
             value={newTimeSlot}
             type="time"
+            viewType="input"
             onChange={onTimeChange}
             disabled={!selectedTimeSlotId}
           />
