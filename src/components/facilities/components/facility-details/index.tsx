@@ -60,6 +60,7 @@ enum ParkingAvailableOptions {
 enum RestroomOptions {
   IN_FACILITY = 'In Facility',
   PORTABLE = 'Portable',
+  BOTHINNOUT = 'Both In Facility & Portable'
 }
 
 const FACILITY_FIELD_MAP_KEY = 'field_map_URL';
@@ -310,19 +311,19 @@ class FacilityDetails extends React.Component<Props, State> {
             {facility.isFieldsLoading ? (
               <Loader />
             ) : (
-              fields.map((it, idx) => (
-                <li key={it.field_id}>
-                  <Field
-                    field={it}
-                    facility={facility}
-                    fieldNumber={idx + 1}
-                    isEdit={isEdit}
-                    onChangeField={this.onChangeField}
-                    deleteField={this.props.deleteField}
-                  />
-                </li>
-              ))
-            )}
+                fields.map((it, idx) => (
+                  <li key={it.field_id}>
+                    <Field
+                      field={it}
+                      facility={facility}
+                      fieldNumber={idx + 1}
+                      isEdit={isEdit}
+                      onChangeField={this.onChangeField}
+                      deleteField={this.props.deleteField}
+                    />
+                  </li>
+                ))
+              )}
           </ul>
           <div className={styles.restroomWrapper}>
             <fieldset
