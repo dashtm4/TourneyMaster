@@ -44,14 +44,14 @@ export const getPaymentPlans = async ({
               const recurringPayments =
                 +rawPaymentPlan.iterations > 1
                   ? `$${installmentPrice.toFixed(
-                      2
-                    )} for ${+rawPaymentPlan.iterations} times every${
-                      +rawPaymentPlan.intervalCount > 1
-                        ? +' ' + rawPaymentPlan.intervalCount
-                        : ''
-                    } ${rawPaymentPlan.interval}${
-                      +rawPaymentPlan.intervalCount > 1 ? 's' : ''
-                    } for `
+                    2
+                  )} for ${+rawPaymentPlan.iterations} times every${
+                  +rawPaymentPlan.intervalCount > 1
+                    ? +' ' + rawPaymentPlan.intervalCount
+                    : ''
+                  } ${rawPaymentPlan.interval}${
+                  +rawPaymentPlan.intervalCount > 1 ? 's' : ''
+                  } for `
                   : '';
               const { payment_schedule_json, ...paymentPlan } = {
                 ...sku,
@@ -60,7 +60,7 @@ export const getPaymentPlans = async ({
                 discount: 0,
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
-                payment_plan_notice: `You will be charged ${recurringPayments}the total amount of $${(
+                payment_plan_notice: `The Installment Schedule is:  ${recurringPayments}the total amount of $${(
                   installmentPrice * rawPaymentPlan.iterations
                 ).toFixed(2)}`,
                 type: rawPaymentPlan.type,
@@ -76,8 +76,8 @@ export const getPaymentPlans = async ({
                   phase.amountType === 'fixed'
                     ? +phase.amount
                     : phase.amountType === 'percent'
-                    ? Math.round(+sku.price * +phase.amount) / 100
-                    : null;
+                      ? Math.round(+sku.price * +phase.amount) / 100
+                      : null;
                 if (!amount) {
                   throw new Error('Incorrect amount specified.');
                 }
