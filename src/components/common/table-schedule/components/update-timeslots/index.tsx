@@ -31,6 +31,7 @@ const UpdateTimeSlots = ({
   const [isOpenWarning, setIsOpenWarning] = useState<boolean>(false);
   const [isOpenConfirmation, setIsOpenConfirmation] = useState<boolean>(false);
   const [doShiftAllSubsequentGames, setDoShiftAllSubsequentGames] = useState<boolean>(false);
+  const [messageForWarning, setMessageForWarning] = useState("The new time can't be earlier than the selected timeslot.");
 
   useEffect(() => {
     fillTimeSlotsSelect(selectedDateId);
@@ -80,12 +81,16 @@ const UpdateTimeSlots = ({
   const onTimeSlotChange = (e: any) => {
     const selectedTimeslotId = e.target.value;
     setSelectedTimeSlotId(selectedTimeslotId);
-    const selectedTimeslot = selectedDateTimeSlots.find(v => v.id === selectedTimeslotId - 1);
+    setNewTimeSlot(selectedTimeslotIdToDate(selectedTimeslotId));
+  };
+
+  const selectedTimeslotIdToDate = (timeslotId: string) => {
+    const selectedTimeslot = selectedDateTimeSlots.find(v => v.id === +timeslotId - 1);
     if (!selectedTimeslot) {
       return;
     }
     const time = selectedTimeslot.time;
-    setNewTimeSlot(new Date(timeToDate(time)));
+    return new Date(timeToDate(time));
   };
 
   const onTimeChange = (time: Date) => {
@@ -95,10 +100,40 @@ const UpdateTimeSlots = ({
     const currentTimeSlotValue = Date.parse(time.toDateString() + ' ' + selectedDateTimeSlots.find(v => v.id === +selectedTimeSlotId - 1)!.time);
     const timeDifference = +time - +currentTimeSlotValue;
 
-    if (timeDifference < 0) {
+    const prevTimeslot = selectedDateTimeSlots.find(v => v.id === +selectedTimeSlotId - 2);
+    const nextTimeslot = selectedDateTimeSlots.find(v => v.id === +selectedTimeSlotId);
+    let prevTimeSlotValue;
+    let nextTimeSlotValue;
+    if (prevTimeslot) {
+      prevTimeSlotValue = Date.parse(time.toDateString() + ' ' + prevTimeslot.time);
+    }
+    if (nextTimeslot) {
+      nextTimeSlotValue = Date.parse(time.toDateString() + ' ' + nextTimeslot.time);
+    }
+
+    if (doShiftAllSubsequentGames && timeDifference < 0) {
+      setMessageForWarning("The new time can't be earlier than the selected timeslot.");
       setIsOpenWarning(true);
       return;
+    } else {
+      if (!prevTimeslot && nextTimeSlotValue && +time >= nextTimeSlotValue) {
+        setMessageForWarning(`Time should be less than ${nextTimeslot!.time}`);
+        setIsOpenWarning(true);
+        return;
+      }
+      if (!nextTimeslot && prevTimeSlotValue && +time <= prevTimeSlotValue) {
+        setMessageForWarning(`Time should be more than ${prevTimeslot!.time}`);
+        setIsOpenWarning(true);
+        return;
+      }
+
+      if (nextTimeSlotValue && prevTimeSlotValue && (+time <= prevTimeSlotValue || +time >= nextTimeSlotValue)) {
+        setMessageForWarning(`Time should be between ${prevTimeslot!.time} and ${nextTimeslot!.time}`);
+        setIsOpenWarning(true);
+        return;
+      }
     }
+
     setTimeShift(timeDifference);
     setNewTimeSlot(time);
   };
@@ -150,7 +185,10 @@ const UpdateTimeSlots = ({
     closeConfirmation();
   };
 
-  const onShiftOptionChange = () => setDoShiftAllSubsequentGames(!doShiftAllSubsequentGames);
+  const onShiftOptionChange = () => {
+    setDoShiftAllSubsequentGames(!doShiftAllSubsequentGames);
+    setNewTimeSlot(selectedTimeslotIdToDate(selectedTimeSlotId));
+  };
 
   return (
     <div>
@@ -207,7 +245,7 @@ const UpdateTimeSlots = ({
 
       <PopupConfirm
         isOpen={isOpenWarning}
-        message="The new time can't be earlier than the selected timeslot."
+        message={messageForWarning}
         onClose={closeWarning}
         onCanceClick={closeWarning}
         showYes={false}
