@@ -247,7 +247,7 @@ class Schedules extends Component<Props, State> {
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: Props) {
     const {
       schedule,
       schedulesDetails,
@@ -276,7 +276,7 @@ class Schedules extends Component<Props, State> {
       return;
     }
 
-    if (!schedulesTeamCards && schedulesDetails && teams && scheduleId) {
+    if (schedulesDetails && (!schedulesTeamCards || schedulesDetails !== prevProps.schedulesDetails) && teams && scheduleId) {
       const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
       this.onScheduleCardsUpdate(mappedTeams);
     }
