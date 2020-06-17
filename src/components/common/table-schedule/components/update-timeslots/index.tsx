@@ -35,7 +35,7 @@ const UpdateTimeSlots = ({
 
   useEffect(() => {
     fillTimeSlotsSelect(selectedDateId);
-  }, [schedulesDetailsToState]);
+  }, [schedulesDetailsToState, selectedDateId]);
 
   const dates = [
     ...new Set(
@@ -76,6 +76,8 @@ const UpdateTimeSlots = ({
     const selectedDateFromSelect = e.target.value;
     setSelectedDateId(selectedDateFromSelect);
     fillTimeSlotsSelect(selectedDateFromSelect);
+    setSelectedTimeSlotId('');
+    setNewTimeSlot(undefined);
   };
 
   const onTimeSlotChange = (e: any) => {
