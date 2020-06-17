@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ISchedulesDetails, ISelectOption } from 'common/models';
 import ITimeSlot from 'common/models/schedule/timeSlots';
 import { TimeSlotsEntityTypes } from 'common/enums';
-import { getTimeSlotsFromEntities } from 'helpers/schedule.helpers';
+import { getTimeSlotsFromEntities, ITimeValues } from 'helpers/schedule.helpers';
 import { timeToDate, dateToTime } from 'helpers/date.helper';
 import { Select, DatePicker, PopupConfirm, Button, Checkbox } from 'components/common';
 import styles from './styles.module.scss';
@@ -10,6 +10,7 @@ import moment from 'moment';
 
 interface IProps {
   schedulesDetails: ISchedulesDetails[];
+  timeValues: ITimeValues;
   onScheduleGameUpdate: (gameId: number, gameTime: string) => void;
   updateSchedulesDetails: (
     modifiedSchedulesDetails: ISchedulesDetails[],
@@ -19,6 +20,7 @@ interface IProps {
 
 const UpdateTimeSlots = ({
   schedulesDetails,
+  timeValues,
   onScheduleGameUpdate,
   updateSchedulesDetails,
 }: IProps) => {
@@ -33,16 +35,6 @@ const UpdateTimeSlots = ({
   const [doShiftAllSubsequentGames, setDoShiftAllSubsequentGames] = useState<boolean>(false);
   const [messageForWarning, setMessageForWarning] = useState("The new time can't be earlier than the selected timeslot.");
 
-  useEffect(() => {
-    setSelectedDateTimeSlots(getTimeSlots(selectedDateId));
-  }, [schedulesDetailsToState, selectedDateId]);
-
-  useEffect(() => {
-    if (!newTimeSlot && selectedDateTimeSlots && selectedDateTimeSlots.length) {
-      setNewTimeSlot(getDateByTimeslotId(selectedTimeSlotId));
-    }
-  }, [newTimeSlot, selectedDateTimeSlots, selectedTimeSlotId]);
-
   const dates: string[] = [
     ...new Set(
       schedulesDetails
@@ -52,12 +44,33 @@ const UpdateTimeSlots = ({
     ),
   ];
 
-  const getTimeSlots = (selectedDateIndex: number): ITimeSlot[] => {
-    return getTimeSlotsFromEntities(
-      filterScheduleDetailsByDate(selectedDateIndex),
-      TimeSlotsEntityTypes.SCHEDULE_DETAILS
-    );
-  };
+  const getDateByTimeslotId = useCallback(
+    (timeslotId: number): Date =>
+      getDateFromTimeSlotsById(selectedDateTimeSlots, timeslotId),
+    // eslint-disable-next-line
+    []
+  );
+
+  const getTimeSlots = useCallback(
+    (selectedDateIndex: number): ITimeSlot[] => {
+      return getTimeSlotsFromEntities(
+        filterScheduleDetailsByDate(selectedDateIndex),
+        TimeSlotsEntityTypes.SCHEDULE_DETAILS
+      );
+    },
+    // eslint-disable-next-line
+    []
+  );
+
+  useEffect(() => {
+    setSelectedDateTimeSlots(getTimeSlots(selectedDateId));
+  }, [getTimeSlots, schedulesDetailsToState, selectedDateId]);
+
+  useEffect(() => {
+    if (!newTimeSlot && selectedDateTimeSlots && selectedDateTimeSlots.length) {
+      setNewTimeSlot(getDateByTimeslotId(selectedTimeSlotId));
+    }
+  }, [getDateByTimeslotId, newTimeSlot, selectedDateTimeSlots, selectedTimeSlotId]);
 
   const filterScheduleDetailsByDate = (dateId: number): ISchedulesDetails[] => {
     return schedulesDetailsToState.filter(v => v.game_date === dates[dateId]);
@@ -103,13 +116,11 @@ const UpdateTimeSlots = ({
   ): Date => {
     const timeslot = timeSlots.find(v => v.id === timeslotId);
     if (timeslot) {
-      return new Date(timeToDate(timeslot.time));
+      const dayDate = new Date(dates[selectedDateId]);
+      return new Date(dayDate.toDateString() + ' ' + timeslot.time);
     }
     return new Date();
   };
-
-  const getDateByTimeslotId = (timeslotId: number): Date =>
-    getDateFromTimeSlotsById(selectedDateTimeSlots, timeslotId);
 
   const showWarningMessage = (message: string): void => {
     setMessageForWarning(message);
@@ -120,11 +131,22 @@ const UpdateTimeSlots = ({
     const minutes = time.getMinutes();
     const remainder = minutes % 5;
     time.setMinutes(remainder >= 3 ? minutes + (5 - remainder) : minutes - remainder);
-    const currentTimeSlotValue = Date.parse(time.toDateString() + ' ' + selectedDateTimeSlots.find(v => v.id === selectedTimeSlotId)!.time);
+    const currentTimeSlot = selectedDateTimeSlots.find(v => v.id === selectedTimeSlotId);
+    const currentTimeSlotValue = new Date(time.toDateString() + ' ' + currentTimeSlot!.time);
     const timeDifference = +time - +currentTimeSlotValue;
+
+    setTimeShift(timeDifference);
+    setNewTimeSlot(time);
+  };
+
+  const validateTime = (time: Date | undefined): string => {
+    if (!time) {
+      return 'There is no new selected time slot';
+    }
 
     const prevTimeslot = selectedDateTimeSlots.find(v => v.id === selectedTimeSlotId - 1);
     const nextTimeslot = selectedDateTimeSlots.find(v => v.id === selectedTimeSlotId + 1);
+
     let prevTimeSlotValue;
     let nextTimeSlotValue;
     let prevTime: string;
@@ -137,32 +159,76 @@ const UpdateTimeSlots = ({
     }
 
     if (doShiftAllSubsequentGames) {
-      if (timeDifference < 0) {
-        showWarningMessage("The new time can't be earlier than the selected timeslot.");
-        return;
+      if (timeShift < 0) {
+        return "The new time can't be earlier than the selected timeslot for shifting subsequent games.";
       }
     } else {
       if (!prevTimeslot && nextTimeSlotValue && +time >= nextTimeSlotValue) {
         nextTime = formatTime(nextTimeslot!.time);
-        showWarningMessage(`Time should be less than ${nextTime}`);
-        return;
+        return `Time should be less than ${nextTime}`;
       }
       if (!nextTimeslot && prevTimeSlotValue && +time <= prevTimeSlotValue) {
         prevTime = formatTime(prevTimeslot!.time);
-        showWarningMessage(`Time should be more than ${prevTime}`);
-        return;
+        return `Time should be more than ${prevTime}`;
       }
 
       if (nextTimeSlotValue && prevTimeSlotValue && (+time <= prevTimeSlotValue || +time >= nextTimeSlotValue)) {
         nextTime = formatTime(nextTimeslot!.time);
         prevTime = formatTime(prevTimeslot!.time);
-        showWarningMessage(`Time should be between ${prevTime} and ${nextTime}`);
-        return;
+        return `Time should be between ${prevTime} and ${nextTime}`;
       }
     }
 
-    setTimeShift(timeDifference);
-    setNewTimeSlot(time);
+    return '';
+  };
+
+  const validateForOutsideEventTimeWindow = (): boolean => {
+    const dayDate = new Date(dates[selectedDateId]);
+    const firstGameTime = new Date(dayDate.toDateString() + ' ' + timeValues.firstGameTime);
+    const lastGameEnd = new Date(dayDate.toDateString() + ' ' + timeValues.lastGameEnd);
+
+    if (doShiftAllSubsequentGames) {
+      const lastGameTimeSlot = Date.parse(dayDate.toDateString() + ' ' + selectedDateTimeSlots[selectedDateTimeSlots.length - 1].time);
+      const lastGamePossibleTimeSlot = new Date(lastGameTimeSlot.valueOf() + timeShift);
+      if (lastGameEnd > lastGamePossibleTimeSlot) {
+        return false;
+      }
+    } else {
+      if (firstGameTime <= newTimeSlot! && newTimeSlot! <= lastGameEnd) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const validateBeforeSave = () => {
+    const message = validateTime(newTimeSlot);
+    const isOutsideEventTimeWindow: boolean = validateForOutsideEventTimeWindow();
+
+    if (doShiftAllSubsequentGames) {
+      if (isOutsideEventTimeWindow) {
+        openConfirmationPopup();
+        return;
+      } else {
+        if (message) {
+          showWarningMessage(message);
+          return;
+        }
+      }
+    } else {
+      if (message) {
+        showWarningMessage(message);
+        return;
+      } else {
+        if (isOutsideEventTimeWindow) {
+          openConfirmationPopup();
+          return;
+        }
+      }
+    }
+
+    updateTimeSlots();
   };
 
   const updateTimeSlots = () => {
@@ -219,7 +285,6 @@ const UpdateTimeSlots = ({
 
   const onShiftOptionChange = () => {
     setDoShiftAllSubsequentGames(!doShiftAllSubsequentGames);
-    setNewTimeSlot(getDateByTimeslotId(selectedTimeSlotId));
   };
 
   return (
@@ -256,7 +321,7 @@ const UpdateTimeSlots = ({
               label="Save"
               variant="contained"
               color="primary"
-              onClick={openConfirmationPopup}
+              onClick={validateBeforeSave}
               disabled={!newTimeSlot}
             />
           </div>

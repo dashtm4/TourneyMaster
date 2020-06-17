@@ -38,6 +38,7 @@ import {
   getTimeValuesFromEventSchedule,
   calculateTimeSlots,
   calculateTournamentDays,
+  ITimeValues,
 } from 'helpers';
 import {
   sortFieldsByPremier,
@@ -112,6 +113,7 @@ interface Props {
 interface State {
   games?: IGame[];
   timeSlots?: ITimeSlot[];
+  timeValues?: ITimeValues;
   teams?: IScheduleTeam[];
   fields?: IScheduleField[];
   facilities?: IScheduleFacility[];
@@ -255,6 +257,7 @@ class RecordScores extends React.Component<
     return this.setState({
       games,
       timeSlots,
+      timeValues,
       divisions: mappedDivisions,
       fields: sortedFields,
       teams: mappedTeams,
@@ -424,6 +427,7 @@ class RecordScores extends React.Component<
     const {
       fields,
       timeSlots,
+      timeValues,
       games,
       facilities,
       isEnterScores,
@@ -463,6 +467,7 @@ class RecordScores extends React.Component<
               fields={fields!}
               games={games!}
               timeSlots={timeSlots!}
+              timeValues={timeValues!}
               pools={pools}
               divisions={divisions!}
               facilities={facilities!}

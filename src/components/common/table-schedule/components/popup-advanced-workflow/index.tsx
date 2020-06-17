@@ -6,10 +6,12 @@ import TeamForTeamGameSwap from 'components/common/table-schedule/components/tea
 import UpdateTimeSlots from 'components/common/table-schedule/components/update-timeslots';
 import { IDivision, ISchedulesDetails } from 'common/models';
 import { ITeam } from 'common/models/schedule/teams';
+import { ITimeValues } from 'helpers';
 
 interface IProps {
   divisions: IDivision[];
   teams: ITeam[];
+  timeValues: ITimeValues;
   schedulesDetails: ISchedulesDetails[];
   onScheduleGameUpdate: (gameId: number, gameTime: string) => void;
   updateSchedulesDetails: (
@@ -21,6 +23,7 @@ interface IProps {
 const PopupAdvancedWorkflow = ({
   divisions,
   teams,
+  timeValues,
   schedulesDetails,
   onScheduleGameUpdate,
   updateSchedulesDetails,
@@ -43,6 +46,7 @@ const PopupAdvancedWorkflow = ({
         return (
           <UpdateTimeSlots
             schedulesDetails={schedulesDetails}
+            timeValues={timeValues}
             onScheduleGameUpdate={onScheduleGameUpdate}
             updateSchedulesDetails={updateSchedulesDetails}
           />

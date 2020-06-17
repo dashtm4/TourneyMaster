@@ -23,6 +23,7 @@ import {
   getAllTeamCardGames,
   calculateTournamentDays,
   getTimeSlotsFromEntities,
+  ITimeValues,
 } from 'helpers';
 import {
   IGame,
@@ -67,6 +68,7 @@ interface Props {
   games: IGame[];
   fields: IField[];
   timeSlots: ITimeSlot[];
+  timeValues: ITimeValues;
   facilities: IScheduleFacility[];
   scheduleData: ISchedule;
   schedulesDetails?: ISchedulesDetails[];
@@ -103,6 +105,7 @@ const TableSchedule = ({
   scheduleData,
   schedulesDetails,
   timeSlots,
+  timeValues,
   eventSummary,
   isEnterScores,
   onScheduleGameUpdate,
@@ -371,6 +374,7 @@ const TableSchedule = ({
                   <PopupAdvancedWorkflow
                     divisions={divisions}
                     teams={teamCards as ITeam[]}
+                    timeValues={timeValues}
                     onScheduleGameUpdate={onScheduleGameUpdate}
                     schedulesDetails={schedulesDetails}
                     updateSchedulesDetails={updateSchedulesDetails}

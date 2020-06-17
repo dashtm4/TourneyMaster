@@ -50,6 +50,7 @@ import {
   calculateTotalGameTime,
   calculateTournamentDays,
   getTimeValuesFromSchedule,
+  ITimeValues,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IDiagnosticsInput } from './diagnostics';
@@ -177,6 +178,7 @@ interface State {
   games?: IGame[];
   scheduleId?: string;
   timeSlots?: ITimeSlot[];
+  timeValues?: ITimeValues;
   teams?: ITeam[];
   fields?: IField[];
   facilities?: IScheduleFacility[];
@@ -388,6 +390,7 @@ class Schedules extends Component<Props, State> {
       {
         games,
         timeSlots,
+        timeValues,
         divisions: mappedDivisions,
         fields: sortedFields,
         teams: mappedTeams,
@@ -766,6 +769,7 @@ class Schedules extends Component<Props, State> {
     const {
       fields,
       timeSlots,
+      timeValues,
       games,
       facilities,
       isLoading,
@@ -819,6 +823,7 @@ class Schedules extends Component<Props, State> {
             pools={pools!}
             games={games!}
             timeSlots={timeSlots!}
+            timeValues={timeValues!}
             divisions={divisions!}
             facilities={facilities!}
             teamCards={schedulesTeamCards!}
