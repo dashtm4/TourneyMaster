@@ -289,10 +289,15 @@ const TableSchedule = ({
     if (filterValues.selectedDay) {
       date = days[+filterValues.selectedDay - 1] || '';
     }
-    return getTimeSlotsFromEntities(
-      schedulesDetails!.filter(v => v.game_date === date),
-      TimeSlotsEntityTypes.SCHEDULE_DETAILS
-    );
+    
+    if (schedulesDetails) {
+      return getTimeSlotsFromEntities(
+        schedulesDetails!.filter(v => v.game_date === date),
+        TimeSlotsEntityTypes.SCHEDULE_DETAILS
+      );
+    }
+
+    return timeSlots;
   };
 
   return (
