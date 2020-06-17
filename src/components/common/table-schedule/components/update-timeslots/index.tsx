@@ -23,9 +23,9 @@ const UpdateTimeSlots = ({
   updateSchedulesDetails,
 }: IProps) => {
   const [schedulesDetailsToState, setSchedulesDetailsToState] = useState<ISchedulesDetails[]>(schedulesDetails);
-  const [selectedDateId, setSelectedDateId] = useState('');
+  const [selectedDateId, setSelectedDateId] = useState(0);
   const [selectedDateTimeSlots, setSelectedDateTimeSlots] = useState<ITimeSlot[]>([]);
-  const [selectedTimeSlotId, setSelectedTimeSlotId] = useState('');
+  const [selectedTimeSlotId, setSelectedTimeSlotId] = useState(0);
   const [timeShift, setTimeShift] = useState<number>(0);
   const [newTimeSlot, setNewTimeSlot] = useState<Date>();
   const [isOpenWarning, setIsOpenWarning] = useState<boolean>(false);
@@ -34,78 +34,101 @@ const UpdateTimeSlots = ({
   const [messageForWarning, setMessageForWarning] = useState("The new time can't be earlier than the selected timeslot.");
 
   useEffect(() => {
-    fillTimeSlotsSelect(selectedDateId);
+    setSelectedDateTimeSlots(getTimeSlots(selectedDateId));
   }, [schedulesDetailsToState, selectedDateId]);
 
-  const dates = [
+  useEffect(() => {
+    if (!newTimeSlot && selectedDateTimeSlots && selectedDateTimeSlots.length) {
+      setNewTimeSlot(getDateByTimeslotId(selectedTimeSlotId));
+    }
+  }, [newTimeSlot, selectedDateTimeSlots, selectedTimeSlotId]);
+
+  const dates: string[] = [
     ...new Set(
-      schedulesDetails.filter(v => v.game_date !== null).map(v => v.game_date)
+      schedulesDetails
+        .filter(v => v.game_date !== null)
+        .map(v => v.game_date as string)
+        .sort((a, b) => a.localeCompare(b))
     ),
   ];
 
-  const fillTimeSlotsSelect = (selectedDateIndex: string) => {
-    setSelectedDateTimeSlots(
-      getTimeSlotsFromEntities(
-        filterScheduleDetailsByDate(selectedDateIndex),
-        TimeSlotsEntityTypes.SCHEDULE_DETAILS
-      )
+  const getTimeSlots = (selectedDateIndex: number): ITimeSlot[] => {
+    return getTimeSlotsFromEntities(
+      filterScheduleDetailsByDate(selectedDateIndex),
+      TimeSlotsEntityTypes.SCHEDULE_DETAILS
     );
   };
 
-  const filterScheduleDetailsByDate = (dateId: string) => {
-    return schedulesDetailsToState.filter(v => v.game_date === dates[+dateId - 1]);
+  const filterScheduleDetailsByDate = (dateId: number): ISchedulesDetails[] => {
+    return schedulesDetailsToState.filter(v => v.game_date === dates[dateId]);
   };
 
-  const mapDatesToOptions = () => {
+  const formatTime = (time: string): string =>
+    moment(timeToDate(time))
+      .locale('en')
+      .format('hh:mm A');
+
+  const mapDatesToOptions = (): ISelectOption[] => {
     return dates.map((v, i) => ({
-      value: i + 1,
-      label: moment(v || '').format('ddd MMM D'),
+      value: i,
+      label: moment(v).format('ddd MMM D'),
     })) as ISelectOption[];
   };
 
   const mapTimeSlotsToOptions = () => {
     return selectedDateTimeSlots.map(v => ({
-      value: v.id + 1,
-      label: moment(timeToDate(v.time))
-        .locale('en')
-        .format('hh:mm A'),
+      value: v.id,
+      label: formatTime(v.time),
     }));
   };
 
-  const onDateChange = (e: any) => {
-    const selectedDateFromSelect = e.target.value;
+  const onDateChange = (e: any): void => {
+    const selectedDateFromSelect: number = e.target.value;
     setSelectedDateId(selectedDateFromSelect);
-    fillTimeSlotsSelect(selectedDateFromSelect);
-    setSelectedTimeSlotId('');
-    setNewTimeSlot(undefined);
+    const timeSlots = getTimeSlots(selectedDateFromSelect);
+    setSelectedDateTimeSlots(timeSlots);
+    setSelectedTimeSlotId(0);
+    setNewTimeSlot(getDateFromTimeSlotsById(timeSlots, 0));
   };
 
-  const onTimeSlotChange = (e: any) => {
-    const selectedTimeslotId = e.target.value;
+  const onTimeSlotChange = (e: any): void => {
+    const selectedTimeslotId: number = e.target.value;
     setSelectedTimeSlotId(selectedTimeslotId);
-    setNewTimeSlot(selectedTimeslotIdToDate(selectedTimeslotId));
+    setNewTimeSlot(getDateByTimeslotId(selectedTimeslotId));
   };
 
-  const selectedTimeslotIdToDate = (timeslotId: string) => {
-    const selectedTimeslot = selectedDateTimeSlots.find(v => v.id === +timeslotId - 1);
-    if (!selectedTimeslot) {
-      return;
+  const getDateFromTimeSlotsById = (
+    timeSlots: ITimeSlot[],
+    timeslotId: number
+  ): Date => {
+    const timeslot = timeSlots.find(v => v.id === timeslotId);
+    if (timeslot) {
+      return new Date(timeToDate(timeslot.time));
     }
-    const time = selectedTimeslot.time;
-    return new Date(timeToDate(time));
+    return new Date();
   };
 
-  const onTimeChange = (time: Date) => {
+  const getDateByTimeslotId = (timeslotId: number): Date =>
+    getDateFromTimeSlotsById(selectedDateTimeSlots, timeslotId);
+
+  const showWarningMessage = (message: string): void => {
+    setMessageForWarning(message);
+    setIsOpenWarning(true);
+  };
+
+  const onTimeChange = (time: Date): void => {
     const minutes = time.getMinutes();
     const remainder = minutes % 5;
     time.setMinutes(remainder >= 3 ? minutes + (5 - remainder) : minutes - remainder);
-    const currentTimeSlotValue = Date.parse(time.toDateString() + ' ' + selectedDateTimeSlots.find(v => v.id === +selectedTimeSlotId - 1)!.time);
+    const currentTimeSlotValue = Date.parse(time.toDateString() + ' ' + selectedDateTimeSlots.find(v => v.id === selectedTimeSlotId)!.time);
     const timeDifference = +time - +currentTimeSlotValue;
 
-    const prevTimeslot = selectedDateTimeSlots.find(v => v.id === +selectedTimeSlotId - 2);
-    const nextTimeslot = selectedDateTimeSlots.find(v => v.id === +selectedTimeSlotId);
+    const prevTimeslot = selectedDateTimeSlots.find(v => v.id === selectedTimeSlotId - 1);
+    const nextTimeslot = selectedDateTimeSlots.find(v => v.id === selectedTimeSlotId + 1);
     let prevTimeSlotValue;
     let nextTimeSlotValue;
+    let prevTime: string;
+    let nextTime: string;
     if (prevTimeslot) {
       prevTimeSlotValue = Date.parse(time.toDateString() + ' ' + prevTimeslot.time);
     }
@@ -115,25 +138,25 @@ const UpdateTimeSlots = ({
 
     if (doShiftAllSubsequentGames) {
       if (timeDifference < 0) {
-        setMessageForWarning("The new time can't be earlier than the selected timeslot.");
-        setIsOpenWarning(true);
+        showWarningMessage("The new time can't be earlier than the selected timeslot.");
         return;
       }
     } else {
       if (!prevTimeslot && nextTimeSlotValue && +time >= nextTimeSlotValue) {
-        setMessageForWarning(`Time should be less than ${nextTimeslot!.time}`);
-        setIsOpenWarning(true);
+        nextTime = formatTime(nextTimeslot!.time);
+        showWarningMessage(`Time should be less than ${nextTime}`);
         return;
       }
       if (!nextTimeslot && prevTimeSlotValue && +time <= prevTimeSlotValue) {
-        setMessageForWarning(`Time should be more than ${prevTimeslot!.time}`);
-        setIsOpenWarning(true);
+        prevTime = formatTime(prevTimeslot!.time);
+        showWarningMessage(`Time should be more than ${prevTime}`);
         return;
       }
 
       if (nextTimeSlotValue && prevTimeSlotValue && (+time <= prevTimeSlotValue || +time >= nextTimeSlotValue)) {
-        setMessageForWarning(`Time should be between ${prevTimeslot!.time} and ${nextTimeslot!.time}`);
-        setIsOpenWarning(true);
+        nextTime = formatTime(nextTimeslot!.time);
+        prevTime = formatTime(prevTimeslot!.time);
+        showWarningMessage(`Time should be between ${prevTime} and ${nextTime}`);
         return;
       }
     }
@@ -146,10 +169,10 @@ const UpdateTimeSlots = ({
     let changingTimeSlots: string[] = [];
     if (doShiftAllSubsequentGames) {
       changingTimeSlots = selectedDateTimeSlots
-        .slice(+selectedTimeSlotId - 1)
+        .slice(selectedTimeSlotId)
         .map(timeslot => timeslot.time);
     } else {
-      changingTimeSlots = [selectedDateTimeSlots[+selectedTimeSlotId - 1].time];
+      changingTimeSlots = [selectedDateTimeSlots[selectedTimeSlotId].time];
     }
 
     const filteredSchedulesDetailsByDate = filterScheduleDetailsByDate(selectedDateId);
@@ -196,7 +219,7 @@ const UpdateTimeSlots = ({
 
   const onShiftOptionChange = () => {
     setDoShiftAllSubsequentGames(!doShiftAllSubsequentGames);
-    setNewTimeSlot(selectedTimeslotIdToDate(selectedTimeSlotId));
+    setNewTimeSlot(getDateByTimeslotId(selectedTimeSlotId));
   };
 
   return (
@@ -206,7 +229,7 @@ const UpdateTimeSlots = ({
           <Select
             options={mapDatesToOptions()}
             placeholder="Select Date"
-            value={selectedDateId}
+            value={selectedDateId?.toString() || ''}
             onChange={onDateChange}
           />
         </div>
@@ -214,9 +237,8 @@ const UpdateTimeSlots = ({
           <Select
             placeholder="Select Timeslot"
             options={mapTimeSlotsToOptions()}
-            value={selectedTimeSlotId}
+            value={selectedTimeSlotId?.toString() || ''}
             onChange={onTimeSlotChange}
-            disabled={!selectedDateId}
           />
         </div>
       </div>
@@ -228,7 +250,6 @@ const UpdateTimeSlots = ({
             type="time"
             viewType="input"
             onChange={onTimeChange}
-            disabled={!selectedTimeSlotId}
           />
           <div className={styles.btnsWrapper}>
             <Button
