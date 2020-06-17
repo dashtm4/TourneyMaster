@@ -111,10 +111,12 @@ const UpdateTimeSlots = ({
       nextTimeSlotValue = Date.parse(time.toDateString() + ' ' + nextTimeslot.time);
     }
 
-    if (doShiftAllSubsequentGames && timeDifference < 0) {
-      setMessageForWarning("The new time can't be earlier than the selected timeslot.");
-      setIsOpenWarning(true);
-      return;
+    if (doShiftAllSubsequentGames) {
+      if (timeDifference < 0) {
+        setMessageForWarning("The new time can't be earlier than the selected timeslot.");
+        setIsOpenWarning(true);
+        return;
+      }
     } else {
       if (!prevTimeslot && nextTimeSlotValue && +time >= nextTimeSlotValue) {
         setMessageForWarning(`Time should be less than ${nextTimeslot!.time}`);
