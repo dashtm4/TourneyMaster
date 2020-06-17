@@ -309,7 +309,7 @@ const UpdateTimeSlots = ({
       </div>
       <div className={styles.flexCol}>
         <div className={styles.flexcontainer}>
-          <p>Change Timeslot:</p>
+          <p>New Timeslot Start:</p>
           <DatePicker
             value={newTimeSlot}
             type="time"
@@ -318,7 +318,7 @@ const UpdateTimeSlots = ({
           />
           <div className={styles.btnsWrapper}>
             <Button
-              label="Save"
+              label="Commit Change"
               variant="contained"
               color="primary"
               onClick={validateBeforeSave}

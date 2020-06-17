@@ -73,7 +73,7 @@ const PopupAdvancedWorkflow = ({
       <Modal isOpen={open} onClose={() => setOpen(false)}>
         <div className={styles.modalContainer}>
           <div>
-            <h4 className={styles.title}>Advanced Workflow</h4>
+            <h4 className={styles.title}>Advanced Settings</h4>
           </div>
           <div>
             <Radio
