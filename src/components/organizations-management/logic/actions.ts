@@ -87,6 +87,14 @@ const addUserToOrganization: ActionCreator<ThunkAction<
 
     await Api.post('/org_members', orgMembers);
 
+    const { length: orgMembersLength } = await Api.get(
+      `/org_members?org_id=${orgMembers.org_id}&member_id=${orgMembers.member_id}`
+    );
+    if (orgMembersLength) {
+      Toasts.errorToast('Already joined!');
+      return;
+    }
+
     const organization = await Api.get(`/organizations?org_id=${invCode}`);
     const currentOrganization = organization.find(
       (it: IOrganization) => it.org_id === invCode
