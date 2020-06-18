@@ -3,34 +3,20 @@
     "id": "FP",
     "name": "Pay in full",
     "type": "installment",
-    "iterations": "1",
-    "interval": "month",
-    "intervalCount": "1"
-  },
-  {
-    "id": "2M",
-    "name": "2 months",
-    "type": "installment",
-    "iterations": "2",
-    "interval": "month",
-    "intervalCount": "1"
-  },
-  {
-    "id": "3M",
-    "name": "3 months",
-    "type": "installment",
-    "iterations": "3",
+    "iterations": 1,
     "interval": "month",
     "intervalCount": "1"
   },
   {
     "id": "S",
-    "name": "Pay later",
     "type": "schedule",
+    "name": "Pay later",
     "schedule": [
-      { "date": "2020-06-06", "amountType": "percent", "amount": "0.5" },
-      { "date": "2020-06-07", "amountType": "percent", "amount": "0.3" },
-      { "date": "2020-07-08", "amountType": "percent", "amount": "0.2" }
+      { "date": 1592504000, "amount": "20", "amountType": "percent" },
+      { "date": 1592507600, "amountType": "percent", "amount": "20" },
+      { "date": 1592511200, "amountType": "percent", "amount": "20" },
+      { "date": 1592514800, "amountType": "percent", "amount": "20" },
+      { "date": 1592518400, "amountType": "percent", "amount": "20" }
     ]
   }
 ]

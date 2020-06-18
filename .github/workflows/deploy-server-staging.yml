@@ -29,6 +29,7 @@ jobs:
           STRIPE_PUBLISHABLE_KEY: ${{secrets.STRIPE_PUBLISHABLE_KEY}}
           STRIPE_SECRET_KEY: ${{secrets.STRIPE_SECRET_KEY}}
           STRIPE_WEBHOOK_SIGNING_SECRET: ${{secrets.STRIPE_WEBHOOK_SIGNING_SECRET}}
+          STRIPE_PAYMENT_SCHEDULE_PRICE: 'price_1GvJrwLMHSTfcs3Hg6Iw1ebK'
           STACK_NAME: 'TourneyMasterPayments'
           PUBLIC_API_BASE_URL: 'https://api.tourneymaster.org/public'
           PRIVATE_API_SM_PARAMETER_NAME: 'TourneyMasterAPIv2'

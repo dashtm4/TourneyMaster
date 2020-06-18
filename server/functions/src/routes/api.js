@@ -1,7 +1,5 @@
-import {
-  processCreateSubscription,
-  paymentSuccessWebhook,
-} from './stripePayments.js';
+import { processCreateSubscription } from './stripeSubscriptions.js';
+import { paymentSuccessWebhook } from './stripeWebhook.js';
 import { getPaymentPlans } from '../services/activeProducts.js';
 
 export default api => {
