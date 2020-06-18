@@ -23,7 +23,8 @@ interface IProps {
 
 enum TypeOptions {
   'Use Scheduler' = 1,
-  'Create Manually' = 2,
+  'Use Visual Games Maker' = 2,
+  'Create Manually' = 3,
 }
 
 const CreateNewModal = (props: IProps) => {
@@ -36,7 +37,7 @@ const CreateNewModal = (props: IProps) => {
   const [step, setStep] = useState(1);
   const [type, setType] = useState(1);
 
-  const typeOptions = ['Use Scheduler', 'Create Manually'];
+  const typeOptions = ['Use Scheduler', 'Use Visual Games Maker', 'Create Manually'];
 
   const onTypeChange = (e: InputTargetValue) =>
     setType(TypeOptions[e.target.value]);
@@ -63,6 +64,10 @@ const CreateNewModal = (props: IProps) => {
     onCreate(schedule);
   };
 
+  const onCreateWithVisualGamesMaker = () => {
+    onCreate(schedule);
+  };
+
   const onCreateManually = () => {
     onChange('isManualScheduling', true);
     onCreate(schedule);
@@ -73,8 +78,8 @@ const CreateNewModal = (props: IProps) => {
       isOpen && (
         <div>
           <p className={styles.message}>
-            Do you want to use 'Scheduling Algorithm' or create schedule
-            manually?
+            Do you want to use 'Scheduling Algorithm', 'Visual Games Maker' or
+            create schedule manually?
           </p>
           <div className={styles.radioBtnsWrapper}>
             <Radio
@@ -97,6 +102,19 @@ const CreateNewModal = (props: IProps) => {
         </div>
       )
     );
+  };
+
+  const chooseOnCreateFunction = (createType: TypeOptions) => {
+    switch (createType) {
+      case TypeOptions['Use Scheduler']:
+        return onCreateWithScheduler;
+      case TypeOptions['Use Visual Games Maker']:
+        return onCreateWithVisualGamesMaker;
+      case TypeOptions['Create Manually']:
+        return onCreateManually;
+      default:
+        return onCreateWithScheduler;
+    }
   };
 
   const renderStepTwo = () => {
@@ -149,7 +167,7 @@ const CreateNewModal = (props: IProps) => {
             label="Create"
             color="primary"
             variant="contained"
-            onClick={type === 1 ? onCreateWithScheduler : onCreateManually}
+            onClick={chooseOnCreateFunction(type)}
             disabled={!schedule.schedule_name?.length}
           />
         </div>
