@@ -90,8 +90,9 @@ const addUserToOrganization: ActionCreator<ThunkAction<
     const { length: orgMembersLength } = await Api.get(
       `/org_members?org_id=${orgMembers.org_id}&member_id=${orgMembers.member_id}`
     );
+
     if (orgMembersLength) {
-      Toasts.errorToast('Already joined!');
+      Toasts.errorToast('You are already joined to this organization!');
       return;
     }
 
