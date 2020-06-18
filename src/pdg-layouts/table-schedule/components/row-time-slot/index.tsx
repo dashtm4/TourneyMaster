@@ -43,7 +43,7 @@ const RowTimeSlot = ({
     >
       <Text style={styles.teamNameWrapper}>{team.name}</Text>
       <Text style={styles.divisionNameWrapper}>
-        {`(${team.divisionShortName!})`}
+        {` (${team.divisionShortName!})`}
       </Text>
     </View>
   );
