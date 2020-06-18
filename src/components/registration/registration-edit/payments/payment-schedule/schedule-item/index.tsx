@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { BindingCbWithTwo, BindingAction } from 'common/models';
-import moment from 'moment';
 import { TableRow, TableCell } from '@material-ui/core';
 
 import { Input, DatePicker, Button } from 'components/common';
@@ -17,12 +16,9 @@ const ScheduleItem: React.SFC<ScheduleItemProps> = ({
   onChange,
   onDelete,
 }: ScheduleItemProps) => {
-  const onDateChange = (e: Date | string) => {
-    const mom = moment(e)
-      .utcOffset('+05:00')
-      .format('YYYY-MM-DD');
-    const ret =
-      !isNaN(Number(e)) && onChange('date', mom /* new Date(e).toISOString()*/);
+  const onDateChange = (e: Date) => {
+    const date = new Date(e.toDateString()).getTime() / 1000;
+    const ret = !isNaN(Number(e)) && onChange('date', date);
     return ret;
   };
 
@@ -35,13 +31,7 @@ const ScheduleItem: React.SFC<ScheduleItemProps> = ({
         <DatePicker
           fullWidth={true}
           type="date"
-          value={
-            data?.date
-              ? moment(data.date)
-                  .utcOffset('+05:00')
-                  .format()
-              : new Date()
-          }
+          value={data?.date ? new Date(data.date * 1000) : new Date()}
           onChange={onDateChange}
         />
       </TableCell>

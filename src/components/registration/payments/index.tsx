@@ -12,7 +12,10 @@ const Payments = ({ data }: { data: Partial<IRegistration> }) => {
     );
     if (decodedSchedule?.schedule) {
       paymentSchedule = decodedSchedule.schedule
-        .map((x: any) => `${moment(x.date).format('YYYY-MM-DD')}: ${x.amount}%`)
+        .map(
+          (x: any) =>
+            `${moment(x.date * 1000).format('YYYY-MM-DD')}: ${x.amount}%`
+        )
         .join(', ');
     }
   }
