@@ -78,7 +78,7 @@ const CsvTable = ({
             <TableRow
               key={index}
               style={{
-                backgroundColor: !fields[index].included
+                backgroundColor: !fields[index]?.included
                   ? '#ececec'
                   : 'transparent',
               }}
@@ -99,7 +99,7 @@ const CsvTable = ({
                   options={[
                     {
                       label: '',
-                      checked: fields[index].included,
+                      checked: fields[index]?.included,
                     },
                   ]}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +117,7 @@ const CsvTable = ({
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       onSelect(e, index);
                     }}
-                    disabled={!fields[index].included}
+                    disabled={fields[index] && !fields[index]?.included}
                   />
                 </div>
               </TableCell>
