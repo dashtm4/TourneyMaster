@@ -17,6 +17,7 @@ interface Props {
     divisionName: string,
     poolName: string
   ) => void;
+  onDeleteAllTeams: (divisionId: string) => void;
 }
 
 const TeamManagement = ({
@@ -25,6 +26,7 @@ const TeamManagement = ({
   pools,
   loadPools,
   onEditPopupOpen,
+  onDeleteAllTeams,
 }: Props) => {
   const [isSectionsExpand, toggleSectionCollapse] = useState<boolean>(true);
 
@@ -65,6 +67,7 @@ const TeamManagement = ({
               teams={teams}
               loadPools={loadPools}
               onEditPopupOpen={onEditPopupOpen}
+              onDeleteAllTeams={onDeleteAllTeams}
               key={division.division_id}
               isSectionExpand={isSectionsExpand}
             />
