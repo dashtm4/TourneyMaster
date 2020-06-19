@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PoolItem from '../pool-item';
-import { SectionDropdown, Loader } from 'components/common';
+import { DeletePopupConfrim, SectionDropdown, Loader } from 'components/common';
 import { IDivision, IPool, ITeam } from 'common/models';
 import styles from './styles.module.scss';
+import Button from 'components/common/buttons/button';
 import { sortByField } from 'helpers';
 import { SortByFilesTypes } from 'common/enums';
 
@@ -16,6 +17,7 @@ interface Props {
     divisionName: string,
     poolName: string
   ) => void;
+  onDeleteAllTeams: (divisionId: string) => void;
   isSectionExpand: boolean;
 }
 
@@ -25,8 +27,15 @@ const DivisionItem = ({
   teams,
   loadPools,
   onEditPopupOpen,
+  onDeleteAllTeams,
   isSectionExpand,
 }: Props) => {
+  const [isDeletePopupOpen, onDeletePopup] = useState(false);
+
+  const onDeletePopupClose = () => {
+    onDeletePopup(false);
+  };
+
   if (!division.isPoolsLoading && !division.isPoolsLoaded) {
     loadPools(division.division_id);
   }
@@ -39,7 +48,24 @@ const DivisionItem = ({
     team => team.division_id === division.division_id && !team.pool_id
   );
 
-  const sotedPools = sortByField(pools, SortByFilesTypes.POOLS);
+  const handleDeletePopup = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    onDeletePopup(true);
+  };
+
+  const handleDeleteAllTeams = () => {
+    onDeleteAllTeams(division.division_id);
+    onDeletePopupClose();
+  };
+
+  const hasTeamsInDivision = () => {
+    const { division_id } = division;
+    return !!teams.filter(it => it.division_id === division_id).length;
+  };
+
+  const sortedPools = sortByField(pools, SortByFilesTypes.POOLS);
 
   return (
     <li className={styles.divisionItem}>
@@ -49,9 +75,21 @@ const DivisionItem = ({
         headingColor="#1C315F"
         expanded={isSectionExpand}
       >
-        <span>Division: {division.long_name}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span>Division: {division.long_name}</span>
+          <div className={styles.buttonContainer}>
+            {hasTeamsInDivision() ? (
+              <Button
+                label="Delete All"
+                variant="text"
+                color="inherit"
+                onClick={handleDeletePopup}
+              />
+            ) : null}
+          </div>
+        </div>
         <ul className={styles.poolList}>
-          {sotedPools.map(pool => {
+          {sortedPools.map(pool => {
             const filtredTeams = teams.filter(
               it => it.pool_id === pool.pool_id
             );
@@ -76,6 +114,14 @@ const DivisionItem = ({
           ) : null}
         </ul>
       </SectionDropdown>
+      <DeletePopupConfrim
+        type={''}
+        message={'Type "All Teams" to delete'}
+        deleteTitle={'All Teams'}
+        isOpen={isDeletePopupOpen}
+        onClose={onDeletePopupClose}
+        onDeleteClick={handleDeleteAllTeams}
+      />
     </li>
   );
 };

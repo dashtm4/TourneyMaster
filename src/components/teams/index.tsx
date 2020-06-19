@@ -121,7 +121,19 @@ class Teams extends React.Component<
     }));
 
     this.onCloseModal();
-    
+
+    setTimeout(() => {
+      this.onSaveClick();
+    }, 500);
+  };
+
+  onDeleteAllTeams = (divisionId: string) => {
+    this.setState(({ teams }) => ({
+      teams: teams.map(it =>
+        it.division_id === divisionId ? { ...it, isDelete: true } : it
+      ),
+    }));
+
     setTimeout(() => {
       this.onSaveClick();
     }, 500);
@@ -149,6 +161,7 @@ class Teams extends React.Component<
       this.setState({ changesAreMade: true });
     }
   };
+
   onSaveTeam = () => {
     const { configurableTeam } = this.state;
 
@@ -226,6 +239,7 @@ class Teams extends React.Component<
               teams={teams.filter(it => !it.isDelete)}
               loadPools={loadPools}
               onEditPopupOpen={this.onEditPopupOpen}
+              onDeleteAllTeams={this.onDeleteAllTeams}
             />
           </ul>
         </section>
