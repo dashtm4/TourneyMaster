@@ -46,21 +46,30 @@ export const mapFieldForSaving = (fields: IField[]) => {
 
 export const parseMapping = (mapping: string, tableDetails: string) => {
   const parsedTableDetails = parseTableDetails(tableDetails);
-  const fields = parsedTableDetails.map((column, index: number) => ({
-    value: column.column_name,
-    csvPosition: index,
-    dataType: column.data_type,
-    included: true,
-    map_id: column.map_id,
-  }));
-
   const parsedMapping = JSON.parse(mapping);
-  const newFields = fields.map((field, index) => {
-    if (parsedMapping[index]) {
-      const obj = fields.find(f => f.map_id === parsedMapping[index]);
-      return { ...field, value: obj!.value, mapId: obj!.map_id };
+
+  const newFields = parsedMapping.map((fieldId: string, index: number) => {
+    if (fieldId) {
+      const tableField = parsedTableDetails.find(x => x.map_id === fieldId);
+      if (!tableField) {
+        throw new Error('Corrupted mapping');
+      } else {
+        return {
+          value: tableField.column_name,
+          csvPosition: index,
+          dataType: tableField.data_type,
+          included: true,
+          map_id: tableField.map_id,
+        };
+      }
     } else {
-      return { ...field, value: '', mapId: '', dataType: '', included: false };
+      return {
+        value: '',
+        csvPosition: index,
+        dataType: '',
+        included: false,
+        map_id: '',
+      };
     }
   });
 
@@ -123,12 +132,12 @@ export const checkCsvForValidity = (
   if (headerIncluded && data.length <= headerPosition) {
     return false;
   }
-  if (headerIncluded && data[headerPosition].length > fields.length) {
-    return false;
+  if (headerIncluded && data[headerPosition - 1].length > fields.length) {
+    return true;
   }
-  if (!headerIncluded && data[0].length > fields.length) {
-    return false;
-  }
+  // if (!headerIncluded && data[0].length > fields.length) {
+  //   return false;
+  // }
   return true;
 };
 

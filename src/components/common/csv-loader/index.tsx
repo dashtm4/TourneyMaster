@@ -134,10 +134,22 @@ class CsvLoader extends React.Component<Props, State> {
           } else {
             const preview = getPreview(data, isHeaderIncluded, headerPosition);
 
-            this.setState({
+            this.setState(prevState => ({
               preview,
               data: isHeaderIncluded ? data.slice(headerPosition) : data,
-            });
+              fields: preview.header.map((column, index: number) => ({
+                value: column,
+                csvPosition: index,
+                dataType:
+                  prevState.fields.find(x => x.value === column)?.dataType ||
+                  '',
+                included:
+                  prevState.fields.find(x => x.value === column)?.included ||
+                  prevState.fields.find(x => x.value === column) === undefined,
+                map_id:
+                  prevState.fields.find(x => x.value === column)?.map_id || '',
+              })),
+            }));
           }
         },
       });
