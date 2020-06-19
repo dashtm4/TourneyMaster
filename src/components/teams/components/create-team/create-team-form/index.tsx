@@ -98,7 +98,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
         <div className={styles.section}>
           <div className={styles.sectionRow}>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Long Names do not render well on phones. Please enter both!
+              Long Names do not render well on phones. So please enter both a long (web) and short (mobile)!
               </CardMessage>
             <div className={styles.sectionItem} />
           </div>

@@ -129,7 +129,7 @@ class CsvLoader extends React.Component<Props, State> {
           );
           if (!isCsvValid) {
             return Toasts.errorToast(
-              'Please, upload valid csv or check header position'
+              'Please chceck your csv. Something seems to be off with it.'
             );
           } else {
             const preview = getPreview(data, isHeaderIncluded, headerPosition);
@@ -308,9 +308,9 @@ class CsvLoader extends React.Component<Props, State> {
 
     const requiredFields = this.props.tableColumns
       ? getRequiredFields(
-          this.props.type,
-          this.props.tableColumns?.table_details
-        )
+        this.props.type,
+        this.props.tableColumns?.table_details
+      )
       : [];
 
     return (
