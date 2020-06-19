@@ -22,15 +22,15 @@ const PoolItem = ({ pool, teams, division, onEditPopupOpen }: Props) => {
   return (
     <li className={styles.pool}>
       <h5 className={styles.poolTitle}>
-        {pool ? `${pool.pool_name} (${teams.length})` : 'Unassigned'}
+        Pool: {pool ? `${pool.pool_name} (Team Count: ${teams.length})` : 'Unassigned'}
       </h5>
       {teams.length !== 0 && (
         <table className={styles.teamsTable}>
           <thead>
             <tr>
-              <th className={styles.teamName}>Name</th>
-              <th>Contact name</th>
-              <th>Contact number</th>
+              <th className={styles.teamName}>Team</th>
+              <th>Coach name</th>
+              <th>Mobile (printed on gameday reports)</th>
               <th className={styles.teamActions}>Actions</th>
             </tr>
           </thead>
