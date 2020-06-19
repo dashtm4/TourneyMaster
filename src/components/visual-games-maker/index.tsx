@@ -35,11 +35,6 @@ class VisualGamesMaker extends Component<IProps, IState> {
     this.props.getAllPools(divisions!.map(v => v.division_id));
   }
 
-  onDivisionChange(e: any) {
-    const divisionId = e.target.value;
-    this.setState({ selectedDivisionId: divisionId });
-  }
-
   render() {
     return (
       <div className={styles.container}>
