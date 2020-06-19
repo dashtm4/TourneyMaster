@@ -5,6 +5,9 @@ import { ITeam, IDivision, IPool } from 'common/models';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
+import RunningGamesTally from './running-games-tally';
+import ResultingGamesList from './resulting-game-list';
+import PossibleGamesMatrix from './possible-games-matrix';
 import styles from './styles.module.scss';
 
 interface IMapStateToProps {
@@ -38,7 +41,11 @@ class VisualGamesMaker extends Component<IProps, IState> {
   render() {
     return (
       <div className={styles.container}>
-        Visual Games Maker
+        <div className={styles.tablesWrapper}>
+          <PossibleGamesMatrix />
+          <RunningGamesTally />
+          <ResultingGamesList />
+        </div>
       </div>
     );
   }
