@@ -10,6 +10,7 @@ import {
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
+  DELETE_ALL_DIVISIONS_SUCCESS,
   ADD_POOL_SUCCESS,
   REGISTRATION_FETCH_SUCCESS,
   DIVISION_SAVE_SUCCESS,
@@ -72,6 +73,10 @@ export const deleteDivisionSuccess = (
 ): { type: string; payload: string } => ({
   type: DELETE_DIVISION_SUCCESS,
   payload,
+});
+
+export const deleteAllDivisionsSuccess = (): { type: string } => ({
+  type: DELETE_ALL_DIVISIONS_SUCCESS,
 });
 
 export const addPoolSuccess = (
@@ -271,6 +276,36 @@ export const deleteDivision: ActionCreator<ThunkAction<
   Toasts.successToast('Division is successfully deleted');
 };
 
+export const deleteAllDivisions: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (divisions: IDivision[], pools: IPool[], teams: ITeam[]) => async (
+  dispatch: Dispatch
+) => {
+  if (pools.length) {
+    await api.delete('/pools', pools);
+  }
+  if (teams.length) {
+    await api.delete('teams', teams);
+  }
+
+  const response = await Promise.all(
+    divisions.map(division =>
+      api.delete(`/divisions?division_id=${division.division_id}`)
+    )
+  );
+
+  if (response.some(res => res && res.errorType === 'Error')) {
+    return Toasts.errorToast("Couldn't delete divisions");
+  }
+
+  dispatch(deleteAllDivisionsSuccess());
+
+  Toasts.successToast('Divisions are successfully deleted');
+};
+
 export const savePool: ActionCreator<ThunkAction<
   void,
   {},
@@ -406,10 +441,10 @@ export const saveTeams = (teams: ITeam[]) => async (
           team => team.long_name,
           'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
         )
-//        .unique(
-//          team => team.short_name,
-//          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
-//        )
+        //        .unique(
+        //          team => team.short_name,
+        //          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
+        //        )
         .validate(
           teams.filter(team => team.division_id === division.division_id)
         );
