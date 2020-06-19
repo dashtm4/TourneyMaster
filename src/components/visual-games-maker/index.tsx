@@ -5,6 +5,7 @@ import { ITeam, IDivision, IPool } from 'common/models';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
+import styles from 'styles.module.scss';
 
 interface IMapStateToProps {
   teams?: ITeam[] | undefined;
