@@ -18,7 +18,11 @@ export default class StripeTaxRatesHandler {
 
   list = async params => {
     const objects = [];
-    for await (const object of this.endpoint.list({ ...params, limit: 100 })) {
+    for await (const object of this.endpoint.list({
+      ...params,
+      active: true,
+      limit: 100,
+    })) {
       objects.push(object);
     }
     return objects;

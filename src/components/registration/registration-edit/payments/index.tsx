@@ -68,7 +68,13 @@ const Payments = ({ data, onChange }: IPaymentsProps) => {
           id: 'S',
           type: 'schedule',
           name: 'Pay later',
-          schedule: [{ date: new Date(), amount: 100, amountType: 'percent' }],
+          schedule: [
+            {
+              date: new Date().getTime() / 1000,
+              amount: 100,
+              amountType: 'percent',
+            },
+          ],
         },
       ];
 

@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
   },
   gameTeamName: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   teamNameWrapper: {
     maxWidth: 65,
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
   divisionNameWrapper: {
     width: 20,
     paddingLeft: 1,
+    fontSize: 6,
   },
 });
 

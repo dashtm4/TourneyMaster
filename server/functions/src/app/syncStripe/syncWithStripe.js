@@ -17,7 +17,7 @@ const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
     // console.log(JSON.stringify(source, null, '  '));
     const activeObjects = source.flatMap(objectClass.map);
 
-    const stripeObjects = await objectClass.list({ active: true });
+    const stripeObjects = await objectClass.list();
 
     let objectsToDelete = [];
     // Create and update products
