@@ -12,11 +12,11 @@
     "type": "schedule",
     "name": "Pay later",
     "schedule": [
-      { "date": 1592504000, "amount": "20", "amountType": "percent" },
-      { "date": 1592507600, "amountType": "percent", "amount": "20" },
-      { "date": 1592511200, "amountType": "percent", "amount": "20" },
-      { "date": 1592514800, "amountType": "percent", "amount": "20" },
-      { "date": 1592518400, "amountType": "percent", "amount": "20" }
+      { "date": 1592656000, "amount": "20", "amountType": "percent" },
+      { "date": 1592659600, "amountType": "percent", "amount": "20" },
+      { "date": 1592663200, "amountType": "percent", "amount": "20" },
+      { "date": 1592666800, "amountType": "percent", "amount": "20" },
+      { "date": 1592670400, "amountType": "percent", "amount": "20" }
     ]
   }
 ]
