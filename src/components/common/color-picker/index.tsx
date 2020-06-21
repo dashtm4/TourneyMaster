@@ -24,7 +24,11 @@ const ColorPicker = ({ value, onChange }: Props) => {
       <div className={styles.ColorPicker}>
         <MUIColorPicker
           name="color"
-          style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+          style={{
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            width: '100%',
+          }}
           defaultValue={`#${value}`}
           onChange={(color: string) => onChange(color || `#${value}`)}
         />
