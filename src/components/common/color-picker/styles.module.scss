@@ -1,29 +1,20 @@
 :local(.ColorPickerWrapper) {
   display: flex;
-  flex-direction: column;
 }
 
 :local(.ColorPickerBtn) {
   height: 36px;
   width: 36px;
 
-  border-radius: 8px;
-
-  border: 0;
-
-  cursor: pointer;
-  outline: none;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
 
 :local(.ColorPicker) {
-  margin-top: 10px;
+  width: 100%;
 
-  & div:nth-child(1) {
-    border-color: transparent !important;
-  }
-
-  & div:nth-child(2) {
-    transform: translate(-50%, 0);
-    left: 50%;
+  input {
+    padding-left: 7px;
+    height: 22px;
   }
 }

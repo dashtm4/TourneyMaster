@@ -3,7 +3,6 @@ import { Props } from '../../';
 
 interface State {
   activeColor: string;
-  displayColorPicker: boolean;
 }
 
 const withSelectColor = (Component: React.ComponentType<Props>) => {
@@ -13,7 +12,6 @@ const withSelectColor = (Component: React.ComponentType<Props>) => {
 
       this.state = {
         activeColor: '1C315F',
-        displayColorPicker: false,
       };
     }
 
@@ -22,26 +20,19 @@ const withSelectColor = (Component: React.ComponentType<Props>) => {
         this.setState({ activeColor: this.props.value });
     }
 
-    onClick = () => {
-      this.setState({ displayColorPicker: !this.state.displayColorPicker });
-    };
-
-    _changeHandler = ({ hex }: any) => {
+    _changeHandler = (value: any) => {
       this.setState({
-        displayColorPicker: !this.state.displayColorPicker,
-        activeColor: hex,
+        activeColor: value,
       });
-      this.props.onChange(hex);
+      this.props.onChange(value);
     };
 
     render() {
-      const { activeColor, displayColorPicker } = this.state;
+      const { activeColor } = this.state;
       return (
         <Component
           {...this.props}
           value={activeColor}
-          displayColorPicker={displayColorPicker}
-          onClick={this.onClick}
           onChange={this._changeHandler}
         />
       );
