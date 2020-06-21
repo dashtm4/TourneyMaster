@@ -52,6 +52,7 @@ enum sportsEnum {
 enum genderEnum {
   'Male' = 1,
   'Female' = 2,
+  'Co-Ed' = 3
 }
 enum timeZoneEnum {
   'Eastern Standard Time' = -5,
@@ -75,6 +76,7 @@ const timeZoneOptions = [
 const genderOptions = [
   { label: 'Male', value: genderEnum[1] },
   { label: 'Female', value: genderEnum[2] },
+  { label: 'Co-Ed', value: genderEnum[3] },
 ];
 
 const levelOptions = ['High School', 'Club', 'Youth', 'Other'];

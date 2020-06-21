@@ -47,7 +47,7 @@ const TeamManagement = ({
           <div>Team Management</div>
           <div className={styles.sectionRow}>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Tip: Only include Division Year in the Team Name if the team is "playing up"! Otherwise, please leave it out.
+              Expert Tip: Only include Division Year in the Team Name if the team is "playing up"! Otherwise, please leave it out, as it is embedded in the Division Name.
               </CardMessage>
             <div className={styles.sectionItem} />
           </div>

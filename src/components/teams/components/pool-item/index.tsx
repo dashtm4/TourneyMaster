@@ -29,8 +29,8 @@ const PoolItem = ({ pool, teams, division, onEditPopupOpen }: Props) => {
           <thead>
             <tr>
               <th className={styles.teamName}>Team</th>
-              <th>Coach name</th>
-              <th>Mobile (printed on gameday reports)</th>
+              <th>Coach Name</th>
+              <th>Mobile # (printed on gameday reports)</th>
               <th className={styles.teamActions}>Actions</th>
             </tr>
           </thead>
