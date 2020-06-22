@@ -3,6 +3,7 @@ import { Props } from '../../';
 
 interface State {
   activeColor: string;
+  displayColorPicker: boolean;
 }
 
 const withSelectColor = (Component: React.ComponentType<Props>) => {
@@ -12,15 +13,21 @@ const withSelectColor = (Component: React.ComponentType<Props>) => {
 
       this.state = {
         activeColor: '1C315F',
+        displayColorPicker: false,
       };
     }
 
     componentDidUpdate(prevProps: Props) {
-      if (prevProps.value !== this.props.value)
+      if (prevProps.value !== this.props.value) {
         this.setState({ activeColor: this.props.value });
+      }
     }
 
-    _changeHandler = (value: any) => {
+    onShowColorPicker = (status: boolean) => {
+      this.setState({ displayColorPicker: status });
+    };
+
+    _changeHandler = (value: string) => {
       this.setState({
         activeColor: value,
       });
@@ -28,11 +35,14 @@ const withSelectColor = (Component: React.ComponentType<Props>) => {
     };
 
     render() {
-      const { activeColor } = this.state;
+      const { activeColor, displayColorPicker } = this.state;
+
       return (
         <Component
           {...this.props}
           value={activeColor}
+          displayColorPicker={displayColorPicker}
+          onShowColorPicker={this.onShowColorPicker}
           onChange={this._changeHandler}
         />
       );
