@@ -80,18 +80,18 @@ const TourneyArchitect = (props: IProps) => {
     value: any,
     icon?: Icons | null
   ) => (
-    <div className={styles.sectionCell}>
-      <p>
-        <b>{`${name}: `}</b>
-        {value}
-      </p>
-      {icon && (
-        <Tooltip type="info" title={tooltipTitle}>
-          {getIcon(icon, getIconStyles(icon))}
-        </Tooltip>
-      )}
-    </div>
-  );
+      <div className={styles.sectionCell}>
+        <p>
+          <b>{`${name}: `}</b>
+          {value}
+        </p>
+        {icon && (
+          <Tooltip type="info" title={tooltipTitle}>
+            {getIcon(icon, getIconStyles(icon))}
+          </Tooltip>
+        )}
+      </div>
+    );
 
   return (
     <SectionDropdown
@@ -117,10 +117,10 @@ const TourneyArchitect = (props: IProps) => {
             'Play Time Window',
             'Inherited from Event Details and is a constant',
             `${schedule.first_game_time &&
-              moment(timeToDate(schedule.first_game_time)).format(
-                'LT'
-              )} - ${schedule.last_game_end_time &&
-              moment(timeToDate(schedule.last_game_end_time)).format('LT')}`,
+            moment(timeToDate(schedule.first_game_time)).format(
+              'LT'
+            )} - ${schedule.last_game_end_time &&
+            moment(timeToDate(schedule.last_game_end_time)).format('LT')}`,
             Icons.INFO
           )}
           {renderSectionCell(
@@ -186,7 +186,7 @@ const TourneyArchitect = (props: IProps) => {
             width="100px"
             type="number"
             align="center"
-            label={`Time Division Duration(${schedule.periods_per_game})`}
+            label={`Period Duration (${schedule.periods_per_game})`}
           />
           <Input
             onChange={onTimeChage}
@@ -198,7 +198,7 @@ const TourneyArchitect = (props: IProps) => {
             width="100px"
             type="number"
             align="center"
-            label="Time Between Periods"
+            label="Time Btwn Periods"
           />
         </div>
         <div className={styles.results}>
@@ -206,12 +206,12 @@ const TourneyArchitect = (props: IProps) => {
             'Game Runtime',
             '',
             `${schedule.periods_per_game *
-              getTimeFromString(schedule.period_duration!, 'minutes') +
-              getTimeFromString(schedule.pre_game_warmup!, 'minutes') +
-              getTimeFromString(
-                schedule.time_btwn_periods!,
-                'minutes'
-              )} Minutes`
+            getTimeFromString(schedule.period_duration!, 'minutes') +
+            getTimeFromString(schedule.pre_game_warmup!, 'minutes') +
+            getTimeFromString(
+              schedule.time_btwn_periods!,
+              'minutes'
+            )} Minutes`
           )}
           {renderSectionCell('Game Slots/Day', '', `${totalGameSlots}`)}
           {renderSectionCell(
@@ -225,8 +225,9 @@ const TourneyArchitect = (props: IProps) => {
               'Bracket Games Needed',
               '',
               `${(Number(event.num_teams_bracket) - 1) *
-                schedule.num_divisions}`
+              schedule.num_divisions}`
             )}
+          {/* #  Needs modification if there are no brackets it should be empty: Dan 6/12/2020 */}
         </div>
         <div className={styles.resultsBtns}>
           <Button

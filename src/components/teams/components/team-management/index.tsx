@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import DivisionItem from '../division-item';
-import { SectionDropdown } from '../../../common';
+import { SectionDropdown, CardMessage } from '../../../common';
 import { IDivision, IPool, ITeam } from '../../../../common/models';
 import { EventMenuTitles, SortByFilesTypes } from 'common/enums';
 import styles from './styles.module.scss';
 import Button from 'components/common/buttons/button';
 import { sortByField } from 'helpers';
+import { CardMessageTypes } from 'components/common/card-message/types';
 
 interface Props {
   divisions: IDivision[];
@@ -44,6 +45,12 @@ const TeamManagement = ({
       >
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div>Team Management</div>
+          <div className={styles.sectionRow}>
+            <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+              Expert Tip: Only include Division Year in the Team Name if the team is "playing up"! Otherwise, please leave it out, as it is embedded in the Division Name.
+              </CardMessage>
+            <div className={styles.sectionItem} />
+          </div>
           {divisions.length ? (
             <div className={styles.buttonContainer}>
               <Button

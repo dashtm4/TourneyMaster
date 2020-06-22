@@ -129,15 +129,27 @@ class CsvLoader extends React.Component<Props, State> {
           );
           if (!isCsvValid) {
             return Toasts.errorToast(
-              'Please, upload valid csv or check header position'
+              'Please chceck your csv. Something seems to be off with it.'
             );
           } else {
             const preview = getPreview(data, isHeaderIncluded, headerPosition);
 
-            this.setState({
+            this.setState(prevState => ({
               preview,
               data: isHeaderIncluded ? data.slice(headerPosition) : data,
-            });
+              fields: preview.header.map((column, index: number) => ({
+                value: column,
+                csvPosition: index,
+                dataType:
+                  prevState.fields.find(x => x.value === column)?.dataType ||
+                  '',
+                included:
+                  prevState.fields.find(x => x.value === column)?.included ||
+                  prevState.fields.find(x => x.value === column) === undefined,
+                map_id:
+                  prevState.fields.find(x => x.value === column)?.map_id || '',
+              })),
+            }));
           }
         },
       });
@@ -308,9 +320,9 @@ class CsvLoader extends React.Component<Props, State> {
 
     const requiredFields = this.props.tableColumns
       ? getRequiredFields(
-          this.props.type,
-          this.props.tableColumns?.table_details
-        )
+        this.props.type,
+        this.props.tableColumns?.table_details
+      )
       : [];
 
     return (

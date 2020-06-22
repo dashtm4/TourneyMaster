@@ -120,19 +120,19 @@ const PopupSaveReporting = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <section className={styles.section}>
         <header className={styles.headerWrapper}>
-          <HeadingLevelTwo>Save as:</HeadingLevelTwo>
+          <HeadingLevelTwo>Select:</HeadingLevelTwo>
           <SelectMultiple
             options={selectDayOptions}
             value={activeDay}
             onChange={onChangeActiveDay}
             primaryValue={DefaultSelectValues.ALL}
             isFormControlRow={true}
-            label="Days: "
+            label="Date Selection: "
           />
         </header>
         <ul className={styles.linkList}>
           <li className={styles.link}>
-            <h3>Schedule:</h3>
+            <h3>Full Schedule:</h3>
             <ul className={styles.downloadLinkList}>
               <li className={styles.dowloadLinkWrapper}>
                 <b>Master Schedule (no colors)</b>
@@ -157,7 +157,7 @@ const PopupSaveReporting = ({
             </ul>
           </li>
           <li className={styles.link}>
-            <h3>Fields' schedule: </h3>
+            <h3>Fields Schedule: </h3>
             <ul className={styles.downloadLinkList}>
               <li className={styles.dowloadLinkWrapper}>
                 <b>Field-by-Field Schedule</b>

@@ -60,7 +60,7 @@ export const getPaymentPlans = async ({
                 discount: 0,
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
-                payment_plan_notice: `You will be charged ${recurringPayments}the total amount of $${(
+                payment_plan_notice: `The Installment Schedule is:  ${recurringPayments}the total amount of $${(
                   installmentPrice * rawPaymentPlan.iterations
                 ).toFixed(2)}`,
                 type: rawPaymentPlan.type,
@@ -81,24 +81,19 @@ export const getPaymentPlans = async ({
                 if (!amount) {
                   throw new Error('Incorrect amount specified.');
                 }
-                const date = new Date(phase.date);
-                const now = new Date(
-                  new Date()
-                    .toLocaleString('us-GB', { timeZone: 'America/New_York' })
-                    .split(',')[0]
-                );
+                const date = +phase.date;
+                const now = new Date().getTime() / 1000;
                 if (date <= now) {
                   if (!schedule['now']) schedule['now'] = 0;
                   schedule['now'] += amount;
                 } else {
-                  const formattedDate = dateFormat(date, 'yyyy-mm-dd');
-                  if (!schedule[formattedDate]) schedule[formattedDate] = 0;
-                  schedule[formattedDate] += amount;
+                  if (!schedule[date]) schedule[date] = 0;
+                  schedule[date] += amount;
                 }
               }
 
-              const scheduleArr = Object.entries(schedule).map(
-                ([date, amount]) => ({
+              const scheduleArr = Object.entries(schedule)
+                .map(([date, amount]) => ({
                   date,
                   amount,
                   price_external_id:
@@ -106,11 +101,17 @@ export const getPaymentPlans = async ({
                     '_' +
                     rawPaymentPlan.id +
                     '_' +
-                    (date === 'now' ? 'now' : dateFormat(date, 'yyyymmdd')) +
+                    date +
                     '_' +
                     amount,
-                })
-              );
+                }))
+                .sort((a, b) =>
+                  b.date === 'now'
+                    ? 1
+                    : a.date === 'now'
+                    ? -1
+                    : +a.date - +b.date
+                );
 
               const { payment_schedule_json, ...paymentPlan } = {
                 ...sku,
@@ -118,8 +119,15 @@ export const getPaymentPlans = async ({
                 discount: 0,
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
-                payment_plan_notice: `You will be charged ${scheduleArr
-                  .map(x => `${x.date}: $${x.amount.toFixed(2)}`)
+                payment_plan_notice: `The Installment Schedule is: ${scheduleArr
+                  .map(
+                    x =>
+                      `${
+                        x.date === 'now'
+                          ? 'now'
+                          : dateFormat(new Date(x.date * 1000), 'yyyy-mm-dd')
+                      }: $${x.amount.toFixed(2)}`
+                  )
                   .join(', ')}`,
                 type: rawPaymentPlan.type,
                 schedule: scheduleArr,
@@ -154,7 +162,6 @@ export const getPaymentPlans = async ({
         return paymentPlans;
       }
     });
-    console.log('paymentPlans:', paymentPlans);
     if (payment_plan_id) {
       return paymentPlans.filter(p => p.payment_plan_id === payment_plan_id);
     } else {

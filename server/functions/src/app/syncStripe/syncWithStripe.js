@@ -1,25 +1,23 @@
 import {
-  getActiveProducts,
   getActiveSkus,
   getPaymentPlans,
 } from '../../services/activeProducts.js';
 import config from '../../config.js';
 import Stripe from 'stripe';
 import StripeServiceProductsHandler from './stripeServiceProductsHandler.js';
-import StripeProductsHandler from './stripeProductsHandler.js';
-import StripeSkusHandler from './stripeSkusHandler.js';
 import StripePricesHandler from './stripePricesHandler.js';
+import StripeTaxRatesHandler from './stripeTaxRatesHandler.js';
 
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 
 const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
   try {
-    console.log(`Started XXX synchronization`);
+    console.log(`Started ${objectClass.constructor.name} synchronization`);
 
     // console.log(JSON.stringify(source, null, '  '));
     const activeObjects = source.flatMap(objectClass.map);
 
-    const stripeObjects = await objectClass.list({ active: true });
+    const stripeObjects = await objectClass.list();
 
     let objectsToDelete = [];
     // Create and update products
@@ -73,21 +71,24 @@ const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
     for (const stripeObject of objectsToDelete) {
       objectClass.delete(stripeObject);
     }
-    console.log(`Finished XXX synchronization`);
+    console.log(`Finished ${objectClass.constructor.name} synchronization`);
   } catch (err) {
     console.log(err);
     throw err;
   }
 };
 
-const syncProducts = async () => {
-  const activeProducts = await getActiveProducts();
-  await syncStripeObjects(new StripeProductsHandler(stripe), activeProducts);
-};
-
-const syncSkus = async () => {
-  const activeSkus = await getActiveSkus();
-  await syncStripeObjects(new StripeSkusHandler(stripe), activeSkus);
+const syncTaxRates = async paymentPlans => {
+  const salesTaxRates = [
+    ...new Set(paymentPlans.map(plan => plan.sales_tax_rate)),
+  ].map(sales_tax_rate => ({
+    sales_tax_rate: sales_tax_rate,
+    display_name: `Tax ${sales_tax_rate}%`,
+    description: `Tax ${sales_tax_rate}%`,
+    jurisdiction: 'US',
+    inclusive: true,
+  }));
+  await syncStripeObjects(new StripeTaxRatesHandler(stripe), salesTaxRates);
 };
 
 const syncServiceProducts = async () => {
@@ -97,6 +98,7 @@ const syncServiceProducts = async () => {
 
 const syncPrices = async () => {
   const activePaymentPlans = await getPaymentPlans({});
+  await syncTaxRates(activePaymentPlans);
   await syncStripeObjects(new StripePricesHandler(stripe), activePaymentPlans);
 };
 

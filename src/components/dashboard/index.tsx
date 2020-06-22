@@ -231,7 +231,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
             ))
             : !this.props.isLoading && (
               <div className={styles.noFoundWrapper}>
-                <span>Create your first by using the above + Create Event button.</span>
+                <span>You have not any events just yet. Start with the above "+ Create Event" button.</span>
               </div>
             )}
         </div>

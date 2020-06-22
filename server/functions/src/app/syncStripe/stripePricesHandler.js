@@ -18,12 +18,14 @@ export default class StripePricesHandler {
           interval_count: +paymentPlan.intervalCount,
         },
         metadata: {
+          type: paymentPlan.type,
           externalId: paymentPlan.payment_plan_id,
           name: paymentPlan.sku_name,
           total_price: paymentPlan.total_price,
           event_id: paymentPlan.event_id,
           division_id: paymentPlan.division_id,
           owner_id: paymentPlan.owner_id,
+          sales_tax_rate: paymentPlan.sales_tax_rate,
           iterations: +paymentPlan.iterations,
           discount: +paymentPlan.discount,
         },
@@ -31,18 +33,20 @@ export default class StripePricesHandler {
       return stripePrice;
     } else if (paymentPlan.type === 'schedule') {
       const stripePrices = [];
-      for (let phase of paymentPlan.schedule) {
+      for (const [index, phase] of paymentPlan.schedule.entries()) {
         const stripePrice = {
           currency: paymentPlan.currency,
           unit_amount: Math.round(+phase.amount * 100, 0),
           active: true,
-          nickname: paymentPlan.payment_plan_name,
+          nickname:
+            paymentPlan.payment_plan_name + `. Installment ${index + 1}`,
           product: paymentPlan.sku_id,
-          recurring: {
-            interval: 'month',
-            interval_count: 12,
-          },
+          // recurring: {
+          //   interval: 'month',
+          //   interval_count: 12,
+          // },
           metadata: {
+            type: paymentPlan.type,
             externalId: phase.price_external_id,
             payment_plan_id: paymentPlan.payment_plan_id,
             total_price: paymentPlan.total_price,
@@ -50,9 +54,10 @@ export default class StripePricesHandler {
             event_id: paymentPlan.event_id,
             division_id: paymentPlan.division_id,
             owner_id: paymentPlan.owner_id,
+            sales_tax_rate: paymentPlan.sales_tax_rate,
             iterations: 1,
             discount: +paymentPlan.discount,
-            paymentDate: phase.date,
+            payment_date: phase.date,
           },
         };
         stripePrices.push(stripePrice);
@@ -63,7 +68,11 @@ export default class StripePricesHandler {
 
   list = async params => {
     const objects = [];
-    for await (const object of this.endpoint.list({ ...params, limit: 100 })) {
+    for await (const object of this.endpoint.list({
+      ...params,
+      active: true,
+      limit: 100,
+    })) {
       objects.push(object);
     }
     return objects;
@@ -76,17 +85,21 @@ export default class StripePricesHandler {
       price.product === stripePrice.product &&
       price.unit_amount === +stripePrice.unit_amount &&
       price.nickname === stripePrice.nickname &&
-      price.recurring?.interval === stripePrice.recurring?.interval &&
-      price.recurring?.interval_count ===
-        +stripePrice.recurring?.interval_count &&
+      (price.metadata.type === 'schedule' ||
+        (price.recurring?.interval === stripePrice.recurring?.interval &&
+          price.recurring?.interval_count ===
+            +stripePrice.recurring?.interval_count)) &&
+      price.metadata.type === stripePrice.metadata.type &&
       price.metadata.externalId === stripePrice.metadata.externalId &&
       price.metadata.total_price === +stripePrice.metadata.total_price &&
       price.metadata.event_id === stripePrice.metadata.event_id &&
       price.metadata.division_id === stripePrice.metadata.division_id &&
       price.metadata.name === stripePrice.metadata.name &&
+      price.metadata.sales_tax_rate === +stripePrice.metadata.sales_tax_rate &&
       price.metadata.iterations === +stripePrice.metadata.iterations &&
       price.metadata.discount === +stripePrice.metadata.discount &&
-      price.metadata.owner_id === stripePrice.metadata.owner_id
+      price.metadata.owner_id === stripePrice.metadata.owner_id &&
+      price.metadata.payment_date === stripePrice.metadata.payment_date
     );
   };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Select } from 'components/common/';
+import { Input, Select, CardMessage } from 'components/common/';
 import Checkbox from 'components/common/buttons/checkbox';
 import styles from '../styles.module.scss';
 import { sortByField } from 'helpers';
@@ -7,6 +7,7 @@ import { IDivision, ITeam } from 'common/models';
 import { SortByFilesTypes } from 'common/enums';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { CardMessageTypes } from 'components/common/card-message/types';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -96,10 +97,16 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
       <div className={styles.sectionContainer}>
         <div className={styles.section}>
           <div className={styles.sectionRow}>
+            <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+              Long Names do not render well on phones. So please enter both a long (web) and short (mobile)!
+              </CardMessage>
+            <div className={styles.sectionItem} />
+          </div>
+          <div className={styles.sectionRow}>
             <div className={styles.sectionItemLarge}>
               <Input
                 fullWidth={true}
-                label="Long Name"
+                label="Long Name (For Browser) *"
                 value={long_name || ''}
                 autofocus={true}
                 onChange={this.onLongNameChange}
@@ -108,7 +115,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Input
                 fullWidth={true}
-                label="Short Name"
+                label="Short Name (On Mobile) *"
                 value={short_name || ''}
                 onChange={this.onShortNameChange}
               />
@@ -116,7 +123,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Input
                 fullWidth={true}
-                label="Team Tag"
+                label="Team Tag (Social Media)"
                 startAdornment="@"
                 value={team_tag || ''}
                 onChange={this.onTagChange}
@@ -136,14 +143,14 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Input
                 fullWidth={true}
-                label="State"
+                label="State *"
                 value={state || ''}
                 onChange={this.onStateChange}
               />
             </div>
             <div className={styles.sectionItem}>
               <Select
-                label="Division"
+                label="Division *"
                 options={divisionsOptions}
                 value={division_id || ''}
                 onChange={this.onDivisionChange}
@@ -158,13 +165,21 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
               />
             </div>
           </div>
+          <div className={styles.sectionRow}>
+            <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+              Entering States enables eliminating intra-state games when creating schedules!
+              2 Letter States (e.g., IL, NJ) or 3 for Canadian Provinces!
+            </CardMessage>
+            <div className={styles.sectionItem} />
+
+          </div>
         </div>
         <div className={styles.section}>
           <div className={styles.sectionRow}>
             <div className={styles.sectionItem}>
               <Input
                 fullWidth={true}
-                label="Contact First Name"
+                label="Coach First Name *"
                 value={contact_first_name || ''}
                 onChange={this.onFirstNameChange}
               />
@@ -172,13 +187,13 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItem}>
               <Input
                 fullWidth={true}
-                label="Last Name"
+                label="Last Name *"
                 value={contact_last_name || ''}
                 onChange={this.onLastNameChange}
               />
             </div>
             <div className={styles.sectionItem}>
-              <div className={styles.title}>Mobile Number</div>
+              <div className={styles.title}>Mobile Number *</div>
               <PhoneInput
                 country={'us'}
                 value={phone_num || ''}
@@ -197,11 +212,17 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
             <div className={styles.sectionItemLarge}>
               <Input
                 fullWidth={true}
-                label="Email"
+                label="Email *"
                 value={contact_email || ''}
                 onChange={this.onEmailChange}
               />
             </div>
+          </div>
+          <div className={styles.sectionRow}>
+            <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
+              Mobile numbers are needed by event staff to call coaches if their team is Missing In Action!
+              </CardMessage>
+
           </div>
           <div className={styles.sectionRow}>
             <div>
