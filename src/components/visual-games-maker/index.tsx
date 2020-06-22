@@ -24,7 +24,7 @@ interface IComponentProps {}
 
 interface IRootState {
   pageEvent?: IPageEventState;
-  divisionsAndPools?: IDivisionAndPoolsState;
+  divisions?: IDivisionAndPoolsState;
 }
 
 type IProps = IMapStateToProps & IMapDispatchToProps & IComponentProps;
@@ -33,9 +33,9 @@ interface IState {}
 
 class VisualGamesMaker extends Component<IProps, IState> {
   componentDidMount() {
-    const { divisions } = this.props;
+    const { divisions, getAllPools } = this.props;
 
-    this.props.getAllPools(divisions!.map(v => v.division_id));
+    getAllPools(divisions!.map(v => v.division_id));
   }
 
   render() {
@@ -53,11 +53,11 @@ class VisualGamesMaker extends Component<IProps, IState> {
 
 const mapStateToProps = ({
   pageEvent,
-  divisionsAndPools,
+  divisions,
 }: IRootState): IMapStateToProps => ({
   teams: pageEvent?.tournamentData.teams,
   divisions: pageEvent?.tournamentData.divisions,
-  pools: divisionsAndPools?.pools,
+  pools: divisions?.pools,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
