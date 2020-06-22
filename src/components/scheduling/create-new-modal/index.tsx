@@ -65,6 +65,7 @@ const CreateNewModal = (props: IProps) => {
   };
 
   const onCreateWithVisualGamesMaker = () => {
+    onChange('isManualScheduling', true);
     onCreate(schedule, true);
   };
 

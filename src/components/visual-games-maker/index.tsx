@@ -11,12 +11,15 @@ import RunningGamesTally from './running-games-tally';
 import ResultingGamesList from './resulting-game-list';
 import PossibleGamesMatrix from './possible-games-matrix';
 import styles from './styles.module.scss';
+import { Button } from 'components/common';
+import History from 'browserhistory';
 
 interface IMapStateToProps {
   teams?: ITeam[] | undefined;
   divisions?: IDivision[] | undefined;
   pools?: IPool[] | undefined;
   schedule?: IConfigurableSchedule | null | undefined;
+  // history: History;
 }
 
 interface IMapDispatchToProps {
@@ -43,12 +46,14 @@ class VisualGamesMaker extends Component<IProps, IState> {
   }
 
   render() {
+    const { schedule } = this.props;
     return (
       <div className={styles.container}>
         <div className={styles.tablesWrapper}>
           <PossibleGamesMatrix />
           <RunningGamesTally />
           <ResultingGamesList />
+          <Button label="Next" color="primary" variant="contained" onClick={() => History.push(`/schedules/${schedule!.event_id}`)}>Next</Button>
         </div>
       </div>
     );
