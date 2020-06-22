@@ -22,7 +22,14 @@ const PoolItem = ({ pool, teams, division, onEditPopupOpen }: Props) => {
   return (
     <li className={styles.pool}>
       <h5 className={styles.poolTitle}>
-        Pool: {pool ? `${pool.pool_name} (Team Count: ${teams.length})` : 'Unassigned'}
+        Pool:{' '}
+        {pool ? (
+          <>
+            {pool.pool_name} <span>(Team Count: {teams.length})</span>
+          </>
+        ) : (
+          'Unassigned'
+        )}
       </h5>
       {teams.length !== 0 && (
         <table className={styles.teamsTable}>
