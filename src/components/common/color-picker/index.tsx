@@ -1,37 +1,55 @@
 import React from 'react';
+import { ChromePicker } from 'react-color';
+import { TextField as MuiTextField } from '@material-ui/core';
 import {
   BindingAction,
   BindingCbWithOne,
 } from '../../../common/models/callback';
 import withSelectColor from './hocs/withSelectColor';
 import styles from './styles.module.scss';
-const MUIColorPicker = require('material-ui-color-picker').default;
 
 export interface Props {
   value: string;
+  displayColorPicker: boolean;
+  onShowColorPicker: BindingAction | BindingCbWithOne<boolean>;
   onChange: BindingAction | BindingCbWithOne<string>;
 }
 
-const ColorPicker = ({ value, onChange }: Props) => {
+const ColorPicker = ({
+  value,
+  onChange,
+  displayColorPicker,
+  onShowColorPicker,
+}: Props) => {
+  console.log('colorpicker', value);
   return (
     <div className={styles.ColorPickerWrapper}>
-      <div
-        className={styles.ColorPickerBtn}
-        style={{ backgroundColor: `#${value}` }}
-      >
-        <span className="visually-hidden">Select Color</span>
-      </div>
-      <div className={styles.ColorPicker}>
-        <MUIColorPicker
-          name="color"
-          style={{
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-            width: '100%',
-          }}
-          defaultValue={`#${value}`}
-          onChange={(color: string) => onChange(color || `#${value}`)}
+      <div className={styles.ColorPickerContainer}>
+        <div
+          className={styles.ColorPickerPreview}
+          style={{ backgroundColor: `#${value}` }}
         />
+        <MuiTextField
+          className={styles.ColorPickerText}
+          fullWidth={true}
+          type="text"
+          name="color-picker-text"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          onClick={() => onShowColorPicker(true)}
+        />
+        {displayColorPicker && (
+          <div className={styles.ColorPickerPalette}>
+            <div
+              className={styles.ColorPickerCover}
+              onClick={() => onShowColorPicker(false)}
+            />
+            <ChromePicker
+              color={value}
+              onChange={(color: any) => onChange(color.hex)}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
