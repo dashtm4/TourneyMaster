@@ -156,10 +156,12 @@ export default (
       };
     }
 
+    /* When dropping a game */
     if (
       simultaneousDnd &&
       (originGamePlace?.awayTeam?.id === teamCard.id ||
-        originGamePlace?.homeTeam?.id === teamCard.id)
+        originGamePlace?.homeTeam?.id === teamCard.id ||
+        !originGamePlace)
     ) {
       const originPosition =
         originGamePlace?.awayTeam?.id === teamCard.id
