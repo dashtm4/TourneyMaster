@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { ITeam, IDivision, IPool } from 'common/models';
+import { IConfigurableSchedule } from 'common/models/schedule';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
+import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import RunningGamesTally from './running-games-tally';
 import ResultingGamesList from './resulting-game-list';
@@ -14,6 +16,7 @@ interface IMapStateToProps {
   teams?: ITeam[] | undefined;
   divisions?: IDivision[] | undefined;
   pools?: IPool[] | undefined;
+  schedule?: IConfigurableSchedule | null | undefined;
 }
 
 interface IMapDispatchToProps {
@@ -25,6 +28,7 @@ interface IComponentProps {}
 interface IRootState {
   pageEvent?: IPageEventState;
   divisions?: IDivisionAndPoolsState;
+  scheduling?: ISchedulingState;
 }
 
 type IProps = IMapStateToProps & IMapDispatchToProps & IComponentProps;
@@ -54,10 +58,12 @@ class VisualGamesMaker extends Component<IProps, IState> {
 const mapStateToProps = ({
   pageEvent,
   divisions,
+  scheduling,
 }: IRootState): IMapStateToProps => ({
   teams: pageEvent?.tournamentData.teams,
   divisions: pageEvent?.tournamentData.divisions,
   pools: divisions?.pools,
+  schedule: scheduling?.schedule,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>

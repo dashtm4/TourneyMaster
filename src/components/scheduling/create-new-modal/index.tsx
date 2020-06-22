@@ -17,7 +17,7 @@ interface IProps {
   schedule: IConfigurableSchedule;
   isOpen: boolean;
   onChange: (name: string, value: any) => void;
-  onCreate: (schedule: IConfigurableSchedule) => void;
+  onCreate: (schedule: IConfigurableSchedule, visualGamesMakerUsed: boolean) => void;
   onClose: () => void;
 }
 
@@ -61,16 +61,16 @@ const CreateNewModal = (props: IProps) => {
   });
 
   const onCreateWithScheduler = () => {
-    onCreate(schedule);
+    onCreate(schedule, false);
   };
 
   const onCreateWithVisualGamesMaker = () => {
-    onCreate(schedule);
+    onCreate(schedule, true);
   };
 
   const onCreateManually = () => {
     onChange('isManualScheduling', true);
-    onCreate(schedule);
+    onCreate(schedule, false);
   };
 
   const renderStepOne = () => {
