@@ -1,5 +1,11 @@
 .container {
   height: 100%;
+  display: flex;
 }
 
-.tablesWrapper {}
+.tablesWrapper {
+
+  .runningTally, .resGameList, .matrix {
+    width: 800px;
+  }
+}
