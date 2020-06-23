@@ -10,15 +10,11 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { ITeam } from "common/models/teams";
-
-interface IGame {
-  home_game_id: number;
-  away_game_id: number;
-}
+import { IGameCell } from '../helpers';
 
 interface IProps {
   teams: ITeam[] | undefined;
-  games: IGame[];
+  games: IGameCell[];
   type: number;
 }
 
@@ -86,10 +82,10 @@ const ResultingGameList = (props: IProps) => {
                   {index + 1}
                 </TableCell>
                 <TableCell className={((index + 1)%2 === 1)? classes.oddTableCell : classes.tableCell} align="center">
-                  {type === DisplayedLabelType.Index ? row.home_game_id : teams && teams[row.home_game_id - 1].short_name || '' }
+                  {type === DisplayedLabelType.Index ? row.homeTeamId : teams && teams.find(v => v.team_id == row.homeTeamId)!.short_name || '' }
                 </TableCell>
                 <TableCell className={((index + 1)%2 === 1)? classes.oddTableCell : classes.tableCell} align="center">
-                  {type === DisplayedLabelType.Index ? row.away_game_id : teams && teams[row.away_game_id - 1].short_name || '' }
+                  {type === DisplayedLabelType.Index ? row.awayTeamId : teams && teams!.find(v => v.team_id == row.awayTeamId)!.short_name || '' }
                 </TableCell>
               </TableRow>
             ))}
