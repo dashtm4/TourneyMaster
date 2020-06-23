@@ -13,22 +13,21 @@ import MatrixOfPossibleGames from './possible-games-matrix';
 import { Button, Checkbox } from 'components/common';
 import History from 'browserhistory';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
+import { ITeamCard } from 'common/models/schedule/teams';
+import { IGameCell } from './helpers';
+import { fillSchedulesTable } from 'components/schedules/logic/schedules-table/actions';
+// import { ISchedulesTableState } from 'components/schedules/logic/schedules-table/schedulesTableReducer';
 
 interface IMapStateToProps {
   teams?: ITeam[] | undefined;
   divisions?: IDivision[] | undefined;
   pools?: IPool[] | undefined;
   schedule?: IConfigurableSchedule | null | undefined;
-  // history: History;
-}
-
-export interface IGame {
-  home_game_id: number;
-  away_game_id: number;
 }
 
 interface IMapDispatchToProps {
   getAllPools: (divisionIds: string[]) => void;
+  fillSchedulesTable: (teamCards: ITeamCard[]) => void;
 }
 
 interface IComponentProps {}
@@ -37,22 +36,35 @@ interface IRootState {
   pageEvent?: IPageEventState;
   divisions?: IDivisionAndPoolsState;
   scheduling?: ISchedulingState;
+  // schedulesTable: ISchedulesTableState;
 }
 
 type IProps = IMapStateToProps & IMapDispatchToProps & IComponentProps;
 
 interface IState {
-  games: IGame[];
   isShowNamesOfTeams: boolean;
+  games: IGameCell[];
+  teamCards: ITeamCard[];
 }
 
 class VisualGamesMaker extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
+    const { teams } = this.props;
     this.state = {
       games: [],
       isShowNamesOfTeams: false,
+      teamCards: teams!.map(v => ({
+        id: v.team_id,
+        name: v.short_name,
+        startTime: '',
+        poolId: v.pool_id,
+        divisionId: v.division_id,
+        isPremier: false,
+        games: {}})) as ITeamCard[],
     };
+
+    console.log('this.state', this.state);
   }
 
   componentDidMount() {
@@ -61,10 +73,24 @@ class VisualGamesMaker extends Component<IProps, IState> {
     getAllPools(divisions!.map(v => v.division_id));
   }
 
-  onChangeGames = (items: IGame[]) => {
+  onChangeGames = (items: IGameCell[]) => {
+    console.log('items', items);
     this.setState({
       games: items,
     });
+
+    const teamCards = this.state.teamCards;
+    const games = this.state.games;
+    const updatedTeamCards = teamCards.map(v => {
+      let newGames = [];
+      newGames = games.filter(game => game.homeTeamId === v.id).map(homeGame => ({ id: homeGame.gameId, teamPosition: 2}))
+      newGames.concat(games.filter(game => game.awayTeamId === v.id).map(awayGame => ({ id: awayGame.gameId, teamPosition: 1})));
+      return { ...v, games: newGames};
+    });
+
+    this.setState({ teamCards: updatedTeamCards});
+
+    // this.props.fillSchedulesTable(this.state.teamCards);
   };
 
   onChangeDisplayedLabelType = () => {
@@ -72,6 +98,9 @@ class VisualGamesMaker extends Component<IProps, IState> {
       return { isShowNamesOfTeams: !state.isShowNamesOfTeams };
     });
   };
+  componentDidUpdate() {
+    console.log(this.state.teamCards);
+  }
 
   render() {
     const teams = this.props.teams && this.props.teams.filter(item => item.division_id === 'ADRL2021')
@@ -109,14 +138,10 @@ class VisualGamesMaker extends Component<IProps, IState> {
             />
           </div>
           <div className={styles.button}>
-            <Button
-              label='Next'
-              color='primary'
-              variant='contained'
-              onClick={() => History.push(`/schedules/${schedule!.event_id}`)}
-            >
-              Next
-            </Button>
+            <Button label="Next" color="primary" variant="contained" onClick={() => { 
+              this.props.fillSchedulesTable(this.state.teamCards);
+              History.push(`/schedules/${schedule!.event_id}`)
+            }}>Next</Button>
           </div>
         </div>
       </div>
@@ -139,6 +164,7 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
   bindActionCreators(
     {
       getAllPools,
+      fillSchedulesTable,
     },
     dispatch
   );

@@ -9,17 +9,13 @@ import {
   Paper,
   makeStyles,
 } from '@material-ui/core';
-import { ITeam } from "common/models/teams";
-
-interface IGame {
-  home_game_id: number;
-  away_game_id: number;
-}
+import { ITeam } from 'common/models/teams';
+import { IGameCell } from '../helpers';
 
 interface IProps {
   teams: ITeam[] | undefined;
-  games: IGame[];
   showNames: boolean;
+  games: IGameCell[];
 }
 
 const useStyles = makeStyles({
@@ -72,19 +68,37 @@ const ResultingGameList = (props: IProps) => {
           </TableHead>
           <TableBody>
             {games.map((row, index) => {
-              const homeTeamName = teams && teams[row.home_game_id - 1].short_name;
-              const awayTeamName = teams && teams[row.away_game_id - 1].short_name;
+              const homeTeamIndex = teams!.findIndex(
+                o => o.team_id === row.homeTeamId
+              );
+              const awayTeamIndex = teams!.findIndex(
+                o => o.team_id === row.awayTeamId
+              );
+              const homeTeamName = teams && teams[homeTeamIndex].short_name;
+              const awayTeamName = teams && teams[awayTeamIndex].short_name;
               return (
                 <TableRow
                   key={index}
-                  className={((index + 1)%2 === 1)? classes.oddTableCell : classes.tableCell}
+                  className={
+                    (index + 1) % 2 === 1
+                      ? classes.oddTableCell
+                      : classes.tableCell
+                  }
                 >
                   <TableCell align="center"> {index + 1} </TableCell>
                   <TableCell align="center">
-                    {showNames ? homeTeamName : (<p title={homeTeamName}>{row.home_game_id}</p>)}
+                    {showNames ? (
+                      homeTeamName
+                    ) : (
+                      <p title={homeTeamName}>{homeTeamIndex + 1}</p>
+                    )}
                   </TableCell>
                   <TableCell align="center">
-                    {showNames ? awayTeamName : (<p title={awayTeamName}>{row.away_game_id}</p>)}
+                    {showNames ? (
+                      awayTeamName
+                    ) : (
+                      <p title={awayTeamName}>{awayTeamIndex + 1}</p>
+                    )}
                   </TableCell>
                 </TableRow>
               );

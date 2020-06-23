@@ -1,5 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { TableCell, makeStyles } from '@material-ui/core';
+import { IGameCell } from '../helpers';
 
 interface IProps {
   gameId: number;
@@ -39,9 +40,9 @@ const Cell = (props: IProps) => {
       return;
     }
     const item = {
-      gameId: gameId,
-      homeTeamId: homeTeamId,
-      awayTeamId: awayTeamId,
+      gameId,
+      homeTeamId,
+      awayTeamId,
     } as IGameCell;
     setIsClicked(!isClicked);
     if (isClicked) {

@@ -11,18 +11,14 @@ import {
   createMuiTheme,
   ThemeProvider,
 } from '@material-ui/core';
-import Cell from '../cell';
-import { ITeam } from 'common/models';
+import Cell from "../cell";
+import { ITeam } from "common/models";
+import { IGameCell } from '../helpers';
 
 interface IProps {
-  games: IGame[];
+  games: IGameCell[];
   teams: ITeam[] | undefined;
-  onChangeGames: (a: IGame[]) => void;
-}
-
-interface IGame {
-  home_game_id: number;
-  away_game_id: number;
+  onChangeGames: (a: IGameCell[]) => void;
 }
 
 const useStyles = makeStyles({
@@ -90,13 +86,15 @@ const theme = createMuiTheme({
 const MatrixOfPossibleGames = (props: IProps) => {
   const { games, teams, onChangeGames } = props;
   const classes = useStyles();
+  // const [gameIdentity, setGameIdentity] = useState(1);
+  let gameIdentity = 1;
 
-  const onAddGame = (item: IGame) => {
+  const onAddGame = (item: IGameCell) => {
     onChangeGames([...games, item]);
   };
 
-  const onDeleteGame = (item: IGame) => {
-    const newGames = games.filter(game => (game.away_game_id !== item.away_game_id || game.home_game_id !== item.home_game_id));
+  const onDeleteGame = (item: IGameCell) => {
+    const newGames = games.filter(game => (game.awayTeamId !== item.awayTeamId || game.homeTeamId !== item.homeTeamId));
     onChangeGames(newGames);
   };
 
@@ -140,11 +138,12 @@ const MatrixOfPossibleGames = (props: IProps) => {
                       <p title={team.short_name}>{index + 1}</p>
                     </TableCell>
                     {teams &&
-                      teams.map((homeTeam, homeIndex) => (
+                      teams.map(homeTeam => (
                         <Cell
-                          key={homeTeam.team_id}
-                          away_game_index={index + 1}
-                          home_game_index={homeIndex + 1}
+                          key={gameIdentity}
+                          gameId={gameIdentity++}
+                          awayTeamId={team.team_id}
+                          homeTeamId={homeTeam.team_id}
                           onAddGame={onAddGame}
                           onDeleteGame={onDeleteGame}
                         />

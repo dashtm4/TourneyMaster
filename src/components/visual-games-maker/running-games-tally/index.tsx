@@ -11,24 +11,20 @@ import {
   TableFooter,
 } from '@material-ui/core';
 import { ITeam } from "common/models/teams";
+import { IGameCell } from '../helpers';
 
 interface ITableRunningTally<T> {
-  team_index: number;
+  team_id: string;
   team_name: T;
   count_of_home_games: number;
   count_of_away_games: number;
   count_of_all_games: number;
 }
 
-interface IGame {
-  home_game_id: number;
-  away_game_id: number;
-}
-
 interface IProps {
   teams: ITeam[] | undefined;
-  games: IGame[];
   showNames: boolean;
+  games: IGameCell[];
 }
 
 const useStyles = makeStyles({
@@ -72,23 +68,23 @@ const RunningTally = (props: IProps) => {
 
   const dataForTable: ITableRunningTally<string>[] = [];
   let totalCount = 0;
-  (teams || []).map((team, ind) => {
+  (teams || []).map(team => {
     let countAllGames = 0;
     let countHomeGames = 0;
     let countAwayGames = 0;
-    games.map((game: IGame) => {
-      if (game.away_game_id === ind + 1) {
+    games.map((game: IGameCell) => {
+      if (game.awayTeamId === team.team_id) {
         countAllGames++;
         countAwayGames++;
       }
-      if (game.home_game_id === ind + 1) {
+      if (game.homeTeamId === team.team_id) {
         countAllGames++;
         countHomeGames++;
       }
     });
     totalCount += countAllGames;
     dataForTable.push({
-      team_index: ind,
+      team_id: team.team_id,
       team_name: team.short_name,
       count_of_home_games: countHomeGames,
       count_of_away_games: countAwayGames,
@@ -118,22 +114,27 @@ const RunningTally = (props: IProps) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {dataForTable.map(row => (
-              <TableRow key={row.team_name}>
-                <TableCell className={classes.tableTeamCell} align="center">
-                  {showNames ? row.team_name : (<p title={row.team_name}>{row.team_index + 1}</p>)}
-                </TableCell>
-                <TableCell className={classes.tableCell} align="center">
-                  {row.count_of_home_games}
-                </TableCell>
-                <TableCell className={classes.tableCell} align="center">
-                  {row.count_of_away_games}
-                </TableCell>
-                <TableCell className={classes.tableCountCell} align="center">
-                  {row.count_of_all_games}
-                </TableCell>
-              </TableRow>
-            ))}
+            {dataForTable.map(row => {
+              const index = teams!.findIndex(
+                o => o.team_id === row.team_id
+              );
+              return (
+                <TableRow key={row.team_name}>
+                  <TableCell className={classes.tableTeamCell} align="center">
+                    {showNames ? row.team_name : (<p title={row.team_name}>{index + 1}</p>)}
+                  </TableCell>
+                  <TableCell className={classes.tableCell} align="center">
+                    {row.count_of_home_games}
+                  </TableCell>
+                  <TableCell className={classes.tableCell} align="center">
+                    {row.count_of_away_games}
+                  </TableCell>
+                  <TableCell className={classes.tableCountCell} align="center">
+                    {row.count_of_all_games}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
           <TableFooter>
             <TableRow>
