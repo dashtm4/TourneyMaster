@@ -19,30 +19,20 @@ interface IGame {
 interface IProps {
   teams: ITeam[] | undefined;
   games: IGame[];
-  type: number;
-}
-
-enum DisplayedLabelType {
-  Index,
-  Name,
+  showNames: boolean;
 }
 
 const useStyles = makeStyles({
-  tableTeamCell: {
-    border: 0,
-  },
-  tableCountCell: {
-    fontWeight: 700,
-    border: 0,
+  tableContainer: {
+    height: '50vh',
+    overflow: 'auto',
   },
   tableCell: {
     border: 0,
+    whiteSpace: 'nowrap',
   },
   tableHeaderCell: {
     borderBottom: '2px solid black',
-  },
-  tableFooterCell: {
-    borderTop: '2px solid black',
   },
   labelWrapp: {
     background: 'linear-gradient(121deg, #073b65 38%, #0079ae)',
@@ -54,18 +44,19 @@ const useStyles = makeStyles({
   oddTableCell: {
     border: 0,
     backgroundColor: 'rgb(235, 235, 235)',
+    whiteSpace: 'nowrap',
   },
 });
 
 const ResultingGameList = (props: IProps) => {
-  const { teams, games, type } = props;
+  const { teams, games, showNames } = props;
   const classes = useStyles();
 
   return (
     <div>
       <div className={classes.labelWrapp}> Resulting Games List </div>
-      <TableContainer component={Paper}>
-        <Table size="small">
+      <TableContainer className={classes.tableContainer} component={Paper}>
+        <Table size="small" stickyHeader={true}>
           <TableHead>
             <TableRow>
               <TableCell className={classes.tableHeaderCell} align="center">
@@ -80,19 +71,24 @@ const ResultingGameList = (props: IProps) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {games.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell className={((index + 1)%2 === 1)? classes.oddTableCell : classes.tableCell} align="center">
-                  {index + 1}
-                </TableCell>
-                <TableCell className={((index + 1)%2 === 1)? classes.oddTableCell : classes.tableCell} align="center">
-                  {type === DisplayedLabelType.Index ? row.home_game_id : teams && teams[row.home_game_id - 1].short_name || '' }
-                </TableCell>
-                <TableCell className={((index + 1)%2 === 1)? classes.oddTableCell : classes.tableCell} align="center">
-                  {type === DisplayedLabelType.Index ? row.away_game_id : teams && teams[row.away_game_id - 1].short_name || '' }
-                </TableCell>
-              </TableRow>
-            ))}
+            {games.map((row, index) => {
+              const homeTeamName = teams && teams[row.home_game_id - 1].short_name;
+              const awayTeamName = teams && teams[row.away_game_id - 1].short_name;
+              return (
+                <TableRow
+                  key={index}
+                  className={((index + 1)%2 === 1)? classes.oddTableCell : classes.tableCell}
+                >
+                  <TableCell align="center"> {index + 1} </TableCell>
+                  <TableCell align="center">
+                    {showNames ? homeTeamName : (<p title={homeTeamName}>{row.home_game_id}</p>)}
+                  </TableCell>
+                  <TableCell align="center">
+                    {showNames ? awayTeamName : (<p title={awayTeamName}>{row.away_game_id}</p>)}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

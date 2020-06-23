@@ -7,10 +7,10 @@ import { IPageEventState } from 'components/authorized-page/authorized-page-even
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
 import styles from './styles.module.scss';
-import RunningTally from "./running-games-tally";
-import ResultingGameList from "./resulting-game-list";
-import MatrixOfPossibleGames from "./possible-games-matrix";
-import { Button } from 'components/common';
+import RunningTally from './running-games-tally';
+import ResultingGameList from './resulting-game-list';
+import MatrixOfPossibleGames from './possible-games-matrix';
+import { Button, Checkbox } from 'components/common';
 import History from 'browserhistory';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
 
@@ -25,11 +25,6 @@ interface IMapStateToProps {
 export interface IGame {
   home_game_id: number;
   away_game_id: number;
-}
-
-export enum DisplayedLabelType {
-  Index,
-  Name,
 }
 
 interface IMapDispatchToProps {
@@ -48,6 +43,7 @@ type IProps = IMapStateToProps & IMapDispatchToProps & IComponentProps;
 
 interface IState {
   games: IGame[];
+  isShowNamesOfTeams: boolean;
 }
 
 class VisualGamesMaker extends Component<IProps, IState> {
@@ -55,6 +51,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
     super(props);
     this.state = {
       games: [],
+      isShowNamesOfTeams: false,
     };
   }
 
@@ -70,17 +67,30 @@ class VisualGamesMaker extends Component<IProps, IState> {
     });
   };
 
+  onChangeDisplayedLabelType = () => {
+    this.setState((state: IState) => {
+      return { isShowNamesOfTeams: !state.isShowNamesOfTeams };
+    });
+  };
+
   render() {
-    const teams = this.props.teams && this.props.teams.filter(item => item.division_id === "ADRL2021" && item.pool_id === "ADRLPL21")
+    const teams = this.props.teams && this.props.teams.filter(item => item.division_id === 'ADRL2021')
     const { schedule } = this.props;
     return (
       <div className={styles.container}>
+        <div className={styles.checkboxWrapp}>
+          <Checkbox
+            options={[{ label: 'Show Names of Teams', checked: this.state.isShowNamesOfTeams }]}
+            onChange={this.onChangeDisplayedLabelType}
+          />
+        </div>
+
         <div className={styles.tablesWrapper}>
-          <div className={styles.runningTally}>
+
+          <div className={styles.matrixOfPossibleGames}>
             <MatrixOfPossibleGames
               games={this.state.games}
               teams={teams}
-              type={DisplayedLabelType.Index}
               onChangeGames={this.onChangeGames}
             />
           </div>
@@ -88,17 +98,26 @@ class VisualGamesMaker extends Component<IProps, IState> {
             <RunningTally
               games={this.state.games}
               teams={teams}
-              type={DisplayedLabelType.Name}
+              showNames={this.state.isShowNamesOfTeams}
             />
           </div>
           <div className={styles.resGameList}>
             <ResultingGameList
               games={this.state.games}
               teams={teams}
-              type={DisplayedLabelType.Name}
+              showNames={this.state.isShowNamesOfTeams}
             />
           </div>
-          <Button label="Next" color="primary" variant="contained" onClick={() => History.push(`/schedules/${schedule!.event_id}`)}>Next</Button>
+          <div className={styles.button}>
+            <Button
+              label='Next'
+              color='primary'
+              variant='contained'
+              onClick={() => History.push(`/schedules/${schedule!.event_id}`)}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
     );

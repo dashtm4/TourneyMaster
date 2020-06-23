@@ -141,7 +141,7 @@ const AuthorizedPageEvent = ({
     togglePublishPopup(!isPublishPopupOpen);
   };
 
-  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
+  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS, Routes.VISUAL_GAMES_MAKER];
   const schedulingIgnoreList = [
     EventMenuTitles.SCHEDULING,
     EventMenuTitles.SCORING,

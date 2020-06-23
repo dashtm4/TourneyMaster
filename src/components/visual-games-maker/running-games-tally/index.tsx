@@ -28,19 +28,17 @@ interface IGame {
 interface IProps {
   teams: ITeam[] | undefined;
   games: IGame[];
-  type: number;
-}
-
-enum DisplayedLabelType {
-  Index,
-  Name,
+  showNames: boolean;
 }
 
 const useStyles = makeStyles({
+  tableContainer: {
+    maxHeight: '50vh',
+    overflow: 'auto',
+  },
   tableTeamCell: {
-    border: '1px solid black',
     backgroundColor: 'rgb(235, 235, 235)',
-    width: '20px',
+    whiteSpace: 'nowrap',
   },
   tableCountCell: {
     fontWeight: 700,
@@ -54,6 +52,10 @@ const useStyles = makeStyles({
   },
   tableFooterCell: {
     borderTop: '2px solid black',
+    position: 'sticky',
+    bottom: 0,
+    marginTop: 'calc(5% + 60px)',
+    backgroundColor: 'white',
   },
   labelWrapp: {
     background: 'linear-gradient(121deg, #073b65 38%, #0079ae)',
@@ -65,7 +67,7 @@ const useStyles = makeStyles({
 });
 
 const RunningTally = (props: IProps) => {
-  const { teams, games, type } = props;
+  const { teams, games, showNames } = props;
   const classes = useStyles();
 
   const dataForTable: ITableRunningTally<string>[] = [];
@@ -97,8 +99,8 @@ const RunningTally = (props: IProps) => {
   return (
     <div>
       <div className={classes.labelWrapp}> Running Tally of Games </div>
-      <TableContainer component={Paper}>
-        <Table size="small">
+      <TableContainer className={classes.tableContainer} component={Paper}>
+        <Table size="small" stickyHeader={true}>
           <TableHead>
             <TableRow>
               <TableCell className={classes.tableHeaderCell} align="center">
@@ -119,9 +121,7 @@ const RunningTally = (props: IProps) => {
             {dataForTable.map(row => (
               <TableRow key={row.team_name}>
                 <TableCell className={classes.tableTeamCell} align="center">
-                  {type === DisplayedLabelType.Index
-                    ? row.team_index
-                    : row.team_name}
+                  {showNames ? row.team_name : (<p title={row.team_name}>{row.team_index + 1}</p>)}
                 </TableCell>
                 <TableCell className={classes.tableCell} align="center">
                   {row.count_of_home_games}
@@ -137,10 +137,7 @@ const RunningTally = (props: IProps) => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell />
-              <TableCell />
-              <TableCell />
-              <TableCell className={classes.tableFooterCell} align="center">
+              <TableCell className={classes.tableFooterCell} align="right" colSpan={4}>
                 Total: {totalCount}
               </TableCell>
             </TableRow>
