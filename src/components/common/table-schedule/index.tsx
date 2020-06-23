@@ -16,6 +16,8 @@ import {
   ISchedule,
   IPool,
   BindingAction,
+  IConfigurableSchedule,
+  ScheduleCreationType,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes } from './types';
 import { getAllTeamCardGames, calculateTournamentDays } from 'helpers';
@@ -109,7 +111,10 @@ const TableSchedule = ({
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
 
-  const [isFromMaker] = useState(true);
+  const [isFromMaker] = useState(
+    (scheduleData as IConfigurableSchedule)?.creationType ===
+    ScheduleCreationType.VisualGamesMaker
+  );
   const [simultaneousDnd, setSimultaneousDnd] = useState(isFromMaker);
 
   const [filterValues, changeFilterValues] = useState<IScheduleFilter>(

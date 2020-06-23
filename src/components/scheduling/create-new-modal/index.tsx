@@ -7,9 +7,17 @@ import {
   Radio,
 } from 'components/common';
 import styles from './styles.module.scss';
-import { IConfigurableSchedule } from 'common/models/schedule';
+import {
+  IConfigurableSchedule,
+  ScheduleCreationType,
+} from 'common/models/schedule';
 import { ArchitectFormFields } from '../types';
 import useOnclickOutside from 'react-cool-onclickoutside';
+import {
+  getScheduleCreationTypeOptions,
+  mapScheduleCreationTypeToOption,
+  mapScheduleCreationOptionToType,
+} from './helpers';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -21,12 +29,6 @@ interface IProps {
   onClose: () => void;
 }
 
-enum TypeOptions {
-  'Use Scheduler' = 1,
-  'Use Visual Games Maker' = 2,
-  'Create Manually' = 3,
-}
-
 const CreateNewModal = (props: IProps) => {
   const { schedule, isOpen, onCreate, onClose, onChange } = props;
 
@@ -35,12 +37,12 @@ const CreateNewModal = (props: IProps) => {
   };
 
   const [step, setStep] = useState(1);
-  const [type, setType] = useState(1);
+  const [type, setType] = useState(ScheduleCreationType.Scheduler);
 
-  const typeOptions = ['Use Scheduler', 'Use Visual Games Maker', 'Create Manually'];
+  const typeOptions = getScheduleCreationTypeOptions();
 
   const onTypeChange = (e: InputTargetValue) =>
-    setType(TypeOptions[e.target.value]);
+    setType(mapScheduleCreationOptionToType(e.target.value));
 
   const localClose = () => {
     onChange('schedule_name', '');
@@ -50,28 +52,33 @@ const CreateNewModal = (props: IProps) => {
   const onCancelClick = () => {
     localClose();
     setStep(1);
-    setType(1);
+    setType(ScheduleCreationType.Scheduler);
   };
 
   const ref = useRef<HTMLDivElement>(null);
   useOnclickOutside(ref, () => {
     localClose();
     setStep(1);
-    setType(1);
+    setType(ScheduleCreationType.Scheduler);
   });
 
   const onCreateWithScheduler = () => {
+    setCreationType(ScheduleCreationType.Scheduler);
     onCreate(schedule, false);
   };
 
   const onCreateWithVisualGamesMaker = () => {
-    onChange('isManualScheduling', true);
+    setCreationType(ScheduleCreationType.VisualGamesMaker);
     onCreate(schedule, true);
   };
 
   const onCreateManually = () => {
-    onChange('isManualScheduling', true);
+    setCreationType(ScheduleCreationType.Manually);
     onCreate(schedule, false);
+  };
+
+  const setCreationType = (t: ScheduleCreationType) => {
+    onChange('creationType', t);
   };
 
   const renderStepOne = () => {
@@ -87,7 +94,7 @@ const CreateNewModal = (props: IProps) => {
               options={typeOptions}
               formLabel=""
               onChange={onTypeChange}
-              checked={TypeOptions[type] || ''}
+              checked={mapScheduleCreationTypeToOption(type)}
             />
           </div>
           <div className={styles.btnWrapper}>
@@ -105,13 +112,13 @@ const CreateNewModal = (props: IProps) => {
     );
   };
 
-  const chooseOnCreateFunction = (createType: TypeOptions) => {
+  const chooseOnCreateFunction = (createType: ScheduleCreationType) => {
     switch (createType) {
-      case TypeOptions['Use Scheduler']:
+      case ScheduleCreationType.Scheduler:
         return onCreateWithScheduler;
-      case TypeOptions['Use Visual Games Maker']:
+      case ScheduleCreationType.VisualGamesMaker:
         return onCreateWithVisualGamesMaker;
-      case TypeOptions['Create Manually']:
+      case ScheduleCreationType.Manually:
         return onCreateManually;
       default:
         return onCreateWithScheduler;

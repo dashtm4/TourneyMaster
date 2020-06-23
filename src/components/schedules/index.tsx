@@ -78,6 +78,7 @@ import {
   ISchedule,
   IPool,
   BindingAction,
+  ScheduleCreationType,
 } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
@@ -204,12 +205,15 @@ class Schedules extends Component<Props, State> {
     const { facilities, match, scheduleData } = this.props;
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
-    const { isManualScheduling } = scheduleData || {};
+    const { creationType } = scheduleData || {};
+    const isManualScheduling =
+      creationType === ScheduleCreationType.Manually ||
+      creationType === ScheduleCreationType.VisualGamesMaker;
 
     this.props.schedulesDetailsClear();
     this.props.clearSchedulesTable();
     this.getPublishedStatus();
-    this.activateLoaders(scheduleId, !!isManualScheduling);
+    this.activateLoaders(scheduleId, isManualScheduling);
     this.calculateTournamentDays();
 
     if (facilitiesIds?.length) {
