@@ -121,7 +121,7 @@ class Teams extends React.Component<
     }));
 
     this.onCloseModal();
-    
+
     setTimeout(() => {
       this.onSaveClick();
     }, 500);
@@ -149,6 +149,20 @@ class Teams extends React.Component<
       this.setState({ changesAreMade: true });
     }
   };
+
+  onChangePhoneNumber = (value: string) => {
+    this.setState(({ configurableTeam }) => ({
+      configurableTeam: {
+        ...(configurableTeam as ITeam),
+        phone_num: value,
+        isChange: true,
+      },
+    }));
+    if (!this.state.changesAreMade) {
+      this.setState({ changesAreMade: true });
+    }
+  };
+
   onSaveTeam = () => {
     const { configurableTeam } = this.state;
 
@@ -235,6 +249,7 @@ class Teams extends React.Component<
             division={currentDivision}
             pool={currentPool}
             onChangeTeam={this.onChangeTeam}
+            onChangePhoneNumber={this.onChangePhoneNumber}
             onSaveTeamClick={this.onSaveTeam}
             onDeleteTeamClick={this.onDeleteTeam}
             onCloseModal={this.onCloseModal}
