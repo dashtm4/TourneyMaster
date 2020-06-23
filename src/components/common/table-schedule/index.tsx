@@ -16,9 +16,15 @@ import {
   ISchedule,
   IPool,
   BindingAction,
+  ISchedulesDetails,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes } from './types';
-import { getAllTeamCardGames, calculateTournamentDays } from 'helpers';
+import {
+  getAllTeamCardGames,
+  calculateTournamentDays,
+  getTimeSlotsFromEntities,
+  ITimeValues,
+} from 'helpers';
 import {
   IGame,
   settleTeamsPerGames,
@@ -39,11 +45,11 @@ import {
 } from './helpers';
 
 import { IScheduleFacility } from 'common/models/schedule/facilities';
-import { ITeamCard } from 'common/models/schedule/teams';
+import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 import { IDropParams } from '../matrix-table/dnd/drop';
 import moveTeamCard from './moveTeamCard';
 import { Button } from 'components/common';
-import { TableScheduleTypes } from 'common/enums';
+import { TableScheduleTypes, TimeSlotsEntityTypes } from 'common/enums';
 import { CardMessageTypes } from '../card-message/types';
 import TeamsDiagnostics from 'components/schedules/diagnostics/teamsDiagnostics';
 import DivisionsDiagnostics from 'components/schedules/diagnostics/divisionsDiagnostics';
@@ -51,6 +57,7 @@ import { IDiagnosticsInput } from 'components/schedules/diagnostics';
 import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
 import { IBracketGame } from 'components/playoffs/bracketGames';
 import { updateGameSlot } from 'components/playoffs/helper';
+import PopupAdvancedWorkflow from './components/popup-advanced-workflow';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -61,14 +68,17 @@ interface Props {
   games: IGame[];
   fields: IField[];
   timeSlots: ITimeSlot[];
+  timeValues: ITimeValues;
   facilities: IScheduleFacility[];
   scheduleData: ISchedule;
+  schedulesDetails?: ISchedulesDetails[];
   eventSummary: IEventSummary[];
   isEnterScores?: boolean;
   historyLength?: number;
   teamsDiagnostics?: IDiagnosticsInput;
   divisionsDiagnostics?: IDiagnosticsInput;
   isFullScreen?: boolean;
+  onScheduleGameUpdate: (gameId: number, gameTime: string) => void;
   onTeamCardsUpdate: (teamCard: ITeamCard[]) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onUndo: () => void;
@@ -77,6 +87,10 @@ interface Props {
   bracketGames?: IBracketGame[];
   onBracketGameUpdate: (bracketGame: IBracketGame) => void;
   recalculateDiagnostics?: () => void;
+  updateSchedulesDetails?: (
+    modifiedSchedulesDetails: ISchedulesDetails[],
+    schedulesDetailsToModify: ISchedulesDetails[]
+  ) => void;
 }
 
 const TableSchedule = ({
@@ -89,9 +103,12 @@ const TableSchedule = ({
   fields,
   facilities,
   scheduleData,
+  schedulesDetails,
   timeSlots,
+  timeValues,
   eventSummary,
   isEnterScores,
+  onScheduleGameUpdate,
   onTeamCardsUpdate,
   onTeamCardUpdate,
   onUndo,
@@ -104,6 +121,7 @@ const TableSchedule = ({
   bracketGames,
   onBracketGameUpdate,
   recalculateDiagnostics,
+  updateSchedulesDetails,
 }: Props) => {
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
@@ -269,6 +287,22 @@ const TableSchedule = ({
       ? undefined
       : getScheduleWarning(scheduleData, event, teamCards, teamsDiagnostics!);
 
+  const getTimeSlotsBySelectedDay = (): ITimeSlot[] => {
+    let date = '';
+    if (filterValues.selectedDay) {
+      date = days[+filterValues.selectedDay - 1] || '';
+    }
+    
+    if (schedulesDetails) {
+      return getTimeSlotsFromEntities(
+        schedulesDetails!.filter(v => v.game_date === date),
+        TimeSlotsEntityTypes.SCHEDULE_DETAILS
+      );
+    }
+
+    return timeSlots;
+  };
+
   return (
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
@@ -324,21 +358,36 @@ const TableSchedule = ({
             />
           )}
           <div className={styles.tableWrapper}>
-            <Filter
-              tableType={tableType}
-              warnings={warnings}
-              days={days.length}
-              filterValues={filterValues}
-              onChangeFilterValue={onFilterChange}
-              simultaneousDnd={simultaneousDnd}
-              toggleSimultaneousDnd={toggleSimultaneousDnd}
-            />
+            <div className={styles.headerWrapper}>
+              <Filter
+                tableType={tableType}
+                warnings={warnings}
+                days={days.length}
+                filterValues={filterValues}
+                onChangeFilterValue={onFilterChange}
+                simultaneousDnd={simultaneousDnd}
+                toggleSimultaneousDnd={toggleSimultaneousDnd}
+              />
+              {tableType === TableScheduleTypes.SCHEDULES &&
+                schedulesDetails &&
+                updateSchedulesDetails && (
+                  <PopupAdvancedWorkflow
+                    divisions={divisions}
+                    teams={teamCards as ITeam[]}
+                    timeValues={timeValues}
+                    onScheduleGameUpdate={onScheduleGameUpdate}
+                    schedulesDetails={schedulesDetails}
+                    updateSchedulesDetails={updateSchedulesDetails}
+                  />
+                )}
+            </div>
+
             <MatrixTable
               tableType={tableType}
               eventDay={filterValues.selectedDay!}
               games={tableGames}
               fields={updatedFields}
-              timeSlots={timeSlots}
+              timeSlots={getTimeSlotsBySelectedDay()!}
               facilities={facilities}
               showHeatmap={showHeatmap}
               isEnterScores={isEnterScores}

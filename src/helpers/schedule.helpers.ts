@@ -10,7 +10,7 @@ import moment from 'moment';
 import { orderBy } from 'lodash-es';
 import { TimeSlotsEntityTypes } from 'common/enums';
 
-interface ITimeValues {
+export interface ITimeValues {
   firstGameTime: string;
   lastGameEnd: string;
   preGameWarmup: string | null;
