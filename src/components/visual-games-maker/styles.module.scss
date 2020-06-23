@@ -1,11 +1,29 @@
 .container {
   height: 100%;
-  display: flex;
+  position: relative;
 }
 
 .tablesWrapper {
+  display: flex;
+  flex-wrap: wrap;
 
-  .runningTally, .resGameList, .matrix {
-    width: 800px;
+  .runningTally, .resGameList {
+    margin: 8px;
+    width: calc( (100% - 48px) / 4 );
   }
+
+  .matrixOfPossibleGames {
+    width: calc( (100% - 48px) / 2 );
+    margin: 8px;
+  }
+}
+
+.button {
+  position: absolute;
+  right: 8px;
+  bottom: -50px;
+}
+
+.checkboxWrapp {
+  padding: 0 8px;
 }
