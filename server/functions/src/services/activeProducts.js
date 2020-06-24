@@ -67,10 +67,12 @@ export const getPaymentPlans = async ({
                 iterations: rawPaymentPlan.iterations,
                 interval: rawPaymentPlan.interval,
                 intervalCount: rawPaymentPlan.intervalCount,
+                billing_cycle_anchor: 0,
               };
               return paymentPlan;
             } else if (rawPaymentPlan.type === 'schedule') {
               const schedule = {};
+              let billingCycleAnchor;
               for (let phase of rawPaymentPlan.schedule) {
                 const amount =
                   phase.amountType === 'fixed'
@@ -86,15 +88,25 @@ export const getPaymentPlans = async ({
                 if (date <= now) {
                   if (!schedule['now']) schedule['now'] = 0;
                   schedule['now'] += amount;
+                  if (!billingCycleAnchor || date > billingCycleAnchor) {
+                    // Set billing anchor to the last of the payment deadlines that are before now
+                    billingCycleAnchor = date;
+                  }
                 } else {
                   if (!schedule[date]) schedule[date] = 0;
                   schedule[date] += amount;
+                  if (!billingCycleAnchor) {
+                    // If no billing anchor yet set it to any of the phases
+                    billingCycleAnchor = date;
+                  }
                 }
               }
 
               const scheduleArr = Object.entries(schedule)
                 .map(([date, amount]) => ({
                   date,
+                  billing_cycle_anchor:
+                    date === 'now' ? billingCycleAnchor : date,
                   amount,
                   price_external_id:
                     sku.sku_id +
@@ -156,6 +168,7 @@ export const getPaymentPlans = async ({
           iterations: 1,
           interval: 'month',
           intervalCount: 1,
+          billing_cycle_anchor: 0,
         };
         return paymentPlan;
       } else {
