@@ -133,6 +133,11 @@ class Teams extends React.Component<
       ),
     }));
 
+    setTimeout(() => {
+      this.onSaveClick();
+    }, 500);
+  };
+
   onEditPopupOpen = (team: ITeam, divisionName: string, poolName: string) =>
     this.setState({
       isEditPopupOpen: true,
@@ -168,6 +173,17 @@ class Teams extends React.Component<
       this.setState({ changesAreMade: true });
     }
   };
+
+  onSaveTeam = () => {
+    const { configurableTeam } = this.state;
+
+    if (configurableTeam) {
+      this.setState(({ teams }) => ({
+        teams: teams.map(it =>
+          it.team_id === configurableTeam.team_id ? configurableTeam : it
+        ),
+      }));
+    }
 
     this.onCloseModal();
   };
