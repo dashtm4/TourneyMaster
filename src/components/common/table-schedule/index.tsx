@@ -141,37 +141,6 @@ const TableSchedule = ({
 
   const toggleSimultaneousDnd = () => setSimultaneousDnd(v => !v);
 
-  // const manageGamesList = useCallback(() => {
-  //   // let definedGames = [...games];
-
-  //   // console.log('defined games', games);
-
-  //   // const firstGame = definedGames[0];
-  //   // const awayTeam = teamCards[0];
-  //   // const homeTeam = teamCards[1];
-  //   // if (!awayTeam.games || !awayTeam.games.length) {
-  //   //   awayTeam.games = [{ ...firstGame, teamPosition: 1 }];
-  //   // }
-  //   // if (!homeTeam.games || !homeTeam.games.length) {
-  //   //   homeTeam.games = [{ ...firstGame, teamPosition: 2 }];
-  //   // }
-
-  //   // const filledGames = settleTeamsPerGames(
-  //   //   definedGames,
-  //   //   teamCards,
-  //   //   days,
-  //   //   filterValues.selectedDay!
-  //   // );
-
-  //   // const filteredGames = mapGamesByFilter([...filledGames], filterValues);
-  //   // return filteredGames;
-  //   const games: IGame[] = [];
-    
-
-  // }, [games, teamCards, days, filterValues, playoffTimeSlots, bracketGames]);
-
-  // const [listGames] = useState<IGame[]>(manageGamesList());
-
   const manageGamesData = useCallback(() => {
     let definedGames = [...games];
     const day = filterValues.selectedDay!;
@@ -242,7 +211,6 @@ const TableSchedule = ({
   const moveCard = (dropParams: IDropParams) => {
     const day = filterValues.selectedDay!;
     const isSimultaneousDnd = isFromMaker ? true : simultaneousDnd;
-    console.log(teamCards, tableGames, dropParams, isSimultaneousDnd);
     const result = moveTeamCard(
       teamCards,
       tableGames,
