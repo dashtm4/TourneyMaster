@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { orderBy } from 'lodash-es';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -6,10 +7,12 @@ import {
   HeadingLevelThree,
   Button,
   DeletePopupConfrim,
+  Select,
 } from 'components/common';
 import FieldItem from './components/field-item';
 import { getIcon } from 'helpers';
 import { BindingAction } from 'common/models/callback';
+import { ISelectOption, IUSAState } from 'common/models';
 import { ITeam, ITeamWithResults } from 'common/models/teams';
 import { Icons } from 'common/enums/icons';
 import { ISchedulesGameWithNames } from 'common/models';
@@ -65,7 +68,23 @@ const TeamDetailsPopup = ({
   const [isEdit, onEditClick] = useState(false);
   const [teamTitle] = useState(team?.long_name);
   const [isDeletePopupOpen, onDeletePopup] = useState(false);
+  const [states, onUpdateStates] = useState([]);
 
+  useEffect(() => {
+    axios.get('/states').then(response => {
+      const selectStateOptions = response.data.map((it: IUSAState) => ({
+        label: it.state_id,
+        value: it.state_name,
+      }));
+
+      const sortedSelectStateOptions = selectStateOptions.sort(
+        (a: ISelectOption, b: ISelectOption) =>
+          a.label.localeCompare(b.label, undefined, { numeric: true })
+      );
+
+      onUpdateStates(sortedSelectStateOptions);
+    });
+  }, []);
   const onDeletePopupClose = () => {
     onDeletePopup(false);
   };
@@ -164,11 +183,12 @@ const TeamDetailsPopup = ({
                 <b>State: </b>
                 {isEdit ? (
                   <label>
-                    <input
-                      onChange={onChangeTeam}
-                      value={team.state || ''}
+                    <Select
+                      options={states}
                       name={FORM_FIELDS.STATE}
-                      type="text"
+                      value={team.state || ''}
+                      onChange={onChangeTeam}
+                      isRequired={true}
                     />
                     <span className="visually-hidden">State</span>
                   </label>

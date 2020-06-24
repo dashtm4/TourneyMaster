@@ -1,9 +1,10 @@
 import React from 'react';
+import axios from 'axios';
 import { Input, Select, CardMessage } from 'components/common/';
 import Checkbox from 'components/common/buttons/checkbox';
 import styles from '../styles.module.scss';
 import { sortByField } from 'helpers';
-import { IDivision, ITeam } from 'common/models';
+import { IDivision, ITeam, ISelectOption, IUSAState } from 'common/models';
 import { SortByFilesTypes } from 'common/enums';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -19,7 +20,21 @@ interface ICreateTeamFormProps {
   divisions: IDivision[];
 }
 
-class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
+interface ICreateTeamFormState {
+  states: ISelectOption[];
+}
+
+class CreateTeamForm extends React.Component<
+  ICreateTeamFormProps,
+  ICreateTeamFormState
+> {
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      states: [],
+    };
+  }
   onLongNameChange = (e: InputTargetValue) => {
     this.props.onChange('long_name', e.target.value, this.props.index);
   };
@@ -33,7 +48,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
   onCityChange = (e: InputTargetValue) =>
     this.props.onChange('city', e.target.value, this.props.index);
 
-  onStateChange = (e: InputTargetValue) =>
+  onStateChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     this.props.onChange('state', e.target.value, this.props.index);
 
   onDivisionChange = (e: InputTargetValue) => {
@@ -62,6 +77,23 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
       this.props.index
     );
   };
+
+  componentDidMount() {
+    axios.get('/states').then(response => {
+      const selectStateOptions = response.data.map((it: IUSAState) => ({
+        label: it.state_id,
+        value: it.state_name,
+      }));
+
+      const sortedSelectStateOptions = selectStateOptions.sort(
+        (a: ISelectOption, b: ISelectOption) =>
+          a.label.localeCompare(b.label, undefined, { numeric: true })
+      );
+
+      this.setState({ states: sortedSelectStateOptions });
+    });
+  }
+
   render() {
     const {
       long_name,
@@ -77,6 +109,7 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
       contact_email,
       schedule_restrictions,
     } = this.props.team;
+    const { states } = this.state;
 
     const divisionsOptions = sortByField(
       this.props.divisions,
@@ -98,8 +131,9 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
         <div className={styles.section}>
           <div className={styles.sectionRow}>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Long Names do not render well on phones. So please enter both a long (web) and short (mobile)!
-              </CardMessage>
+              Long Names do not render well on phones. So please enter both a
+              long (web) and short (mobile)!
+            </CardMessage>
             <div className={styles.sectionItem} />
           </div>
           <div className={styles.sectionRow}>
@@ -141,11 +175,12 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
               />
             </div>
             <div className={styles.sectionItem}>
-              <Input
-                fullWidth={true}
+              <Select
+                options={states}
                 label="State *"
                 value={state || ''}
                 onChange={this.onStateChange}
+                isRequired={true}
               />
             </div>
             <div className={styles.sectionItem}>
@@ -167,11 +202,11 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
           </div>
           <div className={styles.sectionRow}>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Entering States enables eliminating intra-state games when creating schedules!
-              2 Letter States (e.g., IL, NJ) or 3 for Canadian Provinces!
+              Entering States enables eliminating intra-state games when
+              creating schedules! 2 Letter States (e.g., IL, NJ) or 3 for
+              Canadian Provinces!
             </CardMessage>
             <div className={styles.sectionItem} />
-
           </div>
         </div>
         <div className={styles.section}>
@@ -220,9 +255,9 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
           </div>
           <div className={styles.sectionRow}>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Mobile numbers are needed by event staff to call coaches if their team is Missing In Action!
-              </CardMessage>
-
+              Mobile numbers are needed by event staff to call coaches if their
+              team is Missing In Action!
+            </CardMessage>
           </div>
           <div className={styles.sectionRow}>
             <div>
