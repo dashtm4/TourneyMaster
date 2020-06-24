@@ -20,6 +20,7 @@ import {
   fillGamesList,
 } from 'components/schedules/logic/schedules-table/actions';
 import { IGame } from 'components/common/matrix-table/helper';
+import { TeamPositionEnum } from 'components/common/matrix-table/helper';
 
 interface IMapStateToProps {
   teams?: ITeam[] | undefined;
@@ -89,11 +90,17 @@ class VisualGamesMaker extends Component<IProps, IState> {
       let newGames = [];
       newGames = games
         .filter(game => game.homeTeamId === v.id)
-        .map(homeGame => ({ id: homeGame.gameId, teamPosition: 2 }));
+        .map(homeGame => ({
+          id: homeGame.gameId,
+          teamPosition: TeamPositionEnum.homeTeam,
+        }));
       newGames.concat(
         games
           .filter(game => game.awayTeamId === v.id)
-          .map(awayGame => ({ id: awayGame.gameId, teamPosition: 1 }))
+          .map(awayGame => ({
+            id: awayGame.gameId,
+            teamPosition: TeamPositionEnum.awayTeam,
+          }))
       );
       return { ...v, games: newGames};
     });
