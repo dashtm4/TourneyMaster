@@ -7,6 +7,7 @@ import {
   ADD_DIVISION_SUCCESS,
   UPDATE_DIVISION_SUCCESS,
   DELETE_DIVISION_SUCCESS,
+  DELETE_ALL_DIVISIONS_SUCCESS,
   ADD_POOL_SUCCESS,
   REGISTRATION_FETCH_SUCCESS,
   ALL_POOLS_FETCH_SUCCESS,
@@ -106,6 +107,14 @@ export default (
             division => division.division_id !== action.payload
           ),
         ],
+        isLoading: false,
+        error: false,
+      };
+    }
+    case DELETE_ALL_DIVISIONS_SUCCESS: {
+      return {
+        ...state,
+        data: [],
         isLoading: false,
         error: false,
       };

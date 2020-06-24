@@ -121,11 +121,17 @@ class Teams extends React.Component<
     }));
 
     this.onCloseModal();
-
     setTimeout(() => {
       this.onSaveClick();
     }, 500);
   };
+
+  onDeleteAllTeams = (divisionId: string) => {
+    this.setState(({ teams }) => ({
+      teams: teams.map(it =>
+        it.division_id === divisionId ? { ...it, isDelete: true } : it
+      ),
+    }));
 
   onEditPopupOpen = (team: ITeam, divisionName: string, poolName: string) =>
     this.setState({
@@ -162,17 +168,6 @@ class Teams extends React.Component<
       this.setState({ changesAreMade: true });
     }
   };
-
-  onSaveTeam = () => {
-    const { configurableTeam } = this.state;
-
-    if (configurableTeam) {
-      this.setState(({ teams }) => ({
-        teams: teams.map(it =>
-          it.team_id === configurableTeam.team_id ? configurableTeam : it
-        ),
-      }));
-    }
 
     this.onCloseModal();
   };
@@ -240,6 +235,7 @@ class Teams extends React.Component<
               teams={teams.filter(it => !it.isDelete)}
               loadPools={loadPools}
               onEditPopupOpen={this.onEditPopupOpen}
+              onDeleteAllTeams={this.onDeleteAllTeams}
             />
           </ul>
         </section>
