@@ -78,6 +78,7 @@ import {
   ISchedule,
   IPool,
   BindingAction,
+  ScheduleCreationType,
 } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
@@ -110,6 +111,7 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   anotherSchedulePublished?: boolean;
   gamesAlreadyExist?: boolean;
   pools?: IPool[];
+  gamesList?: IGame[];
 }
 
 interface IMapDispatchToProps {
@@ -204,12 +206,15 @@ class Schedules extends Component<Props, State> {
     const { facilities, match, scheduleData } = this.props;
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
-    const { isManualScheduling } = scheduleData || {};
+    const { creationType } = scheduleData || {};
+    const isManualScheduling =
+      creationType === ScheduleCreationType.Manually ||
+      creationType === ScheduleCreationType.VisualGamesMaker;
 
     this.props.schedulesDetailsClear();
     this.props.clearSchedulesTable();
     this.getPublishedStatus();
-    this.activateLoaders(scheduleId, !!isManualScheduling);
+    this.activateLoaders(scheduleId, isManualScheduling);
     this.calculateTournamentDays();
 
     if (facilitiesIds?.length) {
@@ -747,6 +752,7 @@ class Schedules extends Component<Props, State> {
       schedulesPublished,
       isFullScreen,
       onToggleFullScreen,
+      gamesList,
     } = this.props;
 
     const {
@@ -823,6 +829,7 @@ class Schedules extends Component<Props, State> {
             playoffTimeSlots={playoffTimeSlots}
             onBracketGameUpdate={() => {}}
             recalculateDiagnostics={this.calculateDiagnostics}
+            gamesList={gamesList}
           />
         ) : (
           <div className={styles.loadingWrapper}>
@@ -865,6 +872,7 @@ const mapStateToProps = ({
   schedulesDetails: schedules?.schedulesDetails,
   pools: divisions?.pools,
   gamesAlreadyExist: schedules?.gamesAlreadyExist,
+  gamesList: schedulesTable?.gamesList,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>

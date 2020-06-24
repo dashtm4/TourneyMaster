@@ -29,5 +29,11 @@ export interface ISchedule {
 export interface IConfigurableSchedule extends ISchedule {
   num_fields: number;
   periods_per_game: number;
-  isManualScheduling?: boolean;
+  creationType?: ScheduleCreationType;
+}
+
+export enum ScheduleCreationType {
+  Scheduler = 1,
+  VisualGamesMaker,
+  Manually,
 }

@@ -16,6 +16,8 @@ import {
   ISchedule,
   IPool,
   BindingAction,
+  IConfigurableSchedule,
+  ScheduleCreationType,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes } from './types';
 import { getAllTeamCardGames, calculateTournamentDays } from 'helpers';
@@ -78,6 +80,7 @@ interface Props {
   bracketGames?: IBracketGame[];
   onBracketGameUpdate: (bracketGame: IBracketGame) => void;
   recalculateDiagnostics?: () => void;
+  gamesList?: IGame[];
 }
 
 const TableSchedule = ({
@@ -105,11 +108,15 @@ const TableSchedule = ({
   bracketGames,
   onBracketGameUpdate,
   recalculateDiagnostics,
+  gamesList,
 }: Props) => {
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
 
-  const [isFromMaker] = useState(true);
+  const [isFromMaker] = useState(
+    (scheduleData as IConfigurableSchedule)?.creationType ===
+    ScheduleCreationType.VisualGamesMaker
+  );
   const [simultaneousDnd, setSimultaneousDnd] = useState(isFromMaker);
 
   const [filterValues, changeFilterValues] = useState<IScheduleFilter>(
@@ -133,32 +140,6 @@ const TableSchedule = ({
   const [days, setDays] = useState(calculateDays(teamCards));
 
   const toggleSimultaneousDnd = () => setSimultaneousDnd(v => !v);
-
-  const manageGamesList = useCallback(() => {
-    let definedGames = [...games];
-
-    const firstGame = definedGames[0];
-    const awayTeam = teamCards[0];
-    const homeTeam = teamCards[1];
-    if (!awayTeam.games || !awayTeam.games.length) {
-      awayTeam.games = [{ ...firstGame, teamPosition: 1 }];
-    }
-    if (!homeTeam.games || !homeTeam.games.length) {
-      homeTeam.games = [{ ...firstGame, teamPosition: 2 }];
-    }
-
-    const filledGames = settleTeamsPerGames(
-      definedGames,
-      teamCards,
-      days,
-      filterValues.selectedDay!
-    );
-
-    const filteredGames = mapGamesByFilter([...filledGames], filterValues);
-    return filteredGames;
-  }, [games, teamCards, days, filterValues, playoffTimeSlots, bracketGames]);
-
-  const [listGames] = useState<IGame[]>(manageGamesList());
 
   const manageGamesData = useCallback(() => {
     let definedGames = [...games];
@@ -230,7 +211,6 @@ const TableSchedule = ({
   const moveCard = (dropParams: IDropParams) => {
     const day = filterValues.selectedDay!;
     const isSimultaneousDnd = isFromMaker ? true : simultaneousDnd;
-    console.log(teamCards, tableGames, dropParams, isSimultaneousDnd);
     const result = moveTeamCard(
       teamCards,
       tableGames,
@@ -356,7 +336,7 @@ const TableSchedule = ({
                 />
               ) : (
                   <UnassignedGamesList
-                    games={listGames}
+                    games={gamesList || []}
                     event={event}
                     // tableType={tableType}
                     // teamCards={teamCards}

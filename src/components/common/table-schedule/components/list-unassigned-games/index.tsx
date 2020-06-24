@@ -37,7 +37,6 @@ const UnassignedGamesList = (props: IProps) => {
     // pools,
   } = props;
   const acceptType = 'teamdrop';
-  console.log(games);
   // const [unsatisfiedTeamCards, setUnsatisfiedTeamCards] = useState(teamCards);
   // const [satisfiedTeamCards, setSatisfiedTeamCards] = useState<
   //   ITeamCard[] | undefined
@@ -76,7 +75,6 @@ const UnassignedGamesList = (props: IProps) => {
       isOver: monitor.isOver(),
     }),
     drop: (item: any) => {
-      console.log(item);
       onDrop({
         gameId: undefined,
         position: undefined,
