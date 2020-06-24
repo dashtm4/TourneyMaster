@@ -89,16 +89,16 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
                 onClick={this.onSave}
               />
               <FabButton
-                onClick={this.onSave}
-                sequence={2}
-                label="Save"
-                variant="contained"
-              />
-              <FabButton
                 onClick={this.onCancel}
                 sequence={1}
                 label="Cancel"
                 variant="outlined"
+              />
+              <FabButton
+                onClick={this.onSave}
+                sequence={2}
+                label="Save"
+                variant="contained"
               />
             </div>
           </div>

@@ -4,6 +4,7 @@ import { Button, Paper } from 'components/common';
 import { getIcon } from 'helpers';
 import { ButtonColors, ButtonVarian, Icons, Routes } from 'common/enums';
 import { BindingAction } from 'common/models';
+import FabButton from 'components/common/fab-button';
 import styles from '../styles.module.scss';
 
 const ICON_STYLES = {
@@ -63,6 +64,18 @@ const Navigation = ({
           variant={ButtonVarian.CONTAINED}
           onClick={onSave}
           label="Save"
+        />
+        <FabButton
+          onClick={onCancelClick}
+          sequence={1}
+          label="Cancel"
+          variant="outlined"
+        />
+        <FabButton
+          onClick={onSave}
+          sequence={2}
+          label="Save"
+          variant="contained"
         />
       </div>
     </div>
