@@ -10,13 +10,12 @@ import styles from './styles.module.scss';
 import RunningTally from './running-games-tally';
 import ResultingGameList from './resulting-game-list';
 import MatrixOfPossibleGames from './possible-games-matrix';
-import { Button, Checkbox } from 'components/common';
+import { Button, Checkbox, Select } from 'components/common';
 import History from 'browserhistory';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGameCell } from './helpers';
 import { fillSchedulesTable } from 'components/schedules/logic/schedules-table/actions';
-// import { ISchedulesTableState } from 'components/schedules/logic/schedules-table/schedulesTableReducer';
 
 interface IMapStateToProps {
   teams?: ITeam[] | undefined;
@@ -30,13 +29,14 @@ interface IMapDispatchToProps {
   fillSchedulesTable: (teamCards: ITeamCard[]) => void;
 }
 
+type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
+
 interface IComponentProps {}
 
 interface IRootState {
   pageEvent?: IPageEventState;
   divisions?: IDivisionAndPoolsState;
   scheduling?: ISchedulingState;
-  // schedulesTable: ISchedulesTableState;
 }
 
 type IProps = IMapStateToProps & IMapDispatchToProps & IComponentProps;
@@ -45,6 +45,8 @@ interface IState {
   isShowNamesOfTeams: boolean;
   games: IGameCell[];
   teamCards: ITeamCard[];
+  selectedDivisionId: string;
+  selectedPoolId: string;
 }
 
 class VisualGamesMaker extends Component<IProps, IState> {
@@ -54,6 +56,8 @@ class VisualGamesMaker extends Component<IProps, IState> {
     this.state = {
       games: [],
       isShowNamesOfTeams: false,
+      selectedDivisionId: '',
+      selectedPoolId: 'allPools',
       teamCards: teams!.map(v => ({
         id: v.team_id,
         name: v.short_name,
@@ -61,20 +65,22 @@ class VisualGamesMaker extends Component<IProps, IState> {
         poolId: v.pool_id,
         divisionId: v.division_id,
         isPremier: false,
-        games: {}})) as ITeamCard[],
+        games: {},
+      })) as ITeamCard[],
     };
-
-    console.log('this.state', this.state);
   }
 
   componentDidMount() {
     const { divisions, getAllPools } = this.props;
 
+    this.setState({
+      selectedDivisionId: (divisions && divisions[0].division_id) || '',
+    });
+
     getAllPools(divisions!.map(v => v.division_id));
   }
 
   onChangeGames = (items: IGameCell[]) => {
-    console.log('items', items);
     this.setState({
       games: items,
     });
@@ -88,9 +94,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
       return { ...v, games: newGames};
     });
 
-    this.setState({ teamCards: updatedTeamCards});
-
-    // this.props.fillSchedulesTable(this.state.teamCards);
+    this.setState({ teamCards: updatedTeamCards });
   };
 
   onChangeDisplayedLabelType = () => {
@@ -98,50 +102,124 @@ class VisualGamesMaker extends Component<IProps, IState> {
       return { isShowNamesOfTeams: !state.isShowNamesOfTeams };
     });
   };
-  componentDidUpdate() {
-    console.log(this.state.teamCards);
-  }
+
+  onChangeDivision = (e: InputTargetValue) => {
+    const divisionIdFromInput = e.target.value;
+    this.setState({
+      selectedDivisionId: divisionIdFromInput,
+      selectedPoolId: 'allPools',
+      games: [],
+    });
+  };
+
+  onChangePool = (e: InputTargetValue) => {
+    const poolIdFromInput = e.target.value;
+    this.setState({
+      selectedPoolId: poolIdFromInput,
+    });
+  };
+
+  mapOptionsForPools = () => {
+    const firstOption = { value: 'allPools', label: 'All pools' };
+    const pools = (this.props.pools || [])
+      .filter(pool => pool.division_id === this.state.selectedDivisionId)
+      .map(pool => {
+        return {
+          value: pool.pool_id,
+          label: pool.pool_name,
+        };
+      });
+    return [firstOption, ...pools];
+  };
 
   render() {
-    const teams = this.props.teams && this.props.teams.filter(item => item.division_id === 'ADRL2021')
+    const filteredTeams = this.props.teams!.filter(
+      item => item.division_id === this.state.selectedDivisionId
+    );
+    const sortedTeams = filteredTeams.sort((a: ITeam, b: ITeam) => {
+      return (a.pool_id || '') > (b.pool_id || '') ? 1 : -1;
+    });
     const { schedule } = this.props;
     return (
       <div className={styles.container}>
-        <div className={styles.checkboxWrapp}>
-          <Checkbox
-            options={[{ label: 'Show Names of Teams', checked: this.state.isShowNamesOfTeams }]}
-            onChange={this.onChangeDisplayedLabelType}
-          />
+        <h1> Visual Games Maker </h1>
+        <div className={styles.filterWrapp}>
+          <div className={styles.divisionWrapp}>
+            <h3> Division: </h3>
+            <div className={styles.selectWrapp}>
+              <Select
+                value={this.state.selectedDivisionId}
+                options={(this.props.divisions || []).map(division => {
+                  return {
+                    value: division.division_id,
+                    label: division.short_name,
+                  };
+                })}
+                onChange={this.onChangeDivision}
+              />
+            </div>
+          </div>
+          <div className={styles.divisionWrapp}>
+            <h3> Pool: </h3>
+            <div className={styles.selectWrapp}>
+              <Select
+                value={this.state.selectedPoolId}
+                options={this.mapOptionsForPools()}
+                onChange={this.onChangePool}
+              />
+            </div>
+          </div>
+          <div className={styles.checkboxWrapp}>
+            <Checkbox
+              options={[{ label: 'Show Names of Teams', checked: this.state.isShowNamesOfTeams }]}
+              onChange={this.onChangeDisplayedLabelType}
+            />
+          </div>
         </div>
-
         <div className={styles.tablesWrapper}>
 
           <div className={styles.matrixOfPossibleGames}>
             <MatrixOfPossibleGames
               games={this.state.games}
-              teams={teams}
+              teams={sortedTeams}
+              poolId={this.state.selectedPoolId}
               onChangeGames={this.onChangeGames}
             />
           </div>
-          <div className={styles.runningTally}>
-            <RunningTally
-              games={this.state.games}
-              teams={teams}
-              showNames={this.state.isShowNamesOfTeams}
-            />
+          <div className={styles.sideTables}>
+            <div className={styles.runningTally}>
+              <RunningTally
+                games={this.state.games}
+                teams={sortedTeams}
+                showNames={this.state.isShowNamesOfTeams}
+              />
+            </div>
+            <div className={styles.resGameList}>
+              <ResultingGameList
+                games={this.state.games}
+                teams={sortedTeams}
+                showNames={this.state.isShowNamesOfTeams}
+              />
+            </div>
           </div>
-          <div className={styles.resGameList}>
-            <ResultingGameList
-              games={this.state.games}
-              teams={teams}
-              showNames={this.state.isShowNamesOfTeams}
+          <div className={styles.buttonsWrapp}>
+            <div className={styles.cancelButton}>
+              <Button
+                label="Cancel"
+                color="secondary"
+                variant="text"
+                onClick={() => History.goBack()}
+              />
+            </div>
+            <Button
+              label="Next"
+              color="primary"
+              variant="contained"
+              onClick={() => { 
+                this.props.fillSchedulesTable(this.state.teamCards);
+                History.push(`/schedules/${schedule!.event_id}`)
+              }}
             />
-          </div>
-          <div className={styles.button}>
-            <Button label="Next" color="primary" variant="contained" onClick={() => { 
-              this.props.fillSchedulesTable(this.state.teamCards);
-              History.push(`/schedules/${schedule!.event_id}`)
-            }}>Next</Button>
           </div>
         </div>
       </div>
@@ -169,4 +247,7 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
     dispatch
   );
 
-export default connect<IMapStateToProps, IMapDispatchToProps>(mapStateToProps, mapDispatchToProps)(VisualGamesMaker);
+export default connect<IMapStateToProps, IMapDispatchToProps>(
+  mapStateToProps,
+  mapDispatchToProps
+)(VisualGamesMaker);

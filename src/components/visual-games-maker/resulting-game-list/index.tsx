@@ -20,7 +20,7 @@ interface IProps {
 
 const useStyles = makeStyles({
   tableContainer: {
-    height: '50vh',
+    maxHeight: '440px',
     overflow: 'auto',
   },
   tableCell: {
@@ -41,6 +41,15 @@ const useStyles = makeStyles({
     border: 0,
     backgroundColor: 'rgb(235, 235, 235)',
     whiteSpace: 'nowrap',
+  },
+  gameCell: {
+    width: '24%',
+  },
+  homeCell: {
+    width: '38%',
+  },
+  awayCell: {
+    width: '38%',
   },
 });
 
@@ -85,15 +94,17 @@ const ResultingGameList = (props: IProps) => {
                       : classes.tableCell
                   }
                 >
-                  <TableCell align="center"> {index + 1} </TableCell>
-                  <TableCell align="center">
+                  <TableCell className={classes.gameCell} align="center">
+                    {index + 1}
+                  </TableCell>
+                  <TableCell className={classes.homeCell} align="center">
                     {showNames ? (
                       homeTeamName
                     ) : (
                       <p title={homeTeamName}>{homeTeamIndex + 1}</p>
                     )}
                   </TableCell>
-                  <TableCell align="center">
+                  <TableCell className={classes.awayCell} align="center">
                     {showNames ? (
                       awayTeamName
                     ) : (

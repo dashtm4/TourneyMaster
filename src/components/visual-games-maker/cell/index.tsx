@@ -8,6 +8,8 @@ interface IProps {
   awayTeamId: string;
   onAddGame: (a: IGameCell) => void;
   onDeleteGame: (a: IGameCell) => void;
+  isShow: boolean;
+  isSamePool: boolean;
 }
 
 const useStyles = makeStyles({
@@ -23,10 +25,18 @@ const useStyles = makeStyles({
     border: '1px solid black',
     backgroundColor: 'lightgrey',
   },
+  hiddenCell: {
+    display: 'none',
+    visibility: 'hidden',
+  },
+  blockedCell: {
+    border: '1px dashed black',
+    backgroundColor: 'rgb(255, 201, 202)',
+  }
 });
 
 const Cell = (props: IProps) => {
-  const { gameId, homeTeamId, awayTeamId, onAddGame, onDeleteGame } = props;
+  const { gameId, homeTeamId, awayTeamId, isShow, isSamePool, onAddGame, onDeleteGame } = props;
   const classes = useStyles();
   const [isClicked, setIsClicked] = useState(false);
   let isDisabled = false;
@@ -53,11 +63,17 @@ const Cell = (props: IProps) => {
   };
 
   const getClass = () => {
+    if (!isShow) {
+      return classes.hiddenCell;
+    }
     if (isDisabled) {
       return classes.inactiveCell;
     }
     if (isClicked) {
       return classes.selectedCell;
+    }
+    if (!isSamePool) {
+      return classes.blockedCell;
     }
     return classes.activeCell;
   };

@@ -10,7 +10,7 @@ import {
   makeStyles,
   TableFooter,
 } from '@material-ui/core';
-import { ITeam } from "common/models/teams";
+import { ITeam } from 'common/models/teams';
 import { IGameCell } from '../helpers';
 
 interface ITableRunningTally<T> {
@@ -29,7 +29,7 @@ interface IProps {
 
 const useStyles = makeStyles({
   tableContainer: {
-    maxHeight: '50vh',
+    maxHeight: '440px',
     overflow: 'auto',
   },
   tableTeamCell: {
@@ -48,9 +48,9 @@ const useStyles = makeStyles({
   },
   tableFooterCell: {
     borderTop: '2px solid black',
+    borderBottom: 0,
     position: 'sticky',
     bottom: 0,
-    marginTop: 'calc(5% + 60px)',
     backgroundColor: 'white',
   },
   labelWrapp: {
@@ -115,13 +115,15 @@ const RunningTally = (props: IProps) => {
           </TableHead>
           <TableBody>
             {dataForTable.map(row => {
-              const index = teams!.findIndex(
-                o => o.team_id === row.team_id
-              );
+              const index = teams!.findIndex(o => o.team_id === row.team_id);
               return (
                 <TableRow key={row.team_name}>
                   <TableCell className={classes.tableTeamCell} align="center">
-                    {showNames ? row.team_name : (<p title={row.team_name}>{index + 1}</p>)}
+                    {showNames ? (
+                      row.team_name
+                    ) : (
+                      <p title={row.team_name}>{index + 1}</p>
+                    )}
                   </TableCell>
                   <TableCell className={classes.tableCell} align="center">
                     {row.count_of_home_games}
@@ -138,7 +140,11 @@ const RunningTally = (props: IProps) => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell className={classes.tableFooterCell} align="right" colSpan={4}>
+              <TableCell
+                className={classes.tableFooterCell}
+                align="right"
+                colSpan={4}
+              >
                 Total: {totalCount}
               </TableCell>
             </TableRow>

@@ -11,20 +11,20 @@ import {
   createMuiTheme,
   ThemeProvider,
 } from '@material-ui/core';
-import Cell from "../cell";
-import { ITeam } from "common/models";
+import Cell from '../cell';
+import { ITeam } from 'common/models';
 import { IGameCell } from '../helpers';
 
 interface IProps {
   games: IGameCell[];
   teams: ITeam[] | undefined;
+  poolId: string;
   onChangeGames: (a: IGameCell[]) => void;
 }
 
 const useStyles = makeStyles({
   tableContainer: {
-    overflow: 'auto',
-    height: '50vh',
+    overflow: 'hidden',
   },
   tableTeamCell: {
     border: '1px solid black',
@@ -84,9 +84,8 @@ const theme = createMuiTheme({
 });
 
 const MatrixOfPossibleGames = (props: IProps) => {
-  const { games, teams, onChangeGames } = props;
+  const { games, teams, poolId, onChangeGames } = props;
   const classes = useStyles();
-  // const [gameIdentity, setGameIdentity] = useState(1);
   let gameIdentity = 1;
 
   const onAddGame = (item: IGameCell) => {
@@ -94,7 +93,11 @@ const MatrixOfPossibleGames = (props: IProps) => {
   };
 
   const onDeleteGame = (item: IGameCell) => {
-    const newGames = games.filter(game => (game.awayTeamId !== item.awayTeamId || game.homeTeamId !== item.homeTeamId));
+    const newGames = games.filter(
+      game =>
+        game.awayTeamId !== item.awayTeamId ||
+        game.homeTeamId !== item.homeTeamId
+    );
     onChangeGames(newGames);
   };
 
@@ -107,17 +110,30 @@ const MatrixOfPossibleGames = (props: IProps) => {
             <TableBody>
               <TableRow>
                 <TableCell />
-                <TableCell className={classes.homeWrapp} colSpan={21} align="center"> Home </TableCell>
+                <TableCell
+                  className={classes.homeWrapp}
+                  colSpan={(teams || []).length + 1}
+                  align="center"
+                >
+                  Home
+                </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className={classes.awayWrapp} rowSpan={21} align="center">
+                <TableCell
+                  className={classes.awayWrapp}
+                  rowSpan={(teams || []).length + 1}
+                  align="center"
+                >
                   <p className={classes.awayTextWrapp}>Away</p>
                 </TableCell>
                 <TableCell className={classes.tableTeamLeftCell} align="center">
                   Team
                 </TableCell>
-                {teams &&
-                  teams!.map((team, index) => (
+                {teams!.map((team, index) => {
+                  if (!(team.pool_id === poolId) && !(poolId === 'allPools')) {
+                    return;
+                  }
+                  return (
                     <TableCell
                       key={team.team_id}
                       className={classes.tableTeamCell}
@@ -125,31 +141,41 @@ const MatrixOfPossibleGames = (props: IProps) => {
                     >
                       <p title={team.short_name}>{index + 1}</p>
                     </TableCell>
-                  ))}
-
+                  );
+                })}
               </TableRow>
-              {teams &&
-                teams.map((team, index) => (
-                  <TableRow key={team.team_id}>
-                    <TableCell
-                      className={classes.tableTeamLeftCell}
-                      align="center"
-                    >
-                      <p title={team.short_name}>{index + 1}</p>
-                    </TableCell>
-                    {teams &&
-                      teams.map(homeTeam => (
-                        <Cell
-                          key={gameIdentity}
-                          gameId={gameIdentity++}
-                          awayTeamId={team.team_id}
-                          homeTeamId={homeTeam.team_id}
-                          onAddGame={onAddGame}
-                          onDeleteGame={onDeleteGame}
-                        />
-                    ))}
-                  </TableRow>
-                ))}
+              {teams!.map((team, index) => (
+                <TableRow key={team.team_id}>
+                  <TableCell
+                    style={{
+                      display:
+                        poolId === team.pool_id || poolId === 'allPools'
+                          ? 'table-cell'
+                          : 'none',
+                    }}
+                    className={classes.tableTeamLeftCell}
+                    align="center"
+                  >
+                    <p title={team.short_name}>{index + 1}</p>
+                  </TableCell>
+                  {teams!.map(homeTeam => (
+                    <Cell
+                      key={gameIdentity}
+                      gameId={gameIdentity++}
+                      awayTeamId={team.team_id}
+                      homeTeamId={homeTeam.team_id}
+                      isShow={
+                        (poolId === team.pool_id &&
+                          poolId === homeTeam.pool_id) ||
+                        poolId === 'allPools'
+                      }
+                      isSamePool={team.pool_id === homeTeam.pool_id}
+                      onAddGame={onAddGame}
+                      onDeleteGame={onDeleteGame}
+                    />
+                  ))}
+                </TableRow>
+              ))}
             </TableBody>
             <TableFooter>
               <TableRow>
@@ -161,7 +187,6 @@ const MatrixOfPossibleGames = (props: IProps) => {
           </Table>
         </TableContainer>
       </ThemeProvider>
-
     </div>
   );
 };
