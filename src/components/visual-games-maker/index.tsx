@@ -15,9 +15,11 @@ import History from 'browserhistory';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGameCell } from './helpers';
-import { fillSchedulesTable, fillGamesList } from 'components/schedules/logic/schedules-table/actions';
+import {
+  fillSchedulesTable,
+  fillGamesList,
+} from 'components/schedules/logic/schedules-table/actions';
 import { IGame } from 'components/common/matrix-table/helper';
-// import { ISchedulesTableState } from 'components/schedules/logic/schedules-table/schedulesTableReducer';
 
 interface IMapStateToProps {
   teams?: ITeam[] | undefined;
@@ -38,7 +40,6 @@ interface IRootState {
   pageEvent?: IPageEventState;
   divisions?: IDivisionAndPoolsState;
   scheduling?: ISchedulingState;
-  // schedulesTable: ISchedulesTableState;
 }
 
 type IProps = IMapStateToProps & IMapDispatchToProps & IComponentProps;
@@ -56,18 +57,19 @@ class VisualGamesMaker extends Component<IProps, IState> {
     this.state = {
       games: [],
       isShowNamesOfTeams: false,
-      teamCards: teams!.filter(v => v.division_id === 'ADRL2021').map(v => ({
-        id: v.team_id,
-        name: v.short_name,
-        startTime: '',
-        poolId: v.pool_id,
-        divisionId: v.division_id,
-        isPremier: false,
-        games: {}})) as ITeamCard[],
+      teamCards: teams!
+        .filter(v => v.division_id === 'ADRL2021')
+        .map(v => ({
+          id: v.team_id,
+          name: v.short_name,
+          startTime: '',
+          poolId: v.pool_id,
+          divisionId: v.division_id,
+          isPremier: false,
+          games: {},
+        })) as ITeamCard[],
     };
     this.createScheduleTable = this.createScheduleTable.bind(this);
-
-    console.log('this.state', this.state);
   }
 
   componentDidMount() {
@@ -77,23 +79,26 @@ class VisualGamesMaker extends Component<IProps, IState> {
   }
 
   onChangeGames = (items: IGameCell[]) => {
-    console.log('items', items);
     this.setState({
       games: items,
     });
 
     const teamCards = this.state.teamCards;
-    const games = this.state.games;
+    const games = items;
     const updatedTeamCards = teamCards.map(v => {
       let newGames = [];
-      newGames = games.filter(game => game.homeTeamId === v.id).map(homeGame => ({ id: homeGame.gameId, teamPosition: 2}))
-      newGames.concat(games.filter(game => game.awayTeamId === v.id).map(awayGame => ({ id: awayGame.gameId, teamPosition: 1})));
+      newGames = games
+        .filter(game => game.homeTeamId === v.id)
+        .map(homeGame => ({ id: homeGame.gameId, teamPosition: 2 }));
+      newGames.concat(
+        games
+          .filter(game => game.awayTeamId === v.id)
+          .map(awayGame => ({ id: awayGame.gameId, teamPosition: 1 }))
+      );
       return { ...v, games: newGames};
     });
 
     this.setState({ teamCards: updatedTeamCards});
-
-    // this.props.fillSchedulesTable(this.state.teamCards);
   };
 
   onChangeDisplayedLabelType = () => {
@@ -101,23 +106,26 @@ class VisualGamesMaker extends Component<IProps, IState> {
       return { isShowNamesOfTeams: !state.isShowNamesOfTeams };
     });
   };
-  componentDidUpdate() {
-    console.log(this.state.teamCards);
-  }
 
-  createScheduleTable() { 
+  createScheduleTable() {
     const { schedule, fillSchedulesTable, fillGamesList } = this.props;
     fillSchedulesTable(this.state.teamCards);
 
     const gamesList = this.state.games.map(v => {
       const homeTeam = this.state.teamCards.find(teamCard => teamCard.id === v.homeTeamId);
       const awayTeam = this.state.teamCards.find(teamCard => teamCard.id === v.awayTeamId);
-      return { id: v.gameId,
-        homeTeamId: homeTeam?.id, homeDisplayName: homeTeam?.name, homeTeam: homeTeam,
-        awayTeamId: awayTeam?.id, awayDisplayName: awayTeam?.name, awayTeam: awayTeam,
-        timeSlotId: 0, fieldId: ''};
+      return {
+        id: v.gameId,
+        homeTeamId: homeTeam?.id,
+        homeDisplayName: homeTeam?.name,
+        homeTeam: homeTeam,
+        awayTeamId: awayTeam?.id,
+        awayDisplayName: awayTeam?.name,
+        awayTeam: awayTeam,
+        timeSlotId: 0,
+        fieldId: '',
+      };
     });
-    console.log('games list', gamesList);
     fillGamesList(gamesList);
     History.push(`/schedules/${schedule?.event_id}`)
   }
