@@ -209,7 +209,7 @@ export const createTeams: ActionCreator<ThunkAction<
 
     history.goBack();
 
-    Toasts.successToast('Team is successfully created');
+    Toasts.successToast('The Team(s) have been successfully created!');
   } catch (err) {
     Toasts.errorToast(err.message);
   }
@@ -265,7 +265,7 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
       if (!team.division_id) {
         return Toasts.errorToast(
           `Record ${index +
-            1}: There is no division with such long name. Please, create a division first or choose another one.`
+          1}: There is no division with such long name. Please, create a division first or choose another one.`
         );
       }
       const teamsInDivision = allTeams.filter(

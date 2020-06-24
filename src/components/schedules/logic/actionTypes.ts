@@ -24,6 +24,10 @@ export const SCHEDULES_GAMES_ALREADY_EXIST = 'SCHEDULES_GAMES_ALREADY_EXIST';
 
 export const SCHEDULES_DETAILS_CLEAR = 'SCHEDULES:SCHEDULES_DETAILS_CLEAR';
 
+export const UPDATE_SCHEDULES_DETAILS_IN_PROGRESS = 'UPDATE_SCHEDULES_DETAILS_IN_PROGRESS';
+export const UPDATE_SCHEDULES_DETAILS_SUCCESS = 'UPDATE_SCHEDULES_DETAILS_SUCCESS';
+export const UPDATE_SCHEDULES_DETAILS_FAILURE = 'UPDATE_SCHEDULES_DETAILS_FAILURE';
+
 interface IFetchFieldsSuccess {
   type: 'FETCH_FIELDS_SUCCESS';
   payload: IField[];
@@ -93,6 +97,19 @@ interface SchedulesDetailsClear {
   type: 'SCHEDULES:SCHEDULES_DETAILS_CLEAR';
 }
 
+interface UpdateSchedulesDetailsInProgress {
+  type: 'UPDATE_SCHEDULES_DETAILS_IN_PROGRESS';
+}
+
+interface UpdateSchedulesDetailsSuccess {
+  type: 'UPDATE_SCHEDULES_DETAILS_SUCCESS',
+  payload: ISchedulesDetails[];
+}
+
+interface UpdateSchedulesDetailsFailure {
+  type: 'UPDATE_SCHEDULES_DETAILS_FAILURE';
+}
+
 export type FieldsAction = IFetchFieldsSuccess | IFetchFieldsFailure;
 
 export type IScheduleAction =
@@ -108,4 +125,7 @@ export type IScheduleAction =
   | SchedulesPublishedClear
   | AnotherSchedulePublished
   | SchedulesGamesAlreadyExist
-  | SchedulesDetailsClear;
+  | SchedulesDetailsClear
+  | UpdateSchedulesDetailsInProgress
+  | UpdateSchedulesDetailsSuccess
+  | UpdateSchedulesDetailsFailure;

@@ -142,7 +142,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
 
   return (
     <div className={styles.container}>
-      <span className={styles.label}>{label}</span>
+      {label && <span className={styles.label}>{label}</span>}
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         {renderPicker()}
       </MuiPickersUtilsProvider>

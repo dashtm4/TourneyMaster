@@ -127,7 +127,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
           ],
           billing_thresholds: {
             amount_gte: 50,
-            reset_billing_cycle_anchor: false,
+            reset_billing_cycle_anchor: true,
           },
           end_date: Math.round(
             i < phases.length - 1
@@ -171,6 +171,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
   let subscription = await stripe.subscriptions.update(
     schedule.subscription.id,
     {
+      pending_invoice_item_interval: { interval: 'day', interval_count: 1 },
       metadata: { ...subscriptionScheduleData.metadata },
     }
   );

@@ -165,7 +165,7 @@ storiesOf('TourneyMaster', module)
         onChange={action('checked')}
       />
       <Radio
-        options={['Male', 'Female']}
+        options={['Male', 'Female', 'Co-Ed']}
         formLabel="Gender"
         onChange={action('changed')}
       />

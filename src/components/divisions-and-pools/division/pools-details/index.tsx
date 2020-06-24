@@ -169,6 +169,17 @@ const PoolsDetails = ({
     configutationTeam(editedTeam);
   };
 
+  const onChangePhoneNumber = (value: string) => {
+    console.log('pools-details', value);
+    const editedTeam = {
+      ...configurableTeam,
+      phone_num: value,
+      isChange: true,
+    } as ITeam;
+
+    configutationTeam(editedTeam);
+  };
+
   const onSaveTeam = () => {
     if (configurableTeam) {
       const changedTeams = localTeams.map(it =>
@@ -274,6 +285,7 @@ const PoolsDetails = ({
               division={currentDivisionName}
               pool={currentPoolName}
               onChangeTeam={onChangeTeam}
+              onChangePhoneNumber={onChangePhoneNumber}
               onSaveTeamClick={onSaveTeam}
               onDeleteTeamClick={onDeleteTeam}
               onCloseModal={onCloseModal}

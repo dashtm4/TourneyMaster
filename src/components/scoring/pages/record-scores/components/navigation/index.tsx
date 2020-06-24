@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from 'components/common';
+import FabButton from 'components/common/fab-button';
 import { ButtonTypes, ButtonVarian, ButtonColors } from 'common/enums';
 import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
@@ -55,6 +56,12 @@ const Navigation = ({
               color={ButtonColors.SECONDARY}
               label="Close"
             />
+            <FabButton
+              onClick={onLeavePage}
+              sequence={1}
+              label="Cancel"
+              variant="outlined"
+            />
           </span>
         )}
         <span className={styles.btnWrapper}>
@@ -63,6 +70,12 @@ const Navigation = ({
             variant={ButtonVarian.CONTAINED}
             color={ButtonColors.PRIMARY}
             label="Save"
+          />
+          <FabButton
+            onClick={onSaveDraft}
+            sequence={2}
+            label="Save"
+            variant="contained"
           />
         </span>
       </p>
