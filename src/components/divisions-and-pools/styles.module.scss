@@ -24,6 +24,18 @@
     .buttonContainer {
       color: #ff0f19;
     }
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-top: 5px;
+      a {
+        margin-left: 16px;
+        color: #00a3ea;
+        font-size: 18px;
+        font-weight: 500;
+      }
+    }
   }
   .divisionsList {
     margin: 0;
