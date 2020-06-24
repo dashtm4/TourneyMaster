@@ -227,6 +227,10 @@ const TeamDetailsPopup = ({
                 {isEdit ? (
                   <PhoneInput
                     country={'us'}
+                    disableDropdown
+                    onlyCountries={['us']}
+                    disableCountryCode={true}
+                    placeholder=""
                     value={team.phone_num || ''}
                     onChange={onChangePhoneNumber}
                     containerStyle={{ marginTop: '7px' }}

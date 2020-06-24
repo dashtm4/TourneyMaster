@@ -158,6 +158,10 @@ const CreateMessage = ({
         {data.type === 'Text' ? (
           <PhoneInput
             country={'us'}
+            disableDropdown
+            onlyCountries={['us']}
+            disableCountryCode={true}
+            placeholder=""
             value={data.recipients[0] || ''}
             onChange={(value: string) =>
               setMessage({ ...data, recipients: [value] })

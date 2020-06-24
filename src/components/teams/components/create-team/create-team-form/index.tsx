@@ -98,8 +98,9 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
         <div className={styles.section}>
           <div className={styles.sectionRow}>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Long Names do not render well on phones. So please enter both a long (web) and short (mobile)!
-              </CardMessage>
+              Long Names do not render well on phones. So please enter both a
+              long (web) and short (mobile)!
+            </CardMessage>
             <div className={styles.sectionItem} />
           </div>
           <div className={styles.sectionRow}>
@@ -167,11 +168,11 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
           </div>
           <div className={styles.sectionRow}>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Entering States enables eliminating intra-state games when creating schedules!
-              2 Letter States (e.g., IL, NJ) or 3 for Canadian Provinces!
+              Entering States enables eliminating intra-state games when
+              creating schedules! 2 Letter States (e.g., IL, NJ) or 3 for
+              Canadian Provinces!
             </CardMessage>
             <div className={styles.sectionItem} />
-
           </div>
         </div>
         <div className={styles.section}>
@@ -196,6 +197,10 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
               <div className={styles.title}>Mobile Number *</div>
               <PhoneInput
                 country={'us'}
+                disableDropdown
+                onlyCountries={['us']}
+                disableCountryCode={true}
+                placeholder=""
                 value={phone_num || ''}
                 onChange={this.onPhoneChange}
                 containerStyle={{ marginTop: '7px' }}
@@ -220,9 +225,9 @@ class CreateTeamForm extends React.Component<ICreateTeamFormProps, {}> {
           </div>
           <div className={styles.sectionRow}>
             <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
-              Mobile numbers are needed by event staff to call coaches if their team is Missing In Action!
-              </CardMessage>
-
+              Mobile numbers are needed by event staff to call coaches if their
+              team is Missing In Action!
+            </CardMessage>
           </div>
           <div className={styles.sectionRow}>
             <div>
