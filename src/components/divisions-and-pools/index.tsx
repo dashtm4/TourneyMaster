@@ -155,7 +155,16 @@ class DivisionsAndPools extends React.Component<
         />
         <div className={styles.sectionContainer}>
           <div className={styles.headingContainer}>
-            <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>
+            <div className={styles.heading}>
+              <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>
+              <a
+                href="https://tourneymaster.s3.amazonaws.com/public/Quickstarts/TourneyMaster+Creating+Division+%26+Pools+Quick+Start+Guide.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Quickstart Guide
+              </a>
+            </div>
             <div className={styles.buttonContainer}>
               {divisions?.length ? (
                 <>
