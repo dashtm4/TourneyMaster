@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { orderBy } from 'lodash-es';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 import {
   HeadingLevelThree,
   Button,
@@ -42,6 +44,7 @@ interface Props {
   onSaveTeamClick: BindingAction;
   onDeleteTeamClick: (team: ITeam | ITeamWithResults) => void;
   onChangeTeam: (evt: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangePhoneNumber: (value: string) => void;
   onCloseModal: BindingAction;
   deleteMessage?: string;
   games: ISchedulesGameWithNames[] | null;
@@ -55,6 +58,7 @@ const TeamDetailsPopup = ({
   onSaveTeamClick,
   onDeleteTeamClick,
   onChangeTeam,
+  onChangePhoneNumber,
   onCloseModal,
   deleteMessage,
 }: Props) => {
@@ -221,15 +225,20 @@ const TeamDetailsPopup = ({
               <li>
                 <b>Mobile: </b>
                 {isEdit ? (
-                  <label>
-                    <input
-                      onChange={onChangeTeam}
-                      value={team.phone_num || ''}
-                      name={FORM_FIELDS.PHONE_NUM}
-                      type="text"
-                    />
-                    <span className="visually-hidden">Mobile number</span>
-                  </label>
+                  <PhoneInput
+                    country={'us'}
+                    value={team.phone_num || ''}
+                    onChange={onChangePhoneNumber}
+                    containerStyle={{ marginTop: '7px' }}
+                    inputStyle={{
+                      height: '42px',
+                      fontSize: '18px',
+                      color: '#6a6a6a',
+                      borderRadius: '4px',
+                      width: '100%',
+                    }}
+                    inputClass={styles.phoneInput}
+                  />
                 ) : (
                   <span>
                     {team.phone_num ? formatPhoneNumber(team.phone_num) : ''}
