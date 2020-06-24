@@ -9,6 +9,7 @@ import RegistrationDetails from './registration-details';
 import Payments from './payments';
 import { IRegistration } from 'common/models/registration';
 import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
+import FabButton from 'components/common/fab-button';
 import { PopupExposure } from 'components/common';
 
 interface IRegistrationEditProps {
@@ -60,6 +61,18 @@ class RegistrationEdit extends React.Component<
                 variant="contained"
                 color="primary"
                 onClick={this.props.onSave}
+              />
+              <FabButton
+                onClick={this.onCancelClick}
+                sequence={1}
+                label="Cancel"
+                variant="outlined"
+              />
+              <FabButton
+                onClick={this.props.onSave}
+                sequence={2}
+                label="Save"
+                variant="contained"
               />
             </div>
           </div>

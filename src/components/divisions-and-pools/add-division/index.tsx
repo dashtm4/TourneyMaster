@@ -4,6 +4,7 @@ import { History, Location } from 'history';
 import styles from './styles.module.scss';
 import Paper from '../../common/paper';
 import Button from '../../common/buttons/button';
+import FabButton from 'components/common/fab-button';
 import HeadingLevelTwo from '../../common/headings/heading-level-two';
 import AddDivisionForm from './add-division-form';
 import {
@@ -210,6 +211,18 @@ class AddDivision extends React.Component<IDivisionProps, IAddDivisionState> {
                 variant="contained"
                 color="primary"
                 onClick={this.onSave}
+              />
+              <FabButton
+                onClick={this.onCancel}
+                sequence={1}
+                label="Cancel"
+                variant="outlined"
+              />
+              <FabButton
+                onClick={this.onSave}
+                sequence={2}
+                label="Save"
+                variant="contained"
               />
             </div>
           </div>

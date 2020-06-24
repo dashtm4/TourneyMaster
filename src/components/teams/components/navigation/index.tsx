@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from 'components/common/buttons/button';
 import { BindingAction } from 'common/models';
+import FabButton from 'components/common/fab-button';
 import styles from './styles.module.scss';
 import { History } from 'history';
 import { ButtonVarian, ButtonColors } from 'common/enums';
@@ -54,6 +55,18 @@ const Navigation = ({
           variant={ButtonVarian.CONTAINED}
           color={ButtonColors.PRIMARY}
           label="Create Team"
+        />
+        <FabButton
+          onClick={onCancelClick}
+          sequence={1}
+          label="Cancel"
+          variant="outlined"
+        />
+        <FabButton
+          onClick={onSaveClick}
+          sequence={2}
+          label="Save"
+          variant="contained"
         />
       </span>
     </div>
