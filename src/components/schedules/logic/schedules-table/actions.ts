@@ -5,7 +5,10 @@ import {
   SCHEDULES_TABLE_UPDATE,
   SCHEDULES_TABLE_UNDO,
   SCHEDULES_TABLE_CLEAR,
+  FILL_GAMES_LIST,
+  CLEAR_GAMES_LIST,
 } from './actionTypes';
+import { IGame } from 'components/common/matrix-table/helper';
 
 const fillSchedulesTableAction = (payload: ITeamCard[]) => ({
   type: SCHEDULES_TABLE_FILL,
@@ -23,6 +26,15 @@ const scheduleUndo = () => ({
 
 const schedulesTableClear = () => ({
   type: SCHEDULES_TABLE_CLEAR,
+});
+
+const fillGamesListAction = (gamesList: IGame[]) => ({
+  type: FILL_GAMES_LIST,
+  payload: gamesList,
+});
+
+const clearGamesListAction = () => ({
+  type: CLEAR_GAMES_LIST,
 });
 
 export const fillSchedulesTable = (teamCards: ITeamCard[]) => (
@@ -43,4 +55,12 @@ export const onScheduleUndo = () => (dispatch: Dispatch) => {
 
 export const clearSchedulesTable = () => (dispatch: Dispatch) => {
   dispatch(schedulesTableClear());
+};
+
+export const fillGamesList = (gamesList: IGame[]) => (dispatch: Dispatch) => {
+  dispatch(fillGamesListAction(gamesList));
+};
+
+export const clearGamesList = () => (dispatch: Dispatch) => {
+  dispatch(clearGamesListAction());
 };

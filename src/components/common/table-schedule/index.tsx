@@ -80,6 +80,7 @@ interface Props {
   bracketGames?: IBracketGame[];
   onBracketGameUpdate: (bracketGame: IBracketGame) => void;
   recalculateDiagnostics?: () => void;
+  gamesList?: IGame[];
 }
 
 const TableSchedule = ({
@@ -107,6 +108,7 @@ const TableSchedule = ({
   bracketGames,
   onBracketGameUpdate,
   recalculateDiagnostics,
+  gamesList,
 }: Props) => {
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
@@ -139,31 +141,36 @@ const TableSchedule = ({
 
   const toggleSimultaneousDnd = () => setSimultaneousDnd(v => !v);
 
-  const manageGamesList = useCallback(() => {
-    let definedGames = [...games];
+  // const manageGamesList = useCallback(() => {
+  //   // let definedGames = [...games];
 
-    const firstGame = definedGames[0];
-    const awayTeam = teamCards[0];
-    const homeTeam = teamCards[1];
-    if (!awayTeam.games || !awayTeam.games.length) {
-      awayTeam.games = [{ ...firstGame, teamPosition: 1 }];
-    }
-    if (!homeTeam.games || !homeTeam.games.length) {
-      homeTeam.games = [{ ...firstGame, teamPosition: 2 }];
-    }
+  //   // console.log('defined games', games);
 
-    const filledGames = settleTeamsPerGames(
-      definedGames,
-      teamCards,
-      days,
-      filterValues.selectedDay!
-    );
+  //   // const firstGame = definedGames[0];
+  //   // const awayTeam = teamCards[0];
+  //   // const homeTeam = teamCards[1];
+  //   // if (!awayTeam.games || !awayTeam.games.length) {
+  //   //   awayTeam.games = [{ ...firstGame, teamPosition: 1 }];
+  //   // }
+  //   // if (!homeTeam.games || !homeTeam.games.length) {
+  //   //   homeTeam.games = [{ ...firstGame, teamPosition: 2 }];
+  //   // }
 
-    const filteredGames = mapGamesByFilter([...filledGames], filterValues);
-    return filteredGames;
-  }, [games, teamCards, days, filterValues, playoffTimeSlots, bracketGames]);
+  //   // const filledGames = settleTeamsPerGames(
+  //   //   definedGames,
+  //   //   teamCards,
+  //   //   days,
+  //   //   filterValues.selectedDay!
+  //   // );
 
-  const [listGames] = useState<IGame[]>(manageGamesList());
+  //   // const filteredGames = mapGamesByFilter([...filledGames], filterValues);
+  //   // return filteredGames;
+  //   const games: IGame[] = [];
+    
+
+  // }, [games, teamCards, days, filterValues, playoffTimeSlots, bracketGames]);
+
+  // const [listGames] = useState<IGame[]>(manageGamesList());
 
   const manageGamesData = useCallback(() => {
     let definedGames = [...games];
@@ -361,7 +368,7 @@ const TableSchedule = ({
                 />
               ) : (
                   <UnassignedGamesList
-                    games={listGames}
+                    games={gamesList || []}
                     event={event}
                     // tableType={tableType}
                     // teamCards={teamCards}

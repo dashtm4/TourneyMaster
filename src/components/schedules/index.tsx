@@ -111,6 +111,7 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   anotherSchedulePublished?: boolean;
   gamesAlreadyExist?: boolean;
   pools?: IPool[];
+  gamesList?: IGame[];
 }
 
 interface IMapDispatchToProps {
@@ -751,6 +752,7 @@ class Schedules extends Component<Props, State> {
       schedulesPublished,
       isFullScreen,
       onToggleFullScreen,
+      gamesList,
     } = this.props;
 
     const {
@@ -827,6 +829,7 @@ class Schedules extends Component<Props, State> {
             playoffTimeSlots={playoffTimeSlots}
             onBracketGameUpdate={() => {}}
             recalculateDiagnostics={this.calculateDiagnostics}
+            gamesList={gamesList}
           />
         ) : (
           <div className={styles.loadingWrapper}>
@@ -869,6 +872,7 @@ const mapStateToProps = ({
   schedulesDetails: schedules?.schedulesDetails,
   pools: divisions?.pools,
   gamesAlreadyExist: schedules?.gamesAlreadyExist,
+  gamesList: schedulesTable?.gamesList,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
