@@ -231,6 +231,10 @@ class CreateTeamForm extends React.Component<
               <div className={styles.title}>Mobile Number *</div>
               <PhoneInput
                 country={'us'}
+                disableDropdown
+                onlyCountries={['us']}
+                disableCountryCode={true}
+                placeholder=""
                 value={phone_num || ''}
                 onChange={this.onPhoneChange}
                 containerStyle={{ marginTop: '7px' }}

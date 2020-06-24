@@ -217,6 +217,10 @@ const RegistrationDetails = ({
           <div className={styles.sectionTitle}>Phone Number</div>
           <PhoneInput
             country={'us'}
+            disableDropdown
+            onlyCountries={['us']}
+            disableCountryCode={true}
+            placeholder=""
             value={data ? String(data.mobile_number) : ''}
             onChange={onMobileNumberChange}
             containerStyle={{ marginTop: '7px' }}
