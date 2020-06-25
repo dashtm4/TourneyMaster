@@ -24,7 +24,6 @@ import Rankings from './rankings';
 import { Button, HeadingLevelTwo, Loader, Tooltip } from 'components/common';
 import {
   IUploadFile,
-  BindingCbWithOne,
   IEventDetails,
   BindingCbWithTwo,
   ISchedule,
@@ -55,7 +54,7 @@ interface Props extends IMapStateProps {
   createEvent: (event: Partial<IEventDetails>) => void;
   uploadFiles: (files: IIconFile[]) => void;
   removeFiles: (files: IIconFile[]) => void;
-  deleteEvent: BindingCbWithOne<string>;
+  deleteEvent: BindingCbWithTwo<string, string>;
   createEvents: (events: Partial<IEventDetails>[]) => void;
   addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
 }
@@ -325,7 +324,7 @@ class EventDetails extends Component<Props, State> {
           isOpen={this.state.isDeleteModalOpen}
           onClose={this.onDeleteModalClose}
           onDeleteClick={() => {
-            this.props.deleteEvent(event.event_id!);
+            this.props.deleteEvent(event.event_id!, event.event_name!);
           }}
         />
         <PopupExposure
