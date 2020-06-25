@@ -15,23 +15,19 @@ import History from 'browserhistory';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGameCell } from './helpers';
-import {
-  fillSchedulesTable,
-  fillGamesList,
-} from 'components/schedules/logic/schedules-table/actions';
+import { fillGamesList } from 'components/schedules/logic/schedules-table/actions';
 import { IGame } from 'components/common/matrix-table/helper';
-import { TeamPositionEnum } from 'components/common/matrix-table/helper';
 
 interface IMapStateToProps {
   teams?: ITeam[] | undefined;
   divisions?: IDivision[] | undefined;
   pools?: IPool[] | undefined;
   schedule?: IConfigurableSchedule | null | undefined;
+  teamsCards?: ITeamCard[] | undefined;
 }
 
 interface IMapDispatchToProps {
   getAllPools: (divisionIds: string[]) => void;
-  fillSchedulesTable: (teamCards: ITeamCard[]) => void;
   fillGamesList: (gamesList: IGame[]) => void;
 }
 
@@ -50,7 +46,6 @@ type IProps = IMapStateToProps & IMapDispatchToProps & IComponentProps;
 interface IState {
   isShowNamesOfTeams: boolean;
   games: IGameCell[];
-  teamCards: ITeamCard[];
   selectedDivisionId: string;
   selectedPoolId: string;
 }
@@ -58,21 +53,11 @@ interface IState {
 class VisualGamesMaker extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    const { teams } = this.props;
     this.state = {
       games: [],
       isShowNamesOfTeams: false,
       selectedDivisionId: '',
       selectedPoolId: 'allPools',
-      teamCards: teams!.map(v => ({
-        id: v.team_id,
-        name: v.short_name,
-        startTime: '',
-        poolId: v.pool_id,
-        divisionId: v.division_id,
-        isPremier: false,
-        games: {},
-      })) as ITeamCard[],
     };
   }
 
@@ -90,29 +75,6 @@ class VisualGamesMaker extends Component<IProps, IState> {
     this.setState({
       games: items,
     });
-
-    const teamCards = this.state.teamCards;
-    const games = items;
-    const updatedTeamCards = teamCards.map(v => {
-      let newGames = [];
-      newGames = games
-        .filter(game => game.homeTeamId === v.id)
-        .map(homeGame => ({
-          id: homeGame.gameId,
-          teamPosition: TeamPositionEnum.homeTeam,
-        }));
-      newGames.concat(
-        games
-          .filter(game => game.awayTeamId === v.id)
-          .map(awayGame => ({
-            id: awayGame.gameId,
-            teamPosition: TeamPositionEnum.awayTeam,
-          }))
-      );
-      return { ...v, games: newGames};
-    });
-
-    this.setState({ teamCards: updatedTeamCards });
   };
 
   onChangeDisplayedLabelType = () => {
@@ -126,7 +88,6 @@ class VisualGamesMaker extends Component<IProps, IState> {
     this.setState({
       selectedDivisionId: divisionIdFromInput,
       selectedPoolId: 'allPools',
-      games: [],
     });
   };
 
@@ -151,22 +112,18 @@ class VisualGamesMaker extends Component<IProps, IState> {
   };
 
   createScheduleTable = () => {
-    const { schedule, fillSchedulesTable, fillGamesList } = this.props;
-    fillSchedulesTable(this.state.teamCards);
+    const { schedule, fillGamesList } = this.props;
 
     const gamesList = this.state.games.map(v => {
-      const homeTeam = this.state.teamCards.find(teamCard => teamCard.id === v.homeTeamId);
-      const awayTeam = this.state.teamCards.find(teamCard => teamCard.id === v.awayTeamId);
       return {
-        id: v.gameId,
-        homeTeamId: homeTeam?.id,
-        homeDisplayName: homeTeam?.name,
-        homeTeam: homeTeam,
-        awayTeamId: awayTeam?.id,
-        awayDisplayName: awayTeam?.name,
-        awayTeam: awayTeam,
+        id: -1,
+        homeTeamId: v.homeTeamId,
+        awayTeamId: v.awayTeamId,
         timeSlotId: 0,
         fieldId: '',
+        divisionId: v.divisionId,
+        divisionHex: v.divisionHex,
+        divisionName: v.divisionName,
       };
     });
     fillGamesList(gamesList);
@@ -180,6 +137,10 @@ class VisualGamesMaker extends Component<IProps, IState> {
     const sortedTeams = filteredTeams.sort((a: ITeam, b: ITeam) => {
       return (a.pool_id || '') > (b.pool_id || '') ? 1 : -1;
     });
+
+    const filteredGames = this.state.games!.filter(
+      item => item.divisionId === this.state.selectedDivisionId
+    );
 
     return (
       <div className={styles.container}>
@@ -224,20 +185,23 @@ class VisualGamesMaker extends Component<IProps, IState> {
               games={this.state.games}
               teams={sortedTeams}
               poolId={this.state.selectedPoolId}
+              divisionId={this.state.selectedDivisionId}
+              divisionHex={this.props.divisions?.find(v => v.division_id === this.state.selectedDivisionId)?.division_hex || ''}
+              divisionName={this.props.divisions?.find(v => v.division_id === this.state.selectedDivisionId)?.short_name || ''}
               onChangeGames={this.onChangeGames}
             />
           </div>
           <div className={styles.sideTables}>
             <div className={styles.runningTally}>
               <RunningTally
-                games={this.state.games}
+                games={filteredGames}
                 teams={sortedTeams}
                 showNames={this.state.isShowNamesOfTeams}
               />
             </div>
             <div className={styles.resGameList}>
               <ResultingGameList
-                games={this.state.games}
+                games={filteredGames}
                 teams={sortedTeams}
                 showNames={this.state.isShowNamesOfTeams}
               />
@@ -280,7 +244,6 @@ const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
   bindActionCreators(
     {
       getAllPools,
-      fillSchedulesTable,
       fillGamesList,
     },
     dispatch

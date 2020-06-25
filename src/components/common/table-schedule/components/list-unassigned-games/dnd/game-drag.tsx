@@ -166,6 +166,11 @@ const GameDragCard = (props: Props) => {
         styles.isLocked}`}
       style={{
         opacity: isDragging ? 0.8 : 1,
+        backgroundColor: showHeatmap ? awayTeam?.divisionHex : '#fff',
+        color:
+          showHeatmap && awayTeam?.divisionHex
+            ? getContrastingColor(awayTeam.divisionHex)
+            : 'gray',
       }}
     >
       <div
@@ -175,7 +180,7 @@ const GameDragCard = (props: Props) => {
       >
         {awayTeam && renderTeamCard(awayTeam)}
       </div>
-      v.&nbsp;
+      vs.&nbsp;
       <div
         style={{
           backgroundColor: showHeatmap ? homeTeam?.divisionHex : '#fff',

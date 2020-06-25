@@ -19,6 +19,9 @@ interface IProps {
   games: IGameCell[];
   teams: ITeam[] | undefined;
   poolId: string;
+  divisionId: string;
+  divisionHex: string;
+  divisionName: string;
   onChangeGames: (a: IGameCell[]) => void;
 }
 
@@ -84,9 +87,8 @@ const theme = createMuiTheme({
 });
 
 const MatrixOfPossibleGames = (props: IProps) => {
-  const { games, teams, poolId, onChangeGames } = props;
+  const { games, teams, poolId, divisionId, divisionHex, divisionName, onChangeGames } = props;
   const classes = useStyles();
-  let gameIdentity = 1;
 
   const onAddGame = (item: IGameCell) => {
     onChangeGames([...games, item]);
@@ -95,6 +97,7 @@ const MatrixOfPossibleGames = (props: IProps) => {
   const onDeleteGame = (item: IGameCell) => {
     const newGames = games.filter(
       game =>
+        game.divisionId !== item.divisionId ||
         game.awayTeamId !== item.awayTeamId ||
         game.homeTeamId !== item.homeTeamId
     );
@@ -160,16 +163,19 @@ const MatrixOfPossibleGames = (props: IProps) => {
                   </TableCell>
                   {teams!.map(homeTeam => (
                     <Cell
-                      key={gameIdentity}
-                      gameId={gameIdentity++}
+                      key={team.team_id + homeTeam.team_id}
                       awayTeamId={team.team_id}
                       homeTeamId={homeTeam.team_id}
+                      divisionId={divisionId}
+                      divisionHex={divisionHex}
+                      divisionName={divisionName}
                       isShow={
                         (poolId === team.pool_id &&
                           poolId === homeTeam.pool_id) ||
                         poolId === 'allPools'
                       }
                       isSamePool={team.pool_id === homeTeam.pool_id}
+                      isSelected={games.find(v => v.divisionId === divisionId && v.awayTeamId === team.team_id && v.homeTeamId === homeTeam.team_id) ? true : false}
                       onAddGame={onAddGame}
                       onDeleteGame={onDeleteGame}
                     />

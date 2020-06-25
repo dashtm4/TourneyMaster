@@ -3,13 +3,16 @@ import { TableCell, makeStyles } from '@material-ui/core';
 import { IGameCell } from '../helpers';
 
 interface IProps {
-  gameId: number;
   homeTeamId: string;
   awayTeamId: string;
+  divisionId: string;
+  divisionHex: string;
+  divisionName: string;
   onAddGame: (a: IGameCell) => void;
   onDeleteGame: (a: IGameCell) => void;
   isShow: boolean;
   isSamePool: boolean;
+  isSelected: boolean;
 }
 
 const useStyles = makeStyles({
@@ -36,9 +39,9 @@ const useStyles = makeStyles({
 });
 
 const Cell = (props: IProps) => {
-  const { gameId, homeTeamId, awayTeamId, isShow, isSamePool, onAddGame, onDeleteGame } = props;
+  const { homeTeamId, awayTeamId, divisionId, divisionHex, divisionName, isShow, isSamePool, isSelected, onAddGame, onDeleteGame } = props;
   const classes = useStyles();
-  const [isClicked, setIsClicked] = useState(false);
+  const [isActive, setActive] = useState(isSelected);
   let isDisabled = false;
 
   if (homeTeamId === awayTeamId) {
@@ -50,12 +53,14 @@ const Cell = (props: IProps) => {
       return;
     }
     const item = {
-      gameId,
       homeTeamId,
       awayTeamId,
+      divisionId,
+      divisionHex,
+      divisionName,
     } as IGameCell;
-    setIsClicked(!isClicked);
-    if (isClicked) {
+    setActive(!isActive);
+    if (isActive) {
       onDeleteGame(item);
       return;
     }
@@ -69,7 +74,7 @@ const Cell = (props: IProps) => {
     if (isDisabled) {
       return classes.inactiveCell;
     }
-    if (isClicked) {
+    if (isActive) {
       return classes.selectedCell;
     }
     if (!isSamePool) {
