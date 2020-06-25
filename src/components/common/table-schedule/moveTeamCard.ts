@@ -119,7 +119,7 @@ export default (
       gameId &&
       position &&
       teamId === teamCard.id &&
-      !(simultaneousDnd && originGameId)
+      !(simultaneousDnd && (originGameId || possibleGame))
     ) {
       let games = [
         ...teamCard.games?.filter(
