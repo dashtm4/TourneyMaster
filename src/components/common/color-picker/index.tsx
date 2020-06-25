@@ -21,7 +21,6 @@ const ColorPicker = ({
   displayColorPicker,
   onShowColorPicker,
 }: Props) => {
-  console.log('colorpicker', value);
   return (
     <div className={styles.ColorPickerWrapper}>
       <div className={styles.ColorPickerContainer}>
