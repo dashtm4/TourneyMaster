@@ -131,12 +131,12 @@ const TableSchedule = ({
 
   const [showHeatmap, onHeatmapChange] = useState(true);
 
-  const [replacementTeamCards, replacementTeamCardsChange] = useState<
-    ITeamCard[] | undefined
-  >();
-  const [replacementWarning, onReplacementWarningChange] = useState<
-    string | undefined
-  >();
+  interface IMoveCardResult {
+    teamCards: ITeamCard[];
+    possibleGameId?: number;
+  }
+  const [moveCardResult, setMoveCardResult] = useState<IMoveCardResult>();
+  const [moveCardWarning, setMoveCardWarning] = useState<string | undefined>();
   const [days, setDays] = useState(calculateDays(teamCards));
 
   const toggleSimultaneousDnd = () => setSimultaneousDnd(v => !v);
@@ -211,7 +211,7 @@ const TableSchedule = ({
   const moveCard = (dropParams: IDropParams) => {
     const day = filterValues.selectedDay!;
     const isSimultaneousDnd = isFromMaker ? true : simultaneousDnd;
-    const result = moveTeamCard(
+    const data = moveTeamCard(
       teamCards,
       tableGames,
       dropParams,
@@ -219,37 +219,50 @@ const TableSchedule = ({
       days?.length ? days[+day - 1] : undefined
     );
 
+    const result: IMoveCardResult = {
+      teamCards: data.teamCards,
+      possibleGameId: dropParams.possibleGame.id,
+    };
+
     switch (true) {
-      case result.playoffSlot:
-        return onReplacementWarningChange(moveCardMessages.playoffSlot);
-      case result.timeSlotInUse:
-        return onReplacementWarningChange(moveCardMessages.timeSlotInUse);
-      case result.differentFacility: {
-        onReplacementWarningChange(moveCardMessages.differentFacility);
-        return replacementTeamCardsChange(result.teamCards);
+      case data.playoffSlot:
+        return setMoveCardWarning(moveCardMessages.playoffSlot);
+      case data.timeSlotInUse:
+        return setMoveCardWarning(moveCardMessages.timeSlotInUse);
+      case data.differentFacility: {
+        setMoveCardWarning(moveCardMessages.differentFacility);
+        return setMoveCardResult(result);
       }
-      case result.divisionUnmatch: {
-        onReplacementWarningChange(moveCardMessages.divisionUnmatch);
-        return replacementTeamCardsChange(result.teamCards);
+      case data.divisionUnmatch: {
+        setMoveCardWarning(moveCardMessages.divisionUnmatch);
+        return setMoveCardResult(result);
       }
-      case result.poolUnmatch: {
-        onReplacementWarningChange(moveCardMessages.poolUnmatch);
-        return replacementTeamCardsChange(result.teamCards);
+      case data.poolUnmatch: {
+        setMoveCardWarning(moveCardMessages.poolUnmatch);
+        return setMoveCardResult(result);
       }
       default:
+        markGameAssigned(result.possibleGameId);
         onTeamCardsUpdate(result.teamCards);
     }
   };
 
-  const toggleReplacementWarning = () => {
-    replacementTeamCardsChange(undefined);
-    onReplacementWarningChange(undefined);
+  const resetMoveCardWarning = () => {
+    setMoveCardResult(undefined);
+    setMoveCardWarning(undefined);
   };
 
   const confirmReplacement = () => {
-    if (replacementTeamCards) {
-      onTeamCardsUpdate(replacementTeamCards);
-      toggleReplacementWarning();
+    if (moveCardResult) {
+      markGameAssigned(moveCardResult.possibleGameId);
+      onTeamCardsUpdate(moveCardResult.teamCards);
+      resetMoveCardWarning();
+    }
+  };
+
+  const markGameAssigned = (gameId?: number) => {
+    if (gameId) {
+      gamesList = [...gamesList?.filter(g => g.id !== gameId)];
     }
   };
 
@@ -429,11 +442,11 @@ const TableSchedule = ({
         )}
         <PopupConfirm
           type="warning"
-          showYes={!!replacementTeamCards}
-          isOpen={!!replacementWarning}
-          message={replacementWarning || ''}
-          onClose={toggleReplacementWarning}
-          onCanceClick={toggleReplacementWarning}
+          showYes={!!moveCardResult}
+          isOpen={!!moveCardWarning}
+          message={moveCardWarning || ''}
+          onClose={resetMoveCardWarning}
+          onCanceClick={resetMoveCardWarning}
           onYesClick={confirmReplacement}
         />
       </>
