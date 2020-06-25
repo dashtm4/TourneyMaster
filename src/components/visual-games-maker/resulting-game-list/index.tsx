@@ -19,16 +19,24 @@ interface IProps {
 }
 
 const useStyles = makeStyles({
+  container: {
+    height: '100%',
+  },
   tableContainer: {
-    maxHeight: '440px',
+    height: 'calc(100% - 45px)',
+    maxHeight: '428px',
     overflow: 'auto',
+    minWidth: '350px',
   },
   tableCell: {
     border: 0,
     whiteSpace: 'nowrap',
+    fontSize: '12px',
   },
   tableHeaderCell: {
     borderBottom: '2px solid black',
+    fontSize: '12px',
+    whiteSpace: 'nowrap',
   },
   labelWrapp: {
     background: 'linear-gradient(121deg, #073b65 38%, #0079ae)',
@@ -41,15 +49,19 @@ const useStyles = makeStyles({
     border: 0,
     backgroundColor: 'rgb(235, 235, 235)',
     whiteSpace: 'nowrap',
+    fontSize: '12px',
   },
   gameCell: {
     width: '24%',
+    fontSize: '12px',
   },
   homeCell: {
     width: '38%',
+    fontSize: '12px',
   },
   awayCell: {
     width: '38%',
+    fontSize: '12px',
   },
 });
 
@@ -58,7 +70,7 @@ const ResultingGameList = (props: IProps) => {
   const classes = useStyles();
 
   return (
-    <div>
+    <div className={classes.container}>
       <div className={classes.labelWrapp}> Resulting Games List </div>
       <TableContainer className={classes.tableContainer} component={Paper}>
         <Table size="small" stickyHeader={true}>

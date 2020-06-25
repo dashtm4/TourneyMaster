@@ -29,22 +29,28 @@ interface IProps {
 
 const useStyles = makeStyles({
   tableContainer: {
-    maxHeight: '440px',
-    overflow: 'auto',
+    maxHeight: '428px',
+    minWidth: '360px',
+    overflowY: 'auto',
+    overflowX: 'visible',
   },
   tableTeamCell: {
     backgroundColor: 'rgb(235, 235, 235)',
     whiteSpace: 'nowrap',
+    fontSize: '12px',
   },
   tableCountCell: {
     fontWeight: 700,
     border: 0,
+    fontSize: '12px',
   },
   tableCell: {
     border: 0,
+    fontSize: '12px',
   },
   tableHeaderCell: {
     borderBottom: '2px solid black',
+    fontSize: '12px',
   },
   tableFooterCell: {
     borderTop: '2px solid black',
@@ -52,6 +58,7 @@ const useStyles = makeStyles({
     position: 'sticky',
     bottom: 0,
     backgroundColor: 'white',
+    fontSize: '12px',
   },
   labelWrapp: {
     background: 'linear-gradient(121deg, #073b65 38%, #0079ae)',

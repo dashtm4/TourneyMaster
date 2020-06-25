@@ -1,27 +1,47 @@
 ﻿import React, { useState } from 'react';
-import { TableCell, makeStyles } from '@material-ui/core';
+import {
+  TableCell,
+  createMuiTheme,
+  ThemeProvider,
+  makeStyles,
+} from '@material-ui/core';
 import { IGameCell } from '../helpers';
+import {
+  selectedIconMatrixColor,
+  blockedCellsMatrixColor,
+} from 'config/app.config';
 
 interface IProps {
   gameId: number;
   homeTeamId: string;
   awayTeamId: string;
-  onAddGame: (a: IGameCell) => void;
-  onDeleteGame: (a: IGameCell) => void;
   isShow: boolean;
   isSamePool: boolean;
+  onAddGame: (a: IGameCell) => void;
+  onDeleteGame: (a: IGameCell) => void;
 }
 
+const theme = createMuiTheme({
+  overrides: {
+    MuiTableCell: {
+      root: {
+        borderBottom: '1px solid black',
+        padding: 0,
+      },
+    },
+  },
+});
+
 const useStyles = makeStyles({
-  inactiveCell: {
+  blockedCell: {
     border: '1px solid black',
     backgroundColor: 'black',
   },
   selectedCell: {
     border: '1px solid black',
-    backgroundColor: 'rgb(198, 239, 206)',
+    backgroundColor: selectedIconMatrixColor,
   },
-  activeCell: {
+  availableCell: {
     border: '1px solid black',
     backgroundColor: 'lightgrey',
   },
@@ -29,17 +49,26 @@ const useStyles = makeStyles({
     display: 'none',
     visibility: 'hidden',
   },
-  blockedCell: {
+  undesirableCell: {
     border: '1px dashed black',
-    backgroundColor: 'rgb(255, 201, 202)',
-  }
+    backgroundColor: blockedCellsMatrixColor,
+  },
 });
 
 const Cell = (props: IProps) => {
-  const { gameId, homeTeamId, awayTeamId, isShow, isSamePool, onAddGame, onDeleteGame } = props;
-  const classes = useStyles();
+  const {
+    gameId,
+    homeTeamId,
+    awayTeamId,
+    isShow,
+    isSamePool,
+    onAddGame,
+    onDeleteGame,
+  } = props;
   const [isClicked, setIsClicked] = useState(false);
   let isDisabled = false;
+
+  const classes = useStyles();
 
   if (homeTeamId === awayTeamId) {
     isDisabled = !isDisabled;
@@ -67,19 +96,21 @@ const Cell = (props: IProps) => {
       return classes.hiddenCell;
     }
     if (isDisabled) {
-      return classes.inactiveCell;
+      return classes.blockedCell;
     }
     if (isClicked) {
       return classes.selectedCell;
     }
     if (!isSamePool) {
-      return classes.blockedCell;
+      return classes.undesirableCell;
     }
-    return classes.activeCell;
+    return classes.availableCell;
   };
 
   return (
-    <TableCell className={getClass()} align="center" onClick={onCellClick} />
+    <ThemeProvider theme={theme}>
+      <TableCell className={getClass()} align="center" onClick={onCellClick} />
+    </ThemeProvider>
   );
 };
 

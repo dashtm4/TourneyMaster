@@ -7,18 +7,19 @@ import {
   TableBody,
   Paper,
   makeStyles,
-  TableFooter,
   createMuiTheme,
   ThemeProvider,
 } from '@material-ui/core';
 import Cell from '../cell';
 import { ITeam } from 'common/models';
 import { IGameCell } from '../helpers';
+import { sideBarsMatrixColor } from 'config/app.config';
 
 interface IProps {
   games: IGameCell[];
   teams: ITeam[] | undefined;
   poolId: string;
+  showNames: boolean;
   onChangeGames: (a: IGameCell[]) => void;
 }
 
@@ -26,12 +27,15 @@ const useStyles = makeStyles({
   tableContainer: {
     overflow: 'hidden',
   },
-  tableTeamCell: {
+  tableCell: {
     border: '1px solid black',
     backgroundColor: 'rgb(235, 235, 235)',
     width: '20px',
   },
-  tableTeamLeftCell: {
+  tableTextCell: {
+    whiteSpace: 'nowrap',
+  },
+  teamTextCell: {
     border: '1px solid black',
     backgroundColor: 'rgb(235, 235, 235)',
     width: '20px',
@@ -43,10 +47,6 @@ const useStyles = makeStyles({
     color: 'white',
     textAlign: 'center',
   },
-  tableHomeCell: {
-    padding: 0,
-    transform: 'rotate(-90deg)',
-  },
   flexWrapp: {
     display: 'flex',
   },
@@ -55,12 +55,36 @@ const useStyles = makeStyles({
   },
   awayWrapp: {
     width: '20px',
-    backgroundColor: 'rgb(226, 239, 218)',
+    backgroundColor: sideBarsMatrixColor,
   },
   homeWrapp: {
     border: 0,
     padding: '8px',
-    backgroundColor: 'rgb(226, 239, 218)',
+    backgroundColor: sideBarsMatrixColor,
+  },
+  cellsWithNames: {
+    verticalAlign: 'bottom',
+    border: '1px solid black',
+    backgroundColor: 'rgb(235, 235, 235)',
+    width: '20px',
+  },
+  innercellsWithNames: {
+    width: '20px',
+    transform: 'rotate(180deg)',
+    textAlign: 'right',
+    padding: '7px 0',
+    whiteSpace: 'nowrap',
+    writingMode: 'vertical-lr',
+  },
+  hiddenCell: {
+    display: 'none',
+    visibility: 'hidden',
+  },
+  awayTeamCellWithNames: {
+    textAlign: 'right',
+    padding: '0 7px',
+    border: '1px solid black',
+    backgroundColor: 'rgb(235, 235, 235)',
   },
 });
 
@@ -72,6 +96,7 @@ const theme = createMuiTheme({
         '&:last-child': {
           paddingRight: 0,
         },
+        borderBottom: 0,
       },
     },
     MuiTable: {
@@ -84,7 +109,7 @@ const theme = createMuiTheme({
 });
 
 const MatrixOfPossibleGames = (props: IProps) => {
-  const { games, teams, poolId, onChangeGames } = props;
+  const { games, teams, poolId, showNames, onChangeGames } = props;
   const classes = useStyles();
   let gameIdentity = 1;
 
@@ -111,7 +136,7 @@ const MatrixOfPossibleGames = (props: IProps) => {
               <TableRow>
                 <TableCell />
                 <TableCell
-                  className={classes.homeWrapp}
+                  className={showNames ? classes.hiddenCell : classes.homeWrapp}
                   colSpan={(teams || []).length + 1}
                   align="center"
                 >
@@ -120,13 +145,13 @@ const MatrixOfPossibleGames = (props: IProps) => {
               </TableRow>
               <TableRow>
                 <TableCell
-                  className={classes.awayWrapp}
+                  className={showNames ? classes.hiddenCell : classes.awayWrapp}
                   rowSpan={(teams || []).length + 1}
                   align="center"
                 >
                   <p className={classes.awayTextWrapp}>Away</p>
                 </TableCell>
-                <TableCell className={classes.tableTeamLeftCell} align="center">
+                <TableCell className={classes.tableCell} align="center">
                   Team
                 </TableCell>
                 {teams!.map((team, index) => {
@@ -136,10 +161,17 @@ const MatrixOfPossibleGames = (props: IProps) => {
                   return (
                     <TableCell
                       key={team.team_id}
-                      className={classes.tableTeamCell}
+                      className={
+                        showNames ? classes.cellsWithNames : classes.tableCell
+                      }
                       align="center"
                     >
-                      <p title={team.short_name}>{index + 1}</p>
+                      <p
+                        title={team.short_name}
+                        className={showNames ? classes.innercellsWithNames : classes.tableTextCell}
+                      >
+                        {showNames ? team.short_name : index + 1}
+                      </p>
                     </TableCell>
                   );
                 })}
@@ -153,10 +185,19 @@ const MatrixOfPossibleGames = (props: IProps) => {
                           ? 'table-cell'
                           : 'none',
                     }}
-                    className={classes.tableTeamLeftCell}
+                    className={
+                      showNames
+                        ? classes.awayTeamCellWithNames
+                        : classes.tableCell
+                    }
                     align="center"
                   >
-                    <p title={team.short_name}>{index + 1}</p>
+                    <p
+                      title={team.short_name}
+                      className={classes.tableTextCell}
+                    >
+                      {showNames ? team.short_name : index + 1}
+                    </p>
                   </TableCell>
                   {teams!.map(homeTeam => (
                     <Cell
@@ -177,13 +218,6 @@ const MatrixOfPossibleGames = (props: IProps) => {
                 </TableRow>
               ))}
             </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell />
-                <TableCell />
-                <TableCell />
-              </TableRow>
-            </TableFooter>
           </Table>
         </TableContainer>
       </ThemeProvider>

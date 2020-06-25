@@ -171,7 +171,9 @@ class VisualGamesMaker extends Component<IProps, IState> {
     });
     fillGamesList(gamesList);
     History.push(`/schedules/${schedule?.event_id}`)
-  }
+  };
+
+  onCancelClick = () => History.goBack();
 
   render() {
     const filteredTeams = this.props.teams!.filter(
@@ -212,18 +214,23 @@ class VisualGamesMaker extends Component<IProps, IState> {
           </div>
           <div className={styles.checkboxWrapp}>
             <Checkbox
-              options={[{ label: 'Show Names of Teams', checked: this.state.isShowNamesOfTeams }]}
+              options={[
+                {
+                  label: 'Show Names of Teams',
+                  checked: this.state.isShowNamesOfTeams,
+                },
+              ]}
               onChange={this.onChangeDisplayedLabelType}
             />
           </div>
         </div>
         <div className={styles.tablesWrapper}>
-
           <div className={styles.matrixOfPossibleGames}>
             <MatrixOfPossibleGames
               games={this.state.games}
               teams={sortedTeams}
               poolId={this.state.selectedPoolId}
+              showNames={this.state.isShowNamesOfTeams}
               onChangeGames={this.onChangeGames}
             />
           </div>
@@ -249,7 +256,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
                 label="Cancel"
                 color="secondary"
                 variant="text"
-                onClick={() => History.goBack()}
+                onClick={this.onCancelClick}
               />
             </div>
             <Button
