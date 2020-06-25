@@ -279,6 +279,21 @@ const TableSchedule = ({
       ? undefined
       : getScheduleWarning(scheduleData, event, teamCards, teamsDiagnostics!);
 
+  const mapGamesListWithTeamCards = () => {
+    return gamesList?.map(v => {
+      const homeTeam = teamCards.find(homeTeam => homeTeam.id === v.homeTeamId);
+      const awayTeam = teamCards.find(awayTeam => awayTeam.id === v.awayTeamId);
+
+      return {
+        ...v,
+        homeTeam: homeTeam,
+        homeDisplayName: homeTeam?.name,
+        awayTeam: awayTeam,
+        awayDisplayName: awayTeam?.name,
+      }
+    })
+  };
+
   return (
     <section className={styles.section}>
       <h2 className="visually-hidden">Schedule table</h2>
@@ -336,7 +351,7 @@ const TableSchedule = ({
                 />
               ) : (
                   <UnassignedGamesList
-                    games={gamesList || []}
+                    games={mapGamesListWithTeamCards() || []}
                     event={event}
                     // tableType={tableType}
                     // teamCards={teamCards}

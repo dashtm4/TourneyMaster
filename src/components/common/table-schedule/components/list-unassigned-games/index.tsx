@@ -79,6 +79,7 @@ const UnassignedGamesList = (props: IProps) => {
         gameId: undefined,
         position: undefined,
         teamId: item.id,
+        possibleGame: item.possibleGame,
         originGameId: item.originGameId,
         originGameDate: item.originGameDate,
       });

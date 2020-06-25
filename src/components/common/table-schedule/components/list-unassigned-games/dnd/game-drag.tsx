@@ -51,7 +51,7 @@ const GameDragCard = (props: Props) => {
   // const awayTeam = teamCards.find(item => item.id === game.awayTeamId);
   // const homeTeam = teamCards.find(item => item.id === game.homeTeamId);
   const { awayTeam, homeTeam } = game;
-
+  const possibleGame = { ...game };
   // const game = find(teamCard.games, { id: originGameId, date: originGameDate });
   // const isTeamLocked = game?.isTeamLocked;
   // const isBracketTable = tableType === TableScheduleTypes.BRACKETS;
@@ -62,6 +62,7 @@ const GameDragCard = (props: Props) => {
     item: {
       id: awayTeam?.id,
       type,
+      possibleGame,
       originGameId,
       originGameDate,
     },
@@ -165,6 +166,11 @@ const GameDragCard = (props: Props) => {
         styles.isLocked}`}
       style={{
         opacity: isDragging ? 0.8 : 1,
+        backgroundColor: showHeatmap ? awayTeam?.divisionHex : '#fff',
+        color:
+          showHeatmap && awayTeam?.divisionHex
+            ? getContrastingColor(awayTeam.divisionHex)
+            : 'gray',
       }}
     >
       <div
@@ -174,7 +180,7 @@ const GameDragCard = (props: Props) => {
       >
         {awayTeam && renderTeamCard(awayTeam)}
       </div>
-      v.&nbsp;
+      vs.&nbsp;
       <div
         style={{
           backgroundColor: showHeatmap ? homeTeam?.divisionHex : '#fff',

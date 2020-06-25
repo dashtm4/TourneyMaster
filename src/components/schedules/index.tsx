@@ -208,6 +208,7 @@ class Schedules extends Component<Props, State> {
     const facilitiesIds = facilities?.map(f => f.facilities_id);
     const { creationType } = scheduleData || {};
     const isManualScheduling =
+      !creationType ||
       creationType === ScheduleCreationType.Manually ||
       creationType === ScheduleCreationType.VisualGamesMaker;
 

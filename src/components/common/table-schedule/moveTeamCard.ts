@@ -10,7 +10,7 @@ export default (
   simultaneousDnd: boolean,
   day?: string
 ) => {
-  const { teamId, position, gameId, originGameId, originGameDate } = dropParams;
+  const { teamId, position, gameId, possibleGame, originGameId, originGameDate } = dropParams;
   let result = {
     teamCards: [...teamCards],
     divisionUnmatch: false,
@@ -156,15 +156,16 @@ export default (
       };
     }
 
-    /* When dropping a game */
+    /* When dropping a game in matrix */
     if (
       simultaneousDnd &&
       (originGamePlace?.awayTeam?.id === teamCard.id ||
         originGamePlace?.homeTeam?.id === teamCard.id ||
-        !originGamePlace)
+        possibleGame?.awayTeam?.id === teamCard.id ||
+        possibleGame?.homeTeam?.id === teamCard.id)
     ) {
       const originPosition =
-        originGamePlace?.awayTeam?.id === teamCard.id
+        (originGamePlace || possibleGame)?.awayTeam?.id === teamCard.id
           ? TeamPositionEnum.awayTeam
           : TeamPositionEnum.homeTeam;
 

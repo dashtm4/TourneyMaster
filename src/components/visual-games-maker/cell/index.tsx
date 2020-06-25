@@ -12,13 +12,16 @@ import {
 } from 'config/app.config';
 
 interface IProps {
-  gameId: number;
   homeTeamId: string;
   awayTeamId: string;
-  isShow: boolean;
-  isSamePool: boolean;
+  divisionId: string;
+  divisionHex: string;
+  divisionName: string;
   onAddGame: (a: IGameCell) => void;
   onDeleteGame: (a: IGameCell) => void;
+  isShow: boolean;
+  isSamePool: boolean;
+  isSelected: boolean;
 }
 
 const theme = createMuiTheme({
@@ -57,9 +60,11 @@ const useStyles = makeStyles({
 
 const Cell = (props: IProps) => {
   const {
-    gameId,
     homeTeamId,
     awayTeamId,
+    divisionId,
+    divisionHex,
+    divisionName,
     isShow,
     isSamePool,
     onAddGame,
@@ -79,9 +84,11 @@ const Cell = (props: IProps) => {
       return;
     }
     const item = {
-      gameId,
       homeTeamId,
       awayTeamId,
+      divisionId,
+      divisionHex,
+      divisionName,
     } as IGameCell;
     setIsClicked(!isClicked);
     if (isClicked) {

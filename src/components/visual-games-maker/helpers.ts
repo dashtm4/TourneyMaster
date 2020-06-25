@@ -1,5 +1,7 @@
 export interface IGameCell {
-  gameId: number;
   homeTeamId: string;
   awayTeamId: string;
+  divisionId: string;
+  divisionHex: string;
+  divisionName: string;
 }
