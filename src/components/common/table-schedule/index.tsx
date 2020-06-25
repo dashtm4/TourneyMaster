@@ -221,7 +221,7 @@ const TableSchedule = ({
 
     const result: IMoveCardResult = {
       teamCards: data.teamCards,
-      possibleGameId: dropParams.possibleGame.id,
+      possibleGameId: dropParams.possibleGame?.id,
     };
 
     switch (true) {

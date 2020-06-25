@@ -59,18 +59,8 @@ const useStyles = makeStyles({
 });
 
 const Cell = (props: IProps) => {
-  const {
-    homeTeamId,
-    awayTeamId,
-    divisionId,
-    divisionHex,
-    divisionName,
-    isShow,
-    isSamePool,
-    onAddGame,
-    onDeleteGame,
-  } = props;
-  const [isClicked, setIsClicked] = useState(false);
+  const { homeTeamId, awayTeamId, divisionId, divisionHex, divisionName, isShow, isSamePool, isSelected, onAddGame, onDeleteGame } = props;
+  const [isActive, setActive] = useState(isSelected);
   let isDisabled = false;
 
   const classes = useStyles();
@@ -90,8 +80,8 @@ const Cell = (props: IProps) => {
       divisionHex,
       divisionName,
     } as IGameCell;
-    setIsClicked(!isClicked);
-    if (isClicked) {
+    setActive(!isActive);
+    if (isActive) {
       onDeleteGame(item);
       return;
     }
@@ -105,7 +95,7 @@ const Cell = (props: IProps) => {
     if (isDisabled) {
       return classes.blockedCell;
     }
-    if (isClicked) {
+    if (isActive) {
       return classes.selectedCell;
     }
     if (!isSamePool) {
