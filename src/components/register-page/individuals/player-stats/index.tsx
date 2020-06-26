@@ -47,6 +47,9 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
   const onClubNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('player_club_name', e.target.value);
 
+  const onClubCoachNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('player_club_coach_name', e.target.value);
+
   const onHighlightUrlChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('player_highlight_URL', e.target.value);
 
@@ -105,7 +108,7 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
             fullWidth={true}
             label="Club Head Coach Name"
             value={data.player_club_coach_name || ''}
-            onChange={onClubNameChange}
+            onChange={onClubCoachNameChange}
           />
         </div>
         <div className={styles.sectionItem}>

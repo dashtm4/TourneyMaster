@@ -35,6 +35,8 @@ export interface IIndividualsRegister {
   height_inches: string;
   short_size: string;
   shirt_size: string;
+  team_id: string;
+  team_name: string;
   position: string;
   hs_graduation_year: number;
   gpa: number;

@@ -53,9 +53,13 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
                   {moment(registrant.created_datetime).format('MM/DD/YYYY')}
                 </TableCell>
                 <TableCell>
-                  {registrant.team_name
+                  {registrant.coach_first_name
                     ? `${registrant.team_name} (${registrant.team_city}, ${registrant.team_state})`
-                    : `${registrant.participant_first_name} ${registrant.participant_last_name}`}
+                    : `${registrant.participant_first_name} ${
+                        registrant.participant_last_name
+                      } ${
+                        registrant.team_name ? `(${registrant.team_name})` : ''
+                      }`}
                 </TableCell>
                 <TableCell>
                   {(registrant.contact_first_name ||
