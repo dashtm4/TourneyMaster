@@ -3,6 +3,4 @@ enum GamesListDisplayType {
   ALL_GAMES = 'All games',
 }
 
-export {
-  GamesListDisplayType,
-};
+export { GamesListDisplayType };

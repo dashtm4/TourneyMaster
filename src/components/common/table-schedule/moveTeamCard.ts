@@ -61,20 +61,20 @@ export default (
       };
     }
 
-    const findResult = filledGames
-      .filter(v => v.timeSlotId === gamePlace?.timeSlotId)
-      .find(
+    const timeSlotInUseForPossibleTeams =
+      possibleGame &&
+      filledGames.some(
         v =>
-          v.homeTeam &&
-          v.awayTeam &&
-          (v.homeTeam.id === possibleGame?.homeTeamId ||
-            v.homeTeam.id === possibleGame?.awayTeamId ||
-            v.awayTeam.id === possibleGame?.awayTeamdId ||
-            v.awayTeam.id === possibleGame?.homeTeamId)
+          v.timeSlotId === gamePlace?.timeSlotId &&
+          (v.homeTeam || v.awayTeam) &&
+          (v.homeTeam?.id === possibleGame.homeTeamId ||
+            v.homeTeam?.id === possibleGame.awayTeamId ||
+            v.awayTeam?.id === possibleGame.awayTeamdId ||
+            v.awayTeam?.id === possibleGame.homeTeamId)
       );
 
     /* When a team placed in used timeslot */
-    if ((gameId && position && teamTimeSlots.includes(timeSlot!)) || (findResult?.homeTeam && findResult?.awayTeam)) {
+    if ((gameId && position && teamTimeSlots.includes(timeSlot!)) || timeSlotInUseForPossibleTeams) {
       result = {
         ...result,
         timeSlotInUse: true,

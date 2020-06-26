@@ -22,6 +22,7 @@ import {
 import { IScheduleFilter, OptimizeTypes } from './types';
 import { getAllTeamCardGames, calculateTournamentDays } from 'helpers';
 import {
+  IConfigurableGame,
   IGame,
   settleTeamsPerGames,
   calculateDays,
@@ -80,7 +81,7 @@ interface Props {
   bracketGames?: IBracketGame[];
   onBracketGameUpdate: (bracketGame: IBracketGame) => void;
   recalculateDiagnostics?: () => void;
-  gamesList?: IGame[];
+  gamesList?: IConfigurableGame[];
 }
 
 const TableSchedule = ({
@@ -133,7 +134,7 @@ const TableSchedule = ({
 
   interface IMoveCardResult {
     teamCards: ITeamCard[];
-    possibleGameId?: number;
+    possibleGame?: IConfigurableGame;
   }
   const [moveCardResult, setMoveCardResult] = useState<IMoveCardResult>();
   const [moveCardWarning, setMoveCardWarning] = useState<string | undefined>();
@@ -183,6 +184,26 @@ const TableSchedule = ({
 
   useEffect(() => setTableGames(manageGamesData()), [manageGamesData]);
 
+  const managePossibleGames = useCallback(() => {
+    if (!gamesList) {
+      return [] as IConfigurableGame[];
+    }
+    return gamesList.map(v => {
+      const homeTeam = teamCards.find(t => t.id === v.homeTeamId);
+      const awayTeam = teamCards.find(t => t.id === v.awayTeamId);
+
+      return {
+        ...v,
+        homeTeam,
+        homeDisplayName: homeTeam?.name,
+        awayTeam,
+        awayDisplayName: awayTeam?.name,
+      };
+    });
+  }, [gamesList, teamCards]);
+  const [possibleGames, setPossibleGames] = useState<IConfigurableGame[]>(managePossibleGames());
+  useEffect(() => setPossibleGames(managePossibleGames()), [managePossibleGames]);
+
   const updatedFields = mapUnusedFields(fields, tableGames, filterValues);
 
   const onGameUpdate = (game: IGame) => {
@@ -221,7 +242,7 @@ const TableSchedule = ({
 
     const result: IMoveCardResult = {
       teamCards: data.teamCards,
-      possibleGameId: dropParams.possibleGame?.id,
+      possibleGame: dropParams.possibleGame,
     };
 
     switch (true) {
@@ -242,7 +263,7 @@ const TableSchedule = ({
         return setMoveCardResult(result);
       }
       default:
-        markGameAssigned(result.possibleGameId);
+        markGameAssigned(result.possibleGame);
         onTeamCardsUpdate(result.teamCards);
     }
   };
@@ -254,15 +275,22 @@ const TableSchedule = ({
 
   const confirmReplacement = () => {
     if (moveCardResult) {
-      markGameAssigned(moveCardResult.possibleGameId);
+      markGameAssigned(moveCardResult.possibleGame);
       onTeamCardsUpdate(moveCardResult.teamCards);
       resetMoveCardWarning();
     }
   };
 
-  const markGameAssigned = (gameId?: number) => {
-    if (gameId) {
-      gamesList = [...gamesList?.filter(g => g.id !== gameId)];
+  const markGameAssigned = (unassignedGame?: IConfigurableGame) => {
+    if (unassignedGame && gamesList) {
+      const foundGame = gamesList.find(
+        g =>
+          g.homeTeamId === unassignedGame.homeTeam?.id &&
+          g.awayTeamId === unassignedGame.awayTeam?.id
+      );
+      if (foundGame) {
+        foundGame.isAssigned = true;
+      }
     }
   };
 
@@ -291,21 +319,6 @@ const TableSchedule = ({
     tableType === TableScheduleTypes.SCORES
       ? undefined
       : getScheduleWarning(scheduleData, event, teamCards, teamsDiagnostics!);
-
-  const mapGamesListWithTeamCards = () => {
-    return gamesList?.map(v => {
-      const homeTeam = teamCards.find(homeTeam => homeTeam.id === v.homeTeamId);
-      const awayTeam = teamCards.find(awayTeam => awayTeam.id === v.awayTeamId);
-
-      return {
-        ...v,
-        homeTeam: homeTeam,
-        homeDisplayName: homeTeam?.name,
-        awayTeam: awayTeam,
-        awayDisplayName: awayTeam?.name,
-      }
-    })
-  };
 
   return (
     <section className={styles.section}>
@@ -352,23 +365,20 @@ const TableSchedule = ({
         <DndProvider backend={HTML5Backend}>
           {tableType === TableScheduleTypes.SCHEDULES && (
             <>
-              {!isFromMaker ? (
-                <ListUnassigned
-                  pools={pools}
+              {isFromMaker ? (
+                <UnassignedGamesList
+                  games={possibleGames}
                   event={event}
-                  tableType={tableType}
-                  teamCards={teamCards}
-                  minGamesNum={minGamesNum}
                   showHeatmap={showHeatmap}
                   onDrop={moveCard}
                 />
               ) : (
-                  <UnassignedGamesList
-                    games={mapGamesListWithTeamCards() || []}
+                  <ListUnassigned
+                    pools={pools}
                     event={event}
-                    // tableType={tableType}
-                    // teamCards={teamCards}
-                    // minGamesNum={minGamesNum}
+                    tableType={tableType}
+                    teamCards={teamCards}
+                    minGamesNum={minGamesNum}
                     showHeatmap={showHeatmap}
                     onDrop={moveCard}
                   />

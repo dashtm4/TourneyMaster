@@ -1,30 +1,23 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
-// import { find } from 'lodash-es';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
 import { Tooltip } from 'components/common';
 import { getIcon } from 'helpers';
-import {
-  Icons,
-  // TableScheduleTypes
-} from 'common/enums';
-// import { IInputEvent } from 'common/types';
-import cancelIcon from 'assets/canceled.png';
+import { Icons } from 'common/enums';
 import styles from './styles.module.scss';
-import { getContrastingColor, IGame } from 'components/common/matrix-table/helper';
-// import { getContrastingColor } from '../helper';
+import {
+  getContrastingColor,
+  IConfigurableGame,
+  IGame,
+} from 'components/common/matrix-table/helper';
 
 interface Props {
-  game: IGame;
-  // tableType: TableScheduleTypes;
+  game: IConfigurableGame;
   type: string;
-  // teamCards: ITeamCard[];
   originGameId?: number;
   originGameDate?: string;
-  // isEnterScores?: boolean;
   showHeatmap?: boolean;
-  // onTeamCardUpdate?: (teamCard: ITeamCard) => void;
   isDndMode?: boolean;
 }
 
@@ -37,62 +30,29 @@ const ERROR_ICON_STYLES = {
 const GameDragCard = (props: Props) => {
   const {
     game,
-    // tableType,
     type,
     originGameId,
     originGameDate,
     showHeatmap,
-    // teamCards,
-    // isEnterScores,
-    // onTeamCardUpdate,
     isDndMode,
   } = props;
 
-  // const awayTeam = teamCards.find(item => item.id === game.awayTeamId);
-  // const homeTeam = teamCards.find(item => item.id === game.homeTeamId);
-  const { awayTeam, homeTeam } = game;
-  const possibleGame = { ...game };
-  // const game = find(teamCard.games, { id: originGameId, date: originGameDate });
-  // const isTeamLocked = game?.isTeamLocked;
-  // const isBracketTable = tableType === TableScheduleTypes.BRACKETS;
-
-  const isDraggable = true; // !isTeamLocked && !isBracketTable;
+  const divisionHex = game.awayTeam?.divisionHex;
+  const isDraggable = !game.isAssigned;
 
   const [{ isDragging }, drag] = useDrag({
     item: {
-      id: awayTeam?.id,
+      id: game.awayTeam?.id,
       type,
-      possibleGame,
+      possibleGame: game,
       originGameId,
       originGameDate,
     },
-    // canDrag: isDraggable,
+    canDrag: isDraggable,
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
   });
-
-  // const onLockClick = () => {
-  //   onTeamCardUpdate!({
-  //     ...teamCard,
-  //     games: teamCard.games?.map(item =>
-  //       item.id === originGameId && item.date === originGameDate
-  //         ? { ...item, isTeamLocked: !item.isTeamLocked }
-  //         : item
-  //     ),
-  //   });
-  // };
-
-  // const onChangeScore = ({ target: { value } }: IInputEvent) => {
-  //   onTeamCardUpdate!({
-  //     ...teamCard,
-  //     games: teamCard.games?.map(game =>
-  //       game.id === originGameId && game.date === originGameDate
-  //         ? { ...game, teamScore: value }
-  //         : game
-  //     ),
-  //   });
-  // };
 
   const renderTeamCardErrors = (teamCard: ITeamCard) => (
     <Tooltip
@@ -110,51 +70,28 @@ const GameDragCard = (props: Props) => {
     </Tooltip>
   );
 
+  const renderGameCard = (g: IGame) => (
+    <>
+      <p>
+        <span>{g.divisionName}:</span>&nbsp;
+      </p>
+      {g.awayTeam && renderTeamCard(g.awayTeam)}
+      <p>
+        <span>vs.</span>&nbsp;
+      </p>
+      {g.homeTeam && renderTeamCard(g.homeTeam)}
+    </>
+  );
+
   const renderTeamCard = (teamCard: ITeamCard) => (
     <>
       {teamCard.errors?.length && renderTeamCardErrors(teamCard)}
       {!teamCard.errors?.length && (
-        <p className={styles.cardNameWrapper}>
-          <span
-            className={styles.cardTextWrapper}
-            style={{
-              color:
-                showHeatmap && teamCard.divisionHex
-                  ? getContrastingColor(teamCard.divisionHex)
-                  : 'gray',
-            }}
-          >
-            {teamCard.name}&nbsp;({teamCard.divisionShortName})
-          </span>
+        <p>
+          <span>{teamCard.name}</span>
+          &nbsp;
         </p>
       )}
-      {/* <p className={styles.cardOptionsWrapper}>
-        {tableType === TableScheduleTypes.SCORES && (
-          <label className={styles.scoresInputWrapper}>
-            <input
-              onChange={onChangeScore}
-              value={game?.teamScore || ''}
-              type="number"
-              min="0"
-              style={{
-                color: isEnterScores
-                  ? '#000000'
-                  : getContrastingColor(teamCard.divisionHex),
-                backgroundColor: isEnterScores ? '#ffffff' : '',
-              }}
-              readOnly={!isEnterScores}
-            />
-          </label>
-        )}
-        {tableType === TableScheduleTypes.SCHEDULES && originGameId && (
-          <button className={styles.lockBtn} onClick={onLockClick}>
-            {getIcon(game?.isTeamLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
-              fill: showHeatmap && teamCard.divisionHex ? '#ffffff' : '#00A3EA',
-            })}
-            <span className="visually-hidden">Unlock/Lock team</span>
-          </button>
-        )}
-      </p> */}
     </>
   );
 
@@ -166,37 +103,14 @@ const GameDragCard = (props: Props) => {
         styles.isLocked}`}
       style={{
         opacity: isDragging ? 0.8 : 1,
-        backgroundColor: showHeatmap ? awayTeam?.divisionHex : '#fff',
+        backgroundColor: showHeatmap ? divisionHex : '#fff',
         color:
-          showHeatmap && awayTeam?.divisionHex
-            ? getContrastingColor(awayTeam.divisionHex)
+          showHeatmap && divisionHex
+            ? getContrastingColor(divisionHex)
             : 'gray',
       }}
     >
-      <div
-        style={{
-          backgroundColor: showHeatmap ? awayTeam?.divisionHex : '#fff',
-        }}
-      >
-        {awayTeam && renderTeamCard(awayTeam)}
-      </div>
-      vs.&nbsp;
-      <div
-        style={{
-          backgroundColor: showHeatmap ? homeTeam?.divisionHex : '#fff',
-        }}
-      >
-        {homeTeam && renderTeamCard(homeTeam)}
-      </div>
-      {game?.isCancelled && (
-        <img
-          className={styles.cancelIcon}
-          src={cancelIcon}
-          width="60"
-          height="22"
-          alt="Cancel icon"
-        />
-      )}
+      {game && renderGameCard(game)}
     </div>
   );
 };
