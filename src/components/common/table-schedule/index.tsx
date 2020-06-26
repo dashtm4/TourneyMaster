@@ -267,7 +267,11 @@ const TableSchedule = ({
       case data.playoffSlot:
         return setMoveCardWarning(moveCardMessages.playoffSlot);
       case data.timeSlotInUse:
-        return setMoveCardWarning(moveCardMessages.timeSlotInUse);
+        return setMoveCardWarning(
+          isSimultaneousDnd
+            ? moveCardMessages.timeSlotInUseForGame
+            : moveCardMessages.timeSlotInUseForTeam
+        );
       case data.differentFacility: {
         setMoveCardWarning(moveCardMessages.differentFacility);
         return setMoveCardResult(result);
