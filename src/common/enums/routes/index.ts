@@ -29,6 +29,8 @@ enum Routes {
   SCHEDULING_ID = '/event/scheduling/:eventId?',
   SCORING = '/event/scoring',
   SCORING_ID = '/event/scoring/:eventId?',
+  VISUAL_GAMES_MAKER = '/visual-games-maker',
+  VISUAL_GAMES_MAKER_ID = '/visual-games-maker/:eventId?',
   SCHEDULES = '/schedules',
   SCHEDULES_ID = '/schedules/:eventId/:scheduleId?',
   PLAYOFFS = '/playoffs',

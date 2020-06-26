@@ -19,7 +19,7 @@ export const mapScheduleData = (
 
   delete data?.num_fields;
   delete data?.periods_per_game;
-  delete data?.isManualScheduling;
+  delete data?.creationType;
   return data;
 };
 

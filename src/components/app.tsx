@@ -66,6 +66,7 @@ const App: React.FC = () => {
             Routes.TEAMS_ID,
             Routes.CREATE_TEAM,
             Routes.SCHEDULING_ID,
+            Routes.VISUAL_GAMES_MAKER_ID,
             Routes.SCORING_ID,
             Routes.REPORTING_ID,
             Routes.RECORD_SCORES_ID,

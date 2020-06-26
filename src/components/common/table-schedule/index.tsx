@@ -16,6 +16,8 @@ import {
   ISchedule,
   IPool,
   BindingAction,
+  IConfigurableSchedule,
+  ScheduleCreationType,
   ISchedulesDetails,
 } from 'common/models';
 import { IScheduleFilter, OptimizeTypes } from './types';
@@ -26,6 +28,7 @@ import {
   ITimeValues,
 } from 'helpers';
 import {
+  IConfigurableGame,
   IGame,
   settleTeamsPerGames,
   calculateDays,
@@ -57,6 +60,7 @@ import { IDiagnosticsInput } from 'components/schedules/diagnostics';
 import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
 import { IBracketGame } from 'components/playoffs/bracketGames';
 import { updateGameSlot } from 'components/playoffs/helper';
+import UnassignedGamesList from './components/list-unassigned-games';
 import PopupAdvancedWorkflow from './components/popup-advanced-workflow';
 
 interface Props {
@@ -87,6 +91,7 @@ interface Props {
   bracketGames?: IBracketGame[];
   onBracketGameUpdate: (bracketGame: IBracketGame) => void;
   recalculateDiagnostics?: () => void;
+  gamesList?: IConfigurableGame[];
   updateSchedulesDetails?: (
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
@@ -121,12 +126,19 @@ const TableSchedule = ({
   bracketGames,
   onBracketGameUpdate,
   recalculateDiagnostics,
+  gamesList,
   updateSchedulesDetails,
 }: Props) => {
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
 
-  const [simultaneousDnd, setSimultaneousDnd] = useState(false);
+  console.log(schedulesDetails, updateSchedulesDetails);
+
+  const [isFromMaker] = useState(
+    (scheduleData as IConfigurableSchedule)?.creationType ===
+    ScheduleCreationType.VisualGamesMaker
+  );
+  const [simultaneousDnd, setSimultaneousDnd] = useState(isFromMaker);
 
   const [filterValues, changeFilterValues] = useState<IScheduleFilter>(
     applyFilters({ divisions, pools, teamCards, eventSummary })
@@ -140,12 +152,12 @@ const TableSchedule = ({
 
   const [showHeatmap, onHeatmapChange] = useState(true);
 
-  const [replacementTeamCards, replacementTeamCardsChange] = useState<
-    ITeamCard[] | undefined
-  >();
-  const [replacementWarning, onReplacementWarningChange] = useState<
-    string | undefined
-  >();
+  interface IMoveCardResult {
+    teamCards: ITeamCard[];
+    possibleGame?: IConfigurableGame;
+  }
+  const [moveCardResult, setMoveCardResult] = useState<IMoveCardResult>();
+  const [moveCardWarning, setMoveCardWarning] = useState<string | undefined>();
   const [days, setDays] = useState(calculateDays(teamCards));
 
   const toggleSimultaneousDnd = () => setSimultaneousDnd(v => !v);
@@ -192,6 +204,26 @@ const TableSchedule = ({
 
   useEffect(() => setTableGames(manageGamesData()), [manageGamesData]);
 
+  const managePossibleGames = useCallback(() => {
+    if (!gamesList) {
+      return [] as IConfigurableGame[];
+    }
+    return gamesList.map(v => {
+      const homeTeam = teamCards.find(t => t.id === v.homeTeamId);
+      const awayTeam = teamCards.find(t => t.id === v.awayTeamId);
+
+      return {
+        ...v,
+        homeTeam,
+        homeDisplayName: homeTeam?.name,
+        awayTeam,
+        awayDisplayName: awayTeam?.name,
+      };
+    });
+  }, [gamesList, teamCards]);
+  const [possibleGames, setPossibleGames] = useState<IConfigurableGame[]>(managePossibleGames());
+  useEffect(() => setPossibleGames(managePossibleGames()), [managePossibleGames]);
+
   const updatedFields = mapUnusedFields(fields, tableGames, filterValues);
 
   const onGameUpdate = (game: IGame) => {
@@ -219,45 +251,70 @@ const TableSchedule = ({
 
   const moveCard = (dropParams: IDropParams) => {
     const day = filterValues.selectedDay!;
-    const result = moveTeamCard(
+    const isSimultaneousDnd = isFromMaker ? true : simultaneousDnd;
+    const data = moveTeamCard(
       teamCards,
       tableGames,
       dropParams,
-      simultaneousDnd,
+      isSimultaneousDnd,
       days?.length ? days[+day - 1] : undefined
     );
 
+    const result: IMoveCardResult = {
+      teamCards: data.teamCards,
+      possibleGame: dropParams.possibleGame,
+    };
+
     switch (true) {
-      case result.playoffSlot:
-        return onReplacementWarningChange(moveCardMessages.playoffSlot);
-      case result.timeSlotInUse:
-        return onReplacementWarningChange(moveCardMessages.timeSlotInUse);
-      case result.differentFacility: {
-        onReplacementWarningChange(moveCardMessages.differentFacility);
-        return replacementTeamCardsChange(result.teamCards);
+      case data.playoffSlot:
+        return setMoveCardWarning(moveCardMessages.playoffSlot);
+      case data.timeSlotInUse:
+        return setMoveCardWarning(
+          isSimultaneousDnd
+            ? moveCardMessages.timeSlotInUseForGame
+            : moveCardMessages.timeSlotInUseForTeam
+        );
+      case data.differentFacility: {
+        setMoveCardWarning(moveCardMessages.differentFacility);
+        return setMoveCardResult(result);
       }
-      case result.divisionUnmatch: {
-        onReplacementWarningChange(moveCardMessages.divisionUnmatch);
-        return replacementTeamCardsChange(result.teamCards);
+      case data.divisionUnmatch: {
+        setMoveCardWarning(moveCardMessages.divisionUnmatch);
+        return setMoveCardResult(result);
       }
-      case result.poolUnmatch: {
-        onReplacementWarningChange(moveCardMessages.poolUnmatch);
-        return replacementTeamCardsChange(result.teamCards);
+      case data.poolUnmatch: {
+        setMoveCardWarning(moveCardMessages.poolUnmatch);
+        return setMoveCardResult(result);
       }
       default:
+        markGameAssigned(result.possibleGame);
         onTeamCardsUpdate(result.teamCards);
     }
   };
 
-  const toggleReplacementWarning = () => {
-    replacementTeamCardsChange(undefined);
-    onReplacementWarningChange(undefined);
+  const resetMoveCardWarning = () => {
+    setMoveCardResult(undefined);
+    setMoveCardWarning(undefined);
   };
 
   const confirmReplacement = () => {
-    if (replacementTeamCards) {
-      onTeamCardsUpdate(replacementTeamCards);
-      toggleReplacementWarning();
+    if (moveCardResult) {
+      markGameAssigned(moveCardResult.possibleGame);
+      onTeamCardsUpdate(moveCardResult.teamCards);
+      resetMoveCardWarning();
+    }
+  };
+
+  const markGameAssigned = (unassignedGame?: IConfigurableGame) => {
+    if (unassignedGame && gamesList) {
+      const foundGame = gamesList.find(
+        g =>
+          g.homeTeamId === unassignedGame.homeTeam?.id &&
+          g.awayTeamId === unassignedGame.awayTeam?.id
+      );
+      if (foundGame) {
+        foundGame.isAssigned = true;
+      }
     }
   };
 
@@ -292,7 +349,7 @@ const TableSchedule = ({
     if (filterValues.selectedDay) {
       date = days[+filterValues.selectedDay - 1] || '';
     }
-    
+
     if (schedulesDetails) {
       return getTimeSlotsFromEntities(
         schedulesDetails!.filter(v => v.game_date === date),
@@ -347,15 +404,26 @@ const TableSchedule = ({
         )}
         <DndProvider backend={HTML5Backend}>
           {tableType === TableScheduleTypes.SCHEDULES && (
-            <ListUnassigned
-              pools={pools}
-              event={event}
-              tableType={tableType}
-              teamCards={teamCards}
-              minGamesNum={minGamesNum}
-              showHeatmap={showHeatmap}
-              onDrop={moveCard}
-            />
+            <>
+              {isFromMaker ? (
+                <UnassignedGamesList
+                  games={possibleGames}
+                  event={event}
+                  showHeatmap={showHeatmap}
+                  onDrop={moveCard}
+                />
+              ) : (
+                  <ListUnassigned
+                    pools={pools}
+                    event={event}
+                    tableType={tableType}
+                    teamCards={teamCards}
+                    minGamesNum={minGamesNum}
+                    showHeatmap={showHeatmap}
+                    onDrop={moveCard}
+                  />
+                )}
+            </>
           )}
           <div className={styles.tableWrapper}>
             <div className={styles.headerWrapper}>
@@ -365,7 +433,7 @@ const TableSchedule = ({
                 days={days.length}
                 filterValues={filterValues}
                 onChangeFilterValue={onFilterChange}
-                simultaneousDnd={simultaneousDnd}
+                simultaneousDnd={isFromMaker ? undefined : simultaneousDnd}
                 toggleSimultaneousDnd={toggleSimultaneousDnd}
               />
               {tableType === TableScheduleTypes.SCHEDULES &&
@@ -439,11 +507,11 @@ const TableSchedule = ({
         )}
         <PopupConfirm
           type="warning"
-          showYes={!!replacementTeamCards}
-          isOpen={!!replacementWarning}
-          message={replacementWarning || ''}
-          onClose={toggleReplacementWarning}
-          onCanceClick={toggleReplacementWarning}
+          showYes={!!moveCardResult}
+          isOpen={!!moveCardWarning}
+          message={moveCardWarning || ''}
+          onClose={resetMoveCardWarning}
+          onCanceClick={resetMoveCardWarning}
           onYesClick={confirmReplacement}
         />
       </>

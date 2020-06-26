@@ -80,6 +80,7 @@ import {
   ISchedule,
   IPool,
   BindingAction,
+  ScheduleCreationType,
 } from 'common/models';
 import { errorToast } from 'components/common/toastr/showToasts';
 import { ISchedulesDetails } from 'common/models/schedule/schedules-details';
@@ -112,6 +113,7 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   anotherSchedulePublished?: boolean;
   gamesAlreadyExist?: boolean;
   pools?: IPool[];
+  gamesList?: IGame[];
 }
 
 interface IMapDispatchToProps {
@@ -211,12 +213,16 @@ class Schedules extends Component<Props, State> {
     const { facilities, match, scheduleData } = this.props;
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
-    const { isManualScheduling } = scheduleData || {};
+    const { creationType } = scheduleData || {};
+    const isManualScheduling =
+      !creationType ||
+      creationType === ScheduleCreationType.Manually ||
+      creationType === ScheduleCreationType.VisualGamesMaker;
 
     this.props.schedulesDetailsClear();
     this.props.clearSchedulesTable();
     this.getPublishedStatus();
-    this.activateLoaders(scheduleId, !!isManualScheduling);
+    this.activateLoaders(scheduleId, isManualScheduling);
     this.calculateTournamentDays();
 
     if (facilitiesIds?.length) {
@@ -491,15 +497,15 @@ class Schedules extends Component<Props, State> {
 
       teamcards = teamcards.length
         ? teamcards.map(item => ({
-            ...item,
-            games: [
-              ...(item.games || []),
-              ...(updateTeamGamesDateInfo(
-                resultTeams.find(team => team.id === item.id)?.games || [],
-                day
-              ) || []),
-            ],
-          }))
+          ...item,
+          games: [
+            ...(item.games || []),
+            ...(updateTeamGamesDateInfo(
+              resultTeams.find(team => team.id === item.id)?.games || [],
+              day
+            ) || []),
+          ],
+        }))
         : updateTeamsDayInfo(resultTeams, day);
     });
 
@@ -764,6 +770,7 @@ class Schedules extends Component<Props, State> {
       schedulesPublished,
       isFullScreen,
       onToggleFullScreen,
+      gamesList,
     } = this.props;
 
     const {
@@ -799,7 +806,7 @@ class Schedules extends Component<Props, State> {
       <div
         className={`${styles.container} ${
           isFullScreen ? styles.containerFullScreen : ''
-        }`}
+          }`}
       >
         {loadCondition && !isLoading && (
           <SchedulesPaper
@@ -842,15 +849,16 @@ class Schedules extends Component<Props, State> {
             onUndo={onScheduleUndo}
             onToggleFullScreen={onToggleFullScreen}
             playoffTimeSlots={playoffTimeSlots}
-            onBracketGameUpdate={() => {}}
+            onBracketGameUpdate={() => { }}
             recalculateDiagnostics={this.calculateDiagnostics}
+            gamesList={gamesList}
             updateSchedulesDetails={this.props.updateSchedulesDetails}
           />
         ) : (
-          <div className={styles.loadingWrapper}>
-            <SchedulesLoader type={loadingType} time={5000} />
-          </div>
-        )}
+            <div className={styles.loadingWrapper}>
+              <SchedulesLoader type={loadingType} time={5000} />
+            </div>
+          )}
 
         <PopupExposure
           isOpen={cancelConfirmationOpen}
@@ -887,6 +895,7 @@ const mapStateToProps = ({
   schedulesDetails: schedules?.schedulesDetails,
   pools: divisions?.pools,
   gamesAlreadyExist: schedules?.gamesAlreadyExist,
+  gamesList: schedulesTable?.gamesList,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>

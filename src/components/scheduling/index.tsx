@@ -75,7 +75,7 @@ interface IProps {
   isLoaded: boolean;
   fields?: IField[];
   getScheduling: (eventId: string) => void;
-  createNewSchedule: (schedule: IConfigurableSchedule) => void;
+  createNewSchedule: (schedule: IConfigurableSchedule, visualGamesMakerUsed: boolean) => void;
   addNewSchedule: BindingAction;
   changeSchedule: BindingCbWithOne<Partial<ISchedule>>;
   updateSchedule: BindingCbWithOne<ISchedulingSchedule>;

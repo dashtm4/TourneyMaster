@@ -12,6 +12,7 @@ export interface IDropParams {
   teamId: string;
   position: number | undefined;
   gameId: number | undefined;
+  possibleGame?: any;
   originGameId?: number;
   originGameDate?: string;
 }
@@ -50,6 +51,7 @@ const DropContainer = (props: IProps) => {
         teamId: item.id,
         position: props.position,
         gameId: props.gameId,
+        possibleGame: item.possibleGame,
         originGameId: item.originGameId,
         originGameDate: item.originGameDate,
       });

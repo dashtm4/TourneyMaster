@@ -273,6 +273,7 @@ const pageEventReducer = (
               }
             : item
         ),
+        tournamentData: { ...state.tournamentData, teams},
       };
     }
     case SCHEDULE_FETCH_SUCCESS: {

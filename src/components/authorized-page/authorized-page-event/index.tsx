@@ -24,6 +24,7 @@ import Scheduling from 'components/scheduling';
 import Teams from 'components/teams';
 import CreateTeam from 'components/teams/components/create-team';
 import Footer from 'components/footer';
+import VisualGamesMaker from 'components/visual-games-maker';
 import Schedules from 'components/schedules';
 import Reporting from 'components/reporting';
 import Playoffs from 'components/playoffs';
@@ -140,7 +141,7 @@ const AuthorizedPageEvent = ({
     togglePublishPopup(!isPublishPopupOpen);
   };
 
-  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
+  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS, Routes.VISUAL_GAMES_MAKER];
   const schedulingIgnoreList = [
     EventMenuTitles.SCHEDULING,
     EventMenuTitles.SCORING,
@@ -187,6 +188,14 @@ const AuthorizedPageEvent = ({
                     menuList,
                     schedulingIgnoreList
                   )}
+                />
+              )}
+            />
+            <Route
+              path={Routes.VISUAL_GAMES_MAKER_ID}
+              render={props => (
+                <VisualGamesMaker
+                  {...props}
                 />
               )}
             />

@@ -43,6 +43,10 @@ export interface IGame {
   homeTeamScore?: number;
 }
 
+export interface IConfigurableGame extends IGame {
+  isAssigned?: boolean;
+}
+
 export interface IDefinedGames {
   gameTimeSlots: number;
   gameFields: number;
