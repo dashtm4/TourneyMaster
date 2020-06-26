@@ -67,8 +67,7 @@ export default (
           item =>
             findIndex(secondIncomingTeamGames, { id: item.id, date: day }) >= 0
         )
-        .map(g => g.timeSlotId) ||
-      [];
+        .map(g => g.timeSlotId);
 
     if (gamePlace?.isPlayoff) {
       result = {
@@ -76,6 +75,12 @@ export default (
         playoffSlot: true,
       };
     }
+
+    const isTimeSlotInUse = (
+      slot: number,
+      slots1: number[],
+      slots2?: number[]
+    ) => [...slots1, ...(slots2 || [])].includes(slot);
 
     const timeSlotInUseForPossibleTeams =
       possibleGame &&
@@ -91,9 +96,7 @@ export default (
 
     /* When a team placed in used timeslot */
     if (
-      (gameId &&
-        position &&
-        [...teamTimeSlots, ...secondIncomingTeamSlots].includes(timeSlot!)) ||
+      (gameId && position && isTimeSlotInUse(timeSlot!, teamTimeSlots, secondIncomingTeamSlots)) ||
       timeSlotInUseForPossibleTeams
     ) {
       result = {

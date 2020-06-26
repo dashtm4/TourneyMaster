@@ -192,7 +192,7 @@ const MatrixOfPossibleGames = (props: IProps) => {
                 </TableCell>
                 {teams!.map((team, index) => {
                   if (!(team.pool_id === poolId) && !(poolId === 'allPools')) {
-                    return;
+                    return <></>;
                   }
                   return (
                     <TableCell

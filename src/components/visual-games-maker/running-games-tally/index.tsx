@@ -75,29 +75,31 @@ const RunningTally = (props: IProps) => {
 
   const dataForTable: ITableRunningTally<string>[] = [];
   let totalCount = 0;
-  (teams || []).map(team => {
-    let countAllGames = 0;
-    let countHomeGames = 0;
-    let countAwayGames = 0;
-    games.map((game: IGameCell) => {
-      if (game.awayTeamId === team.team_id) {
-        countAllGames++;
-        countAwayGames++;
-      }
-      if (game.homeTeamId === team.team_id) {
-        countAllGames++;
-        countHomeGames++;
-      }
+  if (teams) {
+    teams.forEach(team => {
+      let countAllGames = 0;
+      let countHomeGames = 0;
+      let countAwayGames = 0;
+      games.forEach((game: IGameCell) => {
+        if (game.awayTeamId === team.team_id) {
+          countAllGames++;
+          countAwayGames++;
+        }
+        if (game.homeTeamId === team.team_id) {
+          countAllGames++;
+          countHomeGames++;
+        }
+      });
+      totalCount += countAllGames;
+      dataForTable.push({
+        team_id: team.team_id,
+        team_name: team.short_name,
+        count_of_home_games: countHomeGames,
+        count_of_away_games: countAwayGames,
+        count_of_all_games: countAllGames,
+      } as ITableRunningTally<string>);
     });
-    totalCount += countAllGames;
-    dataForTable.push({
-      team_id: team.team_id,
-      team_name: team.short_name,
-      count_of_home_games: countHomeGames,
-      count_of_away_games: countAwayGames,
-      count_of_all_games: countAllGames,
-    } as ITableRunningTally<string>);
-  });
+  }
 
   return (
     <div>
