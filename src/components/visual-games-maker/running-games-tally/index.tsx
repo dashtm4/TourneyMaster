@@ -13,12 +13,12 @@ import {
 import { ITeam } from 'common/models/teams';
 import { IGameCell } from '../helpers';
 
-interface ITableRunningTally<T> {
-  team_id: string;
-  team_name: T;
-  count_of_home_games: number;
-  count_of_away_games: number;
-  count_of_all_games: number;
+interface ITableRunningTally {
+  teamId: string;
+  teamName: string;
+  homeGamesNumber: number;
+  awayGamesNumber: number;
+  allGamesNumber: number;
 }
 
 interface IProps {
@@ -73,7 +73,7 @@ const RunningTally = (props: IProps) => {
   const { teams, games, showNames } = props;
   const classes = useStyles();
 
-  const dataForTable: ITableRunningTally<string>[] = [];
+  const dataForTable: ITableRunningTally[] = [];
   let totalCount = 0;
   if (teams) {
     teams.forEach(team => {
@@ -92,12 +92,12 @@ const RunningTally = (props: IProps) => {
       });
       totalCount += countAllGames;
       dataForTable.push({
-        team_id: team.team_id,
-        team_name: team.short_name,
-        count_of_home_games: countHomeGames,
-        count_of_away_games: countAwayGames,
-        count_of_all_games: countAllGames,
-      } as ITableRunningTally<string>);
+        teamId: team.team_id,
+        teamName: team.short_name,
+        homeGamesNumber: countHomeGames,
+        awayGamesNumber: countAwayGames,
+        allGamesNumber: countAllGames,
+      } as ITableRunningTally);
     });
   }
 
@@ -124,24 +124,24 @@ const RunningTally = (props: IProps) => {
           </TableHead>
           <TableBody>
             {dataForTable.map(row => {
-              const index = teams!.findIndex(o => o.team_id === row.team_id);
+              const index = teams!.findIndex(o => o.team_id === row.teamId);
               return (
-                <TableRow key={row.team_name}>
+                <TableRow key={row.teamName}>
                   <TableCell className={classes.tableTeamCell} align="center">
                     {showNames ? (
-                      row.team_name
+                      row.teamName
                     ) : (
-                      <p title={row.team_name}>{index + 1}</p>
-                    )}
+                        <p title={row.teamName}>{index + 1}</p>
+                      )}
                   </TableCell>
                   <TableCell className={classes.tableCell} align="center">
-                    {row.count_of_home_games}
+                    {row.homeGamesNumber}
                   </TableCell>
                   <TableCell className={classes.tableCell} align="center">
-                    {row.count_of_away_games}
+                    {row.awayGamesNumber}
                   </TableCell>
                   <TableCell className={classes.tableCountCell} align="center">
-                    {row.count_of_all_games}
+                    {row.allGamesNumber}
                   </TableCell>
                 </TableRow>
               );
