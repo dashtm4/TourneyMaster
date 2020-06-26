@@ -202,7 +202,7 @@ export const createTeams: ActionCreator<ThunkAction<
 
       const response = await Api.post(`/teams`, data);
 
-      if (response?.errorType === 'Error') {
+      if (response?.errorType === 'Error' || response?.message === false) {
         return Toasts.errorToast("Couldn't create a team");
       }
     }
@@ -265,7 +265,7 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
       if (!team.division_id) {
         return Toasts.errorToast(
           `Record ${index +
-          1}: There is no division with such long name. Please, create a division first or choose another one.`
+            1}: There is no division with such long name. Please, create a division first or choose another one.`
         );
       }
       const teamsInDivision = allTeams.filter(
@@ -286,7 +286,7 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
 
     for (const team of data) {
       const response = await Api.post(`/teams`, team);
-      if (response?.errorType === 'Error') {
+      if (response?.errorType === 'Error' || response?.message === false) {
         return Toasts.errorToast("Couldn't create a team");
       }
     }

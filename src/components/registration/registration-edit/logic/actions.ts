@@ -17,6 +17,13 @@ import { IRegistration } from 'common/models/registration';
 import { ICalendarEvent } from 'common/models/calendar';
 import { IDivision } from 'common/models';
 
+const defaultCalendarEvent = (): Partial<ICalendarEvent> => ({
+  cal_event_id: getVarcharEight(),
+  cal_event_type: 'event',
+  has_reminder_YN: 1,
+  status_id: 1,
+});
+
 export const registrationFetchStart = (): { type: string } => ({
   type: REGISTRATION_FETCH_START,
 });
@@ -66,14 +73,25 @@ export const saveRegistration: ActionCreator<ThunkAction<
 >> = (registration: IRegistration, eventId: string) => async (
   dispatch: Dispatch
 ) => {
-  const calendarEvent: Partial<ICalendarEvent> = {
-    cal_event_id: registration.registration_id || '',
-    cal_event_title: 'Registration',
-    cal_event_type: 'event',
-    cal_event_startdate: registration.registration_start || '',
-    cal_event_enddate: registration.registration_end || '',
-    has_reminder_YN: 1,
-    status_id: 1,
+  const { event_name } = (await api.get(`/events?event_id=${eventId}`))[0];
+
+  const openEvent: Partial<ICalendarEvent> = {
+    ...defaultCalendarEvent(),
+    cal_event_title: `${event_name} Open`,
+    cal_event_startdate: registration.registration_start,
+    cal_event_enddate: registration.registration_start,
+  };
+  const closeEvent: Partial<ICalendarEvent> = {
+    ...defaultCalendarEvent(),
+    cal_event_title: `${event_name} Close`,
+    cal_event_startdate: registration.registration_end,
+    cal_event_enddate: registration.registration_end,
+  };
+  const discountEndEvent: Partial<ICalendarEvent> = {
+    ...defaultCalendarEvent(),
+    cal_event_title: `${event_name} Early Bird Discount Ends`,
+    cal_event_startdate: registration.discount_enddate,
+    cal_event_enddate: registration.discount_enddate,
   };
 
   if (registration?.registration_id) {
@@ -83,11 +101,13 @@ export const saveRegistration: ActionCreator<ThunkAction<
       registration
     );
 
-    if (response?.errorType === 'Error') {
+    if (response?.errorType === 'Error' || response?.message === false) {
       return Toasts.errorToast("Couldn't update a registration");
     }
     dispatch(registrationUpdateSuccess(registration));
-    dispatch<any>(saveCalendarEvent(calendarEvent));
+    dispatch<any>(saveCalendarEvent(openEvent));
+    dispatch<any>(saveCalendarEvent(closeEvent));
+    dispatch<any>(saveCalendarEvent(discountEndEvent));
 
     Toasts.successToast('Registration is successfully updated');
     dispatch<any>(getRegistrants(registration.registration_id));
@@ -97,16 +117,17 @@ export const saveRegistration: ActionCreator<ThunkAction<
       event_id: eventId,
       registration_id: getVarcharEight(),
     };
-    calendarEvent.cal_event_id = data.registration_id;
 
     dispatch(registrationFetchStart());
     const response = await api.post(`/registrations`, data);
 
-    if (response?.errorType === 'Error') {
+    if (response?.errorType === 'Error' || response?.message === false) {
       return Toasts.errorToast("Couldn't save a registration");
     }
     dispatch(registrationUpdateSuccess(data));
-    dispatch<any>(saveCalendarEvent(calendarEvent));
+    dispatch<any>(saveCalendarEvent(openEvent));
+    dispatch<any>(saveCalendarEvent(closeEvent));
+    dispatch<any>(saveCalendarEvent(discountEndEvent));
 
     Toasts.successToast('Registration is successfully saved');
   }
@@ -119,24 +140,27 @@ export const saveCalendarEvent: ActionCreator<ThunkAction<
   { type: string }
 >> = (event: ICalendarEvent) => async () => {
   const eventList = await api.get(
-    `/calendar_events?cal_event_id=${event.cal_event_id}`
+    `/calendar_events?cal_event_title=${event.cal_event_title}`
   );
 
   if (eventList.length) {
     // update if exist
-    const response = await api.put(
-      `/calendar_events?cal_event_id=${event.cal_event_id}`,
-      event
+    const eventList = await api.get(
+      `/calendar_events?cal_event_title=${event.cal_event_title}`
     );
-
-    if (response?.errorType === 'Error') {
-      return Toasts.errorToast("Couldn't update (calendar event)");
+    if (eventList.length) {
+      const response = await api.put(
+        `/calendar_events?cal_event_id=${eventList[0].cal_event_id}`,
+        event
+      );
+      if (response?.errorType === 'Error' || response?.message === false) {
+        return Toasts.errorToast("Couldn't update (calendar event)");
+      }
     }
   } else {
     // create if not exist
     const response = await api.post('/calendar_events', event);
-
-    if (response?.errorType === 'Error') {
+    if (response?.errorType === 'Error' || response?.message === false) {
       return Toasts.errorToast("Couldn't create (calendar event)");
     }
   }
