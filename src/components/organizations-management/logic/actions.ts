@@ -1,6 +1,11 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
+import { Auth } from 'aws-amplify';
 import Api from 'api/api';
+import { getVarcharEight } from 'helpers';
+import { organizationSchema, applyInvitationSchema } from 'validations';
+import { Toasts } from 'components/common';
+import { IMember, IOrganization, IOrgMember } from 'common/models';
 import {
   organizationManagementAction,
   LOAD_ORGANIZATIONS_START,
@@ -13,11 +18,6 @@ import {
   DELETE_ORGANIZATION_SUCCESS,
   DELETE_ORGANIZATION_FAILURE,
 } from './action-types';
-import { organizationSchema, applyInvitationSchema } from 'validations';
-import { Toasts } from 'components/common';
-import { IMember, IOrganization, IOrgMember } from 'common/models';
-import { getVarcharEight } from 'helpers';
-import { Auth } from 'aws-amplify';
 
 const loadOrganizations: ActionCreator<ThunkAction<
   void,
@@ -26,9 +26,7 @@ const loadOrganizations: ActionCreator<ThunkAction<
   organizationManagementAction
 >> = () => async (dispatch: Dispatch) => {
   try {
-    dispatch({
-      type: LOAD_ORGANIZATIONS_START,
-    });
+    dispatch({ type: LOAD_ORGANIZATIONS_START });
 
     const currentSession = await Auth.currentSession();
     const userEmail = currentSession.getIdToken().payload.email;
@@ -36,7 +34,7 @@ const loadOrganizations: ActionCreator<ThunkAction<
     const member: IMember = members.find(
       (it: IMember) => it.email_address === userEmail
     );
-    const organizations = await Api.get(`/organizations`);
+    const organizations = await Api.get('/organizations');
     const orgMembers = await Api.get('/org_members');
 
     const userOwnOrgMembers = orgMembers.filter(
@@ -85,8 +83,6 @@ const addUserToOrganization: ActionCreator<ThunkAction<
 
     await applyInvitationSchema.validate(orgMembers);
 
-    await Api.post('/org_members', orgMembers);
-
     const { length: orgMembersLength } = await Api.get(
       `/org_members?org_id=${orgMembers.org_id}&member_id=${orgMembers.member_id}`
     );
@@ -94,6 +90,13 @@ const addUserToOrganization: ActionCreator<ThunkAction<
     if (orgMembersLength) {
       Toasts.errorToast('You are already joined to this organization!');
       return;
+    }
+
+    const orgMembersList = await Api.get(
+      `/org_members?org_id=${orgMembers.org_id}`
+    );
+    if (orgMembersList.length === 0) {
+      await Api.post('/org_members', orgMembers);
     }
 
     const organization = await Api.get(`/organizations?org_id=${invCode}`);
@@ -153,7 +156,12 @@ const createOrganization: ActionCreator<ThunkAction<
 
     await Api.post('/organizations', organization);
 
-    await Api.post('/org_members', orgMembers);
+    const orgMembersList = await Api.get(
+      `/org_members?org_id=${orgMembers.org_id}`
+    );
+    if (orgMembersList.length === 0) {
+      await Api.post('/org_members', orgMembers);
+    }
 
     dispatch({
       type: CREATE_ORGANIZATION_SUCCESS,
@@ -191,9 +199,10 @@ const deleteOrganization: ActionCreator<ThunkAction<
         it.member_id === member.member_id && it.org_id === organization.org_id
     );
 
-    await Api.delete(
-      `/org_members?org_member_id=${toBeDelOrgMember.org_member_id}`
-    );
+    if (toBeDelOrgMember?.org_member_id)
+      await Api.delete(
+        `/org_members?org_member_id=${toBeDelOrgMember.org_member_id}`
+      );
 
     if (organization.created_by === member.member_id) {
       await Api.delete(`/organizations?org_id=${organization.org_id}`);
