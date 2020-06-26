@@ -132,6 +132,8 @@ const TableSchedule = ({
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
 
+  console.log(schedulesDetails, updateSchedulesDetails);
+
   const [isFromMaker] = useState(
     (scheduleData as IConfigurableSchedule)?.creationType ===
     ScheduleCreationType.VisualGamesMaker
@@ -431,7 +433,7 @@ const TableSchedule = ({
                 days={days.length}
                 filterValues={filterValues}
                 onChangeFilterValue={onFilterChange}
-                simultaneousDnd={simultaneousDnd}
+                simultaneousDnd={isFromMaker ? undefined : simultaneousDnd}
                 toggleSimultaneousDnd={toggleSimultaneousDnd}
               />
               {tableType === TableScheduleTypes.SCHEDULES &&
