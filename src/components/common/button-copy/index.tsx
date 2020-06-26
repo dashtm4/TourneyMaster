@@ -41,7 +41,7 @@ const ButtonCopy = ({
     </span>
   );
 
-  const WrappedBtton = (
+  const WrappedButton = (
     <Button
       onClick={onClick}
       label={WrappedLabel}
@@ -53,10 +53,10 @@ const ButtonCopy = ({
 
   return disableMessage ? (
     <Tooltip title={disableMessage} type={TooltipMessageTypes.INFO}>
-      <span>{WrappedBtton}</span>
+      <span>{WrappedButton}</span>
     </Tooltip>
   ) : (
-    WrappedBtton
+    WrappedButton
   );
 };
 

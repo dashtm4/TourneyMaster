@@ -9,9 +9,10 @@ interface ITeamProps {
   onChange: BindingCbWithTwo<string, string | number>;
   divisions: ISelectOption[];
   states: ISelectOption[];
+  isInvited: boolean;
 }
 
-const Team = ({ data, onChange, divisions, states }: ITeamProps) => {
+const Team = ({ data, onChange, divisions, states, isInvited }: ITeamProps) => {
   const onTeamNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('team_name', e.target.value);
 
@@ -64,6 +65,7 @@ const Team = ({ data, onChange, divisions, states }: ITeamProps) => {
             value={data.ext_sku || ''}
             onChange={onDivisionChange}
             isRequired={true}
+            disabled={isInvited}
           />
         </div>
       </div>
