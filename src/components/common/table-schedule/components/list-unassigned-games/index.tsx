@@ -7,13 +7,15 @@ import { useDrop } from 'react-dnd';
 import { IDropParams } from 'components/common/matrix-table/dnd/drop';
 // import { TableScheduleTypes } from 'common/enums';
 // import { getUnsatisfiedTeams, getSatisfiedTeams } from '../../helpers';
-import Checkbox from 'components/common/buttons/checkbox';
+// import Checkbox from 'components/common/buttons/checkbox';
 // import { TableSortLabel } from '@material-ui/core';
 // import { orderBy } from 'lodash-es';
 import { IEventDetails } from 'common/models'; // IPool, 
 // import { calculateTournamentDays } from 'helpers';
 import { IGame } from 'components/common/matrix-table/helper';
 import GameDragCard from './dnd/game-drag';
+import { Radio } from 'components/common';
+import { GamesListDisplayType } from './enums';
 
 interface IProps {
   event: IEventDetails;
@@ -41,7 +43,8 @@ const UnassignedGamesList = (props: IProps) => {
   // const [satisfiedTeamCards, setSatisfiedTeamCards] = useState<
   //   ITeamCard[] | undefined
   // >(undefined);
-  const [showAllTeams, setShowAllTeams] = useState(true);
+  // const [showAllTeams, setShowAllTeams] = useState(true);
+  const [gamesListDisplayType, setGamesListDisplayType] = useState(GamesListDisplayType.UNASSIGNED_GAMES);
   // const [showPools, setShowPools] = useState(true);
   // const [sortBy, setSortBy] = useState('');
   // const [sortOrder, setSortOrder] = useState('desc');
@@ -65,9 +68,9 @@ const UnassignedGamesList = (props: IProps) => {
   //   );
   // };
 
-  const onCheck = () => {
-    setShowAllTeams(!showAllTeams);
-  };
+  // const onCheck = () => {
+  //   setShowAllTeams(!showAllTeams);
+  // };
 
   const [{ isOver }, drop] = useDrop({
     accept: acceptType,
@@ -114,6 +117,8 @@ const UnassignedGamesList = (props: IProps) => {
   //   setSatisfiedTeamCards(orderedSatisfiedTeamCards);
   // }, [teamCards, showAllTeams]);
 
+  const onGamesListDisplayTypeChange = (e: any) => setGamesListDisplayType(e.nativeEvent.target.value);
+
   return (
     <div
       className={styles.container}
@@ -121,9 +126,11 @@ const UnassignedGamesList = (props: IProps) => {
     >
       <h3 className={styles.title}>Needs Assignment</h3>
       <div className={styles.checkboxWrapper}>
-        <Checkbox
-          options={[{ label: 'All Teams', checked: showAllTeams }]}
-          onChange={onCheck}
+        <Radio
+          options={Object.values(GamesListDisplayType)}
+          checked={gamesListDisplayType}
+          onChange={onGamesListDisplayTypeChange}
+          row={true}
         />
         {/* <Checkbox
           options={[{ label: 'Show Pools', checked: showPools }]}
