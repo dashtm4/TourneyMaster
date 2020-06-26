@@ -78,7 +78,7 @@ const ContacnInfo = ({ data, onChange }: IContacnInfoProps) => {
             }}
             inputProps={{
               required: true,
-              minLength: 17,
+              minLength: 14,
             }}
           />
         </div>

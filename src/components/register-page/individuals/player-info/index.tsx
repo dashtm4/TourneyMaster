@@ -136,7 +136,7 @@ const PlayerInfo = ({
             }}
             inputProps={{
               required: true,
-              minLength: 17,
+              minLength: 14,
             }}
           />
         </div>
