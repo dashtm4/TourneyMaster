@@ -9,7 +9,6 @@ const teamSchema = Yup.object({
     .required(
       'Phone numbers of the coaches are required for the printed schedules, so leaving it empty hurts you in the long term. Do yourself a favor and please enter their mobile numbers.'
     ),
-
   //  phone_num: Yup.string().matches(
   //   /^\+?[1-9]\d{1,14}$/,
   //  'Invalid format for phone number'

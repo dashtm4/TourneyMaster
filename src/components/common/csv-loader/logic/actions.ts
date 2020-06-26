@@ -1,5 +1,10 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
+import { Auth } from 'aws-amplify';
+import api from 'api/api';
+import { IMember } from 'common/models';
+import { ITableColumns, IMapping } from 'common/models/table-columns';
+import { Toasts } from 'components/common';
 import {
   TABLE_COLUMNS_FETCH_SUCCESS,
   MAPPINGS_FETCH_SUCCESS,
@@ -7,11 +12,6 @@ import {
   REMOVE_MAPPING_SUCCESS,
   TableColumnsAction,
 } from './actionTypes';
-import api from 'api/api';
-import { Toasts } from 'components/common';
-import { ITableColumns, IMapping } from 'common/models/table-columns';
-import { Auth } from 'aws-amplify';
-import { IMember } from 'common/models';
 
 export const getTableColumnsSuccess = (
   payload: ITableColumns
