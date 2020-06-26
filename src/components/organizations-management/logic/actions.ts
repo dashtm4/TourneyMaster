@@ -92,7 +92,12 @@ const addUserToOrganization: ActionCreator<ThunkAction<
       return;
     }
 
-    await Api.post('/org_members', orgMembers);
+    const orgMembersList = await Api.get(
+      `/org_members?org_id=${orgMembers.org_id}`
+    );
+    if (orgMembersList.length === 0) {
+      await Api.post('/org_members', orgMembers);
+    }
 
     const organization = await Api.get(`/organizations?org_id=${invCode}`);
     const currentOrganization = organization.find(
@@ -151,7 +156,12 @@ const createOrganization: ActionCreator<ThunkAction<
 
     await Api.post('/organizations', organization);
 
-    await Api.post('/org_members', orgMembers);
+    const orgMembersList = await Api.get(
+      `/org_members?org_id=${orgMembers.org_id}`
+    );
+    if (orgMembersList.length === 0) {
+      await Api.post('/org_members', orgMembers);
+    }
 
     dispatch({
       type: CREATE_ORGANIZATION_SUCCESS,
