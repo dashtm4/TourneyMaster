@@ -44,14 +44,14 @@ export const getPaymentPlans = async ({
               const recurringPayments =
                 +rawPaymentPlan.iterations > 1
                   ? `$${installmentPrice.toFixed(
-                    2
-                  )} for ${+rawPaymentPlan.iterations} times every${
-                  +rawPaymentPlan.intervalCount > 1
-                    ? +' ' + rawPaymentPlan.intervalCount
-                    : ''
-                  } ${rawPaymentPlan.interval}${
-                  +rawPaymentPlan.intervalCount > 1 ? 's' : ''
-                  } for `
+                      2
+                    )} for ${+rawPaymentPlan.iterations} times every${
+                      +rawPaymentPlan.intervalCount > 1
+                        ? +' ' + rawPaymentPlan.intervalCount
+                        : ''
+                    } ${rawPaymentPlan.interval}${
+                      +rawPaymentPlan.intervalCount > 1 ? 's' : ''
+                    } for `
                   : '';
               const { payment_schedule_json, ...paymentPlan } = {
                 ...sku,
@@ -67,50 +67,63 @@ export const getPaymentPlans = async ({
                 iterations: rawPaymentPlan.iterations,
                 interval: rawPaymentPlan.interval,
                 intervalCount: rawPaymentPlan.intervalCount,
+                billing_cycle_anchor: 0,
               };
               return paymentPlan;
             } else if (rawPaymentPlan.type === 'schedule') {
               const schedule = {};
+              let billingCycleAnchor;
               for (let phase of rawPaymentPlan.schedule) {
                 const amount =
                   phase.amountType === 'fixed'
                     ? +phase.amount
                     : phase.amountType === 'percent'
-                      ? Math.round(+sku.price * +phase.amount) / 100
-                      : null;
+                    ? Math.round(+sku.price * +phase.amount) / 100
+                    : null;
                 if (!amount) {
                   throw new Error('Incorrect amount specified.');
                 }
-                const date = new Date(phase.date);
-                const now = new Date(
-                  new Date()
-                    .toLocaleString('us-GB', { timeZone: 'America/New_York' })
-                    .split(',')[0]
-                );
+                const date = +phase.date;
+                const now = new Date().getTime() / 1000;
                 if (date <= now) {
                   if (!schedule['now']) schedule['now'] = 0;
                   schedule['now'] += amount;
+                  if (!billingCycleAnchor || date > billingCycleAnchor) {
+                    // Set billing anchor to the last of the payment deadlines that are before now
+                    billingCycleAnchor = date;
+                  }
                 } else {
-                  const formattedDate = dateFormat(date, 'yyyy-mm-dd');
-                  if (!schedule[formattedDate]) schedule[formattedDate] = 0;
-                  schedule[formattedDate] += amount;
+                  if (!schedule[date]) schedule[date] = 0;
+                  schedule[date] += amount;
+                  if (!billingCycleAnchor) {
+                    // If no billing anchor yet set it to any of the phases
+                    billingCycleAnchor = date;
+                  }
                 }
               }
 
-              const scheduleArr = Object.entries(schedule).map(
-                ([date, amount]) => ({
+              const scheduleArr = Object.entries(schedule)
+                .map(([date, amount]) => ({
                   date,
+                  billing_cycle_anchor:
+                    date === 'now' ? billingCycleAnchor : date,
                   amount,
                   price_external_id:
                     sku.sku_id +
                     '_' +
                     rawPaymentPlan.id +
                     '_' +
-                    (date === 'now' ? 'now' : dateFormat(date, 'yyyymmdd')) +
+                    date +
                     '_' +
                     amount,
-                })
-              );
+                }))
+                .sort((a, b) =>
+                  b.date === 'now'
+                    ? 1
+                    : a.date === 'now'
+                    ? -1
+                    : +a.date - +b.date
+                );
 
               const { payment_schedule_json, ...paymentPlan } = {
                 ...sku,
@@ -118,8 +131,15 @@ export const getPaymentPlans = async ({
                 discount: 0,
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
-                payment_plan_notice: `You will be charged ${scheduleArr
-                  .map(x => `${x.date}: $${x.amount.toFixed(2)}`)
+                payment_plan_notice: `The Installment Schedule is: ${scheduleArr
+                  .map(
+                    x =>
+                      `${
+                        x.date === 'now'
+                          ? 'now'
+                          : dateFormat(new Date(x.date * 1000), 'yyyy-mm-dd')
+                      }: $${x.amount.toFixed(2)}`
+                  )
                   .join(', ')}`,
                 type: rawPaymentPlan.type,
                 schedule: scheduleArr,
@@ -148,6 +168,7 @@ export const getPaymentPlans = async ({
           iterations: 1,
           interval: 'month',
           intervalCount: 1,
+          billing_cycle_anchor: 0,
         };
         return paymentPlan;
       } else {

@@ -1,6 +1,20 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
 import * as Yup from 'yup';
+import { IAppState } from 'reducers/root-reducer.types';
+import Api from 'api/api';
+import { teamSchema } from 'validations';
+import { mapScheduleGamesWithNames, getVarcharEight } from 'helpers';
+import history from 'browserhistory';
+import { ScheduleStatuses } from 'common/enums';
+import {
+  ITeam,
+  BindingAction,
+  IDivision,
+  IFacility,
+  ISchedule,
+} from 'common/models';
+import { Toasts } from 'components/common';
 import {
   TeamsAction,
   LOAD_TEAMS_DATA_START,
@@ -13,20 +27,6 @@ import {
   SAVE_TEAMS_FAILURE,
   CREATE_TEAMS_SUCCESS,
 } from './action-types';
-import { IAppState } from 'reducers/root-reducer.types';
-import Api from 'api/api';
-import { teamSchema } from 'validations';
-import { mapScheduleGamesWithNames, getVarcharEight } from 'helpers';
-import { Toasts } from 'components/common';
-import {
-  ITeam,
-  BindingAction,
-  IDivision,
-  IFacility,
-  ISchedule,
-} from 'common/models';
-import history from 'browserhistory';
-import { ScheduleStatuses } from 'common/enums';
 
 const loadTeamsData: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   eventId: string
@@ -117,10 +117,6 @@ const saveTeams = (teams: ITeam[]) => async (
           team => team.long_name,
           'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
         )
-        //       .unique(
-        //        team => team.short_name,
-        //         'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
-        //       )
         .validate(
           teams.filter(team => team.division_id === division.division_id)
         );
@@ -186,10 +182,6 @@ export const createTeams: ActionCreator<ThunkAction<
           team => team.long_name,
           'Oops. It looks like you already have team with the same long name. The team must have a unique long name.'
         )
-        //        .unique(
-        //          team => team.short_name,
-        //          'Oops. It looks like you already have team with the same short name. The team must have a unique short name.'
-        //        )
         .validate(mappedTeams);
     }
 
@@ -202,14 +194,14 @@ export const createTeams: ActionCreator<ThunkAction<
 
       const response = await Api.post(`/teams`, data);
 
-      if (response?.errorType === 'Error') {
+      if (response?.errorType === 'Error' || response?.message === false) {
         return Toasts.errorToast("Couldn't create a team");
       }
     }
 
     history.goBack();
 
-    Toasts.successToast('Team is successfully created');
+    Toasts.successToast('The Team(s) have been successfully created!');
   } catch (err) {
     Toasts.errorToast(err.message);
   }
@@ -277,20 +269,16 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
           t => t.long_name,
           'You already have a team with the same long name. The team must have a unique long name.'
         )
-        //        .unique(
-        //         t => t.short_name,
-        //          'You already have team with the same short name. The team must have a unique short name.'
-        //       )
         .validate([...teamsInDivision, team]);
+      allTeams.push(team);
     }
 
     for (const team of data) {
       const response = await Api.post(`/teams`, team);
-      if (response?.errorType === 'Error') {
+      if (response?.errorType === 'Error' || response?.message === false) {
         return Toasts.errorToast("Couldn't create a team");
       }
     }
-
     dispatch({
       type: CREATE_TEAMS_SUCCESS,
       payload: {
@@ -304,6 +292,7 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
     Toasts.successToast(successMsg);
   } catch (err) {
     let errMessage = err.message;
+
     if (err.value) {
       const invalidTeam = err.value[err.value.length - 1];
       const index = teams.findIndex(
@@ -311,6 +300,7 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
       );
       errMessage = `Record ${index + 1}: ${err.message}`;
     }
+
     return Toasts.errorToast(errMessage);
   }
 };

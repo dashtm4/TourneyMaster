@@ -74,6 +74,10 @@ const CoachInfo = ({ data, onChange, fillCoachInfo }: ICoachInfoProps) => {
           <div className={styles.sectionTitle}>Phone Number</div>
           <PhoneInput
             country={'us'}
+            disableDropdown
+            onlyCountries={['us']}
+            disableCountryCode={true}
+            placeholder=""
             value={data.coach_mobile || ''}
             onChange={onPhoneNumberChange}
             containerStyle={{ marginTop: '7px' }}
@@ -86,7 +90,7 @@ const CoachInfo = ({ data, onChange, fillCoachInfo }: ICoachInfoProps) => {
             }}
             inputProps={{
               required: true,
-              minLength: 17,
+              minLength: 14,
             }}
           />
         </div>

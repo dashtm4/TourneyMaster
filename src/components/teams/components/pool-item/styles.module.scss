@@ -12,6 +12,11 @@
   line-height: 28px;
   font-weight: 600;
   color: #1c315f;
+
+  span {
+    color: #6a6a6a;
+    font-size: 14px;
+  }
 }
 
 .teamsTable {
@@ -36,9 +41,9 @@
 }
 
 .teamName {
-  padding-left: 32px;
+  padding-left: 26px;
 }
 
 .teamActions {
-  padding-left: 35px;
+  padding-left: 28px;
 }

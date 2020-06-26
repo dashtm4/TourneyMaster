@@ -1,5 +1,9 @@
 /* tslint:disable: jsx-no-lambda */
 import React from 'react';
+import { connect } from 'react-redux';
+import Papa from 'papaparse';
+import { BindingAction, BindingCbWithOne } from 'common/models';
+import { ITableColumns, IMapping, IField } from 'common/models/table-columns';
 import {
   Modal,
   FileUpload,
@@ -8,20 +12,11 @@ import {
   Checkbox,
   Input,
 } from 'components/common/';
+import { PopupExposure, Toasts } from 'components/common';
 import {
   FileUploadTypes,
   AcceptFileTypes,
 } from 'components/common/file-upload';
-import Papa from 'papaparse';
-import { connect } from 'react-redux';
-import {
-  getTableColumns,
-  saveMapping,
-  getMappings,
-  removeMapping,
-} from './logic/actions';
-import styles from './styles.module.scss';
-import { BindingAction, BindingCbWithOne } from 'common/models';
 import {
   parseTableDetails,
   getPreview,
@@ -32,12 +27,16 @@ import {
   checkCsvForValidity,
   getRequiredFields,
 } from './helpers';
-import { Toasts } from 'components/common';
-import { PopupExposure } from 'components/common';
+import {
+  getTableColumns,
+  saveMapping,
+  getMappings,
+  removeMapping,
+} from './logic/actions';
 import CsvTable from './table';
 import SaveMapping from './save-mapping';
-import { ITableColumns, IMapping, IField } from 'common/models/table-columns';
 import ManageMapping from './manage-mapping';
+import styles from './styles.module.scss';
 
 interface IComponentsProps {
   isOpen: boolean;
@@ -92,6 +91,7 @@ class CsvLoader extends React.Component<Props, State> {
 
   componentDidUpdate(prevProps: Props) {
     const { tableColumns } = this.props;
+
     if (
       (tableColumns && !this.state.fields.length) ||
       tableColumns !== prevProps.tableColumns
@@ -129,15 +129,27 @@ class CsvLoader extends React.Component<Props, State> {
           );
           if (!isCsvValid) {
             return Toasts.errorToast(
-              'Please, upload valid csv or check header position'
+              'Please chceck your csv. Something seems to be off with it.'
             );
           } else {
             const preview = getPreview(data, isHeaderIncluded, headerPosition);
 
-            this.setState({
+            this.setState(prevState => ({
               preview,
               data: isHeaderIncluded ? data.slice(headerPosition) : data,
-            });
+              fields: preview.header.map((column, index: number) => ({
+                value: column,
+                csvPosition: index,
+                dataType:
+                  prevState.fields.find(x => x.value === column)?.dataType ||
+                  '',
+                included:
+                  prevState.fields.find(x => x.value === column)?.included ||
+                  prevState.fields.find(x => x.value === column) === undefined,
+                map_id:
+                  prevState.fields.find(x => x.value === column)?.map_id || '',
+              })),
+            }));
           }
         },
       });
@@ -218,10 +230,11 @@ class CsvLoader extends React.Component<Props, State> {
   };
 
   onMappingSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const mapping = parseMapping(
-      e.target.value,
-      this.props.tableColumns.table_details
-    );
+    const {
+      tableColumns: { table_details },
+    } = this.props;
+    const mapping = parseMapping(e.target.value, table_details);
+
     this.setState({ fields: mapping, selectedMapping: e.target.value });
   };
 
@@ -297,24 +310,32 @@ class CsvLoader extends React.Component<Props, State> {
   };
 
   render() {
+    const { isOpen, mappings, removeMapping, tableColumns, type } = this.props;
+    const {
+      data: { length },
+      fields,
+      headerPosition,
+      isConfirmModalOpen,
+      isHeaderIncluded,
+      isManageMappingOpen,
+      isMappingModalOpen,
+      preview,
+      selectedMapping,
+    } = this.state;
     const columnOptions =
-      this.props.tableColumns &&
-      getColumnOptions(this.props.tableColumns?.table_details);
+      tableColumns && getColumnOptions(tableColumns?.table_details);
 
-    const mappingsOptions = this.props.mappings.map(map => ({
+    const mappingsOptions = mappings.map(map => ({
       label: map.import_description,
       value: map.map_id_json,
     }));
 
-    const requiredFields = this.props.tableColumns
-      ? getRequiredFields(
-          this.props.type,
-          this.props.tableColumns?.table_details
-        )
+    const requiredFields = tableColumns
+      ? getRequiredFields(type, tableColumns?.table_details)
       : [];
 
     return (
-      <Modal isOpen={this.props.isOpen} onClose={this.onModalClose}>
+      <Modal isOpen={isOpen} onClose={this.onModalClose}>
         <div className={styles.container}>
           <div className={styles.uploaderWrapper}>
             <div>
@@ -339,7 +360,7 @@ class CsvLoader extends React.Component<Props, State> {
                 options={[
                   {
                     label: 'Header is included on row #',
-                    checked: this.state.isHeaderIncluded,
+                    checked: isHeaderIncluded,
                   },
                 ]}
                 onChange={this.onIsHeaderIncludedChange}
@@ -348,24 +369,24 @@ class CsvLoader extends React.Component<Props, State> {
                 width={'50px'}
                 minWidth={'50px'}
                 label=""
-                value={this.state.headerPosition}
+                value={headerPosition}
                 onChange={this.onHeaderPositionChange}
                 type="number"
-                disabled={!this.state.isHeaderIncluded}
+                disabled={!isHeaderIncluded}
               />
             </div>
             <Select
               width={'200px'}
               options={mappingsOptions || []}
               label="Select Historical Mapping"
-              value={this.state.selectedMapping}
+              value={selectedMapping}
               onChange={this.onMappingSelect}
-              disabled={!this.state.data.length}
+              disabled={!length}
             />
           </div>
           <CsvTable
-            preview={this.state.preview}
-            fields={this.state.fields}
+            preview={preview}
+            fields={fields}
             onFieldIncludeChange={this.onFieldIncludeChange}
             onSelect={this.onFieldSelect}
             columnOptions={columnOptions}
@@ -401,22 +422,22 @@ class CsvLoader extends React.Component<Props, State> {
             />
           </div>
           <PopupExposure
-            isOpen={this.state.isConfirmModalOpen}
+            isOpen={isConfirmModalOpen}
             onClose={this.onConfirmModalClose}
             onExitClick={this.onCancel}
             onSaveClick={this.onImport}
           />
           <SaveMapping
-            isOpen={this.state.isMappingModalOpen}
+            isOpen={isMappingModalOpen}
             onClose={this.onMappingModalClose}
             onCancel={this.onSaveMappingCancel}
             onSave={this.onMappingSave}
           />
           <ManageMapping
-            isOpen={this.state.isManageMappingOpen}
+            isOpen={isManageMappingOpen}
             onClose={this.onManageMappingModalClose}
-            mappings={this.props.mappings}
-            onMappingDelete={this.props.removeMapping}
+            mappings={mappings}
+            onMappingDelete={removeMapping}
           />
         </div>
       </Modal>
@@ -429,15 +450,15 @@ interface IState {
 }
 
 const mapStateToProps = (state: IState) => ({
-  tableColumns: state.tableColumns.data,
   mappings: state.tableColumns.mappings,
+  tableColumns: state.tableColumns.data,
 });
 
 const mapDispatchToProps = {
-  getTableColumns,
-  saveMapping,
   getMappings,
+  getTableColumns,
   removeMapping,
+  saveMapping,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CsvLoader);

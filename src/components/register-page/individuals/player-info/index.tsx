@@ -90,7 +90,7 @@ const PlayerInfo = ({
             fullWidth={true}
             label="Birthdate"
             type="date"
-            value={data.player_birthdate || "01-01-2000"}
+            value={data.player_birthdate || '01-01-2000'}
             isRequired={true}
             onChange={onPlayerBirthdayChange}
           />
@@ -120,6 +120,10 @@ const PlayerInfo = ({
           <div className={styles.sectionTitle}>Phone Number</div>
           <PhoneInput
             country={'us'}
+            disableDropdown
+            onlyCountries={['us']}
+            disableCountryCode={true}
+            placeholder=""
             value={data.participant_mobile || ''}
             onChange={onPhoneNumberChange}
             containerStyle={{ marginTop: '7px' }}
@@ -132,7 +136,7 @@ const PlayerInfo = ({
             }}
             inputProps={{
               required: true,
-              minLength: 17,
+              minLength: 14,
             }}
           />
         </div>

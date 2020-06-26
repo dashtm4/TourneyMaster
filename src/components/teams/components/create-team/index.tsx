@@ -4,6 +4,7 @@ import { History } from 'history';
 import styles from './styles.module.scss';
 import Paper from 'components/common/paper';
 import Button from 'components/common/buttons/button';
+import FabButton from 'components/common/fab-button';
 import HeadingLevelTwo from 'components/common/headings/heading-level-two';
 import AddTeamForm from './create-team-form';
 import { createTeams } from '../../logic/actions';
@@ -86,6 +87,18 @@ class CreateTeam extends React.Component<ICreateTeamProps, ICreateTeamState> {
                 variant="contained"
                 color="primary"
                 onClick={this.onSave}
+              />
+              <FabButton
+                onClick={this.onCancel}
+                sequence={1}
+                label="Cancel"
+                variant="outlined"
+              />
+              <FabButton
+                onClick={this.onSave}
+                sequence={2}
+                label="Save"
+                variant="contained"
               />
             </div>
           </div>

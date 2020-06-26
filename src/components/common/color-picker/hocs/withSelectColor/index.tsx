@@ -18,30 +18,31 @@ const withSelectColor = (Component: React.ComponentType<Props>) => {
     }
 
     componentDidUpdate(prevProps: Props) {
-      if (prevProps.value !== this.props.value)
+      if (prevProps.value !== this.props.value) {
         this.setState({ activeColor: this.props.value });
+      }
     }
 
-    onClick = () => {
-      this.setState({ displayColorPicker: !this.state.displayColorPicker });
+    onShowColorPicker = (status: boolean) => {
+      this.setState({ displayColorPicker: status });
     };
 
-    _changeHandler = ({ hex }: any) => {
+    _changeHandler = (value: string) => {
       this.setState({
-        displayColorPicker: !this.state.displayColorPicker,
-        activeColor: hex,
+        activeColor: value,
       });
-      this.props.onChange(hex);
+      this.props.onChange(value);
     };
 
     render() {
       const { activeColor, displayColorPicker } = this.state;
+
       return (
         <Component
           {...this.props}
           value={activeColor}
           displayColorPicker={displayColorPicker}
-          onClick={this.onClick}
+          onShowColorPicker={this.onShowColorPicker}
           onChange={this._changeHandler}
         />
       );

@@ -4,10 +4,12 @@ import { History } from 'history';
 import {
   Loader,
   Button,
+  DeletePopupConfrim,
   HeadingLevelTwo,
   PopupAddToLibrary,
 } from 'components/common';
 import {
+  deleteAllDivisions,
   getDivisionsTeams,
   getPools,
   savePool,
@@ -20,7 +22,11 @@ import {
 import { addEntitiesToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import Modal from '../common/modal';
 import AddPool from './division/add-pool';
-import { BindingCbWithOne, BindingCbWithTwo } from 'common/models/callback';
+import {
+  BindingCbWithOne,
+  BindingCbWithTwo,
+  BindingCbWithThree,
+} from 'common/models/callback';
 import { ITeam, IDivision } from 'common/models';
 import { IPool } from 'common/models';
 import Navigation from './navigation';
@@ -38,6 +44,7 @@ interface IDivisionsAndPoolsProps {
   areDetailsLoading: boolean;
   history: History;
   match: any;
+  deleteAllDivisions: BindingCbWithThree<IDivision[], IPool[], ITeam[]>;
   getDivisionsTeams: BindingCbWithOne<string>;
   getPools: BindingCbWithOne<string>;
   savePool: BindingCbWithOne<Partial<IPool>>;
@@ -55,6 +62,7 @@ interface IDivisionAndPoolsState {
   isSectionsExpand: boolean;
   isCsvLoaderOpen: boolean;
   isLibraryPopupOpen: boolean;
+  isDeletePopupOpen: boolean;
 }
 
 class DivisionsAndPools extends React.Component<
@@ -72,6 +80,7 @@ class DivisionsAndPools extends React.Component<
       isSectionsExpand: true,
       isCsvLoaderOpen: false,
       isLibraryPopupOpen: false,
+      isDeletePopupOpen: false,
     };
   }
 
@@ -112,9 +121,30 @@ class DivisionsAndPools extends React.Component<
     this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
+  handleDeletePopup = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.onDeletePopupOpen();
+  };
+
+  handleDeleteAllTeams = () => {
+    const { divisions, pools, teams, deleteAllDivisions } = this.props;
+    deleteAllDivisions(divisions, pools, teams);
+    this.onDeletePopupClose();
+  };
+
+  onDeletePopupClose = () => {
+    this.setState({ isDeletePopupOpen: false });
+  };
+
+  onDeletePopupOpen = () => {
+    this.setState({ isDeletePopupOpen: true });
+  };
+
   render() {
     const { divisions, pools, teams, isLoading, saveTeams } = this.props;
-    const { isLibraryPopupOpen } = this.state;
+    const { isLibraryPopupOpen, isDeletePopupOpen } = this.state;
 
     return (
       <section className={styles.container}>
@@ -125,17 +155,38 @@ class DivisionsAndPools extends React.Component<
         />
         <div className={styles.sectionContainer}>
           <div className={styles.headingContainer}>
-            <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>
-            {divisions?.length ? (
-              <Button
-                label={
-                  this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
-                }
-                variant="text"
-                color="secondary"
-                onClick={this.toggleSectionCollapse}
-              />
-            ) : null}
+            <div className={styles.heading}>
+              <HeadingLevelTwo>Divisions &amp; Pools</HeadingLevelTwo>
+              <a
+                href="https://tourneymaster.s3.amazonaws.com/public/Quickstarts/TourneyMaster+Creating+Division+%26+Pools+Quick+Start+Guide.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Quickstart Guide
+              </a>
+            </div>
+            <div className={styles.buttonContainer}>
+              {divisions?.length ? (
+                <>
+                  <Button
+                    label="Delete All"
+                    variant="text"
+                    color="inherit"
+                    onClick={this.handleDeletePopup}
+                  />
+                  <Button
+                    label={
+                      this.state.isSectionsExpand
+                        ? 'Collapse All'
+                        : 'Expand All'
+                    }
+                    variant="text"
+                    color="secondary"
+                    onClick={this.toggleSectionCollapse}
+                  />
+                </>
+              ) : null}
+            </div>
           </div>
           {isLoading && <Loader />}
           {divisions.length && !isLoading ? (
@@ -205,6 +256,14 @@ class DivisionsAndPools extends React.Component<
           onClose={this.toggleLibraryPopup}
           addEntitiesToLibrary={this.props.addEntitiesToLibrary}
         />
+        <DeletePopupConfrim
+          type={''}
+          message={'Type "All Divisions" to delete'}
+          deleteTitle={'All Divisions'}
+          isOpen={isDeletePopupOpen}
+          onClose={this.onDeletePopupClose}
+          onDeleteClick={this.handleDeleteAllTeams}
+        />
       </section>
     );
   }
@@ -229,6 +288,7 @@ const mapStateToProps = (state: IState) => ({
 });
 
 const mapDispatchToProps = {
+  deleteAllDivisions,
   getDivisionsTeams,
   getPools,
   savePool,

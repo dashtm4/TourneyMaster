@@ -25,6 +25,7 @@ import {
   createSchedule,
   updateSchedule,
   schedulesDetailsClear,
+  updateSchedulesDetails,
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
@@ -49,6 +50,7 @@ import {
   calculateTotalGameTime,
   calculateTournamentDays,
   getTimeValuesFromSchedule,
+  ITimeValues,
 } from 'helpers';
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { IDiagnosticsInput } from './diagnostics';
@@ -151,6 +153,10 @@ interface IMapDispatchToProps {
     schedulesDetails: ISchedulesDetails[]
   ) => void;
   schedulesDetailsClear: () => void;
+  updateSchedulesDetails: (
+    modifiedSchedulesDetails: ISchedulesDetails[],
+    schedulesDetailsToModify: ISchedulesDetails[]
+  ) => void;
 }
 
 interface ComponentProps {
@@ -174,6 +180,7 @@ interface State {
   games?: IGame[];
   scheduleId?: string;
   timeSlots?: ITimeSlot[];
+  timeValues?: ITimeValues;
   teams?: ITeam[];
   fields?: IField[];
   facilities?: IScheduleFacility[];
@@ -248,7 +255,7 @@ class Schedules extends Component<Props, State> {
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: Props) {
     const {
       schedule,
       schedulesDetails,
@@ -277,7 +284,7 @@ class Schedules extends Component<Props, State> {
       return;
     }
 
-    if (!schedulesTeamCards && schedulesDetails && teams && scheduleId) {
+    if (schedulesDetails && (!schedulesTeamCards || schedulesDetails !== prevProps.schedulesDetails) && teams && scheduleId) {
       const mappedTeams = mapTeamsFromSchedulesDetails(schedulesDetails, teams);
       this.onScheduleCardsUpdate(mappedTeams);
     }
@@ -369,7 +376,6 @@ class Schedules extends Component<Props, State> {
       scheduleId && schedule
         ? getTimeValuesFromEventSchedule(event, schedule)
         : getTimeValuesFromSchedule(scheduleData!);
-
     const timeSlots = calculateTimeSlots(
       timeValues,
       schedulesDetails,
@@ -390,6 +396,7 @@ class Schedules extends Component<Props, State> {
       {
         games,
         timeSlots,
+        timeValues,
         divisions: mappedDivisions,
         fields: sortedFields,
         teams: mappedTeams,
@@ -490,15 +497,15 @@ class Schedules extends Component<Props, State> {
 
       teamcards = teamcards.length
         ? teamcards.map(item => ({
-            ...item,
-            games: [
-              ...(item.games || []),
-              ...(updateTeamGamesDateInfo(
-                resultTeams.find(team => team.id === item.id)?.games || [],
-                day
-              ) || []),
-            ],
-          }))
+          ...item,
+          games: [
+            ...(item.games || []),
+            ...(updateTeamGamesDateInfo(
+              resultTeams.find(team => team.id === item.id)?.games || [],
+              day
+            ) || []),
+          ],
+        }))
         : updateTeamsDayInfo(resultTeams, day);
     });
 
@@ -671,6 +678,7 @@ class Schedules extends Component<Props, State> {
   };
 
   onSaveDraft = async () => {
+    // looks like this method isn't used
     const { draftSaved } = this.props;
     const { scheduleId, cancelConfirmationOpen } = this.state;
     const localSchedule = this.getSchedule();
@@ -737,6 +745,15 @@ class Schedules extends Component<Props, State> {
     this.props.updateSchedulesTable(teamCard);
   };
 
+  onScheduleGameUpdate = (gameId: number, gameTime: string) => {
+    // make it through redux
+    const { games } = this.state;
+    const foundGame = games?.find((g: IGame) => g.id === gameId);
+    if (foundGame) {
+      foundGame.startTime = gameTime;
+    }
+  };
+
   render() {
     const {
       divisions,
@@ -759,6 +776,7 @@ class Schedules extends Component<Props, State> {
     const {
       fields,
       timeSlots,
+      timeValues,
       games,
       facilities,
       isLoading,
@@ -788,7 +806,7 @@ class Schedules extends Component<Props, State> {
       <div
         className={`${styles.container} ${
           isFullScreen ? styles.containerFullScreen : ''
-        }`}
+          }`}
       >
         {loadCondition && !isLoading && (
           <SchedulesPaper
@@ -812,6 +830,7 @@ class Schedules extends Component<Props, State> {
             pools={pools!}
             games={games!}
             timeSlots={timeSlots!}
+            timeValues={timeValues!}
             divisions={divisions!}
             facilities={facilities!}
             teamCards={schedulesTeamCards!}
@@ -819,24 +838,27 @@ class Schedules extends Component<Props, State> {
             scheduleData={
               scheduleData?.schedule_name ? scheduleData : schedule!
             }
+            schedulesDetails={this.props.schedulesDetails}
             historyLength={schedulesHistoryLength}
             teamsDiagnostics={teamsDiagnostics}
             divisionsDiagnostics={divisionsDiagnostics}
             isFullScreen={isFullScreen}
+            onScheduleGameUpdate={this.onScheduleGameUpdate}
             onTeamCardsUpdate={this.onScheduleCardsUpdate}
             onTeamCardUpdate={this.onScheduleCardUpdate}
             onUndo={onScheduleUndo}
             onToggleFullScreen={onToggleFullScreen}
             playoffTimeSlots={playoffTimeSlots}
-            onBracketGameUpdate={() => {}}
+            onBracketGameUpdate={() => { }}
             recalculateDiagnostics={this.calculateDiagnostics}
             gamesList={gamesList}
+            updateSchedulesDetails={this.props.updateSchedulesDetails}
           />
         ) : (
-          <div className={styles.loadingWrapper}>
-            <SchedulesLoader type={loadingType} time={5000} />
-          </div>
-        )}
+            <div className={styles.loadingWrapper}>
+              <SchedulesLoader type={loadingType} time={5000} />
+            </div>
+          )}
 
         <PopupExposure
           isOpen={cancelConfirmationOpen}
@@ -899,6 +921,8 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       createSchedule,
       updateSchedule,
       schedulesDetailsClear,
+      //
+      updateSchedulesDetails,
     },
     dispatch
   );

@@ -1,6 +1,7 @@
 .navWrapper {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
 
   width: 100%;
   padding: 12px 24px;
@@ -11,4 +12,9 @@
   border-radius: 5px;
 
   box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.1);
+
+  a {
+    color: #00a3ea;
+    font-weight: 500;
+  }
 }

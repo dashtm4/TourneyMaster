@@ -118,6 +118,15 @@ class Sсoring extends React.Component<
     }));
   };
 
+  onChangePhoneNumber = (value: string) => {
+    this.setState(({ changeableTeam }) => ({
+      changeableTeam: {
+        ...(changeableTeam as ITeamWithResults),
+        phone_num: value,
+      },
+    }));
+  };
+
   onOpenTeamDetails = (
     team: ITeamWithResults,
     divisionName: string,
@@ -222,6 +231,7 @@ class Sсoring extends React.Component<
             onSaveTeamClick={this.onSaveTeam}
             onDeleteTeamClick={this.onDeleteTeam}
             onChangeTeam={this.onChangeTeam}
+            onChangePhoneNumber={this.onChangePhoneNumber}
             onCloseModal={this.onCloseModal}
             games={games}
           />

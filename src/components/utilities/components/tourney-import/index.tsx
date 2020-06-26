@@ -3,7 +3,7 @@ import React from 'react';
 import Import from './import';
 import History from './history';
 import { Navigation } from './navigation';
-import { HeadingLevelTwo, Loader } from 'components/common';
+import { HeadingLevelTwo, Loader, Toasts } from 'components/common';
 import styles from './styles.module.scss';
 import Api from 'api/api';
 
@@ -53,10 +53,16 @@ const TourneyImportWizard = () => {
   }
 
   const commitImport = async () => {
-    await Api.post(`/tm_commit?job_id=${jobId}`, null).then(res => {
-      // Do whetever needs to be done after commit
-      console.log(res.body);
-    });
+    Api.post(`/tm_commit?job_id=${jobId}`, null)
+      .then(res => {
+        // Do whetever needs to be done after commit
+        console.log(res);
+        Toasts.successToast('Success');
+      })
+      .catch(error => {
+        console.log(error);
+        Toasts.errorToast('Fail');
+      });
   };
 
   function reRunHandler(tournamentid: string | number) {

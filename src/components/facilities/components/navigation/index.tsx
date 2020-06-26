@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from 'components/common';
 import { getIcon } from 'helpers';
 import { BindingAction } from 'common/models';
+import FabButton from 'components/common/fab-button';
 import { ButtonVarian, ButtonColors, Icons, Routes } from 'common/enums';
 import styles from './styles.module.scss';
 
@@ -54,6 +55,18 @@ const Navigation = ({
         variant={ButtonVarian.CONTAINED}
         color={ButtonColors.PRIMARY}
         label="Save"
+      />
+      <FabButton
+        onClick={onCancelClick}
+        sequence={1}
+        label="Cancel"
+        variant="outlined"
+      />
+      <FabButton
+        onClick={onClick}
+        sequence={2}
+        label="Save"
+        variant="contained"
       />
     </span>
   </p>

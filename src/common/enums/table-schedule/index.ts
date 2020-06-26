@@ -9,4 +9,13 @@ enum TimeSlotsEntityTypes {
   SCHEDULE_GAMES = 'scheduleGames',
 }
 
-export { TableScheduleTypes, TimeSlotsEntityTypes };
+enum AdvancedWorkflowOptionTypes {
+  TEAM_FOR_TEAM_GAME_SWAP = 'Team-for-Team Game Swap',
+  UPDATE_TIMESLOTS = 'Update Timeslots',
+}
+
+export {
+  TableScheduleTypes,
+  TimeSlotsEntityTypes,
+  AdvancedWorkflowOptionTypes,
+};

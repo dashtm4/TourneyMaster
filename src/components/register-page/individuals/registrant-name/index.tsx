@@ -62,6 +62,10 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
           <div className={styles.sectionTitle}>Phone Number</div>
           <PhoneInput
             country={'us'}
+            disableDropdown
+            onlyCountries={['us']}
+            disableCountryCode={true}
+            placeholder=""
             value={data.registrant_mobile || ''}
             onChange={onPhoneNumberChange}
             containerStyle={{ marginTop: '7px' }}
@@ -74,7 +78,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
             }}
             inputProps={{
               required: true,
-              minLength: 17,
+              minLength: 14,
             }}
           />
         </div>

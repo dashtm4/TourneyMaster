@@ -15,6 +15,7 @@ import api from 'api/api';
 import { eventDetailsSchema } from 'validations';
 import { IIconFile } from './model';
 import history from 'browserhistory';
+import { ICalendarEvent } from 'common/models/calendar';
 import { Toasts } from 'components/common';
 import {
   IDivision,
@@ -73,12 +74,58 @@ export const saveEventDetails: ActionCreator<ThunkAction<
       return Toasts.errorToast("Couldn't save the changes");
     }
 
+    const calendarEvent: Partial<ICalendarEvent> = {
+      cal_event_id: eventDetails.event_id || '',
+      cal_event_title: eventDetails.event_name || '',
+      cal_event_type: 'event',
+      cal_event_datetime: eventDetails.created_datetime || '',
+      cal_event_tag: eventDetails.event_tag || '',
+      cal_event_desc: eventDetails.event_description || '',
+      cal_event_startdate: eventDetails.event_startdate || '',
+      cal_event_enddate: eventDetails.event_enddate || '',
+      has_reminder_YN: 1,
+      status_id: 1,
+    };
+    dispatch<any>(saveCalendarEvent(calendarEvent));
+
     Toasts.successToast('Changes successfully saved');
 
     dispatch<any>(getEventDetails(eventDetails.event_id));
   } catch (err) {
     Toasts.errorToast(err.message);
   }
+};
+
+export const saveCalendarEvent: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (event: ICalendarEvent) => async () => {
+  const eventList = await api.get(
+    `/calendar_events?cal_event_id=${event.cal_event_id}`
+  );
+
+  if (eventList.length) {
+    // update if exist
+    const response = await api.put(
+      `/calendar_events?cal_event_id=${event.cal_event_id}`,
+      event
+    );
+
+    if (response?.errorType === 'Error' || response?.message === false) {
+      return Toasts.errorToast("Couldn't update (calendar event)");
+    }
+  } else {
+    // create if not exist
+    const response = await api.post('/calendar_events', event);
+
+    if (response?.errorType === 'Error' || response?.message === false) {
+      return Toasts.errorToast("Couldn't create (calendar event)");
+    }
+  }
+
+  Toasts.successToast('Successfully saved (calendar event)');
 };
 
 export const createEvent: ActionCreator<ThunkAction<
@@ -102,6 +149,20 @@ export const createEvent: ActionCreator<ThunkAction<
 
     if (response?.errorType !== undefined)
       return Toasts.errorToast("Couldn't save the changes");
+
+    const calendarEvent: Partial<ICalendarEvent> = {
+      cal_event_id: eventDetails.event_id || '',
+      cal_event_title: eventDetails.event_name || '',
+      cal_event_type: 'event',
+      cal_event_datetime: eventDetails.created_datetime || '',
+      cal_event_tag: eventDetails.event_tag || '',
+      cal_event_desc: eventDetails.event_description || '',
+      cal_event_startdate: eventDetails.event_startdate || '',
+      cal_event_enddate: eventDetails.event_enddate || '',
+      has_reminder_YN: 1,
+      status_id: 1,
+    };
+    dispatch<any>(saveCalendarEvent(calendarEvent));
 
     Toasts.successToast('Changes successfully saved');
 
@@ -145,13 +206,51 @@ export const deleteEvent: ActionCreator<ThunkAction<
   {},
   null,
   EventDetailsAction
->> = (eventId: string) => async (_dispatch: Dispatch) => {
+>> = (eventId: string, eventName: string) => async (_dispatch: Dispatch) => {
   // Delete EVENT
   await api.delete(`/events?event_id=${eventId}`);
 
   //DELETE REGISTRATION
   const registrations = await api.get(`/registrations?event_id=${eventId}`);
   api.delete('/registrations', registrations);
+
+  // Delete calendar event
+  await api.delete(`/calendar_events?cal_event_id=${eventId}`, {
+    is_active_YN: 0,
+  });
+
+  const openEvent = await api.get(
+    `/calendar_events?cal_event_title=${eventName} Open`
+  );
+  if (openEvent.length)
+    await api.delete(
+      `/calendar_events?cal_event_id=${openEvent[0].cal_event_id}`,
+      {
+        is_active_YN: 0,
+      }
+    );
+
+  const closeEvent = await api.get(
+    `/calendar_events?cal_event_title=${eventName} Close`
+  );
+  if (closeEvent.length)
+    await api.delete(
+      `/calendar_events?cal_event_id=${closeEvent[0].cal_event_id}`,
+      {
+        is_active_YN: 0,
+      }
+    );
+
+  const discountEndEvent = await api.get(
+    `/calendar_events?cal_event_title=${eventName} Early Bird Discount Ends`
+  );
+  if (discountEndEvent.length)
+    await api.delete(
+      `/calendar_events?cal_event_id=${discountEndEvent[0].cal_event_id}`,
+      {
+        is_active_YN: 0,
+      }
+    );
 
   // DELETE DIVISIONS&POOLS
   const divisions = await api.get(`/divisions?event_id=${eventId}`);

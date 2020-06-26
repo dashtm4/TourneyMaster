@@ -8,6 +8,8 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  TableBody,
+  TableFooter,
 } from '@material-ui/core';
 import { Button } from 'components/common';
 
@@ -46,7 +48,11 @@ const PaymentSchedule: React.SFC<PaymentScheduleProps> = ({
     const newSchedule = {
       ...schedule,
       schedule: schedule.schedule.concat([
-        { date: new Date(), amountType: 'percent', amount: '0' },
+        {
+          date: new Date().getTime() / 1000,
+          amountType: 'percent',
+          amount: '0',
+        },
       ]),
     };
     onScheduleChange(newSchedule);
@@ -57,37 +63,43 @@ const PaymentSchedule: React.SFC<PaymentScheduleProps> = ({
       <TableContainer className={classes.PaymentSchedule}>
         <Table size="small">
           <TableHead>
-            <TableCell>Payment Date</TableCell>
-            <TableCell>Amount (%)</TableCell>
-            <TableCell />
+            <TableRow>
+              <TableCell>Payment Date</TableCell>
+              <TableCell>Amount (%)</TableCell>
+              <TableCell />
+            </TableRow>
           </TableHead>
-          {schedule?.schedule?.map((phase: any, index: number) => (
-            <ScheduleItem
-              key={index}
-              data={phase}
-              onChange={onPhaseChange.bind(null, index)}
-              onDelete={onPhaseDelete.bind(null, index)}
-            />
-          ))}
-          <TableRow>
-            <TableCell colSpan={1}>
-              <Button
-                variant="outlined"
-                color="primary"
-                label="Add Payment Date"
-                onClick={onPhaseAdd}
+          <TableBody>
+            {schedule?.schedule?.map((phase: any, index: number) => (
+              <ScheduleItem
+                key={index}
+                data={phase}
+                onChange={onPhaseChange.bind(null, index)}
+                onDelete={onPhaseDelete.bind(null, index)}
               />
-            </TableCell>
-            <TableCell>
-              Total:{' '}
-              {schedule?.schedule?.reduce(
-                (sum: number, phase: any) => sum + Number(phase.amount),
-                0
-              )}
-              %
-            </TableCell>
-            <TableCell />
-          </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={1}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  label="Add Payment Date"
+                  onClick={onPhaseAdd}
+                />
+              </TableCell>
+              <TableCell>
+                Total:{' '}
+                {schedule?.schedule?.reduce(
+                  (sum: number, phase: any) => sum + Number(phase.amount),
+                  0
+                )}
+                %
+              </TableCell>
+              <TableCell />
+            </TableRow>
+          </TableFooter>
         </Table>
       </TableContainer>
     </React.Fragment>

@@ -56,6 +56,13 @@ class OnboardingWizard extends React.Component<Props> {
           />
         </div>
         <div className={styles.btnWrapper}>
+          <a
+            href="https://tourneymaster.s3.amazonaws.com/public/Quickstarts/Tourney+Master+Initial+Sign+In+Manual.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Quickstart Guide
+          </a>
           <Button
             label="Next"
             color="primary"
