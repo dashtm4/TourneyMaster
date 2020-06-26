@@ -100,7 +100,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
 
   mapOptionsForPools = () => {
     const firstOption = { value: 'allPools', label: 'All pools' };
-    const pools = (this.props.pools || [])
+    const currentPools = (this.props.pools || [])
       .filter(pool => pool.division_id === this.state.selectedDivisionId)
       .map(pool => {
         return {
@@ -108,7 +108,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
           label: pool.pool_name,
         };
       });
-    return [firstOption, ...pools];
+    return [firstOption, ...currentPools];
   };
 
   createScheduleTable = () => {
@@ -196,6 +196,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
               divisionHex={this.props.divisions?.find(v => v.division_id === this.state.selectedDivisionId)?.division_hex || ''}
               divisionName={this.props.divisions?.find(v => v.division_id === this.state.selectedDivisionId)?.short_name || ''}
               onChangeGames={this.onChangeGames}
+              pools={this.mapOptionsForPools()}
             />
           </div>
           <div className={styles.sideTables}>
