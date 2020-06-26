@@ -5,3 +5,11 @@ export interface IGameCell {
   divisionHex: string;
   divisionName: string;
 }
+
+export interface ITableRunningTally {
+  teamId: string;
+  teamName: string;
+  homeGamesNumber: number;
+  awayGamesNumber: number;
+  allGamesNumber: number;
+}

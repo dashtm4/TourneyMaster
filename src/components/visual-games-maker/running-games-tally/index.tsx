@@ -11,15 +11,7 @@ import {
   TableFooter,
 } from '@material-ui/core';
 import { ITeam } from 'common/models/teams';
-import { IGameCell } from '../helpers';
-
-interface ITableRunningTally {
-  teamId: string;
-  teamName: string;
-  homeGamesNumber: number;
-  awayGamesNumber: number;
-  allGamesNumber: number;
-}
+import { IGameCell, ITableRunningTally } from '../helpers';
 
 interface IProps {
   teams: ITeam[] | undefined;
