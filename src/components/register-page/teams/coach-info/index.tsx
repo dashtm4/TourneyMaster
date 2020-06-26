@@ -90,7 +90,7 @@ const CoachInfo = ({ data, onChange, fillCoachInfo }: ICoachInfoProps) => {
             }}
             inputProps={{
               required: true,
-              minLength: 17,
+              minLength: 14,
             }}
           />
         </div>
