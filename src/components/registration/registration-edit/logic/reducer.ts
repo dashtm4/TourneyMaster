@@ -82,9 +82,11 @@ export default (
       };
     }
     case REGISTRANTS_PAYMENTS_FETCH_SUCCESS: {
+      const newPayments = { ...state.payments };
+      newPayments[action.payload.regResponseId] = action.payload.data;
       return {
         ...state,
-        payments: action.payload,
+        payments: newPayments,
         error: false,
       };
     }

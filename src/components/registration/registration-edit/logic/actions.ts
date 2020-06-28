@@ -214,17 +214,17 @@ export const getRegistrantPayments: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (regResponseId: string) => async (dispatch: Dispatch) => {
-  dispatch(registrantsPaymentsFetchSuccess([]));
+  // dispatch(registrantsPaymentsFetchSuccess({ regResponseId, data: null }));
   const data = await api.get(
     `/registrations_payments?reg_response_id=${regResponseId}`
   ); // TODO
 
-  dispatch(registrantsPaymentsFetchSuccess(data));
+  dispatch(registrantsPaymentsFetchSuccess({ regResponseId, data }));
 };
 
 export const registrantsPaymentsFetchSuccess = (
-  payload: any[]
+  payload: any
 ): { type: string; payload: any[] } => ({
   type: REGISTRANTS_PAYMENTS_FETCH_SUCCESS,
-  payload,
+  payload: payload,
 });
