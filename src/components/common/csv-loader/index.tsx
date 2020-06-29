@@ -13,6 +13,7 @@ import {
   Input,
 } from 'components/common/';
 import { PopupExposure, Toasts } from 'components/common';
+import MuiTable from 'components/common/mui-table';
 import {
   FileUploadTypes,
   AcceptFileTypes,
@@ -69,6 +70,7 @@ interface State {
   isConfirmModalOpen: boolean;
   isMappingModalOpen: boolean;
   isManageMappingOpen: boolean;
+  dupList: { index: number; msg: string }[];
 }
 
 class CsvLoader extends React.Component<Props, State> {
@@ -82,18 +84,21 @@ class CsvLoader extends React.Component<Props, State> {
     isConfirmModalOpen: false,
     isMappingModalOpen: false,
     isManageMappingOpen: false,
+    dupList: [],
   };
 
   componentDidMount() {
-    this.props.getTableColumns(this.props.type);
-    this.props.getMappings(this.props.type);
+    const { getTableColumns, getMappings, type } = this.props;
+    getTableColumns(type);
+    getMappings(type);
   }
 
   componentDidUpdate(prevProps: Props) {
     const { tableColumns } = this.props;
+    const { fields } = this.state;
 
     if (
-      (tableColumns && !this.state.fields.length) ||
+      (tableColumns && !fields.length) ||
       tableColumns !== prevProps.tableColumns
     ) {
       const parsedTableDetails = parseTableDetails(tableColumns?.table_details);
@@ -129,7 +134,7 @@ class CsvLoader extends React.Component<Props, State> {
           );
           if (!isCsvValid) {
             return Toasts.errorToast(
-              'Please chceck your csv. Something seems to be off with it.'
+              'Please check your csv. Something seems to be off with it.'
             );
           } else {
             const preview = getPreview(data, isHeaderIncluded, headerPosition);
@@ -149,6 +154,7 @@ class CsvLoader extends React.Component<Props, State> {
                 map_id:
                   prevState.fields.find(x => x.value === column)?.map_id || '',
               })),
+              dupList: [],
             }));
           }
         },
@@ -157,11 +163,10 @@ class CsvLoader extends React.Component<Props, State> {
   };
 
   onFieldSelect = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const { tableColumns } = this.props;
     const { fields } = this.state;
 
-    const parsedColumnsDetails = parseTableDetails(
-      this.props.tableColumns?.table_details
-    );
+    const parsedColumnsDetails = parseTableDetails(tableColumns?.table_details);
 
     const newField = parsedColumnsDetails.filter(
       field => field.column_name === e.target.value
@@ -195,14 +200,16 @@ class CsvLoader extends React.Component<Props, State> {
   };
 
   onImport = () => {
-    if (!this.state.data.length) {
+    const { data, fields } = this.state;
+    if (!data.length) {
       return Toasts.errorToast('Please, upload a csv file first');
     }
+
     const { type, eventId, onCreate } = this.props;
 
     const dataToSave: any = [];
-    this.state.data.forEach(res => {
-      const event = mapDataForSaving(type, res, this.state.fields, eventId);
+    data.forEach(res => {
+      const event = mapDataForSaving(type, res, fields, eventId);
       dataToSave.push(event);
     });
 
@@ -222,7 +229,8 @@ class CsvLoader extends React.Component<Props, State> {
   };
 
   onIsHeaderIncludedChange = () => {
-    this.setState({ isHeaderIncluded: !this.state.isHeaderIncluded });
+    const { isHeaderIncluded } = this.state;
+    this.setState({ isHeaderIncluded: !isHeaderIncluded });
   };
 
   onHeaderPositionChange = (e: React.ChangeEvent<any>) => {
@@ -238,19 +246,39 @@ class CsvLoader extends React.Component<Props, State> {
     this.setState({ fields: mapping, selectedMapping: e.target.value });
   };
 
-  onModalClose = () => {
-    this.props.onClose();
-    this.setState({
-      preview: { header: [], row: [] },
-      data: [],
-      fields: [],
-      selectedMapping: '',
-      headerPosition: 1,
-    });
+  onModalClose = (param = { type: '', data: [] }) => {
+    const { onClose } = this.props;
+    const { type, data } = param;
+
+    if (type === 'dup' && data.length >= 0) {
+      this.setState({ dupList: data });
+    } else {
+      onClose();
+      this.setState({
+        preview: { header: [], row: [] },
+        data: [],
+        fields: [],
+        selectedMapping: '',
+        headerPosition: 1,
+        dupList: [],
+      });
+    }
+  };
+
+  getDupList = () => {
+    const { dupList, data } = this.state;
+
+    return dupList.map(el => [
+      (el.index + 1).toString(),
+      ...data[el.index],
+      el.msg,
+    ]);
   };
 
   onCancelClick = () => {
-    if (this.state.data.length) {
+    const { data } = this.state;
+
+    if (data.length) {
       this.setState({ isConfirmModalOpen: true });
     } else {
       this.onCancel();
@@ -271,13 +299,16 @@ class CsvLoader extends React.Component<Props, State> {
   };
 
   onMappingSave = (name: string) => {
+    const { saveMapping, type } = this.props;
+    const { fields } = this.state;
+
     const data = {
       import_description: name,
-      map_id_json: JSON.stringify(mapFieldForSaving(this.state.fields)),
-      destination_table: this.props.type,
+      map_id_json: JSON.stringify(mapFieldForSaving(fields)),
+      destination_table: type,
     };
 
-    this.props.saveMapping(data);
+    saveMapping(data);
     this.setState({ isMappingModalOpen: false });
   };
 
@@ -298,11 +329,10 @@ class CsvLoader extends React.Component<Props, State> {
   };
 
   onIncludeAllChange = () => {
-    const areAllFieldsSelected = this.state.fields.every(
-      field => field.included
-    );
+    const { fields } = this.state;
+    const areAllFieldsSelected = fields.every(field => field.included);
     this.setState({
-      fields: this.state.fields.map(field => ({
+      fields: fields.map(field => ({
         ...field,
         included: !areAllFieldsSelected,
       })),
@@ -321,6 +351,7 @@ class CsvLoader extends React.Component<Props, State> {
       isMappingModalOpen,
       preview,
       selectedMapping,
+      dupList,
     } = this.state;
     const columnOptions =
       tableColumns && getColumnOptions(tableColumns?.table_details);
@@ -354,6 +385,11 @@ class CsvLoader extends React.Component<Props, State> {
               onClick={this.onManageMappingClick}
             />
           </div>
+          {dupList.length !== 0 && (
+            <div className={styles.row}>
+              <b>Cannot Import File!</b>
+            </div>
+          )}
           <div className={styles.row}>
             <div className={styles.checkboxWrapper}>
               <Checkbox
@@ -384,14 +420,21 @@ class CsvLoader extends React.Component<Props, State> {
               disabled={!length}
             />
           </div>
-          <CsvTable
-            preview={preview}
-            fields={fields}
-            onFieldIncludeChange={this.onFieldIncludeChange}
-            onSelect={this.onFieldSelect}
-            columnOptions={columnOptions}
-            onIncludeAllChange={this.onIncludeAllChange}
-          />
+          {dupList.length === 0 ? (
+            <CsvTable
+              preview={preview}
+              fields={fields}
+              onFieldIncludeChange={this.onFieldIncludeChange}
+              onSelect={this.onFieldSelect}
+              columnOptions={columnOptions}
+              onIncludeAllChange={this.onIncludeAllChange}
+            />
+          ) : (
+            <MuiTable
+              header={['No', ...preview.header, 'Status']}
+              fields={this.getDupList()}
+            />
+          )}
           <div className={styles.requiredFieldWrapper}>
             <span className={styles.title}>Required Fields:</span>{' '}
             {requiredFields.map((field, index) =>
@@ -408,18 +451,22 @@ class CsvLoader extends React.Component<Props, State> {
               variant="text"
               onClick={this.onCancelClick}
             />
-            <Button
-              label="Save Mapping"
-              color="secondary"
-              variant="text"
-              onClick={this.onSaveMappingClick}
-            />
-            <Button
-              label="Import"
-              color="primary"
-              variant="contained"
-              onClick={this.onImport}
-            />
+            {dupList.length === 0 && (
+              <>
+                <Button
+                  label="Save Mapping"
+                  color="secondary"
+                  variant="text"
+                  onClick={this.onSaveMappingClick}
+                />
+                <Button
+                  label="Import"
+                  color="primary"
+                  variant="contained"
+                  onClick={this.onImport}
+                />
+              </>
+            )}
           </div>
           <PopupExposure
             isOpen={isConfirmModalOpen}

@@ -7,13 +7,7 @@ import { teamSchema } from 'validations';
 import { mapScheduleGamesWithNames, getVarcharEight } from 'helpers';
 import history from 'browserhistory';
 import { ScheduleStatuses } from 'common/enums';
-import {
-  ITeam,
-  BindingAction,
-  IDivision,
-  IFacility,
-  ISchedule,
-} from 'common/models';
+import { ITeam, IDivision, IFacility, ISchedule } from 'common/models';
 import { Toasts } from 'components/common';
 import {
   TeamsAction,
@@ -212,73 +206,91 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (teams: Partial<ITeam>[], cb: BindingAction) => async (
+>> = (teams: Partial<ITeam>[], cb: (param?: object) => void) => async (
   dispatch: Dispatch
 ) => {
-  try {
-    const allDivisions = await Api.get(
-      `/divisions?event_id=${teams[0].event_id}`
-    );
-    const allTeams = await Api.get(`/teams?event_id=${teams[0].event_id}`);
+  const allDivisions = await Api.get(
+    `/divisions?event_id=${teams[0].event_id}`
+  );
+  const allTeams = await Api.get(`/teams?event_id=${teams[0].event_id}`);
 
-    for (const [index, team] of teams.entries()) {
-      if (!team.division_id) {
-        return Toasts.errorToast(
-          `Record ${index + 1}: Division Name is required to fill!`
-        );
+  for (const [index, team] of teams.entries()) {
+    if (!team.division_id) {
+      return Toasts.errorToast(
+        `Record ${index + 1}: Division Name is required to fill!`
+      );
+    }
+  }
+
+  const data = teams.map(team => {
+    const divisionId = allDivisions.find(
+      (div: IDivision) =>
+        div.long_name.toLowerCase() === team.division_id?.toLowerCase()
+    )?.division_id;
+
+    if (team.phone_num) {
+      const orgin: any = team.phone_num;
+      const regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
+      let str = orgin.replace(regex, '');
+      str = str.replace(/\s/g, '');
+
+      if (str && str.indexOf('1') === 0) {
+        str = str.substring(1);
       }
+
+      team.phone_num = str;
+    } else {
+      team.phone_num = '';
     }
 
-    const data = teams.map(team => {
-      const divisionId = allDivisions.find(
-        (div: IDivision) =>
-          div.long_name.toLowerCase() === team.division_id?.toLowerCase()
-      )?.division_id;
+    return { ...team, division_id: divisionId };
+  });
 
-      if (team.phone_num) {
-        const orgin: any = team.phone_num;
-        const regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
-        let str = orgin.replace(regex, '');
-        str = str.replace(/\s/g, '');
+  const dupList = [];
 
-        if (str && str.indexOf('1') === 0) {
-          str = str.substring(1);
-        }
-
-        team.phone_num = str;
-      } else {
-        team.phone_num = '';
-      }
-
-      return { ...team, division_id: divisionId };
-    });
-
-    for (const [index, team] of data.entries()) {
-      if (!team.division_id) {
-        return Toasts.errorToast(
-          `Record ${index +
-            1}: There is no division with such long name. Please, create a division first or choose another one.`
-        );
-      }
-      const teamsInDivision = allTeams.filter(
-        (t: ITeam) => t.division_id === team.division_id
+  for (const [index, team] of data.entries()) {
+    if (!team.division_id) {
+      return Toasts.errorToast(
+        `Record ${index +
+          1}: There is no division with such long name. Please, create a division first or choose another one.`
       );
+    }
+    const teamsInDivision = allTeams.filter(
+      (t: ITeam) => t.division_id === team.division_id
+    );
+
+    try {
       await Yup.array()
         .of(teamSchema)
-        .unique(
-          t => t.long_name,
-          'You already have a team with the same long name. The team must have a unique long name.'
-        )
+        .unique(t => t.long_name, 'The team must have a unique long name.')
         .validate([...teamsInDivision, team]);
-      allTeams.push(team);
+    } catch (err) {
+      if (err.value) {
+        const invalidTeam = err.value[err.value.length - 1];
+        const index = teams.findIndex(
+          team => team.team_id === invalidTeam.team_id
+        );
+
+        dupList.push({
+          index: index,
+          msg: err.message,
+        });
+      }
     }
 
+    allTeams.push(team);
+  }
+
+  if (dupList.length !== 0) {
+    cb({ type: 'dup', data: dupList });
+  } else {
     for (const team of data) {
       const response = await Api.post(`/teams`, team);
       if (response?.errorType === 'Error' || response?.message === false) {
         return Toasts.errorToast("Couldn't create a team");
       }
     }
+
     dispatch({
       type: CREATE_TEAMS_SUCCESS,
       payload: {
@@ -290,17 +302,5 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
 
     const successMsg = `Teams are successfully created (${data.length})`;
     Toasts.successToast(successMsg);
-  } catch (err) {
-    let errMessage = err.message;
-
-    if (err.value) {
-      const invalidTeam = err.value[err.value.length - 1];
-      const index = teams.findIndex(
-        team => team.team_id === invalidTeam.team_id
-      );
-      errMessage = `Record ${index + 1}: ${err.message}`;
-    }
-
-    return Toasts.errorToast(errMessage);
   }
 };
