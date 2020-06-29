@@ -426,7 +426,7 @@ class CsvLoader extends React.Component<Props, State> {
             />
           ) : (
             <MuiTable
-              header={['id', ...preview.header, 'status']}
+              header={['No', ...preview.header, 'Status']}
               fields={this.getDupList()}
             />
           )}
