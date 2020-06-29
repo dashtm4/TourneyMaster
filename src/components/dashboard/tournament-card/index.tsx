@@ -14,6 +14,7 @@ interface ITournamentCardProps {
   event: IEventDetails;
   numOfTeams: number;
   numOfFields: number;
+  numOfGameCount: number;
   numOfLocations: number;
   lastScheduleRelease?: string;
   isDetailLoading: boolean;
@@ -26,6 +27,7 @@ const TournamentCard = ({
   isDetailLoading,
   numOfTeams,
   numOfFields,
+  numOfGameCount,
   numOfLocations,
   lastScheduleRelease,
 }: ITournamentCardProps) => {
@@ -117,6 +119,14 @@ const TournamentCard = ({
               ) : (
                 '—'
               )
+            ) : (
+              <CircularProgress size={15} />
+            )}
+          </div>
+          <div className={styles.tournamentContentItem}>
+            <span className={styles.tournamentContentTitle}>Games Count:</span>{' '}
+            {!isDetailLoading ? (
+              numOfGameCount || '—'
             ) : (
               <CircularProgress size={15} />
             )}
