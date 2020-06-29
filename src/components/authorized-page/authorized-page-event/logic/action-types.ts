@@ -11,6 +11,8 @@ export const CLEAR_AUTH_PAGE_DATA = 'CLEAR_AUTH_PAGE_DATA';
 export const PUBLISH_EVENT_SUCCESS = 'PUBLISH_EVENT_SUCCESS';
 export const PUBLISH_EVENT_FAILURE = 'PUBLISH_EVENT_FAILURE';
 
+export const PUBLISH_GAMECOUNT_SUCCESS = 'PUBLISH_GAMECOUNT_SUCCESS';
+
 export const ADD_ENTITY_TO_LIBRARY_SUCCESS = 'ADD_ENTITY_TO_LIBRARY_SUCCESS';
 export const ADD_ENTITY_TO_LIBRARY_FAILURE = 'ADD_ENTITY_TO_LIBRARY_FAILURE';
 
@@ -41,6 +43,13 @@ export interface publishEventSuccess {
   };
 }
 
+export interface publishGameCountSuccess {
+  type: 'PUBLISH_GAMECOUNT_SUCCESS';
+  payload: {
+    gameCount: number;
+  };
+}
+
 export interface addEntityToLibrarySuccess {
   type: 'ADD_ENTITY_TO_LIBRARY_SUCCESS';
   payload: {
@@ -63,4 +72,5 @@ export type AuthPageAction =
   | cleatAuthPageData
   | publishEventSuccess
   | addEntityToLibrarySuccess
-  | addEntitiesToLibrarySuccess;
+  | addEntitiesToLibrarySuccess
+  | publishGameCountSuccess;

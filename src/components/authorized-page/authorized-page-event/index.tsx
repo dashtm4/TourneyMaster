@@ -5,6 +5,7 @@ import { Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
   loadAuthPageData,
+  loadGameCount,
   clearAuthPageData,
   publishEventData,
 } from './logic/actions';
@@ -62,9 +63,11 @@ interface MatchParams {
 interface Props {
   isLoading: boolean;
   isLoaded: boolean;
+  gameCount: number;
   menuList: IMenuItem[];
   tournamentData: ITournamentData;
   loadAuthPageData: (eventId: string) => void;
+  loadGameCount: (eventId: string) => void;
   clearAuthPageData: BindingAction;
   getCalendarEvents: BindingAction;
   calendarEvents: ICalendarEvent[] | null | undefined;
@@ -86,6 +89,8 @@ const AuthorizedPageEvent = ({
   menuList,
   tournamentData,
   loadAuthPageData,
+  loadGameCount,
+  gameCount,
   clearAuthPageData,
   getCalendarEvents,
   calendarEvents,
@@ -123,6 +128,7 @@ const AuthorizedPageEvent = ({
   React.useEffect(() => {
     if (eventId) {
       loadAuthPageData(eventId);
+      loadGameCount(eventId);
       getCalendarEvents();
     }
 
@@ -141,7 +147,12 @@ const AuthorizedPageEvent = ({
     togglePublishPopup(!isPublishPopupOpen);
   };
 
-  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS, Routes.VISUAL_GAMES_MAKER];
+  const hideOnList = [
+    Routes.SCHEDULES,
+    Routes.RECORD_SCORES,
+    Routes.PLAYOFFS,
+    Routes.VISUAL_GAMES_MAKER,
+  ];
   const schedulingIgnoreList = [
     EventMenuTitles.SCHEDULING,
     EventMenuTitles.SCORING,
@@ -193,11 +204,7 @@ const AuthorizedPageEvent = ({
             />
             <Route
               path={Routes.VISUAL_GAMES_MAKER_ID}
-              render={props => (
-                <VisualGamesMaker
-                  {...props}
-                />
-              )}
+              render={props => <VisualGamesMaker {...props} />}
             />
             <Route
               path={Routes.SCHEDULES_ID}
@@ -272,6 +279,7 @@ const AuthorizedPageEvent = ({
             isOpen={isPublishPopupOpen}
             onClose={onTogglePublishPopup}
             publishEventData={publishEventData}
+            gameCount={gameCount}
           />
         </>
       )}
@@ -286,11 +294,13 @@ export default connect(
     isLoaded: pageEvent.isLoaded,
     menuList: pageEvent.menuList,
     calendarEvents: calendar.events,
+    gameCount: pageEvent.gameCount,
   }),
   (dispatch: Dispatch) =>
     bindActionCreators(
       {
         loadAuthPageData,
+        loadGameCount,
         clearAuthPageData,
         getCalendarEvents,
         updateCalendarEvent,
