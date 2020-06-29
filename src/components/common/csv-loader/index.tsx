@@ -385,6 +385,11 @@ class CsvLoader extends React.Component<Props, State> {
               onClick={this.onManageMappingClick}
             />
           </div>
+          {dupList.length !== 0 && (
+            <div className={styles.row}>
+              <b>Cannot Import File!</b>
+            </div>
+          )}
           <div className={styles.row}>
             <div className={styles.checkboxWrapper}>
               <Checkbox
@@ -446,18 +451,22 @@ class CsvLoader extends React.Component<Props, State> {
               variant="text"
               onClick={this.onCancelClick}
             />
-            <Button
-              label="Save Mapping"
-              color="secondary"
-              variant="text"
-              onClick={this.onSaveMappingClick}
-            />
-            <Button
-              label="Import"
-              color="primary"
-              variant="contained"
-              onClick={this.onImport}
-            />
+            {dupList.length === 0 && (
+              <>
+                <Button
+                  label="Save Mapping"
+                  color="secondary"
+                  variant="text"
+                  onClick={this.onSaveMappingClick}
+                />
+                <Button
+                  label="Import"
+                  color="primary"
+                  variant="contained"
+                  onClick={this.onImport}
+                />
+              </>
+            )}
           </div>
           <PopupExposure
             isOpen={isConfirmModalOpen}
