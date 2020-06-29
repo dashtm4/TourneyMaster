@@ -97,6 +97,7 @@ const RenderGameSlot = (props: Props) => {
                 onTeamCardUpdate={onTeamCardUpdate}
                 isDndMode={isDndMode}
                 isEnterScores={isEnterScores}
+                game={game}
               />
             )}
             {!awayTeam && (awaySeedId || awayDependsUpon) && bracketGameId && (
@@ -160,6 +161,7 @@ const RenderGameSlot = (props: Props) => {
                 onTeamCardUpdate={onTeamCardUpdate}
                 isDndMode={isDndMode}
                 isEnterScores={isEnterScores}
+                game={game}
               />
             )}
             {!homeTeam && (homeSeedId || homeDependsUpon) && bracketGameId && (
