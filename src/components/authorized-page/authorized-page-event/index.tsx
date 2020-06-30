@@ -63,7 +63,10 @@ interface MatchParams {
 interface Props {
   isLoading: boolean;
   isLoaded: boolean;
-  gameCount: number;
+  gameCount: {
+    poolLength: number;
+    bracketLength: number;
+  };
   menuList: IMenuItem[];
   tournamentData: ITournamentData;
   loadAuthPageData: (eventId: string) => void;

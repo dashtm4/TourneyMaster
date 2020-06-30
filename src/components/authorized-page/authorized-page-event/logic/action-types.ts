@@ -46,7 +46,8 @@ export interface publishEventSuccess {
 export interface publishGameCountSuccess {
   type: 'PUBLISH_GAMECOUNT_SUCCESS';
   payload: {
-    gameCount: number;
+    poolLength: number;
+    bracketLength: number;
   };
 }
 

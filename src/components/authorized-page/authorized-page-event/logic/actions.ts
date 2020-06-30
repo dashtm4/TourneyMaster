@@ -109,14 +109,21 @@ export const loadGameCount: ActionCreator<ThunkAction<
   null,
   { type: string }
 >> = (eventId: string) => async (dispatch: Dispatch) => {
-  const games = await api.get(`/games?event_id=${eventId}`);
-  const gamesBrackets = await api.get(`/games_brackets?event_id=${eventId}`);
-
-  const gameCount = (games.length || 0) + (gamesBrackets.length || 0);
+  const games = await api.get(`/event_game_ids?event_id=${eventId}`);
+  const poolLength = games.filter(
+    ({ game_type }: { game_type: string }) => game_type === 'Pool Play'
+  ).length;
+  const bracketLength = games.filter(
+    ({ game_type }: { game_type: string }) => game_type === 'Bracket'
+  ).length;
+  console.log('games', poolLength, bracketLength);
 
   dispatch({
     type: PUBLISH_GAMECOUNT_SUCCESS,
-    payload: gameCount,
+    payload: {
+      poolLength,
+      bracketLength,
+    },
   });
 };
 

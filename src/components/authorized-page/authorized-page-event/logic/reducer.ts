@@ -52,7 +52,10 @@ import { mapSchedulingScheduleData } from 'components/schedules/mapScheduleData'
 export interface IPageEventState {
   isLoading: boolean;
   isLoaded: boolean;
-  gameCount: number;
+  gameCount: {
+    poolLength: number;
+    bracketLength: number;
+  };
   menuList: IMenuItem[];
   tournamentData: ITournamentData;
 }
@@ -60,7 +63,10 @@ export interface IPageEventState {
 const initialState = {
   isLoading: false,
   isLoaded: false,
-  gameCount: 0,
+  gameCount: {
+    poolLength: 0,
+    bracketLength: 0,
+  },
   menuList: EventMenu,
   tournamentData: {
     event: null,
