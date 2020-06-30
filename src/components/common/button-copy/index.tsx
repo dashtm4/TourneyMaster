@@ -18,6 +18,7 @@ interface Props {
   variant: ButtonVarian;
   disableMessage?: string;
   style?: CSSProperties;
+  successMessage?: string;
 }
 
 const ButtonCopy = ({
@@ -27,11 +28,12 @@ const ButtonCopy = ({
   copyString,
   disableMessage,
   style,
+  successMessage = 'Successfully copied!',
 }: Props) => {
   const onClick = () => {
     copyToClipboard(copyString);
 
-    Toasts.successToast('Successfully copied!');
+    Toasts.successToast(successMessage);
   };
 
   const WrappedLabel = (
