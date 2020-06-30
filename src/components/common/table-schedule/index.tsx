@@ -287,7 +287,7 @@ const TableSchedule = ({
         return setMoveCardResult(result);
       }
       default:
-        markGameAssigned(result.possibleGame, !dropParams.gameId && !dropParams.originGameId);
+        markGameAssigned(result.possibleGame, !dropParams.gameId && !dropParams.originGameId, !!(dropParams.gameId && dropParams.originGameId));
         onTeamCardsUpdate(result.teamCards);
     }
   };
@@ -305,7 +305,7 @@ const TableSchedule = ({
     }
   };
 
-  const markGameAssigned = (unassignedGame?: IConfigurableGame, doPrevent: boolean = false) => {
+  const markGameAssigned = (unassignedGame?: IConfigurableGame, doPreventAssign: boolean = false, doPreventUnassign: boolean = false) => {
     if (unassignedGame && gamesList) {
       const foundGame = gamesList.find(
         g =>
@@ -314,9 +314,11 @@ const TableSchedule = ({
       );
       if (foundGame) {
         if (foundGame.isAssigned) {
-          foundGame.isAssigned = false;
+          if (!doPreventUnassign) {
+            foundGame.isAssigned = false;
+          }
         } else {
-          if (!doPrevent) {
+          if (!doPreventAssign) {
             foundGame.isAssigned = true;
           }
         }
