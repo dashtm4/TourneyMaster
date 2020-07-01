@@ -19,7 +19,6 @@ export const mapScheduleData = (
 
   delete data?.num_fields;
   delete data?.periods_per_game;
-  delete data?.creationType;
   return data;
 };
 
@@ -87,14 +86,14 @@ export const mapSchedulesTeamCards = async (
     schedule_id: scheduleId,
     schedule_desc: null,
     event_id: eventId,
-    division_id: game.homeTeam?.divisionId || null,
+    division_id: game.divisionId || game.homeTeam?.divisionId || null,
     pool_id: game.homeTeam?.poolId || null,
     game_id: game.id,
     game_date: game.gameDate || null,
     game_time: game.startTime || null,
     field_id: game.fieldId,
-    away_team_id: game.awayTeam?.id || null,
-    home_team_id: game.homeTeam?.id || null,
+    away_team_id: game.awayTeamId || game.awayTeam?.id || null,
+    home_team_id: game.homeTeamId || game.homeTeam?.id || null,
     game_locked_YN: null,
     away_team_locked: getLockedValue(game.awayTeam, game),
     home_team_locked: getLockedValue(game.homeTeam, game),

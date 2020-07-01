@@ -214,7 +214,7 @@ export const getScheduling = (eventId: string) => async (
   dispatch(scheduleFetchFailure());
 };
 
-export const createNewSchedule = (schedule: IConfigurableSchedule, visualGamesMakerUsed: boolean = false) => async (
+export const createNewSchedule = (schedule: IConfigurableSchedule) => async (
   dispatch: Dispatch,
   getState: GetState
 ) => {
@@ -246,11 +246,7 @@ export const createNewSchedule = (schedule: IConfigurableSchedule, visualGamesMa
       },
     });
 
-    if (visualGamesMakerUsed) {
-      History.push(`/visual-games-maker/${schedule.event_id}`);
-    } else {
-      History.push(`/schedules/${schedule.event_id}`);
-    }
+    History.push(`/schedules/${schedule.event_id}`);
   } catch (err) {
     Toasts.errorToast(err.message);
 

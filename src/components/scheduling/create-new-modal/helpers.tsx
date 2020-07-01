@@ -7,9 +7,9 @@ const getScheduleCreationTypeOptions = () =>
 
 const mapScheduleCreationTypeToOption = (t: ScheduleCreationType) => {
   switch (t) {
-    case ScheduleCreationType.Manually:
+    case ScheduleCreationType.Manual:
       return 'Create Manually';
-    case ScheduleCreationType.VisualGamesMaker:
+    case ScheduleCreationType.Visual:
       return 'Use Visual Games Maker';
     case ScheduleCreationType.Scheduler:
       return 'Use Scheduler';
@@ -21,9 +21,9 @@ const mapScheduleCreationTypeToOption = (t: ScheduleCreationType) => {
 const mapScheduleCreationOptionToType = (o: string): ScheduleCreationType => {
   switch (o) {
     case 'Create Manually':
-      return ScheduleCreationType.Manually;
+      return ScheduleCreationType.Manual;
     case 'Use Visual Games Maker':
-      return ScheduleCreationType.VisualGamesMaker;
+      return ScheduleCreationType.Visual;
     case 'Use Scheduler':
     default:
       return ScheduleCreationType.Scheduler;
