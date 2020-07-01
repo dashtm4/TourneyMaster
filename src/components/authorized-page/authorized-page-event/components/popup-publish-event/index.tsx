@@ -36,6 +36,7 @@ interface Props {
     poolLength: number;
     bracketLength: number;
   };
+  teamCount: number;
   onClose: BindingAction;
   publishEventData: BindingCbWithThree<
     EventPublishTypes,
@@ -50,6 +51,7 @@ const PopupPublishEvent = ({
   brackets,
   isOpen,
   gameCount,
+  teamCount,
   onClose,
   publishEventData,
 }: Props) => {
@@ -86,6 +88,7 @@ const PopupPublishEvent = ({
           <HeadingLevelTwo>Modify Published Status</HeadingLevelTwo>
           <p className={styles.eventName}>Event: {event.event_name}</p>
           <div className={styles.gameCount}>
+            <p>Teams: {teamCount}</p>
             <p>Games being published (Pool): {gameCount.poolLength}</p>
             <p>Games being published (Bracket): {gameCount.bracketLength}</p>
           </div>

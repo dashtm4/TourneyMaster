@@ -110,7 +110,7 @@ const AuthorizedPageEvent = ({
     isFullScreen ? closeFullscreen() : openFullscreen(document.documentElement);
   };
   const eventId = match.params.eventId;
-  const { event, schedules, brackets } = tournamentData;
+  const { event, schedules, brackets, teams } = tournamentData;
 
   const onFullScreen = () => {
     if (!document.fullscreen) {
@@ -283,6 +283,7 @@ const AuthorizedPageEvent = ({
             onClose={onTogglePublishPopup}
             publishEventData={publishEventData}
             gameCount={gameCount}
+            teamCount={teams.length || 0}
           />
         </>
       )}

@@ -116,7 +116,6 @@ export const loadGameCount: ActionCreator<ThunkAction<
   const bracketLength = games.filter(
     ({ game_type }: { game_type: string }) => game_type === 'Bracket'
   ).length;
-  console.log('games', poolLength, bracketLength);
 
   dispatch({
     type: PUBLISH_GAMECOUNT_SUCCESS,
