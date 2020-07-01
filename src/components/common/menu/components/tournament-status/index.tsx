@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'components/common';
 import ListPublised from '../list-publised';
-import { ButtonColors, ButtonVarian, EventStatuses } from 'common/enums';
+import { ButtonColors, ButtonVariant, EventStatuses } from 'common/enums';
 import {
   BindingAction,
   IEventDetails,
@@ -36,7 +36,7 @@ const TournamentStatus = ({
           onClick={togglePublishPopup}
           label="Modify Published Status"
           color={ButtonColors.INHERIT}
-          variant={ButtonVarian.CONTAINED}
+          variant={ButtonVariant.CONTAINED}
         />
       </span>
     </div>

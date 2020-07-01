@@ -10,7 +10,7 @@ import {
 } from 'common/models';
 import {
   ButtonColors,
-  ButtonVarian,
+  ButtonVariant,
   EventPublishTypes,
   EventModifyTypes,
 } from 'common/enums';
@@ -111,7 +111,7 @@ const ConfirmSection = ({
       <p className={styles.btnsWrapper}>
         <Button
           onClick={onClose}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
           btnStyles={BUTTON_STYLES}
           label="Cancel"
@@ -119,7 +119,7 @@ const ConfirmSection = ({
         <span className={styles.btnWrapper}>
           <Button
             onClick={onPublishEvent}
-            variant={ButtonVarian.CONTAINED}
+            variant={ButtonVariant.CONTAINED}
             color={ButtonColors.PRIMARY}
             btnStyles={BUTTON_STYLES}
             disabled={confirmValue !== trimmedEventName}

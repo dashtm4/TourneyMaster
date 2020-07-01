@@ -9,7 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import moment from 'moment';
 import { Button } from 'components/common';
 import { getComparator, stableSort } from './helpers';
-import { ButtonColors, ButtonVarian } from 'common/enums';
+import { ButtonColors, ButtonVariant } from 'common/enums';
 import { OrderTypes, TableSortRowTypes } from './common';
 import { ITableSortEntity } from '../../common';
 import styles from './styles.module.scss';
@@ -87,7 +87,7 @@ const TableSort = ({ rows, onShare, onDelete, onClone }: Props) => {
                     {onShare && (
                       <Button
                         onClick={() => onShare(row.id)}
-                        variant={ButtonVarian.TEXT}
+                        variant={ButtonVariant.TEXT}
                         color={ButtonColors.SECONDARY}
                         btnStyles={BTN_STYLES}
                         label="Apply to…"
@@ -96,7 +96,7 @@ const TableSort = ({ rows, onShare, onDelete, onClone }: Props) => {
                     {onClone && (
                       <Button
                         onClick={() => onClone(row.id)}
-                        variant={ButtonVarian.TEXT}
+                        variant={ButtonVariant.TEXT}
                         color={ButtonColors.SECONDARY}
                         btnStyles={BTN_STYLES}
                         label="Clone"
@@ -105,7 +105,7 @@ const TableSort = ({ rows, onShare, onDelete, onClone }: Props) => {
                     <span className={styles.deleteBtnWrapper}>
                       <Button
                         onClick={() => onDelete(row)}
-                        variant={ButtonVarian.TEXT}
+                        variant={ButtonVariant.TEXT}
                         color={ButtonColors.INHERIT}
                         btnStyles={BTN_STYLES}
                         label="Delete"

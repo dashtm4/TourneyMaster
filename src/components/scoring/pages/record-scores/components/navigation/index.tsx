@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'components/common';
 import FabButton from 'components/common/fab-button';
-import { ButtonTypes, ButtonVarian, ButtonColors } from 'common/enums';
+import { ButtonTypes, ButtonVariant, ButtonColors } from 'common/enums';
 import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 
@@ -32,7 +32,7 @@ const Navigation = ({
             type={
               isEnterScores ? ButtonTypes.SQUARED_OUTLINED : ButtonTypes.SQUARED
             }
-            variant={ButtonVarian.CONTAINED}
+            variant={ButtonVariant.CONTAINED}
             color={ButtonColors.PRIMARY}
             label="View Only"
           />
@@ -42,7 +42,7 @@ const Navigation = ({
           type={
             isEnterScores ? ButtonTypes.SQUARED : ButtonTypes.SQUARED_OUTLINED
           }
-          variant={ButtonVarian.CONTAINED}
+          variant={ButtonVariant.CONTAINED}
           color={ButtonColors.PRIMARY}
           label="Enter Scores"
         />
@@ -52,7 +52,7 @@ const Navigation = ({
           <span className={styles.btnWrapper}>
             <Button
               onClick={onLeavePage}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               label="Close"
             />
@@ -67,7 +67,7 @@ const Navigation = ({
         <span className={styles.btnWrapper}>
           <Button
             onClick={onSaveDraft}
-            variant={ButtonVarian.CONTAINED}
+            variant={ButtonVariant.CONTAINED}
             color={ButtonColors.PRIMARY}
             label="Save"
           />

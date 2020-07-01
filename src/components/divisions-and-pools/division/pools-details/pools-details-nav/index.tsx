@@ -3,7 +3,7 @@ import { Button } from 'components/common';
 import { BindingAction, IDivision } from 'common/models';
 import styles from './styles.module.scss';
 import { getIcon } from 'helpers';
-import { Icons, ButtonVarian, ButtonColors } from 'common/enums';
+import { Icons, ButtonVariant, ButtonColors } from 'common/enums';
 import { ButtonCopy } from 'components/common';
 
 const ICON_STYLES = {
@@ -42,19 +42,19 @@ const PoolsDetailsNav = ({
           copyString={inviteLink}
           label={'Invite Teams'}
           color={ButtonColors.SECONDARY}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           successMessage="Team invitation link copied to clipboard"
         />
         <Button
           onClick={onAdd}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
           label="+ Add Pool"
         />
         <Button
           onClick={onEdit}
           icon={getIcon(Icons.EDIT)}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
           label="Edit Pool Details"
         />
@@ -64,14 +64,14 @@ const PoolsDetailsNav = ({
           <p>
             <Button
               onClick={onCancel}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               label="Cancel"
             />
             <span className={styles.btnWrapper}>
               <Button
                 onClick={onSave}
-                variant={ButtonVarian.CONTAINED}
+                variant={ButtonVariant.CONTAINED}
                 color={ButtonColors.PRIMARY}
                 label="Save"
               />
@@ -81,7 +81,7 @@ const PoolsDetailsNav = ({
           <Button
             onClick={onArrange}
             icon={getIcon(Icons.EDIT, ICON_STYLES)}
-            variant={ButtonVarian.TEXT}
+            variant={ButtonVariant.TEXT}
             color={ButtonColors.SECONDARY}
             label="Arrange Teams"
           />

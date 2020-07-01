@@ -4,7 +4,7 @@ import { Button } from 'components/common';
 import { getIcon } from 'helpers';
 import { BindingAction } from 'common/models';
 import FabButton from 'components/common/fab-button';
-import { ButtonVarian, ButtonColors, Icons, Routes } from 'common/enums';
+import { ButtonVariant, ButtonColors, Icons, Routes } from 'common/enums';
 import styles from './styles.module.scss';
 
 const ICON_STYLES = {
@@ -32,13 +32,13 @@ const Navigation = ({
       <Button
         onClick={toggleLibraryPopup}
         icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
-        variant={ButtonVarian.TEXT}
+        variant={ButtonVariant.TEXT}
         color={ButtonColors.SECONDARY}
         label="Save to Library"
       />
       <Button
         onClick={onCsvLoaderBtn}
-        variant={ButtonVarian.TEXT}
+        variant={ButtonVariant.TEXT}
         color={ButtonColors.SECONDARY}
         label="Import from CSV"
       />
@@ -46,13 +46,13 @@ const Navigation = ({
     <span className={styles.btnsWrapper}>
       <Button
         onClick={onCancelClick}
-        variant={ButtonVarian.TEXT}
+        variant={ButtonVariant.TEXT}
         color={ButtonColors.SECONDARY}
         label="Cancel"
       />
       <Button
         onClick={onClick}
-        variant={ButtonVarian.CONTAINED}
+        variant={ButtonVariant.CONTAINED}
         color={ButtonColors.PRIMARY}
         label="Save"
       />

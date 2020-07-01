@@ -12,7 +12,7 @@ import {
   BindingCbWithThree,
 } from 'common/models';
 import {
-  ButtonVarian,
+  ButtonVariant,
   ButtonColors,
   EventPublishTypes,
   EventModifyTypes,
@@ -114,7 +114,7 @@ const PopupPublishEvent = ({
             <p className={styles.btnsWrapper}>
               <Button
                 onClick={onClose}
-                variant={ButtonVarian.TEXT}
+                variant={ButtonVariant.TEXT}
                 color={ButtonColors.SECONDARY}
                 btnStyles={BUTTON_STYLES}
                 label="Cancel"
@@ -122,7 +122,7 @@ const PopupPublishEvent = ({
               <span className={styles.btnWrapper}>
                 <Button
                   onClick={onToggleConfrim}
-                  variant={ButtonVarian.CONTAINED}
+                  variant={ButtonVariant.CONTAINED}
                   color={ButtonColors.PRIMARY}
                   btnStyles={BUTTON_STYLES}
                   disabled={!Boolean(publishType)}

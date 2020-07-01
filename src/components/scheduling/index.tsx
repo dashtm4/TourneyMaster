@@ -50,7 +50,7 @@ import {
 import { ISchedulingSchedule } from './types';
 import ViewMatrix from './view-matrix';
 import { getTimeValuesFromSchedule, calculateTimeSlots } from 'helpers';
-import { ButtonVarian, ButtonColors, EntryPoints } from 'common/enums';
+import { ButtonVariant, ButtonColors, EntryPoints } from 'common/enums';
 import CreateNewBracket, {
   ICreateBracketModalOutput,
 } from './create-new-bracket';
@@ -75,7 +75,10 @@ interface IProps {
   isLoaded: boolean;
   fields?: IField[];
   getScheduling: (eventId: string) => void;
-  createNewSchedule: (schedule: IConfigurableSchedule, visualGamesMakerUsed: boolean) => void;
+  createNewSchedule: (
+    schedule: IConfigurableSchedule,
+    visualGamesMakerUsed: boolean
+  ) => void;
   addNewSchedule: BindingAction;
   changeSchedule: BindingCbWithOne<Partial<ISchedule>>;
   updateSchedule: BindingCbWithOne<ISchedulingSchedule>;
@@ -292,7 +295,7 @@ class Scheduling extends Component<IProps, IState> {
                 <HeadingLevelTwo margin="24px 0px">Scheduling</HeadingLevelTwo>
                 <Button
                   onClick={this.toggleSectionCollapse}
-                  variant={ButtonVarian.TEXT}
+                  variant={ButtonVariant.TEXT}
                   color={ButtonColors.SECONDARY}
                   label={isSectionsExpand ? 'Collapse All' : 'Expand All'}
                 />
