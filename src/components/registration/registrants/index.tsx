@@ -1,10 +1,18 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import MaterialTable, { Column } from 'material-table';
-import RegistrantPayments from './registrant-payments';
+import { getIcon } from 'helpers';
+import { Icons } from 'common/enums';
+import RegistrantDetails from './registrant-details';
 import { formatPhoneNumber } from '../../../helpers/formatPhoneNumber';
 import moment from 'moment';
 import { IDivision } from 'common/models';
+
+const STYLES_ICON = {
+  width: '20px',
+  height: '20px',
+  marginRight: '9px',
+};
 
 export interface IRegistrantsProps {
   registrants: any[];
@@ -22,6 +30,25 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
       title: 'Date',
       field: 'date',
       type: 'date',
+    },
+    {
+      title: 'Type',
+      field: 'type',
+      type: 'string',
+      hidden: true,
+    },
+    {
+      title: 'Status',
+      field: 'status',
+      type: 'string',
+      lookup: { confirmed: 'confirmed', pending: 'pending' },
+      render: rowData =>
+        rowData.status === 'confirmed'
+          ? getIcon(Icons.CHECK_CIRCLE, {
+              ...STYLES_ICON,
+              fill: '#00CC47',
+            })
+          : null,
     },
     {
       title: 'Participant',
@@ -65,27 +92,49 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
   }));
 
   const detailPanel = (rowData: any) => {
-    return <RegistrantPayments reg_response_id={rowData.reg_response_id} />;
+    return (
+      <RegistrantDetails
+        registrant={rowData.registrant}
+        regResponseId={rowData.reg_response_id}
+      />
+    );
   };
 
-  const data: any[] = props.registrants.map(registrant => ({
-    reg_response_id: registrant.reg_response_id,
-    date: moment(registrant.created_datetime).format('MM/DD/YYYY'),
-    participant: registrant.team_name
-      ? `${registrant.team_name}`
-      : `${registrant.participant_first_name} ${registrant.participant_last_name}`,
-    team_name: registrant.team_name,
-    division_id: registrant.division_id,
-    contact_name:
-      (registrant.contact_first_name || registrant.registrant_first_name) +
-      ' ' +
-      (registrant.contact_last_name || registrant.registrant_last_name),
-    contact_phone: formatPhoneNumber(
-      registrant.contact_mobile || registrant.registrant_mobile
-    ),
-    amount_due: registrant.amount_due?.toFixed(2),
-    amount_paid: registrant.payment_amount.toFixed(2),
-  }));
+  const data: any[] = props.registrants.map(registrant => {
+    return {
+      reg_response_id: registrant.reg_response_id,
+      registrant,
+      type: registrant.type,
+      date: moment(registrant.created_datetime).format('MM/DD/YYYY'),
+      amount_due: registrant.amount_due?.toFixed(2),
+      amount_paid: registrant.payment_amount.toFixed(2),
+      team_name: registrant.team_name,
+      division_id: registrant.division_id,
+      status:
+        registrant.type === 'team'
+          ? registrant.team_id
+            ? 'confirmed'
+            : 'pending'
+          : registrant.amount_due === registrant.payment_amount
+          ? 'confirmed'
+          : 'pending',
+      participant:
+        registrant.type === 'team'
+          ? `${registrant.team_name}`
+          : `${registrant.participant_first_name} ${registrant.participant_last_name}`,
+      contact_name:
+        registrant.type === 'team'
+          ? registrant.contact_first_name + ' ' + registrant.contact_last_name
+          : registrant.registrant_first_name +
+            ' ' +
+            registrant.registrant_last_name,
+      contact_phone: formatPhoneNumber(
+        registrant.type === 'team'
+          ? registrant.contact_mobile
+          : registrant.registrant_mobile
+      ),
+    };
+  });
   return (
     <div style={{ minWidth: '100%' }}>
       <MaterialTable
@@ -95,6 +144,8 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
         detailPanel={detailPanel}
         options={{
           pageSize: 10,
+          pageSizeOptions: [5, 10, 20, 50, 100, 500],
+          emptyRowsWhenPaging: false,
           padding: 'dense',
           exportButton: true,
           exportAllData: true,

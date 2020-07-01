@@ -1,7 +1,7 @@
 export interface ITeam {
   team_id: string;
   event_id: string | null;
-  org_id: number | null;
+  org_id: string | null;
   long_name: string | null;
   short_name: string;
   team_tag: string | null;
@@ -15,15 +15,15 @@ export interface ITeam {
   schedule_restrictions: number | null;
   is_active_YN: number | null;
   is_library_YN: 0 | 1 | null;
-  created_by: string | null;
-  created_datetime: string | null;
-  updated_by: string | null;
-  updated_datetime: string | null;
+  created_by?: string | null;
+  created_datetime?: string | null;
+  updated_by?: string | null;
+  updated_datetime?: string | null;
   division_id: string;
   pool_id: string | null;
   //Optional
-  isChange: boolean;
-  isDelete: boolean;
+  isChange?: boolean;
+  isDelete?: boolean;
 }
 
 export interface ITeamWithResults extends ITeam {
