@@ -548,7 +548,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               {`${TypeOptions[type]} Registration ${
                 isInvited
                   ? getInternalRegType(type) === 'individual'
-                    ? 'for ' + registration.team_name
+                    ? registration.team_name
+                      ? 'for ' + registration.team_name
+                      : ''
                     : 'for ' + registration.division_name
                   : ''
               }`}
