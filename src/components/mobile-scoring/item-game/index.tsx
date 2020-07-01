@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Toasts } from 'components/common';
+import Api from 'api/api';
 import { ISchedulesGame, BindingCbWithOne } from 'common/models';
 import { ButtonVarian, ButtonColors } from 'common/enums';
-import { IMobileScoringGame } from '../common';
 import { IInputEvent } from 'common/types';
-import Api from 'api/api';
-import styles from './styles.module.scss';
 import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
+import { Button, Toasts } from 'components/common';
 import { getDisplayName } from 'components/common/matrix-table/dnd/seed';
+import { IMobileScoringGame } from '../common';
+import styles from './styles.module.scss';
 
 interface Props {
   gameWithNames: IMobileScoringGame;
@@ -32,6 +32,8 @@ const ItemGame = ({ gameWithNames, originGame, changeGameWithName }: Props) => {
     const { name, value } = target;
 
     changeOriginGame({ ...chanedOriginGame, [name]: value });
+
+    changeSavedState(value.toString() === originGame[name].toString());
   };
 
   useEffect(() => {

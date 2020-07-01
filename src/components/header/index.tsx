@@ -1,8 +1,8 @@
 import React from 'react';
 import { RouteComponentProps, withRouter, Link } from 'react-router-dom';
 import { getLinkByApp } from 'helpers';
-import logo from 'assets/logo.png';
 import UserInfo from './user-info';
+import logo from 'assets/logo.png';
 import styles from './style.module.scss';
 
 const Header: React.FC<RouteComponentProps> = ({ history }) => {
@@ -17,10 +17,6 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
     { title: 'Support', link: 'https://www.tourneymaster.org/support/' },
     { title: 'Contact', link: 'https://www.tourneymaster.org/contact/' },
   ];
-
-  // const onMenuClick = (item: string) => {
-  //   return item;
-  // };
 
   const onLogoClick = () => {
     history.push('/');
@@ -38,11 +34,7 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
         <div className={styles.listWrapper}>
           <ul className={styles.list}>
             {menuItems.map((item: any, index: number) => (
-              <li
-                className={styles.listItem}
-                // onClick={onMenuClick.bind(undefined, item.title)}
-                key={index}
-              >
+              <li className={styles.listItem} key={index}>
                 {!item.link.includes('http') ? (
                   <Link to={item.link}>{item.title}</Link>
                 ) : (

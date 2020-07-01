@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import Api from 'api/api';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import Api from 'api/api';
-import TabGames from '../tab-games';
 import { mapScheduleGamesWithNames, formatTimeSlot } from 'helpers';
-import { Loader, Select, Radio } from 'components/common';
 import {
   IEventDetails,
   ISchedule,
@@ -15,7 +13,10 @@ import {
   ITeam,
   IFetchedBracket,
 } from 'common/models';
+import { IInputEvent } from 'common/types';
 import { ScheduleStatuses, BracketStatuses } from 'common/enums';
+import { Loader, Select, Radio } from 'components/common';
+import TabGames from '../tab-games';
 import {
   getTabTimes,
   getDayOptions,
@@ -25,10 +26,9 @@ import {
   mapScoringBracketsWithNames,
   getNewBracketGames,
 } from '../helpers';
-import styles from './styles.module.scss';
-import { IInputEvent } from 'common/types';
 import { IMobileScoringGame, ScoresRaioOptions } from '../common';
 import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
+import styles from './styles.module.scss';
 
 const DEFAULT_TAB = 0;
 
@@ -114,13 +114,13 @@ const SectionGames = ({ event }: Props) => {
 
       const games = publishedSchedule
         ? ((await Api.get(
-          `/games?schedule_id=${publishedSchedule.schedule_id}`
-        )) as ISchedulesGame[])
+            `/games?schedule_id=${publishedSchedule.schedule_id}`
+          )) as ISchedulesGame[])
         : [];
       const bracketGames = publishedBracket
         ? ((await Api.get(
-          `/games_brackets?bracket_id=${publishedBracket.bracket_id}`
-        )) as IPlayoffGame[])
+            `/games_brackets?bracket_id=${publishedBracket.bracket_id}`
+          )) as IPlayoffGame[])
         : [];
 
       const gamesWithTeams = games.filter(
@@ -212,10 +212,10 @@ const SectionGames = ({ event }: Props) => {
       const changedOriginGames = originGames.map(game =>
         game.game_id === changedGame.id
           ? {
-            ...game,
-            away_team_score: changedGame.awayTeamScore,
-            home_team_score: changedGame.homeTeamScore,
-          }
+              ...game,
+              away_team_score: changedGame.awayTeamScore,
+              home_team_score: changedGame.homeTeamScore,
+            }
           : game
       );
 
