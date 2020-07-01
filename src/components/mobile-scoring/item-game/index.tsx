@@ -32,6 +32,8 @@ const ItemGame = ({ gameWithNames, originGame, changeGameWithName }: Props) => {
     const { name, value } = target;
 
     changeOriginGame({ ...chanedOriginGame, [name]: value });
+
+    changeSavedState(value.toString() === originGame[name].toString());
   };
 
   useEffect(() => {
