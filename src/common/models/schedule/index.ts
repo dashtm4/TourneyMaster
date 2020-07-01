@@ -7,6 +7,7 @@ export interface ISchedule {
   first_game_time: string | null;
   last_game_end_time: string | null;
   schedule_tag: string | null;
+  create_mode: string | null;
   num_divisions: number;
   num_teams: number;
   min_num_games: string | null;
@@ -29,11 +30,10 @@ export interface ISchedule {
 export interface IConfigurableSchedule extends ISchedule {
   num_fields: number;
   periods_per_game: number;
-  creationType?: ScheduleCreationType;
 }
 
 export enum ScheduleCreationType {
   Scheduler = 1,
-  VisualGamesMaker,
-  Manually,
+  Visual,
+  Manual,
 }
