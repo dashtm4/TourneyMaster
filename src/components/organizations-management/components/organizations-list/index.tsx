@@ -9,7 +9,7 @@ import {
 } from 'components/common';
 import PopupDeleteConfirm from 'components/common/delete-popup-confirm';
 import { IOrganization } from 'common/models';
-import { Icons, ButtonColors, ButtonVarian } from 'common/enums';
+import { Icons, ButtonColors, ButtonVariant } from 'common/enums';
 import { getIcon } from 'helpers';
 import styles from './styles.module.scss';
 
@@ -101,7 +101,7 @@ const OrganizationsList = ({
                               copyString={organization.org_id}
                               label={organization.org_id}
                               color={ButtonColors.SECONDARY}
-                              variant={ButtonVarian.TEXT}
+                              variant={ButtonVariant.TEXT}
                               style={COPY_ICON_STYLES}
                             />
                           </td>

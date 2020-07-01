@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Button } from 'components/common';
-import { ButtonVarian, ButtonColors } from 'common/enums';
+import { ButtonVariant, ButtonColors } from 'common/enums';
 import RegistrantPayments from './registrant-payments';
 import { addTeamToEvent } from '../../registration-edit/logic/actions';
 import { BindingCbWithOne, IEventDetails } from 'common/models';
@@ -23,7 +23,7 @@ const RegistrantDetails: React.SFC<RegistrantDetailsProps> = ({
       {registrant.type === 'team' && !registrant.team_id ? (
         <Button
           onClick={handleAddTeamToEvent.bind(null, registrant, event)}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
           label="+ Add to Event"
         />

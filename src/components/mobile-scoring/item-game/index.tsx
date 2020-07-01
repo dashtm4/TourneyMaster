@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Api from 'api/api';
 import { ISchedulesGame, BindingCbWithOne } from 'common/models';
-import { ButtonVarian, ButtonColors } from 'common/enums';
+import { ButtonVariant, ButtonColors } from 'common/enums';
 import { IInputEvent } from 'common/types';
 import { IPlayoffGame } from 'common/models/playoffs/bracket-game';
 import { Button, Toasts } from 'components/common';
@@ -137,7 +137,7 @@ const ItemGame = ({ gameWithNames, originGame, changeGameWithName }: Props) => {
       <div className={styles.updateBtnWrapper}>
         <Button
           onClick={onSave}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
           label={wasSaved ? 'Edit' : 'Save'}
         />

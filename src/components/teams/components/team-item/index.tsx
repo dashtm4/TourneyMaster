@@ -2,7 +2,7 @@ import React from 'react';
 import Button from 'components/common/buttons/button';
 import { getIcon } from 'helpers/get-icon.helper';
 import { ITeam, IDivision } from 'common/models';
-import { Icons, ButtonColors, ButtonVarian, ButtonTypes } from 'common/enums';
+import { Icons, ButtonColors, ButtonVariant, ButtonTypes } from 'common/enums';
 import styles from './styles.module.scss';
 import { formatPhoneNumber } from 'helpers/formatPhoneNumber';
 import { ButtonCopy } from 'components/common';
@@ -54,7 +54,7 @@ const TeamItem = ({
         <Button
           onClick={onEdit}
           icon={getIcon(Icons.EDIT, EDIT_ICON_STYLES)}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
           type={ButtonTypes.ICON}
           label="Edit team"
@@ -66,7 +66,7 @@ const TeamItem = ({
             copyString={inviteLink}
             label={'Link'}
             color={ButtonColors.SECONDARY}
-            variant={ButtonVarian.TEXT}
+            variant={ButtonVariant.TEXT}
             style={{
               width: '70px',
             }}

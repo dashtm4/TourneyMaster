@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import { orderBy } from 'lodash-es';
 import { getIcon, onXLSXSave } from 'helpers';
-import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
+import { ButtonColors, ButtonVariant, Icons } from 'common/enums';
 import { DiagnosticTypes } from '../types';
 
 export interface IDiagnosticsInput {
@@ -131,7 +131,7 @@ class Diagnostics extends Component<Props, State> {
             <Button
               onClick={onSave}
               icon={getIcon(Icons.DESCRIPTION)}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               label="Save in XLSX"
             />

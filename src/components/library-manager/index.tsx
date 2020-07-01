@@ -32,7 +32,7 @@ import {
 import {
   MenuTitles,
   EntryPoints,
-  ButtonVarian,
+  ButtonVariant,
   ButtonColors,
 } from 'common/enums';
 import { IEntity } from 'common/types';
@@ -199,7 +199,7 @@ const LibraryManager = ({
         <HeadingLevelTwo>{MenuTitles.LIBRARY_MANAGER}</HeadingLevelTwo>
         <Button
           onClick={onToggleSectionCollapse}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
           label={isSectionsExpand ? 'Collapse All' : 'Expand All'}
         />
