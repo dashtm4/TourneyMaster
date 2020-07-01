@@ -10,8 +10,7 @@ import styles from './styles.module.scss';
 import RunningTally from './running-games-tally';
 import ResultingGameList from './resulting-game-list';
 import MatrixOfPossibleGames from './possible-games-matrix';
-import { Button, Checkbox, Select } from 'components/common';
-import History from 'browserhistory';
+import { Checkbox, Select } from 'components/common';
 import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGameCell } from './helpers';
@@ -33,7 +32,10 @@ interface IMapDispatchToProps {
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
-interface IComponentProps {}
+interface IComponentProps {
+  gamesList?: IGameCell[];
+  onGamesListChange: (item: IGameCell[]) => void;
+}
 
 interface IRootState {
   pageEvent?: IPageEventState;
@@ -45,7 +47,6 @@ type IProps = IMapStateToProps & IMapDispatchToProps & IComponentProps;
 
 interface IState {
   isShowNamesOfTeams: boolean;
-  games: IGameCell[];
   selectedDivisionId: string;
   selectedPoolId: string;
 }
@@ -54,7 +55,6 @@ class VisualGamesMaker extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      games: [],
       isShowNamesOfTeams: false,
       selectedDivisionId: '',
       selectedPoolId: 'allPools',
@@ -62,21 +62,21 @@ class VisualGamesMaker extends Component<IProps, IState> {
   }
 
   componentDidMount() {
-    const { divisions, getAllPools } = this.props;
-
+    const { divisions } = this.props;
     this.setState({
       selectedDivisionId: (divisions && divisions[0].division_id) || '',
     });
-
-    getAllPools(divisions!.map(v => v.division_id));
   }
 
+  componentDidUpdate(prevProps: any) {
+    if (this.props.gamesList !== prevProps.gamesList) {
+      this.createScheduleTable();
+    }
+  }
   onChangeGames = (items: IGameCell[]) => {
-    this.setState({
-      games: items,
-    });
+    const { onGamesListChange } = this.props;
+    onGamesListChange(items);
   };
-
   onChangeDisplayedLabelType = () => {
     this.setState((state: IState) => {
       return { isShowNamesOfTeams: !state.isShowNamesOfTeams };
@@ -112,9 +112,9 @@ class VisualGamesMaker extends Component<IProps, IState> {
   };
 
   createScheduleTable = () => {
-    const { schedule, fillGamesList } = this.props;
-
-    const gamesList = this.state.games.map(v => {
+    const { fillGamesList, gamesList } = this.props;
+    if (!gamesList) return;
+    const gamesListMaker = gamesList.map(v => {
       return {
         id: -1,
         homeTeamId: v.homeTeamId,
@@ -126,11 +126,8 @@ class VisualGamesMaker extends Component<IProps, IState> {
         divisionName: v.divisionName,
       };
     });
-    fillGamesList(gamesList);
-    History.push(`/schedules/${schedule?.event_id}`)
+    fillGamesList(gamesListMaker);
   };
-
-  onCancelClick = () => History.goBack();
 
   render() {
     const filteredTeams = this.props.teams!.filter(
@@ -140,9 +137,9 @@ class VisualGamesMaker extends Component<IProps, IState> {
       return (a.pool_id || '') > (b.pool_id || '') ? 1 : -1;
     });
 
-    const filteredGames = this.state.games!.filter(
+    const filteredGames = this.props.gamesList?.filter(
       item => item.divisionId === this.state.selectedDivisionId
-    );
+    ) || [];
 
     return (
       <div className={styles.container}>
@@ -188,13 +185,21 @@ class VisualGamesMaker extends Component<IProps, IState> {
         <div className={styles.tablesWrapper}>
           <div className={styles.matrixOfPossibleGames}>
             <MatrixOfPossibleGames
-              games={this.state.games}
+              games={this.props.gamesList || []}
               teams={sortedTeams}
               poolId={this.state.selectedPoolId}
               showNames={this.state.isShowNamesOfTeams}
               divisionId={this.state.selectedDivisionId}
-              divisionHex={this.props.divisions?.find(v => v.division_id === this.state.selectedDivisionId)?.division_hex || ''}
-              divisionName={this.props.divisions?.find(v => v.division_id === this.state.selectedDivisionId)?.short_name || ''}
+              divisionHex={
+                this.props.divisions?.find(
+                  v => v.division_id === this.state.selectedDivisionId,
+                )?.division_hex || ''
+              }
+              divisionName={
+                this.props.divisions?.find(
+                  v => v.division_id === this.state.selectedDivisionId,
+                )?.short_name || ''
+              }
               onChangeGames={this.onChangeGames}
               pools={this.mapOptionsForPools()}
             />
@@ -214,22 +219,6 @@ class VisualGamesMaker extends Component<IProps, IState> {
                 showNames={this.state.isShowNamesOfTeams}
               />
             </div>
-          </div>
-          <div className={styles.buttonsWrapp}>
-            <div className={styles.cancelButton}>
-              <Button
-                label="Cancel"
-                color="secondary"
-                variant="text"
-                onClick={this.onCancelClick}
-              />
-            </div>
-            <Button
-              label="Next"
-              color="primary"
-              variant="contained"
-              onClick={this.createScheduleTable}
-            />
           </div>
         </div>
       </div>

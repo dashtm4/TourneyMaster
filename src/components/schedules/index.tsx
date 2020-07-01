@@ -98,6 +98,9 @@ import {
   populateDefinedGamesWithPlayoffState,
   predictPlayoffTimeSlots,
 } from './definePlayoffs';
+import VisualGamesMaker from 'components/visual-games-maker';
+import { IGameCell } from '../visual-games-maker/helpers';
+import { fillGamesList, clearGamesList } from './logic/schedules-table/actions';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -157,6 +160,8 @@ interface IMapDispatchToProps {
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
   ) => void;
+  fillGamesList: (games: IGame[]) => void;
+  clearGamesList: () => void;
 }
 
 interface ComponentProps {
@@ -178,6 +183,7 @@ type Props = IMapStateToProps & IMapDispatchToProps & ComponentProps;
 
 interface State {
   games?: IGame[];
+  gamesList?: IGameCell[];
   scheduleId?: string;
   timeSlots?: ITimeSlot[];
   timeValues?: ITimeValues;
@@ -195,6 +201,13 @@ interface State {
   loadingType: LoaderTypeEnum;
   tournamentDays: string[];
   playoffTimeSlots: ITimeSlot[];
+  activeTab: SchedulesTabsEnum;
+}
+
+enum SchedulesTabsEnum {
+  None = 0,
+  VisualGamesMaker = 1,
+  Schedules = 2,
 }
 
 class Schedules extends Component<Props, State> {
@@ -207,19 +220,21 @@ class Schedules extends Component<Props, State> {
     loadingType: LoaderTypeEnum.CALCULATION,
     tournamentDays: [],
     playoffTimeSlots: [],
+    activeTab: SchedulesTabsEnum.Schedules,
   };
 
   async componentDidMount() {
     const { facilities, match, scheduleData } = this.props;
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
-    const { creationType } = scheduleData || {};
+    const { create_mode } = scheduleData || {};
     const isManualScheduling =
-      !creationType ||
-      creationType === ScheduleCreationType.Manually ||
-      creationType === ScheduleCreationType.VisualGamesMaker;
+      !create_mode ||
+      ScheduleCreationType[create_mode] === ScheduleCreationType.Manual ||
+      ScheduleCreationType[create_mode] === ScheduleCreationType.Visual;
 
     this.props.schedulesDetailsClear();
+    this.props.clearGamesList();
     this.props.clearSchedulesTable();
     this.getPublishedStatus();
     this.activateLoaders(scheduleId, isManualScheduling);
@@ -261,6 +276,8 @@ class Schedules extends Component<Props, State> {
       schedulesDetails,
       schedulesTeamCards,
       draftSaved,
+      gamesList,
+      divisions,
     } = this.props;
 
     const {
@@ -277,6 +294,27 @@ class Schedules extends Component<Props, State> {
         scheduleId: localSchedule?.schedule_id,
       });
       this.updateUrlWithScheduleId();
+    }
+
+    if (scheduleId && !schedule) {
+      this.props.fetchSchedulesDetails(scheduleId);
+    }
+
+    if (schedulesDetails && gamesList && gamesList.length === 0) {
+      const gamesListFromSchedulesDetails: IGame[] = schedulesDetails
+        .filter(v => v.game_id === '-1')
+        .map(v => ({
+          id: -1,
+          divisionId: v.division_id || undefined,
+          divisionName: divisions?.find(division => division.division_id === v.division_id)?.short_name,
+          divisionHex: divisions?.find(division => division.division_id === v.division_id)?.division_hex,
+          awayTeamId: v.away_team_id || undefined,
+          homeTeamId: v.home_team_id || undefined,
+          timeSlotId: 0,
+          fieldId: '',
+        }));
+
+      this.props.fillGamesList(gamesListFromSchedulesDetails);
     }
 
     if (!neccessaryDataCalculated && schedule) {
@@ -341,6 +379,12 @@ class Schedules extends Component<Props, State> {
     const eventId = event?.event_id!;
 
     this.props.getPublishedGames(eventId, scheduleId);
+  };
+
+  onGamesListChange = (item: IGameCell[]) => {
+    this.setState({
+      gamesList: item,
+    });
   };
 
   calculateNeccessaryData = () => {
@@ -599,7 +643,7 @@ class Schedules extends Component<Props, State> {
 
   retrieveSchedulesDetails = async (isDraft: boolean, type: 'POST' | 'PUT') => {
     const { schedulesDetails, schedulesTeamCards } = this.props;
-    const { games, tournamentDays } = this.state;
+    const { games, gamesList, tournamentDays } = this.state;
 
     const localSchedule = this.getSchedule();
 
@@ -613,7 +657,22 @@ class Schedules extends Component<Props, State> {
         settleTeamsPerGamesDays(games, schedulesTeamCards, day)
       );
     }
+
+    if (gamesList) {
+      schedulesTableGames.push(
+        gamesList.map(v => ({
+          id: -1,
+          divisionId: v.divisionId,
+          awayTeamId: v.awayTeamId,
+          homeTeamId: v.homeTeamId,
+        }))
+      );
+    };
+
+    console.log('gameslistCQ', gamesList);
+
     schedulesTableGames = schedulesTableGames.flat();
+
 
     return mapSchedulesTeamCards(
       localSchedule,
@@ -754,6 +813,12 @@ class Schedules extends Component<Props, State> {
     }
   };
 
+  isVisualGamesMakerMode = () => {
+    const { scheduleData } = this.props;
+
+    return scheduleData?.create_mode && ScheduleCreationType[scheduleData?.create_mode] === ScheduleCreationType.Visual;
+  }
+
   render() {
     const {
       divisions,
@@ -774,6 +839,7 @@ class Schedules extends Component<Props, State> {
     } = this.props;
 
     const {
+      activeTab,
       fields,
       timeSlots,
       timeValues,
@@ -821,39 +887,62 @@ class Schedules extends Component<Props, State> {
             saveAndPublish={this.save}
           />
         )}
-
         {loadCondition && !isLoading ? (
-          <TableSchedule
-            tableType={TableScheduleTypes.SCHEDULES}
-            event={event!}
-            fields={fields!}
-            pools={pools!}
-            games={games!}
-            timeSlots={timeSlots!}
-            timeValues={timeValues!}
-            divisions={divisions!}
-            facilities={facilities!}
-            teamCards={schedulesTeamCards!}
-            eventSummary={eventSummary!}
-            scheduleData={
-              scheduleData?.schedule_name ? scheduleData : schedule!
-            }
-            schedulesDetails={this.props.schedulesDetails}
-            historyLength={schedulesHistoryLength}
-            teamsDiagnostics={teamsDiagnostics}
-            divisionsDiagnostics={divisionsDiagnostics}
-            isFullScreen={isFullScreen}
-            onScheduleGameUpdate={this.onScheduleGameUpdate}
-            onTeamCardsUpdate={this.onScheduleCardsUpdate}
-            onTeamCardUpdate={this.onScheduleCardUpdate}
-            onUndo={onScheduleUndo}
-            onToggleFullScreen={onToggleFullScreen}
-            playoffTimeSlots={playoffTimeSlots}
-            onBracketGameUpdate={() => { }}
-            recalculateDiagnostics={this.calculateDiagnostics}
-            gamesList={gamesList}
-            updateSchedulesDetails={this.props.updateSchedulesDetails}
-          />
+          <section className={styles.tabsContainer}>
+            <div className={styles.tabToggle}>
+              {this.isVisualGamesMakerMode() && (
+                  <div
+                    className={activeTab === 1 ? styles.active : ''}
+                    onClick={() => this.setState({ activeTab: 1 })}
+                  >
+                    Visual Games Maker
+                  </div>
+                )}
+              <div
+                className={activeTab === 2 ? styles.active : ''}
+                onClick={() => this.setState({ activeTab: 2 })}
+              >
+                Schedule
+              </div>
+            </div>
+            {activeTab === SchedulesTabsEnum.VisualGamesMaker ? (
+              <VisualGamesMaker
+                gamesList={this.state.gamesList}
+                onGamesListChange={this.onGamesListChange} />
+            ) : (
+                <TableSchedule
+                  tableType={TableScheduleTypes.SCHEDULES}
+                  event={event!}
+                  fields={fields!}
+                  pools={pools!}
+                  games={games!}
+                  timeSlots={timeSlots!}
+                  timeValues={timeValues!}
+                  divisions={divisions!}
+                  facilities={facilities!}
+                  teamCards={schedulesTeamCards!}
+                  eventSummary={eventSummary!}
+                  scheduleData={
+                    scheduleData?.schedule_name ? scheduleData : schedule!
+                  }
+                  schedulesDetails={this.props.schedulesDetails}
+                  historyLength={schedulesHistoryLength}
+                  teamsDiagnostics={teamsDiagnostics}
+                  divisionsDiagnostics={divisionsDiagnostics}
+                  isFullScreen={isFullScreen}
+                  onScheduleGameUpdate={this.onScheduleGameUpdate}
+                  onTeamCardsUpdate={this.onScheduleCardsUpdate}
+                  onTeamCardUpdate={this.onScheduleCardUpdate}
+                  onUndo={onScheduleUndo}
+                  onToggleFullScreen={onToggleFullScreen}
+                  playoffTimeSlots={playoffTimeSlots}
+                  onBracketGameUpdate={() => { }}
+                  recalculateDiagnostics={this.calculateDiagnostics}
+                  gamesList={gamesList}
+                  updateSchedulesDetails={this.props.updateSchedulesDetails}
+                />
+              )}
+          </section>
         ) : (
             <div className={styles.loadingWrapper}>
               <SchedulesLoader type={loadingType} time={5000} />
@@ -923,6 +1012,8 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       schedulesDetailsClear,
       //
       updateSchedulesDetails,
+      fillGamesList,
+      clearGamesList,
     },
     dispatch
   );

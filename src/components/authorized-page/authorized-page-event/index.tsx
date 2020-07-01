@@ -24,7 +24,6 @@ import Scheduling from 'components/scheduling';
 import Teams from 'components/teams';
 import CreateTeam from 'components/teams/components/create-team';
 import Footer from 'components/footer';
-import VisualGamesMaker from 'components/visual-games-maker';
 import Schedules from 'components/schedules';
 import Reporting from 'components/reporting';
 import Playoffs from 'components/playoffs';
@@ -188,14 +187,6 @@ const AuthorizedPageEvent = ({
                     menuList,
                     schedulingIgnoreList
                   )}
-                />
-              )}
-            />
-            <Route
-              path={Routes.VISUAL_GAMES_MAKER_ID}
-              render={props => (
-                <VisualGamesMaker
-                  {...props}
                 />
               )}
             />

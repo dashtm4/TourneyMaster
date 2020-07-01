@@ -25,7 +25,7 @@ interface IProps {
   schedule: IConfigurableSchedule;
   isOpen: boolean;
   onChange: (name: string, value: any) => void;
-  onCreate: (schedule: IConfigurableSchedule, visualGamesMakerUsed: boolean) => void;
+  onCreate: (schedule: IConfigurableSchedule) => void;
   onClose: () => void;
 }
 
@@ -64,21 +64,21 @@ const CreateNewModal = (props: IProps) => {
 
   const onCreateWithScheduler = () => {
     setCreationType(ScheduleCreationType.Scheduler);
-    onCreate(schedule, false);
+    onCreate(schedule);
   };
 
   const onCreateWithVisualGamesMaker = () => {
-    setCreationType(ScheduleCreationType.VisualGamesMaker);
-    onCreate(schedule, true);
+    setCreationType(ScheduleCreationType.Visual);
+    onCreate(schedule);
   };
 
   const onCreateManually = () => {
-    setCreationType(ScheduleCreationType.Manually);
-    onCreate(schedule, false);
+    setCreationType(ScheduleCreationType.Manual);
+    onCreate(schedule);
   };
 
   const setCreationType = (t: ScheduleCreationType) => {
-    onChange('creationType', t);
+    onChange('create_mode', ScheduleCreationType[t]);
   };
 
   const renderStepOne = () => {
@@ -116,9 +116,9 @@ const CreateNewModal = (props: IProps) => {
     switch (createType) {
       case ScheduleCreationType.Scheduler:
         return onCreateWithScheduler;
-      case ScheduleCreationType.VisualGamesMaker:
+      case ScheduleCreationType.Visual:
         return onCreateWithVisualGamesMaker;
-      case ScheduleCreationType.Manually:
+      case ScheduleCreationType.Manual:
         return onCreateManually;
       default:
         return onCreateWithScheduler;

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { find } from 'lodash-es';
@@ -132,11 +132,9 @@ const TableSchedule = ({
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
 
-  console.log(schedulesDetails, updateSchedulesDetails);
-
   const [isFromMaker] = useState(
-    (scheduleData as IConfigurableSchedule)?.creationType ===
-    ScheduleCreationType.VisualGamesMaker
+    (scheduleData as IConfigurableSchedule)?.create_mode ===
+    ScheduleCreationType[ScheduleCreationType.Visual]
   );
   const [simultaneousDnd, setSimultaneousDnd] = useState(isFromMaker);
 
@@ -204,6 +202,8 @@ const TableSchedule = ({
 
   useEffect(() => setTableGames(manageGamesData()), [manageGamesData]);
 
+  const didInitialManagedGames = useRef(false);
+
   const managePossibleGames = useCallback(() => {
     if (!gamesList) {
       return [] as IConfigurableGame[];
@@ -212,17 +212,36 @@ const TableSchedule = ({
       const homeTeam = teamCards.find(t => t.id === v.homeTeamId);
       const awayTeam = teamCards.find(t => t.id === v.awayTeamId);
 
-      return {
+      const newValue = {
         ...v,
         homeTeam,
         homeDisplayName: homeTeam?.name,
         awayTeam,
         awayDisplayName: awayTeam?.name,
       };
+
+      if (!didInitialManagedGames.current) {
+        didInitialManagedGames.current = true;
+        const foundScheduleDetails = schedulesDetails?.find(
+          scheduleDetails =>
+            scheduleDetails.division_id === v.divisionId &&
+            scheduleDetails.away_team_id === v.awayTeamId &&
+            scheduleDetails.home_team_id === v.homeTeamId &&
+            scheduleDetails.game_id !== '-1'
+        );
+
+        newValue.isAssigned = !!foundScheduleDetails;
+      }
+
+      return newValue;
     });
-  }, [gamesList, teamCards]);
-  const [possibleGames, setPossibleGames] = useState<IConfigurableGame[]>(managePossibleGames());
-  useEffect(() => setPossibleGames(managePossibleGames()), [managePossibleGames]);
+  }, [gamesList, teamCards, schedulesDetails]);
+  const [possibleGames, setPossibleGames] = useState<IConfigurableGame[]>(
+    managePossibleGames()
+  );
+  useEffect(() => setPossibleGames(managePossibleGames()), [
+    managePossibleGames,
+  ]);
 
   const updatedFields = mapUnusedFields(fields, tableGames, filterValues);
 
@@ -287,7 +306,11 @@ const TableSchedule = ({
         return setMoveCardResult(result);
       }
       default:
-        markGameAssigned(result.possibleGame, !dropParams.gameId && !dropParams.originGameId, !!(dropParams.gameId && dropParams.originGameId));
+        markGameAssigned(
+          result.possibleGame,
+          !dropParams.gameId && !dropParams.originGameId,
+          !!(dropParams.gameId && dropParams.originGameId)
+        );
         onTeamCardsUpdate(result.teamCards);
     }
   };
@@ -305,12 +328,16 @@ const TableSchedule = ({
     }
   };
 
-  const markGameAssigned = (unassignedGame?: IConfigurableGame, doPreventAssign: boolean = false, doPreventUnassign: boolean = false) => {
-    if (unassignedGame && gamesList) {
+  const markGameAssigned = (
+    game?: IConfigurableGame,
+    doPreventAssign: boolean = false,
+    doPreventUnassign: boolean = false
+  ) => {
+    if (game && gamesList) {
       const foundGame = gamesList.find(
         g =>
-          g.homeTeamId === unassignedGame.homeTeam?.id &&
-          g.awayTeamId === unassignedGame.awayTeam?.id
+          g.homeTeamId === game.homeTeam?.id &&
+          g.awayTeamId === game.awayTeam?.id
       );
       if (foundGame) {
         if (foundGame.isAssigned) {
