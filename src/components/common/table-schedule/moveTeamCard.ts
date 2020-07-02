@@ -54,17 +54,20 @@ export default (
       ? gamePlace[position === 1 ? 'homeTeam' : 'awayTeam']
       : undefined;
 
-    const secondIncomingTeamGames =
+    const secondIncomingTeam =
       originGamePlace &&
       (originGamePlace.homeTeam?.id === incomingTeam?.id
-        ? originGamePlace.awayTeam?.games
-        : originGamePlace.homeTeam?.games);
+        ? originGamePlace.awayTeam
+        : originGamePlace.homeTeam);
+
+    const secondIncomingTeamGames = secondIncomingTeam?.games?.filter(g => g.id !== originGameId);
 
     const secondIncomingTeamSlots =
       secondIncomingTeamGames &&
       filledGames
         .filter(
           item =>
+            item.id !== originGameId &&
             findIndex(secondIncomingTeamGames, { id: item.id, date: day }) >= 0
         )
         .map(g => g.timeSlotId);
