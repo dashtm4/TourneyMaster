@@ -43,6 +43,7 @@ enum IRegistrationFields {
   UPDATED_BY = 'updated_by',
   UPDATED_DATETIME = 'updated_datetime',
   UPCHARGE_FEES_ON_REGISTRATIONS = 'upcharge_fees_on_registrations',
+  WAIVER_CONTENT = 'waiver_content',
 }
 
 export { IRegistrationFields };

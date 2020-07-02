@@ -34,6 +34,7 @@ import {
 import { History } from 'history';
 import { Loader, Toasts } from 'components/common';
 import { IEntity } from 'common/types';
+import Waiver from "./waiver";
 
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
@@ -162,6 +163,8 @@ class RegistrationView extends React.Component<
     this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
+  click = () => console.log("change");
+
   renderView = () => {
     const { registration } = this.props;
     const eventType = this.props.event && this.props.event[0].event_type;
@@ -243,6 +246,18 @@ class RegistrationView extends React.Component<
                   >
                     <span>Payments</span>
                     <Payments data={registration} />
+                  </SectionDropdown>
+                </li>
+                <li>
+                  <SectionDropdown
+                    type="section"
+                    panelDetailsType="flat"
+                    isDefaultExpanded={true}
+                  >
+                    <span>Waiver</span>
+                    <div className={styles.waiverWrapp}>
+                      <Waiver data={registration} isEdit={false} />
+                    </div>
                   </SectionDropdown>
                 </li>
                 <li>

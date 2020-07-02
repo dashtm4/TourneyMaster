@@ -50,6 +50,8 @@ export interface IIndividualsRegister {
   created_datetime: string;
   updated_by: string;
   updated_datetime: string;
+  waiver_signature: string;
+  waiver_sign_datetime: string;
 }
 export interface ITeamsRegister {
   reg_response_id: string;
@@ -88,4 +90,6 @@ export interface ITeamsRegister {
   created_datetime: string;
   updated_by: string;
   updated_datetime: string;
+  waiver_signature: string;
+  waiver_sign_datetime: string;
 }

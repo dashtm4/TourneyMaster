@@ -244,7 +244,6 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
             onChange={onConnectLaxUrlChange}
           />
         </div>
-        <div className={styles.sectionItem} />
       </div>
       <div className={styles.toolTipMessage}>
         <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
