@@ -63,7 +63,7 @@ const PoolsDetailsNav = ({
       ) : (
         <Button
           onClick={onArrange}
-          icon={getIcon(Icons.EDIT, ICON_STYLES)}
+          icon={getIcon(Icons.MOVE, ICON_STYLES)}
           variant={ButtonVarian.TEXT}
           color={ButtonColors.SECONDARY}
           label="Arrange Teams"
