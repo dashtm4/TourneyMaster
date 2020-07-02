@@ -1,9 +1,9 @@
 import { find, orderBy, union, findIndex } from 'lodash-es';
-import { ITeamCard } from 'common/models/schedule/teams';
 import { getTimeFromString, timeToString } from 'helpers';
-import { IGame } from 'components/common/matrix-table/helper';
-import { IField } from 'common/models/schedule/fields';
 import { IScheduleDivision } from 'common/models/schedule/divisions';
+import { ITeamCard } from 'common/models/schedule/teams';
+import { IField } from 'common/models/schedule/fields';
+import { IGame } from 'components/common/matrix-table/helper';
 
 export interface ITeamsDiagnosticsProps {
   teamCards: ITeamCard[];
@@ -47,8 +47,8 @@ const calculateBackToBacks = (teamCard: ITeamCard, games: IGame[]) => {
   const backToBacks: number[] = [];
 
   timeSlotsSorted.map((ts, index, arr) =>
-    arr[index] === arr[index - 1] || arr[index] - arr[index - 1] === 1
-      ? backToBacks.push(arr[index - 1], ts)
+    arr[index] === arr[index + 1] || arr[index + 1] - arr[index] === 1
+      ? backToBacks.push(arr[index], ts)
       : null
   );
 
@@ -68,10 +68,10 @@ export const calculateNumOfTimeSlots = (
     .map(item => item.timeSlotId);
 
   const numOfTimeSlots = timeSlotIds
-    .map((v, i, a) => a[i + 1] - v - 1 || 0)
+    .map((v, i, a) => a[i + 1] - v || 0)
     .filter(item => item);
 
-  return numOfTimeSlots.filter(item => item === gap).length;
+  return numOfTimeSlots.filter(item => item - 1 === gap).length;
 };
 
 const calculateTeamDiagnostics = (
