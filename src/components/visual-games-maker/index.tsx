@@ -33,7 +33,7 @@ interface IMapDispatchToProps {
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface IComponentProps {
-  gamesList?: IGameCell[];
+  gamesCells?: IGameCell[];
   onGamesListChange: (item: IGameCell[]) => void;
 }
 
@@ -69,7 +69,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
   }
 
   componentDidUpdate(prevProps: any) {
-    if (this.props.gamesList !== prevProps.gamesList) {
+    if (this.props.gamesCells !== prevProps.gameCells) {
       this.createScheduleTable();
     }
   }
@@ -112,9 +112,9 @@ class VisualGamesMaker extends Component<IProps, IState> {
   };
 
   createScheduleTable = () => {
-    const { fillGamesList, gamesList } = this.props;
-    if (!gamesList) return;
-    const gamesListMaker = gamesList.map(v => {
+    const { fillGamesList, gamesCells } = this.props;
+    if (!gamesCells) return;
+    const gamesListMaker = gamesCells.map(v => {
       return {
         id: -1,
         homeTeamId: v.homeTeamId,
@@ -137,7 +137,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
       return (a.pool_id || '') > (b.pool_id || '') ? 1 : -1;
     });
 
-    const filteredGames = this.props.gamesList?.filter(
+    const filteredGames = this.props.gamesCells?.filter(
       item => item.divisionId === this.state.selectedDivisionId
     ) || [];
 
@@ -185,7 +185,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
         <div className={styles.tablesWrapper}>
           <div className={styles.matrixOfPossibleGames}>
             <MatrixOfPossibleGames
-              games={this.props.gamesList || []}
+              games={this.props.gamesCells || []}
               teams={sortedTeams}
               poolId={this.state.selectedPoolId}
               showNames={this.state.isShowNamesOfTeams}

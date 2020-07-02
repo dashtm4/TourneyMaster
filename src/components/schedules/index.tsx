@@ -26,6 +26,7 @@ import {
   updateSchedule,
   schedulesDetailsClear,
   updateSchedulesDetails,
+  deleteSchedulesDetails,
 } from './logic/actions';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { ITournamentData } from 'common/models/tournament';
@@ -117,7 +118,7 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   anotherSchedulePublished?: boolean;
   gamesAlreadyExist?: boolean;
   pools?: IPool[];
-  gamesList?: IGame[];
+  gamesList?: IConfigurableGame[];
 }
 
 interface IMapDispatchToProps {
@@ -163,6 +164,7 @@ interface IMapDispatchToProps {
   ) => void;
   fillGamesList: (games: IConfigurableGame[]) => void;
   clearGamesList: () => void;
+  deleteSchedulesDetails: (modifiedSchedulesDetails: ISchedulesDetails[], schedulesDetailsToDelete: ISchedulesDetails[]) => void;
 }
 
 interface ComponentProps {
@@ -184,7 +186,7 @@ type Props = IMapStateToProps & IMapDispatchToProps & ComponentProps;
 
 interface State {
   games?: IGame[];
-  gamesList?: IGameCell[];
+  gamesCells?: IGameCell[];
   scheduleId?: string;
   timeSlots?: ITimeSlot[];
   timeValues?: ITimeValues;
@@ -301,7 +303,7 @@ class Schedules extends Component<Props, State> {
       this.props.fetchSchedulesDetails(scheduleId);
     }
 
-    if (this.isVisualGamesMakerMode() && schedulesDetails && gamesList && gamesList.length === 0) {
+    if (this.isVisualGamesMakerMode() && schedulesDetails && JSON.stringify(this.props.schedulesDetails) !== JSON.stringify(prevProps.schedulesDetails) && gamesList && gamesList.length === 0) {
       const gamesListFromSchedulesDetails: IConfigurableGame[] = schedulesDetails
         .filter(v => v.game_id === '-1')
         .map(v => ({
@@ -316,7 +318,18 @@ class Schedules extends Component<Props, State> {
           isAssigned: !!schedulesDetails.find(details => details.game_id !== '-1' && details.division_id === v.division_id && details.away_team_id === v.away_team_id && details.home_team_id === v.home_team_id)
         }));
 
+      const gamesCellsFromGamesList: IGameCell[] = gamesListFromSchedulesDetails.map(
+        v => ({
+          homeTeamId: v.homeTeamId || '',
+          awayTeamId: v.awayTeamId || '',
+          divisionId: v.divisionId || '',
+          divisionName: v.divisionName || '',
+          divisionHex: v.divisionHex || '',
+        })
+      );
+
       this.props.fillGamesList(gamesListFromSchedulesDetails);
+      this.onGamesListChange(gamesCellsFromGamesList);
     }
 
     if (!neccessaryDataCalculated && schedule) {
@@ -385,7 +398,7 @@ class Schedules extends Component<Props, State> {
 
   onGamesListChange = (item: IGameCell[]) => {
     this.setState({
-      gamesList: item,
+      gamesCells: item,
     });
   };
 
@@ -645,7 +658,7 @@ class Schedules extends Component<Props, State> {
 
   retrieveSchedulesDetails = async (isDraft: boolean, type: 'POST' | 'PUT') => {
     const { schedulesDetails, schedulesTeamCards } = this.props;
-    const { games, gamesList, tournamentDays } = this.state;
+    const { games, gamesCells, tournamentDays } = this.state;
 
     const localSchedule = this.getSchedule();
 
@@ -660,9 +673,9 @@ class Schedules extends Component<Props, State> {
       );
     }
 
-    if (gamesList) {
+    if (gamesCells) {
       schedulesTableGames.push(
-        gamesList.map(v => ({
+        gamesCells.map(v => ({
           id: -1,
           divisionId: v.divisionId,
           awayTeamId: v.awayTeamId,
@@ -671,7 +684,6 @@ class Schedules extends Component<Props, State> {
       );
     };
 
-    console.log('gameslistCQ', gamesList);
 
     schedulesTableGames = schedulesTableGames.flat();
 
@@ -698,20 +710,34 @@ class Schedules extends Component<Props, State> {
   };
 
   save = async () => {
+    const { gamesList, schedulesDetails } = this.props;
     const { scheduleId } = this.state;
     const schedule = this.getSchedule();
 
     if (!schedule) return;
 
-    const schedulesDetails = await this.retrieveSchedulesDetails(
+    const updatedSchedulesDetails = await this.retrieveSchedulesDetails(
       true,
       scheduleId ? 'PUT' : 'POST'
     );
 
     if (scheduleId) {
-      this.props.updateSchedule(schedule, schedulesDetails);
+      const gamesListFromSchedulesDetails = schedulesDetails!.filter(v => v.game_id === '-1');
+      const schedulesDetailsToDelete = gamesListFromSchedulesDetails.filter(
+        v =>
+          !gamesList?.find(
+            game =>
+              game.divisionId === v.division_id &&
+              game.awayTeamId === v.away_team_id &&
+              game.homeTeamId === v.home_team_id
+          )
+      );
+      const modifiedSchedulesDetails = updatedSchedulesDetails!.filter(v => !schedulesDetailsToDelete.includes(v));
+
+      this.props.updateSchedule(schedule, updatedSchedulesDetails);
+      this.props.deleteSchedulesDetails(modifiedSchedulesDetails, schedulesDetailsToDelete);
     } else {
-      this.props.createSchedule(schedule, schedulesDetails);
+      this.props.createSchedule(schedule, updatedSchedulesDetails);
     }
 
     if (this.state.cancelConfirmationOpen) {
@@ -910,7 +936,7 @@ class Schedules extends Component<Props, State> {
             </div>
             {activeTab === SchedulesTabsEnum.VisualGamesMaker ? (
               <VisualGamesMaker
-                gamesList={this.state.gamesList}
+                gamesCells={this.state.gamesCells}
                 onGamesListChange={this.onGamesListChange} />
             ) : (
                 <TableSchedule
@@ -1017,6 +1043,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       updateSchedulesDetails,
       fillGamesList,
       clearGamesList,
+      deleteSchedulesDetails
     },
     dispatch
   );
