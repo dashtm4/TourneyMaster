@@ -33,7 +33,7 @@
 .tabsContainer {
   .tabToggle {
     background: #f4f4f4;
-    width: 300px;
+    width: fit-content;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -50,10 +50,11 @@
       justify-content: center;
       color: #a4a1a1;
       height: 40px;
-      width: 153px;
+      min-width: 150px;
       border-radius: 5px 5px 0 0;
       cursor: pointer;
       font-size: 15px;
+      padding: 0 15px;
 
       &.active {
         box-shadow: 8px -4px 14px -8px rgba(0, 0, 0, 0.2);
