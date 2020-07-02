@@ -25,6 +25,7 @@ const sizeOptions = [
 ];
 const position = [
   { label: 'Attack', value: 'Attack' },
+  { label: 'Attack/Middie', value: 'Attack/Middie' },
   { label: 'Middie', value: 'Middie' },
   { label: 'Defense', value: 'Defense' },
   { label: 'Fogo', value: 'Fogo' },
