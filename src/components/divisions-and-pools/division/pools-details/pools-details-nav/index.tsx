@@ -78,17 +78,17 @@ const PoolsDetailsNav = ({
             </span>
           </p>
         ) : (
-          <Button
-            onClick={onArrange}
-            icon={getIcon(Icons.EDIT, ICON_STYLES)}
-            variant={ButtonVariant.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Arrange Teams"
-          />
-        )}
+            <Button
+              onClick={onArrange}
+              icon={getIcon(Icons.ZOOM, ICON_STYLES)}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Arrange Teams"
+            />
+          )}
       </div>
     </div>
   );
-};
+
 
 export default PoolsDetailsNav;
