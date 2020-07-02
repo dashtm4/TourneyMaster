@@ -30,11 +30,11 @@ const RegistrationDetails = ({ data, eventType }: IRegistrationDetails) => (
             <p>{data.max_players_per_division || '—'}</p>
           </>
         ) : (
-          <>
-            <span className={styles.sectionTitle}>Max Teams Per Division</span>
-            <p>{data.max_teams_per_division || '—'}</p>
-          </>
-        )}
+            <>
+              <span className={styles.sectionTitle}>Max Teams Per Division</span>
+              <p>{data.max_teams_per_division || '—'}</p>
+            </>
+          )}
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Max Athletes on Roster</span>
@@ -54,6 +54,10 @@ const RegistrationDetails = ({ data, eventType }: IRegistrationDetails) => (
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Athlete Email</span>
         <p>{Options[data.request_athlete_email] || '—'}</p>
+      </div>
+      <div className={styles.sectionItem}>
+        <span className={styles.sectionTitle}>US Lacrosse Membership</span>
+        <p>{Options[data.request_us_lacrosse_number] || '—'}</p>
       </div>
       <div className={styles.sectionItem} />
     </div>
