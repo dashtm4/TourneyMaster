@@ -78,7 +78,7 @@ const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
   }
 };
 
-const syncTaxRates = async paymentPlans => {
+const syncTaxRates = async (paymentPlans, stripeAccount) => {
   const salesTaxRates = [
     ...new Set(paymentPlans.map(plan => plan.sales_tax_rate)),
   ].map(sales_tax_rate => ({
@@ -88,21 +88,49 @@ const syncTaxRates = async paymentPlans => {
     jurisdiction: 'US',
     inclusive: true,
   }));
-  await syncStripeObjects(new StripeTaxRatesHandler(stripe), salesTaxRates);
+  await syncStripeObjects(
+    new StripeTaxRatesHandler(stripe, stripeAccount),
+    salesTaxRates
+  );
 };
 
-const syncServiceProducts = async () => {
-  const activeSkus = await getActiveSkus();
-  await syncStripeObjects(new StripeServiceProductsHandler(stripe), activeSkus);
+const syncServiceProducts = async stripeAccount => {
+  const activeSkus = await getActiveSkus(stripeAccount);
+  await syncStripeObjects(
+    new StripeServiceProductsHandler(stripe, stripeAccount),
+    activeSkus
+  );
 };
 
-const syncPrices = async () => {
-  const activePaymentPlans = await getPaymentPlans({});
-  await syncTaxRates(activePaymentPlans);
-  await syncStripeObjects(new StripePricesHandler(stripe), activePaymentPlans);
+const syncPrices = async stripeAccount => {
+  const activePaymentPlans = await getPaymentPlans({
+    stripe_connect_id: stripeAccount,
+  });
+  await syncTaxRates(activePaymentPlans, stripeAccount);
+  await syncStripeObjects(
+    new StripePricesHandler(stripe, stripeAccount),
+    activePaymentPlans
+  );
+};
+
+const loadAll = async (endpoint, params = {}) => {
+  const objects = [];
+  for await (const object of endpoint.list({
+    ...params,
+    limit: 100,
+  })) {
+    objects.push(object);
+  }
+  return objects;
 };
 
 export const syncWithStripe = async () => {
-  await syncServiceProducts();
-  await syncPrices();
+  const stripeAccounts = (await loadAll(stripe.accounts))
+    .filter(account => account.charges_enabled)
+    .map(account => account.id);
+  stripeAccounts.push('main');
+  for (const stripeAccount of stripeAccounts) {
+    await syncServiceProducts(stripeAccount);
+    await syncPrices(stripeAccount);
+  }
 };
