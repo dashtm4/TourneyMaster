@@ -1,5 +1,8 @@
-export default class StripeServiceProductsHandler {
-  constructor(endpoint) {
+import { StripeObject } from './stripeObject.js';
+
+export default class StripeServiceProductsHandler extends StripeObject {
+  constructor(endpoint, stripeAccount) {
+    super(stripeAccount);
     this.endpoint = endpoint.products;
   }
 
@@ -24,14 +27,6 @@ export default class StripeServiceProductsHandler {
     return product;
   };
 
-  list = async params => {
-    const objects = [];
-    for await (const object of this.endpoint.list({ ...params, limit: 100 })) {
-      objects.push(object);
-    }
-    return objects;
-  };
-
   equal = (product, stripeProduct) => {
     return (
       product.name === stripeProduct.name &&
@@ -50,31 +45,10 @@ export default class StripeServiceProductsHandler {
     );
   };
 
-  delete = async product => {
-    console.log(`Deactivating product: ${product.name} (${product.id})`);
-    const stripeProduct = await this.endpoint.update(product.id, {
-      active: false,
-    });
-    return stripeProduct;
-  };
-
-  create = async product => {
-    console.log(`Creating product: ${product.name} (${product.id})`);
-    try {
-      const stripeProduct = await this.endpoint.create(product);
-      return stripeProduct;
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
-  };
-
   update = async product => {
-    console.log(`Updating product: ${product.name} (${product.id})`);
     const updatedProd = { ...product };
     delete updatedProd.type;
     delete updatedProd.id;
-    const stripeProduct = await this.endpoint.update(product.id, updatedProd);
-    return stripeProduct;
+    return await super.update(updatedProduct);
   };
 }

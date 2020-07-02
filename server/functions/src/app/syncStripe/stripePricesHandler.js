@@ -1,7 +1,9 @@
 import config from '../../config.js';
+import { StripeObject } from './stripeObject.js';
 
-export default class StripePricesHandler {
-  constructor(endpoint) {
+export default class StripePricesHandler extends StripeObject {
+  constructor(endpoint, stripeAccount) {
+    super(stripeAccount);
     this.endpoint = endpoint.prices;
   }
 
@@ -68,18 +70,6 @@ export default class StripePricesHandler {
     }
   };
 
-  list = async params => {
-    const objects = [];
-    for await (const object of this.endpoint.list({
-      ...params,
-      active: true,
-      limit: 100,
-    })) {
-      objects.push(object);
-    }
-    return objects;
-  };
-
   equal = (price, stripePrice) => {
     return (
       price.currency === stripePrice.currency.toUpperCase() &&
@@ -107,37 +97,7 @@ export default class StripePricesHandler {
     );
   };
 
-  delete = async price => {
-    console.log(
-      `Deactivating Price: ${price.metadata.externalId} (${price.product})`
-    );
-    const stripeSku = await this.endpoint.update(price.id, {
-      active: false,
-    });
-    return stripeSku;
-  };
-
-  create = async price => {
-    console.log(
-      `Creating Price: ${price.metadata.externalId} (Product Id: ${price.product})`
-    );
-    const stripeSku = await this.endpoint.create(price);
-    return stripeSku;
-  };
-
   update = async price => {
-    console.log(
-      `Updating Price: ${price.metadata?.externalId} (Product Id: ${price.product})`
-    );
-    const updatedSku = { ...price };
-    delete updatedSku.id;
-
-    await this.endpoint.update(price.id, {
-      active: false,
-    });
-
-    const stripeSku = await this.endpoint.create(updatedSku);
-
-    return stripeSku;
+    return await super.update(price, true);
   };
 }

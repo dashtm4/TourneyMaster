@@ -1,0 +1,34 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Payment Server",
+      "program": "${workspaceFolder}/src/index.js",
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "SMParameterName": "TourneyMasterAPIv2",
+        "AWS_PROFILE": "clubsports",
+        "TZ": "UTC",
+        "STRIPE_SECRET_KEY": "sk_test_LmM3FoEAYMtPQu48cMV3sAky00VigSuQ8C",
+        "PUBLIC_API_BASE_URL": "https://api.tourneymaster.org/publicdev"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Sync Products",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/test/test.js",
+      "env": {
+        "TZ": "UTC",
+        "STRIPE_SECRET_KEY": "sk_test_LmM3FoEAYMtPQu48cMV3sAky00VigSuQ8C",
+        "PUBLIC_API_BASE_URL": "https://api.tourneymaster.org/publicdev"
+      }
+    }
+  ]
+}
