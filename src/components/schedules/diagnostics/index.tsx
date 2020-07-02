@@ -1,6 +1,4 @@
 import React, { Component, ReactText } from 'react';
-import { Modal, Button } from 'components/common';
-import styles from './styles.module.scss';
 import {
   Paper,
   TableContainer,
@@ -14,7 +12,9 @@ import {
 import { orderBy } from 'lodash-es';
 import { getIcon, onXLSXSave } from 'helpers';
 import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
+import { Modal, Button } from 'components/common';
 import { DiagnosticTypes } from '../types';
+import styles from './styles.module.scss';
 
 export interface IDiagnosticsInput {
   header: string[];
@@ -55,7 +55,9 @@ class Diagnostics extends Component<Props, State> {
   }
 
   sortData = (sortByArg: string, sortOrderArg?: 'asc' | 'desc') => {
-    const sortBy = this.state.tableData.header.indexOf(sortByArg);
+    const { tableData } = this.state;
+
+    const sortBy = tableData.header.indexOf(sortByArg);
 
     this.setState(({ sortOrder, tableData }) => ({
       sortBy: sortByArg,
@@ -74,28 +76,29 @@ class Diagnostics extends Component<Props, State> {
     }));
   };
 
-  createTableCell = (cellText: Cell, index: number, isHeader?: boolean) => (
-    <TableCell
-      className={isHeader ? styles.tableHeadCell : styles.tableCell}
-      key={'cell-' + index}
-      align="center"
-    >
-      <span className={styles.cellText}>{cellText}</span>
+  createTableCell = (cellText: Cell, index: number, isHeader?: boolean) => {
+    const { sortBy, sortOrder } = this.state;
+    return (
+      <TableCell
+        className={isHeader ? styles.tableHeadCell : styles.tableCell}
+        key={'cell-' + index}
+        align="center"
+      >
+        <span className={styles.cellText}>{cellText}</span>
 
-      {isHeader && (
-        <TableSortLabel
-          className={styles.sortButton}
-          active={cellText === this.state.sortBy}
-          direction={
-            this.state.sortOrder === 'desc' && cellText === this.state.sortBy
-              ? 'asc'
-              : 'desc'
-          }
-          onClick={() => this.sortData(String(cellText))}
-        />
-      )}
-    </TableCell>
-  );
+        {isHeader && (
+          <TableSortLabel
+            className={styles.sortButton}
+            active={cellText === sortBy}
+            direction={
+              sortOrder === 'desc' && cellText === sortBy ? 'asc' : 'desc'
+            }
+            onClick={() => this.sortData(String(cellText))}
+          />
+        )}
+      </TableCell>
+    );
+  };
 
   createTableRow = (cells: Cell[], index?: number, isHeader?: boolean) => (
     <TableRow key={index} hover={true}>
