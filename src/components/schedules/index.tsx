@@ -958,7 +958,6 @@ class Schedules extends Component<Props, State> {
                   recalculateDiagnostics={this.calculateDiagnostics}
                   gamesList={gamesList}
                   updateSchedulesDetails={updateSchedulesDetails}
-                  fillGamesList={this.props.fillGamesList}
                 />
               )}
           </section>
