@@ -9,7 +9,7 @@ import {
 } from 'components/common';
 import { getIcon } from 'helpers';
 import { BindingAction, IPool, BindingCbWithOne } from 'common/models';
-import { ButtonVarian, ButtonColors, IPoolFields, Icons } from 'common/enums';
+import { ButtonVariant, ButtonColors, IPoolFields, Icons } from 'common/enums';
 import { IInputEvent } from 'common/types';
 import { getPoolOptions } from './helpers';
 import styles from './styles.module.scss';
@@ -125,7 +125,7 @@ const PopupEditPool = ({ pools, isOpen, onClose, onEdit, onDelete }: Props) => {
               onClick={onDeletePopup}
               disabled={!activePool}
               icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.INHERIT}
               label="Delete Pool"
             />
@@ -133,7 +133,7 @@ const PopupEditPool = ({ pools, isOpen, onClose, onEdit, onDelete }: Props) => {
           <p>
             <Button
               onClick={onClose}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               label="Cancel"
             />
@@ -141,7 +141,7 @@ const PopupEditPool = ({ pools, isOpen, onClose, onEdit, onDelete }: Props) => {
               <Button
                 onClick={onSave}
                 disabled={!activePool}
-                variant={ButtonVarian.CONTAINED}
+                variant={ButtonVariant.CONTAINED}
                 color={ButtonColors.PRIMARY}
                 label="Save"
               />

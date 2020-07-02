@@ -54,6 +54,8 @@ export interface IIndividualsRegister {
 export interface ITeamsRegister {
   reg_response_id: string;
   registration_id: string;
+  type?: string;
+  team_id?: string;
   team_name: string;
   team_city: string;
   team_state: string;

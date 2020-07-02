@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Paper } from 'components/common';
 import { getIcon } from 'helpers';
-import { ButtonColors, ButtonVarian, Icons, Routes } from 'common/enums';
+import { ButtonColors, ButtonVariant, Icons, Routes } from 'common/enums';
 import { BindingAction } from 'common/models';
 import FabButton from 'components/common/fab-button';
 import styles from '../styles.module.scss';
@@ -33,7 +33,7 @@ const Navigation = ({
           <Button
             onClick={onAddToLibraryManager}
             icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
-            variant={ButtonVarian.TEXT}
+            variant={ButtonVariant.TEXT}
             color={ButtonColors.SECONDARY}
             label="Save to Library"
           />
@@ -46,7 +46,7 @@ const Navigation = ({
             <Button
               onClick={onCsvLoaderBtn}
               color={ButtonColors.SECONDARY}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               label="Import from CSV"
             />
           </>
@@ -55,13 +55,13 @@ const Navigation = ({
       <div className={styles.btnsWrapper}>
         <Button
           color={ButtonColors.SECONDARY}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           onClick={onCancelClick}
           label="Cancel"
         />
         <Button
           color={ButtonColors.PRIMARY}
-          variant={ButtonVarian.CONTAINED}
+          variant={ButtonVariant.CONTAINED}
           onClick={onSave}
           label="Save"
         />

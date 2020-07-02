@@ -21,6 +21,7 @@ import {
   SAVE_TEAMS_FAILURE,
   CREATE_TEAMS_SUCCESS,
 } from './action-types';
+import { ITeamsRegister } from 'common/models/register';
 
 const loadTeamsData: ActionCreator<ThunkAction<void, {}, null, TeamsAction>> = (
   eventId: string
@@ -119,6 +120,17 @@ const saveTeams = (teams: ITeam[]) => async (
     for await (let team of teams) {
       if (team.isDelete) {
         await Api.delete(`/teams?team_id=${team.team_id}`);
+        // Remove connection from registrants
+        let registrants = await Api.get(
+          `/reg_responses_teams?team_id=${team.team_id}`
+        );
+        if (registrants.length > 0) {
+          registrants = registrants.map((registrant: ITeamsRegister) => ({
+            ...registrant,
+            team_id: null,
+          }));
+          await Api.put(`/reg_responses_teams`, registrants);
+        }
       }
 
       if (team.isChange && !team.isDelete) {

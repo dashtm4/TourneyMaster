@@ -6,7 +6,7 @@ import { BindingAction, BindingCbWithOne } from 'common/models';
 import FullWidthTabs from './tab';
 import JobStatus from './tables/job-status';
 import { Button } from 'components/common';
-import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
+import { ButtonVariant, ButtonColors, ButtonFormTypes } from 'common/enums';
 import history from '../../../../../browserhistory';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
@@ -78,7 +78,7 @@ const TourneyImport: React.FC<Props> = ({
               <Button
                 label="Submit"
                 onClick={onPreview}
-                variant={ButtonVarian.CONTAINED}
+                variant={ButtonVariant.CONTAINED}
                 color={ButtonColors.PRIMARY}
                 btnType={ButtonFormTypes.SUBMIT}
               />
@@ -112,7 +112,7 @@ const TourneyImport: React.FC<Props> = ({
                   <Button
                     label="Commit"
                     onClick={onCommit}
-                    variant={ButtonVarian.CONTAINED}
+                    variant={ButtonVariant.CONTAINED}
                     color={ButtonColors.PRIMARY}
                     btnType={ButtonFormTypes.SUBMIT}
                   />

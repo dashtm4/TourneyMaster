@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Paper } from 'components/common';
 import { getIcon } from 'helpers';
-import { ButtonColors, ButtonVarian, Routes, Icons } from 'common/enums';
+import { ButtonColors, ButtonVariant, Routes, Icons } from 'common/enums';
 import { BindingAction } from 'common/models';
 import styles from '../styles.module.scss';
 
@@ -24,7 +24,7 @@ const Navigation = ({ onAddToLibraryManager }: Props) => (
         <Button
           onClick={onAddToLibraryManager}
           icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
           label="Save to Library"
         />
@@ -32,14 +32,14 @@ const Navigation = ({ onAddToLibraryManager }: Props) => (
       <div className={styles.btnsWrapper}>
         <Button
           color={ButtonColors.PRIMARY}
-          variant={ButtonVarian.CONTAINED}
+          variant={ButtonVariant.CONTAINED}
           onClick={() => {}}
           label="+ Create Schedule Review"
         />
         <Link to={Routes.CREATE_MESSAGE}>
           <Button
             color={ButtonColors.PRIMARY}
-            variant={ButtonVarian.CONTAINED}
+            variant={ButtonVariant.CONTAINED}
             onClick={() => {}}
             label="+ Create Message"
           />

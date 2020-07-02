@@ -2,6 +2,7 @@ import {
   EVENTS_FETCH_SUCCESS,
   EVENTS_FETCH_FAILURE,
   DASHBOARD_TEAMS_FETCH_SUCCESS,
+  DASHBOARD_GAMECOUNTS_FETCH_SUCCESS,
   FIELDS_FETCH_SUCCESS,
   DASHBOARD_FETCH_START,
   CALENDAR_EVENTS_FETCH_START,
@@ -21,6 +22,7 @@ import { orderBy } from 'lodash';
 export interface IState {
   data?: IEventDetails[];
   teams: ITeam[];
+  gameCounts: object;
   fields: IField[];
   facilities: IFacility[];
   schedules: ISchedule[];
@@ -34,6 +36,7 @@ export interface IState {
 const defaultState: IState = {
   data: [],
   teams: [],
+  gameCounts: {},
   fields: [],
   facilities: [],
   schedules: [],
@@ -88,6 +91,14 @@ export default (
       return {
         ...state,
         teams: action.payload,
+        isDetailLoading: false,
+        error: false,
+      };
+    }
+    case DASHBOARD_GAMECOUNTS_FETCH_SUCCESS: {
+      return {
+        ...state,
+        gameCounts: action.payload,
         isDetailLoading: false,
         error: false,
       };

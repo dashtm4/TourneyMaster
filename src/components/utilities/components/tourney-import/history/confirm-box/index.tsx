@@ -3,7 +3,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Button } from 'components/common';
-import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
+import { ButtonVariant, ButtonColors, ButtonFormTypes } from 'common/enums';
 import { BindingAction } from 'common/models';
 import Slide from '@material-ui/core/Slide';
 import { TransitionProps } from '@material-ui/core/transitions';
@@ -59,7 +59,7 @@ export const DeleteComformBox = ({ opened, onNo, onYes }: DeleteProps) => {
           <Button
             label="Yes"
             onClick={onYes}
-            variant={ButtonVarian.CONTAINED}
+            variant={ButtonVariant.CONTAINED}
             color={ButtonColors.PRIMARY}
             btnType={ButtonFormTypes.SUBMIT}
           />
@@ -94,7 +94,7 @@ export const RerunComfirmBox = ({ opened, onNo, onYes }: RerunProps) => {
           />
           <Button
             label="Yes"
-            variant={ButtonVarian.CONTAINED}
+            variant={ButtonVariant.CONTAINED}
             onClick={onYes}
             color={ButtonColors.PRIMARY}
             btnType={ButtonFormTypes.SUBMIT}

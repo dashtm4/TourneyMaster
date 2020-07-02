@@ -10,7 +10,7 @@ import { getIcon, getTimeFromString } from 'helpers';
 import {
   Icons,
   ButtonColors,
-  ButtonVarian,
+  ButtonVariant,
   ButtonFormTypes,
 } from 'common/enums';
 import styles from '../popup-edit-schedule/styles.module.scss';
@@ -112,7 +112,7 @@ const PopupEditBracket = ({ bracket, onClose, onSubmit, onDelete }: Props) => {
                 <Button
                   onClick={onDeleteClick}
                   icon={getIcon(Icons.DELETE, DELETE_ICON_STYLES)}
-                  variant={ButtonVarian.TEXT}
+                  variant={ButtonVariant.TEXT}
                   color={ButtonColors.INHERIT}
                   btnType={ButtonFormTypes.BUTTON}
                   btnStyles={{ color: '#ff0f19' }}
@@ -125,14 +125,14 @@ const PopupEditBracket = ({ bracket, onClose, onSubmit, onDelete }: Props) => {
               <p className={styles.cancelBtnWrapper}>
                 <Button
                   onClick={onClose}
-                  variant={ButtonVarian.TEXT}
+                  variant={ButtonVariant.TEXT}
                   color={ButtonColors.SECONDARY}
                   btnType={ButtonFormTypes.BUTTON}
                   label="Cancel"
                 />
               </p>
               <Button
-                variant={ButtonVarian.CONTAINED}
+                variant={ButtonVariant.CONTAINED}
                 color={ButtonColors.PRIMARY}
                 btnType={ButtonFormTypes.SUBMIT}
                 label="Save"

@@ -2,7 +2,7 @@ import React, { CSSProperties } from 'react';
 import { getIcon } from 'helpers';
 import { Button, Toasts, Tooltip } from 'components/common';
 import { TooltipMessageTypes } from 'components/common/tooltip-message/types';
-import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
+import { ButtonColors, ButtonVariant, Icons } from 'common/enums';
 import { copyToClipboard } from './helpers';
 import styles from './styles.module.scss';
 
@@ -15,7 +15,7 @@ interface Props {
   copyString: string;
   label: string;
   color: ButtonColors;
-  variant: ButtonVarian;
+  variant: ButtonVariant;
   disableMessage?: string;
   style?: CSSProperties;
   successMessage?: string;

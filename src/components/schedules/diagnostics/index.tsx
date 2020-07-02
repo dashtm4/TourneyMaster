@@ -134,7 +134,7 @@ class Diagnostics extends Component<Props, State> {
             <Button
               onClick={onSave}
               icon={getIcon(Icons.DESCRIPTION)}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               label="Save in XLSX"
             />

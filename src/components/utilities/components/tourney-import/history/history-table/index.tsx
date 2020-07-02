@@ -11,7 +11,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import moment from 'moment';
 import { Button } from 'components/common';
-import { ButtonVarian, ButtonColors, ButtonFormTypes } from 'common/enums';
+import { ButtonVariant, ButtonColors, ButtonFormTypes } from 'common/enums';
 import { BindingCbWithOne, BindingCbWithTwo } from 'common/models';
 import { DeleteComformBox, RerunComfirmBox } from '../confirm-box';
 interface Data {
@@ -30,7 +30,7 @@ interface Props {
   histories: any[];
   onDelete: BindingCbWithOne<string | number>;
   onRerun: BindingCbWithTwo<string | number, string | number>;
-};
+}
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -46,8 +46,11 @@ type Order = 'asc' | 'desc';
 
 function getComparator<Key extends keyof any>(
   order: Order,
-  orderBy: Key,
-): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
+  orderBy: Key
+): (
+  a: { [key in Key]: number | string },
+  b: { [key in Key]: number | string }
+) => number {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -71,26 +74,36 @@ interface HeadCell {
 }
 
 const headCells: HeadCell[] = [
-  { id: 'created_datetime', numeric: false, width: 10, label: 'Import Date - Time' },
+  {
+    id: 'created_datetime',
+    numeric: false,
+    width: 10,
+    label: 'Import Date - Time',
+  },
   { id: 'IDTournament', numeric: false, width: 10, label: 'Tourney ID' },
   { id: 'name', numeric: false, width: 10, label: 'Name' },
   { id: 'num_games', numeric: true, width: 10, label: 'Games Imported' },
   { id: 'num_locations', numeric: true, width: 10, label: 'Fields Imported' },
   { id: 'is_active_YN', numeric: false, width: 10, label: 'Status' },
   { id: 'reRun', numeric: false, width: 10, label: 'Re-Run' },
-  { id: 'delete', numeric: false, width: 10, label: 'Delete' }
+  { id: 'delete', numeric: false, width: 10, label: 'Delete' },
 ];
 
 interface EnhancedTableProps {
   classes: ReturnType<typeof useStyles>;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => void;
   order: Order;
   orderBy: string;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { classes, order, orderBy, onRequestSort } = props;
-  const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof Data) => (
+    event: React.MouseEvent<unknown>
+  ) => {
     onRequestSort(event, property);
   };
 
@@ -146,7 +159,7 @@ const useStyles = makeStyles((theme: Theme) =>
       top: 20,
       width: 1,
     },
-  }),
+  })
 );
 
 const EnhancedTable = ({ histories, onDelete, onRerun }: Props) => {
@@ -160,7 +173,10 @@ const EnhancedTable = ({ histories, onDelete, onRerun }: Props) => {
   const [jobId, setJobId] = React.useState<string | number>('');
   const [idTournament, setIdTournament] = React.useState<string | number>('');
 
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => {
     event.preventDefault();
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -172,7 +188,9 @@ const EnhancedTable = ({ histories, onDelete, onRerun }: Props) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -180,37 +198,49 @@ const EnhancedTable = ({ histories, onDelete, onRerun }: Props) => {
   const deleteHandler = (job_id: string | number) => {
     setJobId(job_id);
     setDeleteBoxOpened(true);
-  }
+  };
 
   const noDeleteHandler = () => {
     setDeleteBoxOpened(false);
-  }
+  };
 
-  const rerunHandler = (job_id: string | number, idtournament: string | number) => {
+  const rerunHandler = (
+    job_id: string | number,
+    idtournament: string | number
+  ) => {
     setJobId(job_id);
     setIdTournament(idtournament);
     setRerunBoxOpened(true);
-  }
+  };
 
   const noRerunHandler = () => {
     setRerunBoxOpened(false);
-  }
+  };
 
   const yesDeleteHandler = () => {
     onDelete(jobId);
-  }
+  };
 
   const yesRerunHandler = () => {
     onRerun(jobId, idTournament);
-  }
+  };
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, histories.length - page * rowsPerPage);
+  const emptyRows =
+    rowsPerPage - Math.min(rowsPerPage, histories.length - page * rowsPerPage);
 
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <DeleteComformBox opened={deleteBoxOpened} onNo={noDeleteHandler} onYes={yesDeleteHandler} />
-        <RerunComfirmBox opened={rerunBoxOpened} onNo={noRerunHandler} onYes={yesRerunHandler} />
+        <DeleteComformBox
+          opened={deleteBoxOpened}
+          onNo={noDeleteHandler}
+          onYes={yesDeleteHandler}
+        />
+        <RerunComfirmBox
+          opened={rerunBoxOpened}
+          onNo={noRerunHandler}
+          onYes={yesRerunHandler}
+        />
         <TableContainer>
           <Table
             className={classes.table}
@@ -229,38 +259,45 @@ const EnhancedTable = ({ histories, onDelete, onRerun }: Props) => {
                 .map((history, index) => {
                   const labelId = `enhanced-table-checkbox-${index}`;
                   let status: string;
-                  if (history.is_active_YN === 1)
-                    status = 'Complete';
-                  else
-                    status = 'Fail';
+                  if (history.is_active_YN === 1) status = 'Complete';
+                  else status = 'Fail';
 
                   return (
-                    <TableRow
-                      hover
-                      tabIndex={-1}
-                      key={index}
-                    >
-                      <TableCell align="left">{moment(history.created_datetime).format('MM.DD.YYYY hh:mm A')}</TableCell>
-                      <TableCell component="th" id={labelId} scope="row" padding="none">
+                    <TableRow hover tabIndex={-1} key={index}>
+                      <TableCell align="left">
+                        {moment(history.created_datetime).format(
+                          'MM.DD.YYYY hh:mm A'
+                        )}
+                      </TableCell>
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        padding="none"
+                      >
                         {history.IDTournament}
                       </TableCell>
                       <TableCell align="left">{history.name}</TableCell>
                       <TableCell align="right">{history.num_games}</TableCell>
-                      <TableCell align="right">{history.num_locations}</TableCell>
+                      <TableCell align="right">
+                        {history.num_locations}
+                      </TableCell>
                       <TableCell align="left">{status}</TableCell>
                       <TableCell align="left">
                         <Button
                           label="Re-Run"
-                          variant={ButtonVarian.OUTLINED}
+                          variant={ButtonVariant.OUTLINED}
                           color={ButtonColors.SECONDARY}
-                          onClick={() => rerunHandler(history.job_id, history.IDTournament)}
+                          onClick={() =>
+                            rerunHandler(history.job_id, history.IDTournament)
+                          }
                           btnType={ButtonFormTypes.SUBMIT}
                         />
                       </TableCell>
                       <TableCell align="left">
                         <Button
                           label="Delete"
-                          variant={ButtonVarian.OUTLINED}
+                          variant={ButtonVariant.OUTLINED}
                           color={ButtonColors.SECONDARY}
                           onClick={() => deleteHandler(history.job_id)}
                           btnType={ButtonFormTypes.SUBMIT}

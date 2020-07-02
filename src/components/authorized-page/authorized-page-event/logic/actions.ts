@@ -1,5 +1,6 @@
-import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
+import { ThunkAction } from 'redux-thunk';
+import api from 'api/api';
 import {
   AuthPageAction,
   LOAD_AUTH_PAGE_DATA_START,
@@ -8,6 +9,7 @@ import {
   CLEAR_AUTH_PAGE_DATA,
   PUBLISH_EVENT_SUCCESS,
   PUBLISH_EVENT_FAILURE,
+  PUBLISH_GAMECOUNT_SUCCESS,
   ADD_ENTITY_TO_LIBRARY_SUCCESS,
   ADD_ENTITY_TO_LIBRARY_FAILURE,
   ADD_ENTITIES_TO_LIBRARY_SUCCESS,
@@ -99,6 +101,29 @@ const loadAuthPageData: ActionCreator<ThunkAction<
       type: LOAD_AUTH_PAGE_DATA_FAILURE,
     });
   }
+};
+
+export const loadGameCount: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (eventId: string) => async (dispatch: Dispatch) => {
+  const games = await api.get(`/event_game_ids?event_id=${eventId}`);
+  const poolLength = games.filter(
+    ({ game_type }: { game_type: string }) => game_type === 'Pool Play'
+  ).length;
+  const bracketLength = games.filter(
+    ({ game_type }: { game_type: string }) => game_type === 'Bracket'
+  ).length;
+
+  dispatch({
+    type: PUBLISH_GAMECOUNT_SUCCESS,
+    payload: {
+      poolLength,
+      bracketLength,
+    },
+  });
 };
 
 const clearAuthPageData = () => ({
