@@ -16,6 +16,9 @@ import {
   UPDATE_SCHEDULES_DETAILS_IN_PROGRESS,
   UPDATE_SCHEDULES_DETAILS_SUCCESS,
   UPDATE_SCHEDULES_DETAILS_FAILURE,
+  DELETE_SCHEDULES_DETAILS_IN_PROGRESS,
+  DELETE_SCHEDULES_DETAILS_SUCCESS,
+  DELETE_SCHEDULES_DETAILS_FAILURE,
 } from './actionTypes';
 import { IEventSummary } from 'common/models/event-summary';
 import { ISchedule } from 'common/models';
@@ -31,6 +34,7 @@ export interface ISchedulesState {
   gamesAlreadyExist: boolean;
   savingInProgress: boolean;
   updateSchedulesDetailsInProgress: boolean;
+  deleteSchedulesDetailsInProgress: boolean;
   fetchError: boolean;
   error: boolean;
 }
@@ -40,6 +44,7 @@ const initialState: ISchedulesState = {
   fetchError: false,
   savingInProgress: false,
   updateSchedulesDetailsInProgress: false,
+  deleteSchedulesDetailsInProgress: false,
   draftIsAlreadySaved: false,
   schedulesPublished: false,
   anotherSchedulePublished: false,
@@ -134,6 +139,22 @@ const SchedulesReducer = (state = initialState, action: IScheduleAction) => {
         ...state,
         updateSchedulesDetailsInProgress: false,
       };
+    case DELETE_SCHEDULES_DETAILS_IN_PROGRESS:
+      return {
+        ...state,
+        deleteSchedulesDetailsInProgress: true,
+      };
+    case DELETE_SCHEDULES_DETAILS_SUCCESS:
+      return {
+        ...state,
+        schedulesDetails: action.payload,
+        deleteSchedulesDetailsInProgress: false,
+      };
+    case DELETE_SCHEDULES_DETAILS_FAILURE:
+      return {
+        ...state,
+        deleteSchedulesDetailsInProgress: false,
+      }
     default:
       return state;
   }

@@ -20,6 +20,9 @@ import {
   UPDATE_SCHEDULES_DETAILS_IN_PROGRESS,
   UPDATE_SCHEDULES_DETAILS_SUCCESS,
   UPDATE_SCHEDULES_DETAILS_FAILURE,
+  DELETE_SCHEDULES_DETAILS_IN_PROGRESS,
+  DELETE_SCHEDULES_DETAILS_SUCCESS,
+  DELETE_SCHEDULES_DETAILS_FAILURE,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
@@ -107,6 +110,19 @@ export const updateSchedulesDetailsSuccess = (payload: ISchedulesDetails[]) => (
 
 export const updateSchedulesDetailsFailure = () => ({
   type: UPDATE_SCHEDULES_DETAILS_FAILURE,
+});
+
+export const deleteSchedulesDetailsInProgress = () => ({
+  type: DELETE_SCHEDULES_DETAILS_IN_PROGRESS,
+});
+
+export const deleteSchedulesDetailsSuccess = (payload: ISchedulesDetails[]) => ({
+  type: DELETE_SCHEDULES_DETAILS_SUCCESS,
+  payload,
+});
+
+export const deleteSchedulesDetailsFailure = () => ({
+  type: DELETE_SCHEDULES_DETAILS_FAILURE,
 });
 
 export const fetchFields = (
@@ -417,4 +433,27 @@ export const updateSchedulesDetails = (
 
   dispatch(updateSchedulesDetailsFailure());
   errorToast('Something happened during updating schedules');
+};
+
+export const deleteSchedulesDetails = (
+  modifiedScheduleDetails: ISchedulesDetails[],
+  schedulesDetailsToDelete: ISchedulesDetails[]
+) => async (dispatch: Dispatch) => {
+  dispatch(deleteSchedulesDetailsInProgress());
+
+  const schedulesDetailsChunk = chunk(schedulesDetailsToDelete, 50);
+  const schedulesResponses = await Promise.all(
+    schedulesDetailsChunk.map(
+      async arr => await api.delete(`/schedules_details`, arr)
+    )
+  )
+
+  const schedulesResponseOk = schedulesResponses.every(item => item);
+
+  if (schedulesResponseOk) {
+    dispatch(deleteSchedulesDetailsSuccess(modifiedScheduleDetails));
+    return;
+  }
+
+  dispatch(deleteSchedulesDetailsFailure());
 };
