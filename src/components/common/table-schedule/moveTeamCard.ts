@@ -10,7 +10,7 @@ export default (
   simultaneousDnd: boolean,
   day?: string
 ) => {
-  const { teamId, position, gameId, originGameId, originGameDate } = dropParams;
+  const { teamId, position, gameId, possibleGame, originGameId, originGameDate } = dropParams;
   let result = {
     teamCards: [...teamCards],
     divisionUnmatch: false,
@@ -54,6 +54,21 @@ export default (
       ? gamePlace[position === 1 ? 'homeTeam' : 'awayTeam']
       : undefined;
 
+    const secondIncomingTeamGames =
+      originGamePlace &&
+      (originGamePlace.homeTeam?.id === incomingTeam?.id
+        ? originGamePlace.awayTeam?.games
+        : originGamePlace.homeTeam?.games);
+
+    const secondIncomingTeamSlots =
+      secondIncomingTeamGames &&
+      filledGames
+        .filter(
+          item =>
+            findIndex(secondIncomingTeamGames, { id: item.id, date: day }) >= 0
+        )
+        .map(g => g.timeSlotId);
+
     if (gamePlace?.isPlayoff) {
       result = {
         ...result,
@@ -61,8 +76,29 @@ export default (
       };
     }
 
+    const isTimeSlotInUse = (
+      slot: number,
+      slots1: number[],
+      slots2?: number[]
+    ) => [...slots1, ...(slots2 || [])].includes(slot);
+
+    const timeSlotInUseForPossibleTeams =
+      possibleGame &&
+      filledGames.some(
+        v =>
+          v.timeSlotId === gamePlace?.timeSlotId &&
+          (v.homeTeam || v.awayTeam) &&
+          (v.homeTeam?.id === possibleGame.homeTeamId ||
+            v.homeTeam?.id === possibleGame.awayTeamId ||
+            v.awayTeam?.id === possibleGame.awayTeamdId ||
+            v.awayTeam?.id === possibleGame.homeTeamId)
+      );
+
     /* When a team placed in used timeslot */
-    if (gameId && position && teamTimeSlots.includes(timeSlot!)) {
+    if (
+      (gameId && position && isTimeSlotInUse(timeSlot!, teamTimeSlots, secondIncomingTeamSlots)) ||
+      timeSlotInUseForPossibleTeams
+    ) {
       result = {
         ...result,
         timeSlotInUse: true,
@@ -119,7 +155,7 @@ export default (
       gameId &&
       position &&
       teamId === teamCard.id &&
-      !(simultaneousDnd && originGameId)
+      !(simultaneousDnd && (originGameId || possibleGame))
     ) {
       let games = [
         ...teamCard.games?.filter(
@@ -156,13 +192,16 @@ export default (
       };
     }
 
+    /* When dropping a game in matrix */
     if (
       simultaneousDnd &&
       (originGamePlace?.awayTeam?.id === teamCard.id ||
-        originGamePlace?.homeTeam?.id === teamCard.id)
+        originGamePlace?.homeTeam?.id === teamCard.id ||
+        possibleGame?.awayTeam?.id === teamCard.id ||
+        possibleGame?.homeTeam?.id === teamCard.id)
     ) {
       const originPosition =
-        originGamePlace?.awayTeam?.id === teamCard.id
+        (originGamePlace || possibleGame)?.awayTeam?.id === teamCard.id
           ? TeamPositionEnum.awayTeam
           : TeamPositionEnum.homeTeam;
 

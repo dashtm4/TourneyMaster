@@ -34,7 +34,7 @@ const Select: React.FC<ISelectProps> = ({
     className={styles.container}
     style={{ alignItems: align || '', width: isFullWith ? '100%' : undefined }}
   >
-    <span className={styles.label}>{label}</span>
+    {label ? <span className={styles.label}>{label}</span> : null}
     {!value ? (
       <span
         className={styles.placeholder}

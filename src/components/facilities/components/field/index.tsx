@@ -2,7 +2,7 @@ import React from 'react';
 import { Input, Checkbox, Button, DeletePopupConfrim } from 'components/common';
 import { IField, IFacility, BindingCbWithTwo } from 'common/models';
 import { IInputEvent } from 'common/types';
-import { ButtonVarian, ButtonColors, ButtonTypes } from 'common/enums';
+import { ButtonVariant, ButtonColors, ButtonTypes } from 'common/enums';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -73,7 +73,7 @@ const Field = ({
           <span>Field {fieldNumber} Name</span>
           <Button
             onClick={onToggleDeletePopup}
-            variant={ButtonVarian.TEXT}
+            variant={ButtonVariant.TEXT}
             color={ButtonColors.SECONDARY}
             type={ButtonTypes.DANGER_LINK}
             label="Delete"

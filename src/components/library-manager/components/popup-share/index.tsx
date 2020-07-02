@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, HeadingLevelTwo, Select, Button } from 'components/common';
 import { IEventDetails, BindingAction, BindingCbWithOne } from 'common/models';
-import { ButtonVarian, ButtonColors } from 'common/enums';
+import { ButtonVariant, ButtonColors } from 'common/enums';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
 import { orderBy } from 'lodash-es';
@@ -55,7 +55,7 @@ const PopupShare = ({
           <span className={styles.btnWrapper}>
             <Button
               onClick={onClose}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               label="Cancel"
             />
@@ -63,7 +63,7 @@ const PopupShare = ({
           <span className={styles.btnWrapper}>
             <Button
               onClick={onSave}
-              variant={ButtonVarian.CONTAINED}
+              variant={ButtonVariant.CONTAINED}
               color={ButtonColors.PRIMARY}
               label="Save"
             />

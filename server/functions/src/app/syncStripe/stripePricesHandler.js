@@ -28,6 +28,7 @@ export default class StripePricesHandler {
           sales_tax_rate: paymentPlan.sales_tax_rate,
           iterations: +paymentPlan.iterations,
           discount: +paymentPlan.discount,
+          billing_cycle_anchor: +paymentPlan.billing_cycle_anchor,
         },
       };
       return stripePrice;
@@ -58,6 +59,7 @@ export default class StripePricesHandler {
             iterations: 1,
             discount: +paymentPlan.discount,
             payment_date: phase.date,
+            billing_cycle_anchor: +phase.billing_cycle_anchor,
           },
         };
         stripePrices.push(stripePrice);
@@ -98,6 +100,8 @@ export default class StripePricesHandler {
       price.metadata.sales_tax_rate === +stripePrice.metadata.sales_tax_rate &&
       price.metadata.iterations === +stripePrice.metadata.iterations &&
       price.metadata.discount === +stripePrice.metadata.discount &&
+      price.metadata.billing_cycle_anchor ===
+        +stripePrice.metadata.billing_cycle_anchor &&
       price.metadata.owner_id === stripePrice.metadata.owner_id &&
       price.metadata.payment_date === stripePrice.metadata.payment_date
     );

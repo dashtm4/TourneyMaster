@@ -15,7 +15,7 @@ import {
   getSelectDayOptions,
   getGamesByDays,
 } from 'helpers';
-import { ButtonVarian, ButtonColors, DefaultSelectValues } from 'common/enums';
+import { ButtonVariant, ButtonColors, DefaultSelectValues } from 'common/enums';
 import { IEventDetails, ISchedule, IPool, IDivision } from 'common/models';
 import { getScheduleTableXLSX } from '../../helpers';
 import { IGame, calculateDays } from 'components/common/matrix-table/helper';
@@ -97,7 +97,9 @@ const ItemSchedules = ({
         schedule={schedule}
         teamCards={teamCards}
       />,
-      event.event_name ? `${event.event_name} Master Schedule - PDF` : 'Schedule'
+      event.event_name
+        ? `${event.event_name} Master Schedule - PDF`
+        : 'Schedule'
     );
 
   const onHeatmapScheduleTableSave = () =>
@@ -166,7 +168,7 @@ const ItemSchedules = ({
           <li>
             <ButtonLoad
               loadFunc={onScheduleTableSave}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               isDisabled={!isAllowDownload}
               label="Master Schedule - PDF"
@@ -175,7 +177,7 @@ const ItemSchedules = ({
           <li>
             <ButtonLoad
               loadFunc={onHeatmapScheduleTableSave}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               isDisabled={!isAllowDownload}
               label="Master Schedule (with Heatmap) - PDF"
@@ -184,7 +186,7 @@ const ItemSchedules = ({
           <li>
             <ButtonLoad
               loadFunc={onScheduleFieldsSave}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               isDisabled={!isAllowDownload}
               label="Master Schedule (Field by Field) - PDF"
@@ -193,7 +195,7 @@ const ItemSchedules = ({
           <li>
             <ButtonLoad
               loadFunc={onScheduleTableXLSXSave}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               label="Master Schedule - XLSX"
             />

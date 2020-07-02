@@ -96,8 +96,10 @@ const createSubscription = async (customer, paymentPlan, subData) => {
     : null;
 
   let phases = [];
+  let billingCycleAnchor;
   if (paymentPlan.type === 'installment') {
     const price = await getPrice(paymentPlan);
+    billingCycleAnchor = paymentPlan.billing_cycle_anchor;
 
     phases.push({
       plans: [{ price: price.id, quantity: subData.items[0].quantity }],
@@ -107,6 +109,12 @@ const createSubscription = async (customer, paymentPlan, subData) => {
     });
   } else if (paymentPlan.type === 'schedule') {
     phases = paymentPlan.schedule;
+
+    billingCycleAnchor = paymentPlan.schedule.reduce(
+      (a, c) =>
+        !a || +c.billing_cycle_anchor < a ? +c.billing_cycle_anchor : a,
+      0
+    );
 
     phases = await Promise.all(
       phases.map(async (phase, i) => {
@@ -142,12 +150,13 @@ const createSubscription = async (customer, paymentPlan, subData) => {
         return t;
       })
     );
-    console.log();
+  } else {
+    throw new Error(`Payment plan type ${paymentPlan.type} not supported`);
   }
 
   const subscriptionScheduleData = {
     customer: customer.id,
-    start_date: 'now',
+    start_date: billingCycleAnchor ? billingCycleAnchor : 'now',
     end_behavior: 'cancel',
     phases,
     metadata: {

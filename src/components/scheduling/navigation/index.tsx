@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Paper, Button } from 'components/common';
 import { getIcon } from 'helpers';
 import { BindingAction } from 'common/models';
-import { Routes, Icons, ButtonVarian, ButtonColors } from 'common/enums';
+import { Routes, Icons, ButtonVariant, ButtonColors } from 'common/enums';
 import styles from './styles.module.scss';
 
 const ICON_STYLES = {
@@ -23,7 +23,7 @@ const Navigation = ({ toggleLibraryPopup }: Props) => (
       <Button
         onClick={toggleLibraryPopup}
         icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
-        variant={ButtonVarian.TEXT}
+        variant={ButtonVariant.TEXT}
         color={ButtonColors.SECONDARY}
         label="Save to Library"
       />

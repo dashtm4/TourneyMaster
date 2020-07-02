@@ -1,12 +1,12 @@
 import React from 'react';
 import { Button } from 'components/common';
-import { ButtonColors, ButtonVarian } from 'common/enums';
+import { ButtonColors, ButtonVariant } from 'common/enums';
 import { BindingAction } from 'common/models';
 
 interface Props {
   label: string;
   color: ButtonColors;
-  variant: ButtonVarian;
+  variant: ButtonVariant;
   loadFunc: BindingAction;
   isDisabled?: boolean;
 }

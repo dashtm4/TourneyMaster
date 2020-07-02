@@ -13,6 +13,7 @@ interface IPlayerInfoProps {
   fillParticipantInfo: any;
   divisions: ISelectOption[];
   states: ISelectOption[];
+  isInvited: boolean;
 }
 
 // const playerLevelOptions = [{ label: 'Level1', value: 'Level1' }];
@@ -23,6 +24,7 @@ const PlayerInfo = ({
   fillParticipantInfo,
   divisions,
   states,
+  isInvited,
 }: IPlayerInfoProps) => {
   useEffect(() => {
     if (data.registrant_is_the_participant) {
@@ -103,6 +105,7 @@ const PlayerInfo = ({
             value={data.ext_sku || ''}
             isRequired={true}
             onChange={onDivisionChange}
+            disabled={isInvited}
           />
         </div>
       </div>
@@ -136,7 +139,7 @@ const PlayerInfo = ({
             }}
             inputProps={{
               required: true,
-              minLength: 17,
+              minLength: 14,
             }}
           />
         </div>

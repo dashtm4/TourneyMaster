@@ -1,7 +1,25 @@
 import React, { Component } from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import DeleteIcon from '@material-ui/icons/Delete';
 
+import api from 'api/api';
+import history from 'browserhistory';
+import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
+import { Button, HeadingLevelTwo, Loader, Tooltip } from 'components/common';
+import {
+  IUploadFile,
+  IEventDetails,
+  BindingCbWithTwo,
+  ISchedule,
+  IFetchedBracket,
+} from 'common/models';
+import { uploadFile } from 'helpers';
+import { PopupExposure } from 'components/common';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import CsvLoader from 'components/common/csv-loader';
+import { IEntity } from 'common/types';
+import { EntryPoints, LibraryStates } from 'common/enums';
 import {
   getEventDetails,
   saveEventDetails,
@@ -10,39 +28,18 @@ import {
   deleteEvent,
   createEvents,
 } from './logic/actions';
-import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import { IIconFile } from './logic/model';
 import { IEventState } from './logic/reducer';
-
 import Navigation from './navigation';
 import PrimaryInformationSection from './primary-information';
 import EventStructureSection from './event-structure';
 import MediaAssetsSection from './media-assets';
 import PlayoffsSection from './playoffs';
 import Rankings from './rankings';
-
-import { Button, HeadingLevelTwo, Loader, Tooltip } from 'components/common';
-import {
-  IUploadFile,
-  BindingCbWithOne,
-  IEventDetails,
-  BindingCbWithTwo,
-  ISchedule,
-  IFetchedBracket,
-} from 'common/models';
-import { uploadFile } from 'helpers';
-import styles from './styles.module.scss';
 import { eventState } from './state';
-import DeleteIcon from '@material-ui/icons/Delete';
-import history from '../../browserhistory';
-import { PopupExposure } from 'components/common';
-import DeletePopupConfrim from 'components/common/delete-popup-confirm';
-import CsvLoader from 'components/common/csv-loader';
-import { IEntity } from 'common/types';
-import { EntryPoints, LibraryStates } from 'common/enums';
 import WellnessStatement from './wellness-statement';
 import EventWarningModal from './warning-modal';
-import api from 'api/api';
+import styles from './styles.module.scss';
 
 interface IMapStateProps {
   event: IEventState;
@@ -55,7 +52,7 @@ interface Props extends IMapStateProps {
   createEvent: (event: Partial<IEventDetails>) => void;
   uploadFiles: (files: IIconFile[]) => void;
   removeFiles: (files: IIconFile[]) => void;
-  deleteEvent: BindingCbWithOne<string>;
+  deleteEvent: BindingCbWithTwo<string, string>;
   createEvents: (events: Partial<IEventDetails>[]) => void;
   addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
 }
@@ -101,16 +98,18 @@ class EventDetails extends Component<Props, State> {
   }
 
   checkEventExistence = () => {
-    const { eventId } = this.props.match?.params;
+    const {
+      match: {
+        params: { eventId },
+      },
+      getEventDetails,
+    } = this.props;
 
     if (eventId) {
       this.setState({ eventId });
-
-      this.props.getEventDetails(eventId);
-
+      getEventDetails(eventId);
       return;
     }
-
     this.setState({
       event: eventState(),
     });
@@ -128,13 +127,15 @@ class EventDetails extends Component<Props, State> {
   };
 
   onChange = (name: string, value: any, ignore?: boolean) => {
+    const { changesAreMade } = this.state;
+
     this.setState(({ event }) => ({
       event: {
         ...event,
         [name]: value,
       },
     }));
-    if (!this.state.changesAreMade && !ignore) {
+    if (!changesAreMade && !ignore) {
       this.setState({ changesAreMade: true });
     }
   };
@@ -148,9 +149,7 @@ class EventDetails extends Component<Props, State> {
     }
   };
 
-  onFileRemove = (files: IUploadFile[]) => {
-    this.props.removeFiles(files);
-  };
+  onFileRemove = (files: IUploadFile[]) => this.props.removeFiles(files);
 
   onSavePressed = async () => {
     const schedulingExist = await this.checkSchedulingExistence();
@@ -159,11 +158,11 @@ class EventDetails extends Component<Props, State> {
       this.openWarningModal();
       return;
     }
-
     this.onSave();
   };
 
   onSave = () => {
+    const { createEvent, saveEventDetails } = this.props;
     const { event, eventId } = this.state;
     this.closeWarningModal();
     this.onModalClose();
@@ -172,80 +171,77 @@ class EventDetails extends Component<Props, State> {
     if (!event) return;
 
     if (eventId) {
-      this.props.saveEventDetails(event);
+      saveEventDetails(event);
       return;
     }
-
-    this.props.createEvent(event);
+    createEvent(event);
   };
 
-  toggleSectionCollapse = () => {
+  toggleSectionCollapse = () =>
     this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
-  };
 
-  onDeleteClick = () => {
-    this.setState({ isDeleteModalOpen: true });
-  };
+  onDeleteClick = () => this.setState({ isDeleteModalOpen: true });
 
-  onDeleteModalClose = () => {
-    this.setState({ isDeleteModalOpen: false });
-  };
+  onDeleteModalClose = () => this.setState({ isDeleteModalOpen: false });
 
   onCancelClick = () => {
-    if (this.state.changesAreMade) {
+    const { changesAreMade } = this.state;
+
+    if (changesAreMade) {
       this.setState({ isModalOpen: true });
     } else {
       this.onCancel();
     }
   };
 
-  onModalClose = () => {
-    this.setState({ isModalOpen: false });
-  };
+  onModalClose = () => this.setState({ isModalOpen: false });
 
-  onCancel = () => {
-    history.push('/');
-  };
+  onCancel = () => history.push('/');
 
   openWarningModal = () => this.setState({ warningModalOpen: true });
 
   closeWarningModal = () => this.setState({ warningModalOpen: false });
 
-  onCsvLoaderBtn = () => {
-    this.setState({ isCsvLoaderOpen: true });
-  };
+  onCsvLoaderBtn = () => this.setState({ isCsvLoaderOpen: true });
 
-  onCsvLoaderClose = () => {
-    this.setState({ isCsvLoaderOpen: false });
-  };
+  onCsvLoaderClose = () => this.setState({ isCsvLoaderOpen: false });
 
   onAddToLibraryManager = () => {
+    const { addEntityToLibrary } = this.props;
     const { event } = this.state;
 
     if (event?.is_library_YN === LibraryStates.FALSE) {
       this.onChange('is_library_YN', LibraryStates.TRUE);
     }
-
-    this.props.addEntityToLibrary(event as IEventDetails, EntryPoints.EVENTS);
+    addEntityToLibrary(event as IEventDetails, EntryPoints.EVENTS);
   };
 
-  renderDeleteEventBtn = () => {
-    return (
-      <Button
-        label="Delete Event"
-        variant="text"
-        color="secondary"
-        type="dangerLink"
-        icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
-        onClick={this.onDeleteClick}
-        disabled={Boolean(this.state.event?.is_published_YN)}
-      />
-    );
-  };
+  renderDeleteEventBtn = () => (
+    <Button
+      label="Delete Event"
+      variant="text"
+      color="secondary"
+      type="dangerLink"
+      disabled={Boolean(this.state.event?.is_published_YN)}
+      icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
+      onClick={this.onDeleteClick}
+    />
+  );
 
   render() {
-    const { event, isModalOpen, warningModalOpen } = this.state;
-    const { isEventLoading } = this.props.event;
+    const {
+      event: { isEventLoading },
+      match,
+      createEvents,
+      deleteEvent,
+    } = this.props;
+    const {
+      event,
+      isCsvLoaderOpen,
+      isDeleteModalOpen,
+      isModalOpen,
+      isSectionsExpand,
+    } = this.state;
     const deleteMessage = `You are about to delete this event and this cannot be undone. All related data to this event will be deleted too.
       Please, enter the name of the event to continue.`;
 
@@ -253,10 +249,30 @@ class EventDetails extends Component<Props, State> {
       return <Loader />;
     }
 
+    const {
+      desktop_icon_URL,
+      event_name,
+      event_id,
+      is_published_YN,
+      mobile_icon_URL,
+    } = event;
+    const commonChildProps = {
+      eventData: event,
+      onChange: this.onChange,
+      isSectionExpand: isSectionsExpand,
+    };
+
+    const commonModalProps = {
+      isOpen: isModalOpen,
+      onClose: this.onModalClose,
+      onExitClick: this.onCancel,
+      onSaveClick: this.onSavePressed,
+    };
+
     return (
       <div className={styles.container}>
         <Navigation
-          isEventId={this.props.match?.params.eventId}
+          isEventId={match?.params.eventId}
           onCancelClick={this.onCancelClick}
           onCsvLoaderBtn={this.onCsvLoaderBtn}
           onAddToLibraryManager={this.onAddToLibraryManager}
@@ -265,8 +281,7 @@ class EventDetails extends Component<Props, State> {
         <div className={styles.headingContainer}>
           <HeadingLevelTwo margin="24px 0">Event Details</HeadingLevelTwo>
           <div>
-            {this.props.match?.params.eventId &&
-            this.state.event?.is_published_YN ? (
+            {match?.params.eventId && is_published_YN ? (
               <Tooltip
                 type="info"
                 title="This event is currently published. Unpublish it first if you would like to delete it."
@@ -277,74 +292,42 @@ class EventDetails extends Component<Props, State> {
               this.renderDeleteEventBtn()
             )}
             <Button
-              label={
-                this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
-              }
+              label={isSectionsExpand ? 'Collapse All' : 'Expand All'}
               variant="text"
               color="secondary"
               onClick={this.toggleSectionCollapse}
             />
           </div>
         </div>
-        <PrimaryInformationSection
-          eventData={event}
-          onChange={this.onChange}
-          isSectionExpand={this.state.isSectionsExpand}
-        />
-        <EventStructureSection
-          eventData={event}
-          onChange={this.onChange}
-          isSectionExpand={this.state.isSectionsExpand}
-        />
-        <WellnessStatement
-          eventData={event}
-          onChange={this.onChange}
-          isSectionExpand={this.state.isSectionsExpand}
-        />
-        <Rankings
-          eventData={event}
-          onChange={this.onChange}
-          isSectionExpand={this.state.isSectionsExpand}
-        />
-        <PlayoffsSection
-          eventData={event}
-          onChange={this.onChange}
-          isSectionExpand={this.state.isSectionsExpand}
-        />
+        <PrimaryInformationSection {...commonChildProps} />
+        <EventStructureSection {...commonChildProps} />
+        <WellnessStatement {...commonChildProps} />
+        <Rankings {...commonChildProps} />
+        <PlayoffsSection {...commonChildProps} />
         <MediaAssetsSection
           onFileUpload={this.onFileUpload}
           onFileRemove={this.onFileRemove}
-          isSectionExpand={this.state.isSectionsExpand}
-          logo={event.desktop_icon_URL}
-          mobileLogo={event.mobile_icon_URL}
+          isSectionExpand={isSectionsExpand}
+          logo={desktop_icon_URL}
+          mobileLogo={mobile_icon_URL}
         />
         <DeletePopupConfrim
           type={'event'}
-          deleteTitle={event.event_name!}
+          deleteTitle={event_name!}
           message={deleteMessage}
-          isOpen={this.state.isDeleteModalOpen}
+          isOpen={isDeleteModalOpen}
           onClose={this.onDeleteModalClose}
           onDeleteClick={() => {
-            this.props.deleteEvent(event.event_id!);
+            deleteEvent(event_id!, event_name!);
           }}
         />
-        <PopupExposure
-          isOpen={isModalOpen}
-          onClose={this.onModalClose}
-          onExitClick={this.onCancel}
-          onSaveClick={this.onSavePressed}
-        />
-        <EventWarningModal
-          isOpen={warningModalOpen}
-          onClose={this.closeWarningModal}
-          onExitClick={this.onCancel}
-          onSaveClick={this.onSave}
-        />
+        <PopupExposure {...commonModalProps} />
+        <EventWarningModal {...commonModalProps} />
         <CsvLoader
-          isOpen={this.state.isCsvLoaderOpen}
-          onClose={this.onCsvLoaderClose}
           type="event_master"
-          onCreate={this.props.createEvents}
+          isOpen={isCsvLoaderOpen}
+          onClose={this.onCsvLoaderClose}
+          onCreate={createEvents}
         />
       </div>
     );

@@ -18,6 +18,11 @@ const currencyOptions = [
 
 const PricingAndCalendar = ({ data, onChange }: IPricingAndCalendarProps) => {
   useEffect(() => {
+    if (!data) {
+      onOpenDateChange(new Date());
+      onCloseDateChange(new Date());
+      onDiscountEndDateChange(new Date());
+    }
     if (data && !data.currency) {
       onChange('currency', 'USD');
     }

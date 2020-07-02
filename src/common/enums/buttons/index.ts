@@ -12,7 +12,7 @@ enum ButtonColors {
   DEFAULT = 'default',
 }
 
-enum ButtonVarian {
+enum ButtonVariant {
   CONTAINED = 'contained',
   TEXT = 'text',
   OUTLINED = 'outlined',
@@ -23,4 +23,4 @@ enum ButtonFormTypes {
   BUTTON = 'button',
 }
 
-export { ButtonTypes, ButtonColors, ButtonVarian, ButtonFormTypes };
+export { ButtonTypes, ButtonColors, ButtonVariant, ButtonFormTypes };

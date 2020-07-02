@@ -1,12 +1,13 @@
 import {
+  DASHBOARD_FETCH_START,
+  DASHBOARD_SCHEDULES_FETCH_SUCCESS,
   EVENTS_FETCH_SUCCESS,
   EVENTS_FETCH_FAILURE,
   DASHBOARD_TEAMS_FETCH_SUCCESS,
+  DASHBOARD_GAMECOUNTS_FETCH_SUCCESS,
   FIELDS_FETCH_SUCCESS,
-  DASHBOARD_FETCH_START,
   CALENDAR_EVENTS_FETCH_START,
   CALENDAR_EVENTS_FETCH_SUCCESS,
-  DASHBOARD_SCHEDULES_FETCH_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
 import { ActionCreator, Dispatch } from 'redux';
@@ -44,6 +45,13 @@ export const dashboardTeamsFetchSuccess = (
   payload: ITeam[]
 ): { type: string; payload: ITeam[] } => ({
   type: DASHBOARD_TEAMS_FETCH_SUCCESS,
+  payload,
+});
+
+export const dashboardGameCountsFetchSuccess = (
+  payload: object
+): { type: string; payload: object } => ({
+  type: DASHBOARD_GAMECOUNTS_FETCH_SUCCESS,
   payload,
 });
 
@@ -88,6 +96,21 @@ export const getEvents: ActionCreator<ThunkAction<
 
   const teams = await api.get(`/teams`);
 
+  const games = await api.get(`/games`);
+  const gamesBrackets = await api.get(`/games_brackets`);
+
+  const gameCounts = {};
+  games.map(({ event_id }: { event_id: string }) =>
+    gameCounts[event_id]
+      ? (gameCounts[event_id] += 1)
+      : (gameCounts[event_id] = 1)
+  );
+  gamesBrackets.map(({ event_id }: { event_id: string }) =>
+    gameCounts[event_id]
+      ? (gameCounts[event_id] += 1)
+      : (gameCounts[event_id] = 1)
+  );
+
   let facilities: IFacility[] = [];
   for await (const event of events) {
     const fac = await api.get(`/facilities?event_id=${event.event_id}`);
@@ -111,6 +134,7 @@ export const getEvents: ActionCreator<ThunkAction<
 
   dispatch(fieldsFetchSuccess({ fields, facilities }));
   dispatch(schedulesFetchSuccess(schedules));
+  dispatch(dashboardGameCountsFetchSuccess(gameCounts));
   dispatch(dashboardTeamsFetchSuccess(teams));
 };
 

@@ -1,9 +1,10 @@
 import React from 'react';
 import { Button } from 'components/common';
-import { BindingAction } from 'common/models';
+import { BindingAction, IDivision } from 'common/models';
 import styles from './styles.module.scss';
 import { getIcon } from 'helpers';
-import { Icons, ButtonVarian, ButtonColors } from 'common/enums';
+import { Icons, ButtonVariant, ButtonColors } from 'common/enums';
+import { ButtonCopy } from 'components/common';
 
 const ICON_STYLES = {
   marginRight: '5px',
@@ -16,6 +17,7 @@ interface Props {
   onCancel: BindingAction;
   onSave: BindingAction;
   onEdit: BindingAction;
+  division: IDivision;
 }
 
 const PoolsDetailsNav = ({
@@ -25,19 +27,34 @@ const PoolsDetailsNav = ({
   onCancel,
   onSave,
   onEdit,
-}: Props) => (
+  division,
+}: Props) => {
+  const inviteLink = `${window.location.origin.toString()}/register/event/${
+    division.event_id
+  }?division=${encodeURIComponent(division.short_name)}&division_id=${
+    division.division_id
+  }`;
+
+  return (
     <div className={styles.wrapper}>
       <div className={styles.poolsBtns}>
+        <ButtonCopy
+          copyString={inviteLink}
+          label={'Invite Teams'}
+          color={ButtonColors.SECONDARY}
+          variant={ButtonVariant.TEXT}
+          successMessage="Team invitation link copied to clipboard"
+        />
         <Button
           onClick={onAdd}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
           label="+ Add Pool"
         />
         <Button
           onClick={onEdit}
           icon={getIcon(Icons.EDIT)}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
           label="Edit Pool Details"
         />
@@ -47,14 +64,14 @@ const PoolsDetailsNav = ({
           <p>
             <Button
               onClick={onCancel}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               label="Cancel"
             />
             <span className={styles.btnWrapper}>
               <Button
                 onClick={onSave}
-                variant={ButtonVarian.CONTAINED}
+                variant={ButtonVariant.CONTAINED}
                 color={ButtonColors.PRIMARY}
                 label="Save"
               />
@@ -72,5 +89,6 @@ const PoolsDetailsNav = ({
       </div>
     </div>
   );
+
 
 export default PoolsDetailsNav;

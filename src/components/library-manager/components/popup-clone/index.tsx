@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, HeadingLevelTwo, Input, Button } from 'components/common';
 import { BindingAction } from 'common/models';
-import { ButtonVarian, ButtonColors } from 'common/enums';
+import { ButtonVariant, ButtonColors } from 'common/enums';
 import styles from './styles.module.scss';
 import { IInputEvent } from 'common/types';
 
@@ -49,7 +49,7 @@ const PopupClone = ({ isOpen, onClose, onSave }: Props) => {
           <span className={styles.btnWrapper}>
             <Button
               onClick={onClose}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               label="Cancel"
             />
@@ -57,7 +57,7 @@ const PopupClone = ({ isOpen, onClose, onSave }: Props) => {
           <span className={styles.btnWrapper}>
             <Button
               onClick={onSaveCloneItem}
-              variant={ButtonVarian.CONTAINED}
+              variant={ButtonVariant.CONTAINED}
               color={ButtonColors.PRIMARY}
               label="Save"
             />

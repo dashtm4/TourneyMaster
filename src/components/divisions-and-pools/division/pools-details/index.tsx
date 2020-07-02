@@ -229,6 +229,7 @@ const PoolsDetails = ({
             onArrange={onToggleArrange}
             onCancel={onToggleConfirmPopup}
             onSave={onSaveClick}
+            division={division}
           />
         </div>
         {areDetailsLoading ? (

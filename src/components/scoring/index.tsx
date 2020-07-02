@@ -2,23 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dispatch, bindActionCreators } from 'redux';
-import {
-  loadScoringData,
-  loadPools,
-  editTeam,
-  deleteTeam,
-} from './logic/actions';
 import { IAppState } from 'reducers/root-reducer.types';
-import Navigation from './components/navigation';
-import ListStatistic from './components/list-statistic';
-import ScoringItem from './components/scoring-Item';
-import {
-  HeadingLevelTwo,
-  Modal,
-  Loader,
-  PopupTeamEdit,
-  HazardList,
-} from 'components/common';
+import { sortByField } from 'helpers';
 import {
   IDivision,
   IPool,
@@ -29,10 +14,25 @@ import {
   ITeam,
   IEventDetails,
 } from 'common/models';
-import styles from './styles.module.scss';
-import Button from 'components/common/buttons/button';
 import { SortByFilesTypes } from 'common/enums';
-import { sortByField } from 'helpers';
+import {
+  HeadingLevelTwo,
+  Modal,
+  Loader,
+  PopupTeamEdit,
+  HazardList,
+} from 'components/common';
+import Button from 'components/common/buttons/button';
+import Navigation from './components/navigation';
+import ListStatistic from './components/list-statistic';
+import ScoringItem from './components/scoring-Item';
+import {
+  loadScoringData,
+  loadPools,
+  editTeam,
+  deleteTeam,
+} from './logic/actions';
+import styles from './styles.module.scss';
 
 interface MatchParams {
   eventId: string;
@@ -78,8 +78,12 @@ class Sсoring extends React.Component<
   }
 
   componentDidMount() {
-    const { loadScoringData } = this.props;
-    const eventId = this.props.match.params.eventId;
+    const {
+      loadScoringData,
+      match: {
+        params: { eventId },
+      },
+    } = this.props;
 
     if (eventId) {
       loadScoringData(eventId);
@@ -155,6 +159,7 @@ class Sсoring extends React.Component<
   render() {
     const {
       isModalOpen,
+      isSectionsExpand,
       changeableTeam,
       currentDivision,
       currentPool,
@@ -162,6 +167,9 @@ class Sсoring extends React.Component<
 
     const {
       isLoading,
+      match: {
+        params: { eventId },
+      },
       pools,
       teams,
       divisions,
@@ -177,7 +185,7 @@ class Sсoring extends React.Component<
       return (
         <HazardList
           incompleteMenuItems={incompleteMenuItems}
-          eventId={this.props.match.params.eventId}
+          eventId={eventId}
         />
       );
     }
@@ -190,14 +198,12 @@ class Sсoring extends React.Component<
 
     return (
       <section>
-        <Navigation eventId={this.props.match.params.eventId} />
+        <Navigation eventId={eventId} />
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>Scoring</HeadingLevelTwo>
           {divisions?.length ? (
             <Button
-              label={
-                this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
-              }
+              label={isSectionsExpand ? 'Collapse All' : 'Expand All'}
               variant="text"
               color="secondary"
               onClick={this.toggleSectionCollapse}
@@ -218,7 +224,7 @@ class Sсoring extends React.Component<
               loadPools={loadPools}
               onOpenTeamDetails={this.onOpenTeamDetails}
               key={division.division_id}
-              isSectionExpand={this.state.isSectionsExpand}
+              isSectionExpand={isSectionsExpand}
             />
           ))}
         </ul>

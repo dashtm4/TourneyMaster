@@ -4,7 +4,7 @@ import { BindingAction } from 'common/models';
 import FabButton from 'components/common/fab-button';
 import styles from './styles.module.scss';
 import { History } from 'history';
-import { ButtonVarian, ButtonColors } from 'common/enums';
+import { ButtonVariant, ButtonColors } from 'common/enums';
 
 interface Props {
   onSaveClick: BindingAction;
@@ -33,26 +33,26 @@ const Navigation = ({
     <div className={styles.navWrapper}>
       <Button
         onClick={onImportFromCsv}
-        variant={ButtonVarian.TEXT}
+        variant={ButtonVariant.TEXT}
         color={ButtonColors.SECONDARY}
         label="Import from CSV"
       />
       <span className={styles.btnsWrapper}>
         <Button
           onClick={onCancelClick}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
           label="Cancel"
         />
         <Button
           onClick={onSaveClick}
-          variant={ButtonVarian.CONTAINED}
+          variant={ButtonVariant.CONTAINED}
           color={ButtonColors.PRIMARY}
           label="Save"
         />
         <Button
           onClick={onCreateTeam}
-          variant={ButtonVarian.CONTAINED}
+          variant={ButtonVariant.CONTAINED}
           color={ButtonColors.PRIMARY}
           label="Create Team"
         />

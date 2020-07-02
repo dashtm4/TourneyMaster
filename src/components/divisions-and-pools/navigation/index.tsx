@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Paper, Button } from 'components/common';
 import { getIcon } from 'helpers';
 import { BindingAction } from 'common/models';
-import { ButtonColors, ButtonVarian, Routes, Icons } from 'common/enums';
+import { ButtonColors, ButtonVariant, Routes, Icons } from 'common/enums';
 import styles from '../styles.module.scss';
 
 const ICON_STYLES = {
@@ -31,19 +31,19 @@ const Navigation = ({
           <Button
             onClick={toggleLibraryPopup}
             icon={getIcon(Icons.PUBLISH, ICON_STYLES)}
-            variant={ButtonVarian.TEXT}
+            variant={ButtonVariant.TEXT}
             color={ButtonColors.SECONDARY}
             label="Save to Library"
           />
           <Button
             color={ButtonColors.SECONDARY}
-            variant={ButtonVarian.TEXT}
+            variant={ButtonVariant.TEXT}
             onClick={onCsvLoaderBtn}
             label="Import from CSV"
           />
         </p>
         <Button
-          variant={ButtonVarian.CONTAINED}
+          variant={ButtonVariant.CONTAINED}
           color={ButtonColors.PRIMARY}
           onClick={onAddDivision}
           label="+ Add Division"
