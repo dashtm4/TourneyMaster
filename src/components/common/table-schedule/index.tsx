@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { find } from 'lodash-es';
@@ -202,8 +202,6 @@ const TableSchedule = ({
 
   useEffect(() => setTableGames(manageGamesData()), [manageGamesData]);
 
-  const didInitialManagedGames = useRef(false);
-
   const managePossibleGames = useCallback(() => {
     if (!gamesList) {
       return [] as IConfigurableGame[];
@@ -212,28 +210,13 @@ const TableSchedule = ({
       const homeTeam = teamCards.find(t => t.id === v.homeTeamId);
       const awayTeam = teamCards.find(t => t.id === v.awayTeamId);
 
-      const newValue = {
+      return {
         ...v,
         homeTeam,
         homeDisplayName: homeTeam?.name,
         awayTeam,
         awayDisplayName: awayTeam?.name,
       };
-
-      if (!didInitialManagedGames.current) {
-        didInitialManagedGames.current = true;
-        const foundScheduleDetails = schedulesDetails?.find(
-          scheduleDetails =>
-            scheduleDetails.division_id === v.divisionId &&
-            scheduleDetails.away_team_id === v.awayTeamId &&
-            scheduleDetails.home_team_id === v.homeTeamId &&
-            scheduleDetails.game_id !== '-1'
-        );
-
-        newValue.isAssigned = !!foundScheduleDetails;
-      }
-
-      return newValue;
     });
   }, [gamesList, teamCards, schedulesDetails]);
   const [possibleGames, setPossibleGames] = useState<IConfigurableGame[]>(

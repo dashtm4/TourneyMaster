@@ -9,12 +9,12 @@ import {
   CLEAR_GAMES_LIST,
 } from './actionTypes';
 import { SCHEDULES_DRAFT_SAVED_SUCCESS } from '../actionTypes';
-import { IGame } from 'components/common/matrix-table/helper';
+import { IConfigurableGame } from 'components/common/matrix-table/helper';
 
 export interface ISchedulesTableState {
   previous: (ITeamCard[] | undefined)[];
   current?: ITeamCard[];
-  gamesList: IGame[];
+  gamesList: IConfigurableGame[];
 }
 
 const initialState: ISchedulesTableState = {

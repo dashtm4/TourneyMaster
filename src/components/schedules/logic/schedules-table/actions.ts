@@ -8,7 +8,7 @@ import {
   FILL_GAMES_LIST,
   CLEAR_GAMES_LIST,
 } from './actionTypes';
-import { IGame } from 'components/common/matrix-table/helper';
+import { IConfigurableGame } from 'components/common/matrix-table/helper';
 
 const fillSchedulesTableAction = (payload: ITeamCard[]) => ({
   type: SCHEDULES_TABLE_FILL,
@@ -28,7 +28,7 @@ const schedulesTableClear = () => ({
   type: SCHEDULES_TABLE_CLEAR,
 });
 
-const fillGamesListAction = (gamesList: IGame[]) => ({
+const fillGamesListAction = (gamesList: IConfigurableGame[]) => ({
   type: FILL_GAMES_LIST,
   payload: gamesList,
 });
@@ -57,7 +57,7 @@ export const clearSchedulesTable = () => (dispatch: Dispatch) => {
   dispatch(schedulesTableClear());
 };
 
-export const fillGamesList = (gamesList: IGame[]) => (dispatch: Dispatch) => {
+export const fillGamesList = (gamesList: IConfigurableGame[]) => (dispatch: Dispatch) => {
   dispatch(fillGamesListAction(gamesList));
 };
 

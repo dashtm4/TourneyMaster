@@ -36,6 +36,7 @@ import {
   settleTeamsPerGames,
   IGame,
   settleTeamsPerGamesDays,
+  IConfigurableGame,
 } from 'components/common/matrix-table/helper';
 import {
   mapFieldsData,
@@ -160,7 +161,7 @@ interface IMapDispatchToProps {
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
   ) => void;
-  fillGamesList: (games: IGame[]) => void;
+  fillGamesList: (games: IConfigurableGame[]) => void;
   clearGamesList: () => void;
 }
 
@@ -301,7 +302,7 @@ class Schedules extends Component<Props, State> {
     }
 
     if (schedulesDetails && gamesList && gamesList.length === 0) {
-      const gamesListFromSchedulesDetails: IGame[] = schedulesDetails
+      const gamesListFromSchedulesDetails: IConfigurableGame[] = schedulesDetails
         .filter(v => v.game_id === '-1')
         .map(v => ({
           id: -1,
@@ -312,6 +313,7 @@ class Schedules extends Component<Props, State> {
           homeTeamId: v.home_team_id || undefined,
           timeSlotId: 0,
           fieldId: '',
+          isAssigned: !!schedulesDetails.find(details => details.game_id !== '-1' && details.division_id === v.division_id && details.away_team_id === v.away_team_id && details.home_team_id === v.home_team_id)
         }));
 
       this.props.fillGamesList(gamesListFromSchedulesDetails);
@@ -941,6 +943,7 @@ class Schedules extends Component<Props, State> {
                   recalculateDiagnostics={this.calculateDiagnostics}
                   gamesList={gamesList}
                   updateSchedulesDetails={this.props.updateSchedulesDetails}
+                  fillGamesList={this.props.fillGamesList}
                 />
               )}
           </section>

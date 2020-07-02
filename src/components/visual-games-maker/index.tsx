@@ -15,7 +15,7 @@ import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IGameCell } from './helpers';
 import { fillGamesList } from 'components/schedules/logic/schedules-table/actions';
-import { IGame } from 'components/common/matrix-table/helper';
+import { IConfigurableGame } from 'components/common/matrix-table/helper';
 
 interface IMapStateToProps {
   teams?: ITeam[] | undefined;
@@ -27,7 +27,7 @@ interface IMapStateToProps {
 
 interface IMapDispatchToProps {
   getAllPools: (divisionIds: string[]) => void;
-  fillGamesList: (gamesList: IGame[]) => void;
+  fillGamesList: (gamesList: IConfigurableGame[]) => void;
 }
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
