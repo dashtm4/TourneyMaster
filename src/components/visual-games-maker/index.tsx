@@ -142,86 +142,87 @@ class VisualGamesMaker extends Component<IProps, IState> {
     ) || [];
 
     return (
-      <div className={styles.container}>
-        <h1> Visual Games Maker </h1>
-        <div className={styles.filterWrapp}>
-          <div className={styles.divisionWrapp}>
-            <h3> Division: </h3>
-            <div className={styles.selectWrapp}>
-              <Select
-                value={this.state.selectedDivisionId}
-                options={(this.props.divisions || []).map(division => {
-                  return {
-                    value: division.division_id,
-                    label: division.short_name,
-                  };
-                })}
-                onChange={this.onChangeDivision}
+      <section className={styles.section}>
+        <div className={styles.container}>
+          <div className={styles.filterWrapp}>
+            <div className={styles.divisionWrapp}>
+              <h3> Division: </h3>
+              <div className={styles.selectWrapp}>
+                <Select
+                  value={this.state.selectedDivisionId}
+                  options={(this.props.divisions || []).map(division => {
+                    return {
+                      value: division.division_id,
+                      label: division.short_name,
+                    };
+                  })}
+                  onChange={this.onChangeDivision}
+                />
+              </div>
+            </div>
+            <div className={styles.divisionWrapp}>
+              <h3> Pool: </h3>
+              <div className={styles.selectWrapp}>
+                <Select
+                  value={this.state.selectedPoolId}
+                  options={this.mapOptionsForPools()}
+                  onChange={this.onChangePool}
+                />
+              </div>
+            </div>
+            <div className={styles.checkboxWrapp}>
+              <Checkbox
+                options={[
+                  {
+                    label: 'Show Names of Teams',
+                    checked: this.state.isShowNamesOfTeams,
+                  },
+                ]}
+                onChange={this.onChangeDisplayedLabelType}
               />
             </div>
           </div>
-          <div className={styles.divisionWrapp}>
-            <h3> Pool: </h3>
-            <div className={styles.selectWrapp}>
-              <Select
-                value={this.state.selectedPoolId}
-                options={this.mapOptionsForPools()}
-                onChange={this.onChangePool}
+          <div className={styles.tablesWrapper}>
+            <div className={styles.matrixOfPossibleGames}>
+              <MatrixOfPossibleGames
+                games={this.props.gamesCells || []}
+                teams={sortedTeams}
+                poolId={this.state.selectedPoolId}
+                showNames={this.state.isShowNamesOfTeams}
+                divisionId={this.state.selectedDivisionId}
+                divisionHex={
+                  this.props.divisions?.find(
+                    v => v.division_id === this.state.selectedDivisionId,
+                  )?.division_hex || ''
+                }
+                divisionName={
+                  this.props.divisions?.find(
+                    v => v.division_id === this.state.selectedDivisionId,
+                  )?.short_name || ''
+                }
+                onChangeGames={this.onChangeGames}
+                pools={this.mapOptionsForPools()}
               />
             </div>
-          </div>
-          <div className={styles.checkboxWrapp}>
-            <Checkbox
-              options={[
-                {
-                  label: 'Show Names of Teams',
-                  checked: this.state.isShowNamesOfTeams,
-                },
-              ]}
-              onChange={this.onChangeDisplayedLabelType}
-            />
+            <div className={styles.sideTables}>
+              <div className={styles.runningTally}>
+                <RunningTally
+                  games={filteredGames}
+                  teams={sortedTeams}
+                  showNames={this.state.isShowNamesOfTeams}
+                />
+              </div>
+              <div className={styles.resGameList}>
+                <ResultingGameList
+                  games={filteredGames}
+                  teams={sortedTeams}
+                  showNames={this.state.isShowNamesOfTeams}
+                />
+              </div>
+            </div>
           </div>
         </div>
-        <div className={styles.tablesWrapper}>
-          <div className={styles.matrixOfPossibleGames}>
-            <MatrixOfPossibleGames
-              games={this.props.gamesCells || []}
-              teams={sortedTeams}
-              poolId={this.state.selectedPoolId}
-              showNames={this.state.isShowNamesOfTeams}
-              divisionId={this.state.selectedDivisionId}
-              divisionHex={
-                this.props.divisions?.find(
-                  v => v.division_id === this.state.selectedDivisionId,
-                )?.division_hex || ''
-              }
-              divisionName={
-                this.props.divisions?.find(
-                  v => v.division_id === this.state.selectedDivisionId,
-                )?.short_name || ''
-              }
-              onChangeGames={this.onChangeGames}
-              pools={this.mapOptionsForPools()}
-            />
-          </div>
-          <div className={styles.sideTables}>
-            <div className={styles.runningTally}>
-              <RunningTally
-                games={filteredGames}
-                teams={sortedTeams}
-                showNames={this.state.isShowNamesOfTeams}
-              />
-            </div>
-            <div className={styles.resGameList}>
-              <ResultingGameList
-                games={filteredGames}
-                teams={sortedTeams}
-                showNames={this.state.isShowNamesOfTeams}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
     );
   }
 }

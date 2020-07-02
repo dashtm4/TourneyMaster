@@ -201,6 +201,7 @@ interface State {
   isLoading: boolean;
   neccessaryDataCalculated: boolean;
   teamCardsAlreadyUpdated: boolean;
+  defaultTabUpdated: boolean;
   loadingType: LoaderTypeEnum;
   tournamentDays: string[];
   playoffTimeSlots: ITimeSlot[];
@@ -220,6 +221,7 @@ class Schedules extends Component<Props, State> {
     isLoading: true,
     neccessaryDataCalculated: false,
     teamCardsAlreadyUpdated: false,
+    defaultTabUpdated: false,
     loadingType: LoaderTypeEnum.CALCULATION,
     tournamentDays: [],
     playoffTimeSlots: [],
@@ -255,6 +257,12 @@ class Schedules extends Component<Props, State> {
     } else {
       await this.calculateNeccessaryData();
 
+      if (this.isVisualGamesMakerMode()) {
+        this.setState({
+          activeTab: SchedulesTabsEnum.VisualGamesMaker,
+        });
+      }
+
       if (isManualScheduling) {
         this.onScheduleCardsUpdate(
           this.state.teams?.map(item => ({
@@ -288,6 +296,7 @@ class Schedules extends Component<Props, State> {
       teams,
       neccessaryDataCalculated,
       teamCardsAlreadyUpdated,
+      defaultTabUpdated,
     } = this.state;
 
     const localSchedule = this.getSchedule();
@@ -350,6 +359,15 @@ class Schedules extends Component<Props, State> {
     ) {
       this.calculateDiagnostics();
       this.setState({ teamCardsAlreadyUpdated: true });
+    }
+
+    if (schedule && !defaultTabUpdated) {
+      this.setState({
+        defaultTabUpdated: true,
+        activeTab: this.isVisualGamesMakerMode()
+          ? SchedulesTabsEnum.VisualGamesMaker
+          : SchedulesTabsEnum.Schedules,
+      });
     }
   }
 
@@ -682,11 +700,10 @@ class Schedules extends Component<Props, State> {
           homeTeamId: v.homeTeamId,
         }))
       );
-    };
+    }
 
 
     schedulesTableGames = schedulesTableGames.flat();
-
 
     return mapSchedulesTeamCards(
       localSchedule,
@@ -844,9 +861,15 @@ class Schedules extends Component<Props, State> {
   isVisualGamesMakerMode = () => {
     const { schedule, scheduleData } = this.props;
 
-    return scheduleData?.create_mode && ScheduleCreationType[scheduleData?.create_mode] === ScheduleCreationType.Visual || 
-            schedule?.create_mode && ScheduleCreationType[schedule?.create_mode] === ScheduleCreationType.Visual;
-  }
+    return (
+      (scheduleData?.create_mode &&
+        ScheduleCreationType[scheduleData?.create_mode] ===
+        ScheduleCreationType.Visual) ||
+      (schedule?.create_mode &&
+        ScheduleCreationType[schedule?.create_mode] ===
+        ScheduleCreationType.Visual)
+    );
+  };
 
   render() {
     const {
