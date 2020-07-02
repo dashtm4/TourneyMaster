@@ -32,6 +32,11 @@ interface Props {
   schedules: ISchedule[];
   brackets: IFetchedBracket[];
   isOpen: boolean;
+  gameCount: {
+    poolLength: number;
+    bracketLength: number;
+  };
+  teamCount: number;
   onClose: BindingAction;
   publishEventData: BindingCbWithThree<
     EventPublishTypes,
@@ -45,6 +50,8 @@ const PopupPublishEvent = ({
   schedules,
   brackets,
   isOpen,
+  gameCount,
+  teamCount,
   onClose,
   publishEventData,
 }: Props) => {
@@ -80,6 +87,11 @@ const PopupPublishEvent = ({
         <div className={styles.titleWrapper}>
           <HeadingLevelTwo>Modify Published Status</HeadingLevelTwo>
           <p className={styles.eventName}>Event: {event.event_name}</p>
+          <div className={styles.gameCount}>
+            <p>Teams: {teamCount}</p>
+            <p>Games being published (Pool): {gameCount.poolLength}</p>
+            <p>Games being published (Bracket): {gameCount.bracketLength}</p>
+          </div>
         </div>
         {isConfrimOpen && publishType ? (
           <SectionConfirm
