@@ -26,51 +26,51 @@ const PoolsDetailsNav = ({
   onSave,
   onEdit,
 }: Props) => (
-  <div className={styles.wrapper}>
-    <div className={styles.poolsBtns}>
-      <Button
-        onClick={onAdd}
-        variant={ButtonVarian.TEXT}
-        color={ButtonColors.SECONDARY}
-        label="+ Add Pool"
-      />
-      <Button
-        onClick={onEdit}
-        icon={getIcon(Icons.EDIT)}
-        variant={ButtonVarian.TEXT}
-        color={ButtonColors.SECONDARY}
-        label="Edit Pool Details"
-      />
-    </div>
-    <div className={styles.teamBtns}>
-      {isArrange ? (
-        <p>
-          <Button
-            onClick={onCancel}
-            variant={ButtonVarian.TEXT}
-            color={ButtonColors.SECONDARY}
-            label="Cancel"
-          />
-          <span className={styles.btnWrapper}>
-            <Button
-              onClick={onSave}
-              variant={ButtonVarian.CONTAINED}
-              color={ButtonColors.PRIMARY}
-              label="Save"
-            />
-          </span>
-        </p>
-      ) : (
+    <div className={styles.wrapper}>
+      <div className={styles.poolsBtns}>
         <Button
-          onClick={onArrange}
-          icon={getIcon(Icons.MOVE, ICON_STYLES)}
+          onClick={onAdd}
           variant={ButtonVarian.TEXT}
           color={ButtonColors.SECONDARY}
-          label="Arrange Teams"
+          label="+ Add Pool"
         />
-      )}
+        <Button
+          onClick={onEdit}
+          icon={getIcon(Icons.EDIT)}
+          variant={ButtonVarian.TEXT}
+          color={ButtonColors.SECONDARY}
+          label="Edit Pool Details"
+        />
+      </div>
+      <div className={styles.teamBtns}>
+        {isArrange ? (
+          <p>
+            <Button
+              onClick={onCancel}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Cancel"
+            />
+            <span className={styles.btnWrapper}>
+              <Button
+                onClick={onSave}
+                variant={ButtonVarian.CONTAINED}
+                color={ButtonColors.PRIMARY}
+                label="Save"
+              />
+            </span>
+          </p>
+        ) : (
+            <Button
+              onClick={onArrange}
+              icon={getIcon(Icons.ZOOM, ICON_STYLES)}
+              variant={ButtonVarian.TEXT}
+              color={ButtonColors.SECONDARY}
+              label="Arrange Teams"
+            />
+          )}
+      </div>
     </div>
-  </div>
-);
+  );
 
 export default PoolsDetailsNav;
