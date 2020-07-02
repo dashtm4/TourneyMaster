@@ -827,9 +827,10 @@ class Schedules extends Component<Props, State> {
   };
 
   isVisualGamesMakerMode = () => {
-    const { scheduleData } = this.props;
+    const { schedule, scheduleData } = this.props;
 
-    return scheduleData?.create_mode && ScheduleCreationType[scheduleData?.create_mode] === ScheduleCreationType.Visual;
+    return scheduleData?.create_mode && ScheduleCreationType[scheduleData?.create_mode] === ScheduleCreationType.Visual || 
+            schedule?.create_mode && ScheduleCreationType[schedule?.create_mode] === ScheduleCreationType.Visual;
   }
 
   render() {
