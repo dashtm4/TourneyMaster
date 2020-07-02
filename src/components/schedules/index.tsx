@@ -301,7 +301,7 @@ class Schedules extends Component<Props, State> {
       this.props.fetchSchedulesDetails(scheduleId);
     }
 
-    if (schedulesDetails && gamesList && gamesList.length === 0) {
+    if (this.isVisualGamesMakerMode() && schedulesDetails && gamesList && gamesList.length === 0) {
       const gamesListFromSchedulesDetails: IConfigurableGame[] = schedulesDetails
         .filter(v => v.game_id === '-1')
         .map(v => ({
