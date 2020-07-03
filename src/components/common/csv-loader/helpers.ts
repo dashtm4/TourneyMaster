@@ -98,6 +98,11 @@ const getBaseObj = (type: string, eventId?: string) => {
         team_id: getVarcharEight(),
         event_id: eventId,
       };
+    case 'divisions_pools_teams':
+      return {
+        team_id: getVarcharEight(),
+        event_id: eventId,
+      };
     default:
       return {
         event_id: getVarcharEight(),

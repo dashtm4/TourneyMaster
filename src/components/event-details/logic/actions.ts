@@ -1,17 +1,15 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Dispatch } from 'redux';
 import { Storage } from 'aws-amplify';
-// import uuidv4 from 'uuid/v4';
 import * as Yup from 'yup';
-
+import api from 'api/api';
+// import { getVarcharEight } from 'helpers';
 import {
   EVENT_DETAILS_FETCH_START,
   EVENT_DETAILS_FETCH_SUCCESS,
   EVENT_DETAILS_FETCH_FAILURE,
   EventDetailsAction,
 } from './actionTypes';
-
-import api from 'api/api';
 import { eventDetailsSchema } from 'validations';
 import { IIconFile } from './model';
 import history from 'browserhistory';
@@ -315,4 +313,121 @@ export const createEvents: ActionCreator<ThunkAction<
     const errMessage = `Record ${index + 1}: ${err.message}`;
     return Toasts.errorToast(errMessage);
   }
+};
+
+export const createDataFromCSV: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (data: any) => async (dispatch: Dispatch) => {
+  // exit when no data from CSV
+  if (data.length === 0) {
+    return;
+  }
+
+  const newDivisions = new Set();
+  const newPools: any[] = [];
+  const errDivisions: number[] = [];
+
+  data.forEach(
+    (
+      {
+        division_name,
+        pool_name,
+      }: {
+        division_name: string;
+        pool_name: string;
+      },
+      index: number
+    ) => {
+      if (division_name && division_name.trim()) {
+        newDivisions.add(division_name);
+
+        if (!newPools.hasOwnProperty(division_name)) {
+          newPools[division_name] = new Set();
+        }
+        newPools[division_name].add(pool_name);
+      } else {
+        errDivisions.push(index);
+      }
+    }
+  );
+
+  if (errDivisions.length !== 0) {
+    console.log('errDivisions');
+    console.log(errDivisions);
+    return false;
+  }
+
+  // const { event_id } = data[0];
+  // const allDivisions = await api.get(`/divisions?event_id=${event_id}`);
+
+  newDivisions.forEach(newDivision => {
+    // allDivisions.some(el => el.long_name || el.short_name === )
+    const newHex =
+      '#' + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0');
+    console.log(newHex, newDivision);
+    // await api.post('/divisions', {
+    //   division_hex: '1c315f',
+    //   division_id: getVarcharEight(),
+    //   long_name: division.division_name,
+    //   short_name: division.division_name,
+    //   event_id,
+    // });
+  });
+
+  console.log(newDivisions, newPools);
+
+  // const dataGroupByDivision: any = {};
+  // const newDivisions = {};
+
+  // dataFromCSV.forEach((row: any[]) => {
+  //   const divisionName = row['division_name'];
+  //   if (!dataGroupByDivision.hasOwnProperty(divisionName)) {
+  //     Object.assign(dataGroupByDivision, { [divisionName]: [] });
+  //   }
+  //   dataGroupByDivision[divisionName].push(row);
+  // });
+
+  // Object.keys(dataGroupByDivision).forEach((index: string) => {
+  //   console.log(dataGroupByDivision[index], index);
+  // divisions.forEach((row: any[]) => {
+  //   console.log
+  // });
+  // });
+  //   const division = v['Division Name'];
+  //   const pool = v['Pool Name'];
+
+  //   if (division) {
+  //     divisionsFromCSV.push(division);
+  //   }
+  //   if (pool) {
+  //     poolsFromCSV.push(pool);
+  //   }
+  // });
+
+  // const allPools = await api.get(`/pools?division_id=${pool.division_id}`);
+
+  // const divisionsFromCSV: any[] = [];
+  // const poolsFromCSV: any[] = [];
+
+  // const divisions = union(divisionsFromCSV);
+  // const pools = union(poolsFromCSV);
+
+  // for (const division of divisions) {
+  //   await api.post('/divisions', {
+  //     division_hex: "1c315f"
+  //   division_id: "DBKSKPQR"
+  //   event_id: "UMTRNKQF"
+  //   long_name: "dvasd"
+  //   short_name: "asdf"
+  //   });
+  // }
+  // for (const pool of pools) {
+  //   await api.post('/divisions', division);
+  // }
+  console.log(dispatch);
+  // console.log(divisions);
+  // console.log(pools);
 };
