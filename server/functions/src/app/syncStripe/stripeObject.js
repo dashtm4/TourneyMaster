@@ -6,11 +6,10 @@ export class StripeObject {
 
   map = dbProd => {};
 
-  list = async params => {
+  async list(params) {
     const objects = [];
     for await (const object of this.endpoint.list(
       {
-        active: true,
         limit: 100,
         ...params,
       },
@@ -19,11 +18,11 @@ export class StripeObject {
       objects.push(object);
     }
     return objects;
-  };
+  }
 
   equal = (object, stripeObject) => {};
 
-  delete = async object => {
+  async delete(object) {
     console.log(
       `Deactivating object: ${object.name} (${object.id ||
         object.metadata?.externalId})`
@@ -36,10 +35,13 @@ export class StripeObject {
       this.requestParams
     );
     return stripeProduct;
-  };
+  }
 
-  create = async object => {
-    console.log(`Creating object: ${object.name} (${object.id})`);
+  async create(object) {
+    console.log(
+      `Creating object: ${object.name || object.nickname} (${object.id ||
+        object.metadata?.externalId})`
+    );
     try {
       const stripeObject = await this.endpoint.create(
         object,
@@ -50,18 +52,17 @@ export class StripeObject {
       console.log(err);
       throw err;
     }
-  };
+  }
 
-  update = async (object, updateViaDelete = false) => {
+  async update(object, updateViaDelete = false) {
     console.log(`Updating object: ${object.name} (${object.id})`);
     let stripeObject;
     const updatedObject = { ...object };
+    delete updatedObject.id;
     if (updateViaDelete) {
       // console.log(
       //   `Updating Price: ${price.metadata?.externalId} (Product Id: ${price.product})`
       // );
-      delete updatedObject.id;
-
       await this.endpoint.update(
         object.id,
         {
@@ -82,5 +83,5 @@ export class StripeObject {
       );
     }
     return stripeObject;
-  };
+  }
 }

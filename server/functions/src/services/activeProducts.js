@@ -28,10 +28,10 @@ export const getPaymentPlans = async ({
     (stripe_connect_id !== null
       ? `&stripe_connect_id=${stripe_connect_id}`
       : '');
-  console.log(`sku_id: ${sku_id}, payment_plan_id: ${payment_plan_id}`);
+  // console.log(`sku_id: ${sku_id}, payment_plan_id: ${payment_plan_id}`);
 
   const skus = await axios.get(`/skus${query}`);
-  console.log(`Query: ${query}, Skus: ${skus}`);
+  // console.log(`Query: ${query}, Skus: ${skus}`);
   if (skus.data?.length > 0) {
     const paymentPlans = skus.data.flatMap(sku => {
       sku.payment_schedule_json = JSON.parse(sku.payment_schedule_json);

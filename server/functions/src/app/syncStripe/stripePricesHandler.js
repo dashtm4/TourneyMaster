@@ -72,7 +72,7 @@ export default class StripePricesHandler extends StripeObject {
 
   equal = (price, stripePrice) => {
     return (
-      price.currency === stripePrice.currency.toUpperCase() &&
+      price.currency.toUpperCase() === stripePrice.currency.toUpperCase() &&
       price.active === stripePrice.active &&
       price.product === stripePrice.product &&
       price.unit_amount === +stripePrice.unit_amount &&
@@ -95,6 +95,10 @@ export default class StripePricesHandler extends StripeObject {
       price.metadata.owner_id === stripePrice.metadata.owner_id &&
       price.metadata.payment_date === stripePrice.metadata.payment_date
     );
+  };
+
+  list = async params => {
+    return super.list({ active: true });
   };
 
   update = async price => {

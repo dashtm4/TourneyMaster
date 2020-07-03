@@ -9,10 +9,10 @@ export default class StripeServiceProductsHandler extends StripeObject {
   map = dbProd => {
     const product = {
       id: dbProd.sku_id,
-      name: dbProd.product_name + ': ' + dbProd.sku_name,
+      name:
+        dbProd.product_name + (dbProd.sku_name ? ': ' + dbProd.sku_name : ''),
       type: 'service',
       active: true,
-      url: dbProd.url,
       metadata: {
         externalId: dbProd.sku_id,
         event_id: dbProd.event_id,
@@ -31,7 +31,6 @@ export default class StripeServiceProductsHandler extends StripeObject {
     return (
       product.name === stripeProduct.name &&
       product.active === !!stripeProduct.active &&
-      product.url === stripeProduct.url &&
       product.type === stripeProduct.type &&
       product.metadata.externalId === stripeProduct.metadata.externalId &&
       product.metadata.price === +stripeProduct.metadata.price &&
@@ -48,7 +47,7 @@ export default class StripeServiceProductsHandler extends StripeObject {
   update = async product => {
     const updatedProd = { ...product };
     delete updatedProd.type;
-    delete updatedProd.id;
-    return await super.update(updatedProduct);
+
+    return await super.update(updatedProd, false);
   };
 }

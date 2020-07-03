@@ -94,18 +94,56 @@ const syncTaxRates = async (paymentPlans, stripeAccount) => {
   );
 };
 
+const createSpecialProduct = stripeAccount => {
+  return {
+    product_name: 'Payment Schedule',
+    sku_id: 'sched_' + stripeAccount,
+    sku_name: '',
+    event_id: 'no',
+    division_id: 'no',
+    price: 0,
+    sales_tax_rate: 0,
+    sale_startdate: '0',
+    sale_enddate: '0',
+  };
+};
+
 const syncServiceProducts = async stripeAccount => {
   const activeSkus = await getActiveSkus(stripeAccount);
+  activeSkus.push(createSpecialProduct(stripeAccount));
   await syncStripeObjects(
     new StripeServiceProductsHandler(stripe, stripeAccount),
     activeSkus
   );
 };
 
+const createSpecialPaymentPlan = stripeAccount => {
+  return {
+    type: 'installment',
+    currency: 'USD',
+    price: 0,
+    payment_plan_name: 'Payment Schedule',
+    sku_id: 'sched_' + stripeAccount,
+    interval: 'month',
+    intervalCount: '12',
+    payment_plan_id: 'acc_' + stripeAccount,
+    sku_name: 'Payment Schedule',
+    total_price: 0,
+    event_id: 'no',
+    division_id: 'no',
+    owner_id: 'no',
+    sales_tax_rate: 0,
+    iterations: 0,
+    discount: 0,
+    billing_cycle_anchor: 0,
+  };
+};
+
 const syncPrices = async stripeAccount => {
   const activePaymentPlans = await getPaymentPlans({
     stripe_connect_id: stripeAccount,
   });
+  activePaymentPlans.push(createSpecialPaymentPlan(stripeAccount));
   await syncTaxRates(activePaymentPlans, stripeAccount);
   await syncStripeObjects(
     new StripePricesHandler(stripe, stripeAccount),
