@@ -14,16 +14,16 @@ instance.interceptors.request.use(null, error => {
 instance.interceptors.response.use(
   response => {
     console.log(
-      `Status: ${response.status} (${response.statusText}). URL: ${response.config.url}`
+      `Status: ${response?.status} (${response?.statusText}). URL: ${response?.config?.url}`
     );
     return response;
   },
   error => {
     console.log(
-      `Error: ${error.response.status} (${error.response.statusText})`
+      `Error: ${error?.response?.status} (${error?.response?.statusText})`
     );
-    console.log('URL: ', error.config.url);
-    console.log('Payload: ', error.config.data);
+    console.log('URL: ', error?.config?.url);
+    console.log('Payload: ', error?.config?.data);
     return Promise.reject(error);
   }
 );

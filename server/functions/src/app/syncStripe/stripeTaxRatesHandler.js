@@ -31,6 +31,10 @@ export default class StripeTaxRatesHandler extends StripeObject {
     );
   };
 
+  list = async params => {
+    return super.list({ active: true });
+  };
+
   update = async taxRate => {
     return await super.update(taxRate, true);
   };
