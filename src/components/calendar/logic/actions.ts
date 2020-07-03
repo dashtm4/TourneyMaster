@@ -54,7 +54,7 @@ export const saveCalendarEvent: ActionCreator<ThunkAction<
 >> = (event: ICalendarEvent) => async (dispatch: Dispatch) => {
   const response = await api.post('/calendar_events', event);
 
-  if (response?.errorType === 'Error') {
+  if (response?.errorType === 'Error' || response?.message === false) {
     return Toasts.errorToast("Couldn't create");
   }
 
@@ -76,7 +76,7 @@ export const updateCalendarEvent: ActionCreator<ThunkAction<
     event
   );
 
-  if (response?.errorType === 'Error') {
+  if (response?.errorType === 'Error' || response?.message === false) {
     return Toasts.errorToast("Couldn't update");
   }
 
@@ -93,7 +93,7 @@ export const deleteCalendarEvent: ActionCreator<ThunkAction<
 >> = (id: string) => async (dispatch: Dispatch) => {
   const response = await api.delete(`/calendar_events?cal_event_id=${id}`);
 
-  if (response?.errorType === 'Error') {
+  if (response?.errorType === 'Error' || response?.message === false) {
     return Toasts.errorToast("Couldn't delete");
   }
 

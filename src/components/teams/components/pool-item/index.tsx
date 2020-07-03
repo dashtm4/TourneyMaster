@@ -39,12 +39,14 @@ const PoolItem = ({ pool, teams, division, onEditPopupOpen }: Props) => {
               <th>Coach Name</th>
               <th>Mobile # (printed on gameday reports)</th>
               <th className={styles.teamActions}>Actions</th>
+              <th>Invite to Register</th>
             </tr>
           </thead>
           <tbody>
             {sortedTeams.map(it => (
               <TeamItem
                 team={it}
+                division={division}
                 divisionName={division.long_name}
                 poolName={pool?.pool_name}
                 onEditPopupOpen={onEditPopupOpen}

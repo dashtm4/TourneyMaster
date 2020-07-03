@@ -23,6 +23,18 @@ const sizeOptions = [
   { label: 'YM', value: 'YM' },
   { label: 'YS', value: 'YS' },
 ];
+const position = [
+  { label: 'Attack', value: 'Attack' },
+  { label: 'Attack/Middie', value: 'Attack/Middie' },
+  { label: 'Middie', value: 'Middie' },
+  { label: 'Defense', value: 'Defense' },
+  { label: 'Fogo', value: 'Fogo' },
+  { label: 'Goalie', value: 'Goalie' },
+  { label: 'LSM', value: 'LSM' },
+  { label: 'Other', value: 'Other' },
+
+]
+
 const heightFeetOptions = [
   { label: '4', value: '4' },
   { label: '5', value: '5' },
@@ -46,6 +58,9 @@ const heightInchesOptions = [
 const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
   const onClubNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('player_club_name', e.target.value);
+
+  const onClubCoachNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('player_club_coach_name', e.target.value);
 
   const onHighlightUrlChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('player_highlight_URL', e.target.value);
@@ -105,7 +120,7 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
             fullWidth={true}
             label="Club Head Coach Name"
             value={data.player_club_coach_name || ''}
-            onChange={onClubNameChange}
+            onChange={onClubCoachNameChange}
           />
         </div>
         <div className={styles.sectionItem}>
@@ -161,8 +176,9 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
       </div>
       <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
+          <Select
+            options={position}
+            // fullWidth={true}
             label="Position"
             value={data.position || ''}
             onChange={onPositionChange}
@@ -228,7 +244,6 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
             onChange={onConnectLaxUrlChange}
           />
         </div>
-        <div className={styles.sectionItem} />
       </div>
       <div className={styles.toolTipMessage}>
         <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>

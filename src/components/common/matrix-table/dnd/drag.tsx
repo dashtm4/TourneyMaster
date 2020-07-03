@@ -10,6 +10,7 @@ import { IInputEvent } from 'common/types';
 import cancelIcon from 'assets/canceled.png';
 import styles from './styles.module.scss';
 import { getContrastingColor } from '../helper';
+import { IGame } from '../helper';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -21,6 +22,7 @@ interface Props {
   showHeatmap?: boolean;
   onTeamCardUpdate?: (teamCard: ITeamCard) => void;
   isDndMode?: boolean;
+  game?: IGame;
 }
 
 const ERROR_ICON_STYLES = {
@@ -40,16 +42,17 @@ export default (props: Props) => {
     isEnterScores,
     onTeamCardUpdate,
     isDndMode,
+    game
   } = props;
 
-  const game = find(teamCard.games, { id: originGameId, date: originGameDate });
-  const isTeamLocked = game?.isTeamLocked;
+  const gameFromTeamCard = find(teamCard.games, { id: originGameId, date: originGameDate });
+  const isTeamLocked = gameFromTeamCard?.isTeamLocked;
   const isBracketTable = tableType === TableScheduleTypes.BRACKETS;
 
   const isDraggable = !isTeamLocked && !isBracketTable;
 
   const [{ isDragging }, drag] = useDrag({
-    item: { id: teamCard.id, type, originGameId, originGameDate },
+    item: { id: teamCard.id, type, possibleGame: game, originGameId, originGameDate },
     canDrag: isDraggable,
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
@@ -117,7 +120,7 @@ export default (props: Props) => {
           <label className={styles.scoresInputWrapper}>
             <input
               onChange={onChangeScore}
-              value={game?.teamScore || ''}
+              value={gameFromTeamCard?.teamScore || ''}
               type="number"
               min="0"
               style={{
@@ -132,7 +135,7 @@ export default (props: Props) => {
         )}
         {tableType === TableScheduleTypes.SCHEDULES && originGameId && (
           <button className={styles.lockBtn} onClick={onLockClick}>
-            {getIcon(game?.isTeamLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+            {getIcon(gameFromTeamCard?.isTeamLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
               fill: showHeatmap && teamCard.divisionHex ? '#ffffff' : '#00A3EA',
             })}
             <span className="visually-hidden">Unlock/Lock team</span>
@@ -154,7 +157,7 @@ export default (props: Props) => {
       }}
     >
       {teamCard && renderTeamCard(teamCard)}
-      {game?.isCancelled && (
+      {gameFromTeamCard?.isCancelled && (
         <img
           className={styles.cancelIcon}
           src={cancelIcon}

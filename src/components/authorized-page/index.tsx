@@ -2,21 +2,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Switch, Route, useLocation } from 'react-router-dom';
-import Header from '../header';
+import { Routes } from 'common/enums';
+import { BindingAction, ICalendarEvent } from 'common/models';
 import Menu from '../common/menu';
-import { MenuList } from './logic/constants';
-import Dashboard from '../dashboard';
-import Support from '../support';
-import LibraryManager from '../library-manager';
-import OrganizationsManagement from '../organizations-management';
 import Calendar from 'components/calendar';
 import Utilities from 'components/utilities';
-import Footer from 'components/footer';
-import { Routes } from 'common/enums';
-import styles from './styles.module.scss';
+import CreateMessage from 'components/event-link/create-message';
+import MobileScoring from 'components/mobile-scoring';
 import GamedayComplexities from 'components/gameday-complexities';
 import ScrollTopButton from 'components/common/scroll-top-button';
 import EventLink from 'components/event-link';
+import Footer from 'components/footer';
 import {
   getCalendarEvents,
   updateCalendarEvent,
@@ -25,9 +21,13 @@ import {
   filterCalendarEvents,
   checkIfRemind,
 } from 'components/calendar/logic/helper';
-import { BindingAction, ICalendarEvent } from 'common/models';
-import CreateMessage from 'components/event-link/create-message';
-import MobileScoring from 'components/mobile-scoring';
+import { MenuList } from './logic/constants';
+import Header from '../header';
+import Dashboard from '../dashboard';
+import Support from '../support';
+import LibraryManager from '../library-manager';
+import OrganizationsManagement from '../organizations-management';
+import styles from './styles.module.scss';
 
 interface Props {
   getCalendarEvents: BindingAction;

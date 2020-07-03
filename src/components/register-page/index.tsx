@@ -1,5 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { loadStripe, Stripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -66,6 +69,26 @@ export interface RegisterMatchParams {
   };
 }
 
+export const wrappedRegister = ({ match }: RegisterMatchParams) => {
+  const stripePromise = new Promise(async resolve => {
+    const stripeAccount = (
+      await axios.get(`/skus?event_id=${match.params.eventId}`)
+    ).data[0].stripe_connect_id;
+    const stripe = await loadStripe(
+      process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY ||
+        'pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh', // TODO: Remove the hardcoded key after initial deployment
+      stripeAccount === 'main' ? undefined : { stripeAccount }
+    );
+    resolve(stripe);
+  }) as Promise<Stripe | null>;
+
+  return (
+    <Elements stripe={stripePromise}>
+      <RegisterPage match={match} />
+    </Elements>
+  );
+};
+
 const RegisterPage = ({ match }: RegisterMatchParams) => {
   const [event, setEvent] = useState<IEventDetails | null>(null);
   const [
@@ -80,6 +103,11 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const [purchasing] = useState<boolean>(false);
   const [processing, setProcessing] = useState<boolean>(false);
+  const [registration, setRegistration] = useState<
+    Partial<IIndividualsRegister> | Partial<ITeamsRegister>
+  >({});
+  const [isInvited, setIsInvited] = useState(false);
+
   // const [clientSecret, setClientSecret] = useState<string>('');
   const stripe = useStripe()!;
   const elements = useElements();
@@ -97,8 +125,23 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
   const steps = getSteps();
 
+  const useQuery = () => {
+    return new URLSearchParams(useLocation().search);
+  };
+  const query = useQuery();
+
   useEffect(() => {
     const eventId = match.params.eventId;
+    if (query.get('team') || query.get('division')) {
+      setIsInvited(true);
+      if (getInternalRegType(type) === 'individual') {
+        onChange('team_id', query.get('team_id')!);
+      }
+      onChange('team_name', query.get('team')!);
+      onChange('division_name', query.get('division')!);
+      onChange('ext_sku', 'div_' + query.get('division_id')!);
+    }
+
     axios.get('/events').then(response => {
       const eventData: IEventDetails = response.data.filter(
         (e: IEventDetails) => e.event_id === eventId
@@ -220,10 +263,6 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  const [registration, setRegistration] = useState<
-    Partial<IIndividualsRegister> | Partial<ITeamsRegister>
-  >({});
-
   const onChange = (name: string, value: string | number) => {
     setRegistration(prevRegistration => ({
       ...prevRegistration,
@@ -263,6 +302,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               fillParticipantInfo={fillParticipantInfo}
               divisions={divisions}
               states={states}
+              isInvited={isInvited}
             />
           );
         case 2:
@@ -287,6 +327,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               data={registration}
               divisions={divisions}
               states={states}
+              isInvited={isInvited}
             />
           );
         case 1:
@@ -457,8 +498,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         name:
           updatedRegistration.registrant_first_name ||
           updatedRegistration.contact_first_name +
-          ' ' +
-          updatedRegistration.registrant_last_name ||
+            ' ' +
+            updatedRegistration.registrant_last_name ||
           updatedRegistration.contact_last_name,
         email:
           updatedRegistration.registrant_email ||
@@ -526,7 +567,15 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         <div className={styles.stepperWrapper}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <HeadingLevelTwo>
-              {`${TypeOptions[type]} Registration`}
+              {`${TypeOptions[type]} Registration ${
+                isInvited
+                  ? getInternalRegType(type) === 'individual'
+                    ? registration.team_name
+                      ? 'for ' + registration.team_name
+                      : ''
+                    : 'for ' + registration.division_name
+                  : ''
+              }`}
             </HeadingLevelTwo>
           </div>
           <div style={{ width: '90%' }}>
@@ -587,8 +636,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           {event && eventRegistration ? (
             <SideBar event={event} eventRegistration={eventRegistration} />
           ) : (
-              <Loader />
-            )}
+            <Loader />
+          )}
         </div>
       </div>
       {event && (

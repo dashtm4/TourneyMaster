@@ -5,6 +5,7 @@ import {
   CLEAR_AUTH_PAGE_DATA,
   PUBLISH_EVENT_SUCCESS,
   AuthPageAction,
+  PUBLISH_GAMECOUNT_SUCCESS,
 } from './action-types';
 import {
   EVENT_DETAILS_FETCH_SUCCESS,
@@ -51,6 +52,10 @@ import { mapSchedulingScheduleData } from 'components/schedules/mapScheduleData'
 export interface IPageEventState {
   isLoading: boolean;
   isLoaded: boolean;
+  gameCount: {
+    poolLength: number;
+    bracketLength: number;
+  };
   menuList: IMenuItem[];
   tournamentData: ITournamentData;
 }
@@ -58,6 +63,10 @@ export interface IPageEventState {
 const initialState = {
   isLoading: false,
   isLoaded: false,
+  gameCount: {
+    poolLength: 0,
+    bracketLength: 0,
+  },
   menuList: EventMenu,
   tournamentData: {
     event: null,
@@ -181,6 +190,13 @@ const pageEventReducer = (
         },
       };
     }
+    case PUBLISH_GAMECOUNT_SUCCESS: {
+      const gameCount = action.payload;
+      return {
+        ...state,
+        gameCount: gameCount,
+      };
+    }
     case REGISTRATION_UPDATE_SUCCESS: {
       const registration = action.payload;
 
@@ -273,6 +289,7 @@ const pageEventReducer = (
               }
             : item
         ),
+        tournamentData: { ...state.tournamentData, teams },
       };
     }
     case SCHEDULE_FETCH_SUCCESS: {

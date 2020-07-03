@@ -35,6 +35,8 @@ export interface IIndividualsRegister {
   height_inches: string;
   short_size: string;
   shirt_size: string;
+  team_id: string;
+  team_name: string;
   position: string;
   hs_graduation_year: number;
   gpa: number;
@@ -52,6 +54,8 @@ export interface IIndividualsRegister {
 export interface ITeamsRegister {
   reg_response_id: string;
   registration_id: string;
+  type?: string;
+  team_id?: string;
   team_name: string;
   team_city: string;
   team_state: string;

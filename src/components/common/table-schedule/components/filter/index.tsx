@@ -16,7 +16,7 @@ interface IProps {
   days: number;
   warnings?: IModalItem[];
   filterValues: IScheduleFilter;
-  simultaneousDnd: boolean;
+  simultaneousDnd?: boolean;
   toggleSimultaneousDnd: () => void;
   onChangeFilterValue: (values: IScheduleFilter) => void;
 }
@@ -112,7 +112,7 @@ const ScoringFilter = (props: IProps) => {
           {warnings?.length ? (
             <InteractiveTooltip title="Scheduling Warning" items={warnings} />
           ) : null}
-          {tableType === TableScheduleTypes.SCHEDULES && (
+          {tableType === TableScheduleTypes.SCHEDULES && simultaneousDnd !== undefined && (
             <Tooltip type="info" title="Move both teams simultaneously">
               <div style={{ marginLeft: '15px', marginBottom: '2px' }}>
                 <Button

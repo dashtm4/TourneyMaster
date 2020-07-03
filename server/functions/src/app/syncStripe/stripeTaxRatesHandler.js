@@ -1,5 +1,8 @@
-export default class StripeTaxRatesHandler {
-  constructor(endpoint) {
+import { StripeObject } from './stripeObject.js';
+
+export default class StripeTaxRatesHandler extends StripeObject {
+  constructor(endpoint, stripeAccount) {
+    super(stripeAccount);
     this.endpoint = endpoint.taxRates;
   }
 
@@ -16,18 +19,6 @@ export default class StripeTaxRatesHandler {
     return tax;
   };
 
-  list = async params => {
-    const objects = [];
-    for await (const object of this.endpoint.list({
-      ...params,
-      active: true,
-      limit: 100,
-    })) {
-      objects.push(object);
-    }
-    return objects;
-  };
-
   equal = (taxRate, stripeTaxRate) => {
     return (
       taxRate.display_name === stripeTaxRate.display_name &&
@@ -40,37 +31,11 @@ export default class StripeTaxRatesHandler {
     );
   };
 
-  delete = async taxRate => {
-    console.log(`Deactivating tax rate: ${taxRate.name} (${taxRate.id})`);
-    const stripeTaxRate = await this.endpoint.update(taxRate.id, {
-      active: false,
-    });
-    return stripeTaxRate;
-  };
-
-  create = async taxRate => {
-    console.log(`Creating taxRate: ${taxRate.name} (${taxRate.id})`);
-    try {
-      const stripeTaxRate = await this.endpoint.create(taxRate);
-      return stripeTaxRate;
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
+  list = async params => {
+    return super.list({ active: true });
   };
 
   update = async taxRate => {
-    console.log(`Updating taxRate: ${taxRate.display_name}`);
-
-    const updatedTaxRate = { ...taxRate };
-    delete updatedTaxRate.id;
-
-    await this.endpoint.update(taxRate.id, {
-      active: false,
-    });
-
-    const stripeTaxRate = await this.endpoint.create(updatedTaxRate);
-
-    return stripeTaxRate;
+    return await super.update(taxRate, true);
   };
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, CardMessage } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { getIcon } from 'helpers';
-import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
+import { ButtonColors, ButtonVariant, Icons } from 'common/enums';
 import { OptimizeTypes } from '../../types';
 import styles from './styles.module.scss';
 import { BindingAction } from 'common/models';
@@ -39,7 +39,7 @@ const TableActions = (props: IProps) => {
             onClick={onUndoClick}
             icon={getIcon(Icons.SETTINGS_BACKUP_RESTORE)}
             label="Undo"
-            variant={ButtonVarian.TEXT}
+            variant={ButtonVariant.TEXT}
             disabled={!!(historyLength && historyLength < 2)}
             color={ButtonColors.SECONDARY}
           />
@@ -52,20 +52,20 @@ const TableActions = (props: IProps) => {
             onClick={onLockAllClick}
             icon={getIcon(Icons.LOCK)}
             label="Lock All"
-            variant={ButtonVarian.TEXT}
+            variant={ButtonVariant.TEXT}
             color={ButtonColors.SECONDARY}
           />
           <Button
             onClick={onUnlockAllClick}
             icon={getIcon(Icons.LOCK_OPEN)}
             label="Unlock All"
-            variant={ButtonVarian.TEXT}
+            variant={ButtonVariant.TEXT}
             color={ButtonColors.SECONDARY}
           />
           <Button
             onClick={togglePopupSaveReport}
             icon={getIcon(Icons.PRINT)}
-            variant={ButtonVarian.TEXT}
+            variant={ButtonVariant.TEXT}
             color={ButtonColors.SECONDARY}
             label="Print"
           />

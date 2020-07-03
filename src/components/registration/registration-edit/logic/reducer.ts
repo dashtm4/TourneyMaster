@@ -6,6 +6,7 @@ import {
   DIVISIONS_FETCH_SUCCESS,
   REGISTRANTS_FETCH_SUCCESS,
   REGISTRANTS_PAYMENTS_FETCH_SUCCESS,
+  REGISTRANTS_ADD_TO_EVENT_SUCCESS,
   EVENT_FETCH_SUCCESS,
 } from './actionTypes';
 import { sortByField } from 'helpers';
@@ -81,10 +82,27 @@ export default (
         error: false,
       };
     }
-    case REGISTRANTS_PAYMENTS_FETCH_SUCCESS: {
+    case REGISTRANTS_ADD_TO_EVENT_SUCCESS: {
+      const { regResponseId, teamId } = action.payload;
+      const updatedRegistrants = state.registrants.map(registrant =>
+        registrant.reg_response_id === regResponseId
+          ? { ...registrant, team_id: teamId }
+          : registrant
+      );
+
       return {
         ...state,
-        payments: action.payload,
+        registrants: updatedRegistrants,
+        error: false,
+      };
+    }
+
+    case REGISTRANTS_PAYMENTS_FETCH_SUCCESS: {
+      const newPayments = { ...state.payments };
+      newPayments[action.payload.regResponseId] = action.payload.data;
+      return {
+        ...state,
+        payments: newPayments,
         error: false,
       };
     }

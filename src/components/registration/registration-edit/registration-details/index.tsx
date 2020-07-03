@@ -52,6 +52,9 @@ const RegistrationDetails = ({
   const onAthleteEmailChange = (e: InputTargetValue) =>
     onChange('request_athlete_email', OptionsEnum[e.target.value]);
 
+  //const onAthleteUSLaxChange = (e: InputTargetValue) =>
+  //  onChange('request_us_lacrosse_number', OptionsEnum[e.target.value]);
+
   const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('reg_first_name', e.target.value);
   const onLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -100,14 +103,14 @@ const RegistrationDetails = ({
               onChange={onMaxPlayersPerDivisionChange}
             />
           ) : (
-            <Input
-              fullWidth={true}
-              label="Max Teams Per Division"
-              type="number"
-              value={data ? data.max_teams_per_division : ''}
-              onChange={onMaxTeamsPerDivisionChange}
-            />
-          )}
+              <Input
+                fullWidth={true}
+                label="Max Teams Per Division"
+                type="number"
+                value={data ? data.max_teams_per_division : ''}
+                onChange={onMaxTeamsPerDivisionChange}
+              />
+            )}
         </div>
         <div className={styles.sectionItem}>
           <Input
@@ -150,6 +153,17 @@ const RegistrationDetails = ({
             onChange={onAthleteEmailChange}
             checked={
               (data && OptionsEnum[data.request_athlete_email]) ||
+              OptionsEnum[3]
+            }
+          />
+        </div>
+        <div className={styles.sectionItem}>
+          <Radio
+            options={options}
+            formLabel="US Lacrosse Number"
+            onChange={onAthleteEmailChange}
+            checked={
+              (data && OptionsEnum[data.request_us_lacrosse_number]) ||
               OptionsEnum[3]
             }
           />

@@ -1,7 +1,9 @@
 import config from '../../config.js';
+import { StripeObject } from './stripeObject.js';
 
-export default class StripePricesHandler {
-  constructor(endpoint) {
+export default class StripePricesHandler extends StripeObject {
+  constructor(endpoint, stripeAccount) {
+    super(stripeAccount);
     this.endpoint = endpoint.prices;
   }
 
@@ -28,6 +30,7 @@ export default class StripePricesHandler {
           sales_tax_rate: paymentPlan.sales_tax_rate,
           iterations: +paymentPlan.iterations,
           discount: +paymentPlan.discount,
+          billing_cycle_anchor: +paymentPlan.billing_cycle_anchor,
         },
       };
       return stripePrice;
@@ -58,6 +61,7 @@ export default class StripePricesHandler {
             iterations: 1,
             discount: +paymentPlan.discount,
             payment_date: phase.date,
+            billing_cycle_anchor: +phase.billing_cycle_anchor,
           },
         };
         stripePrices.push(stripePrice);
@@ -66,21 +70,9 @@ export default class StripePricesHandler {
     }
   };
 
-  list = async params => {
-    const objects = [];
-    for await (const object of this.endpoint.list({
-      ...params,
-      active: true,
-      limit: 100,
-    })) {
-      objects.push(object);
-    }
-    return objects;
-  };
-
   equal = (price, stripePrice) => {
     return (
-      price.currency === stripePrice.currency.toUpperCase() &&
+      price.currency.toUpperCase() === stripePrice.currency.toUpperCase() &&
       price.active === stripePrice.active &&
       price.product === stripePrice.product &&
       price.unit_amount === +stripePrice.unit_amount &&
@@ -98,42 +90,18 @@ export default class StripePricesHandler {
       price.metadata.sales_tax_rate === +stripePrice.metadata.sales_tax_rate &&
       price.metadata.iterations === +stripePrice.metadata.iterations &&
       price.metadata.discount === +stripePrice.metadata.discount &&
+      price.metadata.billing_cycle_anchor ===
+        +stripePrice.metadata.billing_cycle_anchor &&
       price.metadata.owner_id === stripePrice.metadata.owner_id &&
       price.metadata.payment_date === stripePrice.metadata.payment_date
     );
   };
 
-  delete = async price => {
-    console.log(
-      `Deactivating Price: ${price.metadata.externalId} (${price.product})`
-    );
-    const stripeSku = await this.endpoint.update(price.id, {
-      active: false,
-    });
-    return stripeSku;
-  };
-
-  create = async price => {
-    console.log(
-      `Creating Price: ${price.metadata.externalId} (Product Id: ${price.product})`
-    );
-    const stripeSku = await this.endpoint.create(price);
-    return stripeSku;
+  list = async params => {
+    return super.list({ active: true });
   };
 
   update = async price => {
-    console.log(
-      `Updating Price: ${price.metadata?.externalId} (Product Id: ${price.product})`
-    );
-    const updatedSku = { ...price };
-    delete updatedSku.id;
-
-    await this.endpoint.update(price.id, {
-      active: false,
-    });
-
-    const stripeSku = await this.endpoint.create(updatedSku);
-
-    return stripeSku;
+    return await super.update(price, true);
   };
 }

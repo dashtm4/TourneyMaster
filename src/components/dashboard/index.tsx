@@ -1,19 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { History } from 'history';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import styles from './style.module.scss';
-import Button from '../common/buttons/button';
-import HeadingLevelTwo from '../common/headings/heading-level-two';
-import Paper from '../common/paper';
-import TimelineCard from './timeline-card';
-import NotificationsCard from './notifications-card';
-import InfoCard from './info-card';
-import TournamentCard from './tournament-card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
-import { getEvents, getCalendarEvents } from './logic/actions';
+import { History } from 'history';
 import { Loader } from 'components/common';
 import {
   ITeam,
@@ -25,9 +16,18 @@ import {
   IFacility,
   ISchedule,
 } from 'common/models';
+import { EventStatuses, ScheduleStatuses } from 'common/enums';
+import Button from '../common/buttons/button';
+import HeadingLevelTwo from '../common/headings/heading-level-two';
+import Paper from '../common/paper';
 import OnboardingWizard from 'components/onboarding-wizard';
 import { loadOrganizations } from 'components/organizations-management/logic/actions';
-import { EventStatuses, ScheduleStatuses } from 'common/enums';
+import TimelineCard from './timeline-card';
+import NotificationsCard from './notifications-card';
+import InfoCard from './info-card';
+import TournamentCard from './tournament-card';
+import { getEvents, getCalendarEvents } from './logic/actions';
+import styles from './style.module.scss';
 
 interface IFieldWithEventId extends IField {
   event_id: string;
@@ -37,6 +37,7 @@ interface IDashboardProps {
   history: History;
   events: IEventDetails[];
   teams: ITeam[];
+  gameCounts: object;
   fields: IFieldWithEventId[];
   facilities: IFacility[];
   schedules: ISchedule[];
@@ -64,31 +65,33 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   };
 
   componentDidMount() {
-    this.props.loadOrganizations();
-    this.props.getEvents();
-    this.props.getCalendarEvents();
+    const { loadOrganizations, getEvents, getCalendarEvents } = this.props;
+
+    loadOrganizations();
+    getEvents();
+    getCalendarEvents();
   }
 
   componentDidUpdate(prevProps: IDashboardProps) {
+    const { organizations } = this.props;
+
     if (
       !prevProps.organizations.length &&
-      prevProps.organizations !== this.props.organizations
+      prevProps.organizations !== organizations
     ) {
       this.setState({
-        isOnboardingWizardOpen: !this.props.organizations.length,
+        isOnboardingWizardOpen: !organizations.length,
       });
     }
   }
 
-  onCreateTournament = () => {
-    this.props.history.push('/event/event-details');
-  };
-  onOrderChange = (order: number) => {
-    this.setState({ order });
-  };
+  onCreateTournament = () => this.props.history.push('/event/event-details');
+
+  onOrderChange = (order: number) => this.setState({ order });
 
   filterEvents = (status: number) => {
     const { filters } = this.state;
+
     if (filters.status.includes(status)) {
       this.setState({
         filters: {
@@ -106,40 +109,47 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
     }
   };
 
-  onPublishedFilter = () => {
-    this.filterEvents(EventStatuses.Published);
-  };
+  onPublishedFilter = () => this.filterEvents(EventStatuses.Published);
 
-  onDraftFilter = () => {
-    this.filterEvents(EventStatuses.Draft);
-  };
+  onDraftFilter = () => this.filterEvents(EventStatuses.Draft);
 
   onHistoricalFilter = () => {
+    const { filters } = this.state;
+
     this.setState({
       filters: {
         status: [],
-        historical: !this.state.filters.historical,
+        historical: !filters.historical,
       },
     });
   };
 
   renderEvents = () => {
-    const filteredEvents = this.state.filters.historical
-      ? this.props.events.filter(
-        event => new Date(event.event_enddate) < new Date()
-      )
-      : this.props.events.filter(event =>
-        this.state.filters.status.includes(event.is_published_YN)
-      );
+    const {
+      events,
+      facilities,
+      fields,
+      gameCounts,
+      history,
+      isDetailLoading,
+      isLoading,
+      schedules,
+      teams,
+    } = this.props;
+    const { filters } = this.state;
 
-    const numOfPublished = this.props.events?.filter(
+    const filteredEvents = filters.historical
+      ? events.filter(event => new Date(event.event_enddate) < new Date())
+      : events.filter(event => filters.status.includes(event.is_published_YN));
+
+    const numOfPublished = events?.filter(
       event => event.is_published_YN === EventStatuses.Published
     ).length;
-    const numOfDraft = this.props.events?.filter(
+    const numOfDraft = events?.filter(
       event => event.is_published_YN === EventStatuses.Draft
     ).length;
 
-    const numOfHistorical = this.props.events?.filter(
+    const numOfHistorical = events?.filter(
       event => new Date(event.event_enddate) < new Date()
     ).length;
 
@@ -162,8 +172,8 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
               variant="contained"
               color="primary"
               type={
-                this.state.filters.status.includes(EventStatuses.Published) &&
-                  !this.state.filters.historical
+                filters.status.includes(EventStatuses.Published) &&
+                !filters.historical
                   ? 'squared'
                   : 'squaredOutlined'
               }
@@ -174,8 +184,8 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
               variant="contained"
               color="primary"
               type={
-                this.state.filters.status.includes(EventStatuses.Draft) &&
-                  !this.state.filters.historical
+                filters.status.includes(EventStatuses.Draft) &&
+                !filters.historical
                   ? 'squared'
                   : 'squaredOutlined'
               }
@@ -185,89 +195,86 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
               label={`Historical (${numOfHistorical})`}
               variant="contained"
               color="primary"
-              type={
-                this.state.filters.historical ? 'squared' : 'squaredOutlined'
-              }
+              type={filters.historical ? 'squared' : 'squaredOutlined'}
               onClick={this.onHistoricalFilter}
             />
           </div>
         </div>
         <div className={styles.tournamentsListContainer}>
-          {this.props.isLoading && (
+          {isLoading && (
             <div className={styles.loaderContainer}>
               <Loader />
             </div>
           )}
-          {filteredEvents?.length && !this.props.isLoading
+          {filteredEvents?.length && !isLoading
             ? filteredEvents.map((event: IEventDetails) => (
-              <TournamentCard
-                key={event.event_id}
-                event={event}
-                history={this.props.history}
-                numOfTeams={
-                  this.props.teams.filter(
-                    team => team.event_id === event.event_id
-                  )?.length
-                }
-                numOfFields={
-                  this.props.fields.filter(
-                    field => field.event_id === event.event_id
-                  )?.length
-                }
-                numOfLocations={
-                  this.props.facilities.filter(
-                    facility => facility.event_id === event.event_id
-                  )?.length
-                }
-                lastScheduleRelease={
-                  this.props.schedules.filter(
-                    schedule =>
-                      schedule.event_id === event.event_id &&
-                      schedule.is_published_YN === ScheduleStatuses.Published
-                  )[0]?.updated_datetime
-                }
-                isDetailLoading={this.props.isDetailLoading}
-              />
-            ))
-            : !this.props.isLoading && (
-              <div className={styles.noFoundWrapper}>
-                <span>You have not any events just yet. Start with the above "+ Create Event" button.</span>
-              </div>
-            )}
+                <TournamentCard
+                  key={event.event_id}
+                  event={event}
+                  history={history}
+                  numOfTeams={
+                    teams.filter(team => team.event_id === event.event_id)
+                      ?.length
+                  }
+                  numOfFields={
+                    fields.filter(field => field.event_id === event.event_id)
+                      ?.length
+                  }
+                  numOfGameCount={gameCounts[event.event_id]}
+                  numOfLocations={
+                    facilities.filter(
+                      facility => facility.event_id === event.event_id
+                    )?.length
+                  }
+                  lastScheduleRelease={
+                    schedules.filter(
+                      schedule =>
+                        schedule.event_id === event.event_id &&
+                        schedule.is_published_YN === ScheduleStatuses.Published
+                    )[0]?.updated_datetime
+                  }
+                  isDetailLoading={isDetailLoading}
+                />
+              ))
+            : !isLoading && (
+                <div className={styles.noFoundWrapper}>
+                  <span>
+                    You have not any events just yet. Start with the above "+
+                    Create Event" button.
+                  </span>
+                </div>
+              )}
         </div>
       </div>
     );
   };
 
-  renderNotifications = () => {
-    return (
-      <div className={styles.notificationsContainer} key={2}>
-        <NotificationsCard
-          data={this.props.calendarEvents.filter(
-            event =>
-              event.cal_event_type === 'reminder' &&
-              event.status_id === 1 &&
-              new Date(event.cal_event_datetime) > new Date()
-          )}
-          areCalendarEventsLoading={this.props.areCalendarEventsLoading}
-        />
-      </div>
-    );
-  };
+  renderNotifications = () => (
+    <div className={styles.notificationsContainer} key={2}>
+      <NotificationsCard
+        data={this.props.calendarEvents.filter(
+          event =>
+            event.cal_event_type === 'reminder' &&
+            event.status_id === 1 &&
+            new Date(event.cal_event_datetime) > new Date()
+        )}
+        areCalendarEventsLoading={this.props.areCalendarEventsLoading}
+      />
+    </div>
+  );
 
-  renderTimeline = () => {
-    return (
-      <div className={styles.timelineContainer} key={3}>
-        <TimelineCard
-          data={this.props.calendarEvents.filter(event => event.cal_event_id)}
-          areCalendarEventsLoading={this.props.areCalendarEventsLoading}
-        />
-      </div>
-    );
-  };
+  renderTimeline = () => (
+    <div className={styles.timelineContainer} key={3}>
+      <TimelineCard
+        data={this.props.calendarEvents.filter(event => event.cal_event_id)}
+        areCalendarEventsLoading={this.props.areCalendarEventsLoading}
+      />
+    </div>
+  );
 
   renderDashbaordInOrder = () => {
     const { order } = this.state;
+
     switch (order) {
       case 1:
         return [
@@ -297,6 +304,9 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   };
 
   render() {
+    const { isOnboardingWizardOpen } = this.state;
+    const { calendarEvents, events } = this.props;
+
     return (
       <div className={styles.main}>
         <Paper sticky={true}>
@@ -315,37 +325,37 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
         <div className={styles.dashboardCardsContainer}>
           <InfoCard
             icon={<FontAwesomeIcon size="lg" icon={faTrophy} />}
-            info={`${this.props.events?.length} Events`}
+            info={`${events?.length} Events`}
             order={1}
             changeOrder={this.onOrderChange}
           />
           <InfoCard
             icon={<NotificationsIcon fontSize="large" />}
             info={`${
-              this.props.calendarEvents.filter(
+              calendarEvents.filter(
                 event =>
                   event.cal_event_type === 'reminder' &&
                   event.status_id === 1 &&
                   new Date(event.cal_event_datetime) > new Date()
               ).length
-              } Pending Reminders`}
+            } Pending Reminders`}
             order={2}
             changeOrder={this.onOrderChange}
           />
           <InfoCard
             icon={<FormatListBulletedIcon fontSize="large" />}
             info={`${
-              this.props.calendarEvents.filter(
+              calendarEvents.filter(
                 event =>
                   event.cal_event_type === 'task' && event.status_id === 1
               ).length
-              } Pending/Open Tasks`}
+            } Pending/Open Tasks`}
             order={3}
             changeOrder={this.onOrderChange}
           />
         </div>
         {this.renderDashbaordInOrder()}
-        <OnboardingWizard isOpen={this.state.isOnboardingWizardOpen} />
+        <OnboardingWizard isOpen={isOnboardingWizardOpen} />
       </div>
     );
   }
@@ -354,6 +364,7 @@ interface IState {
   events: {
     data: IEventDetails[];
     teams: ITeam[];
+    gameCounts: object;
     fields: IFieldWithEventId[];
     facilities: IFacility[];
     schedules: ISchedule[];
@@ -368,6 +379,7 @@ interface IState {
 const mapStateToProps = (state: IState) => ({
   events: state.events.data,
   teams: state.events.teams,
+  gameCounts: state.events.gameCounts,
   fields: state.events.fields,
   facilities: state.events.facilities,
   schedules: state.events.schedules,
