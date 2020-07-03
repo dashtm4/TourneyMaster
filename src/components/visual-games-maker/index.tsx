@@ -16,6 +16,7 @@ import { ITeamCard } from 'common/models/schedule/teams';
 import { IGameCell } from './helpers';
 import { fillGamesList } from 'components/schedules/logic/schedules-table/actions';
 import { IConfigurableGame } from 'components/common/matrix-table/helper';
+import { ISchedulesTableState } from 'components/schedules/logic/schedules-table/schedulesTableReducer';
 
 interface IMapStateToProps {
   teams?: ITeam[] | undefined;
@@ -23,6 +24,7 @@ interface IMapStateToProps {
   pools?: IPool[] | undefined;
   schedule?: IConfigurableSchedule | null | undefined;
   teamsCards?: ITeamCard[] | undefined;
+  gamesList?: IConfigurableGame[] | undefined;
 }
 
 interface IMapDispatchToProps {
@@ -41,6 +43,7 @@ interface IRootState {
   pageEvent?: IPageEventState;
   divisions?: IDivisionAndPoolsState;
   scheduling?: ISchedulingState;
+  schedulesTable?: ISchedulesTableState;
 }
 
 type IProps = IMapStateToProps & IMapDispatchToProps & IComponentProps;
@@ -69,7 +72,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
   }
 
   componentDidUpdate(prevProps: any) {
-    if (this.props.gamesCells !== prevProps.gameCells) {
+    if (JSON.stringify(this.props.gamesCells) !== JSON.stringify(prevProps.gamesCells)) {
       this.createScheduleTable();
     }
   }
@@ -112,9 +115,10 @@ class VisualGamesMaker extends Component<IProps, IState> {
   };
 
   createScheduleTable = () => {
-    const { fillGamesList, gamesCells } = this.props;
+    const { fillGamesList, gamesCells, gamesList } = this.props;
     if (!gamesCells) return;
     const gamesListMaker = gamesCells.map(v => {
+      const game = gamesList?.find(game => game.divisionId === v.divisionId && game.awayTeamId === v.awayTeamId && game.homeTeamId === v.homeTeamId)
       return {
         id: -1,
         homeTeamId: v.homeTeamId,
@@ -124,6 +128,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
         divisionId: v.divisionId,
         divisionHex: v.divisionHex,
         divisionName: v.divisionName,
+        isAssigned: game ? game.isAssigned : false,
       };
     });
     fillGamesList(gamesListMaker);
@@ -231,11 +236,13 @@ const mapStateToProps = ({
   pageEvent,
   divisions,
   scheduling,
+  schedulesTable,
 }: IRootState): IMapStateToProps => ({
   teams: pageEvent?.tournamentData.teams,
   divisions: pageEvent?.tournamentData.divisions,
   pools: divisions?.pools,
   schedule: scheduling?.schedule,
+  gamesList: schedulesTable?.gamesList,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
