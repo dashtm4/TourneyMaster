@@ -206,6 +206,7 @@ interface State {
   tournamentDays: string[];
   playoffTimeSlots: ITimeSlot[];
   activeTab: SchedulesTabsEnum;
+  showTeamsNamesInVisualGamesMaker: boolean;
 }
 
 enum SchedulesTabsEnum {
@@ -226,6 +227,7 @@ class Schedules extends Component<Props, State> {
     tournamentDays: [],
     playoffTimeSlots: [],
     activeTab: SchedulesTabsEnum.Schedules,
+    showTeamsNamesInVisualGamesMaker: true,
   };
 
   async componentDidMount() {
@@ -871,6 +873,10 @@ class Schedules extends Component<Props, State> {
     );
   };
 
+  toggleShowTeamsNamesInVisualGamesMaker = () => {
+    this.setState({ showTeamsNamesInVisualGamesMaker: !this.state.showTeamsNamesInVisualGamesMaker });
+  }
+
   render() {
     const {
       divisions,
@@ -960,7 +966,10 @@ class Schedules extends Component<Props, State> {
             {activeTab === SchedulesTabsEnum.VisualGamesMaker ? (
               <VisualGamesMaker
                 gamesCells={this.state.gamesCells}
-                onGamesListChange={this.onGamesListChange} />
+                onGamesListChange={this.onGamesListChange} 
+                showTeamsNames={this.state.showTeamsNamesInVisualGamesMaker}
+                toggleShowTeamsNames={this.toggleShowTeamsNamesInVisualGamesMaker}  
+              />
             ) : (
                 <TableSchedule
                   tableType={TableScheduleTypes.SCHEDULES}

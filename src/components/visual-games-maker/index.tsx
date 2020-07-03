@@ -37,6 +37,8 @@ type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 interface IComponentProps {
   gamesCells?: IGameCell[];
   onGamesListChange: (item: IGameCell[]) => void;
+  showTeamsNames: boolean;
+  toggleShowTeamsNames: () => void;
 }
 
 interface IRootState {
@@ -49,7 +51,6 @@ interface IRootState {
 type IProps = IMapStateToProps & IMapDispatchToProps & IComponentProps;
 
 interface IState {
-  isShowNamesOfTeams: boolean;
   selectedDivisionId: string;
   selectedPoolId: string;
 }
@@ -58,7 +59,6 @@ class VisualGamesMaker extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      isShowNamesOfTeams: false,
       selectedDivisionId: '',
       selectedPoolId: 'allPools',
     };
@@ -79,11 +79,6 @@ class VisualGamesMaker extends Component<IProps, IState> {
   onChangeGames = (items: IGameCell[]) => {
     const { onGamesListChange } = this.props;
     onGamesListChange(items);
-  };
-  onChangeDisplayedLabelType = () => {
-    this.setState((state: IState) => {
-      return { isShowNamesOfTeams: !state.isShowNamesOfTeams };
-    });
   };
 
   onChangeDivision = (e: InputTargetValue) => {
@@ -146,6 +141,8 @@ class VisualGamesMaker extends Component<IProps, IState> {
       item => item.divisionId === this.state.selectedDivisionId
     ) || [];
 
+    const { showTeamsNames, toggleShowTeamsNames } = this.props;
+
     return (
       <section className={styles.section}>
         <div className={styles.container}>
@@ -180,10 +177,10 @@ class VisualGamesMaker extends Component<IProps, IState> {
                 options={[
                   {
                     label: 'Show Names of Teams',
-                    checked: this.state.isShowNamesOfTeams,
+                    checked: showTeamsNames,
                   },
                 ]}
-                onChange={this.onChangeDisplayedLabelType}
+                onChange={toggleShowTeamsNames}
               />
             </div>
           </div>
@@ -193,7 +190,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
                 games={this.props.gamesCells || []}
                 teams={sortedTeams}
                 poolId={this.state.selectedPoolId}
-                showNames={this.state.isShowNamesOfTeams}
+                showNames={showTeamsNames}
                 divisionId={this.state.selectedDivisionId}
                 divisionHex={
                   this.props.divisions?.find(
@@ -214,14 +211,14 @@ class VisualGamesMaker extends Component<IProps, IState> {
                 <RunningTally
                   games={filteredGames}
                   teams={sortedTeams}
-                  showNames={this.state.isShowNamesOfTeams}
+                  showNames={showTeamsNames}
                 />
               </div>
               <div className={styles.resGameList}>
                 <ResultingGameList
                   games={filteredGames}
                   teams={sortedTeams}
-                  showNames={this.state.isShowNamesOfTeams}
+                  showNames={showTeamsNames}
                 />
               </div>
             </div>
