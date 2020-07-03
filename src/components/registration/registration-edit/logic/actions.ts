@@ -166,8 +166,6 @@ export const saveCalendarEvent: ActionCreator<ThunkAction<
       return Toasts.errorToast("Couldn't create (calendar event)");
     }
   }
-
-  Toasts.successToast('Successfully saved (calendar event)');
 };
 
 export const getDivisions: ActionCreator<ThunkAction<
