@@ -206,21 +206,19 @@ class VisualGamesMaker extends Component<IProps, IState> {
                 pools={this.mapOptionsForPools()}
               />
             </div>
-            <div className={styles.sideTables}>
-              <div className={styles.runningTally}>
-                <RunningTally
-                  games={filteredGames}
-                  teams={sortedTeams}
-                  showNames={showTeamsNames}
-                />
-              </div>
-              <div className={styles.resGameList}>
-                <ResultingGameList
-                  games={filteredGames}
-                  teams={sortedTeams}
-                  showNames={showTeamsNames}
-                />
-              </div>
+            <div className={styles.runningTally}>
+              <RunningTally
+                games={filteredGames}
+                teams={sortedTeams}
+                showNames={showTeamsNames}
+              />
+            </div>
+            <div className={styles.resGameList}>
+              <ResultingGameList
+                games={filteredGames}
+                teams={sortedTeams}
+                showNames={showTeamsNames}
+              />
             </div>
           </div>
         </div>
