@@ -12,7 +12,7 @@ import {
 import { CardMessageTypes } from 'components/common/card-message/types';
 import { onPDFSave, getSelectDayOptions, getGamesByDays } from 'helpers';
 import { BindingAction } from 'common/models';
-import { ButtonColors, ButtonVarian, DefaultSelectValues } from 'common/enums';
+import { ButtonColors, ButtonVariant, DefaultSelectValues } from 'common/enums';
 import { IEventDetails, ISchedule } from 'common/models';
 import { IGame } from 'components/common/matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
@@ -138,7 +138,7 @@ const PopupSaveReporting = ({
                 <b>Master Schedule (no colors)</b>
                 <ButtonLoad
                   loadFunc={onScheduleTableSave}
-                  variant={ButtonVarian.TEXT}
+                  variant={ButtonVariant.TEXT}
                   color={ButtonColors.SECONDARY}
                   isDisabled={!isAllowDownload}
                   label="Download"
@@ -148,7 +148,7 @@ const PopupSaveReporting = ({
                 <b>Master Schedule (Colored Heatmap)</b>
                 <ButtonLoad
                   loadFunc={onHeatmapScheduleTableSave}
-                  variant={ButtonVarian.TEXT}
+                  variant={ButtonVariant.TEXT}
                   color={ButtonColors.SECONDARY}
                   isDisabled={!isAllowDownload}
                   label="Download"
@@ -163,7 +163,7 @@ const PopupSaveReporting = ({
                 <b>Field-by-Field Schedule</b>
                 <ButtonLoad
                   loadFunc={onScheduleFieldsSave}
-                  variant={ButtonVarian.TEXT}
+                  variant={ButtonVariant.TEXT}
                   color={ButtonColors.SECONDARY}
                   isDisabled={!isAllowDownload}
                   label="Download"
@@ -183,7 +183,7 @@ const PopupSaveReporting = ({
         <div className={styles.btnWrapper}>
           <Button
             onClick={onClose}
-            variant={ButtonVarian.TEXT}
+            variant={ButtonVariant.TEXT}
             color={ButtonColors.SECONDARY}
             label="Cancel"
           />

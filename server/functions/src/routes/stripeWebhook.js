@@ -6,7 +6,6 @@ import Stripe from 'stripe';
 import { getPaymentPlans } from '../services/activeProducts.js';
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 const ssm = new SSM({ region: 'us-east-1' });
-const endpointSecret = process.env.STRIPE_WEBHOOK_SIGNING_SECRET;
 
 export const paymentSuccessWebhook = async req => {
   const getParams = async paramName => {
@@ -25,6 +24,13 @@ export const paymentSuccessWebhook = async req => {
   const sig = req.headers['stripe-signature'];
   let event;
 
+  let endpointSecret;
+  if (req.body.account) {
+    endpointSecret = process.env.STRIPE_CONNECT_WEBHOOK_SIGNING_SECRET;
+  } else {
+    endpointSecret = process.env.STRIPE_WEBHOOK_SIGNING_SECRET;
+  }
+
   try {
     event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
     console.log('Webhook Stripe signature verification: OK');
@@ -37,14 +43,19 @@ export const paymentSuccessWebhook = async req => {
     event.type === 'invoice.payment_succeeded' ||
     event.type === 'invoice.payment_failed'
   ) {
-    console.log('Payment success processing...');
+    console.log('Payment success/failure processing...');
     const fromParams = await getParams(
       process.env.PUBLIC_API_SM_PARAMETER_NAME
     );
     const toParams = await getParams(process.env.PRIVATE_API_SM_PARAMETER_NAME);
 
+    const requestParams = event.account
+      ? { stripeAccount: event.account }
+      : null;
+
     const subscription = await stripe.subscriptions.retrieve(
-      event.data.object.subscription
+      event.data.object.subscription,
+      requestParams
     );
 
     const {

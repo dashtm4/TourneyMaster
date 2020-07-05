@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { loadStripe, Stripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -66,6 +68,26 @@ export interface RegisterMatchParams {
     };
   };
 }
+
+export const wrappedRegister = ({ match }: RegisterMatchParams) => {
+  const stripePromise = new Promise(async resolve => {
+    const stripeAccount = (
+      await axios.get(`/skus?event_id=${match.params.eventId}`)
+    ).data[0].stripe_connect_id;
+    const stripe = await loadStripe(
+      process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY ||
+        'pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh', // TODO: Remove the hardcoded key after initial deployment
+      stripeAccount === 'main' ? undefined : { stripeAccount }
+    );
+    resolve(stripe);
+  }) as Promise<Stripe | null>;
+
+  return (
+    <Elements stripe={stripePromise}>
+      <RegisterPage match={match} />
+    </Elements>
+  );
+};
 
 const RegisterPage = ({ match }: RegisterMatchParams) => {
   const [event, setEvent] = useState<IEventDetails | null>(null);
@@ -548,7 +570,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               {`${TypeOptions[type]} Registration ${
                 isInvited
                   ? getInternalRegType(type) === 'individual'
-                    ? 'for ' + registration.team_name
+                    ? registration.team_name
+                      ? 'for ' + registration.team_name
+                      : ''
                     : 'for ' + registration.division_name
                   : ''
               }`}

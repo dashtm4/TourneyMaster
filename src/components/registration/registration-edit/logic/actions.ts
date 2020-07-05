@@ -6,6 +6,7 @@ import {
   DIVISIONS_FETCH_SUCCESS,
   REGISTRANTS_FETCH_SUCCESS,
   REGISTRANTS_PAYMENTS_FETCH_SUCCESS,
+  REGISTRANTS_ADD_TO_EVENT_SUCCESS,
   EVENT_FETCH_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
@@ -15,7 +16,8 @@ import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
 import { IRegistration } from 'common/models/registration';
 import { ICalendarEvent } from 'common/models/calendar';
-import { IDivision } from 'common/models';
+import { IDivision, ITeam, IEventDetails } from 'common/models';
+import { ITeamsRegister } from 'common/models/register';
 
 const defaultCalendarEvent = (): Partial<ICalendarEvent> => ({
   cal_event_id: getVarcharEight(),
@@ -164,8 +166,6 @@ export const saveCalendarEvent: ActionCreator<ThunkAction<
       return Toasts.errorToast("Couldn't create (calendar event)");
     }
   }
-
-  Toasts.successToast('Successfully saved (calendar event)');
 };
 
 export const getDivisions: ActionCreator<ThunkAction<
@@ -185,16 +185,85 @@ export const divisionsFetchSuccess = (
   payload,
 });
 
+export const addTeamToEvent: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (registrant: ITeamsRegister, event: IEventDetails) => async (
+  dispatch: Dispatch
+) => {
+  let team: ITeam;
+  let teams: ITeam[] = await api.get(
+    `teams?division_id=${registrant.division_id}&long_name=${registrant.team_name}`
+  );
+  if (teams.length === 0) {
+    // Create a new team if does not exist
+    team = {
+      team_id: getVarcharEight(),
+      event_id: event.event_id,
+      org_id: event.org_id,
+      long_name: registrant.team_name,
+      short_name: registrant.team_name,
+      team_tag: null,
+      city: registrant.team_city,
+      state: registrant.team_state,
+      level: registrant.team_level,
+      contact_first_name: registrant.contact_first_name,
+      contact_last_name: registrant.contact_last_name,
+      phone_num: registrant.contact_mobile,
+      contact_email: registrant.contact_email,
+      schedule_restrictions: null,
+      is_active_YN: 1,
+      is_library_YN: null,
+      division_id: registrant.division_id,
+      pool_id: null,
+    };
+
+    await api.post(`/teams`, team);
+  } else {
+    team = teams[0];
+  }
+
+  const updatedRegistrant = {
+    ...registrant,
+    team_id: team.team_id,
+  };
+  delete updatedRegistrant.type;
+
+  await api.put(
+    `/reg_responses_teams?reg_response_id=${updatedRegistrant.reg_response_id}`,
+    updatedRegistrant
+  );
+
+  dispatch(
+    registrantsAddToEventSuccess({
+      regResponseId: updatedRegistrant.reg_response_id,
+      teamId: team.team_id,
+    })
+  );
+  Toasts.successToast(`Team ${team.long_name} added to the event`);
+};
+
+export const registrantsAddToEventSuccess = (
+  payload: any
+): { type: string; payload: any[] } => ({
+  type: REGISTRANTS_ADD_TO_EVENT_SUCCESS,
+  payload: payload,
+});
+
 export const getRegistrants: ActionCreator<ThunkAction<
   void,
   {},
   null,
   { type: string }
 >> = (registrationId: string) => async (dispatch: Dispatch) => {
-  const [teams, individuals] = await Promise.all([
+  let [teams, individuals] = await Promise.all([
     api.get(`/reg_responses_teams?registration_id=${registrationId}`),
     api.get(`/reg_responses_individuals?registration_id=${registrationId}`),
   ]); // TODO
+  teams = teams.map((x: any) => ({ ...x, type: 'team' }));
+  individuals = individuals.map((x: any) => ({ ...x, type: 'individual' }));
 
   const data = teams.concat(individuals);
 

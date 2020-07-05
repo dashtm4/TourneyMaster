@@ -9,23 +9,25 @@ import {
   TableCell,
   TableFooter,
 } from '@material-ui/core';
-import { getRegistrantPayments } from '../../registration-edit/logic/actions';
+import { getRegistrantPayments } from '../../../registration-edit/logic/actions';
 import { BindingCbWithOne } from 'common/models';
 
 import moment from 'moment';
 
 export interface RegistrantPaymentsProps {
-  reg_response_id: string;
-  payments: any[0];
+  registrant: any;
+  allPayments: any[];
   getRegistrantPayments: BindingCbWithOne<string>;
 }
 
-const RegistrantPayments: React.SFC<RegistrantPaymentsProps> = (
-  props: RegistrantPaymentsProps
-) => {
-  const payments = props.payments[props.reg_response_id];
+const RegistrantPayments: React.SFC<RegistrantPaymentsProps> = ({
+  registrant,
+  allPayments,
+  getRegistrantPayments,
+}: RegistrantPaymentsProps) => {
+  const payments = allPayments[registrant.reg_response_id];
 
-  const { reg_response_id, getRegistrantPayments } = props;
+  const { reg_response_id } = registrant;
   useEffect(() => {
     getRegistrantPayments(reg_response_id);
   }, [reg_response_id, getRegistrantPayments]);
@@ -90,7 +92,7 @@ const RegistrantPayments: React.SFC<RegistrantPaymentsProps> = (
 };
 
 const mapStateToProps = (state: any) => ({
-  payments: state.registration.payments,
+  allPayments: state.registration.payments,
 });
 
 const mapDispatchToProps = {

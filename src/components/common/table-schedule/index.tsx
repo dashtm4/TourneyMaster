@@ -3,12 +3,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { find } from 'lodash-es';
-import ListUnassigned from './components/list-unassigned';
-import Filter from './components/filter';
-import DivisionHeatmap from './components/division-heatmap';
-import TableActions from './components/table-actions';
-import PopupSaveReporting from './components/popup-save-reporting';
-import { MatrixTable, CardMessage } from 'components/common';
+import {
+  getAllTeamCardGames,
+  calculateTournamentDays,
+  getTimeSlotsFromEntities,
+  ITimeValues,
+} from 'helpers';
+import { TableScheduleTypes, TimeSlotsEntityTypes } from 'common/enums';
 import {
   IDivision,
   IEventSummary,
@@ -20,40 +21,18 @@ import {
   ScheduleCreationType,
   ISchedulesDetails,
 } from 'common/models';
-import { IScheduleFilter, OptimizeTypes } from './types';
-import {
-  getAllTeamCardGames,
-  calculateTournamentDays,
-  getTimeSlotsFromEntities,
-  ITimeValues,
-} from 'helpers';
-import {
-  IConfigurableGame,
-  IGame,
-  settleTeamsPerGames,
-  calculateDays,
-} from '../matrix-table/helper';
 import { IField } from 'common/models/schedule/fields';
 import ITimeSlot from 'common/models/schedule/timeSlots';
-import PopupConfirm from 'components/common/popup-confirm';
-import styles from './styles.module.scss';
-
-import {
-  mapGamesByFilter,
-  mapFilterValues,
-  applyFilters,
-  mapUnusedFields,
-  moveCardMessages,
-  getScheduleWarning,
-} from './helpers';
-
 import { IScheduleFacility } from 'common/models/schedule/facilities';
 import { ITeamCard, ITeam } from 'common/models/schedule/teams';
-import { IDropParams } from '../matrix-table/dnd/drop';
-import moveTeamCard from './moveTeamCard';
 import { Button } from 'components/common';
-import { TableScheduleTypes, TimeSlotsEntityTypes } from 'common/enums';
-import { CardMessageTypes } from '../card-message/types';
+import PopupConfirm from 'components/common/popup-confirm';
+import { MatrixTable, CardMessage } from 'components/common';
+import ListUnassigned from './components/list-unassigned';
+import Filter from './components/filter';
+import DivisionHeatmap from './components/division-heatmap';
+import TableActions from './components/table-actions';
+import PopupSaveReporting from './components/popup-save-reporting';
 import TeamsDiagnostics from 'components/schedules/diagnostics/teamsDiagnostics';
 import DivisionsDiagnostics from 'components/schedules/diagnostics/divisionsDiagnostics';
 import { IDiagnosticsInput } from 'components/schedules/diagnostics';
@@ -62,6 +41,25 @@ import { IBracketGame } from 'components/playoffs/bracketGames';
 import { updateGameSlot } from 'components/playoffs/helper';
 import UnassignedGamesList from './components/list-unassigned-games';
 import PopupAdvancedWorkflow from './components/popup-advanced-workflow';
+import {
+  mapGamesByFilter,
+  mapFilterValues,
+  applyFilters,
+  mapUnusedFields,
+  moveCardMessages,
+  getScheduleWarning,
+} from './helpers';
+import { IScheduleFilter, OptimizeTypes } from './types';
+import {
+  IConfigurableGame,
+  IGame,
+  settleTeamsPerGames,
+  calculateDays,
+} from '../matrix-table/helper';
+import { IDropParams } from '../matrix-table/dnd/drop';
+import moveTeamCard from './moveTeamCard';
+import { CardMessageTypes } from '../card-message/types';
+import styles from './styles.module.scss';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -132,11 +130,9 @@ const TableSchedule = ({
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
 
-  console.log(schedulesDetails, updateSchedulesDetails);
-
   const [isFromMaker] = useState(
     (scheduleData as IConfigurableSchedule)?.creationType ===
-    ScheduleCreationType.VisualGamesMaker
+      ScheduleCreationType.VisualGamesMaker
   );
   const [simultaneousDnd, setSimultaneousDnd] = useState(isFromMaker);
 
@@ -221,8 +217,12 @@ const TableSchedule = ({
       };
     });
   }, [gamesList, teamCards]);
-  const [possibleGames, setPossibleGames] = useState<IConfigurableGame[]>(managePossibleGames());
-  useEffect(() => setPossibleGames(managePossibleGames()), [managePossibleGames]);
+  const [possibleGames, setPossibleGames] = useState<IConfigurableGame[]>(
+    managePossibleGames()
+  );
+  useEffect(() => setPossibleGames(managePossibleGames()), [
+    managePossibleGames,
+  ]);
 
   const updatedFields = mapUnusedFields(fields, tableGames, filterValues);
 
@@ -287,7 +287,11 @@ const TableSchedule = ({
         return setMoveCardResult(result);
       }
       default:
-        markGameAssigned(result.possibleGame, !dropParams.gameId && !dropParams.originGameId);
+        markGameAssigned(
+          result.possibleGame,
+          !dropParams.gameId && !dropParams.originGameId,
+          !!(dropParams.gameId && dropParams.originGameId)
+        );
         onTeamCardsUpdate(result.teamCards);
     }
   };
@@ -305,7 +309,11 @@ const TableSchedule = ({
     }
   };
 
-  const markGameAssigned = (unassignedGame?: IConfigurableGame, doPrevent: boolean = false) => {
+  const markGameAssigned = (
+    unassignedGame?: IConfigurableGame,
+    doPreventAssign: boolean = false,
+    doPreventUnassign: boolean = false
+  ) => {
     if (unassignedGame && gamesList) {
       const foundGame = gamesList.find(
         g =>
@@ -314,9 +322,11 @@ const TableSchedule = ({
       );
       if (foundGame) {
         if (foundGame.isAssigned) {
-          foundGame.isAssigned = false;
+          if (!doPreventUnassign) {
+            foundGame.isAssigned = false;
+          }
         } else {
-          if (!doPrevent) {
+          if (!doPreventAssign) {
             foundGame.isAssigned = true;
           }
         }
@@ -419,16 +429,16 @@ const TableSchedule = ({
                   onDrop={moveCard}
                 />
               ) : (
-                  <ListUnassigned
-                    pools={pools}
-                    event={event}
-                    tableType={tableType}
-                    teamCards={teamCards}
-                    minGamesNum={minGamesNum}
-                    showHeatmap={showHeatmap}
-                    onDrop={moveCard}
-                  />
-                )}
+                <ListUnassigned
+                  pools={pools}
+                  event={event}
+                  tableType={tableType}
+                  teamCards={teamCards}
+                  minGamesNum={minGamesNum}
+                  showHeatmap={showHeatmap}
+                  onDrop={moveCard}
+                />
+              )}
             </>
           )}
           <div className={styles.tableWrapper}>

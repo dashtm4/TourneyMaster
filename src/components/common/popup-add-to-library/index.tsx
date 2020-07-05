@@ -7,7 +7,7 @@ import {
   Checkbox,
 } from 'components/common';
 import { BindingAction, BindingCbWithTwo } from 'common/models';
-import { ButtonVarian, ButtonColors, EntryPoints } from 'common/enums';
+import { ButtonVariant, ButtonColors, EntryPoints } from 'common/enums';
 import { IEntity, IInputEvent } from 'common/types';
 import { getSelectOptions, getEntityByOptions } from './helpers';
 import styles from './styles.module.scss';
@@ -122,7 +122,7 @@ const PopupAddToLibrary = ({
           <span className={styles.btnWrapper}>
             <Button
               onClick={onClose}
-              variant={ButtonVarian.TEXT}
+              variant={ButtonVariant.TEXT}
               color={ButtonColors.SECONDARY}
               btnStyles={BUTTON_STYLES}
               label="Cancel"
@@ -133,7 +133,7 @@ const PopupAddToLibrary = ({
               (isConfirm ? (
                 <Button
                   onClick={onSave}
-                  variant={ButtonVarian.CONTAINED}
+                  variant={ButtonVariant.CONTAINED}
                   color={ButtonColors.PRIMARY}
                   btnStyles={BUTTON_STYLES}
                   label="Save"
@@ -141,7 +141,7 @@ const PopupAddToLibrary = ({
               ) : (
                 <Button
                   onClick={onToggleConfirm}
-                  variant={ButtonVarian.CONTAINED}
+                  variant={ButtonVariant.CONTAINED}
                   color={ButtonColors.PRIMARY}
                   btnStyles={BUTTON_STYLES}
                   label="Save"

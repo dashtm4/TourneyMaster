@@ -16,7 +16,7 @@ import { IPosition } from './map/autocomplete';
 import {
   EventMenuTitles,
   ButtonColors,
-  ButtonVarian,
+  ButtonVariant,
   EventStatuses,
 } from 'common/enums';
 
@@ -52,7 +52,7 @@ enum sportsEnum {
 enum genderEnum {
   'Male' = 1,
   'Female' = 2,
-  'Co-Ed' = 3
+  'Co-Ed' = 3,
 }
 enum timeZoneEnum {
   'Eastern Standard Time' = -5,
@@ -323,7 +323,7 @@ const PrimaryInformationSection: React.FC<Props> = ({
         <ButtonCopy
           copyString={`${BASE_RESULT_LINK}${event_id}`}
           color={ButtonColors.SECONDARY}
-          variant={ButtonVarian.TEXT}
+          variant={ButtonVariant.TEXT}
           disableMessage={
             is_published_YN === EventStatuses.Draft
               ? RESULTS_DISABLE_MESSAGE
