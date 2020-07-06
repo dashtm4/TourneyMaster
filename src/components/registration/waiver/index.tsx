@@ -1,16 +1,9 @@
-﻿///<reference path= "../../../../node_modules/react-froala-wysiwyg/lib/index.d.ts" />
-
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { IRegistration } from 'common/models/registration';
 import { BindingCbWithTwo } from 'common/models';
 import styles from './styles.module.scss';
-import 'froala-editor/js/plugins.pkgd.min.js';
-import 'froala-editor/js/froala_editor.pkgd.min.js';
-import 'froala-editor/css/froala_style.min.css';
-import 'froala-editor/css/froala_editor.pkgd.min.css';
-import FroalaEditorView from 'react-froala-wysiwyg/FroalaEditorView';
-
-import FroalaEditor from 'react-froala-wysiwyg';
+import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill';
 
 interface IRegistrationDetailsProps {
   data: IRegistration | undefined;
@@ -20,25 +13,30 @@ interface IRegistrationDetailsProps {
 
 const Waiver = ({ data, isEdit, onChange }: IRegistrationDetailsProps) => {
   const [model, setModel] = useState(data?.waiver_content);
-  const config = {
-    placeholderText: 'This is the Froala Editor',
-    toolbarButtons: {
-      moreText: {
-        'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontFamily', 'fontSize', 'textColor', 'backgroundColor', 'inlineClass', 'inlineStyle', 'clearFormatting']
-      },
-      moreParagraph: {
-        'buttons': ['alignLeft', 'alignCenter', 'formatOLSimple', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle', 'lineHeight', 'outdent', 'indent', 'quote']
-      },
-      moreRich: {
-        'buttons': ['insertLink', 'insertImage', 'insertTable', 'emoticons', 'fontAwesome', 'specialCharacters', 'embedly', 'insertHR']
-      },
-      moreMisc: {
-        'buttons': ['undo', 'redo', 'fullscreen', 'spellChecker', 'selectAll', 'html', 'help'],
-        'align': 'right',
-        'buttonsVisible': 2
-      },
-    },
+
+
+  const quill = {
+    toolbar: [
+      [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+      [{ size: [] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' },
+      { 'indent': '-1' }, { 'indent': '+1' }],
+      ['link', 'image', 'video'],
+      ['clean']
+    ],
+    clipboard: {
+      // toggle to add extra line breaks when pasting HTML:
+      matchVisual: false
+    }
   };
+
+  const formats = [
+    'header', 'font', 'size',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'bullet', 'indent',
+    'link', 'image', 'video'
+  ];
 
   const onModelChange = (text: string) => {
     setModel(text);
@@ -52,11 +50,13 @@ const Waiver = ({ data, isEdit, onChange }: IRegistrationDetailsProps) => {
     if (isEdit && onChange) {
       return (
         <div className={styles.redactor}>
-          <FroalaEditor
-            tag="textarea"
-            model={model}
-            onModelChange={onModelChange}
-            config={config}
+          <ReactQuill
+            theme={'snow'}
+            value={model || ''}
+            modules={quill}
+            formats={formats}
+            placeholder={'Write something...'}
+            onChange={onModelChange}
           />
         </div>
       );
@@ -65,8 +65,8 @@ const Waiver = ({ data, isEdit, onChange }: IRegistrationDetailsProps) => {
       return <div>Not found waiver.</div>;
     }
     return (
-      <div className={styles.waiveWrapp}>
-        <FroalaEditorView model={data.waiver_content} />
+      <div className={styles.waiverWrapp}>
+        <div dangerouslySetInnerHTML={{ __html: data.waiver_content }} />
       </div>
     );
   };

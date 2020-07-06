@@ -1,23 +1,24 @@
-﻿///<reference path= '../../../../node_modules/react-froala-wysiwyg/lib/index.d.ts' />
-
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { BindingCbWithTwo, IRegistration, BindingCbWithOne } from 'common/models';
 import 'react-phone-input-2/lib/high-res.css';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import 'froala-editor/js/plugins.pkgd.min.js';
-import 'froala-editor/css/froala_style.min.css';
-import 'froala-editor/css/froala_editor.pkgd.min.css';
-import { Input } from 'components/common';
-import FroalaEditorView from 'react-froala-wysiwyg/FroalaEditorView';
+import { Input, Button } from 'components/common';
 import { IIndividualsRegister } from 'common/models/register';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import axios from 'axios';
 import MD5 from 'crypto-js/md5';
+import { ButtonColors, ButtonVariant } from "common/enums/buttons";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
 const useStyles = makeStyles(
   createStyles({
-    waiveWrapp: {
+    waiverContainer: {
+      position: 'relative',
+    },
+    waiverWrapp: {
       backgroundColor: 'white',
       width: '100%',
       maxHeight: '500px',
@@ -26,6 +27,9 @@ const useStyles = makeStyles(
       marginLeft: 'auto',
       marginRight: 'auto',
       lineHeight: 'normal',
+    },
+    waiver: {
+      padding: '40px',
     },
     fullName: {
       fontFamily: 'Segoe Script',
@@ -39,6 +43,14 @@ const useStyles = makeStyles(
     errorText: {
       color: 'red',
       marginLeft: '8px',
+    },
+    buttonWrapp: {
+      position: 'absolute',
+      right: '20px',
+      top: '10px',
+    },
+    hiddenButton: {
+      visibility: 'hidden',
     },
   })
 );
@@ -137,8 +149,40 @@ const Waiver = ({ data, content, eventName, onChange, setDisabledButton }: IRegi
     setDisabledButton(false);
   };
 
+  const sendDataToPDF = (event: any) => {
+    event.preventDefault();
 
+    const htmlElement = document.getElementById('waiver-content');
 
+    if (htmlElement !== null && htmlElement !== undefined) {
+      html2canvas(htmlElement).then(function (canvas: any) {
+
+        console.log(canvas);
+
+        // let imgHeight = canvas.height * 600 / canvas.width;
+        const imgData = canvas.toDataURL('image/png');
+
+        const imgWidth = 500;
+        const pageHeight = 705;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        // const imgHeight = 705;
+        let heightLeft = imgHeight;
+
+        const doc = new jsPDF('p', 'pt');
+        let position = 10;
+        doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          doc.addPage();
+          doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+        doc.save('Waiver.pdf');
+      });
+    }
+  };
 
   const renderWaiver = () => {
     if (!content) {
@@ -155,9 +199,19 @@ const Waiver = ({ data, content, eventName, onChange, setDisabledButton }: IRegi
         content.waiver_content +
         `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>`;
     return (
-      <div>
-        <div className={classes.waiveWrapp} ref={scrollRef}>
-          <FroalaEditorView model={waiverContent} />
+      <div className={classes.waiverContainer}>
+        <div className={isComplete ? classes.buttonWrapp : classes.hiddenButton}>
+          <Button
+            onClick={sendDataToPDF}
+            variant={ButtonVariant.CONTAINED}
+            color={ButtonColors.PRIMARY}
+            label={'Save to PDF'}
+            icon={<GetAppIcon style={{ fill: '#FFFFFF' }} />}
+            isIconRightSide={true}
+          />
+        </div>
+        <div className={classes.waiverWrapp} ref={scrollRef}>
+          <div id="waiver-content" className={classes.waiver} dangerouslySetInnerHTML={{ __html: waiverContent }} />
         </div>
         <div className={classes.inputWrapp}>
           <Input
