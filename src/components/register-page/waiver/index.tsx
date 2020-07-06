@@ -8,8 +8,9 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import axios from 'axios';
 import MD5 from 'crypto-js/md5';
 import { ButtonColors, ButtonVariant } from "common/enums/buttons";
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+// import jsPDF from 'jspdf';
+// import html2canvas from 'html2canvas';
+import { onPDFSaveFromString } from "helpers/on-save.helper";
 
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
@@ -151,37 +152,52 @@ const Waiver = ({ data, content, eventName, onChange, setDisabledButton }: IRegi
 
   const sendDataToPDF = (event: any) => {
     event.preventDefault();
-
-    const htmlElement = document.getElementById('waiver-content');
-
-    if (htmlElement !== null && htmlElement !== undefined) {
-      html2canvas(htmlElement).then(function (canvas: any) {
-
-        console.log(canvas);
-
-        // let imgHeight = canvas.height * 600 / canvas.width;
-        const imgData = canvas.toDataURL('image/png');
-
-        const imgWidth = 500;
-        const pageHeight = 705;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        // const imgHeight = 705;
-        let heightLeft = imgHeight;
-
-        const doc = new jsPDF('p', 'pt');
-        let position = 10;
-        doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight;
-          doc.addPage();
-          doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-        doc.save('Waiver.pdf');
-      });
+    if (!content) {
+      return;
     }
+    const signature = data.waiver_signature
+      ? JSON.parse(data.waiver_signature).name
+      : '';
+
+    const waiverContent =
+      content.waiver_content === null || !content.waiver_content
+        ? 'Not found.'
+        : `<h1 style="text-align: center">${eventName}</h1>` +
+          content.waiver_content +
+          `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>`;
+    onPDFSaveFromString(waiverContent);
+    // event.preventDefault();
+
+    // const htmlElement = document.getElementById('waiver-content');
+
+    // if (htmlElement !== null && htmlElement !== undefined) {
+    //   html2canvas(htmlElement).then(function (canvas: any) {
+
+    //     console.log(canvas);
+
+    //     // let imgHeight = canvas.height * 600 / canvas.width;
+    //     const imgData = canvas.toDataURL('image/png');
+
+    //     const imgWidth = 500;
+    //     const pageHeight = 705;
+    //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    //     // const imgHeight = 705;
+    //     let heightLeft = imgHeight;
+
+    //     const doc = new jsPDF('p', 'pt');
+    //     let position = 10;
+    //     doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    //     heightLeft -= pageHeight + 130;
+
+    //     while (heightLeft >= 0) {
+    //       position = heightLeft - imgHeight;
+    //       doc.addPage();
+    //       doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    //       heightLeft -= pageHeight + 130;
+    //     }
+    //     doc.save('Waiver.pdf');
+    //   });
+    // }
   };
 
   const renderWaiver = () => {
@@ -205,7 +221,7 @@ const Waiver = ({ data, content, eventName, onChange, setDisabledButton }: IRegi
             onClick={sendDataToPDF}
             variant={ButtonVariant.CONTAINED}
             color={ButtonColors.PRIMARY}
-            label={'Save to PDF'}
+            label={'Save'}
             icon={<GetAppIcon style={{ fill: '#FFFFFF' }} />}
             isIconRightSide={true}
           />

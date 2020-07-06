@@ -57,6 +57,7 @@
     "draft-js": "^0.11.6",
     "file-saver": "^2.0.2",
     "history": "^4.10.1",
+    "html-docx-js-typescript": "^0.1.5",
     "html2canvas": "^1.0.0-rc.5",
     "immutability-helper": "^3.0.1",
     "jspdf": "^1.5.3",
