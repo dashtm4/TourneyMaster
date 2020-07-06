@@ -122,7 +122,7 @@ const Waiver = ({
       inputedValue.trim() !==
       data.registrant_first_name + ' ' + data.registrant_last_name
     ) {
-      setError('First name and Last name is not match.');
+      setError('First name and last name must match the values from step 1 (above).');
     } else {
       setError('');
       setIsComplete(true);
