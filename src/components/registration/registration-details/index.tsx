@@ -4,8 +4,8 @@ import { IRegistration } from 'common/models';
 import { Checkbox } from 'components/common';
 
 enum Options {
-  'Require' = 1,
-  'Request' = 2,
+  'Required' = 1,
+  'Requested' = 2,
   'None' = 0,
 }
 
@@ -27,48 +27,48 @@ const RegistrationDetails = ({ data, eventType }: IRegistrationDetails) => (
             <span className={styles.sectionTitle}>
               Max Players Per Division
             </span>
-            <p>{data.max_players_per_division || '—'}</p>
+            <p>{data.max_players_per_division || 'Not specified'}</p>
           </>
         ) : (
             <>
               <span className={styles.sectionTitle}>Max Teams Per Division</span>
-              <p>{data.max_teams_per_division || '—'}</p>
+              <p>{data.max_teams_per_division || 'Not specified'}</p>
             </>
           )}
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Max Athletes on Roster</span>
-        <p>{data.max_players_per_roster || '—'}</p>
+        <p>{data.max_players_per_roster || 'Not specified'}</p>
       </div>
       <div className={styles.sectionItem} />
     </div>
     <div className={styles.sectionRow}>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Athlete Birth Date</span>
-        <p>{Options[data.request_athlete_birthdate] || '—'}</p>
+        <p>{Options[data.request_athlete_birthdate] || 'Not specified'}</p>
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Athlete Jersey Number</span>
-        <p>{Options[data.request_athlete_jersey_number] || '—'}</p>
+        <p>{Options[data.request_athlete_jersey_number] || 'Not specified'}</p>
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Athlete Email</span>
-        <p>{Options[data.request_athlete_email] || '—'}</p>
+        <p>{Options[data.request_athlete_email] || 'Not specified'}</p>
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>US Lacrosse Membership</span>
-        <p>{Options[data.request_us_lacrosse_number] || '—'}</p>
+        <p>{Options[data.request_us_lacrosse_number] || 'Not specified'}</p>
       </div>
       <div className={styles.sectionItem} />
     </div>
     <div className={styles.sectionInfoRow}>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Disclaimer</span>
-        <p>{data.disclaimer || '—'}</p>
+        <p>{data.disclaimer || 'Nothing Specified'}</p>
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Registration Details</span>
-        <p>{data.registration_information || '—'}</p>
+        <p>{data.registration_information || 'Nothing Specified'}</p>
       </div>
     </div>
     <div className={styles.sectionRow}>

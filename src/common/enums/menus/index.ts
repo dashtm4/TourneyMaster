@@ -21,7 +21,7 @@ enum EventMenuTitles {
   EVENT_STRUCTURE = 'Event Structure',
   PLAYOFFS = 'Playoffs',
   MEDIA_ASSETS = 'Media Assets',
-  WELLNESS = 'Wellness Statement',
+  WELLNESS = 'Waivers & Wellness',
   RANKINGS = 'Ranking Factors',
   ADVANCED_SETTINGS = 'Advanced Settings',
   FACILITIES = 'Facilities',
@@ -41,7 +41,7 @@ enum EventMenuTitles {
 enum EventMenuRegistrationTitles {
   PRICING_AND_CALENDAR = 'Pricing & Calendar',
   REGISTRATION_DETAILS = 'Registration Details',
-  WAIVER = 'Waiver',
+  WAIVER = 'Waivers',
   PAYMENTS = 'Payments',
   REGISTRANTS = 'Registrants',
 }
