@@ -70,7 +70,7 @@ const ApplyInvitation = ({
             }
             value={invCode || ''}
             fullWidth={true}
-            label="Organization Code"
+            label="Organization Code (8 characters. Ask your admin.)"
           />
         </div>
         {type === 'wizard' && (
