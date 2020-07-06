@@ -30,8 +30,8 @@ jobs:
           REACT_APP_AWS_IDENTITY_POOL_ID: ${{ secrets.REACT_APP_AWS_IDENTITY_POOL_ID }}
           REACT_APP_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           REACT_APP_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          REACT_APP_API_BASE_URL: 'https://api.tourneymaster.org/v2'
-          REACT_APP_PUBLIC_API_BASE_URL: 'https://api.tourneymaster.org/public'
+          REACT_APP_API_BASE_URL: 'https://noiyewfm5g.execute-api.us-east-1.amazonaws.com/PROD'
+          REACT_APP_PUBLIC_API_BASE_URL: 'https://kr4h1pzp94.execute-api.us-east-1.amazonaws.com/PROD'
           REACT_APP_STRIPE_PUBLISHABLE_KEY: ${{secrets.STRIPE_PUBLISHABLE_KEY}}
           CI: 'false'
       - name: Enable Amazon
