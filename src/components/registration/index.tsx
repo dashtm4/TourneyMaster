@@ -272,6 +272,17 @@ class RegistrationView extends React.Component<
                     </SectionDropdown>
                   </li>
                 ) : null}
+                <li>
+                  <SectionDropdown
+                    id={EventMenuRegistrationTitles.REGISTRANTS}
+                    type="section"
+                    panelDetailsType="flat"
+                    expanded={this.state.isSectionsExpand}
+                  >
+                    <span>Registrants</span>
+                    <Registrants />
+                  </SectionDropdown>
+                </li>
               </ul>
             ) : (
               !this.props.isLoading && (
