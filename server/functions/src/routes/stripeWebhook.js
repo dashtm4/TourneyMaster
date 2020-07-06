@@ -1,3 +1,4 @@
+import '../services/logger.js';
 import mysql from 'promise-mysql';
 import SSM from 'aws-sdk/clients/ssm.js';
 
@@ -7,8 +8,8 @@ import { getPaymentPlans } from '../services/activeProducts.js';
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 const ssm = new SSM({ region: 'us-east-1' });
 
-export const paymentSuccessWebhook = async req => {
-  const getParams = async paramName => {
+export const paymentSuccessWebhook = async (req) => {
+  const getParams = async (paramName) => {
     return JSON.parse(
       (
         await ssm
@@ -103,7 +104,14 @@ export const paymentSuccessWebhook = async req => {
             +lineItem.tax_amounts.reduce((a, x) => a + +x.amount, 0) * paidRatio
           ) / 100;
         const newPaymentFees =
-          Math.round(newPaymentAmount * 100 * 0.029) / 100 + 0.3;
+          Math.round(newPaymentAmount * 100 * 0.029) / 100 +
+          0.3 +
+          Math.round(
+            (+event.data.object.application_fee_amount * +lineItem.amount) /
+              +event.data.object.amount_paid
+          ) /
+            100; // When a payment is for multiple items allocate the application fee proportionally
+
         const newPaymentDate = new Date(
           +event.data.object.status_transitions.paid_at * 1000
         );
@@ -153,7 +161,7 @@ export const paymentSuccessWebhook = async req => {
       VALUES (?, ?, ?, 'scheduled', ?, ?, 1, ?)`;
           let params = [];
           if (paymentPlan.type === 'schedule') {
-            params = paymentPlan.schedule.map(phase => [
+            params = paymentPlan.schedule.map((phase) => [
               reg_response_id,
               phase.price_external_id,
               phase.date === 'now' ? new Date() : new Date(+phase.date * 1000),
@@ -189,7 +197,7 @@ export const paymentSuccessWebhook = async req => {
                 );
               }
             }
-            params = installmentDates.map(date => [
+            params = installmentDates.map((date) => [
               reg_response_id,
               paymentPlan.payment_plan_id,
               date,
@@ -252,6 +260,9 @@ export const paymentSuccessWebhook = async req => {
           `Successfully processed. Registration data copied to main database`
         );
       } else if (event.type === 'invoice.payment_failed') {
+        console.logError(
+          new Error(`Payment Failure Event: ${JSON.stringify(event)}`)
+        );
         let availableForAllocation = await findScheduledPaymentToAllocateTo(
           paymentPlan,
           toConn,

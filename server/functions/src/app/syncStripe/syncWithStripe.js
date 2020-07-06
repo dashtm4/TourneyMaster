@@ -23,7 +23,7 @@ const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
     // Create and update products
     for (const object of activeObjects) {
       const matchedStripeObjects = stripeObjects.filter(
-        item => item.metadata.externalId === object.metadata.externalId
+        (item) => item.metadata.externalId === object.metadata.externalId
       );
       if (matchedStripeObjects.length >= 1) {
         const stripeObject = matchedStripeObjects[0];
@@ -50,10 +50,10 @@ const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
     }
     // Delete products
     objectsToDelete = objectsToDelete.concat(
-      stripeObjects.filter(stripeObject => {
+      stripeObjects.filter((stripeObject) => {
         return (
           activeObjects.filter(
-            object =>
+            (object) =>
               object.metadata.externalId === stripeObject.metadata.externalId
           ).length === 0 &&
           stripeObject.active &&
@@ -64,7 +64,7 @@ const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
     if (objectsToDelete.length > 0) {
       console.log(
         `Objects to delete:\n * ${objectsToDelete
-          .map(x => x.metadata.externalId)
+          .map((x) => x.metadata.externalId)
           .join('\n * ')}`
       );
     }
@@ -80,8 +80,8 @@ const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
 
 const syncTaxRates = async (paymentPlans, stripeAccount) => {
   const salesTaxRates = [
-    ...new Set(paymentPlans.map(plan => plan.sales_tax_rate)),
-  ].map(sales_tax_rate => ({
+    ...new Set(paymentPlans.map((plan) => plan.sales_tax_rate)),
+  ].map((sales_tax_rate) => ({
     sales_tax_rate: sales_tax_rate,
     display_name: `Tax ${sales_tax_rate}%`,
     description: `Tax ${sales_tax_rate}%`,
@@ -94,7 +94,7 @@ const syncTaxRates = async (paymentPlans, stripeAccount) => {
   );
 };
 
-const createSpecialProduct = stripeAccount => {
+const createSpecialProduct = (stripeAccount) => {
   return {
     product_name: 'Payment Schedule',
     sku_id: 'sched_' + stripeAccount,
@@ -108,7 +108,7 @@ const createSpecialProduct = stripeAccount => {
   };
 };
 
-const syncServiceProducts = async stripeAccount => {
+const syncServiceProducts = async (stripeAccount) => {
   const activeSkus = await getActiveSkus(stripeAccount);
   activeSkus.push(createSpecialProduct(stripeAccount));
   await syncStripeObjects(
@@ -117,7 +117,7 @@ const syncServiceProducts = async stripeAccount => {
   );
 };
 
-const createSpecialPaymentPlan = stripeAccount => {
+const createSpecialPaymentPlan = (stripeAccount) => {
   return {
     type: 'installment',
     currency: 'USD',
@@ -139,7 +139,7 @@ const createSpecialPaymentPlan = stripeAccount => {
   };
 };
 
-const syncPrices = async stripeAccount => {
+const syncPrices = async (stripeAccount) => {
   const activePaymentPlans = await getPaymentPlans({
     stripe_connect_id: stripeAccount,
   });
@@ -164,8 +164,8 @@ const loadAll = async (endpoint, params = {}) => {
 
 export const syncWithStripe = async () => {
   const stripeAccounts = (await loadAll(stripe.accounts))
-    .filter(account => account.charges_enabled)
-    .map(account => account.id);
+    .filter((account) => account.charges_enabled)
+    .map((account) => account.id);
   stripeAccounts.push('main');
   for (const stripeAccount of stripeAccounts) {
     await syncServiceProducts(stripeAccount);

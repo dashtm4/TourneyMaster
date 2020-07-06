@@ -24,7 +24,7 @@ Resources:
     Properties:
       RoleName: !Sub LambdaExecRole${ProjectName}
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -32,21 +32,21 @@ Resources:
                 - lambda.amazonaws.com
             Action:
               - sts:AssumeRole
-      Path: '/'
+      Path: "/"
       Policies:
         - PolicyName: AWSLambdaBasicExecutionRole
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: '*'
+                Resource: "*"
         - PolicyName: PublishMessagesToSNS
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action: sns:*
@@ -54,14 +54,14 @@ Resources:
                   - !Ref EventNotificationsTopic
         - PolicyName: GetSecretValue
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action: secretsmanager:GetSecretValue
                 Resource: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${ProjectName}*
         - PolicyName: GetSMParameter
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action: ssm:GetParameter
@@ -80,9 +80,10 @@ Resources:
       Timeout: 60
       Environment:
         Variables:
-          STRIPE_SECRET_KEY: ''
-          STRIPE_PUBLISHABLE_KEY: ''
-          PUBLIC_API_BASE_URL: ''
+          EVENT_NOTIFICATIONS_TOPIC: !Ref EventNotificationsTopic
+          STRIPE_SECRET_KEY: ""
+          STRIPE_PUBLISHABLE_KEY: ""
+          PUBLIC_API_BASE_URL: "1"
 
   PaymentsApiFunction:
     Type: AWS::Lambda::Function
@@ -92,19 +93,20 @@ Resources:
       Handler: index.handler
       Role: !GetAtt LambdaExecRole.Arn
       Code:
-        ZipFile: 'import json'
+        ZipFile: "import json"
       Runtime: nodejs12.x
       Timeout: 10
       Environment:
         Variables:
-          SMParameterName: 'TourneyMasterAPIv2'
-          STRIPE_SECRET_KEY: ''
-          STRIPE_PUBLISHABLE_KEY: ''
-          STRIPE_WEBHOOK_SIGNING_SECRET: ''
-          PUBLIC_API_BASE_URL: ''
+          EVENT_NOTIFICATIONS_TOPIC: !Ref EventNotificationsTopic
+          SMParameterName: "TourneyMasterAPIv2"
+          STRIPE_SECRET_KEY: ""
+          STRIPE_PUBLISHABLE_KEY: ""
+          STRIPE_WEBHOOK_SIGNING_SECRET: ""
+          PUBLIC_API_BASE_URL: "1"
 
   Permission:
-    Type: 'AWS::Lambda::Permission'
+    Type: "AWS::Lambda::Permission"
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt PaymentsApiFunction.Arn
@@ -112,18 +114,18 @@ Resources:
       SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGatewayId}/*/*/*
 
   PaymentsApiResource:
-    Type: 'AWS::ApiGateway::Resource'
+    Type: "AWS::ApiGateway::Resource"
     Properties:
       RestApiId: !Ref ApiGatewayId
       ParentId: !Ref RootResource
-      PathPart: 'payments'
+      PathPart: "payments"
 
   ProxyResource:
-    Type: 'AWS::ApiGateway::Resource'
+    Type: "AWS::ApiGateway::Resource"
     Properties:
       RestApiId: !Ref ApiGatewayId
       ParentId: !Ref PaymentsApiResource
-      PathPart: '{proxy+}'
+      PathPart: "{proxy+}"
 
   AnyMethod:
     Type: AWS::ApiGateway::Method
@@ -136,14 +138,14 @@ Resources:
         Type: AWS_PROXY
         IntegrationHttpMethod: POST
         Uri: !Join
-          - ''
-          - - !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/'
+          - ""
+          - - !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/"
             - !GetAtt PaymentsApiFunction.Arn
-            - '/invocations' # :${stageVariables.lambdaAlias}
+            - "/invocations" # :${stageVariables.lambdaAlias}
         IntegrationResponses:
           - StatusCode: 200
             ResponseTemplates:
-              application/json: ''
+              application/json: ""
       MethodResponses:
         - StatusCode: 200
       ResourceId: !Ref ProxyResource
@@ -164,7 +166,7 @@ Resources:
               method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
             ResponseTemplates:
-              application/json: ''
+              application/json: ""
         PassthroughBehavior: WHEN_NO_MATCH
         RequestTemplates:
           application/json: '{"statusCode": 200}'
@@ -172,7 +174,7 @@ Resources:
       MethodResponses:
         - StatusCode: 200
           ResponseModels:
-            application/json: 'Empty'
+            application/json: "Empty"
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: false
             method.response.header.Access-Control-Allow-Methods: false
@@ -182,11 +184,11 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Name: !Sub ${ProjectName}-runSyncProducts
-      ScheduleExpression: 'rate(1 minute)'
+      ScheduleExpression: "rate(1 minute)"
       State: ENABLED
       Targets:
         - Arn: !GetAtt SyncProductsFunction.Arn
-          Id: 'SyncProductsFunction'
+          Id: "SyncProductsFunction"
     DependsOn:
       - SyncProductsFunction
 
@@ -194,8 +196,8 @@ Resources:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName: !Ref SyncProductsFunction
-      Action: 'lambda:InvokeFunction'
-      Principal: 'events.amazonaws.com'
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
       SourceArn: !GetAtt EventRule.Arn
     DependsOn:
       - SyncProductsFunction
