@@ -466,6 +466,7 @@ class RecordScores extends React.Component<
               event={event!}
               fields={fields!}
               games={games!}
+              matchups={[]}
               timeSlots={timeSlots!}
               timeValues={timeValues!}
               pools={pools}
@@ -479,7 +480,8 @@ class RecordScores extends React.Component<
               onScheduleGameUpdate={() => { }}
               onTeamCardsUpdate={() => { }}
               onTeamCardUpdate={this.onScheduleCardUpdate}
-              onUndo={() => {}}
+              onUndo={() => { }}
+              onAssignMatchup={() => { }}
               onToggleFullScreen={onToggleFullScreen}
               playoffTimeSlots={playoffTimeSlots}
               bracketGames={bracketGames || undefined}

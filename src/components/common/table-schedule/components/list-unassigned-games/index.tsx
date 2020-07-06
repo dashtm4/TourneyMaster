@@ -3,14 +3,14 @@ import styles from './styles.module.scss';
 import { useDrop } from 'react-dnd';
 import { IDropParams } from 'components/common/matrix-table/dnd/drop';
 import { IEventDetails } from 'common/models';
-import { IConfigurableGame } from 'components/common/matrix-table/helper';
 import GameDragCard from './dnd/game-drag';
 import { Radio } from 'components/common';
 import { GamesListDisplayType } from './enums';
+import { IMatchup } from 'components/visual-games-maker/helpers';
 
 interface IProps {
   event: IEventDetails;
-  games: IConfigurableGame[];
+  games: IMatchup[];
   showHeatmap?: boolean;
   onDrop: (dropParams: IDropParams) => void;
 }
@@ -19,6 +19,8 @@ const UnassignedGamesList = (props: IProps) => {
   const { games, onDrop, showHeatmap } = props;
   const acceptType = 'teamdrop';
   const [gamesListDisplayType, setGamesListDisplayType] = useState(GamesListDisplayType.UNASSIGNED_GAMES);
+
+  const assignedGames = games.filter(g => !!g.assignedGameId);
 
   const [{ isOver }, drop] = useDrop({
     accept: acceptType,
@@ -39,7 +41,7 @@ const UnassignedGamesList = (props: IProps) => {
 
   const onGamesListDisplayTypeChange = (e: any) => setGamesListDisplayType(e.nativeEvent.target.value);
 
-  const renderGames = (items: IConfigurableGame[]) => (
+  const renderGames = (items: IMatchup[]) => (
     <>
       {items.map(game => (
         <tr key={`tr-${game.awayTeamId}-${game.homeTeamId}`}>
@@ -77,16 +79,16 @@ const UnassignedGamesList = (props: IProps) => {
             </tr>
           </thead>
           <tbody>
-            {renderGames(games.filter(g => !g.isAssigned))}
+            {renderGames(games.filter(g => !g.assignedGameId))}
             {!!(
               gamesListDisplayType === GamesListDisplayType.ALL_GAMES &&
-              games.some(g => g.isAssigned)
+              assignedGames.length > 0
             ) && (
                 <>
                   <tr className={styles.emptyRow}>
                     <td>Assigned Games</td>
                   </tr>
-                  {renderGames(games.filter(g => g.isAssigned))}
+                  {renderGames(assignedGames)}
                 </>
               )}
           </tbody>

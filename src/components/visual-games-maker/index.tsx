@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { ITeam, IDivision, IPool } from 'common/models';
-import { IConfigurableSchedule } from 'common/models/schedule';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
 import { getAllPools } from 'components/divisions-and-pools/logic/actions';
@@ -11,9 +10,8 @@ import RunningTally from './running-games-tally';
 import ResultingGameList from './resulting-game-list';
 import MatrixOfPossibleGames from './possible-games-matrix';
 import { Checkbox, Select } from 'components/common';
-import { ISchedulingState } from 'components/scheduling/logic/reducer';
 import { ITeamCard } from 'common/models/schedule/teams';
-import { IGameCell } from './helpers';
+import { IMatchup, IMatchupTeam } from './helpers';
 import { fillGamesList } from 'components/schedules/logic/schedules-table/actions';
 import { IConfigurableGame } from 'components/common/matrix-table/helper';
 import { ISchedulesTableState } from 'components/schedules/logic/schedules-table/schedulesTableReducer';
@@ -22,7 +20,6 @@ interface IMapStateToProps {
   teams?: ITeam[] | undefined;
   divisions?: IDivision[] | undefined;
   pools?: IPool[] | undefined;
-  schedule?: IConfigurableSchedule | null | undefined;
   teamsCards?: ITeamCard[] | undefined;
   gamesList?: IConfigurableGame[] | undefined;
 }
@@ -35,8 +32,8 @@ interface IMapDispatchToProps {
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface IComponentProps {
-  gamesCells?: IGameCell[];
-  onGamesListChange: (item: IGameCell[]) => void;
+  gamesCells: IMatchup[];
+  onGamesListChange: (item: IMatchup[]) => void;
   showTeamsNames: boolean;
   toggleShowTeamsNames: () => void;
 }
@@ -44,7 +41,6 @@ interface IComponentProps {
 interface IRootState {
   pageEvent?: IPageEventState;
   divisions?: IDivisionAndPoolsState;
-  scheduling?: ISchedulingState;
   schedulesTable?: ISchedulesTableState;
 }
 
@@ -71,14 +67,8 @@ class VisualGamesMaker extends Component<IProps, IState> {
     });
   }
 
-  componentDidUpdate(prevProps: any) {
-    if (JSON.stringify(this.props.gamesCells) !== JSON.stringify(prevProps.gamesCells)) {
-      this.createScheduleTable();
-    }
-  }
-  onChangeGames = (items: IGameCell[]) => {
-    const { onGamesListChange } = this.props;
-    onGamesListChange(items);
+  onChangeGames = (items: IMatchup[]) => {
+    this.props.onGamesListChange(items);
   };
 
   onChangeDivision = (e: InputTargetValue) => {
@@ -109,37 +99,43 @@ class VisualGamesMaker extends Component<IProps, IState> {
     return [firstOption, ...currentPools];
   };
 
-  createScheduleTable = () => {
-    const { fillGamesList, gamesCells, gamesList } = this.props;
-    if (!gamesCells) return;
-    const gamesListMaker = gamesCells.map(v => {
-      const game = gamesList?.find(game => game.divisionId === v.divisionId && game.awayTeamId === v.awayTeamId && game.homeTeamId === v.homeTeamId)
-      return {
-        id: -1,
-        homeTeamId: v.homeTeamId,
-        awayTeamId: v.awayTeamId,
-        timeSlotId: 0,
-        fieldId: '',
-        divisionId: v.divisionId,
-        divisionHex: v.divisionHex,
-        divisionName: v.divisionName,
-        isAssigned: game ? game.isAssigned : false,
-      };
+  getFilteredAndSortedTeams = (): IMatchupTeam[] => {
+    const filteredTeams = this.props
+      .teams!.filter(item => item.division_id === this.state.selectedDivisionId)
+      .map(
+        t =>
+          ({
+            id: t.team_id,
+            name: t.short_name,
+            poolId: t.pool_id === null ? '' : t.pool_id,
+          } as IMatchupTeam)
+      );
+
+    return filteredTeams.sort((a: IMatchupTeam, b: IMatchupTeam) => {
+      // sort by pool
+      if (a.poolId > b.poolId) {
+        return 1;
+      } else if (a.poolId < b.poolId) {
+        return -1;
+      }
+
+      // then by name
+      if (a.name < b.name) {
+        return -1;
+      } else if (a.name > b.name) {
+        return 1;
+      } else {
+        return 0;
+      }
     });
-    fillGamesList(gamesListMaker);
   };
 
   render() {
-    const filteredTeams = this.props.teams!.filter(
-      item => item.division_id === this.state.selectedDivisionId
-    );
-    const sortedTeams = filteredTeams.sort((a: ITeam, b: ITeam) => {
-      return (a.pool_id || '') > (b.pool_id || '') ? 1 : -1;
-    });
+    const sortedTeams = this.getFilteredAndSortedTeams();
 
-    const filteredGames = this.props.gamesCells?.filter(
+    const filteredGames = this.props.gamesCells.filter(
       item => item.divisionId === this.state.selectedDivisionId
-    ) || [];
+    );
 
     const { showTeamsNames, toggleShowTeamsNames } = this.props;
 
@@ -187,7 +183,7 @@ class VisualGamesMaker extends Component<IProps, IState> {
           <div className={styles.tablesWrapper}>
             <div className={styles.matrixOfPossibleGames}>
               <MatrixOfPossibleGames
-                games={this.props.gamesCells || []}
+                games={this.props.gamesCells}
                 teams={sortedTeams}
                 poolId={this.state.selectedPoolId}
                 showNames={showTeamsNames}
@@ -230,13 +226,11 @@ class VisualGamesMaker extends Component<IProps, IState> {
 const mapStateToProps = ({
   pageEvent,
   divisions,
-  scheduling,
   schedulesTable,
 }: IRootState): IMapStateToProps => ({
   teams: pageEvent?.tournamentData.teams,
   divisions: pageEvent?.tournamentData.divisions,
   pools: divisions?.pools,
-  schedule: scheduling?.schedule,
   gamesList: schedulesTable?.gamesList,
 });
 
