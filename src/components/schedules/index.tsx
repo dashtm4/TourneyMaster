@@ -345,7 +345,7 @@ class Schedules extends Component<Props, State> {
           v =>
             ({
               id: uuidv4(),
-              assignedGameId: v.game_id,
+              assignedGameId: +v.game_id > 0 ? +v.game_id : null,
               homeTeamId: v.home_team_id,
               awayTeamId: v.away_team_id,
               divisionId: v.division_id,
@@ -450,7 +450,6 @@ class Schedules extends Component<Props, State> {
             ...v,
             games: v.games?.filter(
               game =>
-                v.divisionId !== deselectedGame.divisionId &&
                 game.awayTeamId !== deselectedGame.awayTeamId &&
                 game.homeTeamId !== deselectedGame.homeTeamId
             ),
@@ -752,9 +751,10 @@ class Schedules extends Component<Props, State> {
       );
     }
 
-    if (gamesCells.length > 0) {
+    const unassignedGames = gamesCells.filter(g => !g.assignedGameId);
+    if (unassignedGames.length > 0) {
       schedulesTableGames.push(
-        gamesCells.map(v => ({
+        unassignedGames.map(v => ({
           gameId: null,
           divisionId: v.divisionId,
           awayTeamId: v.awayTeamId,
@@ -799,29 +799,35 @@ class Schedules extends Component<Props, State> {
     );
 
     if (scheduleId) {
-      const gamesListFromSchedulesDetails = schedulesDetails!.filter(v => v.game_id === null);
+      const gamesListFromSchedulesDetails = schedulesDetails!.filter(v => !v.game_id);
 
       const schedulesDetailsToAdd = updatedSchedulesDetails!.filter(
         v =>
+          v.away_team_id &&
+          !v.game_id &&
           !gamesListFromSchedulesDetails.find(
             detail =>
-              detail.division_id === v.division_id &&
               detail.away_team_id === v.away_team_id &&
               detail.home_team_id === v.home_team_id
           )
-      ) || [];
-
-      const schedulesDetailsToDelete = gamesListFromSchedulesDetails.filter(
-        v =>
-          !gamesCells?.find(
-            game =>
-              game.divisionId === v.division_id &&
-              game.awayTeamId === v.away_team_id &&
-              game.homeTeamId === v.home_team_id
-          )
       );
 
-      const modifiedSchedulesDetails = updatedSchedulesDetails.filter(v => !schedulesDetailsToDelete.includes(v));
+      const schedulesDetailsToDelete = gamesListFromSchedulesDetails.filter(o =>
+        gamesCells?.find(
+          x =>
+            x.assignedGameId &&
+            x.awayTeamId === o.away_team_id &&
+            x.homeTeamId === o.home_team_id
+        ) ||
+        !gamesCells?.find(
+          y =>
+            !y.assignedGameId &&
+            y.awayTeamId === o.away_team_id &&
+            y.homeTeamId === o.home_team_id
+        )
+      );
+
+      const modifiedSchedulesDetails = updatedSchedulesDetails.filter(v => !schedulesDetailsToDelete.includes(v) && !schedulesDetailsToAdd.includes(v));
 
       this.props.updateSchedule(schedule, updatedSchedulesDetails);
       this.props.addSchedulesDetails(modifiedSchedulesDetails, schedulesDetailsToAdd);
