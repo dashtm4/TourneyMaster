@@ -23,6 +23,9 @@ import {
   DELETE_SCHEDULES_DETAILS_IN_PROGRESS,
   DELETE_SCHEDULES_DETAILS_SUCCESS,
   DELETE_SCHEDULES_DETAILS_FAILURE,
+  ADD_SCHEDULES_DETAILS_IN_PROGRESS,
+  ADD_SCHEDULES_DETAILS_SUCCESS,
+  ADD_SCHEDULES_DETAILS_FAILURE,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
@@ -123,6 +126,19 @@ export const deleteSchedulesDetailsSuccess = (payload: ISchedulesDetails[]) => (
 
 export const deleteSchedulesDetailsFailure = () => ({
   type: DELETE_SCHEDULES_DETAILS_FAILURE,
+});
+
+export const addSchedulesDetailsInProgress = () => ({
+  type: ADD_SCHEDULES_DETAILS_IN_PROGRESS,
+});
+
+export const addSchedulesDetailsSuccess = (payload: ISchedulesDetails[]) => ({
+  type: ADD_SCHEDULES_DETAILS_SUCCESS,
+  payload,
+});
+
+export const addScheduleDetailsFailure = () => ({
+  type: ADD_SCHEDULES_DETAILS_FAILURE,
 });
 
 export const fetchFields = (
@@ -446,7 +462,7 @@ export const deleteSchedulesDetails = (
     schedulesDetailsChunk.map(
       async arr => await api.delete(`/schedules_details`, arr)
     )
-  )
+  );
 
   const schedulesResponseOk = schedulesResponses.every(item => item);
 
@@ -456,4 +472,27 @@ export const deleteSchedulesDetails = (
   }
 
   dispatch(deleteSchedulesDetailsFailure());
+};
+
+export const addSchedulesDetails = (
+  modifiedSchedulesDetails: ISchedulesDetails[],
+  schedulesDetailsToAdd: ISchedulesDetails[]
+) => async (dispatch: Dispatch) => {
+  dispatch(addSchedulesDetailsInProgress());
+
+  const schedulesDetailsChunk = chunk(schedulesDetailsToAdd, 50);
+  const schedulesResponses = await Promise.all(
+    schedulesDetailsChunk.map(
+      async arr => await api.post('/schedules_details', arr)
+    )
+  );
+
+  const schedulesResponseOk = schedulesResponses.every(item => item);
+
+  if (schedulesResponseOk) {
+    dispatch(addSchedulesDetailsSuccess(modifiedSchedulesDetails));
+    return;
+  }
+
+  dispatch(addScheduleDetailsFailure());
 };

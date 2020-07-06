@@ -193,8 +193,10 @@ export const mapTeamsFromSchedulesDetails = (
             awayTeamId === team.id || homeTeamId === team.id
         )
         .map(
-          ({ gameId, awayTeamId, date, awayTeamLocked, homeTeamLocked }) => ({
+          ({ gameId, awayTeamId, homeTeamId, date, awayTeamLocked, homeTeamLocked }) => ({
             id: Number(gameId),
+            awayTeamId: awayTeamId!,
+            homeTeamId: homeTeamId!,
             teamPosition: awayTeamId === team.id ? 1 : 2,
             isTeamLocked:
               awayTeamId === team.id
