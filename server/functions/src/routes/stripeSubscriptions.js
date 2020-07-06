@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { getPaymentPlans } from '../services/activeProducts.js';
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 
-const createOrUpdateCustomer = async subData => {
+const createOrUpdateCustomer = async (subData) => {
   const customerData = {
     ...subData.customer,
     metadata: {
@@ -75,17 +75,17 @@ const validateSubscriptionData = async (subData /* price */) => {
 };
 
 const createSubscription = async (customer, paymentPlan, subData) => {
-  const validatePrice = async price => {
+  const validatePrice = async (price) => {
     if (price.unit_amount > process.env.MAX_PAYMENT_AMOUNT * 100) {
       console.error(
-        `Payment amount ${price.unit_amount /
-          100} is higher than MAX_PAYMENT_AMOUNT=${
-          process.env.MAX_PAYMENT_AMOUNT
-        }`
+        `Payment amount ${
+          price.unit_amount / 100
+        } is higher than MAX_PAYMENT_AMOUNT=${process.env.MAX_PAYMENT_AMOUNT}`
       );
       throw new Error(
-        `Payment amount ${price.unit_amount /
-          100} cannot be processed online. Please contact the event organizer.`
+        `Payment amount ${
+          price.unit_amount / 100
+        } cannot be processed online. Please contact the event organizer.`
       );
     }
   };
@@ -99,7 +99,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
       await stripe.prices.list({ product: sku_id, active: true }, requestParams)
     ).data;
     console.log(prices);
-    const price = prices.find(x => x.metadata.externalId === payment_plan_id);
+    const price = prices.find((x) => x.metadata.externalId === payment_plan_id);
     console.log(price);
     await validatePrice(price);
 
@@ -115,7 +115,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
           },
           subData.requestParams
         )
-      ).data.find(tax => +tax.percentage === paymentPlan.sales_tax_rate)
+      ).data.find((tax) => +tax.percentage === paymentPlan.sales_tax_rate)
     : null;
 
   let phases = [];
@@ -128,6 +128,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
       plans: [{ price: price.id, quantity: subData.items[0].quantity }],
       iterations: paymentPlan.iterations,
       proration_behavior: 'none',
+      application_fee_percent: paymentPlan.application_fee_percent,
       default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
     });
   } else if (paymentPlan.type === 'schedule') {
@@ -175,6 +176,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
               : +phase.date + 60 * 60 * 24 // if the last installment end_date = phase.date + 1 day
           ),
           proration_behavior: 'none',
+          application_fee_percent: paymentPlan.application_fee_percent,
           default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
         };
         return t;
@@ -237,7 +239,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
   return subscription;
 };
 
-export const processCreateSubscription = async subData => {
+export const processCreateSubscription = async (subData) => {
   console.log(`SubData: ${JSON.stringify(subData)}`);
 
   const paymentPlan = (await getPaymentPlans(subData.items[0]))[0];
