@@ -221,7 +221,7 @@ const Waiver = ({
         </div>
         <div className={classes.inputWrapp}>
           <Input
-            label={'Retype your First and Last name.'}
+            label={'If you agree to these terms and conditions, please retype your first and last name.'}
             value={name}
             onChange={onInputName}
             placeholder={'First name and Last name'}
