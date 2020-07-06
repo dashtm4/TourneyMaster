@@ -1,5 +1,6 @@
 import XLSX from 'xlsx';
 import { pdf } from '@react-pdf/renderer';
+import { asBlob } from 'html-docx-js-typescript';
 import { saveAs } from 'file-saver';
 
 const stringToArrayBuffer = (str: string) => {
@@ -42,4 +43,10 @@ const onPDFSave = (PDFComponent: JSX.Element, title: string) => {
   });
 };
 
-export { onXLSXSave, onPDFSave };
+const onPDFSaveFromString = (htmlString: string) => {
+  asBlob(htmlString).then(data => {
+    saveAs(data as Blob, 'file.docx');
+  });
+};
+
+export { onXLSXSave, onPDFSave, onPDFSaveFromString };
