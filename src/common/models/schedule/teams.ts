@@ -42,6 +42,8 @@ export interface ITeam {
 export interface ITeamCard extends ITeam {
   games?: {
     id: number;
+    awayTeamId?: string;
+    homeTeamId?: string;
     teamPosition: TeamPositionEnum;
     isTeamLocked?: boolean;
     isCancelled?: boolean;
