@@ -250,6 +250,7 @@ class RegistrationView extends React.Component<
                 </li>
                 <li>
                   <SectionDropdown
+                    id={EventMenuRegistrationTitles.WAIVER}
                     type="section"
                     panelDetailsType="flat"
                     isDefaultExpanded={true}

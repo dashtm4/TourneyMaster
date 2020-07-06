@@ -65,7 +65,13 @@ interface IRegistrationDetailsProps {
   setDisabledButton: BindingCbWithOne<boolean>;
 }
 
-const Waiver = ({ data, content, eventName, onChange, setDisabledButton }: IRegistrationDetailsProps) => {
+const Waiver = ({
+  data,
+  content,
+  eventName,
+  onChange,
+  setDisabledButton,
+}: IRegistrationDetailsProps) => {
   const [isBottom, setIsBottom] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [name, setName] = useState('');
@@ -156,16 +162,10 @@ const Waiver = ({ data, content, eventName, onChange, setDisabledButton }: IRegi
 
     if (htmlElement !== null && htmlElement !== undefined) {
       html2canvas(htmlElement).then(function (canvas: any) {
-
-        console.log(canvas);
-
-        // let imgHeight = canvas.height * 600 / canvas.width;
         const imgData = canvas.toDataURL('image/png');
-
         const imgWidth = 500;
         const pageHeight = 705;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        // const imgHeight = 705;
         let heightLeft = imgHeight;
 
         const doc = new jsPDF('p', 'pt');
@@ -200,7 +200,9 @@ const Waiver = ({ data, content, eventName, onChange, setDisabledButton }: IRegi
         `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>`;
     return (
       <div className={classes.waiverContainer}>
-        <div className={isComplete ? classes.buttonWrapp : classes.hiddenButton}>
+        <div
+          className={isComplete ? classes.buttonWrapp : classes.hiddenButton}
+        >
           <Button
             onClick={sendDataToPDF}
             variant={ButtonVariant.CONTAINED}
@@ -211,7 +213,11 @@ const Waiver = ({ data, content, eventName, onChange, setDisabledButton }: IRegi
           />
         </div>
         <div className={classes.waiverWrapp} ref={scrollRef}>
-          <div id="waiver-content" className={classes.waiver} dangerouslySetInnerHTML={{ __html: waiverContent }} />
+          <div
+            id="waiver-content"
+            className={classes.waiver}
+            dangerouslySetInnerHTML={{ __html: waiverContent }}
+          />
         </div>
         <div className={classes.inputWrapp}>
           <Input
