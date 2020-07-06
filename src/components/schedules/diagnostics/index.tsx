@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import { orderBy } from 'lodash-es';
 import { getIcon, onXLSXSave } from 'helpers';
-import { ButtonColors, ButtonVarian, Icons } from 'common/enums';
+import { ButtonColors, ButtonVariant, Icons } from 'common/enums';
 import { Modal, Button } from 'components/common';
 import { DiagnosticTypes } from '../types';
 import styles from './styles.module.scss';
