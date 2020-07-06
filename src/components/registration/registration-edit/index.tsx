@@ -11,6 +11,7 @@ import { IRegistration } from 'common/models/registration';
 import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
 import FabButton from 'components/common/fab-button';
 import { PopupExposure } from 'components/common';
+import Waiver from "../waiver";
 
 interface IRegistrationEditProps {
   onCancel: BindingAction;
@@ -120,6 +121,22 @@ class RegistrationEdit extends React.Component<
                   data={this.props.registration}
                   onChange={this.props.onChange}
                 />
+              </SectionDropdown>
+            </li>
+            <li>
+              <SectionDropdown
+                type="section"
+                panelDetailsType="flat"
+                isDefaultExpanded={true}
+              >
+                <span>Waiver</span>
+                <div className={styles.waiverWrapp}>
+                  <Waiver
+                    data={this.props.registration}
+                    onChange={this.props.onChange}
+                    isEdit={true}
+                  />
+                </div>
               </SectionDropdown>
             </li>
           </ul>
