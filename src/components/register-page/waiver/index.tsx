@@ -164,24 +164,22 @@ const Waiver = ({
     if (htmlElement !== null && htmlElement !== undefined) {
       html2canvas(htmlElement).then(function (canvas: any) {
         const imgData = canvas.toDataURL('image/png');
-        const imgWidth = 500;
-        const pageHeight = 705;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const imgWidth = 595;
+        const pageHeight = 842;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width - 20;
         let heightLeft = imgHeight;
 
         const doc = new jsPDF('p', 'pt');
         let position = 10;
-        doc.addPage([imgWidth, pageHeight]);
         doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        heightLeft -= pageHeight + 135;
+        heightLeft -= pageHeight;
 
         while (heightLeft >= 0) {
           position = heightLeft - imgHeight;
-          doc.addPage([imgWidth, pageHeight]);
+          doc.addPage();
           doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight + 135;
+          heightLeft -= pageHeight;
         }
-        doc.deletePage(1);
         doc.save('Waiver.pdf');
       });
     }
