@@ -1,3 +1,4 @@
+import '../services/logger.js';
 import mysql from 'promise-mysql';
 import SSM from 'aws-sdk/clients/ssm.js';
 
@@ -259,6 +260,9 @@ export const paymentSuccessWebhook = async (req) => {
           `Successfully processed. Registration data copied to main database`
         );
       } else if (event.type === 'invoice.payment_failed') {
+        console.logError(
+          new Error(`Payment Failure Event: ${JSON.stringify(event)}`)
+        );
         let availableForAllocation = await findScheduledPaymentToAllocateTo(
           paymentPlan,
           toConn,
