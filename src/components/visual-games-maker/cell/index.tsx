@@ -5,7 +5,7 @@ import {
   ThemeProvider,
   makeStyles,
 } from '@material-ui/core';
-import { IGameCell } from '../helpers';
+import { IMatchup } from '../helpers';
 import {
   selectedIconMatrixColor,
   blockedCellsMatrixColor,
@@ -17,8 +17,8 @@ interface IProps {
   divisionId: string;
   divisionHex: string;
   divisionName: string;
-  onAddGame: (a: IGameCell) => void;
-  onDeleteGame: (a: IGameCell) => void;
+  onAddGame: (a: IMatchup) => void;
+  onDeleteGame: (a: IMatchup) => void;
   isShow: boolean;
   isSamePool: boolean;
   isSelected: boolean;
@@ -79,7 +79,7 @@ const Cell = (props: IProps) => {
       divisionId,
       divisionHex,
       divisionName,
-    } as IGameCell;
+    } as IMatchup;
     setActive(!isActive);
     if (isActive) {
       onDeleteGame(item);

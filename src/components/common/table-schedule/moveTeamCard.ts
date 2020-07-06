@@ -93,7 +93,7 @@ export default (
           (v.homeTeam || v.awayTeam) &&
           (v.homeTeam?.id === possibleGame.homeTeamId ||
             v.homeTeam?.id === possibleGame.awayTeamId ||
-            v.awayTeam?.id === possibleGame.awayTeamdId ||
+            v.awayTeam?.id === possibleGame.awayTeamId ||
             v.awayTeam?.id === possibleGame.homeTeamId)
       );
 

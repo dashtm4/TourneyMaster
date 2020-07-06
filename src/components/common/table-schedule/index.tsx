@@ -28,7 +28,6 @@ import {
   ITimeValues,
 } from 'helpers';
 import {
-  IConfigurableGame,
   IGame,
   settleTeamsPerGames,
   calculateDays,
@@ -62,6 +61,7 @@ import { IBracketGame } from 'components/playoffs/bracketGames';
 import { updateGameSlot } from 'components/playoffs/helper';
 import UnassignedGamesList from './components/list-unassigned-games';
 import PopupAdvancedWorkflow from './components/popup-advanced-workflow';
+import { IMatchup } from 'components/visual-games-maker/helpers';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -91,7 +91,8 @@ interface Props {
   bracketGames?: IBracketGame[];
   onBracketGameUpdate: (bracketGame: IBracketGame) => void;
   recalculateDiagnostics?: () => void;
-  gamesList?: IConfigurableGame[];
+  matchups: IMatchup[];
+  onAssignMatchup: (id: string, assignedGameId: number | null) => void;
   updateSchedulesDetails?: (
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
@@ -126,7 +127,8 @@ const TableSchedule = ({
   bracketGames,
   onBracketGameUpdate,
   recalculateDiagnostics,
-  gamesList,
+  matchups,
+  onAssignMatchup,
   updateSchedulesDetails,
 }: Props) => {
   const minGamesNum =
@@ -151,8 +153,9 @@ const TableSchedule = ({
   const [showHeatmap, onHeatmapChange] = useState(true);
 
   interface IMoveCardResult {
+    gameId?: number;
     teamCards: ITeamCard[];
-    possibleGame?: IConfigurableGame;
+    possibleGame?: IMatchup;
   }
   const [moveCardResult, setMoveCardResult] = useState<IMoveCardResult>();
   const [moveCardWarning, setMoveCardWarning] = useState<string | undefined>();
@@ -203,23 +206,18 @@ const TableSchedule = ({
   useEffect(() => setTableGames(manageGamesData()), [manageGamesData]);
 
   const managePossibleGames = useCallback(() => {
-    if (!gamesList) {
-      return [] as IConfigurableGame[];
-    }
-    return gamesList.map(v => {
+    return matchups.map(v => {
       const homeTeam = teamCards.find(t => t.id === v.homeTeamId);
       const awayTeam = teamCards.find(t => t.id === v.awayTeamId);
 
       return {
         ...v,
         homeTeam,
-        homeDisplayName: homeTeam?.name,
         awayTeam,
-        awayDisplayName: awayTeam?.name,
       };
     });
-  }, [gamesList, teamCards, schedulesDetails]);
-  const [possibleGames, setPossibleGames] = useState<IConfigurableGame[]>(
+  }, [matchups, teamCards]);
+  const [possibleGames, setPossibleGames] = useState<IMatchup[]>(
     managePossibleGames()
   );
   useEffect(() => setPossibleGames(managePossibleGames()), [
@@ -263,6 +261,7 @@ const TableSchedule = ({
     );
 
     const result: IMoveCardResult = {
+      gameId: dropParams.gameId,
       teamCards: data.teamCards,
       possibleGame: dropParams.possibleGame,
     };
@@ -291,6 +290,7 @@ const TableSchedule = ({
       default:
         markGameAssigned(
           result.possibleGame,
+          result.gameId,
           !dropParams.gameId && !dropParams.originGameId,
           !!(dropParams.gameId && dropParams.originGameId)
         );
@@ -305,35 +305,58 @@ const TableSchedule = ({
 
   const confirmReplacement = () => {
     if (moveCardResult) {
-      markGameAssigned(moveCardResult.possibleGame);
+      markGameAssigned(moveCardResult.possibleGame, moveCardResult.gameId);
       onTeamCardsUpdate(moveCardResult.teamCards);
       resetMoveCardWarning();
     }
   };
 
   const markGameAssigned = (
-    game?: IConfigurableGame,
+    game?: IMatchup | IGame,
+    gameId?: number,
     doPreventAssign: boolean = false,
     doPreventUnassign: boolean = false
   ) => {
-    if (game && gamesList) {
-      const foundGame = gamesList.find(
-        g =>
-          g.homeTeamId === game.homeTeam?.id &&
-          g.awayTeamId === game.awayTeam?.id
-      );
+    if (!game) {
+      return;
+    }
+
+    const isMatchup = typeof game.id === 'string';
+    if (isMatchup) {
+      const matchup = game as IMatchup;
+      const foundGame = tableGames.find(g => g.id === gameId);
       if (foundGame) {
-        if (foundGame.isAssigned) {
+        if (!!matchup.assignedGameId) {
           if (!doPreventUnassign) {
-            foundGame.isAssigned = false;
+            onUnassignMatchup(matchup);
           }
         } else {
           if (!doPreventAssign) {
-            foundGame.isAssigned = true;
+            onAssignMatchup(matchup.id, foundGame.id);
           }
         }
       }
     }
+
+    const gameSlot = game as IGame;
+    if (gameSlot) {
+      const foundMathup = matchups.find(
+        g =>
+          g.homeTeamId === gameSlot.homeTeam?.id &&
+          g.awayTeamId === gameSlot.awayTeam?.id
+      );
+      if (foundMathup) {
+        if (!!foundMathup.assignedGameId) {
+          if (!doPreventUnassign) {
+            onUnassignMatchup(foundMathup);
+          }
+        }
+      }
+    }
+  };
+
+  const onUnassignMatchup = (game: IMatchup) => {
+    onAssignMatchup(game.id, null);
   };
 
   const onLockAll = () => {

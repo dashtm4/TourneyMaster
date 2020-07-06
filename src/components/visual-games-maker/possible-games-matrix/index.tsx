@@ -1,4 +1,5 @@
 import React from 'react';
+import uuidv4 from 'uuid/v4';
 import {
   TableContainer,
   Table,
@@ -11,20 +12,20 @@ import {
   ThemeProvider,
 } from '@material-ui/core';
 import Cell from '../cell';
-import { ITeam, ISelectOption } from 'common/models';
-import { IGameCell } from '../helpers';
+import { ISelectOption } from 'common/models';
+import { IMatchup, IMatchupTeam } from '../helpers';
 import { sideBarsMatrixColor } from 'config/app.config';
 
 interface IProps {
-  games: IGameCell[];
-  teams: ITeam[] | undefined;
+  games: IMatchup[];
+  teams: IMatchupTeam[];
   poolId: string;
   pools: ISelectOption[];
   showNames: boolean;
   divisionId: string;
   divisionHex: string;
   divisionName: string;
-  onChangeGames: (a: IGameCell[]) => void;
+  onChangeGames: (a: IMatchup[]) => void;
 }
 
 const useStyles = makeStyles({
@@ -134,13 +135,15 @@ const MatrixOfPossibleGames = (props: IProps) => {
     divisionName,
     onChangeGames,
   } = props;
+
   const classes = useStyles();
 
-  const onAddGame = (item: IGameCell) => {
+  const onAddGame = (item: IMatchup) => {
+    item.id = uuidv4();
     onChangeGames([...games, item]);
   };
 
-  const onDeleteGame = (item: IGameCell) => {
+  const onDeleteGame = (item: IMatchup) => {
     const newGames = games.filter(
       game =>
         game.divisionId !== item.divisionId ||
@@ -151,12 +154,12 @@ const MatrixOfPossibleGames = (props: IProps) => {
   };
 
   let selectedPoolId = '';
-  const isPoolCell = (team: ITeam) => {
-    if (team.pool_id !== selectedPoolId && team.pool_id && poolId === 'allPools') {
+  const renderPoolCell = (team: IMatchupTeam) => {
+    if (team.poolId && team.poolId !== selectedPoolId && poolId === 'allPools') {
       let count = 0;
-      teams!.map(item => (item.pool_id === team.pool_id ? count++ : null));
-      selectedPoolId = team.pool_id;
-      const label = pools.find(pool => pool.value === team.pool_id)?.label;
+      teams.map(item => (item.poolId === team.poolId ? count++ : null));
+      selectedPoolId = team.poolId;
+      const label = pools.find(pool => pool.value === team.poolId)?.label;
       return (
         <TableCell className={classes.pool} rowSpan={count} align="center">
           <p className={classes.poolName}>{label}</p>
@@ -178,7 +181,7 @@ const MatrixOfPossibleGames = (props: IProps) => {
                 {poolId === 'allPools' ? <TableCell /> : null}
                 <TableCell
                   className={showNames ? classes.hiddenCell : classes.homeWrapp}
-                  colSpan={(teams || []).length + 1}
+                  colSpan={teams.length + 1}
                   align="center"
                 >
                   Home
@@ -190,48 +193,48 @@ const MatrixOfPossibleGames = (props: IProps) => {
                 <TableCell className={classes.tableCell} align="center">
                   Team
                 </TableCell>
-                {teams!.map((team, index) => {
-                  if (!(team.pool_id === poolId) && !(poolId === 'allPools')) {
+                {teams.map((team, index) => {
+                  if (!(team.poolId === poolId) && !(poolId === 'allPools')) {
                     return <></>;
                   }
                   return (
                     <TableCell
-                      key={team.team_id}
+                      key={team.id}
                       className={
                         showNames ? classes.cellsWithNames : classes.tableCell
                       }
                       align="center"
                     >
                       <p
-                        title={team.short_name}
+                        title={team.name}
                         className={
                           showNames
                             ? classes.innercellsWithNames
                             : classes.tableTextCell
                         }
                       >
-                        {showNames ? team.short_name : index + 1}
+                        {showNames ? team.name : index + 1}
                       </p>
                     </TableCell>
                   );
                 })}
               </TableRow>
-              {teams!.map((team, index) => (
-                <TableRow key={team.team_id}>
+              {teams.map((awayTeam, index) => (
+                <TableRow key={awayTeam.id}>
                   {index === 0 ? (
                     <TableCell
                       className={showNames ? classes.hiddenCell : classes.awayWrapp}
-                      rowSpan={(teams || []).length + 1}
+                      rowSpan={teams.length + 1}
                       align="center"
                     >
                       <p className={classes.awayTextWrapp}>Away</p>
                     </TableCell>
                   ) : null}
-                  {isPoolCell(team)}
+                  {renderPoolCell(awayTeam)}
                   <TableCell
                     style={{
                       display:
-                        poolId === team.pool_id || poolId === 'allPools'
+                        poolId === awayTeam.poolId || poolId === 'allPools'
                           ? 'table-cell'
                           : 'none',
                     }}
@@ -242,37 +245,30 @@ const MatrixOfPossibleGames = (props: IProps) => {
                     }
                     align="center"
                   >
-                    <p
-                      title={team.short_name}
-                      className={classes.tableTextCell}
-                    >
-                      {showNames ? team.short_name : index + 1}
+                    <p title={awayTeam.name} className={classes.tableTextCell}>
+                      {showNames ? awayTeam.name : index + 1}
                     </p>
                   </TableCell>
-                  {teams!.map(homeTeam => (
+                  {teams.map(homeTeam => (
                     <Cell
-                      key={team.team_id + homeTeam.team_id}
-                      awayTeamId={team.team_id}
-                      homeTeamId={homeTeam.team_id}
+                      key={awayTeam.id + homeTeam.id}
+                      awayTeamId={awayTeam.id}
+                      homeTeamId={homeTeam.id}
                       divisionId={divisionId}
                       divisionHex={divisionHex}
                       divisionName={divisionName}
                       isShow={
-                        (poolId === team.pool_id &&
-                          poolId === homeTeam.pool_id) ||
+                        (poolId === awayTeam.poolId &&
+                          poolId === homeTeam.poolId) ||
                         poolId === 'allPools'
                       }
-                      isSamePool={team.pool_id === homeTeam.pool_id}
-                      isSelected={
-                        games.find(
-                          v =>
-                            v.divisionId === divisionId &&
-                            v.awayTeamId === team.team_id &&
-                            v.homeTeamId === homeTeam.team_id
-                        )
-                          ? true
-                          : false
-                      }
+                      isSamePool={awayTeam.poolId === homeTeam.poolId}
+                      isSelected={games.some(
+                        v =>
+                          v.divisionId === divisionId &&
+                          v.awayTeamId === awayTeam.id &&
+                          v.homeTeamId === homeTeam.id
+                      )}
                       onAddGame={onAddGame}
                       onDeleteGame={onDeleteGame}
                     />
