@@ -10,6 +10,7 @@ import MD5 from 'crypto-js/md5';
 import { ButtonColors, ButtonVariant } from "common/enums/buttons";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import moment from 'moment';
 
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
@@ -131,6 +132,8 @@ const Waiver = ({
         'waiver_signature',
         JSON.stringify({ ip: IP, hash: hash, name: inputedValue })
       );
+      const currentDate = new Date();
+      onChange('waiver_sign_datetime', currentDate.toISOString());
     }
   };
 
@@ -141,8 +144,6 @@ const Waiver = ({
       return;
     }
     setHash(MD5(content.waiver_content).toString());
-    const currentDate = new Date();
-    onChange('waiver_sign_datetime', currentDate.toISOString());
   };
 
   const loadPrevData = () => {
@@ -170,15 +171,17 @@ const Waiver = ({
 
         const doc = new jsPDF('p', 'pt');
         let position = 10;
+        doc.addPage([imgWidth, pageHeight]);
         doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        heightLeft -= pageHeight + 130;
+        heightLeft -= pageHeight + 135;
 
         while (heightLeft >= 0) {
           position = heightLeft - imgHeight;
-          doc.addPage();
+          doc.addPage([imgWidth, pageHeight]);
           doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight + 130;
+          heightLeft -= pageHeight + 135;
         }
+        doc.deletePage(1);
         doc.save('Waiver.pdf');
       });
     }
@@ -191,13 +194,18 @@ const Waiver = ({
     const signature = data.waiver_signature
       ? JSON.parse(data.waiver_signature).name
       : '';
-
+    const date = moment(data.waiver_sign_datetime).format('MMM D, YYYY');
+    const time = moment(data.waiver_sign_datetime).format('hh:mm:ss');
+    const agreedment = data.waiver_sign_datetime
+      ? `Agreed and Accepted on ${date} at ${time}`
+      : '';
     const waiverContent =
       content.waiver_content === null || !content.waiver_content
         ? 'Not found.'
         : `<h1 style="text-align: center">${eventName}</h1>` +
-        content.waiver_content +
-        `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>`;
+          content.waiver_content +
+          `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>
+        <h2 style="font-size: 12px; text-align: right">${agreedment}</h2>`;
     return (
       <div className={classes.waiverContainer}>
         <div
