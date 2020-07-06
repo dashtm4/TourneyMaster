@@ -9,8 +9,8 @@ import 'react-phone-input-2/lib/high-res.css';
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 enum OptionsEnum {
-  'Require' = 1,
-  'Request' = 2,
+  'Required' = 1,
+  'Requested' = 2,
   'None' = 0,
 }
 
@@ -32,7 +32,7 @@ const RegistrationDetails = ({
   onChange,
   eventType,
 }: IRegistrationDetailsProps) => {
-  const options = ['Require', 'Request', 'None'];
+  const options = ['Required', 'Requested', 'None'];
 
   const onMaxTeamsPerDivisionChange = (e: InputTargetValue) =>
     onChange('max_teams_per_division', e.target.value);

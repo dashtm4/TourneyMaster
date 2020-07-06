@@ -41,7 +41,7 @@ enum EventMenuTitles {
 enum EventMenuRegistrationTitles {
   PRICING_AND_CALENDAR = 'Pricing & Calendar',
   REGISTRATION_DETAILS = 'Registration Details',
-  WAIVER = 'Waiver',
+  WAIVER = 'Waivers',
   PAYMENTS = 'Payments',
   REGISTRANTS = 'Registrants',
 }
