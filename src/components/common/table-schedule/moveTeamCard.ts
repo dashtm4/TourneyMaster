@@ -16,6 +16,7 @@ export default (
     divisionUnmatch: false,
     poolUnmatch: false,
     timeSlotInUse: false,
+    gameSlotInUse: false,
     differentFacility: false,
     playoffSlot: false,
   };
@@ -71,6 +72,13 @@ export default (
             findIndex(secondIncomingTeamGames, { id: item.id, date: day }) >= 0
         )
         .map(g => g.timeSlotId);
+
+    if (gamePlace?.awayTeam && gamePlace?.homeTeam) {
+      result = {
+        ...result,
+        gameSlotInUse: true,
+      };
+    }
 
     if (gamePlace?.isPlayoff) {
       result = {

@@ -267,6 +267,8 @@ const TableSchedule = ({
     switch (true) {
       case data.playoffSlot:
         return setMoveCardWarning(moveCardMessages.playoffSlot);
+      case data.gameSlotInUse:
+        return setMoveCardWarning(moveCardMessages.gameSlotInUse);
       case data.timeSlotInUse:
         return setMoveCardWarning(
           isSimultaneousDnd

@@ -311,6 +311,7 @@ export const mapUnusedFields = (
 const moveCardMessages = {
   playoffSlot:
     'This game slot is located in the Playoffs section. Please choose another one.',
+  gameSlotInUse: 'Game slot is already in use.',
   timeSlotInUseForTeam: 'This team is already playing at this time.',
   timeSlotInUseForGame: 'One team is already playing at this time.',
   differentFacility:
