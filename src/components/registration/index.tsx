@@ -34,7 +34,7 @@ import {
 import { History } from 'history';
 import { Loader, Toasts } from 'components/common';
 import { IEntity } from 'common/types';
-import Waiver from "./waiver";
+import Waiver from './waiver';
 
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
@@ -63,7 +63,7 @@ interface IRegistrationProps {
 class RegistrationView extends React.Component<
   IRegistrationProps,
   IRegistrationState
-> {
+  > {
   eventId = this.props.match.params.eventId;
   state = {
     registration: undefined,
@@ -117,16 +117,16 @@ class RegistrationView extends React.Component<
 
   scheduleIsValid = (registration: any) => {
     const schedule = registration.payment_schedule_json
-      ? JSON.parse(registration.payment_schedule_json!)?.find(
-          (x: any) => x.type === 'schedule'
-        )
-      : null;
+      ? JSON.parse(registration.payment_schedule_json!) ?.find(
+        (x: any) => x.type === 'schedule'
+      )
+        : null;
     return (
       !schedule ||
-      schedule?.schedule?.reduce(
-        (sum: number, phase: any) => sum + Number(phase.amount),
-        0
-      ) === 100
+        schedule ?.schedule ?.reduce(
+          (sum: number, phase: any) => sum + Number(phase.amount),
+          0
+        ) === 100
     );
   };
 
@@ -155,8 +155,8 @@ class RegistrationView extends React.Component<
     const { registration } = this.state;
 
     if (
-      ((registration as unknown) as IRegistration)?.is_library_YN ===
-      LibraryStates.FALSE
+      ((registration as unknown) as IRegistration) ?.is_library_YN ===
+        LibraryStates.FALSE
     ) {
       this.onChange(IRegistrationFields.IS_LIBRARY_YN, LibraryStates.TRUE);
     }
@@ -170,7 +170,7 @@ class RegistrationView extends React.Component<
     this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
-  click = () => console.log("change");
+  click = () => console.log('change');
 
   renderView = () => {
     const { registration, event } = this.props;
@@ -256,21 +256,21 @@ class RegistrationView extends React.Component<
                     <Payments data={registration} />
                   </SectionDropdown>
                 </li>
-                {event && event[0].waivers_required === 1
-                  ? <li>
+                {event && event[0].waivers_required === 1 ? (
+                  <li>
                     <SectionDropdown
+                      id={EventMenuRegistrationTitles.WAIVER}
                       type="section"
                       panelDetailsType="flat"
                       isDefaultExpanded={true}
                     >
-                      <span>Waiver</span>
+                      <span>Waivers & Wellness</span>
                       <div className={styles.waiverWrapp}>
                         <Waiver data={registration} isEdit={false} />
                       </div>
                     </SectionDropdown>
                   </li>
-                  : null
-                }
+                ) : null}
                 <li>
                   <SectionDropdown
                     id={EventMenuRegistrationTitles.REGISTRANTS}
@@ -284,15 +284,15 @@ class RegistrationView extends React.Component<
                 </li>
               </ul>
             ) : (
-              !this.props.isLoading && (
-                <div className={styles.noFoundWrapper}>
-                  <span>
-                    There are currently no registrations. Start with the "Add"
-                    button.
+                !this.props.isLoading && (
+                  <div className={styles.noFoundWrapper}>
+                    <span>
+                      There are currently no registrations. Start with the "Add"
+                      button.
                   </span>
-                </div>
-              )
-            )}
+                  </div>
+                )
+              )}
           </div>
         </section>
       );
