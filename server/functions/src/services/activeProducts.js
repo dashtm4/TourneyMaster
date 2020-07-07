@@ -173,9 +173,10 @@ export const getPaymentPlans = async ({
           total_price: sku.price,
           payment_plan_id: sku.sku_id + '_FP',
           payment_plan_name: 'Pay in full',
-          payment_plan_notice: `Your credit card will be charged $${sku.price.toFixed(
-            2
-          )} now.`,
+          payment_plan_notice: `Your credit card will be charged $${(
+            sku.price *
+            (1 + sku.sales_tax_rate / 100)
+          ).toFixed(2)} now.`,
           type: 'installment',
           discount: 0,
           iterations: 1,
