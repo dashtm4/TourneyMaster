@@ -63,7 +63,7 @@ interface IRegistrationProps {
 class RegistrationView extends React.Component<
   IRegistrationProps,
   IRegistrationState
-  > {
+> {
   eventId = this.props.match.params.eventId;
   state = {
     registration: undefined,
@@ -117,16 +117,16 @@ class RegistrationView extends React.Component<
 
   scheduleIsValid = (registration: any) => {
     const schedule = registration.payment_schedule_json
-      ? JSON.parse(registration.payment_schedule_json!) ?.find(
-        (x: any) => x.type === 'schedule'
-      )
-        : null;
+      ? JSON.parse(registration.payment_schedule_json!)?.find(
+          (x: any) => x.type === 'schedule'
+        )
+      : null;
     return (
       !schedule ||
-        schedule ?.schedule ?.reduce(
-          (sum: number, phase: any) => sum + Number(phase.amount),
-          0
-        ) === 100
+      schedule?.schedule?.reduce(
+        (sum: number, phase: any) => sum + Number(phase.amount),
+        0
+      ) === 100
     );
   };
 
@@ -155,8 +155,8 @@ class RegistrationView extends React.Component<
     const { registration } = this.state;
 
     if (
-      ((registration as unknown) as IRegistration) ?.is_library_YN ===
-        LibraryStates.FALSE
+      ((registration as unknown) as IRegistration)?.is_library_YN ===
+      LibraryStates.FALSE
     ) {
       this.onChange(IRegistrationFields.IS_LIBRARY_YN, LibraryStates.TRUE);
     }
@@ -263,6 +263,7 @@ class RegistrationView extends React.Component<
                       type="section"
                       panelDetailsType="flat"
                       isDefaultExpanded={true}
+                      expanded={this.state.isSectionsExpand}
                     >
                       <span>Waivers & Wellness</span>
                       <div className={styles.waiverWrapp}>
@@ -284,15 +285,15 @@ class RegistrationView extends React.Component<
                 </li>
               </ul>
             ) : (
-                !this.props.isLoading && (
-                  <div className={styles.noFoundWrapper}>
-                    <span>
-                      There are currently no registrations. Start with the "Add"
-                      button.
+              !this.props.isLoading && (
+                <div className={styles.noFoundWrapper}>
+                  <span>
+                    There are currently no registrations. Start with the "Add"
+                    button.
                   </span>
-                  </div>
-                )
-              )}
+                </div>
+              )
+            )}
           </div>
         </section>
       );
