@@ -8,8 +8,8 @@ import { getPaymentPlans } from '../services/activeProducts.js';
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 const ssm = new SSM({ region: 'us-east-1' });
 
-export const paymentSuccessWebhook = async (req) => {
-  const getParams = async (paramName) => {
+export const paymentSuccessWebhook = async req => {
+  const getParams = async paramName => {
     return JSON.parse(
       (
         await ssm
@@ -98,13 +98,15 @@ export const paymentSuccessWebhook = async (req) => {
       );
 
       if (event.type === 'invoice.payment_succeeded') {
-        const newPaymentAmount = Math.round(+lineItem.amount * paidRatio) / 100;
+        const newPaymentNetAmount =
+          Math.round(+lineItem.amount * paidRatio) / 100;
         const newPaymentTax =
           Math.round(
             +lineItem.tax_amounts.reduce((a, x) => a + +x.amount, 0) * paidRatio
           ) / 100;
+        const newPaymentGrossAmount = newPaymentNetAmount + newPaymentTax;
         const newPaymentFees =
-          Math.round(newPaymentAmount * 100 * 0.029) / 100 +
+          Math.round(newPaymentNetAmount * 100 * 0.029) / 100 +
           0.3 +
           Math.round(
             (+event.data.object.application_fee_amount * +lineItem.amount) /
@@ -131,7 +133,12 @@ export const paymentSuccessWebhook = async (req) => {
           reg_response.ext_payment_system = 'stripe';
           reg_response.ext_payment_id = event.data.object.id;
           reg_response.currency = paymentPlan.currency;
-          reg_response.amount_due = paymentPlan.total_price;
+          reg_response.amount_due =
+            Math.round(
+              paymentPlan.total_price *
+                (1 + paymentPlan.sales_tax_rate / 100) *
+                100
+            ) / 100;
           reg_response.payment_amount = 0;
           reg_response.payment_date = newPaymentDate;
           reg_response.created_by = owner_id;
@@ -161,12 +168,14 @@ export const paymentSuccessWebhook = async (req) => {
       VALUES (?, ?, ?, 'scheduled', ?, ?, 1, ?)`;
           let params = [];
           if (paymentPlan.type === 'schedule') {
-            params = paymentPlan.schedule.map((phase) => [
+            params = paymentPlan.schedule.map(phase => [
               reg_response_id,
               phase.price_external_id,
               phase.date === 'now' ? new Date() : new Date(+phase.date * 1000),
               paymentPlan.currency,
-              phase.amount,
+              Math.round(
+                phase.amount * (1 + paymentPlan.sales_tax_rate / 100) * 100
+              ) / 100,
               owner_id,
             ]);
           } else if (paymentPlan.type === 'installment') {
@@ -197,12 +206,14 @@ export const paymentSuccessWebhook = async (req) => {
                 );
               }
             }
-            params = installmentDates.map((date) => [
+            params = installmentDates.map(date => [
               reg_response_id,
               paymentPlan.payment_plan_id,
               date,
               paymentPlan.currency,
-              paymentPlan.price,
+              Math.round(
+                paymentPlan.price * (1 + paymentPlan.sales_tax_rate / 100) * 100
+              ) / 100,
               owner_id,
             ]);
           }
@@ -218,7 +229,7 @@ export const paymentSuccessWebhook = async (req) => {
           `update ${toParams.db.database}.${tableName} set payment_amount=payment_amount+?, 
            payment_date=?,ext_payment_id=? where reg_response_id=?`,
           [
-            newPaymentAmount,
+            newPaymentGrossAmount,
             newPaymentDate,
             event.data.object.id,
             reg_response_id,
@@ -241,10 +252,10 @@ export const paymentSuccessWebhook = async (req) => {
             `update ${toParams.db.database}.registrations_payments set amount_paid=amount_paid+?, amount_fees=amount_fees+?, amount_tax=amount_tax+?, amount_net=amount_net+?,
            payment_date=?,ext_payment_system=?, ext_payment_id=?, payment_status=?, payment_details=? where reg_payment_id=?`,
             [
-              newPaymentAmount,
+              newPaymentGrossAmount,
               newPaymentFees,
               newPaymentTax,
-              newPaymentAmount - newPaymentFees - newPaymentTax,
+              newPaymentNetAmount - newPaymentFees,
               newPaymentDate,
               'stripe',
               event.data.object.id,

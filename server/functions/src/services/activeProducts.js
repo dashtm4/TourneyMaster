@@ -47,9 +47,13 @@ export const getPaymentPlans = async ({
               const installmentPrice =
                 Math.round((+sku.price / +rawPaymentPlan.iterations) * 100) /
                 100;
+              const installmentPriceWithTax =
+                Math.round(
+                  installmentPrice * (1 + sku.sales_tax_rate / 100) * 100
+                ) / 100;
               const recurringPayments =
                 +rawPaymentPlan.iterations > 1
-                  ? `$${installmentPrice.toFixed(
+                  ? `$${installmentPriceWithTax.toFixed(
                       2
                     )} for ${+rawPaymentPlan.iterations} times every${
                       +rawPaymentPlan.intervalCount > 1
@@ -67,7 +71,7 @@ export const getPaymentPlans = async ({
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
                 payment_plan_notice: `The Installment Schedule is:  ${recurringPayments}the total amount of $${(
-                  installmentPrice * rawPaymentPlan.iterations
+                  installmentPriceWithTax * rawPaymentPlan.iterations
                 ).toFixed(2)}`,
                 type: rawPaymentPlan.type,
                 iterations: rawPaymentPlan.iterations,
@@ -122,6 +126,9 @@ export const getPaymentPlans = async ({
                     date +
                     '_' +
                     amount,
+                  amountWithTax:
+                    Math.round(amount * (1 + sku.sales_tax_rate / 100) * 100) /
+                    100,
                 }))
                 .sort((a, b) =>
                   b.date === 'now'
@@ -144,7 +151,7 @@ export const getPaymentPlans = async ({
                         x.date === 'now'
                           ? 'now'
                           : dateFormat(new Date(x.date * 1000), 'yyyy-mm-dd')
-                      }: $${x.amount.toFixed(2)}`
+                      }: $${x.amountWithTax.toFixed(2)}`
                   )
                   .join(', ')}`,
                 type: rawPaymentPlan.type,
@@ -166,9 +173,10 @@ export const getPaymentPlans = async ({
           total_price: sku.price,
           payment_plan_id: sku.sku_id + '_FP',
           payment_plan_name: 'Pay in full',
-          payment_plan_notice: `Your credit card will be charged $${sku.price.toFixed(
-            2
-          )} now.`,
+          payment_plan_notice: `Your credit card will be charged $${(
+            sku.price *
+            (1 + sku.sales_tax_rate / 100)
+          ).toFixed(2)} now.`,
           type: 'installment',
           discount: 0,
           iterations: 1,
