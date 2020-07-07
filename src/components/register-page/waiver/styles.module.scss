@@ -1,17 +1,53 @@
-﻿.waiverWrapp {
+﻿.waiverContainer {
+  position: relative;
+}
+.waiverWrapp {
   background-color: white;
   width: 100%;
   max-height: 500px;
   overflow: auto;
-  padding: 40px;
   margin-left: auto;
   margin-right: auto;
   line-height: normal;
   position: relative;
-  z-index: 1000;
 
   &:hover {
-    cursor: url(../../../assets/scroll-cursor.png), auto;
+    .warnText {
+      visibility: visible;
+      width: 100%;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      background: linear-gradient(to bottom, grey 0%, white 100%);
+      opacity: 0.5;
+    }
   }
-  cursor: url(../../../assets/scroll-cursor.png), auto;
+}
+.waiver {
+  padding: 40px;
+}
+.fullName {
+  font-family: Segoe Script;
+  text-align: right;
+  height: 40px;
+  margin-top: 8px;
+}
+.inputWrapp {
+  margin: 8px;
+}
+.errorText {
+  color: red;
+  margin-left: 8px;
+}
+.buttonWrapp {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  z-index: 1000;
+}
+.hiddenButton {
+  visibility: hidden;
+}
+.warnText {
+  visibility: hidden;
 }
