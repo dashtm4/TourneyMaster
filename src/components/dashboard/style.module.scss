@@ -105,3 +105,19 @@
 .notificationsContainer {
   margin: 35px 0;
 }
+
+.modal {
+  margin: 20px;
+  color: #6a6a6a;
+
+  .btnWrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 5px;
+  }
+
+  .message {
+    padding-top: 22px;
+  }
+}

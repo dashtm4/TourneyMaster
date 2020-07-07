@@ -26,7 +26,7 @@
 .wBtnsWrapper {
   display: flex;
   justify-content: flex-end;
-  & > :first-child {
+  & > :nth-child(n) {
     margin-right: 15px;
   }
 }

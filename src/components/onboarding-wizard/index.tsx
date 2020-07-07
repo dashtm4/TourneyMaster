@@ -1,21 +1,26 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import history from 'browserhistory';
+import { Routes } from 'common/enums';
+import {
+  BindingCbWithOne,
+  BindingAction,
+  IConfigurableOrganization,
+} from 'common/models';
 import { Modal, Radio, Button, HeadingLevelTwo } from 'components/common';
-import styles from './styles.module.scss';
 import CreateOrganization from 'components/organizations-management/components/create-organization';
 import ApplyInvitation from 'components/organizations-management/components/apply-invitation';
-import { BindingCbWithOne, IConfigurableOrganization } from 'common/models';
 import {
   createOrganization,
   addUserToOrganization,
 } from 'components/organizations-management/logic/actions';
-import { Routes } from 'common/enums';
-import history from 'browserhistory';
+import styles from './styles.module.scss';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface Props {
   isOpen: boolean;
+  onSkipOpen?: BindingAction;
   createOrganization: BindingCbWithOne<IConfigurableOrganization>;
   addUserToOrganization: BindingCbWithOne<string>;
 }
@@ -42,6 +47,8 @@ class OnboardingWizard extends React.Component<Props> {
   };
 
   renderStepOne = () => {
+    const { onSkipOpen } = this.props;
+
     return (
       <div style={{ height: '185px' }}>
         <p className={styles.message}>
@@ -55,7 +62,7 @@ class OnboardingWizard extends React.Component<Props> {
             checked={TypeOptions[this.state.type] || ''}
           />
         </div>
-        <div className={styles.btnWrapper}>
+        <div className={styles.statusWrapper}>
           <a
             href="https://tourneymaster.s3.amazonaws.com/public/Quickstarts/Tourney+Master+Initial+Sign+In+Manual.pdf"
             target="_blank"
@@ -63,18 +70,27 @@ class OnboardingWizard extends React.Component<Props> {
           >
             Quickstart Guide
           </a>
-          <Button
-            label="Next"
-            color="primary"
-            variant="contained"
-            onClick={this.onNextStep}
-          />
+          <div className={styles.btnWrapper}>
+            <Button
+              label="Skip"
+              color="secondary"
+              variant="text"
+              onClick={onSkipOpen}
+            />
+            <Button
+              label="Next"
+              color="primary"
+              variant="contained"
+              onClick={this.onNextStep}
+            />
+          </div>
         </div>
       </div>
     );
   };
 
   renderStepTwo = (type: number) => {
+    const { onSkipOpen } = this.props;
     switch (type) {
       case 1:
         return (
@@ -83,6 +99,7 @@ class OnboardingWizard extends React.Component<Props> {
               type="wizard"
               createOrganization={this.props.createOrganization}
               onCancelBtn={this.onPreviousStep}
+              onSkipBtn={onSkipOpen}
               isSectionExpand={true}
             />
           </div>
@@ -94,6 +111,7 @@ class OnboardingWizard extends React.Component<Props> {
               type="wizard"
               addUserToOrganization={this.props.addUserToOrganization}
               onCancel={this.onPreviousStep}
+              onSkip={onSkipOpen}
               isSectionExpand={true}
             />
           </div>
