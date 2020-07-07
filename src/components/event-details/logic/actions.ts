@@ -547,7 +547,7 @@ export const createDataFromCSV: ActionCreator<ThunkAction<
       }
 
       await Promise.all(promisesAddTeams);
-
+      cb();
       Toasts.successToast('Data successfully imported');
     } catch {
       Toasts.errorToast("Couldn't import data");
