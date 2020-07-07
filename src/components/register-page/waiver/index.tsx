@@ -11,7 +11,6 @@ import { ButtonColors, ButtonVariant } from "common/enums/buttons";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import moment from 'moment';
-import styles from './styles.module.scss';
 
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
@@ -25,7 +24,6 @@ const useStyles = makeStyles(
       width: '100%',
       maxHeight: '500px',
       overflow: 'auto',
-      padding: '40px',
       marginLeft: 'auto',
       marginRight: 'auto',
       lineHeight: 'normal',
@@ -60,7 +58,11 @@ const useStyles = makeStyles(
     warnText: {
       width: '100%',
       textAlign: 'center',
-      padding: '4px',
+      padding: '8px',
+      position: 'sticky',
+      top: 0,
+      background: 'linear-gradient(to bottom, grey 0%, white 100%)',
+      opacity: 0.5,
     },
   })
 );
@@ -270,10 +272,11 @@ const Waiver = ({
             isIconRightSide={true}
           />
         </div>
-        <h2 className={!isBottom ? classes.warnText : classes.hiddenButton}>
-          Scroll to the bottom of the waiver to enable signing of the document
-        </h2>
-        <div className={styles.waiverWrapp} ref={scrollRef}>
+
+        <div className={classes.waiverWrapp} ref={scrollRef}>
+          <div className={!isBottom ? classes.warnText : classes.hiddenButton}>
+            Scroll to the bottom of the waiver to enable signing of the document
+          </div>
           <div
             id="waiver-content"
             className={classes.waiver}
@@ -281,8 +284,7 @@ const Waiver = ({
           />
         </div>
         <div>
-
-          <div className={isBottom ? classes.inputWrapp : classes.hiddenButton}>
+          <div className={classes.inputWrapp}>
             <Input
               label={'If you agree to these terms and conditions, please retype your first and last name.'}
               value={name}
