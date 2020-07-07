@@ -28,6 +28,14 @@ export const UPDATE_SCHEDULES_DETAILS_IN_PROGRESS = 'UPDATE_SCHEDULES_DETAILS_IN
 export const UPDATE_SCHEDULES_DETAILS_SUCCESS = 'UPDATE_SCHEDULES_DETAILS_SUCCESS';
 export const UPDATE_SCHEDULES_DETAILS_FAILURE = 'UPDATE_SCHEDULES_DETAILS_FAILURE';
 
+export const DELETE_SCHEDULES_DETAILS_IN_PROGRESS = 'DELETE_SCHEDULES_DETAILS_IN_PROGRESS';
+export const DELETE_SCHEDULES_DETAILS_SUCCESS = 'DELETE_SCHEDULES_DETAILS_SUCCESS';
+export const DELETE_SCHEDULES_DETAILS_FAILURE = 'DELETE_SCHEDULES_DETAILS_FAILURE';
+
+export const ADD_SCHEDULES_DETAILS_IN_PROGRESS = 'ADD_SCHEDULES_DETAILS_IN_PROGRESS';
+export const ADD_SCHEDULES_DETAILS_SUCCESS = 'ADD_SCHEDULES_DETAILS_SUCCESS';
+export const ADD_SCHEDULES_DETAILS_FAILURE = 'ADD_SCHEDULES_DETAILS_FAILURE';
+
 interface IFetchFieldsSuccess {
   type: 'FETCH_FIELDS_SUCCESS';
   payload: IField[];
@@ -110,6 +118,32 @@ interface UpdateSchedulesDetailsFailure {
   type: 'UPDATE_SCHEDULES_DETAILS_FAILURE';
 }
 
+interface DeleteSchedulesDetailsInProgress {
+  type: 'DELETE_SCHEDULES_DETAILS_IN_PROGRESS';
+}
+
+interface DeleteSchedulesDetailsSuccess {
+  type: 'DELETE_SCHEDULES_DETAILS_SUCCESS';
+  payload: ISchedulesDetails[];
+}
+
+interface DeleteSchedulesDetailsFailure {
+  type: 'DELETE_SCHEDULES_DETAILS_FAILURE';
+}
+
+interface AddSchedulesDetailsInProgress {
+  type: 'ADD_SCHEDULES_DETAILS_IN_PROGRESS';
+}
+
+interface AddSchedulesDetailsSuccess {
+  type: 'ADD_SCHEDULES_DETAILS_SUCCESS';
+  payload: ISchedulesDetails[];
+}
+
+interface AddSchedulesDetailsFailure {
+  type: 'ADD_SCHEDULES_DETAILS_FAILURE';
+}
+
 export type FieldsAction = IFetchFieldsSuccess | IFetchFieldsFailure;
 
 export type IScheduleAction =
@@ -128,4 +162,10 @@ export type IScheduleAction =
   | SchedulesDetailsClear
   | UpdateSchedulesDetailsInProgress
   | UpdateSchedulesDetailsSuccess
-  | UpdateSchedulesDetailsFailure;
+  | UpdateSchedulesDetailsFailure
+  | DeleteSchedulesDetailsInProgress
+  | DeleteSchedulesDetailsSuccess
+  | DeleteSchedulesDetailsFailure
+  | AddSchedulesDetailsInProgress
+  | AddSchedulesDetailsSuccess
+  | AddSchedulesDetailsFailure;

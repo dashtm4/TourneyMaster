@@ -3,22 +3,29 @@ import styles from './styles.module.scss';
 import { useDrop } from 'react-dnd';
 import { IDropParams } from 'components/common/matrix-table/dnd/drop';
 import { IEventDetails } from 'common/models';
-import { IConfigurableGame } from 'components/common/matrix-table/helper';
 import GameDragCard from './dnd/game-drag';
 import { Radio } from 'components/common';
-import { GamesListDisplayType } from './enums';
+import { IMatchup } from 'components/visual-games-maker/helpers';
 
 interface IProps {
   event: IEventDetails;
-  games: IConfigurableGame[];
+  games: IMatchup[];
+  inner?: boolean;
   showHeatmap?: boolean;
   onDrop: (dropParams: IDropParams) => void;
 }
 
+enum DisplayType {
+  UNASSIGNED_GAMES = 'Unassigned games',
+  ALL_GAMES = 'All games',
+}
+
 const UnassignedGamesList = (props: IProps) => {
-  const { games, onDrop, showHeatmap } = props;
+  const { games, inner, onDrop, showHeatmap } = props;
   const acceptType = 'teamdrop';
-  const [gamesListDisplayType, setGamesListDisplayType] = useState(GamesListDisplayType.UNASSIGNED_GAMES);
+  const [displayType, setDisplayType] = useState(DisplayType.UNASSIGNED_GAMES);
+
+  const assignedGames = games.filter(g => !!g.assignedGameId);
 
   const [{ isOver }, drop] = useDrop({
     accept: acceptType,
@@ -37,9 +44,9 @@ const UnassignedGamesList = (props: IProps) => {
     },
   });
 
-  const onGamesListDisplayTypeChange = (e: any) => setGamesListDisplayType(e.nativeEvent.target.value);
+  const onGamesListDisplayTypeChange = (e: any) => setDisplayType(e.nativeEvent.target.value);
 
-  const renderGames = (items: IConfigurableGame[]) => (
+  const renderGames = (items: IMatchup[]) => (
     <>
       {items.map(game => (
         <tr key={`tr-${game.awayTeamId}-${game.homeTeamId}`}>
@@ -57,14 +64,14 @@ const UnassignedGamesList = (props: IProps) => {
 
   return (
     <div
-      className={styles.container}
+      className={`${styles.container} ${inner ? styles.inner : ''}`}
       style={{ background: isOver ? '#fcfcfc' : '#ececec' }}
     >
-      <h3 className={styles.title}>Needs Assignment</h3>
+      {!inner && <h3 className={styles.title}>Needs Assignment</h3>}
       <div className={styles.checkboxWrapper}>
         <Radio
-          options={Object.values(GamesListDisplayType)}
-          checked={gamesListDisplayType}
+          options={Object.values(DisplayType)}
+          checked={displayType}
           onChange={onGamesListDisplayTypeChange}
           row={true}
         />
@@ -77,16 +84,16 @@ const UnassignedGamesList = (props: IProps) => {
             </tr>
           </thead>
           <tbody>
-            {renderGames(games.filter(g => !g.isAssigned))}
+            {renderGames(games.filter(g => !g.assignedGameId))}
             {!!(
-              gamesListDisplayType === GamesListDisplayType.ALL_GAMES &&
-              games.some(g => g.isAssigned)
+              displayType === DisplayType.ALL_GAMES &&
+              assignedGames.length > 0
             ) && (
                 <>
                   <tr className={styles.emptyRow}>
                     <td>Assigned Games</td>
                   </tr>
-                  {renderGames(games.filter(g => g.isAssigned))}
+                  {renderGames(assignedGames)}
                 </>
               )}
           </tbody>

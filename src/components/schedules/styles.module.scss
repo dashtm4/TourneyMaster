@@ -29,3 +29,38 @@
     margin-right: 13px;
   }
 }
+
+.tabsContainer {
+  .tabToggle {
+    background: #f4f4f4;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+    position: relative;
+    border-radius: 5px 5px 0 0;
+    box-shadow: -6px -5px 10px 0 rgba(0, 0, 0, 0.03);
+    background: #ececec;
+
+    > div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #a4a1a1;
+      height: 40px;
+      min-width: 150px;
+      border-radius: 5px 5px 0 0;
+      cursor: pointer;
+      font-size: 15px;
+      padding: 0 15px;
+
+      &.active {
+        box-shadow: 8px -4px 14px -8px rgba(0, 0, 0, 0.2);
+        color: #565656;
+        background: #f4f4f4;
+      }
+    }
+  }
+}

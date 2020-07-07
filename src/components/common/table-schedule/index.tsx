@@ -28,7 +28,7 @@ import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 import { Button } from 'components/common';
 import PopupConfirm from 'components/common/popup-confirm';
 import { MatrixTable, CardMessage } from 'components/common';
-import ListUnassigned from './components/list-unassigned';
+import ListUnassignedTeams from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
@@ -39,7 +39,7 @@ import { IDiagnosticsInput } from 'components/schedules/diagnostics';
 import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
 import { IBracketGame } from 'components/playoffs/bracketGames';
 import { updateGameSlot } from 'components/playoffs/helper';
-import UnassignedGamesList from './components/list-unassigned-games';
+import ListUnassignedMatchups from './components/list-unassigned-games';
 import PopupAdvancedWorkflow from './components/popup-advanced-workflow';
 import {
   mapGamesByFilter,
@@ -48,10 +48,10 @@ import {
   mapUnusedFields,
   moveCardMessages,
   getScheduleWarning,
+  AssignmentType,
 } from './helpers';
 import { IScheduleFilter, OptimizeTypes } from './types';
 import {
-  IConfigurableGame,
   IGame,
   settleTeamsPerGames,
   calculateDays,
@@ -60,6 +60,9 @@ import { IDropParams } from '../matrix-table/dnd/drop';
 import moveTeamCard from './moveTeamCard';
 import { CardMessageTypes } from '../card-message/types';
 import styles from './styles.module.scss';
+import { IMatchup } from 'components/visual-games-maker/helpers';
+import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -89,12 +92,19 @@ interface Props {
   bracketGames?: IBracketGame[];
   onBracketGameUpdate: (bracketGame: IBracketGame) => void;
   recalculateDiagnostics?: () => void;
-  gamesList?: IConfigurableGame[];
+  matchups: IMatchup[];
+  onAssignMatchup: (id: string, assignedGameId: number | null) => void;
   updateSchedulesDetails?: (
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
   ) => void;
 }
+
+// const useStyles = makeStyles({
+//   toggleButtomGroup: {
+//     width: '100%',
+//   }
+// });
 
 const TableSchedule = ({
   tableType,
@@ -124,15 +134,27 @@ const TableSchedule = ({
   bracketGames,
   onBracketGameUpdate,
   recalculateDiagnostics,
-  gamesList,
+  matchups,
+  onAssignMatchup,
   updateSchedulesDetails,
 }: Props) => {
+  const theme = createMuiTheme({
+    overrides: {
+      MuiButtonBase: {
+        root: {
+          width: '100%',
+          height: '36px',
+        },
+      },
+    },
+  });
+
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
 
   const [isFromMaker] = useState(
-    (scheduleData as IConfigurableSchedule)?.creationType ===
-      ScheduleCreationType.VisualGamesMaker
+    (scheduleData as IConfigurableSchedule)?.create_mode ===
+    ScheduleCreationType[ScheduleCreationType.Visual]
   );
   const [simultaneousDnd, setSimultaneousDnd] = useState(isFromMaker);
 
@@ -147,16 +169,26 @@ const TableSchedule = ({
   const [zoomingDisabled, changeZoomingAction] = useState(false);
 
   const [showHeatmap, onHeatmapChange] = useState(true);
+  const [assignmentType, setAssignmentType] = useState(
+    isFromMaker ? AssignmentType.Matchups : AssignmentType.Teams
+  );
+  const onAssignmentTypeChange = (_: any, newAssignmentType: AssignmentType) => {
+    if (newAssignmentType) {
+      setAssignmentType(newAssignmentType);
+    }
+  };
 
   interface IMoveCardResult {
+    gameId?: number;
+    teamId?: string;
     teamCards: ITeamCard[];
-    possibleGame?: IConfigurableGame;
+    possibleGame?: IMatchup;
   }
   const [moveCardResult, setMoveCardResult] = useState<IMoveCardResult>();
   const [moveCardWarning, setMoveCardWarning] = useState<string | undefined>();
   const [days, setDays] = useState(calculateDays(teamCards));
 
-  const toggleSimultaneousDnd = () => setSimultaneousDnd(v => !v);
+  const toggleSimultaneousDnd = () => setSimultaneousDnd(!toggleSimultaneousDnd);
 
   const manageGamesData = useCallback(() => {
     let definedGames = [...games];
@@ -201,23 +233,18 @@ const TableSchedule = ({
   useEffect(() => setTableGames(manageGamesData()), [manageGamesData]);
 
   const managePossibleGames = useCallback(() => {
-    if (!gamesList) {
-      return [] as IConfigurableGame[];
-    }
-    return gamesList.map(v => {
+    return matchups.map(v => {
       const homeTeam = teamCards.find(t => t.id === v.homeTeamId);
       const awayTeam = teamCards.find(t => t.id === v.awayTeamId);
 
       return {
         ...v,
         homeTeam,
-        homeDisplayName: homeTeam?.name,
         awayTeam,
-        awayDisplayName: awayTeam?.name,
       };
     });
-  }, [gamesList, teamCards]);
-  const [possibleGames, setPossibleGames] = useState<IConfigurableGame[]>(
+  }, [matchups, teamCards]);
+  const [possibleGames, setPossibleGames] = useState<IMatchup[]>(
     managePossibleGames()
   );
   useEffect(() => setPossibleGames(managePossibleGames()), [
@@ -261,6 +288,7 @@ const TableSchedule = ({
     );
 
     const result: IMoveCardResult = {
+      gameId: dropParams.gameId,
       teamCards: data.teamCards,
       possibleGame: dropParams.possibleGame,
     };
@@ -268,6 +296,8 @@ const TableSchedule = ({
     switch (true) {
       case data.playoffSlot:
         return setMoveCardWarning(moveCardMessages.playoffSlot);
+      case data.gameSlotInUse:
+        return setMoveCardWarning(moveCardMessages.gameSlotInUse);
       case data.timeSlotInUse:
         return setMoveCardWarning(
           isSimultaneousDnd
@@ -289,6 +319,7 @@ const TableSchedule = ({
       default:
         markGameAssigned(
           result.possibleGame,
+          result.gameId,
           !dropParams.gameId && !dropParams.originGameId,
           !!(dropParams.gameId && dropParams.originGameId)
         );
@@ -303,35 +334,58 @@ const TableSchedule = ({
 
   const confirmReplacement = () => {
     if (moveCardResult) {
-      markGameAssigned(moveCardResult.possibleGame);
+      markGameAssigned(moveCardResult.possibleGame, moveCardResult.gameId);
       onTeamCardsUpdate(moveCardResult.teamCards);
       resetMoveCardWarning();
     }
   };
 
   const markGameAssigned = (
-    unassignedGame?: IConfigurableGame,
+    game?: IMatchup | IGame,
+    gameId?: number,
     doPreventAssign: boolean = false,
     doPreventUnassign: boolean = false
   ) => {
-    if (unassignedGame && gamesList) {
-      const foundGame = gamesList.find(
-        g =>
-          g.homeTeamId === unassignedGame.homeTeam?.id &&
-          g.awayTeamId === unassignedGame.awayTeam?.id
-      );
+    if (!game) {
+      return;
+    }
+
+    const isMatchup = typeof game.id === 'string';
+    if (isMatchup) {
+      const matchup = game as IMatchup;
+      const foundGame = tableGames.find(g => g.id === gameId);
       if (foundGame) {
-        if (foundGame.isAssigned) {
+        if (!!matchup.assignedGameId) {
           if (!doPreventUnassign) {
-            foundGame.isAssigned = false;
+            onUnassignMatchup(matchup);
           }
         } else {
           if (!doPreventAssign) {
-            foundGame.isAssigned = true;
+            onAssignMatchup(matchup.id, foundGame.id);
           }
         }
       }
     }
+
+    const gameSlot = game as IGame;
+    if (gameSlot) {
+      const foundMathup = matchups.find(
+        g =>
+          g.homeTeamId === gameSlot.homeTeam?.id &&
+          g.awayTeamId === gameSlot.awayTeam?.id
+      );
+      if (foundMathup) {
+        if (!!foundMathup.assignedGameId) {
+          if (!doPreventUnassign) {
+            onUnassignMatchup(foundMathup);
+          }
+        }
+      }
+    }
+  };
+
+  const onUnassignMatchup = (game: IMatchup) => {
+    onAssignMatchup(game.id, null);
   };
 
   const onLockAll = () => {
@@ -421,24 +475,45 @@ const TableSchedule = ({
         <DndProvider backend={HTML5Backend}>
           {tableType === TableScheduleTypes.SCHEDULES && (
             <>
-              {isFromMaker ? (
-                <UnassignedGamesList
-                  games={possibleGames}
-                  event={event}
-                  showHeatmap={showHeatmap}
-                  onDrop={moveCard}
-                />
-              ) : (
-                <ListUnassigned
-                  pools={pools}
-                  event={event}
-                  tableType={tableType}
-                  teamCards={teamCards}
-                  minGamesNum={minGamesNum}
-                  showHeatmap={showHeatmap}
-                  onDrop={moveCard}
-                />
-              )}
+              <div className={`${styles.container} ${isFromMaker ? styles.vgm : ''}`}>
+                {isFromMaker && (
+                  <>
+                    <h3 className={styles.title}>Needs Assignment</h3>
+                    <ThemeProvider theme={theme}>
+                      <div className={styles.toggleButtomGroup}>
+                        <ToggleButtonGroup value={assignmentType} exclusive onChange={onAssignmentTypeChange} aria-label="text alignment">
+                          <ToggleButton value={AssignmentType.Matchups}>
+                            Matchups
+                          </ToggleButton>
+                          <ToggleButton value={AssignmentType.Teams}>
+                            Teams
+                          </ToggleButton>
+                        </ToggleButtonGroup>
+                      </div>
+                    </ThemeProvider>
+                  </>)}
+
+                {isFromMaker && assignmentType === AssignmentType.Matchups ? (
+                  <ListUnassignedMatchups
+                    games={possibleGames}
+                    event={event}
+                    showHeatmap={showHeatmap}
+                    onDrop={moveCard}
+                    inner={isFromMaker}
+                  />
+                ) : (
+                    <ListUnassignedTeams
+                      pools={pools}
+                      event={event}
+                      tableType={tableType}
+                      teamCards={teamCards}
+                      minGamesNum={minGamesNum}
+                      showHeatmap={showHeatmap}
+                      onDrop={moveCard}
+                      inner={isFromMaker}
+                    />
+                  )}
+              </div>
             </>
           )}
           <div className={styles.tableWrapper}>

@@ -82,7 +82,7 @@
 
       tbody {
         display: block;
-        height: 381px;
+        height: 290px;
         width: 310px;
         overflow-x: hidden;
         overflow-y: scroll;
@@ -120,4 +120,8 @@
       }
     }
   }
+}
+
+.inner.container {
+    margin-top: 0!important;
 }
