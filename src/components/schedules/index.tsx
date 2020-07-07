@@ -443,9 +443,7 @@ class Schedules extends Component<Props, State> {
           return {
             ...v,
             games: v.games?.filter(
-              game =>
-                game.awayTeamId !== deselectedGame.awayTeamId &&
-                game.homeTeamId !== deselectedGame.homeTeamId
+              game => game.id !== deselectedGame.assignedGameId
             ),
           };
         });
