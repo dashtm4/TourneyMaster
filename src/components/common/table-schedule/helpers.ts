@@ -28,6 +28,11 @@ interface IFilterValues {
   fieldsOptions: IMultiSelectOption[];
 }
 
+export enum AssignmentType {
+  Matchups = 'Matchups',
+  Teams = 'Teams',
+}
+
 const getUnsatisfiedTeams = (
   teamCards: ITeamCard[],
   minGamesNum: number | null,

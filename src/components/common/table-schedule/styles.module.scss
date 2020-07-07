@@ -8,6 +8,13 @@
   min-width: 1412px;
 }
 
+.checkboxWrapper {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-around;
+}
+
 .diagnosticsWrapper {
   display: flex;
   align-items: center;
@@ -68,4 +75,43 @@
 .btnsWrapper {
   display: flex;
   justify-content: flex-end;
+}
+
+.listWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  height: inherit;
+  padding: 8px 5px 5px;
+  margin: 26px 8px 0 0;
+  background-color: #ececec;
+  border-radius: 2px;
+  transition: background-color 0.25s ease-in-out;
+
+  .title {
+    margin: 0;
+    text-align: center;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 700;
+    color: #6a6a6a;
+  }
+
+  .checkboxWrapper {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+  }
+}
+
+.toggleButtomGroup {
+  width: 100%;
+}
+
+[class *=MuiToggleButtonGroup-root] {
+  width: 100% !important;
+  margin-top: 8px;
 }

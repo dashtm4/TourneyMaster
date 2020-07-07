@@ -10,6 +10,7 @@ import { IMatchup } from 'components/visual-games-maker/helpers';
 interface IProps {
   event: IEventDetails;
   games: IMatchup[];
+  inner?: boolean;
   showHeatmap?: boolean;
   onDrop: (dropParams: IDropParams) => void;
 }
@@ -20,7 +21,7 @@ enum DisplayType {
 }
 
 const UnassignedGamesList = (props: IProps) => {
-  const { games, onDrop, showHeatmap } = props;
+  const { games, inner, onDrop, showHeatmap } = props;
   const acceptType = 'teamdrop';
   const [displayType, setDisplayType] = useState(DisplayType.UNASSIGNED_GAMES);
 
@@ -63,10 +64,10 @@ const UnassignedGamesList = (props: IProps) => {
 
   return (
     <div
-      className={styles.container}
+      className={`${styles.container} ${inner ? styles.inner : ''}`}
       style={{ background: isOver ? '#fcfcfc' : '#ececec' }}
     >
-      <h3 className={styles.title}>Needs Assignment</h3>
+      {!inner && <h3 className={styles.title}>Needs Assignment</h3>}
       <div className={styles.checkboxWrapper}>
         <Radio
           options={Object.values(DisplayType)}

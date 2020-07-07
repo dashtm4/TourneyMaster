@@ -48,6 +48,7 @@ import {
   mapUnusedFields,
   moveCardMessages,
   getScheduleWarning,
+  AssignmentType,
 } from './helpers';
 import { IScheduleFilter, OptimizeTypes } from './types';
 import {
@@ -60,6 +61,8 @@ import moveTeamCard from './moveTeamCard';
 import { CardMessageTypes } from '../card-message/types';
 import styles from './styles.module.scss';
 import { IMatchup } from 'components/visual-games-maker/helpers';
+import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -97,6 +100,12 @@ interface Props {
   ) => void;
 }
 
+// const useStyles = makeStyles({
+//   toggleButtomGroup: {
+//     width: '100%',
+//   }
+// });
+
 const TableSchedule = ({
   tableType,
   event,
@@ -129,6 +138,17 @@ const TableSchedule = ({
   onAssignMatchup,
   updateSchedulesDetails,
 }: Props) => {
+  const theme = createMuiTheme({
+    overrides: {
+      MuiButtonBase: {
+        root: {
+          width: '100%',
+          height: '36px',
+        },
+      },
+    },
+  });
+
   const minGamesNum =
     Number(scheduleData?.min_num_games) || event.min_num_of_games;
 
@@ -149,9 +169,18 @@ const TableSchedule = ({
   const [zoomingDisabled, changeZoomingAction] = useState(false);
 
   const [showHeatmap, onHeatmapChange] = useState(true);
+  const [assignmentType, setAssignmentType] = useState(
+    isFromMaker ? AssignmentType.Matchups : AssignmentType.Teams
+  );
+  const onAssignmentTypeChange = (_: any, newAssignmentType: AssignmentType) => {
+    if (newAssignmentType) {
+      setAssignmentType(newAssignmentType);
+    }
+  };
 
   interface IMoveCardResult {
     gameId?: number;
+    teamId?: string;
     teamCards: ITeamCard[];
     possibleGame?: IMatchup;
   }
@@ -159,7 +188,7 @@ const TableSchedule = ({
   const [moveCardWarning, setMoveCardWarning] = useState<string | undefined>();
   const [days, setDays] = useState(calculateDays(teamCards));
 
-  const toggleSimultaneousDnd = () => setSimultaneousDnd(v => !v);
+  const toggleSimultaneousDnd = () => setSimultaneousDnd(!toggleSimultaneousDnd);
 
   const manageGamesData = useCallback(() => {
     let definedGames = [...games];
@@ -446,24 +475,45 @@ const TableSchedule = ({
         <DndProvider backend={HTML5Backend}>
           {tableType === TableScheduleTypes.SCHEDULES && (
             <>
-              {isFromMaker ? (
-                <ListUnassignedMatchups
-                  games={possibleGames}
-                  event={event}
-                  showHeatmap={showHeatmap}
-                  onDrop={moveCard}
-                />
-              ) : (
-                  <ListUnassignedTeams
-                    pools={pools}
+              <div className={`${styles.container} ${isFromMaker ? styles.vgm : ''}`}>
+                {isFromMaker && (
+                  <>
+                    <h3 className={styles.title}>Needs Assignment</h3>
+                    <ThemeProvider theme={theme}>
+                      <div className={styles.toggleButtomGroup}>
+                        <ToggleButtonGroup value={assignmentType} exclusive onChange={onAssignmentTypeChange} aria-label="text alignment">
+                          <ToggleButton value={AssignmentType.Matchups}>
+                            Matchups
+                          </ToggleButton>
+                          <ToggleButton value={AssignmentType.Teams}>
+                            Teams
+                          </ToggleButton>
+                        </ToggleButtonGroup>
+                      </div>
+                    </ThemeProvider>
+                  </>)}
+
+                {isFromMaker && assignmentType === AssignmentType.Matchups ? (
+                  <ListUnassignedMatchups
+                    games={possibleGames}
                     event={event}
-                    tableType={tableType}
-                    teamCards={teamCards}
-                    minGamesNum={minGamesNum}
                     showHeatmap={showHeatmap}
                     onDrop={moveCard}
+                    inner={isFromMaker}
                   />
-                )}
+                ) : (
+                    <ListUnassignedTeams
+                      pools={pools}
+                      event={event}
+                      tableType={tableType}
+                      teamCards={teamCards}
+                      minGamesNum={minGamesNum}
+                      showHeatmap={showHeatmap}
+                      onDrop={moveCard}
+                      inner={isFromMaker}
+                    />
+                  )}
+              </div>
             </>
           )}
           <div className={styles.tableWrapper}>

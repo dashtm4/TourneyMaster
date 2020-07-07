@@ -99,10 +99,10 @@ export default (
         v =>
           v.timeSlotId === gamePlace?.timeSlotId &&
           (v.homeTeam || v.awayTeam) &&
-          (v.homeTeam?.id === possibleGame.homeTeamId ||
-            v.homeTeam?.id === possibleGame.awayTeamId ||
-            v.awayTeam?.id === possibleGame.awayTeamId ||
-            v.awayTeam?.id === possibleGame.homeTeamId)
+          (v.homeTeam?.id === possibleGame.homeTeam?.id ||
+            v.homeTeam?.id === possibleGame.awayTeam?.id ||
+            v.awayTeam?.id === possibleGame.awayTeam?.id ||
+            v.awayTeam?.id === possibleGame.homeTeam?.id)
       );
 
     /* When a team placed in used timeslot */
