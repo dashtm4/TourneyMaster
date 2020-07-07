@@ -71,6 +71,7 @@ interface State {
   isMappingModalOpen: boolean;
   isManageMappingOpen: boolean;
   errorList: { index: number; msg: string }[];
+  isCheck: boolean;
 }
 
 class CsvLoader extends React.Component<Props, State> {
@@ -85,6 +86,7 @@ class CsvLoader extends React.Component<Props, State> {
     isMappingModalOpen: false,
     isManageMappingOpen: false,
     errorList: [],
+    isCheck: false,
   };
 
   componentDidMount() {
@@ -217,6 +219,15 @@ class CsvLoader extends React.Component<Props, State> {
     this.setState({ isConfirmModalOpen: false });
   };
 
+  onCheck = () => {
+    const { data } = this.state;
+    if (!data.length) {
+      return Toasts.errorToast('Please, upload a csv file first');
+    }
+
+    this.setState({ isCheck: true });
+  };
+
   onFieldIncludeChange = (
     _e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -250,7 +261,6 @@ class CsvLoader extends React.Component<Props, State> {
     const { onClose } = this.props;
     const { type, data } = param;
 
-    console.log('Import', type, data);
     if (type === 'error' && data.length >= 0) {
       this.setState({ errorList: data });
     } else {
@@ -264,6 +274,7 @@ class CsvLoader extends React.Component<Props, State> {
         errorList: [],
       });
     }
+    this.setState({ isCheck: false });
   };
 
   getErrorList = () => {
@@ -343,9 +354,10 @@ class CsvLoader extends React.Component<Props, State> {
   render() {
     const { isOpen, mappings, removeMapping, tableColumns, type } = this.props;
     const {
-      data: { length },
+      data,
       fields,
       headerPosition,
+      isCheck,
       isConfirmModalOpen,
       isHeaderIncluded,
       isManageMappingOpen,
@@ -418,24 +430,29 @@ class CsvLoader extends React.Component<Props, State> {
               label="Select Historical Mapping"
               value={selectedMapping}
               onChange={this.onMappingSelect}
-              disabled={!length}
+              disabled={!data.length}
             />
           </div>
-          {errorList.length === 0 ? (
-            <CsvTable
-              preview={preview}
-              fields={fields}
-              onFieldIncludeChange={this.onFieldIncludeChange}
-              onSelect={this.onFieldSelect}
-              columnOptions={columnOptions}
-              onIncludeAllChange={this.onIncludeAllChange}
-            />
-          ) : (
-            <MuiTable
-              header={['No', ...preview.header, 'Status']}
-              fields={this.getErrorList()}
-            />
+          {type === 'divisions_pools_teams' && isCheck && (
+            <MuiTable header={preview.header} fields={data} />
           )}
+
+          {(type !== 'divisions_pools_teams' || !isCheck) &&
+            (errorList.length === 0 ? (
+              <CsvTable
+                preview={preview}
+                fields={fields}
+                onFieldIncludeChange={this.onFieldIncludeChange}
+                onSelect={this.onFieldSelect}
+                columnOptions={columnOptions}
+                onIncludeAllChange={this.onIncludeAllChange}
+              />
+            ) : (
+              <MuiTable
+                header={['No', ...preview.header, 'Status']}
+                fields={this.getErrorList()}
+              />
+            ))}
           <div className={styles.requiredFieldWrapper}>
             <span className={styles.title}>Required Fields:</span>{' '}
             {requiredFields.map((field, index) =>
@@ -460,12 +477,12 @@ class CsvLoader extends React.Component<Props, State> {
                   variant="text"
                   onClick={this.onSaveMappingClick}
                 />
-                {type === 'event_master' ? (
+                {type === 'divisions_pools_teams' && !isCheck ? (
                   <Button
                     label="Check"
                     color="primary"
                     variant="contained"
-                    onClick={this.onImport}
+                    onClick={this.onCheck}
                   />
                 ) : (
                   <Button
