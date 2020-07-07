@@ -39,7 +39,7 @@ import { getVarcharEight } from 'helpers';
 import { IIndividualsRegister, ITeamsRegister } from 'common/models/register';
 import { ButtonFormTypes } from 'common/enums';
 import { eventTypeOptions } from 'components/event-details/event-structure';
-import Waiver from "./waiver";
+import Waiver from './waiver';
 
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
@@ -120,7 +120,19 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
       type === TypeOptions.Player ||
       type === TypeOptions['Parent/Guardian']
     ) {
-      return ['Registrant Name', 'Player Info', 'Player Stats', 'Waiver', 'Payment'];
+      const steps = [
+        'Registrant Name',
+        'Player Info',
+        'Player Stats',
+        'Waiver',
+        'Payment',
+      ];
+
+      if (event && event.waivers_required === 1) {
+        return steps;
+      } else {
+        return steps.filter(item => item !== 'Waiver');
+      }
     } else {
       return ['Team', 'Contact Info', 'Coach Info', 'Payment'];
     }
@@ -236,7 +248,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
         const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
           !cur.iterations ||
-            (cur.type === 'installment' && prev.iterations < cur.iterations)
+          (cur.type === 'installment' && prev.iterations < cur.iterations)
             ? prev
             : cur
         );
@@ -312,7 +324,15 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         case 2:
           return <PlayerStats onChange={onChange} data={registration} />;
         case 3:
-          return <Waiver data={registration} content={eventRegistration} onChange={onChange} eventName={event?.event_name} setDisabledButton={(e: boolean) => setIsDisable(e)} />;
+          return (
+            <Waiver
+              data={registration}
+              content={eventRegistration}
+              onChange={onChange}
+              event={event}
+              setDisabledButton={(e: boolean) => setIsDisable(e)}
+            />
+          );
         case 4:
           return (
             <Payment

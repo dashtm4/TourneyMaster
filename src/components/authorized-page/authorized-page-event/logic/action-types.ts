@@ -21,6 +21,8 @@ export const ADD_ENTITIES_TO_LIBRARY_SUCCESS =
 export const ADD_ENTITIES_TO_LIBRARY_FAILURE =
   'ADD_ENTITIES_TO_LIBRARY_FAILURE';
 
+export const UPDATE_MENU = 'UPDATE_MENU';
+
 export interface loadAuthPageDataStart {
   type: 'LOAD_AUTH_PAGE_DATA_START';
 }
@@ -67,6 +69,13 @@ export interface addEntitiesToLibrarySuccess {
   };
 }
 
+export interface updateMenu {
+  type: 'UPDATE_MENU';
+  payload: {
+    tournamentData: ITournamentData;
+  };
+}
+
 export type AuthPageAction =
   | loadAuthPageDataStart
   | loadAuthPageDataSuccess
@@ -74,4 +83,5 @@ export type AuthPageAction =
   | publishEventSuccess
   | addEntityToLibrarySuccess
   | addEntitiesToLibrarySuccess
-  | publishGameCountSuccess;
+  | publishGameCountSuccess
+  | updateMenu;

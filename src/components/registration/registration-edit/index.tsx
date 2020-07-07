@@ -7,6 +7,7 @@ import Paper from '../../common/paper';
 import PricingAndCalendar from './pricing-and-calendar';
 import RegistrationDetails from './registration-details';
 import Payments from './payments';
+import { IEventDetails } from 'common/models/event';
 import { IRegistration } from 'common/models/registration';
 import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
 import FabButton from 'components/common/fab-button';
@@ -21,6 +22,7 @@ interface IRegistrationEditProps {
   changesAreMade: boolean;
   divisions: IDivision[];
   eventType: string;
+  event?: IEventDetails;
 }
 
 interface IRegistrationEditState {
@@ -123,22 +125,26 @@ class RegistrationEdit extends React.Component<
                 />
               </SectionDropdown>
             </li>
-            <li>
-              <SectionDropdown
-                type="section"
-                panelDetailsType="flat"
-                isDefaultExpanded={true}
-              >
-                <span>Waiver</span>
-                <div className={styles.waiverWrapp}>
-                  <Waiver
-                    data={this.props.registration}
-                    onChange={this.props.onChange}
-                    isEdit={true}
-                  />
-                </div>
-              </SectionDropdown>
-            </li>
+            {
+              this.props.event && this.props.event[0].waivers_required == 1
+                ? <li>
+                  <SectionDropdown
+                    type="section"
+                    panelDetailsType="flat"
+                    isDefaultExpanded={true}
+                  >
+                    <span>Waiver</span>
+                    <div className={styles.waiverWrapp}>
+                      <Waiver
+                        data={this.props.registration}
+                        onChange={this.props.onChange}
+                        isEdit={true}
+                      />
+                    </div>
+                  </SectionDropdown>
+                </li>
+                : null
+            }
           </ul>
         </div>
         <PopupExposure
