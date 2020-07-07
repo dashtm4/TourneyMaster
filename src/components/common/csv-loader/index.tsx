@@ -70,7 +70,8 @@ interface State {
   isConfirmModalOpen: boolean;
   isMappingModalOpen: boolean;
   isManageMappingOpen: boolean;
-  dupList: { index: number; msg: string }[];
+  errorList: { index: number; msg: string }[];
+  isCheck: boolean;
 }
 
 class CsvLoader extends React.Component<Props, State> {
@@ -84,7 +85,8 @@ class CsvLoader extends React.Component<Props, State> {
     isConfirmModalOpen: false,
     isMappingModalOpen: false,
     isManageMappingOpen: false,
-    dupList: [],
+    errorList: [],
+    isCheck: false,
   };
 
   componentDidMount() {
@@ -154,7 +156,7 @@ class CsvLoader extends React.Component<Props, State> {
                 map_id:
                   prevState.fields.find(x => x.value === column)?.map_id || '',
               })),
-              dupList: [],
+              errorList: [],
             }));
           }
         },
@@ -217,6 +219,15 @@ class CsvLoader extends React.Component<Props, State> {
     this.setState({ isConfirmModalOpen: false });
   };
 
+  onCheck = () => {
+    const { data } = this.state;
+    if (!data.length) {
+      return Toasts.errorToast('Please, upload a csv file first');
+    }
+
+    this.setState({ isCheck: true });
+  };
+
   onFieldIncludeChange = (
     _e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -250,8 +261,8 @@ class CsvLoader extends React.Component<Props, State> {
     const { onClose } = this.props;
     const { type, data } = param;
 
-    if (type === 'dup' && data.length >= 0) {
-      this.setState({ dupList: data });
+    if (type === 'error' && data.length >= 0) {
+      this.setState({ errorList: data });
     } else {
       onClose();
       this.setState({
@@ -260,15 +271,16 @@ class CsvLoader extends React.Component<Props, State> {
         fields: [],
         selectedMapping: '',
         headerPosition: 1,
-        dupList: [],
+        errorList: [],
       });
     }
+    this.setState({ isCheck: false });
   };
 
-  getDupList = () => {
-    const { dupList, data } = this.state;
+  getErrorList = () => {
+    const { errorList, data } = this.state;
 
-    return dupList.map(el => [
+    return errorList.map(el => [
       (el.index + 1).toString(),
       ...data[el.index],
       el.msg,
@@ -342,16 +354,17 @@ class CsvLoader extends React.Component<Props, State> {
   render() {
     const { isOpen, mappings, removeMapping, tableColumns, type } = this.props;
     const {
-      data: { length },
+      data,
       fields,
       headerPosition,
+      isCheck,
       isConfirmModalOpen,
       isHeaderIncluded,
       isManageMappingOpen,
       isMappingModalOpen,
       preview,
       selectedMapping,
-      dupList,
+      errorList,
     } = this.state;
     const columnOptions =
       tableColumns && getColumnOptions(tableColumns?.table_details);
@@ -385,7 +398,7 @@ class CsvLoader extends React.Component<Props, State> {
               onClick={this.onManageMappingClick}
             />
           </div>
-          {dupList.length !== 0 && (
+          {errorList.length !== 0 && (
             <div className={styles.row}>
               <b>Cannot Import File!</b>
             </div>
@@ -417,24 +430,29 @@ class CsvLoader extends React.Component<Props, State> {
               label="Select Historical Mapping"
               value={selectedMapping}
               onChange={this.onMappingSelect}
-              disabled={!length}
+              disabled={!data.length}
             />
           </div>
-          {dupList.length === 0 ? (
-            <CsvTable
-              preview={preview}
-              fields={fields}
-              onFieldIncludeChange={this.onFieldIncludeChange}
-              onSelect={this.onFieldSelect}
-              columnOptions={columnOptions}
-              onIncludeAllChange={this.onIncludeAllChange}
-            />
-          ) : (
-            <MuiTable
-              header={['No', ...preview.header, 'Status']}
-              fields={this.getDupList()}
-            />
+          {type === 'divisions_pools_teams' && isCheck && (
+            <MuiTable header={preview.header} fields={data} />
           )}
+
+          {(type !== 'divisions_pools_teams' || !isCheck) &&
+            (errorList.length === 0 ? (
+              <CsvTable
+                preview={preview}
+                fields={fields}
+                onFieldIncludeChange={this.onFieldIncludeChange}
+                onSelect={this.onFieldSelect}
+                columnOptions={columnOptions}
+                onIncludeAllChange={this.onIncludeAllChange}
+              />
+            ) : (
+              <MuiTable
+                header={['No', ...preview.header, 'Status']}
+                fields={this.getErrorList()}
+              />
+            ))}
           <div className={styles.requiredFieldWrapper}>
             <span className={styles.title}>Required Fields:</span>{' '}
             {requiredFields.map((field, index) =>
@@ -451,7 +469,7 @@ class CsvLoader extends React.Component<Props, State> {
               variant="text"
               onClick={this.onCancelClick}
             />
-            {dupList.length === 0 && (
+            {errorList.length === 0 && (
               <>
                 <Button
                   label="Save Mapping"
@@ -459,12 +477,21 @@ class CsvLoader extends React.Component<Props, State> {
                   variant="text"
                   onClick={this.onSaveMappingClick}
                 />
-                <Button
-                  label="Import"
-                  color="primary"
-                  variant="contained"
-                  onClick={this.onImport}
-                />
+                {type === 'divisions_pools_teams' && !isCheck ? (
+                  <Button
+                    label="Check"
+                    color="primary"
+                    variant="contained"
+                    onClick={this.onCheck}
+                  />
+                ) : (
+                  <Button
+                    label="Import"
+                    color="primary"
+                    variant="contained"
+                    onClick={this.onImport}
+                  />
+                )}
               </>
             )}
           </div>
