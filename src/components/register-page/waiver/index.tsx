@@ -1,7 +1,7 @@
 ﻿import React, { useState, useRef, useEffect } from 'react';
 import { BindingCbWithTwo, IRegistration, BindingCbWithOne, IEventDetails } from 'common/models';
 import 'react-phone-input-2/lib/high-res.css';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+//import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Input, Button } from 'components/common';
 import { IIndividualsRegister } from 'common/models/register';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -11,51 +11,62 @@ import { ButtonColors, ButtonVariant } from "common/enums/buttons";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import moment from 'moment';
+import styles from './styles.module.scss';
 
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
-const useStyles = makeStyles(
-  createStyles({
-    waiverContainer: {
-      position: 'relative',
-    },
-    waiverWrapp: {
-      backgroundColor: 'white',
-      width: '100%',
-      maxHeight: '500px',
-      overflow: 'auto',
-      padding: '40px',
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      lineHeight: 'normal',
-      position: 'relative',
-    },
-    waiver: {
-      padding: '40px',
-    },
-    fullName: {
-      fontFamily: 'Segoe Script',
-      textAlign: 'right',
-      height: '40px',
-      marginTop: '8px',
-    },
-    inputWrapp: {
-      margin: '8px',
-    },
-    errorText: {
-      color: 'red',
-      marginLeft: '8px',
-    },
-    buttonWrapp: {
-      position: 'absolute',
-      right: '20px',
-      top: '10px',
-    },
-    hiddenButton: {
-      visibility: 'hidden',
-    },
-  })
-);
+// const useStyles = makeStyles(
+//   createStyles({
+//     waiverContainer: {
+//       position: 'relative',
+//     },
+//     waiverWrapp: {
+//       backgroundColor: 'white',
+//       width: '100%',
+//       maxHeight: '500px',
+//       overflow: 'auto',
+//       marginLeft: 'auto',
+//       marginRight: 'auto',
+//       lineHeight: 'normal',
+//       position: 'relative',
+//       cursor: `url(../../../assets/scroll-cursor.png), auto`,
+//     },
+//     waiver: {
+//       padding: '40px',
+//     },
+//     fullName: {
+//       fontFamily: 'Segoe Script',
+//       textAlign: 'right',
+//       height: '40px',
+//       marginTop: '8px',
+//     },
+//     inputWrapp: {
+//       margin: '8px',
+//     },
+//     errorText: {
+//       color: 'red',
+//       marginLeft: '8px',
+//     },
+//     buttonWrapp: {
+//       position: 'absolute',
+//       right: '20px',
+//       top: '10px',
+//       zIndex: 1000,
+//     },
+//     hiddenButton: {
+//       visibility: 'hidden',
+//     },
+//     warnText: {
+//       width: '100%',
+//       textAlign: 'center',
+//       padding: '8px',
+//       position: 'sticky',
+//       top: 0,
+//       background: 'linear-gradient(to bottom, grey 0%, white 100%)',
+//       opacity: 0.5,
+//     },
+//   })
+// );
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -111,8 +122,6 @@ const Waiver = ({
     };
   }, []);
 
-  const classes = useStyles();
-
   const onInputName = async (e: InputTargetValue) => {
     const inputedValue = e.target.value;
     if (!data.registrant_first_name || !data.registrant_last_name) {
@@ -131,7 +140,7 @@ const Waiver = ({
       setDisabledButton(false);
       onChange(
         'waiver_signature',
-        JSON.stringify({ ip: IP, hash: hash, name: inputedValue })
+        JSON.stringify({ ip: IP, hash, name: inputedValue })
       );
       const currentDate = new Date();
       onChange('waiver_sign_datetime', currentDate.toISOString());
@@ -246,40 +255,45 @@ const Waiver = ({
           content.waiver_content +
           `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>
         <h2 style="font-size: 12px; text-align: right">${agreedment}</h2>` +
-        `<h3 style="font-size: 10px; text-align: right">${ip}</h3>
+          `<h3 style="font-size: 10px; text-align: right">${ip}</h3>
         <h3 style="font-size: 10px; text-align: right">${hash}</h3>`;
     return (
-      <div className={classes.waiverContainer}>
-        <div
-          className={isComplete ? classes.buttonWrapp : classes.hiddenButton}
-        >
+      <div className={styles.waiverContainer}>
+        <div className={isComplete ? styles.buttonWrapp : styles.hiddenButton}>
           <Button
             onClick={sendDataToPDF}
             variant={ButtonVariant.CONTAINED}
             color={ButtonColors.PRIMARY}
-            label={'Save'}
+            label={'Save to PDF'}
             icon={<GetAppIcon style={{ fill: '#FFFFFF' }} />}
             isIconRightSide={true}
           />
         </div>
-        <div className={classes.waiverWrapp} ref={scrollRef}>
+
+        <div className={styles.waiverWrapp} ref={scrollRef}>
+          <div className={!isBottom ? styles.warnText : styles.hiddenButton}>
+            Scroll to the bottom of the waiver to enable signing of the document
+          </div>
           <div
             id="waiver-content"
-            className={classes.waiver}
+            className={styles.waiver}
             dangerouslySetInnerHTML={{ __html: waiverContent }}
           />
         </div>
-        <div className={classes.inputWrapp}>
-          <Input
-            label={'If you agree to these terms and conditions, please retype your first and last name.'}
-            value={name}
-            onChange={onInputName}
-            placeholder={'First name and Last name'}
-            disabled={!isBottom || isComplete}
-            isRequired={true}
-          />
+        <div>
+          <div className={styles.inputWrapp}>
+            <Input
+              label={'If you agree to these terms and conditions, please retype your first and last name.'}
+              value={name}
+              onChange={onInputName}
+              placeholder={'First name and Last name'}
+              disabled={!isBottom || isComplete}
+              isRequired={true}
+            />
+          </div>
         </div>
-        <div className={classes.errorText}>{error}</div>
+
+        <div className={styles.errorText}>{error}</div>
       </div>
     );
   };
