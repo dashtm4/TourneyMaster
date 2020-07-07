@@ -14,6 +14,7 @@ const ICON_STYLES = {
 interface Props {
   isEventId: boolean;
   onCsvLoaderBtn: BindingAction;
+  onDataLoaderBtn: BindingAction;
   onCancelClick: BindingAction;
   onAddToLibraryManager: BindingAction;
   onSave: BindingAction;
@@ -22,6 +23,7 @@ interface Props {
 const Navigation = ({
   isEventId,
   onCsvLoaderBtn,
+  onDataLoaderBtn,
   onCancelClick,
   onAddToLibraryManager,
   onSave,
@@ -51,6 +53,12 @@ const Navigation = ({
             />
           </>
         )}
+        <Button
+          onClick={onDataLoaderBtn}
+          variant={ButtonVariant.TEXT}
+          color={ButtonColors.SECONDARY}
+          label="Import CSV of All Divisions/Pools/Teams"
+        />
       </div>
       <div className={styles.btnsWrapper}>
         <Button

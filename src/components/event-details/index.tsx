@@ -27,6 +27,7 @@ import {
   removeFiles,
   deleteEvent,
   createEvents,
+  createDataFromCSV,
 } from './logic/actions';
 import { IIconFile } from './logic/model';
 import { IEventState } from './logic/reducer';
@@ -54,6 +55,7 @@ interface Props extends IMapStateProps {
   removeFiles: (files: IIconFile[]) => void;
   deleteEvent: BindingCbWithTwo<string, string>;
   createEvents: (events: Partial<IEventDetails>[]) => void;
+  createDataFromCSV: (data: any) => void;
   addEntityToLibrary: BindingCbWithTwo<IEntity, EntryPoints>;
 }
 
@@ -64,6 +66,7 @@ type State = {
   isModalOpen: boolean;
   isDeleteModalOpen: boolean;
   isCsvLoaderOpen: boolean;
+  isDataLoaderOpen: boolean;
   isSectionsExpand: boolean;
   changesAreMade: boolean;
   warningModalOpen: boolean;
@@ -77,6 +80,7 @@ class EventDetails extends Component<Props, State> {
     isModalOpen: false,
     isDeleteModalOpen: false,
     isCsvLoaderOpen: false,
+    isDataLoaderOpen: false,
     isSectionsExpand: true,
     changesAreMade: false,
     warningModalOpen: false,
@@ -206,6 +210,10 @@ class EventDetails extends Component<Props, State> {
 
   onCsvLoaderClose = () => this.setState({ isCsvLoaderOpen: false });
 
+  onDataLoaderBtn = () => this.setState({ isDataLoaderOpen: true });
+
+  onDataLoaderClose = () => this.setState({ isDataLoaderOpen: false });
+
   onAddToLibraryManager = () => {
     const { addEntityToLibrary } = this.props;
     const { event } = this.state;
@@ -233,11 +241,13 @@ class EventDetails extends Component<Props, State> {
       event: { isEventLoading },
       match,
       createEvents,
+      createDataFromCSV,
       deleteEvent,
     } = this.props;
     const {
       event,
       isCsvLoaderOpen,
+      isDataLoaderOpen,
       isDeleteModalOpen,
       isModalOpen,
       isSectionsExpand,
@@ -275,6 +285,7 @@ class EventDetails extends Component<Props, State> {
           isEventId={match?.params.eventId}
           onCancelClick={this.onCancelClick}
           onCsvLoaderBtn={this.onCsvLoaderBtn}
+          onDataLoaderBtn={this.onDataLoaderBtn}
           onAddToLibraryManager={this.onAddToLibraryManager}
           onSave={this.onSavePressed}
         />
@@ -329,6 +340,13 @@ class EventDetails extends Component<Props, State> {
           onClose={this.onCsvLoaderClose}
           onCreate={createEvents}
         />
+        <CsvLoader
+          type="divisions_pools_teams"
+          isOpen={isDataLoaderOpen}
+          onClose={this.onDataLoaderClose}
+          onCreate={createDataFromCSV}
+          eventId={event_id!}
+        />
       </div>
     );
   }
@@ -351,6 +369,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       removeFiles,
       deleteEvent,
       createEvents,
+      createDataFromCSV,
       addEntityToLibrary,
     },
     dispatch
