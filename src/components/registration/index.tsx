@@ -34,6 +34,7 @@ import {
 import { History } from 'history';
 import { Loader, Toasts } from 'components/common';
 import { IEntity } from 'common/types';
+import Waiver from "./waiver";
 
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
@@ -61,7 +62,7 @@ interface IRegistrationProps {
 class RegistrationView extends React.Component<
   IRegistrationProps,
   IRegistrationState
-> {
+  > {
   eventId = this.props.match.params.eventId;
   state = {
     registration: undefined,
@@ -110,8 +111,8 @@ class RegistrationView extends React.Component<
   scheduleIsValid = (registration: any) => {
     const schedule = registration.payment_schedule_json
       ? JSON.parse(registration.payment_schedule_json!)?.find(
-          (x: any) => x.type === 'schedule'
-        )
+        (x: any) => x.type === 'schedule'
+      )
       : null;
     return (
       !schedule ||
@@ -161,6 +162,8 @@ class RegistrationView extends React.Component<
   toggleSectionCollapse = () => {
     this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
+
+  click = () => console.log("change");
 
   renderView = () => {
     const { registration } = this.props;
@@ -247,6 +250,19 @@ class RegistrationView extends React.Component<
                 </li>
                 <li>
                   <SectionDropdown
+                    id={EventMenuRegistrationTitles.WAIVER}
+                    type="section"
+                    panelDetailsType="flat"
+                    expanded={this.state.isSectionsExpand}
+                   >
+                    <span>Waivers & Wellness</span>
+                    <div className={styles.waiverWrapp}>
+                      <Waiver data={registration} isEdit={false} />
+                    </div>
+                  </SectionDropdown>
+                </li>
+                <li>
+                  <SectionDropdown
                     id={EventMenuRegistrationTitles.REGISTRANTS}
                     type="section"
                     panelDetailsType="flat"
@@ -258,15 +274,15 @@ class RegistrationView extends React.Component<
                 </li>
               </ul>
             ) : (
-              !this.props.isLoading && (
-                <div className={styles.noFoundWrapper}>
-                  <span>
-                    There are currently no registrations. Start with the "Add"
-                    button.
+                !this.props.isLoading && (
+                  <div className={styles.noFoundWrapper}>
+                    <span>
+                      There are currently no registrations. Start with the "Add"
+                      button.
                   </span>
-                </div>
-              )
-            )}
+                  </div>
+                )
+              )}
           </div>
         </section>
       );

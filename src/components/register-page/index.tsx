@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { loadStripe, Stripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -37,6 +39,7 @@ import { getVarcharEight } from 'helpers';
 import { IIndividualsRegister, ITeamsRegister } from 'common/models/register';
 import { ButtonFormTypes } from 'common/enums';
 import { eventTypeOptions } from 'components/event-details/event-structure';
+import Waiver from "./waiver";
 
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
@@ -67,6 +70,26 @@ export interface RegisterMatchParams {
   };
 }
 
+export const wrappedRegister = ({ match }: RegisterMatchParams) => {
+  const stripePromise = new Promise(async resolve => {
+    const stripeAccount = (
+      await axios.get(`/skus?event_id=${match.params.eventId}`)
+    ).data[0].stripe_connect_id;
+    const stripe = await loadStripe(
+      process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY ||
+        'pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh', // TODO: Remove the hardcoded key after initial deployment
+      stripeAccount === 'main' ? undefined : { stripeAccount }
+    );
+    resolve(stripe);
+  }) as Promise<Stripe | null>;
+
+  return (
+    <Elements stripe={stripePromise}>
+      <RegisterPage match={match} />
+    </Elements>
+  );
+};
+
 const RegisterPage = ({ match }: RegisterMatchParams) => {
   const [event, setEvent] = useState<IEventDetails | null>(null);
   const [
@@ -81,10 +104,12 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const [purchasing] = useState<boolean>(false);
   const [processing, setProcessing] = useState<boolean>(false);
+
   const [registration, setRegistration] = useState<
     Partial<IIndividualsRegister> | Partial<ITeamsRegister>
   >({});
   const [isInvited, setIsInvited] = useState(false);
+  const [isDisable, setIsDisable] = useState<boolean>(false);
 
   // const [clientSecret, setClientSecret] = useState<string>('');
   const stripe = useStripe()!;
@@ -95,7 +120,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
       type === TypeOptions.Player ||
       type === TypeOptions['Parent/Guardian']
     ) {
-      return ['Registrant Name', 'Player Info', 'Player Stats', 'Payment'];
+      return ['Registrant Name', 'Player Info', 'Player Stats', 'Waiver', 'Payment'];
     } else {
       return ['Team', 'Contact Info', 'Coach Info', 'Payment'];
     }
@@ -211,7 +236,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
         const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
           !cur.iterations ||
-          (cur.type === 'installment' && prev.iterations < cur.iterations)
+            (cur.type === 'installment' && prev.iterations < cur.iterations)
             ? prev
             : cur
         );
@@ -239,6 +264,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
   const handleBack = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
+    setIsDisable(false);
   };
 
   const onChange = (name: string, value: string | number) => {
@@ -285,7 +311,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           );
         case 2:
           return <PlayerStats onChange={onChange} data={registration} />;
-        default:
+        case 3:
+          return <Waiver data={registration} content={eventRegistration} onChange={onChange} eventName={event?.event_name} setDisabledButton={(e: boolean) => setIsDisable(e)} />;
+        case 4:
           return (
             <Payment
               onChange={onChange}
@@ -318,7 +346,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               fillCoachInfo={fillCoachInfo}
             />
           );
-        default:
+        case 3:
           return (
             <Payment
               onChange={onChange}
@@ -584,7 +612,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                           <Button
                             btnType={ButtonFormTypes.SUBMIT}
                             variant="contained"
-                            disabled={processing}
+                            disabled={processing || isDisable}
                             color="primary"
                             label={
                               activeStep === steps.length - 1

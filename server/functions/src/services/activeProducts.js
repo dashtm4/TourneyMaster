@@ -7,25 +7,31 @@ export const getActiveProducts = async () => {
   });
 };
 
-export const getActiveSkus = async () => {
-  return axios.get('/skus').then(data => {
-    return data.data;
-  });
+export const getActiveSkus = async stripeAccount => {
+  return axios
+    .get(`/skus${stripeAccount ? '?stripe_connect_id=' + stripeAccount : ''}`)
+    .then(data => {
+      return data.data;
+    });
 };
 
 export const getPaymentPlans = async ({
   product_id = null,
   sku_id = null,
   payment_plan_id = null,
+  stripe_connect_id = null,
 }) => {
   let query =
     '?' +
     (product_id !== null ? `product_id=${product_id}` : '') +
-    (sku_id !== null ? `&sku_id=${sku_id}` : '');
-  console.log(`sku_id: ${sku_id}, payment_plan_id: ${payment_plan_id}`);
+    (sku_id !== null ? `&sku_id=${sku_id}` : '') +
+    (stripe_connect_id !== null
+      ? `&stripe_connect_id=${stripe_connect_id}`
+      : '');
+  // console.log(`sku_id: ${sku_id}, payment_plan_id: ${payment_plan_id}`);
 
   const skus = await axios.get(`/skus${query}`);
-  console.log(`Query: ${query}, Skus: ${skus}`);
+  // console.log(`Query: ${query}, Skus: ${skus}`);
   if (skus.data?.length > 0) {
     const paymentPlans = skus.data.flatMap(sku => {
       sku.payment_schedule_json = JSON.parse(sku.payment_schedule_json);
@@ -181,6 +187,6 @@ export const getPaymentPlans = async ({
       return paymentPlans;
     }
   } else {
-    return null;
+    return [];
   }
 };

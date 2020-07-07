@@ -1,8 +1,9 @@
+import '../services/logger.js';
 import { processCreateSubscription } from './stripeSubscriptions.js';
 import { paymentSuccessWebhook } from './stripeWebhook.js';
 import { getPaymentPlans } from '../services/activeProducts.js';
 
-export default api => {
+export default (api) => {
   api.post('/create-subscription', async (req, res) => {
     try {
       const subscription = await processCreateSubscription(req.body);
@@ -12,7 +13,7 @@ export default api => {
         subscription: subscription,
       });
     } catch (err) {
-      console.log(err);
+      console.logError(err);
       res.json({
         success: false,
         subscription: null,
@@ -34,7 +35,7 @@ export default api => {
 
       res.json(data);
     } catch (err) {
-      console.log(err);
+      console.logError(err);
       res.status(400).json({
         success: false,
         message: err.message,

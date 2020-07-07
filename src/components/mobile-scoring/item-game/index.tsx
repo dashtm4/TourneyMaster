@@ -135,12 +135,20 @@ const ItemGame = ({ gameWithNames, originGame, changeGameWithName }: Props) => {
         </p>
       </div>
       <div className={styles.updateBtnWrapper}>
-        <Button
-          onClick={onSave}
-          variant={ButtonVariant.TEXT}
-          color={ButtonColors.SECONDARY}
-          label={wasSaved ? 'Edit' : 'Save'}
-        />
+        {wasSaved ? (
+          <Button
+            variant={ButtonVariant.TEXT}
+            color={ButtonColors.PRIMARY}
+            label={'Edit'}
+          />
+        ) : (
+          <Button
+            onClick={onSave}
+            variant={ButtonVariant.TEXT}
+            color={ButtonColors.SECONDARY}
+            label={'Save'}
+          />
+        )}
       </div>
     </li>
   );

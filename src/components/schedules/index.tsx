@@ -245,7 +245,6 @@ class Schedules extends Component<Props, State> {
       fetchEventSummary,
       fetchSchedulesDetails,
     } = this.props;
-    const { teams } = this.state;
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
     const { create_mode } = scheduleData || {};
@@ -281,7 +280,7 @@ class Schedules extends Component<Props, State> {
 
       if (isManualScheduling) {
         this.onScheduleCardsUpdate(
-          teams?.map(item => ({
+          this.state.teams?.map(item => ({
             ...item,
             games: [],
           }))!

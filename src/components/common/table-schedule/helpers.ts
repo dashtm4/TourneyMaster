@@ -313,7 +313,7 @@ const moveCardMessages = {
     'This game slot is located in the Playoffs section. Please choose another one.',
   gameSlotInUse: 'Game slot is already in use.',
   timeSlotInUseForTeam: 'This team is already playing at this time.',
-  timeSlotInUseForGame: 'One team is already playing at this time.',
+  timeSlotInUseForGame: 'One of these teams is already playing at this time.',
   differentFacility:
     'This division is not playing at this facility on this day. Please confirm your intentions.',
   divisionUnmatch:
