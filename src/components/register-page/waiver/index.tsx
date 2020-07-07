@@ -271,7 +271,7 @@ const Waiver = ({
         </div>
 
         <div className={styles.waiverWrapp} ref={scrollRef}>
-          <div className={!isBottom ? styles.warnText : styles.hiddenButton}>
+          <div className={!isBottom && !isComplete ? styles.warnText : styles.hiddenButton}>
             Scroll to the bottom of the waiver to enable signing of the document
           </div>
           <div
