@@ -320,7 +320,7 @@ export const createDataFromCSV: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (data: any) => async (dispatch: Dispatch) => {
+>> = (data: any, cb: (parm?: object) => void) => async () => {
   // exit when no data from CSV
   if (data.length === 0) {
     return;
@@ -347,8 +347,8 @@ export const createDataFromCSV: ActionCreator<ThunkAction<
         pool_name,
         coach_email,
         coach_first_name,
-        coache_last_name,
-        coache_phone,
+        coach_last_name,
+        coach_phone,
         team_city,
         team_id,
         team_name,
@@ -358,8 +358,8 @@ export const createDataFromCSV: ActionCreator<ThunkAction<
         pool_name: string | undefined;
         coach_email: string | undefined;
         coach_first_name: string | undefined;
-        coache_last_name: string | undefined;
-        coache_phone: string | undefined;
+        coach_last_name: string | undefined;
+        coach_phone: string | undefined;
         team_city: string | undefined;
         team_id: string | undefined;
         team_name: string | undefined;
@@ -385,8 +385,8 @@ export const createDataFromCSV: ActionCreator<ThunkAction<
           pool_name,
           coach_email,
           coach_first_name,
-          coache_last_name,
-          coache_phone,
+          coach_last_name,
+          coach_phone,
           team_city,
           team_id,
           team_name,
@@ -398,7 +398,8 @@ export const createDataFromCSV: ActionCreator<ThunkAction<
     }
   );
 
-  const promises = [];
+  const promisesNewTeams = [];
+
   for (const parentDivision in newTeams) {
     if (newTeams.hasOwnProperty(parentDivision)) {
       const teamsByDivision = newTeams[parentDivision];
@@ -417,7 +418,7 @@ export const createDataFromCSV: ActionCreator<ThunkAction<
             (el: any) => el.long_name === parentDivision
           )?.division_id;
           if (divisionId) {
-            promises.push(
+            promisesNewTeams.push(
               api.get(`/teams?division_id=${divisionId}`).then(allTeams => {
                 const dupTeam = allTeams.find(
                   (el: any) =>
@@ -434,88 +435,122 @@ export const createDataFromCSV: ActionCreator<ThunkAction<
     }
   }
 
-  await Promise.all(promises);
+  await Promise.all(promisesNewTeams);
 
   if (errDivisions.length !== 0) {
-    console.log(errDivisions);
-    return false;
-  }
+    cb({
+      type: 'error',
+      data: errDivisions.map(el => ({
+        index: el,
+        msg: 'Division Name is required to fill',
+      })),
+    });
+  } else if (errTeams.size !== 0) {
+    cb({
+      type: 'error',
+      data: [...errTeams].map(el => ({
+        index: el,
+        msg: 'The team must have a unique name',
+      })),
+    });
+  } else {
+    try {
+      // add new divisions
+      const promisesNewDivisions = [];
 
-  if (errTeams.size !== 0) {
-    console.log(errTeams);
-    return false;
-  }
+      for (let i = 0; i < newDivisions.size; i++) {
+        const divisionName: any = [...newDivisions][i];
+        const dupDivision = allDivisions.find(
+          (el: any) => el.long_name === divisionName
+        );
+        const divisionId = getVarcharEight();
 
-  // add new divisions
-  for (let i = 0; i < newDivisions.size; i++) {
-    const divisionName: any = [...newDivisions][i];
-    const dupDivision = allDivisions.find(
-      (el: any) => el.long_name === divisionName
-    );
-    const divisionId = getVarcharEight();
+        if (!dupDivision) {
+          const newHex =
+            '#' +
+            ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0');
 
-    if (!dupDivision) {
-      const newHex =
-        '#' + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0');
-      await api.post('/divisions', {
-        division_hex: newHex,
-        division_id: divisionId,
-        long_name: divisionName,
-        short_name: divisionName,
-        event_id,
-      });
-      newDivisionList[divisionName] = divisionId;
-    } else {
-      newDivisionList[dupDivision.long_name] = dupDivision.division_id;
-    }
-  }
-
-  // add new pools
-  for (const parentDivision in newPools) {
-    if (newPools.hasOwnProperty(parentDivision)) {
-      const divisionId = newDivisionList[parentDivision];
-      const allPools = await api.get(`/pools?division_id=${divisionId}`);
-
-      for (let i = 0; i < newPools[parentDivision].size; i++) {
-        const poolName = [...newPools[parentDivision]][i];
-        const dupPool = allPools.find((el: any) => el.pool_name === poolName);
-        const poolId = getVarcharEight();
-
-        if (!dupPool) {
-          await api.post('/pools', {
-            division_id: newDivisionList[parentDivision],
-            pool_id: poolId,
-            pool_name: poolName,
-          });
-          newPoolList[poolName] = poolId;
+          promisesNewDivisions.push(
+            api.post('/divisions', {
+              division_hex: newHex,
+              division_id: divisionId,
+              long_name: divisionName,
+              short_name: divisionName,
+              event_id,
+            })
+          );
+          newDivisionList[divisionName] = divisionId;
         } else {
-          newPoolList[dupPool.pool_name] = dupPool.pool_id;
+          newDivisionList[dupDivision.long_name] = dupDivision.division_id;
         }
       }
-    }
-  }
 
-  // add new teams
-  for (const parentDivision in newTeams) {
-    if (newTeams.hasOwnProperty(parentDivision)) {
-      for (const newTeam of newTeams[parentDivision]) {
-        await api.post('/teams', {
-          event_id,
-          contact_email: newTeam.coach_email || undefined,
-          contact_first_name: newTeam.coach_first_name || undefined,
-          contact_last_name: newTeam.coache_last_name || undefined,
-          phone_num: newTeam.coache_phone,
-          division_id: newDivisionList[parentDivision],
-          pool_id: newPoolList[newTeam.pool_name],
-          city: newTeam.team_city || undefined,
-          team_id: newTeam.team_id,
-          long_name: newTeam.team_name,
-          short_name: newTeam.team_name,
-          state: newTeam.team_state || undefined,
-        });
+      await Promise.all(promisesNewDivisions);
+
+      // add new pools
+      const promisesNewPools = [];
+
+      for (const parentDivision in newPools) {
+        if (newPools.hasOwnProperty(parentDivision)) {
+          const divisionId = newDivisionList[parentDivision];
+          const allPools = await api.get(`/pools?division_id=${divisionId}`);
+
+          for (let i = 0; i < newPools[parentDivision].size; i++) {
+            const poolName = [...newPools[parentDivision]][i];
+            const dupPool = allPools.find(
+              (el: any) => el.pool_name === poolName
+            );
+            const poolId = getVarcharEight();
+
+            if (!dupPool) {
+              promisesNewPools.push(
+                api.post('/pools', {
+                  division_id: newDivisionList[parentDivision],
+                  pool_id: poolId,
+                  pool_name: poolName,
+                })
+              );
+              newPoolList[poolName] = poolId;
+            } else {
+              newPoolList[dupPool.pool_name] = dupPool.pool_id;
+            }
+          }
+        }
       }
+
+      await Promise.all(promisesNewPools);
+
+      // add new teams
+      const promisesAddTeams = [];
+
+      for (const parentDivision in newTeams) {
+        if (newTeams.hasOwnProperty(parentDivision)) {
+          for (const newTeam of newTeams[parentDivision]) {
+            promisesAddTeams.push(
+              api.post('/teams', {
+                event_id,
+                contact_email: newTeam.coach_email || undefined,
+                contact_first_name: newTeam.coach_first_name || undefined,
+                contact_last_name: newTeam.coach_last_name || undefined,
+                phone_num: newTeam.coach_phone,
+                division_id: newDivisionList[parentDivision],
+                pool_id: newPoolList[newTeam.pool_name],
+                city: newTeam.team_city || undefined,
+                team_id: newTeam.team_id,
+                long_name: newTeam.team_name,
+                short_name: newTeam.team_name,
+                state: newTeam.team_state || undefined,
+              })
+            );
+          }
+        }
+      }
+
+      await Promise.all(promisesAddTeams);
+
+      Toasts.successToast('Data successfully imported');
+    } catch {
+      Toasts.errorToast("Couldn't import data");
     }
   }
-
-  console.log(dispatch);
 };

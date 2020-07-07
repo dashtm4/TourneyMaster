@@ -70,7 +70,7 @@ interface State {
   isConfirmModalOpen: boolean;
   isMappingModalOpen: boolean;
   isManageMappingOpen: boolean;
-  dupList: { index: number; msg: string }[];
+  errorList: { index: number; msg: string }[];
 }
 
 class CsvLoader extends React.Component<Props, State> {
@@ -84,7 +84,7 @@ class CsvLoader extends React.Component<Props, State> {
     isConfirmModalOpen: false,
     isMappingModalOpen: false,
     isManageMappingOpen: false,
-    dupList: [],
+    errorList: [],
   };
 
   componentDidMount() {
@@ -154,7 +154,7 @@ class CsvLoader extends React.Component<Props, State> {
                 map_id:
                   prevState.fields.find(x => x.value === column)?.map_id || '',
               })),
-              dupList: [],
+              errorList: [],
             }));
           }
         },
@@ -250,8 +250,9 @@ class CsvLoader extends React.Component<Props, State> {
     const { onClose } = this.props;
     const { type, data } = param;
 
-    if (type === 'dup' && data.length >= 0) {
-      this.setState({ dupList: data });
+    console.log('Import', type, data);
+    if (type === 'error' && data.length >= 0) {
+      this.setState({ errorList: data });
     } else {
       onClose();
       this.setState({
@@ -260,15 +261,15 @@ class CsvLoader extends React.Component<Props, State> {
         fields: [],
         selectedMapping: '',
         headerPosition: 1,
-        dupList: [],
+        errorList: [],
       });
     }
   };
 
-  getDupList = () => {
-    const { dupList, data } = this.state;
+  getErrorList = () => {
+    const { errorList, data } = this.state;
 
-    return dupList.map(el => [
+    return errorList.map(el => [
       (el.index + 1).toString(),
       ...data[el.index],
       el.msg,
@@ -351,7 +352,7 @@ class CsvLoader extends React.Component<Props, State> {
       isMappingModalOpen,
       preview,
       selectedMapping,
-      dupList,
+      errorList,
     } = this.state;
     const columnOptions =
       tableColumns && getColumnOptions(tableColumns?.table_details);
@@ -385,7 +386,7 @@ class CsvLoader extends React.Component<Props, State> {
               onClick={this.onManageMappingClick}
             />
           </div>
-          {dupList.length !== 0 && (
+          {errorList.length !== 0 && (
             <div className={styles.row}>
               <b>Cannot Import File!</b>
             </div>
@@ -420,7 +421,7 @@ class CsvLoader extends React.Component<Props, State> {
               disabled={!length}
             />
           </div>
-          {dupList.length === 0 ? (
+          {errorList.length === 0 ? (
             <CsvTable
               preview={preview}
               fields={fields}
@@ -432,7 +433,7 @@ class CsvLoader extends React.Component<Props, State> {
           ) : (
             <MuiTable
               header={['No', ...preview.header, 'Status']}
-              fields={this.getDupList()}
+              fields={this.getErrorList()}
             />
           )}
           <div className={styles.requiredFieldWrapper}>
@@ -451,7 +452,7 @@ class CsvLoader extends React.Component<Props, State> {
               variant="text"
               onClick={this.onCancelClick}
             />
-            {dupList.length === 0 && (
+            {errorList.length === 0 && (
               <>
                 <Button
                   label="Save Mapping"
@@ -459,12 +460,21 @@ class CsvLoader extends React.Component<Props, State> {
                   variant="text"
                   onClick={this.onSaveMappingClick}
                 />
-                <Button
-                  label="Import"
-                  color="primary"
-                  variant="contained"
-                  onClick={this.onImport}
-                />
+                {type === 'event_master' ? (
+                  <Button
+                    label="Check"
+                    color="primary"
+                    variant="contained"
+                    onClick={this.onImport}
+                  />
+                ) : (
+                  <Button
+                    label="Import"
+                    color="primary"
+                    variant="contained"
+                    onClick={this.onImport}
+                  />
+                )}
               </>
             )}
           </div>

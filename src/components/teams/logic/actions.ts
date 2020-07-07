@@ -284,7 +284,7 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
         );
 
         dupList.push({
-          index: index,
+          index,
           msg: err.message,
         });
       }
@@ -294,7 +294,7 @@ export const createTeamsCsv: ActionCreator<ThunkAction<
   }
 
   if (dupList.length !== 0) {
-    cb({ type: 'dup', data: dupList });
+    cb({ type: 'error', data: dupList });
   } else {
     for (const team of data) {
       const response = await Api.post(`/teams`, team);
