@@ -153,7 +153,6 @@ const AuthorizedPageEvent = ({
     Routes.SCHEDULES,
     Routes.RECORD_SCORES,
     Routes.PLAYOFFS,
-    Routes.VISUAL_GAMES_MAKER,
   ];
   const schedulingIgnoreList = [
     EventMenuTitles.SCHEDULING,
