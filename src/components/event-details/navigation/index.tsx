@@ -57,7 +57,7 @@ const Navigation = ({
           onClick={onDataLoaderBtn}
           variant={ButtonVariant.TEXT}
           color={ButtonColors.SECONDARY}
-          label="Data Import"
+          label="Import CSV of All Divisions/Pools/Teams"
         />
       </div>
       <div className={styles.btnsWrapper}>
