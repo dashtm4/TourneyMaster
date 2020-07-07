@@ -50,14 +50,14 @@ export const getPaymentPlans = async ({
               const recurringPayments =
                 +rawPaymentPlan.iterations > 1
                   ? `$${installmentPrice.toFixed(
-                      2
-                    )} for ${+rawPaymentPlan.iterations} times every${
-                      +rawPaymentPlan.intervalCount > 1
-                        ? +' ' + rawPaymentPlan.intervalCount
-                        : ''
-                    } ${rawPaymentPlan.interval}${
-                      +rawPaymentPlan.intervalCount > 1 ? 's' : ''
-                    } for `
+                    2
+                  )}(+tax) for ${+rawPaymentPlan.iterations} times every${
+                  +rawPaymentPlan.intervalCount > 1
+                    ? +' ' + rawPaymentPlan.intervalCount
+                    : ''
+                  } ${rawPaymentPlan.interval}${
+                  +rawPaymentPlan.intervalCount > 1 ? 's' : ''
+                  } for `
                   : '';
               const { payment_schedule_json, ...paymentPlan } = {
                 ...sku,
@@ -84,8 +84,8 @@ export const getPaymentPlans = async ({
                   phase.amountType === 'fixed'
                     ? +phase.amount
                     : phase.amountType === 'percent'
-                    ? Math.round(+sku.price * +phase.amount) / 100
-                    : null;
+                      ? Math.round(+sku.price * +phase.amount) / 100
+                      : null;
                 if (!amount) {
                   throw new Error('Incorrect amount specified.');
                 }
@@ -127,8 +127,8 @@ export const getPaymentPlans = async ({
                   b.date === 'now'
                     ? 1
                     : a.date === 'now'
-                    ? -1
-                    : +a.date - +b.date
+                      ? -1
+                      : +a.date - +b.date
                 );
 
               const { payment_schedule_json, ...paymentPlan } = {
@@ -141,9 +141,9 @@ export const getPaymentPlans = async ({
                   .map(
                     x =>
                       `${
-                        x.date === 'now'
-                          ? 'now'
-                          : dateFormat(new Date(x.date * 1000), 'yyyy-mm-dd')
+                      x.date === 'now'
+                        ? 'now'
+                        : dateFormat(new Date(x.date * 1000), 'yyyy-mm-dd')
                       }: $${x.amount.toFixed(2)}`
                   )
                   .join(', ')}`,
