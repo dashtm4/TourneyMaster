@@ -47,17 +47,21 @@ export const getPaymentPlans = async ({
               const installmentPrice =
                 Math.round((+sku.price / +rawPaymentPlan.iterations) * 100) /
                 100;
+              const installmentPriceWithTax =
+                Math.round(
+                  installmentPrice * (1 + sku.sales_tax_rate / 100) * 100
+                ) / 100;
               const recurringPayments =
                 +rawPaymentPlan.iterations > 1
-                  ? `$${installmentPrice.toFixed(
-                    2
-                  )}(+tax) for ${+rawPaymentPlan.iterations} times every${
-                  +rawPaymentPlan.intervalCount > 1
-                    ? +' ' + rawPaymentPlan.intervalCount
-                    : ''
-                  } ${rawPaymentPlan.interval}${
-                  +rawPaymentPlan.intervalCount > 1 ? 's' : ''
-                  } for `
+                  ? `$${installmentPriceWithTax.toFixed(
+                      2
+                    )} for ${+rawPaymentPlan.iterations} times every${
+                      +rawPaymentPlan.intervalCount > 1
+                        ? +' ' + rawPaymentPlan.intervalCount
+                        : ''
+                    } ${rawPaymentPlan.interval}${
+                      +rawPaymentPlan.intervalCount > 1 ? 's' : ''
+                    } for `
                   : '';
               const { payment_schedule_json, ...paymentPlan } = {
                 ...sku,
@@ -67,7 +71,7 @@ export const getPaymentPlans = async ({
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
                 payment_plan_notice: `The Installment Schedule is:  ${recurringPayments}the total amount of $${(
-                  installmentPrice * rawPaymentPlan.iterations
+                  installmentPriceWithTax * rawPaymentPlan.iterations
                 ).toFixed(2)}`,
                 type: rawPaymentPlan.type,
                 iterations: rawPaymentPlan.iterations,
@@ -84,8 +88,8 @@ export const getPaymentPlans = async ({
                   phase.amountType === 'fixed'
                     ? +phase.amount
                     : phase.amountType === 'percent'
-                      ? Math.round(+sku.price * +phase.amount) / 100
-                      : null;
+                    ? Math.round(+sku.price * +phase.amount) / 100
+                    : null;
                 if (!amount) {
                   throw new Error('Incorrect amount specified.');
                 }
@@ -122,13 +126,16 @@ export const getPaymentPlans = async ({
                     date +
                     '_' +
                     amount,
+                  amountWithTax:
+                    Math.round(amount * (1 + sku.sales_tax_rate / 100) * 100) /
+                    100,
                 }))
                 .sort((a, b) =>
                   b.date === 'now'
                     ? 1
                     : a.date === 'now'
-                      ? -1
-                      : +a.date - +b.date
+                    ? -1
+                    : +a.date - +b.date
                 );
 
               const { payment_schedule_json, ...paymentPlan } = {
@@ -141,10 +148,10 @@ export const getPaymentPlans = async ({
                   .map(
                     x =>
                       `${
-                      x.date === 'now'
-                        ? 'now'
-                        : dateFormat(new Date(x.date * 1000), 'yyyy-mm-dd')
-                      }: $${x.amount.toFixed(2)}`
+                        x.date === 'now'
+                          ? 'now'
+                          : dateFormat(new Date(x.date * 1000), 'yyyy-mm-dd')
+                      }: $${x.amountWithTax.toFixed(2)}`
                   )
                   .join(', ')}`,
                 type: rawPaymentPlan.type,
