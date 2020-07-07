@@ -87,6 +87,7 @@ export const saveEventDetails: ActionCreator<ThunkAction<
       status_id: 1,
     };
     dispatch<any>(saveCalendarEvent(calendarEvent));
+    // dispatch<any>(updateMenu());
 
     Toasts.successToast('Changes successfully saved');
 

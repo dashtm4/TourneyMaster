@@ -41,6 +41,7 @@ interface IRegistrationState {
   isEdit: boolean;
   isSectionsExpand: boolean;
   changesAreMade: boolean;
+  event?: Partial<IEventDetails>;
 }
 
 interface IRegistrationProps {
@@ -69,6 +70,7 @@ class RegistrationView extends React.Component<
     isEdit: false,
     isSectionsExpand: true,
     changesAreMade: false,
+    event: undefined,
   };
 
   componentDidMount() {
@@ -80,6 +82,11 @@ class RegistrationView extends React.Component<
     if (this.props.registration !== prevProps.registration) {
       this.setState({
         registration: this.props.registration,
+      });
+    }
+    if (this.props.event !== prevProps.event) {
+      this.setState({
+        event: this.props.event,
       });
     }
   }
@@ -166,11 +173,12 @@ class RegistrationView extends React.Component<
   click = () => console.log("change");
 
   renderView = () => {
-    const { registration } = this.props;
-    const eventType = this.props.event && this.props.event[0].event_type;
+    const { registration, event } = this.props;
+    const eventType = event && event[0].event_type;
     if (this.state.isEdit) {
       return (
         <RegistrationEdit
+          event={event}
           registration={this.state.registration}
           onChange={this.onChange}
           onCancel={this.onCancelClick}
@@ -248,19 +256,21 @@ class RegistrationView extends React.Component<
                     <Payments data={registration} />
                   </SectionDropdown>
                 </li>
-                <li>
-                  <SectionDropdown
-                    id={EventMenuRegistrationTitles.WAIVER}
-                    type="section"
-                    panelDetailsType="flat"
-                    isDefaultExpanded={true}
-                  >
-                    <span>Waiver</span>
-                    <div className={styles.waiverWrapp}>
-                      <Waiver data={registration} isEdit={false} />
-                    </div>
-                  </SectionDropdown>
-                </li>
+                {event && event[0].waivers_required === 1
+                  ? <li>
+                    <SectionDropdown
+                      type="section"
+                      panelDetailsType="flat"
+                      isDefaultExpanded={true}
+                    >
+                      <span>Waiver</span>
+                      <div className={styles.waiverWrapp}>
+                        <Waiver data={registration} isEdit={false} />
+                      </div>
+                    </SectionDropdown>
+                  </li>
+                  : null
+                }
                 <li>
                   <SectionDropdown
                     id={EventMenuRegistrationTitles.REGISTRANTS}
