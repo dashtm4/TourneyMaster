@@ -224,6 +224,12 @@ const Waiver = ({
     const signature = data.waiver_signature
       ? JSON.parse(data.waiver_signature).name
       : '';
+    const hash = data.waiver_signature
+      ? `Cryptographic hash of ` + JSON.parse(data.waiver_signature).hash
+      : '';
+    const ip = data.waiver_signature
+      ? `Signing IP address: ` + JSON.parse(data.waiver_signature).ip
+      : '';
     const date = moment(data.waiver_sign_datetime).format('MMM D, YYYY');
     const time = moment(data.waiver_sign_datetime).format('hh:mm:ss');
     const agreedment = data.waiver_sign_datetime
@@ -239,7 +245,9 @@ const Waiver = ({
             event.desktop_icon_URL}" style="position: absolute; top: 80px; right: 80px; max-width: 200px; max-height: 200px" /></div>` +
           content.waiver_content +
           `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>
-        <h2 style="font-size: 12px; text-align: right">${agreedment}</h2>`;
+        <h2 style="font-size: 12px; text-align: right">${agreedment}</h2>` +
+        `<h3 style="font-size: 10px; text-align: right">${ip}</h3>
+        <h3 style="font-size: 10px; text-align: right">${hash}</h3>`;
     return (
       <div className={classes.waiverContainer}>
         <div
