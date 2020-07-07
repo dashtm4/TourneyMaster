@@ -141,8 +141,8 @@ const pageEventReducer = (
                 isCompleted: CheckIsCompleted.checkIsCompletedRegistration(
                   registration
                 ),
-                children: registration
-                  ? Object.values(EventMenuRegistrationTitles)
+                children: registration && event !== null
+                  ? Object.values(EventMenuRegistrationTitles).filter(title => title !== EventMenuRegistrationTitles.WAIVER || event.waivers_required === 1)
                   : [],
               };
             }
@@ -205,11 +205,11 @@ const pageEventReducer = (
         menuList: state.menuList.map(item =>
           item.title === EventMenuTitles.REGISTRATION
             ? {
-                ...item,
-                isCompleted: CheckIsCompleted.checkIsCompletedRegistration(
-                  registration
-                ),
-                children: registration
+              ...item,
+              isCompleted: CheckIsCompleted.checkIsCompletedRegistration(
+                registration
+              ),
+              children: registration
                   ? Object.values(EventMenuRegistrationTitles)
                   : [],
               }
