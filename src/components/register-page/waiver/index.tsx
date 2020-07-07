@@ -11,6 +11,7 @@ import { ButtonColors, ButtonVariant } from "common/enums/buttons";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import moment from 'moment';
+import styles from './styles.module.scss';
 
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
@@ -29,6 +30,7 @@ const useStyles = makeStyles(
       marginRight: 'auto',
       lineHeight: 'normal',
       position: 'relative',
+      cursor: `url(../../../assets/scroll-cursor.png), auto`,
     },
     waiver: {
       padding: '40px',
@@ -50,9 +52,15 @@ const useStyles = makeStyles(
       position: 'absolute',
       right: '20px',
       top: '10px',
+      zIndex: 1000,
     },
     hiddenButton: {
       visibility: 'hidden',
+    },
+    warnText: {
+      width: '100%',
+      textAlign: 'center',
+      padding: '4px',
     },
   })
 );
@@ -131,7 +139,7 @@ const Waiver = ({
       setDisabledButton(false);
       onChange(
         'waiver_signature',
-        JSON.stringify({ ip: IP, hash: hash, name: inputedValue })
+        JSON.stringify({ ip: IP, hash, name: inputedValue })
       );
       const currentDate = new Date();
       onChange('waiver_sign_datetime', currentDate.toISOString());
@@ -246,7 +254,7 @@ const Waiver = ({
           content.waiver_content +
           `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>
         <h2 style="font-size: 12px; text-align: right">${agreedment}</h2>` +
-        `<h3 style="font-size: 10px; text-align: right">${ip}</h3>
+          `<h3 style="font-size: 10px; text-align: right">${ip}</h3>
         <h3 style="font-size: 10px; text-align: right">${hash}</h3>`;
     return (
       <div className={classes.waiverContainer}>
@@ -257,28 +265,35 @@ const Waiver = ({
             onClick={sendDataToPDF}
             variant={ButtonVariant.CONTAINED}
             color={ButtonColors.PRIMARY}
-            label={'Save'}
+            label={'Save to PDF'}
             icon={<GetAppIcon style={{ fill: '#FFFFFF' }} />}
             isIconRightSide={true}
           />
         </div>
-        <div className={classes.waiverWrapp} ref={scrollRef}>
+        <h2 className={!isBottom ? classes.warnText : classes.hiddenButton}>
+          Scroll to the bottom of the waiver to enable signing of the document
+        </h2>
+        <div className={styles.waiverWrapp} ref={scrollRef}>
           <div
             id="waiver-content"
             className={classes.waiver}
             dangerouslySetInnerHTML={{ __html: waiverContent }}
           />
         </div>
-        <div className={classes.inputWrapp}>
-          <Input
-            label={'If you agree to these terms and conditions, please retype your first and last name.'}
-            value={name}
-            onChange={onInputName}
-            placeholder={'First name and Last name'}
-            disabled={!isBottom || isComplete}
-            isRequired={true}
-          />
+        <div>
+
+          <div className={isBottom ? classes.inputWrapp : classes.hiddenButton}>
+            <Input
+              label={'If you agree to these terms and conditions, please retype your first and last name.'}
+              value={name}
+              onChange={onInputName}
+              placeholder={'First name and Last name'}
+              disabled={!isBottom || isComplete}
+              isRequired={true}
+            />
+          </div>
         </div>
+
         <div className={classes.errorText}>{error}</div>
       </div>
     );
