@@ -65,6 +65,7 @@ import {
   updateSchedulesDetails,
   deleteSchedulesDetails,
   addSchedulesDetails,
+  setIsAlreadyDraftSaveStatus,
 } from './logic/actions';
 import {
   fillSchedulesTable,
@@ -163,6 +164,7 @@ interface IMapDispatchToProps {
   ) => void;
   deleteSchedulesDetails: (modifiedSchedulesDetails: ISchedulesDetails[], schedulesDetailsToDelete: ISchedulesDetails[]) => void;
   addSchedulesDetails: (modifiedSchedulesDetails: ISchedulesDetails[], schedulesDetailsToAdd: ISchedulesDetails[]) => void;
+  setIsAlreadyDraftSaveStatus: (isAlreadyDraftSave: boolean) => void;
 }
 
 interface ComponentProps {
@@ -239,7 +241,9 @@ class Schedules extends Component<Props, State> {
       fetchFields,
       fetchEventSummary,
       fetchSchedulesDetails,
+      setIsAlreadyDraftSaveStatus,
     } = this.props;
+    setIsAlreadyDraftSaveStatus(false);
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
     const { create_mode } = scheduleData || {};
@@ -1142,6 +1146,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       updateSchedulesDetails,
       deleteSchedulesDetails,
       addSchedulesDetails,
+      setIsAlreadyDraftSaveStatus,
     },
     dispatch
   );

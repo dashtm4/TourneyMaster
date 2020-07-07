@@ -22,6 +22,7 @@ import {
   ADD_SCHEDULES_DETAILS_IN_PROGRESS,
   ADD_SCHEDULES_DETAILS_SUCCESS,
   ADD_SCHEDULES_DETAILS_FAILURE,
+  SET_IS_DRAFT_ALREADY_SAVED_STATUS,
 } from './actionTypes';
 import { IEventSummary } from 'common/models/event-summary';
 import { ISchedule } from 'common/models';
@@ -176,6 +177,11 @@ const SchedulesReducer = (state = initialState, action: IScheduleAction) => {
         ...state,
         addSchedulesDetailsInProgress: false,
       };
+    case SET_IS_DRAFT_ALREADY_SAVED_STATUS:
+      return {
+        ...state,
+        draftIsAlreadySaved: action.payload,
+      }
     default:
       return state;
   }
