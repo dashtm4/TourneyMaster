@@ -269,6 +269,7 @@ class Schedules extends Component<Props, State> {
       if (this.isVisualGamesMakerMode()) {
         this.setState({
           activeTab: SchedulesTabsEnum.VisualGamesMaker,
+          defaultTabUpdated: true,
         });
       }
 
