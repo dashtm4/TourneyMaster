@@ -18,7 +18,7 @@
   justify-content: space-between;
 }
 .btnsGroup {
-  & > :first-child {
+  & > :nth-child(n) {
     margin-right: 15px;
   }
 }
