@@ -41,7 +41,6 @@ import {
   settleTeamsPerGames,
   IGame,
   settleTeamsPerGamesDays,
-  IConfigurableGame,
 } from 'components/common/matrix-table/helper';
 import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import { IDivisionAndPoolsState } from 'components/divisions-and-pools/logic/reducer';
@@ -103,7 +102,6 @@ import {
 import styles from './styles.module.scss';
 import VisualGamesMaker from 'components/visual-games-maker';
 import { IMatchup } from '../visual-games-maker/helpers';
-import { fillGamesList, clearGamesList } from './logic/schedules-table/actions';
 import uuidv4 from 'uuid/v4';
 
 type PartialTournamentData = Partial<ITournamentData>;
@@ -120,7 +118,6 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   anotherSchedulePublished?: boolean;
   gamesAlreadyExist?: boolean;
   pools?: IPool[];
-  gamesList?: IConfigurableGame[];
 }
 
 interface IMapDispatchToProps {
@@ -164,8 +161,6 @@ interface IMapDispatchToProps {
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
   ) => void;
-  fillGamesList: (games: IConfigurableGame[]) => void;
-  clearGamesList: () => void;
   deleteSchedulesDetails: (modifiedSchedulesDetails: ISchedulesDetails[], schedulesDetailsToDelete: ISchedulesDetails[]) => void;
   addSchedulesDetails: (modifiedSchedulesDetails: ISchedulesDetails[], schedulesDetailsToAdd: ISchedulesDetails[]) => void;
 }
@@ -254,7 +249,6 @@ class Schedules extends Component<Props, State> {
       ScheduleCreationType[create_mode] === ScheduleCreationType.Visual;
 
     schedulesDetailsClear();
-    this.props.clearGamesList();
     clearSchedulesTable();
     this.getPublishedStatus();
     this.activateLoaders(scheduleId, isManualScheduling);
@@ -327,44 +321,28 @@ class Schedules extends Component<Props, State> {
       this.props.fetchSchedulesDetails(scheduleId);
     }
 
-    // TODO: fill games cells from database
     if (this.isVisualGamesMakerMode() && schedulesDetails && JSON.stringify(this.props.schedulesDetails) !== JSON.stringify(prevProps.schedulesDetails) && gamesCells && gamesCells.length === 0) {
-      // const gamesListFromSchedulesDetails: IConfigurableGame[] = schedulesDetails
-      //   .filter(v => v.game_id === '-1')
-      //   .map(v => ({
-      //     id: -1,
-      //     divisionId: v.division_id || undefined,
-      //     divisionName: divisions?.find(division => division.division_id === v.division_id)?.short_name,
-      //     divisionHex: divisions?.find(division => division.division_id === v.division_id)?.division_hex,
-      //     awayTeamId: v.away_team_id || undefined,
-      //     homeTeamId: v.home_team_id || undefined,
-      //     timeSlotId: 0,
-      //     fieldId: '',
-      //     isAssigned: !!schedulesDetails.find(details => details.game_id !== '-1' && details.division_id === v.division_id && details.away_team_id === v.away_team_id && details.home_team_id === v.home_team_id)
-      //   }));
-
-      const gamesCellsFromGamesList: IMatchup[] = schedulesDetails
+      const matchups: IMatchup[] = schedulesDetails
         .filter(
           v =>
             v.away_team_id !== null &&
             v.home_team_id !== null &&
             v.division_id !== null
         )
-        .map(
-          v =>
-            ({
-              id: uuidv4(),
-              assignedGameId: +v.game_id > 0 ? +v.game_id : null,
-              homeTeamId: v.home_team_id,
-              awayTeamId: v.away_team_id,
-              divisionId: v.division_id,
-              divisionName: divisions?.find(division => division.division_id === v.division_id)?.short_name || '',
-              divisionHex: divisions?.find(division => division.division_id === v.division_id)?.division_hex || '',
-            } as IMatchup)
-        );
+        .map(v => {
+          const division = divisions?.find(d => d.division_id === v.division_id);
+          return {
+            id: uuidv4(),
+            assignedGameId: +v.game_id > 0 ? +v.game_id : null,
+            homeTeamId: v.home_team_id,
+            awayTeamId: v.away_team_id,
+            divisionId: v.division_id,
+            divisionName: division?.short_name || '',
+            divisionHex: division?.division_hex || '',
+          } as IMatchup;
+        });
 
-      // this.props.fillGamesList(gamesListFromSchedulesDetails);
-      this.onGamesListChange(gamesCellsFromGamesList);
+      this.onGamesListChange(matchups);
     }
 
     if (!neccessaryDataCalculated && schedule) {
@@ -815,20 +793,20 @@ class Schedules extends Component<Props, State> {
     );
 
     if (scheduleId) {
-      const gamesListFromSchedulesDetails = schedulesDetails!.filter(v => !v.game_id);
+      const matchupsFromSchedulesDetails = schedulesDetails!.filter(v => !v.game_id);
 
       const schedulesDetailsToAdd = updatedSchedulesDetails!.filter(
         v =>
           v.away_team_id &&
           !v.game_id &&
-          !gamesListFromSchedulesDetails.find(
+          !matchupsFromSchedulesDetails.find(
             detail =>
               detail.away_team_id === v.away_team_id &&
               detail.home_team_id === v.home_team_id
           )
       );
 
-      const schedulesDetailsToDelete = gamesListFromSchedulesDetails.filter(o =>
+      const schedulesDetailsToDelete = matchupsFromSchedulesDetails.filter(o =>
         gamesCells?.find(
           x =>
             x.assignedGameId &&
@@ -1136,7 +1114,6 @@ const mapStateToProps = ({
   schedulesDetails: schedules?.schedulesDetails,
   pools: divisions?.pools,
   gamesAlreadyExist: schedules?.gamesAlreadyExist,
-  gamesList: schedulesTable?.gamesList,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
@@ -1164,8 +1141,6 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       schedulesDetailsClear,
       //
       updateSchedulesDetails,
-      fillGamesList,
-      clearGamesList,
       deleteSchedulesDetails,
       addSchedulesDetails,
     },

@@ -12,21 +12,16 @@ import MatrixOfPossibleGames from './possible-games-matrix';
 import { Checkbox, Select } from 'components/common';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { IMatchup, IMatchupTeam } from './helpers';
-import { fillGamesList } from 'components/schedules/logic/schedules-table/actions';
-import { IConfigurableGame } from 'components/common/matrix-table/helper';
-import { ISchedulesTableState } from 'components/schedules/logic/schedules-table/schedulesTableReducer';
 
 interface IMapStateToProps {
   teams?: ITeam[] | undefined;
   divisions?: IDivision[] | undefined;
   pools?: IPool[] | undefined;
   teamsCards?: ITeamCard[] | undefined;
-  gamesList?: IConfigurableGame[] | undefined;
 }
 
 interface IMapDispatchToProps {
   getAllPools: (divisionIds: string[]) => void;
-  fillGamesList: (gamesList: IConfigurableGame[]) => void;
 }
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
@@ -41,7 +36,6 @@ interface IComponentProps {
 interface IRootState {
   pageEvent?: IPageEventState;
   divisions?: IDivisionAndPoolsState;
-  schedulesTable?: ISchedulesTableState;
 }
 
 type IProps = IMapStateToProps & IMapDispatchToProps & IComponentProps;
@@ -226,19 +220,16 @@ class VisualGamesMaker extends Component<IProps, IState> {
 const mapStateToProps = ({
   pageEvent,
   divisions,
-  schedulesTable,
 }: IRootState): IMapStateToProps => ({
   teams: pageEvent?.tournamentData.teams,
   divisions: pageEvent?.tournamentData.divisions,
   pools: divisions?.pools,
-  gamesList: schedulesTable?.gamesList,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchToProps =>
   bindActionCreators(
     {
       getAllPools,
-      fillGamesList,
     },
     dispatch
   );

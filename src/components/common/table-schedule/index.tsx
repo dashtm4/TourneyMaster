@@ -28,7 +28,7 @@ import { ITeamCard, ITeam } from 'common/models/schedule/teams';
 import { Button } from 'components/common';
 import PopupConfirm from 'components/common/popup-confirm';
 import { MatrixTable, CardMessage } from 'components/common';
-import ListUnassigned from './components/list-unassigned';
+import ListUnassignedTeams from './components/list-unassigned';
 import Filter from './components/filter';
 import DivisionHeatmap from './components/division-heatmap';
 import TableActions from './components/table-actions';
@@ -39,7 +39,7 @@ import { IDiagnosticsInput } from 'components/schedules/diagnostics';
 import { populateDefinedGamesWithPlayoffState } from 'components/schedules/definePlayoffs';
 import { IBracketGame } from 'components/playoffs/bracketGames';
 import { updateGameSlot } from 'components/playoffs/helper';
-import UnassignedGamesList from './components/list-unassigned-games';
+import ListUnassignedMatchups from './components/list-unassigned-games';
 import PopupAdvancedWorkflow from './components/popup-advanced-workflow';
 import {
   mapGamesByFilter,
@@ -447,14 +447,14 @@ const TableSchedule = ({
           {tableType === TableScheduleTypes.SCHEDULES && (
             <>
               {isFromMaker ? (
-                <UnassignedGamesList
+                <ListUnassignedMatchups
                   games={possibleGames}
                   event={event}
                   showHeatmap={showHeatmap}
                   onDrop={moveCard}
                 />
               ) : (
-                  <ListUnassigned
+                  <ListUnassignedTeams
                     pools={pools}
                     event={event}
                     tableType={tableType}

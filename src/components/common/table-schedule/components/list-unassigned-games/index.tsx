@@ -5,7 +5,6 @@ import { IDropParams } from 'components/common/matrix-table/dnd/drop';
 import { IEventDetails } from 'common/models';
 import GameDragCard from './dnd/game-drag';
 import { Radio } from 'components/common';
-import { GamesListDisplayType } from './enums';
 import { IMatchup } from 'components/visual-games-maker/helpers';
 
 interface IProps {
@@ -15,10 +14,15 @@ interface IProps {
   onDrop: (dropParams: IDropParams) => void;
 }
 
+enum DisplayType {
+  UNASSIGNED_GAMES = 'Unassigned games',
+  ALL_GAMES = 'All games',
+}
+
 const UnassignedGamesList = (props: IProps) => {
   const { games, onDrop, showHeatmap } = props;
   const acceptType = 'teamdrop';
-  const [gamesListDisplayType, setGamesListDisplayType] = useState(GamesListDisplayType.UNASSIGNED_GAMES);
+  const [displayType, setDisplayType] = useState(DisplayType.UNASSIGNED_GAMES);
 
   const assignedGames = games.filter(g => !!g.assignedGameId);
 
@@ -39,7 +43,7 @@ const UnassignedGamesList = (props: IProps) => {
     },
   });
 
-  const onGamesListDisplayTypeChange = (e: any) => setGamesListDisplayType(e.nativeEvent.target.value);
+  const onGamesListDisplayTypeChange = (e: any) => setDisplayType(e.nativeEvent.target.value);
 
   const renderGames = (items: IMatchup[]) => (
     <>
@@ -65,8 +69,8 @@ const UnassignedGamesList = (props: IProps) => {
       <h3 className={styles.title}>Needs Assignment</h3>
       <div className={styles.checkboxWrapper}>
         <Radio
-          options={Object.values(GamesListDisplayType)}
-          checked={gamesListDisplayType}
+          options={Object.values(DisplayType)}
+          checked={displayType}
           onChange={onGamesListDisplayTypeChange}
           row={true}
         />
@@ -81,7 +85,7 @@ const UnassignedGamesList = (props: IProps) => {
           <tbody>
             {renderGames(games.filter(g => !g.assignedGameId))}
             {!!(
-              gamesListDisplayType === GamesListDisplayType.ALL_GAMES &&
+              displayType === DisplayType.ALL_GAMES &&
               assignedGames.length > 0
             ) && (
                 <>
