@@ -253,8 +253,8 @@ class RegistrationView extends React.Component<
                     id={EventMenuRegistrationTitles.WAIVER}
                     type="section"
                     panelDetailsType="flat"
-                    isDefaultExpanded={true}
-                  >
+                    expanded={this.state.isSectionsExpand}
+                   >
                     <span>Waivers & Wellness</span>
                     <div className={styles.waiverWrapp}>
                       <Waiver data={registration} isEdit={false} />
