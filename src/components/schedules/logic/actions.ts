@@ -26,6 +26,7 @@ import {
   ADD_SCHEDULES_DETAILS_IN_PROGRESS,
   ADD_SCHEDULES_DETAILS_SUCCESS,
   ADD_SCHEDULES_DETAILS_FAILURE,
+  SET_IS_DRAFT_ALREADY_SAVED_STATUS,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
@@ -139,6 +140,11 @@ export const addSchedulesDetailsSuccess = (payload: ISchedulesDetails[]) => ({
 
 export const addScheduleDetailsFailure = () => ({
   type: ADD_SCHEDULES_DETAILS_FAILURE,
+});
+
+export const setIsDraftAlreadySaveStatusAction = (payload: boolean) => ({
+  type: SET_IS_DRAFT_ALREADY_SAVED_STATUS,
+  payload,
 });
 
 export const fetchFields = (
@@ -495,4 +501,8 @@ export const addSchedulesDetails = (
   }
 
   dispatch(addScheduleDetailsFailure());
+};
+
+export const setIsAlreadyDraftSaveStatus = (isDraftAlreadySaved: boolean) => async (dispatch: Dispatch) => {
+  dispatch(setIsDraftAlreadySaveStatusAction(isDraftAlreadySaved));
 };
