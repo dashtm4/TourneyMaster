@@ -169,7 +169,7 @@ const Waiver = ({
         : `<div style="height: 220px"><div><h1 style="text-align: center">${event && event.event_name}</h1>` +
           `<h2 style="text-align: center">${participantName}</h2></div>` +
           `<img src="https://tourneymaster.s3.amazonaws.com/public/${event &&
-            event.desktop_icon_URL}" style="position: absolute; top: 80px; right: 80px; max-width: 200px; max-height: 200px" /></div>` +
+            event.desktop_icon_URL}" style="position: absolute; top: 60px; right: 40px; max-width: 200px; max-height: 200px" /></div>` +
           content.waiver_content +
           `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>
         <h2 style="font-size: 12px; text-align: right; height: 16px">${agreedment}</h2>` +
