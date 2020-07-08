@@ -7,6 +7,7 @@ import { IGame } from '../helper';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { TableScheduleTypes } from 'common/enums';
 import chainIcon from 'assets/chainIcon.png';
+import { AssignmentType } from "../../table-schedule/helpers";
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -20,6 +21,7 @@ interface Props {
   onDrop: (dropParams: IDropParams) => void;
   onTeamCardUpdate: (teamCard: ITeamCard) => void;
   onGameUpdate: (game: IGame) => void;
+  assignmentType?: AssignmentType;
 }
 
 const RenderGameSlot = (props: Props) => {
@@ -35,6 +37,7 @@ const RenderGameSlot = (props: Props) => {
     highlightedGamedId,
     onGameUpdate,
     simultaneousDnd,
+    assignmentType
   } = props;
 
   const {
@@ -68,7 +71,7 @@ const RenderGameSlot = (props: Props) => {
 
   const awayTeamName = teamCards.find(item => item.id === awayTeamId)?.name;
   const homeTeamName = teamCards.find(item => item.id === homeTeamId)?.name;
-
+  const moveBothChain = (!!simultaneousDnd && !!awayTeam && !!homeTeam) || (assignmentType === AssignmentType.Matchups && !!awayTeam && !!homeTeam)
   return (
     <td
       className={`${styles.gameSlotContainer} ${isPlayoff &&
@@ -127,7 +130,7 @@ const RenderGameSlot = (props: Props) => {
             )}
           </>
         </DropContainer>
-        {!!simultaneousDnd && !!awayTeam && !!homeTeam && (
+        {moveBothChain && (
           <div
             className={styles.chainWrapper}
             style={{ backgroundColor: awayTeam?.divisionHex }}

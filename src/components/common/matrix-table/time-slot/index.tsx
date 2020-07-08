@@ -9,6 +9,7 @@ import { formatTimeSlot } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { Icons, TableScheduleTypes } from 'common/enums';
 import { getIcon } from 'helpers';
+import { AssignmentType } from "../../table-schedule/helpers";
 
 interface IProps {
   tableType: TableScheduleTypes;
@@ -25,6 +26,7 @@ interface IProps {
   simultaneousDnd?: boolean;
   highlightedGamedId?: number;
   onGameUpdate: (game: IGame) => void;
+  assignmentType: AssignmentType | undefined;
 }
 
 const RenderTimeSlot = (props: IProps) => {
@@ -43,6 +45,7 @@ const RenderTimeSlot = (props: IProps) => {
     highlightedGamedId,
     onGameUpdate,
     simultaneousDnd,
+    assignmentType
   } = props;
 
   const idsGamesForTimeSlot = games
@@ -113,6 +116,7 @@ const RenderTimeSlot = (props: IProps) => {
             highlightedGamedId={highlightedGamedId}
             simultaneousDnd={simultaneousDnd}
             onGameUpdate={onGameUpdate}
+            assignmentType={assignmentType}
           />
         ))}
     </tr>
