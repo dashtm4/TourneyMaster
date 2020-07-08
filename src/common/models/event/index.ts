@@ -37,6 +37,7 @@ export interface IEventDetails {
   min_num_of_games: number | null;
   event_type: string;
   playoffs_exist: number | null;
+  playoff_comments: string | null;
   max_num_of_divisions: number | null;
   bracket_type: string | null;
   ranking_factor_divisions: string;
