@@ -49,8 +49,9 @@ const Waiver = ({ data, isEdit, onChange }: IRegistrationDetailsProps) => {
     }
     if (isEdit && onChange) {
       return (
-        <div className={styles.redactor}>
+        <div className={styles.redactorWrapp}>
           <ReactQuill
+            className={styles.redactor}
             theme={'snow'}
             value={model || ''}
             modules={quill}

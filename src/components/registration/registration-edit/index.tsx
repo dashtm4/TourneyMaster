@@ -125,26 +125,24 @@ class RegistrationEdit extends React.Component<
                 />
               </SectionDropdown>
             </li>
-            {
-              this.props.event && this.props.event[0].waivers_required == 1
-                ? <li>
-                  <SectionDropdown
-                    type="section"
-                    panelDetailsType="flat"
-                    isDefaultExpanded={true}
-                  >
-                    <span>Waiver</span>
-                    <div className={styles.waiverWrapp}>
-                      <Waiver
-                        data={this.props.registration}
-                        onChange={this.props.onChange}
-                        isEdit={true}
-                      />
-                    </div>
-                  </SectionDropdown>
-                </li>
-                : null
-            }
+            {this.props.event && this.props.event[0].waivers_required === 1 ? (
+              <li>
+                <SectionDropdown
+                  type="section"
+                  panelDetailsType="flat"
+                  isDefaultExpanded={true}
+                >
+                  <span>Waiver</span>
+                  <div className={styles.waiverWrapp}>
+                    <Waiver
+                      data={this.props.registration}
+                      onChange={this.props.onChange}
+                      isEdit={true}
+                    />
+                  </div>
+                </SectionDropdown>
+              </li>
+            ) : null}
           </ul>
         </div>
         <PopupExposure
