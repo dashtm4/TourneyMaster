@@ -188,7 +188,7 @@ const TableSchedule = ({
   const [moveCardWarning, setMoveCardWarning] = useState<string | undefined>();
   const [days, setDays] = useState(calculateDays(teamCards));
 
-  const toggleSimultaneousDnd = () => setSimultaneousDnd(!toggleSimultaneousDnd);
+  const toggleSimultaneousDnd = () => setSimultaneousDnd(!simultaneousDnd);
 
   const manageGamesData = useCallback(() => {
     let definedGames = [...games];
@@ -278,7 +278,7 @@ const TableSchedule = ({
 
   const moveCard = (dropParams: IDropParams) => {
     const day = filterValues.selectedDay!;
-    const isSimultaneousDnd = isFromMaker ? true : simultaneousDnd;
+    const isSimultaneousDnd = assignmentType === AssignmentType.Matchups ? true : simultaneousDnd;
     const data = moveTeamCard(
       teamCards,
       tableGames,
@@ -524,7 +524,8 @@ const TableSchedule = ({
                 days={days.length}
                 filterValues={filterValues}
                 onChangeFilterValue={onFilterChange}
-                simultaneousDnd={isFromMaker ? undefined : simultaneousDnd}
+                simultaneousDnd={assignmentType === AssignmentType.Matchups ? true : simultaneousDnd}
+                assignmentType={assignmentType}
                 toggleSimultaneousDnd={toggleSimultaneousDnd}
               />
               {tableType === TableScheduleTypes.SCHEDULES &&
@@ -559,6 +560,7 @@ const TableSchedule = ({
               simultaneousDnd={simultaneousDnd}
               onToggleFullScreen={onToggleFullScreen}
               onGameUpdate={onGameUpdate}
+              assignmentType={assignmentType}
             />
           </div>
         </DndProvider>
