@@ -47,6 +47,14 @@ const SideBar = ({ event, eventRegistration }: IProps) => {
             </div>
           </>
         )}
+                {eventRegistration.entry_fee && (
+          <>
+            <span className={styles.sectionTitle}>Sales Tax:</span>
+            <div className={styles.sideContentItem}>
+              {`${eventRegistration. sales_tax_rate}%`}
+            </div>
+          </>
+        )}
         {eventRegistration.upcharge_fee && (
           <>
             <span className={styles.sectionTitle}>Upcharge Fee:</span>
