@@ -181,7 +181,10 @@ $sectionBodyPadding: 20px 0;
       flex-direction: row;
       align-items: flex-start;
       justify-content: space-between;
-      width: 560px;
+
+      input:disabled {
+        background: #dbe0e7;
+      }
     }
 
     .pdThird {
