@@ -225,7 +225,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
 
   const subscriptionScheduleData = {
     customer: customer.id,
-    start_date: billingCycleAnchor ? billingCycleAnchor : 'now',
+    start_date: 'now',
     end_behavior: 'cancel',
     phases,
     metadata: {

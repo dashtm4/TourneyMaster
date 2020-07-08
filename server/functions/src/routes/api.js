@@ -3,7 +3,7 @@ import { processCreateSubscription } from './stripeSubscriptions.js';
 import { paymentSuccessWebhook } from './stripeWebhook.js';
 import { getPaymentPlans } from '../services/activeProducts.js';
 
-export default (api) => {
+export default api => {
   api.post('/create-subscription', async (req, res) => {
     try {
       const subscription = await processCreateSubscription(req.body);
@@ -24,12 +24,11 @@ export default (api) => {
 
   api.get('/payment-plans', async (req, res) => {
     try {
-      const sku_id = req.query.sku_id;
-      const product_id = req.query.product_id;
-      const payment_plan_id = req.query.payment_plan_id;
+      const { sku_id, product_id, payment_plan_id, discount_code } = req.query;
       const data = await getPaymentPlans({
         sku_id,
         product_id,
+        discount_code,
         payment_plan_id,
       });
 

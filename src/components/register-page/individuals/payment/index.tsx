@@ -5,6 +5,7 @@ import { BindingCbWithTwo, ISelectOption } from 'common/models';
 import { IIndividualsRegister } from 'common/models/register';
 import { CardElement } from '@stripe/react-stripe-js';
 import stripeLogo from 'assets/stripeLogo.png';
+import { Button } from '@material-ui/core';
 // import CardHelp from '../../card-help';
 
 interface IPaymentSelectionOptions extends ISelectOption {
@@ -19,6 +20,7 @@ interface IPaymentProps {
   processing: boolean;
   purchasing: boolean;
   paymentSelectionOptions: IPaymentSelectionOptions[];
+  reloadPaymentPlans(): void;
 }
 
 const paymentMethodOptions = [
@@ -32,6 +34,7 @@ const Payment = ({
   onChange,
   processing,
   paymentSelectionOptions,
+  reloadPaymentPlans,
 }: IPaymentProps) => {
   const onPaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('payment_method', e.target.value);
@@ -60,7 +63,7 @@ const Payment = ({
         >
           <Select
             options={paymentSelectionOptions}
-            label="Payment Options"
+            label='Payment Options'
             disabled={processing}
             value={data.payment_selection || ''}
             onChange={onPaymentSelectionChange}
@@ -72,7 +75,7 @@ const Payment = ({
         >
           <Select
             options={paymentMethodOptions}
-            label="Payment Method"
+            label='Payment Method'
             disabled={true}
             value={data.payment_method || ''}
             onChange={onPaymentMethodChange}
@@ -85,11 +88,14 @@ const Payment = ({
         >
           <Input
             fullWidth={true}
-            label="Discount Code"
+            label='Discount Code'
             disabled={processing}
             value={data.discount_code || ''}
             onChange={onDiscountCodeChange}
           />
+          <Button onClick={reloadPaymentPlans} color='primary'>
+            Apply Code
+          </Button>
         </div>
       </div>
       <div className={styles.sectionRow}>
@@ -130,7 +136,7 @@ const Payment = ({
             width: '150px',
             height: '75px',
           }}
-          alt="Stripe logo"
+          alt='Stripe logo'
         />
       </div>
     </div>

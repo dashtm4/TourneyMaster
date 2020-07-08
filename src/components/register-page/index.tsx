@@ -233,9 +233,15 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     }
   };
 
-  const handleProceedToPayment = async () => {
-    axios
-      .get(`/payments/payment-plans?sku_id=${registration.ext_sku}`)
+  const loadPaymentPlans = async () => {
+    return axios
+      .get(
+        `/payments/payment-plans?sku_id=${registration.ext_sku}${
+          registration.discount_code
+            ? `&discount_code=${registration.discount_code}`
+            : ''
+        }`
+      )
       .then(response => {
         const plans = response.data.map((plan: any) => ({
           label: plan.payment_plan_name,
@@ -245,19 +251,24 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           notice: plan.payment_plan_notice,
         }));
         setPaymentPlans(plans);
-
-        const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
-          !cur.iterations ||
-          (cur.type === 'installment' && prev.iterations < cur.iterations)
-            ? prev
-            : cur
-        );
-        setRegistration({
-          ...registration,
-          payment_selection: planWithMinIterations.value,
-          payment_method: 'Credit Card',
-        });
+        return plans;
       });
+  };
+
+  const handleProceedToPayment = async () => {
+    loadPaymentPlans().then(plans => {
+      const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
+        !cur.iterations ||
+        (cur.type === 'installment' && prev.iterations < cur.iterations)
+          ? prev
+          : cur
+      );
+      setRegistration({
+        ...registration,
+        payment_selection: planWithMinIterations.value,
+        payment_method: 'Credit Card',
+      });
+    });
     setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
@@ -341,6 +352,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               processing={processing}
               purchasing={purchasing}
               paymentSelectionOptions={paymentPlans}
+              reloadPaymentPlans={loadPaymentPlans}
             />
           );
       }
@@ -374,6 +386,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               processing={processing}
               purchasing={purchasing}
               paymentSelectionOptions={paymentPlans}
+              reloadPaymentPlans={loadPaymentPlans}
             />
           );
       }
