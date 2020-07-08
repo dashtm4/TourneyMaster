@@ -10,13 +10,12 @@ import {
   makeStyles,
   TableFooter,
 } from '@material-ui/core';
-import { ITeam } from 'common/models/teams';
-import { IGameCell, ITableRunningTally } from '../helpers';
+import { IMatchup, IMatchupTeam, ITableRunningTally } from '../helpers';
 
 interface IProps {
-  teams: ITeam[] | undefined;
+  teams: IMatchupTeam[];
   showNames: boolean;
-  games: IGameCell[];
+  games: IMatchup[];
 }
 
 const useStyles = makeStyles({
@@ -72,20 +71,20 @@ const RunningTally = (props: IProps) => {
       let countAllGames = 0;
       let countHomeGames = 0;
       let countAwayGames = 0;
-      games.forEach((game: IGameCell) => {
-        if (game.awayTeamId === team.team_id) {
+      games.forEach((game: IMatchup) => {
+        if (game.awayTeamId === team.id) {
           countAllGames++;
           countAwayGames++;
         }
-        if (game.homeTeamId === team.team_id) {
+        if (game.homeTeamId === team.id) {
           countAllGames++;
           countHomeGames++;
         }
       });
       totalCount += countAllGames;
       dataForTable.push({
-        teamId: team.team_id,
-        teamName: team.short_name,
+        teamId: team.id,
+        teamName: team.name,
         homeGamesNumber: countHomeGames,
         awayGamesNumber: countAwayGames,
         allGamesNumber: countAllGames,
@@ -116,7 +115,7 @@ const RunningTally = (props: IProps) => {
           </TableHead>
           <TableBody>
             {dataForTable.map(row => {
-              const index = teams!.findIndex(o => o.team_id === row.teamId);
+              const index = teams!.findIndex(o => o.id === row.teamId);
               return (
                 <TableRow key={row.teamName}>
                   <TableCell className={classes.tableTeamCell} align="center">

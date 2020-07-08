@@ -88,7 +88,6 @@ const PoolsDetailsNav = ({
           )}
       </div>
     </div>
-
   );
 }
 

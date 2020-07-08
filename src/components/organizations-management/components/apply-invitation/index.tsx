@@ -12,6 +12,7 @@ interface Props {
   addUserToOrganization: (invCode: string) => void;
   type?: string;
   onCancel?: BindingAction;
+  onSkip?: BindingAction;
   isSectionExpand: boolean;
 }
 
@@ -19,6 +20,7 @@ const ApplyInvitation = ({
   addUserToOrganization,
   type,
   onCancel,
+  onSkip,
   isSectionExpand,
 }: Props) => {
   const [invCode, onChange] = React.useState('');
@@ -75,6 +77,12 @@ const ApplyInvitation = ({
         </div>
         {type === 'wizard' && (
           <div className={styles.wBtnsWrapper}>
+            <Button
+              label="Skip"
+              color="secondary"
+              variant="text"
+              onClick={onSkip}
+            />
             <Button
               label="Cancel"
               variant="text"

@@ -571,6 +571,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           },
         ],
         paymentMethodId: paymentMethod!.id,
+        discount_code: updatedRegistration.discount_code,
       };
 
       subscriptionData.customer.address.postal_code = paymentMethod?.billing_details.address?.postal_code!;
@@ -608,13 +609,13 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
             <Paper>
               <Stepper
                 activeStep={activeStep}
-                orientation="vertical"
+                orientation='vertical'
                 style={{ backgroundColor: 'transparent', width: '100%' }}
               >
                 {steps.map((label, index) => (
                   <Step key={label}>
                     <StepLabel>
-                      <HeadingLevelThree color="#1c315f">
+                      <HeadingLevelThree color='#1c315f'>
                         <span>{label}</span>
                       </HeadingLevelThree>
                     </StepLabel>
@@ -625,15 +626,15 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                           <Button
                             disabled={activeStep === 0}
                             onClick={handleBack}
-                            label="Back"
-                            variant="text"
-                            color="secondary"
+                            label='Back'
+                            variant='text'
+                            color='secondary'
                           />
                           <Button
                             btnType={ButtonFormTypes.SUBMIT}
-                            variant="contained"
+                            variant='contained'
                             disabled={processing || isDisable}
-                            color="primary"
+                            color='primary'
                             label={
                               activeStep === steps.length - 1
                                 ? 'Agree and Pay'

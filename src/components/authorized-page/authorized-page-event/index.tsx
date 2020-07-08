@@ -25,7 +25,6 @@ import Scheduling from 'components/scheduling';
 import Teams from 'components/teams';
 import CreateTeam from 'components/teams/components/create-team';
 import Footer from 'components/footer';
-import VisualGamesMaker from 'components/visual-games-maker';
 import Schedules from 'components/schedules';
 import Reporting from 'components/reporting';
 import Playoffs from 'components/playoffs';
@@ -154,7 +153,6 @@ const AuthorizedPageEvent = ({
     Routes.SCHEDULES,
     Routes.RECORD_SCORES,
     Routes.PLAYOFFS,
-    Routes.VISUAL_GAMES_MAKER,
   ];
   const schedulingIgnoreList = [
     EventMenuTitles.SCHEDULING,
@@ -183,7 +181,7 @@ const AuthorizedPageEvent = ({
         <main
           className={`${styles.eventPageContent} ${
             isFullScreen ? styles.contentFullScreen : ''
-          }`}
+            }`}
         >
           <Switch>
             <Route path={Routes.EVENT_DETAILS_ID} component={EventDetails} />
@@ -204,10 +202,6 @@ const AuthorizedPageEvent = ({
                   )}
                 />
               )}
-            />
-            <Route
-              path={Routes.VISUAL_GAMES_MAKER_ID}
-              render={props => <VisualGamesMaker {...props} />}
             />
             <Route
               path={Routes.SCHEDULES_ID}

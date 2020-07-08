@@ -28,6 +28,11 @@ interface IFilterValues {
   fieldsOptions: IMultiSelectOption[];
 }
 
+export enum AssignmentType {
+  Matchups = 'Matchups',
+  Teams = 'Teams',
+}
+
 const getUnsatisfiedTeams = (
   teamCards: ITeamCard[],
   minGamesNum: number | null,
@@ -311,6 +316,7 @@ export const mapUnusedFields = (
 const moveCardMessages = {
   playoffSlot:
     'This game slot is located in the Playoffs section. Please choose another one.',
+  gameSlotInUse: 'Game slot is already in use.',
   timeSlotInUseForTeam: 'This team is already playing at this time.',
   timeSlotInUseForGame: 'One of these teams is already playing at this time.',
   differentFacility:

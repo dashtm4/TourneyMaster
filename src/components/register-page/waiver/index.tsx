@@ -1,7 +1,6 @@
 ﻿import React, { useState, useRef, useEffect } from 'react';
 import { BindingCbWithTwo, IRegistration, BindingCbWithOne, IEventDetails } from 'common/models';
 import 'react-phone-input-2/lib/high-res.css';
-//import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Input, Button } from 'components/common';
 import { IIndividualsRegister } from 'common/models/register';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -15,58 +14,6 @@ import styles from './styles.module.scss';
 
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
-// const useStyles = makeStyles(
-//   createStyles({
-//     waiverContainer: {
-//       position: 'relative',
-//     },
-//     waiverWrapp: {
-//       backgroundColor: 'white',
-//       width: '100%',
-//       maxHeight: '500px',
-//       overflow: 'auto',
-//       marginLeft: 'auto',
-//       marginRight: 'auto',
-//       lineHeight: 'normal',
-//       position: 'relative',
-//       cursor: `url(../../../assets/scroll-cursor.png), auto`,
-//     },
-//     waiver: {
-//       padding: '40px',
-//     },
-//     fullName: {
-//       fontFamily: 'Segoe Script',
-//       textAlign: 'right',
-//       height: '40px',
-//       marginTop: '8px',
-//     },
-//     inputWrapp: {
-//       margin: '8px',
-//     },
-//     errorText: {
-//       color: 'red',
-//       marginLeft: '8px',
-//     },
-//     buttonWrapp: {
-//       position: 'absolute',
-//       right: '20px',
-//       top: '10px',
-//       zIndex: 1000,
-//     },
-//     hiddenButton: {
-//       visibility: 'hidden',
-//     },
-//     warnText: {
-//       width: '100%',
-//       textAlign: 'center',
-//       padding: '8px',
-//       position: 'sticky',
-//       top: 0,
-//       background: 'linear-gradient(to bottom, grey 0%, white 100%)',
-//       opacity: 0.5,
-//     },
-//   })
-// );
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -105,19 +52,20 @@ const Waiver = ({
   useEffect(() => {
     loadPrevData();
     loadSignatureParams();
-  }, []);
+  });
 
   useEffect(() => {
-    if (!scrollRef.current) {
+    const waiverElement = scrollRef.current;
+    if (!waiverElement) {
       return;
     }
-    if (scrollRef.current.clientHeight < 500) {
+    if (waiverElement.clientHeight < 500) {
       setIsBottom(true);
     }
-    scrollRef.current.addEventListener('scroll', onScroll);
+    waiverElement.addEventListener('scroll', onScroll);
     return () => {
-      if (scrollRef && scrollRef.current) {
-        scrollRef.current.removeEventListener('scroll', onScroll);
+      if (scrollRef && waiverElement) {
+        waiverElement.removeEventListener('scroll', onScroll);
       }
     };
   }, []);
@@ -173,36 +121,6 @@ const Waiver = ({
 
     if (htmlElement !== null && htmlElement !== undefined) {
 
-    //   let HTML_Width = htmlElement.getBoundingClientRect().width; `https://tourneymaster.s3.amazonaws.com/public/${event.desktop_icon_URL}`
-    //   let HTML_Height = htmlElement.getBoundingClientRect().height;
-    //   let top_left_margin = 15;
-    //   let PDF_Width = HTML_Width+(top_left_margin*2);
-    //   let PDF_Height = (PDF_Width*1.5)+(top_left_margin*2);
-    //   let canvas_image_width = HTML_Width;
-    //   let canvas_image_height = HTML_Height;
-		
-    //   let totalPDFPages = Math.ceil(HTML_Height/PDF_Height)-1;
-		
-
-    //   html2canvas(htmlElement,{allowTaint:true})
-    //   .then(function(canvas) {
-    //     canvas.getContext('2d');
-        
-    //     let imgData = canvas.toDataURL("image/jpeg", 1.0);
-    //     let pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
-    //       pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
-        
-        
-    //     for (let i = 1; i <= totalPDFPages; i++) { 
-    //       pdf.addPage([PDF_Width, PDF_Height]);
-    //       pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
-    //     }
-        
-    //       pdf.save("HTML-Document.pdf");
-    //       });
-
-    //     }
-
       html2canvas(htmlElement).then((canvas: any) => {
         const imgData = canvas.toDataURL('image/png');
         const imgWidth = 595;
@@ -251,12 +169,12 @@ const Waiver = ({
         : `<div style="height: 220px"><div><h1 style="text-align: center">${event && event.event_name}</h1>` +
           `<h2 style="text-align: center">${participantName}</h2></div>` +
           `<img src="https://tourneymaster.s3.amazonaws.com/public/${event &&
-            event.desktop_icon_URL}" style="position: absolute; top: 80px; right: 80px; max-width: 200px; max-height: 200px" /></div>` +
+            event.desktop_icon_URL}" style="position: absolute; top: 60px; right: 40px; max-width: 200px; max-height: 200px" /></div>` +
           content.waiver_content +
           `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>
-        <h2 style="font-size: 12px; text-align: right">${agreedment}</h2>` +
-          `<h3 style="font-size: 10px; text-align: right">${ip}</h3>
-        <h3 style="font-size: 10px; text-align: right">${hash}</h3>`;
+        <h2 style="font-size: 12px; text-align: right; height: 16px">${agreedment}</h2>` +
+          `<h3 style="font-size: 10px; text-align: right; height: 14px">${ip}</h3>
+        <h3 style="font-size: 10px; text-align: right; height: 14px">${hash}</h3>`;
     return (
       <div className={styles.waiverContainer}>
         <div className={isComplete ? styles.buttonWrapp : styles.hiddenButton}>
@@ -271,7 +189,11 @@ const Waiver = ({
         </div>
 
         <div className={styles.waiverWrapp} ref={scrollRef}>
-          <div className={!isBottom ? styles.warnText : styles.hiddenButton}>
+          <div
+            className={
+              !isBottom && !isComplete ? styles.warnText : styles.hiddenButton
+            }
+          >
             Scroll to the bottom of the waiver to enable signing of the document
           </div>
           <div
@@ -283,7 +205,9 @@ const Waiver = ({
         <div>
           <div className={styles.inputWrapp}>
             <Input
-              label={'If you agree to these terms and conditions, please retype your first and last name.'}
+              label={
+                'If you agree to these terms and conditions, please retype your first and last name.'
+              }
               value={name}
               onChange={onInputName}
               placeholder={'First name and Last name'}

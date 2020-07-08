@@ -20,6 +20,13 @@ import {
   UPDATE_SCHEDULES_DETAILS_IN_PROGRESS,
   UPDATE_SCHEDULES_DETAILS_SUCCESS,
   UPDATE_SCHEDULES_DETAILS_FAILURE,
+  DELETE_SCHEDULES_DETAILS_IN_PROGRESS,
+  DELETE_SCHEDULES_DETAILS_SUCCESS,
+  DELETE_SCHEDULES_DETAILS_FAILURE,
+  ADD_SCHEDULES_DETAILS_IN_PROGRESS,
+  ADD_SCHEDULES_DETAILS_SUCCESS,
+  ADD_SCHEDULES_DETAILS_FAILURE,
+  SET_IS_DRAFT_ALREADY_SAVED_STATUS,
 } from './actionTypes';
 import { IField, ISchedule } from 'common/models';
 import { IEventSummary } from 'common/models/event-summary';
@@ -107,6 +114,37 @@ export const updateSchedulesDetailsSuccess = (payload: ISchedulesDetails[]) => (
 
 export const updateSchedulesDetailsFailure = () => ({
   type: UPDATE_SCHEDULES_DETAILS_FAILURE,
+});
+
+export const deleteSchedulesDetailsInProgress = () => ({
+  type: DELETE_SCHEDULES_DETAILS_IN_PROGRESS,
+});
+
+export const deleteSchedulesDetailsSuccess = (payload: ISchedulesDetails[]) => ({
+  type: DELETE_SCHEDULES_DETAILS_SUCCESS,
+  payload,
+});
+
+export const deleteSchedulesDetailsFailure = () => ({
+  type: DELETE_SCHEDULES_DETAILS_FAILURE,
+});
+
+export const addSchedulesDetailsInProgress = () => ({
+  type: ADD_SCHEDULES_DETAILS_IN_PROGRESS,
+});
+
+export const addSchedulesDetailsSuccess = (payload: ISchedulesDetails[]) => ({
+  type: ADD_SCHEDULES_DETAILS_SUCCESS,
+  payload,
+});
+
+export const addScheduleDetailsFailure = () => ({
+  type: ADD_SCHEDULES_DETAILS_FAILURE,
+});
+
+export const setIsDraftAlreadySaveStatusAction = (payload: boolean) => ({
+  type: SET_IS_DRAFT_ALREADY_SAVED_STATUS,
+  payload,
 });
 
 export const fetchFields = (
@@ -417,4 +455,54 @@ export const updateSchedulesDetails = (
 
   dispatch(updateSchedulesDetailsFailure());
   errorToast('Something happened during updating schedules');
+};
+
+export const deleteSchedulesDetails = (
+  modifiedScheduleDetails: ISchedulesDetails[],
+  schedulesDetailsToDelete: ISchedulesDetails[]
+) => async (dispatch: Dispatch) => {
+  dispatch(deleteSchedulesDetailsInProgress());
+
+  const schedulesDetailsChunk = chunk(schedulesDetailsToDelete, 50);
+  const schedulesResponses = await Promise.all(
+    schedulesDetailsChunk.map(
+      async arr => await api.delete(`/schedules_details`, arr)
+    )
+  );
+
+  const schedulesResponseOk = schedulesResponses.every(item => item);
+
+  if (schedulesResponseOk) {
+    dispatch(deleteSchedulesDetailsSuccess(modifiedScheduleDetails));
+    return;
+  }
+
+  dispatch(deleteSchedulesDetailsFailure());
+};
+
+export const addSchedulesDetails = (
+  modifiedSchedulesDetails: ISchedulesDetails[],
+  schedulesDetailsToAdd: ISchedulesDetails[]
+) => async (dispatch: Dispatch) => {
+  dispatch(addSchedulesDetailsInProgress());
+
+  const schedulesDetailsChunk = chunk(schedulesDetailsToAdd, 50);
+  const schedulesResponses = await Promise.all(
+    schedulesDetailsChunk.map(
+      async arr => await api.post('/schedules_details', arr)
+    )
+  );
+
+  const schedulesResponseOk = schedulesResponses.every(item => item);
+
+  if (schedulesResponseOk) {
+    dispatch(addSchedulesDetailsSuccess(modifiedSchedulesDetails));
+    return;
+  }
+
+  dispatch(addScheduleDetailsFailure());
+};
+
+export const setIsAlreadyDraftSaveStatus = (isDraftAlreadySaved: boolean) => async (dispatch: Dispatch) => {
+  dispatch(setIsDraftAlreadySaveStatusAction(isDraftAlreadySaved));
 };

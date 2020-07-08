@@ -20,6 +20,7 @@ interface IProps {
   teamCards: ITeamCard[];
   showHeatmap?: boolean;
   minGamesNum: number | null;
+  inner?: boolean;
   onDrop: (dropParams: IDropParams) => void;
 }
 
@@ -31,6 +32,7 @@ const UnassignedList = (props: IProps) => {
     tableType,
     minGamesNum,
     pools,
+    inner,
   } = props;
   const acceptType = 'teamdrop';
 
@@ -112,10 +114,10 @@ const UnassignedList = (props: IProps) => {
 
   return (
     <div
-      className={styles.container}
+      className={`${styles.container} ${inner ? styles.inner : ''}`}
       style={{ background: isOver ? '#fcfcfc' : '#ececec' }}
     >
-      <h3 className={styles.title}>Needs Assignment</h3>
+      {!inner && <h3 className={styles.title}>Needs Assignment</h3>}
       <div className={styles.checkboxWrapper}>
         <Checkbox
           options={[{ label: 'All Teams', checked: showAllTeams }]}

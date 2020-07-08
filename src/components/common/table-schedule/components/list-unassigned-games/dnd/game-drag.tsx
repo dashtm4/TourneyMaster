@@ -6,14 +6,11 @@ import { Tooltip } from 'components/common';
 import { getIcon } from 'helpers';
 import { Icons } from 'common/enums';
 import styles from './styles.module.scss';
-import {
-  getContrastingColor,
-  IConfigurableGame,
-  IGame,
-} from 'components/common/matrix-table/helper';
+import { getContrastingColor } from 'components/common/matrix-table/helper';
+import { IMatchup } from 'components/visual-games-maker/helpers';
 
 interface Props {
-  game: IConfigurableGame;
+  game: IMatchup;
   type: string;
   originGameId?: number;
   originGameDate?: string;
@@ -38,11 +35,11 @@ const GameDragCard = (props: Props) => {
   } = props;
 
   const divisionHex = game.awayTeam?.divisionHex;
-  const isDraggable = !game.isAssigned;
+  const isDraggable = !game.assignedGameId;
 
   const [{ isDragging }, drag] = useDrag({
     item: {
-      id: game.awayTeam?.id,
+      id: game.awayTeamId,
       type,
       possibleGame: game,
       originGameId,
@@ -70,7 +67,7 @@ const GameDragCard = (props: Props) => {
     </Tooltip>
   );
 
-  const renderGameCard = (g: IGame) => (
+  const renderGameCard = (g: IMatchup) => (
     <>
       <p>
         <span>{g.divisionName}:</span>&nbsp;

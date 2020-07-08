@@ -63,6 +63,9 @@ import {
   updateSchedule,
   schedulesDetailsClear,
   updateSchedulesDetails,
+  deleteSchedulesDetails,
+  addSchedulesDetails,
+  setIsAlreadyDraftSaveStatus,
 } from './logic/actions';
 import {
   fillSchedulesTable,
@@ -98,6 +101,9 @@ import {
   predictPlayoffTimeSlots,
 } from './definePlayoffs';
 import styles from './styles.module.scss';
+import VisualGamesMaker from 'components/visual-games-maker';
+import { IMatchup } from '../visual-games-maker/helpers';
+import uuidv4 from 'uuid/v4';
 
 type PartialTournamentData = Partial<ITournamentData>;
 type PartialSchedules = Partial<ISchedulesState>;
@@ -113,7 +119,6 @@ interface IMapStateToProps extends PartialTournamentData, PartialSchedules {
   anotherSchedulePublished?: boolean;
   gamesAlreadyExist?: boolean;
   pools?: IPool[];
-  gamesList?: IGame[];
 }
 
 interface IMapDispatchToProps {
@@ -157,6 +162,9 @@ interface IMapDispatchToProps {
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
   ) => void;
+  deleteSchedulesDetails: (modifiedSchedulesDetails: ISchedulesDetails[], schedulesDetailsToDelete: ISchedulesDetails[]) => void;
+  addSchedulesDetails: (modifiedSchedulesDetails: ISchedulesDetails[], schedulesDetailsToAdd: ISchedulesDetails[]) => void;
+  setIsAlreadyDraftSaveStatus: (isAlreadyDraftSave: boolean) => void;
 }
 
 interface ComponentProps {
@@ -178,6 +186,7 @@ type Props = IMapStateToProps & IMapDispatchToProps & ComponentProps;
 
 interface State {
   games?: IGame[];
+  gamesCells: IMatchup[];
   scheduleId?: string;
   timeSlots?: ITimeSlot[];
   timeValues?: ITimeValues;
@@ -192,21 +201,34 @@ interface State {
   isLoading: boolean;
   neccessaryDataCalculated: boolean;
   teamCardsAlreadyUpdated: boolean;
+  defaultTabUpdated: boolean;
   loadingType: LoaderTypeEnum;
   tournamentDays: string[];
   playoffTimeSlots: ITimeSlot[];
+  activeTab: SchedulesTabsEnum;
+  vgmShowTeamsNames: boolean;
+}
+
+enum SchedulesTabsEnum {
+  None = 0,
+  VisualGamesMaker = 1,
+  Schedules = 2,
 }
 
 class Schedules extends Component<Props, State> {
   timer: any;
   state: State = {
     cancelConfirmationOpen: false,
+    gamesCells: [],
     isLoading: true,
     neccessaryDataCalculated: false,
     teamCardsAlreadyUpdated: false,
+    defaultTabUpdated: false,
     loadingType: LoaderTypeEnum.CALCULATION,
     tournamentDays: [],
     playoffTimeSlots: [],
+    activeTab: SchedulesTabsEnum.Schedules,
+    vgmShowTeamsNames: true,
   };
 
   async componentDidMount() {
@@ -219,14 +241,16 @@ class Schedules extends Component<Props, State> {
       fetchFields,
       fetchEventSummary,
       fetchSchedulesDetails,
+      setIsAlreadyDraftSaveStatus,
     } = this.props;
+    setIsAlreadyDraftSaveStatus(false);
     const { eventId, scheduleId } = match?.params;
     const facilitiesIds = facilities?.map(f => f.facilities_id);
-    const { creationType } = scheduleData || {};
+    const { create_mode } = scheduleData || {};
     const isManualScheduling =
-      !creationType ||
-      creationType === ScheduleCreationType.Manually ||
-      creationType === ScheduleCreationType.VisualGamesMaker;
+      !create_mode ||
+      ScheduleCreationType[create_mode] === ScheduleCreationType.Manual ||
+      ScheduleCreationType[create_mode] === ScheduleCreationType.Visual;
 
     schedulesDetailsClear();
     clearSchedulesTable();
@@ -245,6 +269,13 @@ class Schedules extends Component<Props, State> {
       fetchSchedulesDetails(scheduleId);
     } else {
       await this.calculateNeccessaryData();
+
+      if (this.isVisualGamesMakerMode()) {
+        this.setState({
+          activeTab: SchedulesTabsEnum.VisualGamesMaker,
+          defaultTabUpdated: true,
+        });
+      }
 
       if (isManualScheduling) {
         this.onScheduleCardsUpdate(
@@ -270,6 +301,7 @@ class Schedules extends Component<Props, State> {
       schedulesDetails,
       schedulesTeamCards,
       draftSaved,
+      divisions,
     } = this.props;
 
     const {
@@ -277,6 +309,8 @@ class Schedules extends Component<Props, State> {
       teams,
       neccessaryDataCalculated,
       teamCardsAlreadyUpdated,
+      defaultTabUpdated,
+      gamesCells,
     } = this.state;
 
     const localSchedule = this.getSchedule();
@@ -286,6 +320,34 @@ class Schedules extends Component<Props, State> {
         scheduleId: localSchedule?.schedule_id,
       });
       this.updateUrlWithScheduleId();
+    }
+
+    if (scheduleId && !schedule) {
+      this.props.fetchSchedulesDetails(scheduleId);
+    }
+
+    if (this.isVisualGamesMakerMode() && schedulesDetails && JSON.stringify(this.props.schedulesDetails) !== JSON.stringify(prevProps.schedulesDetails) && gamesCells && gamesCells.length === 0) {
+      const matchups: IMatchup[] = schedulesDetails
+        .filter(
+          v =>
+            v.away_team_id !== null &&
+            v.home_team_id !== null &&
+            v.division_id !== null
+        )
+        .map(v => {
+          const division = divisions?.find(d => d.division_id === v.division_id);
+          return {
+            id: uuidv4(),
+            assignedGameId: +v.game_id > 0 ? +v.game_id : null,
+            homeTeamId: v.home_team_id,
+            awayTeamId: v.away_team_id,
+            divisionId: v.division_id,
+            divisionName: division?.short_name || '',
+            divisionHex: division?.division_hex || '',
+          } as IMatchup;
+        });
+
+      this.onGamesListChange(matchups);
     }
 
     if (!neccessaryDataCalculated && schedule) {
@@ -312,6 +374,15 @@ class Schedules extends Component<Props, State> {
     ) {
       this.calculateDiagnostics();
       this.setState({ teamCardsAlreadyUpdated: true });
+    }
+
+    if (schedule && !defaultTabUpdated) {
+      this.setState({
+        defaultTabUpdated: true,
+        activeTab: this.isVisualGamesMakerMode()
+          ? SchedulesTabsEnum.VisualGamesMaker
+          : SchedulesTabsEnum.Schedules,
+      });
     }
   }
 
@@ -356,6 +427,53 @@ class Schedules extends Component<Props, State> {
     const eventId = event?.event_id!;
 
     getPublishedGames(eventId, scheduleId);
+  };
+
+  onGamesListChange = (item: IMatchup[]) => {
+    const prevState = this.state;
+    const { gamesCells } = prevState;
+
+    this.setState({
+      gamesCells: item,
+    });
+
+    if (gamesCells) {
+      const deselectedGame = gamesCells.find(v => !item.includes(v));
+
+      if (deselectedGame) {
+        const { schedulesTeamCards } = this.props;
+
+        const newTeamsCards = schedulesTeamCards!.map(v => {
+          return {
+            ...v,
+            games: v.games?.filter(
+              game => game.id !== deselectedGame.assignedGameId
+            ),
+          };
+        });
+
+        this.props.fillSchedulesTable(newTeamsCards);
+      }
+    }
+  };
+
+  onAddMatchup = (item: IMatchup) => {
+    this.setState({
+      gamesCells: [...this.state.gamesCells, item],
+    });
+  };
+
+  onAssignMatchup = (id: string, assignedGameId: number | null) => {
+    const item = this.state.gamesCells.find(o => o.id === id);
+    if (item) {
+      const filteredItems = this.state.gamesCells.filter(o => o.id !== id);
+      const newItem = { ...item };
+      // assign by existing game id or unassign matchup with null
+      newItem.assignedGameId = assignedGameId;
+      this.setState({
+        gamesCells: [...filteredItems, newItem],
+      });
+    }
   };
 
   calculateNeccessaryData = () => {
@@ -513,15 +631,15 @@ class Schedules extends Component<Props, State> {
 
       teamcards = teamcards.length
         ? teamcards.map(item => ({
-            ...item,
-            games: [
-              ...(item.games || []),
-              ...(updateTeamGamesDateInfo(
-                resultTeams.find(team => team.id === item.id)?.games || [],
-                day
-              ) || []),
-            ],
-          }))
+          ...item,
+          games: [
+            ...(item.games || []),
+            ...(updateTeamGamesDateInfo(
+              resultTeams.find(team => team.id === item.id)?.games || [],
+              day
+            ) || []),
+          ],
+        }))
         : updateTeamsDayInfo(resultTeams, day);
     });
 
@@ -615,7 +733,7 @@ class Schedules extends Component<Props, State> {
 
   retrieveSchedulesDetails = async (isDraft: boolean, type: 'POST' | 'PUT') => {
     const { schedulesDetails, schedulesTeamCards } = this.props;
-    const { games, tournamentDays } = this.state;
+    const { games, gamesCells, tournamentDays } = this.state;
 
     const localSchedule = this.getSchedule();
 
@@ -629,6 +747,19 @@ class Schedules extends Component<Props, State> {
         settleTeamsPerGamesDays(games, schedulesTeamCards, day)
       );
     }
+
+    const unassignedGames = gamesCells.filter(g => !g.assignedGameId);
+    if (unassignedGames.length > 0) {
+      schedulesTableGames.push(
+        unassignedGames.map(v => ({
+          gameId: null,
+          divisionId: v.divisionId,
+          awayTeamId: v.awayTeamId,
+          homeTeamId: v.homeTeamId,
+        }))
+      );
+    }
+
     schedulesTableGames = schedulesTableGames.flat();
 
     return mapSchedulesTeamCards(
@@ -653,21 +784,53 @@ class Schedules extends Component<Props, State> {
   };
 
   save = async () => {
-    const { updateSchedule, createSchedule } = this.props;
-    const { scheduleId, cancelConfirmationOpen } = this.state;
+    const { schedulesDetails, updateSchedule, createSchedule } = this.props;
+    const { gamesCells, scheduleId, cancelConfirmationOpen } = this.state;
     const schedule = this.getSchedule();
 
     if (!schedule) return;
 
-    const schedulesDetails = await this.retrieveSchedulesDetails(
+    const updatedSchedulesDetails = await this.retrieveSchedulesDetails(
       true,
       scheduleId ? 'PUT' : 'POST'
     );
 
     if (scheduleId) {
-      updateSchedule(schedule, schedulesDetails);
+      const matchupsFromSchedulesDetails = schedulesDetails!.filter(v => !v.game_id);
+
+      const schedulesDetailsToAdd = updatedSchedulesDetails!.filter(
+        v =>
+          v.away_team_id &&
+          !v.game_id &&
+          !matchupsFromSchedulesDetails.find(
+            detail =>
+              detail.away_team_id === v.away_team_id &&
+              detail.home_team_id === v.home_team_id
+          )
+      );
+
+      const schedulesDetailsToDelete = matchupsFromSchedulesDetails.filter(o =>
+        gamesCells?.find(
+          x =>
+            x.assignedGameId &&
+            x.awayTeamId === o.away_team_id &&
+            x.homeTeamId === o.home_team_id
+        ) ||
+        !gamesCells?.find(
+          y =>
+            !y.assignedGameId &&
+            y.awayTeamId === o.away_team_id &&
+            y.homeTeamId === o.home_team_id
+        )
+      );
+
+      const modifiedSchedulesDetails = updatedSchedulesDetails.filter(v => !schedulesDetailsToDelete.includes(v) && !schedulesDetailsToAdd.includes(v));
+
+      updateSchedule(schedule, updatedSchedulesDetails);
+      this.props.addSchedulesDetails(modifiedSchedulesDetails, schedulesDetailsToAdd);
+      this.props.deleteSchedulesDetails(modifiedSchedulesDetails, schedulesDetailsToDelete);
     } else {
-      createSchedule(schedule, schedulesDetails);
+      createSchedule(schedule, updatedSchedulesDetails);
     }
 
     if (cancelConfirmationOpen) {
@@ -766,6 +929,23 @@ class Schedules extends Component<Props, State> {
     }
   };
 
+  isVisualGamesMakerMode = () => {
+    const { schedule, scheduleData } = this.props;
+
+    return (
+      (scheduleData?.create_mode &&
+        ScheduleCreationType[scheduleData?.create_mode] ===
+        ScheduleCreationType.Visual) ||
+      (schedule?.create_mode &&
+        ScheduleCreationType[schedule?.create_mode] ===
+        ScheduleCreationType.Visual)
+    );
+  };
+
+  toggleShowTeamsNames = () => {
+    this.setState({ vgmShowTeamsNames: !this.state.vgmShowTeamsNames });
+  };
+
   render() {
     const {
       divisions,
@@ -784,14 +964,15 @@ class Schedules extends Component<Props, State> {
       onToggleFullScreen,
       updateSchedulesDetails,
       schedulesDetails,
-      gamesList,
     } = this.props;
 
     const {
+      activeTab,
       fields,
       timeSlots,
       timeValues,
       games,
+      gamesCells,
       facilities,
       isLoading,
       teamsDiagnostics,
@@ -820,7 +1001,7 @@ class Schedules extends Component<Props, State> {
       <div
         className={`${styles.container} ${
           isFullScreen ? styles.containerFullScreen : ''
-        }`}
+          }`}
       >
         {loadCondition && !isLoading && (
           <SchedulesPaper
@@ -835,44 +1016,71 @@ class Schedules extends Component<Props, State> {
             saveAndPublish={this.save}
           />
         )}
-
         {loadCondition && !isLoading ? (
-          <TableSchedule
-            tableType={TableScheduleTypes.SCHEDULES}
-            event={event!}
-            fields={fields!}
-            pools={pools!}
-            games={games!}
-            timeSlots={timeSlots!}
-            timeValues={timeValues!}
-            divisions={divisions!}
-            facilities={facilities!}
-            teamCards={schedulesTeamCards!}
-            eventSummary={eventSummary!}
-            scheduleData={
-              scheduleData?.schedule_name ? scheduleData : schedule!
-            }
-            schedulesDetails={schedulesDetails}
-            historyLength={schedulesHistoryLength}
-            teamsDiagnostics={teamsDiagnostics}
-            divisionsDiagnostics={divisionsDiagnostics}
-            isFullScreen={isFullScreen}
-            onScheduleGameUpdate={this.onScheduleGameUpdate}
-            onTeamCardsUpdate={this.onScheduleCardsUpdate}
-            onTeamCardUpdate={this.onScheduleCardUpdate}
-            onUndo={onScheduleUndo}
-            onToggleFullScreen={onToggleFullScreen}
-            playoffTimeSlots={playoffTimeSlots}
-            onBracketGameUpdate={() => {}}
-            recalculateDiagnostics={this.calculateDiagnostics}
-            gamesList={gamesList}
-            updateSchedulesDetails={updateSchedulesDetails}
-          />
+          <section className={styles.tabsContainer}>
+            <div className={styles.tabToggle}>
+              {this.isVisualGamesMakerMode() && (
+                <div
+                  className={activeTab === 1 ? styles.active : ''}
+                  onClick={() => this.setState({ activeTab: 1 })}
+                >
+                  Visual Games Maker
+                </div>
+              )}
+              <div
+                className={activeTab === 2 ? styles.active : ''}
+                onClick={() => this.setState({ activeTab: 2 })}
+              >
+                Schedule
+              </div>
+            </div>
+            {activeTab === SchedulesTabsEnum.VisualGamesMaker ? (
+              <VisualGamesMaker
+                gamesCells={this.state.gamesCells}
+                onGamesListChange={this.onGamesListChange}
+                showTeamsNames={this.state.vgmShowTeamsNames}
+                toggleShowTeamsNames={this.toggleShowTeamsNames}
+              />
+            ) : (
+                <TableSchedule
+                  tableType={TableScheduleTypes.SCHEDULES}
+                  event={event!}
+                  fields={fields!}
+                  pools={pools!}
+                  games={games!}
+                  timeSlots={timeSlots!}
+                  timeValues={timeValues!}
+                  divisions={divisions!}
+                  facilities={facilities!}
+                  teamCards={schedulesTeamCards!}
+                  eventSummary={eventSummary!}
+                  scheduleData={
+                    scheduleData?.schedule_name ? scheduleData : schedule!
+                  }
+                  schedulesDetails={schedulesDetails}
+                  historyLength={schedulesHistoryLength}
+                  teamsDiagnostics={teamsDiagnostics}
+                  divisionsDiagnostics={divisionsDiagnostics}
+                  isFullScreen={isFullScreen}
+                  onScheduleGameUpdate={this.onScheduleGameUpdate}
+                  onTeamCardsUpdate={this.onScheduleCardsUpdate}
+                  onTeamCardUpdate={this.onScheduleCardUpdate}
+                  onUndo={onScheduleUndo}
+                  onToggleFullScreen={onToggleFullScreen}
+                  playoffTimeSlots={playoffTimeSlots}
+                  onBracketGameUpdate={() => { }}
+                  recalculateDiagnostics={this.calculateDiagnostics}
+                  matchups={gamesCells}
+                  onAssignMatchup={this.onAssignMatchup}
+                  updateSchedulesDetails={updateSchedulesDetails}
+                />
+              )}
+          </section>
         ) : (
-          <div className={styles.loadingWrapper}>
-            <SchedulesLoader type={loadingType} time={5000} />
-          </div>
-        )}
+            <div className={styles.loadingWrapper}>
+              <SchedulesLoader type={loadingType} time={5000} />
+            </div>
+          )}
 
         <PopupExposure
           isOpen={cancelConfirmationOpen}
@@ -909,7 +1117,6 @@ const mapStateToProps = ({
   schedulesDetails: schedules?.schedulesDetails,
   pools: divisions?.pools,
   gamesAlreadyExist: schedules?.gamesAlreadyExist,
-  gamesList: schedulesTable?.gamesList,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>
@@ -937,6 +1144,9 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       schedulesDetailsClear,
       //
       updateSchedulesDetails,
+      deleteSchedulesDetails,
+      addSchedulesDetails,
+      setIsAlreadyDraftSaveStatus,
     },
     dispatch
   );

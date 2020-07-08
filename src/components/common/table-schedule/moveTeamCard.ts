@@ -16,6 +16,7 @@ export default (
     divisionUnmatch: false,
     poolUnmatch: false,
     timeSlotInUse: false,
+    gameSlotInUse: false,
     differentFacility: false,
     playoffSlot: false,
   };
@@ -54,20 +55,30 @@ export default (
       ? gamePlace[position === 1 ? 'homeTeam' : 'awayTeam']
       : undefined;
 
-    const secondIncomingTeamGames =
+    const secondIncomingTeam =
       originGamePlace &&
       (originGamePlace.homeTeam?.id === incomingTeam?.id
-        ? originGamePlace.awayTeam?.games
-        : originGamePlace.homeTeam?.games);
+        ? originGamePlace.awayTeam
+        : originGamePlace.homeTeam);
+
+    const secondIncomingTeamGames = secondIncomingTeam?.games?.filter(g => g.id !== originGameId);
 
     const secondIncomingTeamSlots =
       secondIncomingTeamGames &&
       filledGames
         .filter(
           item =>
+            item.id !== originGameId &&
             findIndex(secondIncomingTeamGames, { id: item.id, date: day }) >= 0
         )
         .map(g => g.timeSlotId);
+
+    if (gamePlace?.awayTeam && gamePlace?.homeTeam) {
+      result = {
+        ...result,
+        gameSlotInUse: true,
+      };
+    }
 
     if (gamePlace?.isPlayoff) {
       result = {
@@ -88,10 +99,10 @@ export default (
         v =>
           v.timeSlotId === gamePlace?.timeSlotId &&
           (v.homeTeam || v.awayTeam) &&
-          (v.homeTeam?.id === possibleGame.homeTeamId ||
-            v.homeTeam?.id === possibleGame.awayTeamId ||
-            v.awayTeam?.id === possibleGame.awayTeamdId ||
-            v.awayTeam?.id === possibleGame.homeTeamId)
+          (v.homeTeam?.id === possibleGame.homeTeam?.id ||
+            v.homeTeam?.id === possibleGame.awayTeam?.id ||
+            v.awayTeam?.id === possibleGame.awayTeam?.id ||
+            v.awayTeam?.id === possibleGame.homeTeam?.id)
       );
 
     /* When a team placed in used timeslot */

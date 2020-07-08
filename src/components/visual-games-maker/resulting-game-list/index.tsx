@@ -9,13 +9,12 @@ import {
   Paper,
   makeStyles,
 } from '@material-ui/core';
-import { ITeam } from 'common/models/teams';
-import { IGameCell } from '../helpers';
+import { IMatchup, IMatchupTeam } from '../helpers';
 
 interface IProps {
-  teams: ITeam[] | undefined;
+  teams: IMatchupTeam[];
   showNames: boolean;
-  games: IGameCell[];
+  games: IMatchup[];
 }
 
 const useStyles = makeStyles({
@@ -90,13 +89,13 @@ const ResultingGameList = (props: IProps) => {
           <TableBody>
             {games.map((row, index) => {
               const homeTeamIndex = teams!.findIndex(
-                o => o.team_id === row.homeTeamId
+                o => o.id === row.homeTeamId
               );
               const awayTeamIndex = teams!.findIndex(
-                o => o.team_id === row.awayTeamId
+                o => o.id === row.awayTeamId
               );
-              const homeTeamName = teams && teams[homeTeamIndex].short_name;
-              const awayTeamName = teams && teams[awayTeamIndex].short_name;
+              const homeTeamName = teams && teams[homeTeamIndex].name;
+              const awayTeamName = teams && teams[awayTeamIndex].name;
               return (
                 <TableRow
                   key={index}
@@ -113,15 +112,15 @@ const ResultingGameList = (props: IProps) => {
                     {showNames ? (
                       homeTeamName
                     ) : (
-                      <p title={homeTeamName}>{homeTeamIndex + 1}</p>
-                    )}
+                        <p title={homeTeamName}>{homeTeamIndex + 1}</p>
+                      )}
                   </TableCell>
                   <TableCell className={classes.awayCell} align="center">
                     {showNames ? (
                       awayTeamName
                     ) : (
-                      <p title={awayTeamName}>{awayTeamIndex + 1}</p>
-                    )}
+                        <p title={awayTeamName}>{awayTeamIndex + 1}</p>
+                      )}
                   </TableCell>
                 </TableRow>
               );

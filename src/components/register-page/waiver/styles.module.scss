@@ -10,6 +10,7 @@
   margin-right: auto;
   line-height: normal;
   position: relative;
+  padding-bottom: 40px;
 
   &:hover {
     .warnText {
@@ -17,6 +18,7 @@
       width: 100%;
       text-align: center;
       position: sticky;
+      font-size: 18px;
       top: 0;
       background: linear-gradient(to bottom, grey 0%, white 100%);
       opacity: 0.5;
@@ -50,4 +52,5 @@
 }
 .warnText {
   visibility: hidden;
+  height: 22px;
 }
