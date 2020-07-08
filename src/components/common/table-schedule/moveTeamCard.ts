@@ -95,6 +95,7 @@ export default (
 
     const timeSlotInUseForPossibleTeams =
       possibleGame &&
+      !originGameId &&
       filledGames.some(
         v =>
           v.timeSlotId === gamePlace?.timeSlotId &&
