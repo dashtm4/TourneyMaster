@@ -106,12 +106,19 @@ export const saveRegistration: ActionCreator<ThunkAction<
     if (response?.errorType === 'Error' || response?.message === false) {
       return Toasts.errorToast("Couldn't update a registration");
     }
-    dispatch(registrationUpdateSuccess(registration));
+    // const event = await api.get(`/events?event_id=${eventId}`);
+    const data = {
+      ...registration,
+      // waivers_required: event[0].waivers_required,
+    };
+    dispatch(registrationUpdateSuccess(data));
     dispatch<any>(saveCalendarEvent(openEvent));
     dispatch<any>(saveCalendarEvent(closeEvent));
     dispatch<any>(saveCalendarEvent(discountEndEvent));
 
     Toasts.successToast('Registration is successfully updated');
+    dispatch<any>(getDivisions(eventId));
+    dispatch<any>(getRegistration(eventId));
     dispatch<any>(getRegistrants(registration.registration_id));
   } else {
     const data = {
@@ -194,7 +201,7 @@ export const addTeamToEvent: ActionCreator<ThunkAction<
   dispatch: Dispatch
 ) => {
   let team: ITeam;
-  let teams: ITeam[] = await api.get(
+  const teams: ITeam[] = await api.get(
     `teams?division_id=${registrant.division_id}&long_name=${registrant.team_name}`
   );
   if (teams.length === 0) {
@@ -249,7 +256,7 @@ export const registrantsAddToEventSuccess = (
   payload: any
 ): { type: string; payload: any[] } => ({
   type: REGISTRANTS_ADD_TO_EVENT_SUCCESS,
-  payload: payload,
+  payload,
 });
 
 export const getRegistrants: ActionCreator<ThunkAction<
@@ -295,5 +302,5 @@ export const registrantsPaymentsFetchSuccess = (
   payload: any
 ): { type: string; payload: any[] } => ({
   type: REGISTRANTS_PAYMENTS_FETCH_SUCCESS,
-  payload: payload,
+  payload,
 });

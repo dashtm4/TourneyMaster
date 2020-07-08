@@ -58,3 +58,8 @@ export interface IRegistration {
 
   waiver_content: string | null;
 }
+
+// export interface IRegistrationSuccess {
+//   registration: IRegistration;
+//   waivers_re
+// }

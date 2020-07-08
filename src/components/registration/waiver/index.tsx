@@ -12,7 +12,7 @@ interface IRegistrationDetailsProps {
 }
 
 const Waiver = ({ data, isEdit, onChange }: IRegistrationDetailsProps) => {
-  const [model, setModel] = useState(data?.waiver_content);
+  const [model, setModel] = useState(data ?.waiver_content);
 
 
   const quill = {
@@ -66,7 +66,7 @@ const Waiver = ({ data, isEdit, onChange }: IRegistrationDetailsProps) => {
       return <div>Not found waiver.</div>;
     }
     return (
-      <div className={styles.waiverWrapp}>
+      <div className={`${styles.waiverWrapp} ql-snow ql-editor`}>
         <div dangerouslySetInnerHTML={{ __html: data.waiver_content }} />
       </div>
     );
