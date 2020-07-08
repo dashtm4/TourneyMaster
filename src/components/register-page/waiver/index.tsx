@@ -171,9 +171,9 @@ const Waiver = ({
             event.desktop_icon_URL}" style="position: absolute; top: 80px; right: 80px; max-width: 200px; max-height: 200px" /></div>` +
           content.waiver_content +
           `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>
-        <h2 style="font-size: 12px; text-align: right">${agreedment}</h2>` +
-          `<h3 style="font-size: 10px; text-align: right">${ip}</h3>
-        <h3 style="font-size: 10px; text-align: right">${hash}</h3>`;
+        <h2 style="font-size: 12px; text-align: right; height: 16px">${agreedment}</h2>` +
+          `<h3 style="font-size: 10px; text-align: right; height: 14px">${ip}</h3>
+        <h3 style="font-size: 10px; text-align: right; height: 14px">${hash}</h3>`;
     return (
       <div className={styles.waiverContainer}>
         <div className={isComplete ? styles.buttonWrapp : styles.hiddenButton}>
@@ -204,7 +204,9 @@ const Waiver = ({
         <div>
           <div className={styles.inputWrapp}>
             <Input
-              label={'If you agree to these terms and conditions, please retype your first and last name.'}
+              label={
+                'If you agree to these terms and conditions, please retype your first and last name.'
+              }
               value={name}
               onChange={onInputName}
               placeholder={'First name and Last name'}
