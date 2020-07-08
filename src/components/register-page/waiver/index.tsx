@@ -52,19 +52,20 @@ const Waiver = ({
   useEffect(() => {
     loadPrevData();
     loadSignatureParams();
-  }, []);
+  });
 
   useEffect(() => {
-    if (!scrollRef.current) {
+    const waiverElement = scrollRef.current;
+    if (!waiverElement) {
       return;
     }
-    if (scrollRef.current.clientHeight < 500) {
+    if (waiverElement.clientHeight < 500) {
       setIsBottom(true);
     }
-    scrollRef.current.addEventListener('scroll', onScroll);
+    waiverElement.addEventListener('scroll', onScroll);
     return () => {
-      if (scrollRef && scrollRef.current) {
-        scrollRef.current.removeEventListener('scroll', onScroll);
+      if (scrollRef && waiverElement) {
+        waiverElement.removeEventListener('scroll', onScroll);
       }
     };
   }, []);
