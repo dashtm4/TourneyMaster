@@ -591,6 +591,13 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     <div className={styles.container}>
       <Header />
       <div className={styles.main}>
+        <div className={styles.sideContent}>
+          {event && eventRegistration ? (
+            <SideBar event={event} eventRegistration={eventRegistration} />
+          ) : (
+            <Loader />
+          )}
+        </div>
         <div className={styles.stepperWrapper}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <HeadingLevelTwo>
@@ -658,13 +665,6 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               )}
             </Paper>
           </div>
-        </div>
-        <div className={styles.sideContent}>
-          {event && eventRegistration ? (
-            <SideBar event={event} eventRegistration={eventRegistration} />
-          ) : (
-            <Loader />
-          )}
         </div>
       </div>
       {event && (
