@@ -43,7 +43,7 @@ const Waiver = ({
   const onScroll = () => {
     if (scrollRef.current) {
       const isCurrentBottom =
-        Math.round(scrollRef.current.scrollTop) >=
+        scrollRef.current.scrollTop + 1 >=
         scrollRef.current.scrollHeight - scrollRef.current.clientHeight;
       setIsBottom(isCurrentBottom);
     }

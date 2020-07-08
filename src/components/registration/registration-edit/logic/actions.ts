@@ -106,7 +106,12 @@ export const saveRegistration: ActionCreator<ThunkAction<
     if (response?.errorType === 'Error' || response?.message === false) {
       return Toasts.errorToast("Couldn't update a registration");
     }
-    dispatch(registrationUpdateSuccess(registration));
+    const event = await api.get(`/events?event_id=${eventId}`);
+    const data = {
+      ...registration,
+      // waivers_required: event[0].waivers_required,
+    };
+    dispatch(registrationUpdateSuccess(data));
     dispatch<any>(saveCalendarEvent(openEvent));
     dispatch<any>(saveCalendarEvent(closeEvent));
     dispatch<any>(saveCalendarEvent(discountEndEvent));
