@@ -37,7 +37,7 @@ if (isInLambda) {
     serverlessExpress.proxy(server, event, context);
   };
 } else {
-  app.listen(3000, () => console.log(`Listening on 3000`));
+  app.listen(3001, () => console.log(`Listening on 3000`));
 }
 
 export { handler };
