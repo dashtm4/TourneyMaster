@@ -89,7 +89,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
             onChange={onIsParticipantChange}
             options={[
               {
-                label: 'Registrant is the Player',
+                label: 'Registrant is also the Participant',
                 checked: Boolean(data.registrant_is_the_participant || false),
               },
             ]}
