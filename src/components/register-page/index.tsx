@@ -44,14 +44,14 @@ import Waiver from './waiver';
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
 export enum TypeOptions {
-  'Player' = 1,
+  'Participant' = 1,
   'Parent/Guardian' = 2,
   'Team Admin' = 3,
   'Coach' = 4,
 }
 
 const getInternalRegType = (type: TypeOptions) => {
-  if (type === TypeOptions.Player || type === TypeOptions['Parent/Guardian']) {
+  if (type === TypeOptions.Participant || type === TypeOptions['Parent/Guardian']) {
     return 'individual';
   } else {
     return 'team';
@@ -117,13 +117,13 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
   const getSteps = () => {
     if (
-      type === TypeOptions.Player ||
+      type === TypeOptions.Participant ||
       type === TypeOptions['Parent/Guardian']
     ) {
       const steps = [
         'Registrant Name',
-        'Player Info',
-        'Player Stats',
+        'Participant Personal Info',
+        'Participant Profile',
         'Waiver',
         'Payment',
       ];
@@ -165,7 +165,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
       setEvent(eventData);
       setType(
         eventTypeOptions[eventData.event_type] === eventTypeOptions.Showcase
-          ? TypeOptions.Player
+          ? TypeOptions.Participant
           : TypeOptions['Team Admin']
       );
     });
@@ -304,7 +304,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
   const getStepContent = (step: number) => {
     if (
-      type === TypeOptions.Player ||
+      type === TypeOptions.Participant ||
       type === TypeOptions['Parent/Guardian']
     ) {
       switch (step) {
