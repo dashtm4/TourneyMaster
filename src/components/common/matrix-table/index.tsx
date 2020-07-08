@@ -13,6 +13,7 @@ import { IDropParams } from './dnd/drop';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { TableScheduleTypes } from 'common/enums';
 import { BindingAction, IPinchProps } from 'common/models';
+import { AssignmentType } from "../table-schedule/helpers";
 
 const TRANSFORM_WRAPPER_OPTIONS = {
   minScale: 0.1,
@@ -38,6 +39,7 @@ interface IProps {
   simultaneousDnd?: boolean;
   eventDay?: string;
   onGameUpdate: (game: IGame) => void;
+  assignmentType?: AssignmentType;
 }
 
 const SchedulesMatrix = (props: IProps) => {
@@ -59,6 +61,7 @@ const SchedulesMatrix = (props: IProps) => {
     highlightedGameId,
     onGameUpdate,
     simultaneousDnd,
+    assignmentType
   } = props;
 
   const takeFacilityByFieldId = (facilityId: string) =>
@@ -118,6 +121,7 @@ const SchedulesMatrix = (props: IProps) => {
                         isDndMode={disableZooming}
                         highlightedGamedId={highlightedGameId}
                         onGameUpdate={onGameUpdate}
+                        assignmentType={assignmentType}
                       />
                     ))}
                   </tbody>
