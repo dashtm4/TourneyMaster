@@ -535,11 +535,11 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
       const customer = {
         name:
-          updatedRegistration.registrant_first_name ||
-          updatedRegistration.contact_first_name +
-            ' ' +
-            updatedRegistration.registrant_last_name ||
-          updatedRegistration.contact_last_name,
+          (updatedRegistration.registrant_first_name ||
+            updatedRegistration.contact_first_name) +
+          ' ' +
+          (updatedRegistration.registrant_last_name ||
+            updatedRegistration.contact_last_name),
         email:
           updatedRegistration.registrant_email ||
           updatedRegistration.contact_email,
@@ -581,10 +581,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
             sku_id: registration.ext_sku,
             payment_plan_id: registration.payment_selection,
             quantity: 1,
+            discount_code: updatedRegistration.discount_code,
           },
         ],
         paymentMethodId: paymentMethod!.id,
-        discount_code: updatedRegistration.discount_code,
       };
 
       subscriptionData.customer.address.postal_code = paymentMethod?.billing_details.address?.postal_code!;

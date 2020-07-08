@@ -121,7 +121,8 @@ const createSubscription = async (customer, paymentPlan, subData) => {
     : null;
 
   const coupon =
-    subData.discount_code && subData.discount_code === paymentPlan.promo_code
+    subData.items[0].discount_code &&
+    subData.items[0].discount_code === paymentPlan.promo_code
       ? await (await loadAll(stripe.coupons, null, subData.requestParams)).find(
           coupon => coupon.percent_off === paymentPlan.promo_code_discount
         )
@@ -138,7 +139,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
       iterations: paymentPlan.iterations,
       proration_behavior: 'none',
       application_fee_percent: paymentPlan.application_fee_percent.toFixed(2),
-      coupon: coupon.id,
+      coupon: coupon?.id,
       default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
     });
   } else if (paymentPlan.type === 'schedule') {
@@ -213,7 +214,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
           application_fee_percent: paymentPlan.application_fee_percent.toFixed(
             2
           ),
-          coupon: coupon.id,
+          coupon: coupon?.id,
           default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
         };
         return t;
@@ -236,7 +237,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
       division_id: paymentPlan.division_id,
       sku_id: paymentPlan.sku_id,
       payment_plan_id: paymentPlan.payment_plan_id,
-      promo_code: subData.discount_code,
+      promo_code: subData.items[0].discount_code,
     },
     expand: ['subscription.latest_invoice.payment_intent'],
   };
@@ -264,6 +265,20 @@ const createSubscription = async (customer, paymentPlan, subData) => {
   );
 
   console.log(`Stripe Subscription ${subscription.id} added metadata`);
+
+  const updatedInvoice = await stripe.invoices.update(
+    schedule.subscription.latest_invoice.id,
+    {
+      footer: paymentPlan.payment_plan_notice
+        .split(': ')
+        .join(':\n - ')
+        .split(',')
+        .join('\n -'),
+    },
+    subData.requestParams
+  );
+
+  console.log(`Invoice ${updatedInvoice.id} updated`);
 
   const invoice = await stripe.invoices.pay(
     schedule.subscription.latest_invoice.id,
