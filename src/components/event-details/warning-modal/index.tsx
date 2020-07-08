@@ -31,7 +31,8 @@ export default ({ isOpen, onClose }: Props) => (
         Warning
       </CardMessage>
       <p className={styles.popupText}>
-        You cannot edit the published event.
+        Warning: This event is currently published. <br />
+        You would need to "unpublish" the event if you would like to edit it.
       </p>
       <p className={styles.btnsWrapper}>
         <Button
