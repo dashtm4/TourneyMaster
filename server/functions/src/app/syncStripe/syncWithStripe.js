@@ -8,6 +8,7 @@ import StripeServiceProductsHandler from './stripeServiceProductsHandler.js';
 import StripePricesHandler from './stripePricesHandler.js';
 import StripeTaxRatesHandler from './stripeTaxRatesHandler.js';
 import StripeCouponsHandler from './stripeCouponsHandler.js';
+import { loadAll } from '../utils/stripeUtils.js';
 
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 
@@ -187,17 +188,6 @@ const syncPrices = async stripeAccount => {
     new StripePricesHandler(stripe, stripeAccount),
     activePaymentPlans
   );
-};
-
-const loadAll = async (endpoint, params = {}) => {
-  const objects = [];
-  for await (const object of endpoint.list({
-    ...params,
-    limit: 100,
-  })) {
-    objects.push(object);
-  }
-  return objects;
 };
 
 export const syncWithStripe = async () => {
