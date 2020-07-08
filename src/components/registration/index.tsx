@@ -170,8 +170,6 @@ class RegistrationView extends React.Component<
     this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
 
-  click = () => console.log('change');
-
   renderView = () => {
     const { registration, event } = this.props;
     const eventType = event && event[0].event_type;

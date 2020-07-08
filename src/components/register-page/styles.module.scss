@@ -1,12 +1,16 @@
 .container {
   height: 100vh;
   width: 100%;
+
   .main {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    flex-direction: row-reverse;
   }
   .stepperWrapper {
     width: 70%;
+    min-width: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -16,6 +20,7 @@
   }
   .sideContent {
     width: 30%;
+    min-width: 300px;
     margin-top: 80px;
     .headingWrapper {
       margin-bottom: 20px;
@@ -35,6 +40,7 @@
   .sectionRow {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     & > :last-child {
       margin-bottom: 0;
     }
@@ -42,6 +48,7 @@
   .sectionItem {
     flex-grow: 0;
     width: 22%;
+    min-width: 100px;
     color: #6a6a6a;
     margin-bottom: 32px;
   }
@@ -53,6 +60,7 @@
 .buttonsWrapper {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
   & > :first-child {
     margin-right: 15px;
   }
@@ -71,6 +79,7 @@
   .btnWrapper {
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
     padding-top: 5px;
     padding-bottom: 5px;
   }
