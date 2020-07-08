@@ -34,7 +34,9 @@ export const getPaymentPlans = async ({
   // console.log(`Query: ${query}, Skus: ${skus}`);
   if (skus.data?.length > 0) {
     const paymentPlans = skus.data.flatMap(sku => {
-      sku.payment_schedule_json = JSON.parse(sku.payment_schedule_json);
+      if (sku.payment_schedule_json) {
+        sku.payment_schedule_json = JSON.parse(sku.payment_schedule_json);
+      }
 
       let paymentPlans = [];
       if (

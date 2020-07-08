@@ -125,7 +125,7 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
           ? registrant.team_id
             ? 'confirmed'
             : 'pending'
-          : registrant.amount_due === registrant.payment_amount
+          : registrant.amount_due < registrant.payment_amount
           ? 'confirmed'
           : 'pending',
       participant:

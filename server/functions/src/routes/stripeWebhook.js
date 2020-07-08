@@ -66,6 +66,14 @@ export const paymentSuccessWebhook = async req => {
       requestParams
     );
 
+    const charge = await stripe.charges.retrieve(
+      event.data.object.charge,
+      {
+        expand: ['balance_transaction'],
+      },
+      requestParams
+    );
+
     const discount = subscription.metadata.promo_code_discount
       ? +subscription.metadata.promo_code_discount
       : 0;
@@ -115,25 +123,20 @@ export const paymentSuccessWebhook = async req => {
       );
 
       if (event.type === 'invoice.payment_succeeded') {
+        const discountAmount =
+          Math.round((+lineItem.amount / 100) * discount * paidRatio) / 100;
         const newPaymentNetAmount =
-          Math.round(+lineItem.amount * (1 - discount / 100) * paidRatio) / 100;
+          Math.round(+lineItem.amount * paidRatio) / 100 - discountAmount;
         const newPaymentTax =
           Math.round(
             +lineItem.tax_amounts.reduce((a, x) => a + +x.amount, 0) * paidRatio
           ) / 100;
         const newPaymentGrossAmount = newPaymentNetAmount + newPaymentTax;
         const newPaymentFees =
-          Math.round(newPaymentGrossAmount * 100 * 0.039) / 100 +
-          (+event.data.object.amount_paid > 0.5 ? 0.3 : 0) +
-          Math.round(
-            event.data.object.amount_paid
-              ? (+event.data.object.application_fee_amount *
-                  newPaymentGrossAmount *
-                  100) /
-                  +event.data.object.amount_paid
-              : 0
-          ) /
-            100; // When a payment is for multiple items allocate the application fee proportionally
+          (event.data.object.amount_paid
+            ? (charge.balance_transaction.fee * newPaymentGrossAmount * 100) /
+              +event.data.object.amount_paid
+            : 0) / 100; // When a payment is for multiple items allocate the application fee proportionally
 
         const newPaymentDate = new Date(
           +event.data.object.status_transitions.paid_at * 1000
