@@ -1,7 +1,7 @@
 import React from 'react';
+import { BindingAction } from 'common/models';
 import { CardMessage, Button, Modal } from 'components/common';
 import { CardMessageTypes } from 'components/common/card-message/types';
-import { BindingAction } from 'common/models';
 import styles from './styles.module.scss';
 
 const CARD_MESSAGE_STYLES = {
@@ -18,11 +18,9 @@ const ICON_CARD_STYLES = {
 interface Props {
   isOpen: boolean;
   onClose: BindingAction;
-  onExitClick: BindingAction;
-  onSaveClick: BindingAction;
 }
 
-export default ({ isOpen, onClose, onExitClick, onSaveClick }: Props) => (
+export default ({ isOpen, onClose }: Props) => (
   <Modal isOpen={isOpen} onClose={onClose}>
     <section className={styles.popupWrapper}>
       <CardMessage
@@ -33,21 +31,14 @@ export default ({ isOpen, onClose, onExitClick, onSaveClick }: Props) => (
         Warning
       </CardMessage>
       <p className={styles.popupText}>
-        Schedules and playoffs are attached to this event. Please be careful,
-        any change on this page may lead to a change in the Playoff or Schedule.
+        You cannot edit the published event.
       </p>
       <p className={styles.btnsWrapper}>
         <Button
-          onClick={onExitClick}
+          onClick={onClose}
           label="Cancel"
           variant="text"
           color="secondary"
-        />
-        <Button
-          onClick={onSaveClick}
-          label="Save Anyway"
-          variant="contained"
-          color="primary"
         />
       </p>
     </section>
