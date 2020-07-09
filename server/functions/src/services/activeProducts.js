@@ -19,6 +19,7 @@ export const getPaymentPlans = async ({
   product_id = null,
   sku_id = null,
   payment_plan_id = null,
+  discount_code = null,
   stripe_connect_id = null,
 }) => {
   let query =
@@ -38,6 +39,13 @@ export const getPaymentPlans = async ({
         sku.payment_schedule_json = JSON.parse(sku.payment_schedule_json);
       }
 
+      let discount = 0;
+      let discountNotice = '';
+      if (discount_code && sku.promo_code === discount_code) {
+        discount = sku.promo_code_discount;
+        discountNotice = ` (${discount_code} applied)`;
+      }
+
       let paymentPlans = [];
       if (
         Array.isArray(sku.payment_schedule_json) &&
@@ -46,9 +54,16 @@ export const getPaymentPlans = async ({
         paymentPlans = sku.payment_schedule_json
           .map(rawPaymentPlan => {
             if (rawPaymentPlan.type === 'installment') {
+              const discountAmount =
+                Math.round(
+                  ((+sku.price * (discount / 100)) /
+                    +rawPaymentPlan.iterations) *
+                    100
+                ) / 100;
               const installmentPrice =
                 Math.round((+sku.price / +rawPaymentPlan.iterations) * 100) /
-                100;
+                  100 -
+                discountAmount;
               const installmentPriceWithTax =
                 Math.round(
                   installmentPrice * (1 + sku.sales_tax_rate / 100) * 100
@@ -72,7 +87,7 @@ export const getPaymentPlans = async ({
                 discount: 0,
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
-                payment_plan_notice: `The Installment Schedule is:  ${recurringPayments}the total amount of $${(
+                payment_plan_notice: `The Installment Schedule is${discountNotice}:  ${recurringPayments}the total amount of $${(
                   installmentPriceWithTax * rawPaymentPlan.iterations
                 ).toFixed(2)}`,
                 type: rawPaymentPlan.type,
@@ -86,7 +101,7 @@ export const getPaymentPlans = async ({
               const schedule = {};
               let billingCycleAnchor;
               for (let phase of rawPaymentPlan.schedule) {
-                const amount =
+                let amount =
                   phase.amountType === 'fixed'
                     ? +phase.amount
                     : phase.amountType === 'percent'
@@ -95,6 +110,12 @@ export const getPaymentPlans = async ({
                 if (!amount) {
                   throw new Error('Incorrect amount specified.');
                 }
+
+                const discountAmount =
+                  Math.round(amount * (discount / 100) * 100) / 100;
+
+                amount -= discountAmount;
+
                 const date = +phase.date;
                 const now = new Date().getTime() / 1000;
                 if (date <= now) {
@@ -146,7 +167,7 @@ export const getPaymentPlans = async ({
                 discount: 0,
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
-                payment_plan_notice: `The Installment Schedule is: ${scheduleArr
+                payment_plan_notice: `The Installment Schedule is${discountNotice}: ${scheduleArr
                   .map(
                     x =>
                       `${
@@ -178,7 +199,7 @@ export const getPaymentPlans = async ({
           payment_plan_notice: `Your credit card will be charged $${(
             sku.price *
             (1 + sku.sales_tax_rate / 100)
-          ).toFixed(2)} now.`,
+          ).toFixed(2)} now ${discountNotice}.`,
           type: 'installment',
           discount: 0,
           iterations: 1,
