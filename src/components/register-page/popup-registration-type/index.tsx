@@ -36,7 +36,7 @@ const PopupRegistrationType = ({
   return (
     <Modal isOpen={isOpenModalOpen} onClose={() => {}}>
       <div className={styles.modalContainer}>
-        <div style={{ height: '190px' }}>
+        <div>
           <HeadingLevelFour>
             <span>Event Registration</span>
           </HeadingLevelFour>

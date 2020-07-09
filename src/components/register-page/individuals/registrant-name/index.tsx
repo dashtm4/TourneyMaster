@@ -84,17 +84,15 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
         </div>
       </div>
       <div className={styles.sectionRow}>
-        <div className={styles.sectionItem}>
-          <Checkbox
-            onChange={onIsParticipantChange}
-            options={[
-              {
-                label: 'Registrant is the Player',
-                checked: Boolean(data.registrant_is_the_participant || false),
-              },
-            ]}
-          />
-        </div>
+        <Checkbox
+          onChange={onIsParticipantChange}
+          options={[
+            {
+              label: 'Registrant is the Player',
+              checked: Boolean(data.registrant_is_the_participant || false),
+            },
+          ]}
+        />
       </div>
     </div>
   );

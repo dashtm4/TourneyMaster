@@ -11,7 +11,7 @@ interface IProps {
 
 const SideBar = ({ event, eventRegistration }: IProps) => {
   return (
-    <div style={{ width: '90%' }}>
+    <div>
       <Paper>
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>
