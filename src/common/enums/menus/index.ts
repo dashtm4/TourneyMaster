@@ -7,6 +7,7 @@ enum MenuTitles {
   SCHEDULING = 'Scheduling',
   UTILITIES = 'Utilities',
   USER_PROFILE = 'User Profile',
+  ORG_INFO = 'Organization Info',
   TOURNEY_IMPORT = 'Tourney Import',
   TOURNEY_IMPORT_TITLE = 'Import New Tournament',
   TOURNEY_HISTORY_TITLE = 'Historical Imports',

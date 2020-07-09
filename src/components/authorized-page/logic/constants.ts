@@ -43,6 +43,7 @@ export const MenuList = [
     link: Routes.UTILITIES,
     children: [
       MenuTitles.USER_PROFILE,
+      MenuTitles.ORG_INFO,
       MenuTitles.TOURNEY_IMPORT,
       // MenuTitles.EMAIL_SETUP
     ],

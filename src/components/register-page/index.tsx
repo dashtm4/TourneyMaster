@@ -77,7 +77,7 @@ export const wrappedRegister = ({ match }: RegisterMatchParams) => {
     ).data[0].stripe_connect_id;
     const stripe = await loadStripe(
       process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY ||
-        'pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh', // TODO: Remove the hardcoded key after initial deployment
+      'pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh', // TODO: Remove the hardcoded key after initial deployment
       stripeAccount === 'main' ? undefined : { stripeAccount }
     );
     resolve(stripe);
@@ -248,7 +248,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
         const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
           !cur.iterations ||
-          (cur.type === 'installment' && prev.iterations < cur.iterations)
+            (cur.type === 'installment' && prev.iterations < cur.iterations)
             ? prev
             : cur
         );
@@ -524,8 +524,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         name:
           updatedRegistration.registrant_first_name ||
           updatedRegistration.contact_first_name +
-            ' ' +
-            updatedRegistration.registrant_last_name ||
+          ' ' +
+          updatedRegistration.registrant_last_name ||
           updatedRegistration.contact_last_name,
         email:
           updatedRegistration.registrant_email ||
@@ -601,7 +601,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                       : ''
                     : 'for ' + registration.division_name
                   : ''
-              }`}
+                }`}
             </HeadingLevelTwo>
           </div>
           <div style={{ width: '90%' }}>
@@ -662,8 +662,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           {event && eventRegistration ? (
             <SideBar event={event} eventRegistration={eventRegistration} />
           ) : (
-            <Loader />
-          )}
+              <Loader />
+            )}
         </div>
       </div>
       {event && (

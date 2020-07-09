@@ -32,7 +32,7 @@ interface IRegistrationEditState {
 class RegistrationEdit extends React.Component<
   IRegistrationEditProps,
   IRegistrationEditState
-> {
+  > {
   state = { isExposurePopupOpen: false };
 
   onModalClose = () => {
@@ -126,7 +126,7 @@ class RegistrationEdit extends React.Component<
               </SectionDropdown>
             </li>
             {
-              this.props.event && this.props.event[0].waivers_required == 1
+              this.props.event && this.props.event[0].waivers_required === 1
                 ? <li>
                   <SectionDropdown
                     type="section"

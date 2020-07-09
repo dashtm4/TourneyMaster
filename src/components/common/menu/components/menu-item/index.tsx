@@ -49,7 +49,7 @@ const MenuItem = ({ eventId, menuItem, isAllowEdit, isCollapsed }: Props) => {
             <Link
               className={`${styles.itemTitle} ${
                 isActiveItem ? styles.itemTitleActive : ''
-              }`}
+                }`}
               to={`${menuItem.link}/${eventId || ''}`}
             >
               {menuItem.title}
@@ -57,13 +57,13 @@ const MenuItem = ({ eventId, menuItem, isAllowEdit, isCollapsed }: Props) => {
                 menuItem.hasOwnProperty(RequiredMenuKeys.IS_COMPLETED) &&
                 (menuItem.isCompleted
                   ? getIcon(Icons.CHECK_CIRCLE, {
-                      ...STYLES_PROGREES_ICON,
-                      fill: '#00CC47',
-                    })
+                    ...STYLES_PROGREES_ICON,
+                    fill: '#00CC47',
+                  })
                   : getIcon(Icons.WARNING, {
-                      ...STYLES_PROGREES_ICON,
-                      fill: '#FFCB00',
-                    }))}
+                    ...STYLES_PROGREES_ICON,
+                    fill: '#FFCB00',
+                  }))}
             </Link>
           )}
         </ExpansionPanelSummaryWrapped>
