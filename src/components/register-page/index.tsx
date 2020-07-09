@@ -317,9 +317,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
             />
           );
         case 'Participant Profile':
-          return <PlayerStats
-            onChange={onChange}
-            data={registration}
+          return (
+            <PlayerStats
+              onChange={onChange}
+              data={registration}
               jerseyNumberRequired={
                 eventRegistration?.request_athlete_jersey_number === 1
               }
