@@ -63,6 +63,7 @@ import styles from './styles.module.scss';
 import { IMatchup } from 'components/visual-games-maker/helpers';
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import uuidv4 from 'uuid/v4';
 
 interface Props {
   tableType: TableScheduleTypes;
@@ -98,13 +99,8 @@ interface Props {
     modifiedSchedulesDetails: ISchedulesDetails[],
     schedulesDetailsToModify: ISchedulesDetails[]
   ) => void;
+  onGamesListChange?: (item: IMatchup[], teamIdToDeleteGame?: string, isDnd?: boolean) => void;
 }
-
-// const useStyles = makeStyles({
-//   toggleButtomGroup: {
-//     width: '100%',
-//   }
-// });
 
 const TableSchedule = ({
   tableType,
@@ -137,6 +133,7 @@ const TableSchedule = ({
   matchups,
   onAssignMatchup,
   updateSchedulesDetails,
+  onGamesListChange
 }: Props) => {
   const theme = createMuiTheme({
     overrides: {
@@ -183,6 +180,7 @@ const TableSchedule = ({
     teamId?: string;
     teamCards: ITeamCard[];
     possibleGame?: IMatchup;
+    dropParams?: IDropParams;
   }
   const [moveCardResult, setMoveCardResult] = useState<IMoveCardResult>();
   const [moveCardWarning, setMoveCardWarning] = useState<string | undefined>();
@@ -276,9 +274,47 @@ const TableSchedule = ({
 
   const toggleZooming = () => changeZoomingAction(!zoomingDisabled);
 
+  const handleScheduleMatrixMatchups = (result: IMoveCardResult) => {
+    const { dropParams } = result;
+
+    let newGamesList: IMatchup[] = matchups || [];
+    let teamIdToDeleteGame = '';
+    let isDnd = false;
+    if (matchups && onGamesListChange && dropParams) {
+      const prevParticipatingTeams = teamCards.filter(v => v.games?.find(game => game.id === dropParams.originGameId));
+      const participatingTeams = result.teamCards.filter(v => v.games?.find(game => game.id === result.gameId));
+
+      if (prevParticipatingTeams && prevParticipatingTeams.length === 2) {
+        newGamesList = newGamesList.filter(v => v.assignedGameId !== dropParams.originGameId);
+        teamIdToDeleteGame = dropParams.teamId;
+        isDnd = true;
+      }
+
+      if (participatingTeams && participatingTeams.length === 2) {
+        const awayTeam = participatingTeams.find(v => v.games?.find(game => game.id === result.gameId && game.teamPosition === 1));
+        const homeTeam = participatingTeams.find(v => v.games?.find(game => game.id === result.gameId && game.teamPosition === 2));
+        const newMatchup = {
+          id: uuidv4(),
+          assignedGameId: result.gameId || null,
+          homeTeamId: homeTeam?.id || "",
+          awayTeamId: awayTeam?.id || "",
+          divisionId: awayTeam?.divisionId || "",
+          divisionHex: awayTeam?.divisionHex || "",
+          divisionName: awayTeam?.divisionShortName || "",
+          awayTeam,
+          homeTeam
+        };
+
+        newGamesList = [...newGamesList, newMatchup];
+      }
+
+      onGamesListChange(newGamesList, teamIdToDeleteGame, isDnd);
+    }
+  };
+
   const moveCard = (dropParams: IDropParams) => {
     const day = filterValues.selectedDay!;
-    const isSimultaneousDnd = assignmentType === AssignmentType.Matchups ? true : simultaneousDnd;
+    const isSimultaneousDnd = assignmentType === AssignmentType.Matchups && (dropParams.possibleGame.awayTeam && dropParams.possibleGame.homeTeam) ? true : simultaneousDnd;
     const data = moveTeamCard(
       teamCards,
       tableGames,
@@ -290,7 +326,8 @@ const TableSchedule = ({
     const result: IMoveCardResult = {
       gameId: dropParams.gameId,
       teamCards: data.teamCards,
-      possibleGame: dropParams.possibleGame,
+      possibleGame: isSimultaneousDnd ? dropParams.possibleGame : undefined,
+      dropParams: dropParams,
     };
 
     switch (true) {
@@ -317,12 +354,17 @@ const TableSchedule = ({
         return setMoveCardResult(result);
       }
       default:
-        markGameAssigned(
-          result.possibleGame,
-          result.gameId,
-          !dropParams.gameId && !dropParams.originGameId,
-          !!(dropParams.gameId && dropParams.originGameId)
-        );
+        if (!result.possibleGame && result.gameId !== dropParams.originGameId) {
+          handleScheduleMatrixMatchups(result);
+        } else {
+          markGameAssigned(
+            result.possibleGame,
+            result.gameId,
+            !dropParams.gameId && !dropParams.originGameId,
+            !!(dropParams.gameId && dropParams.originGameId)
+          );
+        }
+
         onTeamCardsUpdate(result.teamCards);
     }
   };
@@ -334,7 +376,11 @@ const TableSchedule = ({
 
   const confirmReplacement = () => {
     if (moveCardResult) {
-      markGameAssigned(moveCardResult.possibleGame, moveCardResult.gameId);
+      if (moveCardResult.dropParams && !moveCardResult.possibleGame && moveCardResult.gameId !== moveCardResult.dropParams.originGameId) {
+        handleScheduleMatrixMatchups(moveCardResult);
+      } else {
+        markGameAssigned(moveCardResult.possibleGame, moveCardResult.gameId);
+      }
       onTeamCardsUpdate(moveCardResult.teamCards);
       resetMoveCardWarning();
     }
