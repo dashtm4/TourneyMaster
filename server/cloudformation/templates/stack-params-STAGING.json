@@ -1,14 +1,26 @@
 [
-	{
-		"ParameterKey": "ProjectName",
-		"ParameterValue": "TourneyMasterPayments"
-	},
-	{
-		"ParameterKey": "ApiGatewayId",
-		"ParameterValue": "kr4h1pzp94"
-	},
-	{
-		"ParameterKey": "RootResource",
-		"ParameterValue": "hfl0syi4x8"
-	}
+  {
+    "ParameterKey": "ProjectName",
+    "ParameterValue": "TourneyMasterPayments"
+  },
+  {
+    "ParameterKey": "PrivateApiGatewayId",
+    "ParameterValue": "noiyewfm5g"
+  },
+  {
+    "ParameterKey": "PrivateRootResource",
+    "ParameterValue": "lvn9upjw11"
+  },
+  {
+    "ParameterKey": "Authorizer",
+    "ParameterValue": "e1jyz1"
+  },
+  {
+    "ParameterKey": "PublicApiGatewayId",
+    "ParameterValue": "kr4h1pzp94"
+  },
+  {
+    "ParameterKey": "PublicRootResource",
+    "ParameterValue": "hfl0syi4x8"
+  }
 ]

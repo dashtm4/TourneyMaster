@@ -51,7 +51,10 @@ export enum TypeOptions {
 }
 
 const getInternalRegType = (type: TypeOptions) => {
-  if (type === TypeOptions.Participant || type === TypeOptions['Parent/Guardian']) {
+  if (
+    type === TypeOptions.Participant ||
+    type === TypeOptions['Parent/Guardian']
+  ) {
     return 'individual';
   } else {
     return 'team';
@@ -76,8 +79,7 @@ export const wrappedRegister = ({ match }: RegisterMatchParams) => {
       await axios.get(`/skus?event_id=${match.params.eventId}`)
     ).data[0].stripe_connect_id;
     const stripe = await loadStripe(
-      process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY ||
-      'pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh', // TODO: Remove the hardcoded key after initial deployment
+      process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY!,
       stripeAccount === 'main' ? undefined : { stripeAccount }
     );
     resolve(stripe);
@@ -92,7 +94,10 @@ export const wrappedRegister = ({ match }: RegisterMatchParams) => {
 
 const RegisterPage = ({ match }: RegisterMatchParams) => {
   const [event, setEvent] = useState<IEventDetails | null>(null);
-  const [eventRegistration, setEventRegistration,] = useState<IRegistration | null>(null);
+  const [
+    eventRegistration,
+    setEventRegistration,
+  ] = useState<IRegistration | null>(null);
   const [divisions, setDivisions] = useState([]);
   const [paymentPlans, setPaymentPlans] = useState([]);
   const [states, setStates] = useState<ISelectOption[]>([]);
@@ -142,7 +147,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   const query = useQuery();
 
   useEffect(() => {
-    const { params: { eventId } } = match;
+    const {
+      params: { eventId },
+    } = match;
 
     if (query.get('team') || query.get('division')) {
       setIsInvited(true);
@@ -210,7 +217,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           ? registration.ext_sku.slice(4)
           : null,
       reg_response_id: getVarcharEight(),
-      registration_id: eventRegistration ?.registration_id,
+      registration_id: eventRegistration?.registration_id,
     };
     setRegistration(updatedRegistration);
 
@@ -226,9 +233,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     return axios
       .get(
         `/payments/payment-plans?sku_id=${registration.ext_sku}${
-        registration.discount_code
-          ? `&discount_code=${registration.discount_code}`
-          : ''
+          registration.discount_code
+            ? `&discount_code=${registration.discount_code}`
+            : ''
         }`
       )
       .then(response => {
@@ -247,7 +254,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     loadPaymentPlans().then(plans => {
       const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
         !cur.iterations ||
-          (cur.type === 'installment' && prev.iterations < cur.iterations)
+        (cur.type === 'installment' && prev.iterations < cur.iterations)
           ? prev
           : cur
       );
@@ -312,7 +319,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               divisions={divisions}
               states={states}
               isInvited={isInvited}
-              datePickerRequired={eventRegistration ?.request_athlete_birthdate === 1}
+              datePickerRequired={
+                eventRegistration?.request_athlete_birthdate === 1
+              }
             />
           );
         case 'Participant Profile':
@@ -526,11 +535,11 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
       const customer = {
         name:
-          updatedRegistration.registrant_first_name ||
-          updatedRegistration.contact_first_name +
+          (updatedRegistration.registrant_first_name ||
+            updatedRegistration.contact_first_name) +
           ' ' +
-          updatedRegistration.registrant_last_name ||
-          updatedRegistration.contact_last_name,
+          (updatedRegistration.registrant_last_name ||
+            updatedRegistration.contact_last_name),
         email:
           updatedRegistration.registrant_email ||
           updatedRegistration.contact_email,
@@ -599,8 +608,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           {event && eventRegistration ? (
             <SideBar event={event} eventRegistration={eventRegistration} />
           ) : (
-              <Loader />
-            )}
+            <Loader />
+          )}
         </div>
         <div className={styles.stepperWrapper}>
           <div className={styles.headerStepper}>
@@ -613,20 +622,20 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                       : ''
                     : 'for ' + registration.division_name
                   : ''
-                }`}
+              }`}
             </HeadingLevelTwo>
           </div>
           <div>
             <Paper>
               <Stepper
                 activeStep={activeStep}
-                orientation="vertical"
+                orientation='vertical'
                 style={{ backgroundColor: 'transparent', width: '100%' }}
               >
                 {steps.map(label => (
                   <Step key={label}>
                     <StepLabel>
-                      <HeadingLevelThree color="#1c315f">
+                      <HeadingLevelThree color='#1c315f'>
                         <span>{label}</span>
                       </HeadingLevelThree>
                     </StepLabel>
@@ -637,15 +646,15 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                           <Button
                             disabled={activeStep === 0}
                             onClick={handleBack}
-                            label="Back"
-                            variant="text"
-                            color="secondary"
+                            label='Back'
+                            variant='text'
+                            color='secondary'
                           />
                           <Button
                             btnType={ButtonFormTypes.SUBMIT}
-                            variant="contained"
+                            variant='contained'
                             disabled={processing || isDisable}
-                            color="primary"
+                            color='primary'
                             label={
                               activeStep === steps.length - 1
                                 ? 'Agree and Pay'

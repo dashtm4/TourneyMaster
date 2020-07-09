@@ -31,7 +31,7 @@ jobs:
           STRIPE_WEBHOOK_SIGNING_SECRET: ${{secrets.STRIPE_WEBHOOK_SIGNING_SECRET_PROD}}
           STRIPE_CONNECT_WEBHOOK_SIGNING_SECRET: ${{secrets.STRIPE_CONNECT_WEBHOOK_SIGNING_SECRET_PROD}}
           STACK_NAME: 'TMPaymentsPROD'
-          PUBLIC_API_BASE_URL: 'https://api.tourneymaster.org/publicprod'
+          PUBLIC_API_BASE_URL: 'https://epwfxxr4qg.execute-api.us-east-1.amazonaws.com/PROD'
           PRIVATE_API_SM_PARAMETER_NAME: 'TourneyMasterAPIv2'
           PUBLIC_API_SM_PARAMETER_NAME: 'TMPublicApiPROD'
           MAX_PAYMENT_AMOUNT: ${{secrets.MAX_PAYMENT_AMOUNT_PROD}}

@@ -266,7 +266,7 @@ export const getRegistrants: ActionCreator<ThunkAction<
   let [teams, individuals] = await Promise.all([
     api.get(`/reg_responses_teams?registration_id=${registrationId}`),
     api.get(`/reg_responses_individuals?registration_id=${registrationId}`),
-  ]); // TODO
+  ]);
   teams = teams.map((x: any) => ({ ...x, type: 'team' }));
   individuals = individuals.map((x: any) => ({ ...x, type: 'individual' }));
 
@@ -291,7 +291,7 @@ export const getRegistrantPayments: ActionCreator<ThunkAction<
   // dispatch(registrantsPaymentsFetchSuccess({ regResponseId, data: null }));
   const data = await api.get(
     `/registrations_payments?reg_response_id=${regResponseId}`
-  ); // TODO
+  );
 
   dispatch(registrantsPaymentsFetchSuccess({ regResponseId, data }));
 };
