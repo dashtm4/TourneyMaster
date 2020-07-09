@@ -313,15 +313,15 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     toggleModal(false);
   };
 
-  const getStepContent = (step: number) => {
+  const getStepContent = (step: string) => {
     if (
       type === TypeOptions.Participant ||
       type === TypeOptions['Parent/Guardian']
     ) {
       switch (step) {
-        case 0:
+        case 'Registrant Name':
           return <RegistrantName onChange={onChange} data={registration} />;
-        case 1:
+        case 'Participant Personal Info':
           return (
             <PlayerInfo
               onChange={onChange}
@@ -332,9 +332,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               isInvited={isInvited}
             />
           );
-        case 2:
+        case 'Participant Profile':
           return <PlayerStats onChange={onChange} data={registration} />;
-        case 3:
+        case 'Waiver':
           return (
             <Waiver
               data={registration}
@@ -344,7 +344,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               setDisabledButton={(e: boolean) => setIsDisable(e)}
             />
           );
-        case 4:
+        case 'Payment':
           return (
             <Payment
               onChange={onChange}
@@ -358,7 +358,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
       }
     } else {
       switch (step) {
-        case 0:
+        case 'Team':
           return (
             <Team
               onChange={onChange}
@@ -368,9 +368,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               isInvited={isInvited}
             />
           );
-        case 1:
+        case 'Contact Info':
           return <ContactInfo onChange={onChange} data={registration} />;
-        case 2:
+        case 'Coach Info':
           return (
             <CoachInfo
               onChange={onChange}
@@ -378,7 +378,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               fillCoachInfo={fillCoachInfo}
             />
           );
-        case 3:
+        case 'Payment':
           return (
             <Payment
               onChange={onChange}
@@ -612,7 +612,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           )}
         </div>
         <div className={styles.stepperWrapper}>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className={styles.headerStepper}>
             <HeadingLevelTwo>
               {`${TypeOptions[type]} Registration ${
                 isInvited
@@ -625,14 +625,14 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               }`}
             </HeadingLevelTwo>
           </div>
-          <div style={{ width: '90%' }}>
+          <div>
             <Paper>
               <Stepper
                 activeStep={activeStep}
                 orientation='vertical'
                 style={{ backgroundColor: 'transparent', width: '100%' }}
               >
-                {steps.map((label, index) => (
+                {steps.map(label => (
                   <Step key={label}>
                     <StepLabel>
                       <HeadingLevelThree color='#1c315f'>
@@ -641,7 +641,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                     </StepLabel>
                     <StepContent>
                       <form onSubmit={handleNext}>
-                        <div>{getStepContent(index)}</div>
+                        <div>{getStepContent(label)}</div>
                         <div className={styles.buttonsWrapper}>
                           <Button
                             disabled={activeStep === 0}
@@ -681,15 +681,17 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         </div>
       </div>
       {event && (
-        <PopupRegistrationType
-          event={event}
-          isOpenModalOpen={isOpenModalOpen}
-          onTypeChange={onTypeChange}
-          onTypeSelect={onTypeSelect}
-          type={type}
-        />
+        <div className={styles.modalWrapp}>
+          <PopupRegistrationType
+            event={event}
+            isOpenModalOpen={isOpenModalOpen}
+            onTypeChange={onTypeChange}
+            onTypeSelect={onTypeSelect}
+            type={type}
+          />
+        </div>
       )}
-      <div style={{ marginTop: '50px' }}>
+      <div style={{ marginTop: '50px', flex: '0 0 auto' }}>
         <Footer />
       </div>
     </div>

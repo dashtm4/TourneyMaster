@@ -56,18 +56,36 @@ const Payment = ({
 
   const paymentForm = (
     <div className={styles.section}>
-      <div className={styles.sectionRow}>
-        <div
-          className={styles.sectionItem}
-          style={{ maxWidth: '30%', flexGrow: 1 }}
-        >
-          <Select
-            options={paymentSelectionOptions}
-            label='Payment Options'
-            disabled={processing}
-            value={data.payment_selection || ''}
-            onChange={onPaymentSelectionChange}
-          />
+      <div className={styles.paymentRow}>
+        <div className={styles.sectionRow}>
+          <div className={styles.sectionItem}>
+            <Select
+              options={paymentSelectionOptions}
+              label="Payment Options"
+              disabled={processing}
+              value={data.payment_selection || ''}
+              onChange={onPaymentSelectionChange}
+            />
+          </div>
+          <div className={styles.sectionItem}>
+            <Select
+              options={paymentMethodOptions}
+              label="Payment Method"
+              disabled={true}
+              value={data.payment_method || ''}
+              onChange={onPaymentMethodChange}
+              isRequired={true}
+            />
+          </div>
+          <div className={styles.sectionItem}>
+            <Input
+              fullWidth={true}
+              label="Discount Code"
+              disabled={processing}
+              value={data.discount_code || ''}
+              onChange={onDiscountCodeChange}
+            />
+          </div>
         </div>
         <div
           className={styles.sectionItem}
@@ -98,12 +116,13 @@ const Payment = ({
           </Button>
         </div>
       </div>
+
       <div className={styles.sectionRow}>
         <strong>{totalAmountNotice}</strong>
       </div>
       <div className={styles.sectionRow}>&nbsp;</div>
-      <div style={{ display: 'flex' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', width: '48%' }}>
+      <div className={styles.cardWrapp}>
+        <div className={styles.card}>
           <div className={styles.sectionTitle}>Card Details</div>
           <CardElement
             className={styles.stripeElement}
