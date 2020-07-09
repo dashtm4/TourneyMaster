@@ -429,7 +429,7 @@ class Schedules extends Component<Props, State> {
     getPublishedGames(eventId, scheduleId);
   };
 
-  onGamesListChange = (item: IMatchup[]) => {
+  onGamesListChange = (item: IMatchup[], teamIdToDeleteGame: string = '', isDnd: boolean = false) => {
     const prevState = this.state;
     const { gamesCells } = prevState;
 
@@ -443,14 +443,39 @@ class Schedules extends Component<Props, State> {
       if (deselectedGame) {
         const { schedulesTeamCards } = this.props;
 
-        const newTeamsCards = schedulesTeamCards!.map(v => {
-          return {
-            ...v,
-            games: v.games?.filter(
-              game => game.id !== deselectedGame.assignedGameId
-            ),
-          };
-        });
+        let newTeamsCards: ITeamCard[] = [];
+
+        if (teamIdToDeleteGame) {
+          newTeamsCards = schedulesTeamCards!.map(v => {
+            return {
+              ...v,
+              games: v.games?.filter(
+                game => game.id !== deselectedGame.assignedGameId && v.id !== teamIdToDeleteGame
+              ),
+            };
+          });
+        } else {
+          if (isDnd) {
+            newTeamsCards = schedulesTeamCards!.map(v => {
+              return {
+                ...v,
+                games: v.games?.filter(
+                  game => game.id !== deselectedGame.assignedGameId
+                ),
+              };
+            });
+          } else {
+            const gamesIdToDelete = gamesCells.filter(v => v.awayTeamId === deselectedGame.awayTeamId && v.homeTeamId === deselectedGame.homeTeamId).map(v => v.assignedGameId);
+            newTeamsCards = schedulesTeamCards!.map(v => {
+              return {
+                ...v,
+                games: v.games?.filter(
+                  game => !gamesIdToDelete.includes(game.id)
+                ),
+              };
+            });
+          }
+        }
 
         this.props.fillSchedulesTable(newTeamsCards);
       }
@@ -1048,6 +1073,7 @@ class Schedules extends Component<Props, State> {
                   fields={fields!}
                   pools={pools!}
                   games={games!}
+                  gamesCells={gamesCells}
                   timeSlots={timeSlots!}
                   timeValues={timeValues!}
                   divisions={divisions!}
@@ -1073,6 +1099,7 @@ class Schedules extends Component<Props, State> {
                   matchups={gamesCells}
                   onAssignMatchup={this.onAssignMatchup}
                   updateSchedulesDetails={updateSchedulesDetails}
+                  onGamesListChange={this.onGamesListChange}
                 />
               )}
           </section>
