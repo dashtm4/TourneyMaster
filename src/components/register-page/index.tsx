@@ -599,8 +599,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           {event && eventRegistration ? (
             <SideBar event={event} eventRegistration={eventRegistration} />
           ) : (
-            <Loader />
-          )}
+              <Loader />
+            )}
         </div>
         <div className={styles.stepperWrapper}>
           <div className={styles.headerStepper}>
@@ -613,7 +613,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                       : ''
                     : 'for ' + registration.division_name
                   : ''
-              }`}
+                }`}
             </HeadingLevelTwo>
           </div>
           <div>
