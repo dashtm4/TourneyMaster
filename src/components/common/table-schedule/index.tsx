@@ -72,7 +72,6 @@ interface Props {
   pools: IPool[];
   teamCards: ITeamCard[];
   games: IGame[];
-  gamesCells?: IMatchup[];
   fields: IField[];
   timeSlots: ITimeSlot[];
   timeValues: ITimeValues;
@@ -103,12 +102,6 @@ interface Props {
   onGamesListChange?: (item: IMatchup[], teamIdToDeleteGame?: string, isDnd?: boolean) => void;
 }
 
-// const useStyles = makeStyles({
-//   toggleButtomGroup: {
-//     width: '100%',
-//   }
-// });
-
 const TableSchedule = ({
   tableType,
   event,
@@ -116,7 +109,6 @@ const TableSchedule = ({
   pools,
   teamCards,
   games,
-  gamesCells,
   fields,
   facilities,
   scheduleData,
@@ -285,10 +277,10 @@ const TableSchedule = ({
   const handleScheduleMatrixMatchups = (result: IMoveCardResult) => {
     const { dropParams } = result;
 
-    let newGamesList: IMatchup[] = gamesCells || [];
+    let newGamesList: IMatchup[] = matchups || [];
     let teamIdToDeleteGame = '';
     let isDnd = false;
-    if (gamesCells && onGamesListChange && dropParams) {
+    if (matchups && onGamesListChange && dropParams) {
       const prevParticipatingTeams = teamCards.filter(v => v.games?.find(game => game.id === dropParams.originGameId));
       const participatingTeams = result.teamCards.filter(v => v.games?.find(game => game.id === result.gameId));
 

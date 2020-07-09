@@ -1073,7 +1073,6 @@ class Schedules extends Component<Props, State> {
                   fields={fields!}
                   pools={pools!}
                   games={games!}
-                  gamesCells={gamesCells}
                   timeSlots={timeSlots!}
                   timeValues={timeValues!}
                   divisions={divisions!}
