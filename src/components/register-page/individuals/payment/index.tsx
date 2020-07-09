@@ -85,36 +85,12 @@ const Payment = ({
               value={data.discount_code || ''}
               onChange={onDiscountCodeChange}
             />
+            <Button onClick={reloadPaymentPlans} color='primary'>
+              Apply Code
+            </Button>
           </div>
         </div>
-        <div
-          className={styles.sectionItem}
-          style={{ maxWidth: '30%', flexGrow: 1 }}
-        >
-          <Select
-            options={paymentMethodOptions}
-            label='Payment Method'
-            disabled={true}
-            value={data.payment_method || ''}
-            onChange={onPaymentMethodChange}
-            isRequired={true}
-          />
-        </div>
-        <div
-          className={styles.sectionItem}
-          style={{ maxWidth: '30%', flexGrow: 1 }}
-        >
-          <Input
-            fullWidth={true}
-            label='Discount Code'
-            disabled={processing}
-            value={data.discount_code || ''}
-            onChange={onDiscountCodeChange}
-          />
-          <Button onClick={reloadPaymentPlans} color='primary'>
-            Apply Code
-          </Button>
-        </div>
+
       </div>
 
       <div className={styles.sectionRow}>
