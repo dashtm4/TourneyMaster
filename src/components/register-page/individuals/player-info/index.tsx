@@ -14,6 +14,7 @@ interface IPlayerInfoProps {
   divisions: ISelectOption[];
   states: ISelectOption[];
   isInvited: boolean;
+  datePickerRequired: boolean;
 }
 
 // const playerLevelOptions = [{ label: 'Level1', value: 'Level1' }];
@@ -25,6 +26,7 @@ const PlayerInfo = ({
   divisions,
   states,
   isInvited,
+  datePickerRequired,
 }: IPlayerInfoProps) => {
   useEffect(() => {
     if (data.registrant_is_the_participant) {
@@ -90,10 +92,10 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <DatePicker
             fullWidth={true}
-            label="Birthdate"
+            label={`Birthdate ${datePickerRequired ? '(Required)' : ''}`}
             type="date"
-            value={data.player_birthdate || '01-01-2000'}
-            isRequired={true}
+            value={data.player_birthdate}
+            isRequired={datePickerRequired}
             onChange={onPlayerBirthdayChange}
           />
         </div>
