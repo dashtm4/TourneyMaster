@@ -4,11 +4,11 @@
     "ParameterValue": "TMPaymentsDEV"
   },
   {
-    "ParameterKey": "ApiGatewayId",
+    "ParameterKey": "PublicApiGatewayId",
     "ParameterValue": "h07bgbfxf7"
   },
   {
-    "ParameterKey": "RootResource",
+    "ParameterKey": "PublicRootResource",
     "ParameterValue": "r8la7ul4pg"
   }
 ]

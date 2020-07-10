@@ -1,10 +1,10 @@
-import '../services/logger.js';
+import '../../../services/logger.js';
 import mysql from 'promise-mysql';
 import SSM from 'aws-sdk/clients/ssm.js';
 
-import config from '../config.js';
+import config from '../../../config.js';
 import Stripe from 'stripe';
-import { getPaymentPlans } from '../services/activeProducts.js';
+import { getPaymentPlans } from '../../products/activeProducts.js';
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 const ssm = new SSM({ region: 'us-east-1' });
 

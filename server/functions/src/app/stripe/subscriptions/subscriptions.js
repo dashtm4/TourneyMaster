@@ -1,7 +1,7 @@
-import config from '../config.js';
+import config from '../../../config.js';
 import Stripe from 'stripe';
-import { getPaymentPlans } from '../services/activeProducts.js';
-import { loadAll } from '../app/utils/stripeUtils.js';
+import { getPaymentPlans } from '../../products/activeProducts.js';
+import { loadAll } from '../utils/utils.js';
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 
 const createOrUpdateCustomer = async (subData, currency) => {
@@ -106,9 +106,9 @@ const createSubscription = async (customer, paymentPlan, subData) => {
     const prices = (
       await stripe.prices.list({ product: sku_id, active: true }, requestParams)
     ).data;
-    console.log(prices);
+    console.log(`Prices of sku ${sku_id}`, prices);
     const price = prices.find(x => x.metadata.externalId === payment_plan_id);
-    console.log(price);
+    console.log(`Price of ${payment_plan_id}:`, price);
     await validatePrice(price);
 
     return price;

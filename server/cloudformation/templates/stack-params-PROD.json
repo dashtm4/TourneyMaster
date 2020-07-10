@@ -1,14 +1,14 @@
 [
-	{
-		"ParameterKey": "ProjectName",
-		"ParameterValue": "TMPaymentsPROD"
-	},
-	{
-		"ParameterKey": "ApiGatewayId",
-		"ParameterValue": "epwfxxr4qg"
-	},
-	{
-		"ParameterKey": "RootResource",
-		"ParameterValue": "m1fkx7bbje"
-	}
+  {
+    "ParameterKey": "ProjectName",
+    "ParameterValue": "TMPaymentsPROD"
+  },
+  {
+    "ParameterKey": "PublicApiGatewayId",
+    "ParameterValue": "epwfxxr4qg"
+  },
+  {
+    "ParameterKey": "PublicRootResource",
+    "ParameterValue": "m1fkx7bbje"
+  }
 ]
