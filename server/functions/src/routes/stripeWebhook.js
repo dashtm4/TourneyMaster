@@ -33,8 +33,15 @@ export const paymentSuccessWebhook = async req => {
   }
 
   try {
-    event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
-    console.log('Webhook Stripe signature verification: OK');
+    if (process.env.NODE_ENV === 'development') {
+      event = req.body;
+      console.log(
+        'Bypassing Webhook Stripe signature verification on development'
+      );
+    } else {
+      event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
+      console.log('Webhook Stripe signature verification: OK');
+    }
   } catch (err) {
     console.log('Webhook Stripe signature verification: FAILED');
     throw new Error(`Webhook Error: ${err.message}`);
@@ -59,6 +66,18 @@ export const paymentSuccessWebhook = async req => {
       requestParams
     );
 
+    const charge = await stripe.charges.retrieve(
+      event.data.object.charge,
+      {
+        expand: ['balance_transaction'],
+      },
+      requestParams
+    );
+
+    const discount = subscription.metadata.promo_code_discount
+      ? +subscription.metadata.promo_code_discount
+      : 0;
+
     const {
       reg_type,
       reg_response_id,
@@ -82,10 +101,16 @@ export const paymentSuccessWebhook = async req => {
     const toConn = await mysql.createConnection(toParams.db);
 
     const paidRatio =
-      +event.data.object.amount_paid / +event.data.object.amount_due;
+      +event.data.object.amount_due !== 0
+        ? +event.data.object.amount_paid / +event.data.object.amount_due
+        : 0;
 
     for (const lineItem of event.data.object.lines.data) {
-      if (+lineItem.price.unit_amount === 0) continue; // Skip line items with zero price
+      if (
+        +lineItem.price.unit_amount === 0 &&
+        lineItem.price.metadata?.externalId
+      )
+        continue; // Skip line items with zero price
 
       const dbResponses = await toConn.query(
         `select * from ${toParams.db.database}.${tableName} where reg_response_id=?`,
@@ -98,21 +123,20 @@ export const paymentSuccessWebhook = async req => {
       );
 
       if (event.type === 'invoice.payment_succeeded') {
+        const discountAmount =
+          Math.round((+lineItem.amount / 100) * discount * paidRatio) / 100;
         const newPaymentNetAmount =
-          Math.round(+lineItem.amount * paidRatio) / 100;
+          Math.round(+lineItem.amount * paidRatio) / 100 - discountAmount;
         const newPaymentTax =
           Math.round(
             +lineItem.tax_amounts.reduce((a, x) => a + +x.amount, 0) * paidRatio
           ) / 100;
         const newPaymentGrossAmount = newPaymentNetAmount + newPaymentTax;
         const newPaymentFees =
-          Math.round(newPaymentNetAmount * 100 * 0.029) / 100 +
-          0.3 +
-          Math.round(
-            (+event.data.object.application_fee_amount * +lineItem.amount) /
+          (event.data.object.amount_paid
+            ? (charge.balance_transaction.fee * newPaymentGrossAmount * 100) /
               +event.data.object.amount_paid
-          ) /
-            100; // When a payment is for multiple items allocate the application fee proportionally
+            : 0) / 100; // When a payment is for multiple items allocate the application fee proportionally
 
         const newPaymentDate = new Date(
           +event.data.object.status_transitions.paid_at * 1000
@@ -136,6 +160,7 @@ export const paymentSuccessWebhook = async req => {
           reg_response.amount_due =
             Math.round(
               paymentPlan.total_price *
+                (1 - discount / 100) *
                 (1 + paymentPlan.sales_tax_rate / 100) *
                 100
             ) / 100;
@@ -174,7 +199,10 @@ export const paymentSuccessWebhook = async req => {
               phase.date === 'now' ? new Date() : new Date(+phase.date * 1000),
               paymentPlan.currency,
               Math.round(
-                phase.amount * (1 + paymentPlan.sales_tax_rate / 100) * 100
+                phase.amount *
+                  (1 - discount / 100) *
+                  (1 + paymentPlan.sales_tax_rate / 100) *
+                  100
               ) / 100,
               owner_id,
             ]);
@@ -212,7 +240,10 @@ export const paymentSuccessWebhook = async req => {
               date,
               paymentPlan.currency,
               Math.round(
-                paymentPlan.price * (1 + paymentPlan.sales_tax_rate / 100) * 100
+                paymentPlan.price *
+                  (1 - discount / 100) *
+                  (1 + paymentPlan.sales_tax_rate / 100) *
+                  100
               ) / 100,
               owner_id,
             ]);
@@ -226,10 +257,11 @@ export const paymentSuccessWebhook = async req => {
         }
 
         await toConn.query(
-          `update ${toParams.db.database}.${tableName} set payment_amount=payment_amount+?, 
+          `update ${toParams.db.database}.${tableName} set payment_amount=payment_amount+?, amount_net=amount_net+?,
            payment_date=?,ext_payment_id=? where reg_response_id=?`,
           [
             newPaymentGrossAmount,
+            newPaymentNetAmount - newPaymentFees,
             newPaymentDate,
             event.data.object.id,
             reg_response_id,
@@ -328,8 +360,8 @@ const findScheduledPaymentToAllocateTo = async (
     );
   } else if (paymentPlan.type === 'schedule') {
     dbPayments = await toConn.query(
-      `select * from ${toParams.db.database}.registrations_payments where reg_response_id=? and installment_id=?`,
-      [reg_response_id, externalId]
+      `select * from ${toParams.db.database}.registrations_payments where reg_response_id=?`, //  and installment_id=?
+      [reg_response_id /*, externalId */]
     );
   }
   console.log(
@@ -338,7 +370,7 @@ const findScheduledPaymentToAllocateTo = async (
     )}. Attempting to allocate the payment to a scheduled one`
   );
   const availableForAllocation = dbPayments.reduce((a, c) => {
-    if (+c.amount_due - +c.amount_paid > 0) {
+    if (+c.amount_due - +c.amount_paid > 0 || +c.amount_due === 0) {
       if (!a || new Date(a.payment_date) > new Date(c.payment_date)) {
         return c;
       } else {

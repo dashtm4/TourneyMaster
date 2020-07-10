@@ -146,6 +146,7 @@ class RegistrationView extends React.Component<
     if (!prevState.registration && nextProps.registration) {
       return {
         registration: nextProps.registration,
+        event: nextProps.event,
       };
     }
     return null;
@@ -169,8 +170,6 @@ class RegistrationView extends React.Component<
   toggleSectionCollapse = () => {
     this.setState({ isSectionsExpand: !this.state.isSectionsExpand });
   };
-
-  click = () => console.log('change');
 
   renderView = () => {
     const { registration, event } = this.props;

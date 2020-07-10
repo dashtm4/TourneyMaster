@@ -51,6 +51,7 @@ export default (
     const teamTimeSlots = incomingTeamGames.map(item => item.timeSlotId);
     const teamFacilities = incomingTeamGames.map(item => item.facilityId);
 
+    const isSeparateTeamInMatchupsMode = (simultaneousDnd && (!possibleGame?.awayTeam || !possibleGame?.homeTeam))
     const pairTeam = gamePlace
       ? gamePlace[position === 1 ? 'homeTeam' : 'awayTeam']
       : undefined;
@@ -73,7 +74,7 @@ export default (
         )
         .map(g => g.timeSlotId);
 
-    if (gamePlace?.awayTeam && gamePlace?.homeTeam) {
+    if (gamePlace?.awayTeam && gamePlace?.homeTeam && simultaneousDnd) {
       result = {
         ...result,
         gameSlotInUse: true,
@@ -95,6 +96,7 @@ export default (
 
     const timeSlotInUseForPossibleTeams =
       possibleGame &&
+      !originGameId &&
       filledGames.some(
         v =>
           v.timeSlotId === gamePlace?.timeSlotId &&
@@ -165,8 +167,11 @@ export default (
     if (
       gameId &&
       position &&
-      teamId === teamCard.id &&
-      !(simultaneousDnd && (originGameId || possibleGame))
+      teamId === teamCard.id && 
+      (
+        !(simultaneousDnd && (originGameId || possibleGame))
+        || isSeparateTeamInMatchupsMode 
+      )
     ) {
       let games = [
         ...teamCard.games?.filter(
@@ -238,7 +243,7 @@ export default (
     }
 
     if (
-      simultaneousDnd &&
+      (simultaneousDnd && !possibleGame?.homeTeam && !possibleGame?.awayTeam) &&
       originGameId &&
       findIndex(teamCard.games, {
         id: gameId,
@@ -268,7 +273,7 @@ export default (
 
     /* 3. Remove replaced team game */
     if (
-      !simultaneousDnd &&
+      !simultaneousDnd || isSeparateTeamInMatchupsMode &&
       findIndex(teamCard.games, {
         id: gameId,
         teamPosition: position,

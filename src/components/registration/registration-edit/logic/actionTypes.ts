@@ -1,4 +1,4 @@
-import { IRegistration } from 'common/models';
+import { IRegistration, IEventDetails } from 'common/models';
 
 export const REGISTRATION_FETCH_START = 'REGISTRATION_FETCH_START';
 export const REGISTRATION_FETCH_SUCCESS = 'REGISTRATION_FETCH_SUCCESS';
@@ -15,6 +15,7 @@ export const REGISTRANTS_PAYMENTS_FETCH_SUCCESS =
 export interface registrationUpdateSuccess {
   type: 'REGISTRATION_UPDATE_SUCCESS';
   payload: IRegistration;
+  event: IEventDetails | null;
 }
 
 export type RegistrationAction = registrationUpdateSuccess;

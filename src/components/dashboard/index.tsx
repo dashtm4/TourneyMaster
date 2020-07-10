@@ -5,7 +5,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons';
 import { History } from 'history';
-import { Loader } from 'components/common';
+import { Loader, Modal } from 'components/common';
 import {
   ITeam,
   IField,
@@ -55,6 +55,7 @@ interface IDashboardState {
   order: number;
   filters: { status: number[]; historical: boolean };
   isOnboardingWizardOpen: boolean;
+  isSkipOpen: boolean;
 }
 
 class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
@@ -62,6 +63,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
     order: 1,
     filters: { status: [1, 0], historical: false },
     isOnboardingWizardOpen: false,
+    isSkipOpen: false,
   };
 
   componentDidMount() {
@@ -84,6 +86,16 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
       });
     }
   }
+
+  onSkipOpen = () => this.setState({ isSkipOpen: true });
+
+  onSkipClose = () => this.setState({ isSkipOpen: false });
+
+  onSkip = () => {
+    this.setState({ isOnboardingWizardOpen: true });
+
+    this.onSkipClose();
+  };
 
   onCreateTournament = () => this.props.history.push('/event/event-details');
 
@@ -304,7 +316,7 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
   };
 
   render() {
-    const { isOnboardingWizardOpen } = this.state;
+    const { isOnboardingWizardOpen, isSkipOpen } = this.state;
     const { calendarEvents, events } = this.props;
 
     return (
@@ -355,7 +367,26 @@ class Dashboard extends React.Component<IDashboardProps, IDashboardState> {
           />
         </div>
         {this.renderDashbaordInOrder()}
-        <OnboardingWizard isOpen={isOnboardingWizardOpen} />
+        <OnboardingWizard
+          isOpen={isOnboardingWizardOpen}
+          onSkipOpen={this.onSkipOpen}
+        />
+        <Modal isOpen={isSkipOpen} onClose={() => {}}>
+          <div className={styles.modal}>
+            <p className={styles.message}>
+              You can create or join an organization later under the
+              Collaboration Menu
+            </p>
+            <div className={styles.btnWrapper}>
+              <Button
+                label="Continue"
+                color="secondary"
+                variant="text"
+                onClick={this.onSkip}
+              />
+            </div>
+          </div>
+        </Modal>
       </div>
     );
   }

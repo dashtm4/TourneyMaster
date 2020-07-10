@@ -1,6 +1,7 @@
-import config from "../config.js";
-import Stripe from "stripe";
-import { getPaymentPlans } from "../services/activeProducts.js";
+import config from '../config.js';
+import Stripe from 'stripe';
+import { getPaymentPlans } from '../services/activeProducts.js';
+import { loadAll } from '../app/utils/stripeUtils.js';
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 
 const createOrUpdateCustomer = async (subData, currency) => {
@@ -23,7 +24,7 @@ const createOrUpdateCustomer = async (subData, currency) => {
       subData.requestParams
     )
     ?.data?.filter(
-      (customer) =>
+      customer =>
         customer.currency === null ||
         customer.currency.toLowerCase() === currency.toLowerCase()
     );
@@ -76,13 +77,13 @@ const attachPaymentMethod = async (customer, paymentMethodId, subData) => {
 };
 
 const validateSubscriptionData = async (subData /* price */) => {
-  if (subData.reg_type !== "individual" && subData.reg_type !== "team") {
+  if (subData.reg_type !== 'individual' && subData.reg_type !== 'team') {
     throw new Error('Reg_type must be "individual" or "team"');
   }
 };
 
 const createSubscription = async (customer, paymentPlan, subData) => {
-  const validatePrice = async (price) => {
+  const validatePrice = async price => {
     if (price.unit_amount > process.env.MAX_PAYMENT_AMOUNT * 100) {
       console.error(
         `Payment amount ${
@@ -99,14 +100,14 @@ const createSubscription = async (customer, paymentPlan, subData) => {
 
   const getPrice = async ({ sku_id, payment_plan_id, stripe_connect_id }) => {
     const requestParams =
-      stripe_connect_id === "main"
+      stripe_connect_id === 'main'
         ? null
         : { stripeAccount: stripe_connect_id };
     const prices = (
       await stripe.prices.list({ product: sku_id, active: true }, requestParams)
     ).data;
     console.log(prices);
-    const price = prices.find((x) => x.metadata.externalId === payment_plan_id);
+    const price = prices.find(x => x.metadata.externalId === payment_plan_id);
     console.log(price);
     await validatePrice(price);
 
@@ -115,30 +116,33 @@ const createSubscription = async (customer, paymentPlan, subData) => {
 
   const salesTaxRate = paymentPlan.sales_tax_rate
     ? (
-        await stripe.taxRates.list(
-          {
-            active: true,
-            limit: 100,
-          },
-          subData.requestParams
-        )
-      ).data.find((tax) => +tax.percentage === paymentPlan.sales_tax_rate)
+        await loadAll(stripe.taxRates, { active: true }, subData.requestParams)
+      ).find(tax => +tax.percentage === paymentPlan.sales_tax_rate)
     : null;
+
+  const coupon =
+    subData.items[0].discount_code &&
+    subData.items[0].discount_code === paymentPlan.promo_code
+      ? await (await loadAll(stripe.coupons, null, subData.requestParams)).find(
+          coupon => coupon.percent_off === paymentPlan.promo_code_discount
+        )
+      : null;
 
   let phases = [];
   let billingCycleAnchor;
-  if (paymentPlan.type === "installment") {
+  if (paymentPlan.type === 'installment') {
     const price = await getPrice(paymentPlan);
     billingCycleAnchor = paymentPlan.billing_cycle_anchor;
 
     phases.push({
       plans: [{ price: price.id, quantity: subData.items[0].quantity }],
       iterations: paymentPlan.iterations,
-      proration_behavior: "none",
+      proration_behavior: 'none',
       application_fee_percent: paymentPlan.application_fee_percent.toFixed(2),
+      coupon: coupon?.id,
       default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
     });
-  } else if (paymentPlan.type === "schedule") {
+  } else if (paymentPlan.type === 'schedule') {
     phases = paymentPlan.schedule;
 
     billingCycleAnchor = paymentPlan.schedule.reduce(
@@ -168,14 +172,33 @@ const createSubscription = async (customer, paymentPlan, subData) => {
           stripe_connect_id: paymentPlan.stripe_connect_id,
         });
 
-        const t = {
-          plans: [{ price: paymentSchedulePrice.id, quantity: 0 }],
-          add_invoice_items: [
+        let add_invoice_items;
+        if (coupon) {
+          add_invoice_items = [
+            {
+              // price_data: {
+              //   currency: price.currency,
+              //   product: price.product,
+              //   unit_amount: Math.round(
+              //     price.unit_amount // * (1 - coupon.percent_off / 100)
+              //   ),
+              // },
+              price: price.id,
+              quantity: subData.items[0].quantity,
+            },
+          ];
+        } else {
+          add_invoice_items = [
             {
               price: price.id,
               quantity: subData.items[0].quantity,
             },
-          ],
+          ];
+        }
+
+        const t = {
+          plans: [{ price: paymentSchedulePrice.id, quantity: 0 }],
+          add_invoice_items,
           billing_thresholds: {
             amount_gte: 50,
             reset_billing_cycle_anchor: true,
@@ -183,14 +206,15 @@ const createSubscription = async (customer, paymentPlan, subData) => {
           end_date: Math.round(
             i < phases.length - 1
               ? +phases[i + 1].date // end_date = start_date of the next installment
-              : phase.date === "now"
+              : phase.date === 'now'
               ? new Date().getTime() / 1000 + 60 * 60 * 24 // if the last and only installment end_date = now + 1 day
               : +phase.date + 60 * 60 * 24 // if the last installment end_date = phase.date + 1 day
           ),
-          proration_behavior: "none",
+          proration_behavior: 'none',
           application_fee_percent: paymentPlan.application_fee_percent.toFixed(
             2
           ),
+          coupon: coupon?.id,
           default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
         };
         return t;
@@ -202,8 +226,8 @@ const createSubscription = async (customer, paymentPlan, subData) => {
 
   const subscriptionScheduleData = {
     customer: customer.id,
-    start_date: billingCycleAnchor ? billingCycleAnchor : "now",
-    end_behavior: "cancel",
+    start_date: 'now',
+    end_behavior: 'cancel',
     phases,
     metadata: {
       reg_type: subData.reg_type,
@@ -213,9 +237,16 @@ const createSubscription = async (customer, paymentPlan, subData) => {
       division_id: paymentPlan.division_id,
       sku_id: paymentPlan.sku_id,
       payment_plan_id: paymentPlan.payment_plan_id,
+      promo_code: subData.items[0].discount_code,
     },
-    expand: ["subscription.latest_invoice.payment_intent"],
+    expand: ['subscription.latest_invoice.payment_intent'],
   };
+
+  if (coupon) {
+    subscriptionScheduleData.metadata.promo_code_discount =
+      paymentPlan.promo_code_discount;
+    subscriptionScheduleData.metadata.coupon = coupon.id;
+  }
 
   const schedule = await stripe.subscriptionSchedules.create(
     subscriptionScheduleData,
@@ -227,13 +258,27 @@ const createSubscription = async (customer, paymentPlan, subData) => {
   let subscription = await stripe.subscriptions.update(
     schedule.subscription.id,
     {
-      pending_invoice_item_interval: { interval: "day", interval_count: 1 },
+      pending_invoice_item_interval: { interval: 'day', interval_count: 1 },
       metadata: { ...subscriptionScheduleData.metadata },
     },
     subData.requestParams
   );
 
   console.log(`Stripe Subscription ${subscription.id} added metadata`);
+
+  const updatedInvoice = await stripe.invoices.update(
+    schedule.subscription.latest_invoice.id,
+    {
+      footer: paymentPlan.payment_plan_notice
+        .split(': ')
+        .join(':\n - ')
+        .split(',')
+        .join('\n -'),
+    },
+    subData.requestParams
+  );
+
+  console.log(`Invoice ${updatedInvoice.id} updated`);
 
   const invoice = await stripe.invoices.pay(
     schedule.subscription.latest_invoice.id,
@@ -245,7 +290,7 @@ const createSubscription = async (customer, paymentPlan, subData) => {
   subscription = await stripe.subscriptions.retrieve(
     subscription.id,
     {
-      expand: ["latest_invoice.payment_intent"],
+      expand: ['latest_invoice.payment_intent'],
     },
     subData.requestParams
   );
@@ -253,14 +298,14 @@ const createSubscription = async (customer, paymentPlan, subData) => {
   return subscription;
 };
 
-export const processCreateSubscription = async (subData) => {
+export const processCreateSubscription = async subData => {
   console.log(`SubData: ${JSON.stringify(subData)}`);
 
   const paymentPlan = (await getPaymentPlans(subData.items[0]))[0];
   console.log(`Payment Plan: ${JSON.stringify(paymentPlan)}`);
   // const price = await getPrice(subData);
   subData.requestParams =
-    paymentPlan.stripe_connect_id === "main"
+    paymentPlan.stripe_connect_id === 'main'
       ? null
       : { stripeAccount: paymentPlan.stripe_connect_id };
   await validateSubscriptionData(subData /*, price */);

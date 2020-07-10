@@ -141,9 +141,14 @@ const pageEventReducer = (
                 isCompleted: CheckIsCompleted.checkIsCompletedRegistration(
                   registration
                 ),
-                children: registration && event !== null
-                  ? Object.values(EventMenuRegistrationTitles).filter(title => title !== EventMenuRegistrationTitles.WAIVER || event.waivers_required === 1)
-                  : [],
+                children:
+                  registration && event !== null
+                    ? Object.values(EventMenuRegistrationTitles).filter(
+                        title =>
+                          title !== EventMenuRegistrationTitles.WAIVER ||
+                          event.waivers_required === 1
+                      )
+                    : [],
               };
             }
             case EventMenuTitles.DIVISIONS_AND_POOLS: {
@@ -199,18 +204,19 @@ const pageEventReducer = (
     }
     case REGISTRATION_UPDATE_SUCCESS: {
       const registration = action.payload;
+      const event = action.event;
 
       return {
         ...state,
         menuList: state.menuList.map(item =>
           item.title === EventMenuTitles.REGISTRATION
             ? {
-              ...item,
-              isCompleted: CheckIsCompleted.checkIsCompletedRegistration(
-                registration
-              ),
-              children: registration
-                  ? Object.values(EventMenuRegistrationTitles)
+                ...item,
+                isCompleted: CheckIsCompleted.checkIsCompletedRegistration(
+                  registration
+                ),
+                children: registration
+                  ? Object.values(EventMenuRegistrationTitles).filter(title => title !== EventMenuRegistrationTitles.WAIVER || event?.waivers_required === 1)
                   : [],
               }
             : item

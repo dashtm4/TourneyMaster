@@ -21,6 +21,7 @@ import {
   BindingAction,
   IEventDetails,
 } from 'common/models';
+import { registrationUpdateSuccess } from '../../registration/registration-edit/logic/actions';
 
 export const eventDetailsFetchStart = () => ({
   type: EVENT_DETAILS_FETCH_START,
@@ -68,6 +69,8 @@ export const saveEventDetails: ActionCreator<ThunkAction<
       eventDetails
     );
 
+    const registration = await api.get(`/registrations?event_id=${eventDetails.event_id}`);
+
     if (response?.errorType !== undefined) {
       return Toasts.errorToast("Couldn't save the changes");
     }
@@ -90,6 +93,7 @@ export const saveEventDetails: ActionCreator<ThunkAction<
     Toasts.successToast('Changes successfully saved');
 
     dispatch<any>(getEventDetails(eventDetails.event_id));
+    dispatch<any>(registrationUpdateSuccess(registration, eventDetails))
   } catch (err) {
     Toasts.errorToast(err.message);
   }
@@ -548,7 +552,7 @@ export const createDataFromCSV: ActionCreator<ThunkAction<
       }
 
       await Promise.all(promisesAddTeams);
-
+      cb();
       Toasts.successToast('Data successfully imported');
     } catch {
       Toasts.errorToast("Couldn't import data");

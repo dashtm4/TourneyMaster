@@ -7,6 +7,8 @@ import Stripe from 'stripe';
 import StripeServiceProductsHandler from './stripeServiceProductsHandler.js';
 import StripePricesHandler from './stripePricesHandler.js';
 import StripeTaxRatesHandler from './stripeTaxRatesHandler.js';
+import StripeCouponsHandler from './stripeCouponsHandler.js';
+import { loadAll } from '../utils/stripeUtils.js';
 
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 
@@ -56,7 +58,7 @@ const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
             object =>
               object.metadata.externalId === stripeObject.metadata.externalId
           ).length === 0 &&
-          stripeObject.active &&
+          (stripeObject.active === undefined || stripeObject.active) &&
           stripeObject.metadata.externalId
         );
       })
@@ -91,6 +93,22 @@ const syncTaxRates = async (paymentPlans, stripeAccount) => {
   await syncStripeObjects(
     new StripeTaxRatesHandler(stripe, stripeAccount),
     salesTaxRates
+  );
+};
+
+const syncCoupons = async (paymentPlans, stripeAccount) => {
+  const coupons = [
+    ...new Set(paymentPlans.map(plan => plan.promo_code_discount)),
+  ]
+    .filter(coupon => coupon)
+    .map(promo_code_discount => ({
+      duration: 'forever',
+      percent_off: promo_code_discount,
+      name: `Discount ${promo_code_discount}%`,
+    }));
+  await syncStripeObjects(
+    new StripeCouponsHandler(stripe, stripeAccount),
+    coupons
   );
 };
 
@@ -165,21 +183,11 @@ const syncPrices = async stripeAccount => {
     )
   );
   await syncTaxRates(activePaymentPlans, stripeAccount);
+  await syncCoupons(activePaymentPlans, stripeAccount);
   await syncStripeObjects(
     new StripePricesHandler(stripe, stripeAccount),
     activePaymentPlans
   );
-};
-
-const loadAll = async (endpoint, params = {}) => {
-  const objects = [];
-  for await (const object of endpoint.list({
-    ...params,
-    limit: 100,
-  })) {
-    objects.push(object);
-  }
-  return objects;
 };
 
 export const syncWithStripe = async () => {

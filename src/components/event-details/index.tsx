@@ -2,24 +2,20 @@ import React, { Component } from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import DeleteIcon from '@material-ui/icons/Delete';
-
-import api from 'api/api';
 import history from 'browserhistory';
-import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
-import { Button, HeadingLevelTwo, Loader, Tooltip } from 'components/common';
+import { uploadFile } from 'helpers';
+import { IEntity } from 'common/types';
+import { EntryPoints, LibraryStates, EventStatuses } from 'common/enums';
 import {
   IUploadFile,
   IEventDetails,
   BindingCbWithTwo,
-  ISchedule,
-  IFetchedBracket,
 } from 'common/models';
-import { uploadFile } from 'helpers';
-import { PopupExposure } from 'components/common';
-import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import { Button, HeadingLevelTwo, Loader, Tooltip, PopupExposure } from 'components/common';
 import CsvLoader from 'components/common/csv-loader';
-import { IEntity } from 'common/types';
-import { EntryPoints, LibraryStates } from 'common/enums';
+import DeletePopupConfrim from 'components/common/delete-popup-confirm';
+import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
+import { IPageEventState } from 'components/authorized-page/authorized-page-event/logic/reducer';
 import {
   getEventDetails,
   saveEventDetails,
@@ -29,8 +25,8 @@ import {
   createEvents,
   createDataFromCSV,
 } from './logic/actions';
-import { IIconFile } from './logic/model';
 import { IEventState } from './logic/reducer';
+import { IIconFile } from './logic/model';
 import Navigation from './navigation';
 import PrimaryInformationSection from './primary-information';
 import EventStructureSection from './event-structure';
@@ -42,8 +38,10 @@ import WellnessStatement from './wellness-statement';
 import EventWarningModal from './warning-modal';
 import styles from './styles.module.scss';
 
+
 interface IMapStateProps {
   event: IEventState;
+  publishStatus: number | undefined;
 }
 
 interface Props extends IMapStateProps {
@@ -119,17 +117,6 @@ class EventDetails extends Component<Props, State> {
     });
   };
 
-  checkSchedulingExistence = async () => {
-    const { event_id } = this.state.event || {};
-    const schedules = await api.get('/schedules', { event_id });
-    const brackets = await api.get('/brackets_details', { event_id });
-
-    const schedulesExist = schedules?.filter((v?: ISchedule) => v)?.length;
-    const bracketsExist = brackets?.filter((v?: IFetchedBracket) => v)?.length;
-
-    return Boolean(schedulesExist || bracketsExist);
-  };
-
   onChange = (name: string, value: any, ignore?: boolean) => {
     const { changesAreMade } = this.state;
 
@@ -156,12 +143,13 @@ class EventDetails extends Component<Props, State> {
   onFileRemove = (files: IUploadFile[]) => this.props.removeFiles(files);
 
   onSavePressed = async () => {
-    const schedulingExist = await this.checkSchedulingExistence();
+    const { publishStatus } = this.props;
 
-    if (schedulingExist) {
+    if (publishStatus && EventStatuses[publishStatus] === 'Published') {
       this.openWarningModal();
       return;
     }
+
     this.onSave();
   };
 
@@ -224,17 +212,21 @@ class EventDetails extends Component<Props, State> {
     addEntityToLibrary(event as IEventDetails, EntryPoints.EVENTS);
   };
 
-  renderDeleteEventBtn = () => (
-    <Button
+  renderDeleteEventBtn = () => {
+    const { publishStatus } = this.props;
+    const isPublish = (publishStatus && EventStatuses[publishStatus] === 'Published')
+
+
+    return <Button
       label="Delete Event"
       variant="text"
       color="secondary"
       type="dangerLink"
-      disabled={Boolean(this.state.event?.is_published_YN)}
+      disabled={Boolean(isPublish)}
       icon={<DeleteIcon style={{ fill: '#FF0F19' }} />}
       onClick={this.onDeleteClick}
     />
-  );
+  };
 
   render() {
     const {
@@ -251,6 +243,7 @@ class EventDetails extends Component<Props, State> {
       isDeleteModalOpen,
       isModalOpen,
       isSectionsExpand,
+      warningModalOpen,
     } = this.state;
     const deleteMessage = `You are about to delete this event and this cannot be undone. All related data to this event will be deleted too.
       Please, enter the name of the event to continue.`;
@@ -270,13 +263,6 @@ class EventDetails extends Component<Props, State> {
       eventData: event,
       onChange: this.onChange,
       isSectionExpand: isSectionsExpand,
-    };
-
-    const commonModalProps = {
-      isOpen: isModalOpen,
-      onClose: this.onModalClose,
-      onExitClick: this.onCancel,
-      onSaveClick: this.onSavePressed,
     };
 
     return (
@@ -332,8 +318,16 @@ class EventDetails extends Component<Props, State> {
             deleteEvent(event_id!, event_name!);
           }}
         />
-        <PopupExposure {...commonModalProps} />
-        <EventWarningModal {...commonModalProps} />
+        <PopupExposure
+          isOpen={isModalOpen}
+          onClose={this.onModalClose}
+          onExitClick={this.onCancel}
+          onSaveClick={this.onSavePressed}
+        />
+        <EventWarningModal
+          isOpen={warningModalOpen}
+          onClose={this.closeWarningModal}
+        />
         <CsvLoader
           type="event_master"
           isOpen={isCsvLoaderOpen}
@@ -354,10 +348,12 @@ class EventDetails extends Component<Props, State> {
 
 interface IRootState {
   event: IEventState;
+  pageEvent: IPageEventState;
 }
 
 const mapStateToProps = (state: IRootState): IMapStateProps => ({
   event: state.event,
+  publishStatus: state?.pageEvent?.tournamentData?.event?.is_published_YN,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) =>

@@ -32,6 +32,7 @@ interface Props {
   createOrganization: (organizationData: IConfigurableOrganization) => void;
   type?: string;
   onCancelBtn?: BindingAction;
+  onSkipBtn?: BindingAction;
   isSectionExpand: boolean;
 }
 
@@ -39,6 +40,7 @@ const CreateOrganization = ({
   createOrganization,
   type,
   onCancelBtn,
+  onSkipBtn,
   isSectionExpand,
 }: Props) => {
   const [organization, onChange] = React.useState<IConfigurableOrganization>(
@@ -64,6 +66,14 @@ const CreateOrganization = ({
     }
   };
 
+  const onSkipClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (onSkipBtn) {
+      return onSkipBtn();
+    }
+  };
+
   const onModalClose = () => {
     onModalChange(false);
   };
@@ -81,6 +91,12 @@ const CreateOrganization = ({
   const renderBtns = () => {
     return (
       <div className={styles.btnsGroup}>
+        <Button
+          label="Skip"
+          color="secondary"
+          variant="text"
+          onClick={onSkipClick}
+        />
         <Button
           label="Cancel"
           variant="text"

@@ -32,20 +32,26 @@ const RenderFieldHeader = (props: IProps) => {
 
   const currentDate = games.find(item => item.gameDate)?.gameDate;
 
-  const isEveryTeamInFieldLocked = teamCards.every(team =>
-    team.games
-      ?.filter(
-        game => idsGamesForField.includes(game.id) && currentDate === game.date
-      )
-      .every(game => game.isTeamLocked)
+  const filterByDayAndField = (g: any) => {
+    return idsGamesForField.includes(g.id) && currentDate === g.date;
+  };
+
+  const anyTeamsInFieldUnlocked = teamCards.some((t) =>
+    t.games?.filter(filterByDayAndField).some((game) => !game.isTeamLocked)
   );
+
+  const noTeamsInField = !teamCards.some((t) =>
+    t.games?.some(filterByDayAndField)
+  );
+
+  const isFieldLocked = !(anyTeamsInFieldUnlocked || noTeamsInField);
 
   const onLockClick = () => {
     const updatedTeamCards = teamCards.map(teamCard => ({
       ...teamCard,
       games: teamCard.games?.map(item =>
         idsGamesForField.includes(item.id) && currentDate === item.date
-          ? { ...item, isTeamLocked: !isEveryTeamInFieldLocked }
+          ? { ...item, isTeamLocked: !isFieldLocked }
           : item
       ),
     }));
@@ -64,7 +70,7 @@ const RenderFieldHeader = (props: IProps) => {
         </div>
         {tableType === TableScheduleTypes.SCHEDULES && (
           <button className={styles.lockBtn} onClick={onLockClick}>
-            {getIcon(isEveryTeamInFieldLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
+            {getIcon(isFieldLocked ? Icons.LOCK : Icons.LOCK_OPEN, {
               fill: '#00A3EA',
             })}
             <span className="visually-hidden">Unlock/Lock teams</span>

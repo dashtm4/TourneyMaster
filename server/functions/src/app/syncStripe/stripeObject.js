@@ -24,8 +24,9 @@ export class StripeObject {
 
   async delete(object) {
     console.log(
-      `Deactivating object: ${object.name} (${object.id ||
-        object.metadata?.externalId})`
+      `Deactivating object: ${object.name} (${
+        object.id || object.metadata?.externalId
+      })`
     );
     const stripeProduct = await this.endpoint.update(
       object.id,
@@ -39,8 +40,9 @@ export class StripeObject {
 
   async create(object) {
     console.log(
-      `Creating object: ${object.name || object.nickname} (${object.id ||
-        object.metadata?.externalId})`
+      `Creating object: ${object.name || object.nickname} (${
+        object.id || object.metadata?.externalId
+      })`
     );
     try {
       const stripeObject = await this.endpoint.create(
@@ -60,21 +62,8 @@ export class StripeObject {
     const updatedObject = { ...object };
     delete updatedObject.id;
     if (updateViaDelete) {
-      // console.log(
-      //   `Updating Price: ${price.metadata?.externalId} (Product Id: ${price.product})`
-      // );
-      await this.endpoint.update(
-        object.id,
-        {
-          active: false,
-        },
-        this.requestParams
-      );
-
-      stripeObject = await this.endpoint.create(
-        updatedObject,
-        this.requestParams
-      );
+      this.delete(object);
+      stripeObject = await this.create(updatedObject);
     } else {
       stripeObject = await this.endpoint.update(
         object.id,
