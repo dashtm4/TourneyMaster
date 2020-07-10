@@ -146,6 +146,7 @@ class RegistrationView extends React.Component<
     if (!prevState.registration && nextProps.registration) {
       return {
         registration: nextProps.registration,
+        event: nextProps.event,
       };
     }
     return null;
