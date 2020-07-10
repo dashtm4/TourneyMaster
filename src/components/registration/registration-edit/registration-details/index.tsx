@@ -52,8 +52,8 @@ const RegistrationDetails = ({
   const onAthleteEmailChange = (e: InputTargetValue) =>
     onChange('request_athlete_email', OptionsEnum[e.target.value]);
 
-  //const onAthleteUSLaxChange = (e: InputTargetValue) =>
-  //  onChange('request_us_lacrosse_number', OptionsEnum[e.target.value]);
+  const onAthleteUSLaxChange = (e: InputTargetValue) =>
+    onChange('us_lax_memb_YN', OptionsEnum[e.target.value]);
 
   const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('reg_first_name', e.target.value);
@@ -161,9 +161,9 @@ const RegistrationDetails = ({
           <Radio
             options={options}
             formLabel="US Lacrosse Number"
-            onChange={onAthleteEmailChange}
+            onChange={onAthleteUSLaxChange}
             checked={
-              (data && OptionsEnum[data.request_us_lacrosse_number]) ||
+              (data && OptionsEnum[data.us_lax_memb_YN]) ||
               OptionsEnum[3]
             }
           />

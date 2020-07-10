@@ -57,7 +57,7 @@ const RegistrationDetails = ({ data, eventType }: IRegistrationDetails) => (
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>US Lacrosse Membership</span>
-        <p>{Options[data.request_us_lacrosse_number] || 'Not specified'}</p>
+        <p>{Options[data.us_lax_memb_YN] || 'Not specified'}</p>
       </div>
       <div className={styles.sectionItem} />
     </div>
