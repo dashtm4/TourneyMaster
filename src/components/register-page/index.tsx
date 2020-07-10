@@ -210,7 +210,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           ? registration.ext_sku.slice(4)
           : null,
       reg_response_id: getVarcharEight(),
-      registration_id: eventRegistration?.registration_id,
+      registration_id: eventRegistration ?.registration_id,
     };
     setRegistration(updatedRegistration);
 
@@ -296,15 +296,15 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
   const onTypeSelect = () => toggleModal(false);
 
-  const getStepContent = (step: number) => {
+  const getStepContent = (step: string) => {
     if (
       type === TypeOptions.Participant ||
       type === TypeOptions['Parent/Guardian']
     ) {
       switch (step) {
-        case 0:
+        case 'Registrant Name':
           return <RegistrantName onChange={onChange} data={registration} />;
-        case 1:
+        case 'Participant Personal Info':
           return (
             <PlayerInfo
               onChange={onChange}
@@ -313,15 +313,20 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               divisions={divisions}
               states={states}
               isInvited={isInvited}
-              datePickerRequired={eventRegistration?.request_athlete_birthdate === 1}
+              datePickerRequired={eventRegistration ?.request_athlete_birthdate === 1}
             />
           );
-        case 2:
-          return <PlayerStats
-            onChange={onChange}
-            data={registration}
-            jerseyNumberRequired={eventRegistration?.request_athlete_jersey_number === 1} />;
-        case 3:
+        case 'Participant Profile':
+          return (
+            <PlayerStats
+              onChange={onChange}
+              data={registration}
+              jerseyNumberRequired={
+                eventRegistration?.request_athlete_jersey_number === 1
+              }
+            />
+          );
+        case 'Waiver':
           return (
             <Waiver
               data={registration}
@@ -331,7 +336,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               setDisabledButton={(e: boolean) => setIsDisable(e)}
             />
           );
-        case 4:
+        case 'Payment':
           return (
             <Payment
               onChange={onChange}
@@ -345,7 +350,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
       }
     } else {
       switch (step) {
-        case 0:
+        case 'Team':
           return (
             <Team
               onChange={onChange}
@@ -355,9 +360,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               isInvited={isInvited}
             />
           );
-        case 1:
+        case 'Contact Info':
           return <ContactInfo onChange={onChange} data={registration} />;
-        case 2:
+        case 'Coach Info':
           return (
             <CoachInfo
               onChange={onChange}
@@ -365,7 +370,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               fillCoachInfo={fillCoachInfo}
             />
           );
-        case 3:
+        case 'Payment':
           return (
             <Payment
               onChange={onChange}
@@ -522,11 +527,11 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
       const customer = {
         name:
-          (updatedRegistration.registrant_first_name ||
-            updatedRegistration.contact_first_name) +
-          ' ' +
-          (updatedRegistration.registrant_last_name ||
-            updatedRegistration.contact_last_name),
+          updatedRegistration.registrant_first_name ||
+          updatedRegistration.contact_first_name +
+            ' ' +
+            updatedRegistration.registrant_last_name ||
+          updatedRegistration.contact_last_name,
         email:
           updatedRegistration.registrant_email ||
           updatedRegistration.contact_email,
@@ -599,7 +604,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
             )}
         </div>
         <div className={styles.stepperWrapper}>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className={styles.headerStepper}>
             <HeadingLevelTwo>
               {`${TypeOptions[type]} Registration ${
                 isInvited
@@ -612,36 +617,36 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                 }`}
             </HeadingLevelTwo>
           </div>
-          <div style={{ width: '90%' }}>
+          <div>
             <Paper>
               <Stepper
                 activeStep={activeStep}
-                orientation='vertical'
+                orientation="vertical"
                 style={{ backgroundColor: 'transparent', width: '100%' }}
               >
-                {steps.map((label, index) => (
+                {steps.map(label => (
                   <Step key={label}>
                     <StepLabel>
-                      <HeadingLevelThree color='#1c315f'>
+                      <HeadingLevelThree color="#1c315f">
                         <span>{label}</span>
                       </HeadingLevelThree>
                     </StepLabel>
                     <StepContent>
                       <form onSubmit={handleNext}>
-                        <div>{getStepContent(index)}</div>
+                        <div>{getStepContent(label)}</div>
                         <div className={styles.buttonsWrapper}>
                           <Button
                             disabled={activeStep === 0}
                             onClick={handleBack}
-                            label='Back'
-                            variant='text'
-                            color='secondary'
+                            label="Back"
+                            variant="text"
+                            color="secondary"
                           />
                           <Button
                             btnType={ButtonFormTypes.SUBMIT}
-                            variant='contained'
+                            variant="contained"
                             disabled={processing || isDisable}
-                            color='primary'
+                            color="primary"
                             label={
                               activeStep === steps.length - 1
                                 ? 'Agree and Pay'
@@ -668,15 +673,17 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         </div>
       </div>
       {event && (
-        <PopupRegistrationType
-          event={event}
-          isOpenModalOpen={isOpenModalOpen}
-          onTypeChange={onTypeChange}
-          onTypeSelect={onTypeSelect}
-          type={type}
-        />
+        <div className={styles.modalWrapp}>
+          <PopupRegistrationType
+            event={event}
+            isOpenModalOpen={isOpenModalOpen}
+            onTypeChange={onTypeChange}
+            onTypeSelect={onTypeSelect}
+            type={type}
+          />
+        </div>
       )}
-      <div style={{ marginTop: '50px' }}>
+      <div style={{ marginTop: '50px', flex: '0 0 auto' }}>
         <Footer />
       </div>
     </div>
