@@ -1,14 +1,14 @@
 import {
   getActiveSkus,
   getPaymentPlans,
-} from '../../services/activeProducts.js';
-import config from '../../config.js';
+} from '../../products/activeProducts.js';
+import config from '../../../config.js';
 import Stripe from 'stripe';
 import StripeServiceProductsHandler from './stripeServiceProductsHandler.js';
 import StripePricesHandler from './stripePricesHandler.js';
 import StripeTaxRatesHandler from './stripeTaxRatesHandler.js';
 import StripeCouponsHandler from './stripeCouponsHandler.js';
-import { loadAll } from '../utils/stripeUtils.js';
+import { loadAll } from '../utils/utils.js';
 
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 

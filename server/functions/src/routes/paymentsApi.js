@@ -1,7 +1,7 @@
 import '../services/logger.js';
-import { processCreateSubscription } from './stripeSubscriptions.js';
-import { paymentSuccessWebhook } from './stripeWebhook.js';
-import { getPaymentPlans } from '../services/activeProducts.js';
+import { processCreateSubscription } from '../app/stripe/subscriptions/subscriptions.js';
+import { paymentSuccessWebhook } from '../app/stripe/webhooks/webhook.js';
+import { getPaymentPlans } from '../app/products/activeProducts.js';
 
 export default api => {
   api.post('/create-subscription', async (req, res) => {

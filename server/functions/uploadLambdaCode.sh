@@ -47,3 +47,5 @@ aws lambda update-function-configuration --function-name "$STACK_NAME-PaymentsAp
   EVENT_NOTIFICATIONS_TOPIC="arn:aws:sns:us-east-1:564748484972:$STACK_NAME-EventNotificationsTopic",\
   STRIPE_WEBHOOK_SIGNING_SECRET=$STRIPE_WEBHOOK_SIGNING_SECRET,\
   STRIPE_CONNECT_WEBHOOK_SIGNING_SECRET=$STRIPE_CONNECT_WEBHOOK_SIGNING_SECRET}"
+
+aws lambda update-function-code --function-name "$STACK_NAME-ServicesApiFunction" --zip-file "fileb://dist/bundle.zip"

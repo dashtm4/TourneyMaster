@@ -26,7 +26,7 @@ Parameters:
     Description: Public API Gateway Root Resource ID
 
 Conditions:
-  DeployPrivateApiComponents: !Not [!Equals ["", !Ref PrivateApiGatewayId]]
+  DeployPrivateApiComponents: !Not [!Equals ['', !Ref PrivateApiGatewayId]]
 
 Resources:
   EventNotificationsTopic:
@@ -136,7 +136,7 @@ Resources:
         Variables:
           SMParameterName: 'TourneyMasterAPIv2'
 
-  Permission:
+  ServicesPermission:
     Condition: DeployPrivateApiComponents
     Type: 'AWS::Lambda::Permission'
     Properties:
@@ -145,7 +145,7 @@ Resources:
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${PrivateApiGatewayId}/*/*/*
 
-  Permission:
+  PaymentsPermission:
     Type: 'AWS::Lambda::Permission'
     Properties:
       Action: lambda:InvokeFunction
@@ -220,7 +220,6 @@ Resources:
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: false
 
-
   ServicesApiResource:
     Condition: DeployPrivateApiComponents
     Type: 'AWS::ApiGateway::Resource'
@@ -291,7 +290,6 @@ Resources:
             method.response.header.Access-Control-Allow-Headers: false
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: false
-
 
   EventRule:
     Type: AWS::Events::Rule
