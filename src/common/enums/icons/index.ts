@@ -15,6 +15,7 @@ enum Icons {
   PLACE = 'place',
   SCORING = 'scoring',
   EDIT = 'edit',
+  SAVE = 'save',
   DELETE = 'delete',
   GET_APP = 'getApp',
   PUBLISH = 'publish',

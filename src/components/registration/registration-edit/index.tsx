@@ -32,7 +32,7 @@ interface IRegistrationEditState {
 class RegistrationEdit extends React.Component<
   IRegistrationEditProps,
   IRegistrationEditState
-> {
+  > {
   state = { isExposurePopupOpen: false };
 
   onModalClose = () => {

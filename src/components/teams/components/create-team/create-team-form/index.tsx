@@ -27,7 +27,7 @@ interface ICreateTeamFormState {
 class CreateTeamForm extends React.Component<
   ICreateTeamFormProps,
   ICreateTeamFormState
-> {
+  > {
   constructor(props: any) {
     super(props);
 

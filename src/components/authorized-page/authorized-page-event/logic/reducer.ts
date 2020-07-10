@@ -204,7 +204,7 @@ const pageEventReducer = (
     }
     case REGISTRATION_UPDATE_SUCCESS: {
       const registration = action.payload;
-      console.log(registration);
+      const event = action.event;
 
       return {
         ...state,
@@ -216,7 +216,7 @@ const pageEventReducer = (
                   registration
                 ),
                 children: registration
-                  ? Object.values(EventMenuRegistrationTitles)
+                  ? Object.values(EventMenuRegistrationTitles).filter(title => title !== EventMenuRegistrationTitles.WAIVER || event?.waivers_required === 1)
                   : [],
               }
             : item
