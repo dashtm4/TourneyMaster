@@ -25,7 +25,7 @@ export interface IRegistration {
   request_athlete_birthdate: number;
   request_athlete_jersey_number: number;
   request_athlete_email: number;
-  request_us_lacrosse_number: number;
+  us_lax_memb_YN: number;
   disclaimer: string;
   registration_information: string;
   reg_first_name: string;

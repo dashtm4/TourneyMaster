@@ -59,7 +59,7 @@ interface State {
 class Teams extends React.Component<
   Props & RouteComponentProps<MatchParams>,
   State
-> {
+  > {
   constructor(props: Props & RouteComponentProps<MatchParams>) {
     super(props);
 
