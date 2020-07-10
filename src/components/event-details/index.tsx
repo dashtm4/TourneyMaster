@@ -300,8 +300,8 @@ class EventDetails extends Component<Props, State> {
                 <span>{this.renderDeleteEventBtn()}</span>
               </Tooltip>
             ) : (
-              this.renderDeleteEventBtn()
-            )}
+                this.renderDeleteEventBtn()
+              )}
             <Button
               label={isSectionsExpand ? 'Collapse All' : 'Expand All'}
               variant="text"

@@ -15,6 +15,7 @@ import RoomIcon from '@material-ui/icons/Room';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import CreateIcon from '@material-ui/icons/Create';
 import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -75,6 +76,8 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <CreateIcon style={iconStyles} />;
     case Icons.EDIT:
       return <EditIcon style={iconStyles} />;
+    case Icons.SAVE:
+      return <SaveIcon style={iconStyles} />;
     case Icons.DELETE:
       return <DeleteIcon style={iconStyles} />;
     case Icons.GET_APP:

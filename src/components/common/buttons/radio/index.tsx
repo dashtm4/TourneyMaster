@@ -21,20 +21,20 @@ const Radio: React.FC<IRadioProps> = ({
   onChange,
   row,
 }) => (
-  <div className={styles.container}>
-    <span className={styles.label}>{formLabel}</span>
-    <RadioGroup aria-label="gender" name="gender1" row={row}>
-      {options.map((option: string, index: number) => (
-        <FormControlLabel
-          key={index}
-          value={option}
-          control={<MuiRadio checked={option === checked} color="secondary" />}
-          label={option}
-          onChange={onChange}
-        />
-      ))}
-    </RadioGroup>
-  </div>
-);
+    <div className={styles.container}>
+      <span className={styles.label}>{formLabel}</span>
+      <RadioGroup aria-label="gender" name="gender1" row={row}>
+        {options.map((option: string, index: number) => (
+          <FormControlLabel
+            key={index}
+            value={option}
+            control={<MuiRadio checked={option === checked} color="secondary" />}
+            label={option}
+            onChange={onChange}
+          />
+        ))}
+      </RadioGroup>
+    </div>
+  );
 
 export default Radio;

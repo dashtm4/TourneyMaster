@@ -1,28 +1,53 @@
 import { Dispatch } from 'redux';
 import { Auth } from 'aws-amplify';
 import {
-  LOAD_USER_DATA_START,
-  LOAD_USER_DATA_SUCCESS,
-  LOAD_USER_DATA_FAILURE,
-  SAVE_USER_DATA_SUCCESS,
-  SAVE_USER_DATA_FAILURE,
-  CHANGE_USER,
+  LOAD_ORGANIZATION,
+  LOAD_ORGANIZATION_SUCCESS,
+  LOAD_ORGANIZATION_FAILURE,
+  LOAD_STATEGROUP,
+  LOAD_STATEGROUP_SUCCESS,
+  LOAD_STATEGROUP_FAILURE,
 } from './action-types';
-import { AppState } from './reducer';
 import Api from 'api/api';
-import { memberSchema } from 'validations';
 import { Toasts } from 'components/common';
-import { IMember } from 'common/models';
-import { IUtilitiesMember } from '../types';
+import { IMember, IUSAState, ISelectOption } from 'common/models';
 
-type IAppState = {
-  utilities: AppState;
-};
-
-const loadUserData = () => async (dispatch: Dispatch) => {
+const getStatesGroup = () => async (dispatch: Dispatch) => {
   try {
     dispatch({
-      type: LOAD_USER_DATA_START,
+      type: LOAD_STATEGROUP,
+    });
+
+    const stateGroup = await Api.get('/states').then(response => {
+      const selectStateOptions = response.map((it: IUSAState) => ({
+        label: it.state_abbr,
+        value: it.state_name,
+      }));
+
+      const sortedSelectStateOptions = selectStateOptions.sort(
+        (a: ISelectOption, b: ISelectOption) =>
+          a.label.localeCompare(b.label, undefined, { numeric: true })
+      );
+      return sortedSelectStateOptions;
+    });
+
+    dispatch({
+      type: LOAD_STATEGROUP_SUCCESS,
+      payload: {
+        stateGroup,
+      },
+    });
+  } catch {
+    dispatch({
+      type: LOAD_STATEGROUP_FAILURE,
+    });
+  }
+}
+
+const getOrgInfo = () => async (dispatch: Dispatch) => {
+  try {
+    dispatch({
+      type: LOAD_ORGANIZATION,
     });
 
     const currentSession = await Auth.currentSession();
@@ -33,76 +58,63 @@ const loadUserData = () => async (dispatch: Dispatch) => {
     );
     const memberId = member.member_id;
 
-    const orgMemberList = await Api.get(`/3?member_id=${memberId}`);
-
-    const orgList: any = [];
-
-    await orgMemberList.map((el: any) => {
-      Api.get(`/organizations?org_id=${el.org_id}`).then(res => {
+    const orgMemberList = await Api.get(`/org_members?member_id=${memberId}`);
+    const promises: Promise<any>[] = [];
+    orgMemberList.map((el: any) =>
+      promises.push(Api.get(`/organizations?org_id=${el.org_id}`).then(res => {
         if (res?.length > 0) {
-          orgList.push(res[0]);
+          const { org_id, org_name, city, state, stripe_connect_id, authdotnet_id } = res[0];
+          return {
+            org_id,
+            org_name,
+            city,
+            state,
+            stripe_connect_id,
+            authdotnet_id,
+            is_default_YN: el.is_default_YN,
+            org_member_id: el.org_member_id
+          };
         }
-      });
-    });
+        return null;
+      }))
+    );
 
-    console.log('org');
-    console.log(orgMemberList);
-    console.log(orgList);
+    const orgList = await Promise.all(promises);
 
     dispatch({
-      type: LOAD_USER_DATA_SUCCESS,
+      type: LOAD_ORGANIZATION_SUCCESS,
       payload: {
-        userData: member,
+        orgList,
       },
     });
   } catch {
     dispatch({
-      type: LOAD_USER_DATA_FAILURE,
+      type: LOAD_ORGANIZATION_FAILURE,
     });
   }
 };
 
-const saveUserData = () => async (
-  dispatch: Dispatch,
-  getState: () => IAppState
-) => {
+
+const save = (orgList: Array<any>) => async () => {
   try {
-    const { userData } = getState().utilities;
+    const promises: Promise<any>[] = [];
 
-    if (userData && !userData.isChange) {
-      return;
-    }
-
-    const copiedUser = { ...userData } as IUtilitiesMember;
-
-    delete copiedUser?.isChange;
-
-    await memberSchema.validate(copiedUser);
-
-    Api.put(`/members?member_id=${copiedUser.member_id}`, copiedUser);
-
-    dispatch({
-      type: SAVE_USER_DATA_SUCCESS,
+    orgList.forEach(el => {
+      const { is_default_YN, org_member_id, ...others } = el;
+      promises.push(Api.put(`/organizations?org_id=${others.org_id}`, others));
+      promises.push(Api.put(`/org_members?org_member_id=${org_member_id}`, {
+        is_default_YN,
+        org_member_id,
+      }));
     });
 
-    Toasts.successToast('User saved successfully');
-  } catch (err) {
-    dispatch({
-      type: SAVE_USER_DATA_FAILURE,
-    });
+    await Promise.all(promises);
 
-    Toasts.errorToast(err.message);
+    Toasts.successToast("Saved successfully");
+
+  } catch {
+    Toasts.errorToast("Couldn't save");
   }
-};
+}
 
-const changeUser = (userNewField: Partial<IUtilitiesMember>) => ({
-  type: CHANGE_USER,
-  payload: {
-    userNewField: {
-      ...userNewField,
-      isChange: true,
-    },
-  },
-});
-
-export { loadUserData, saveUserData, changeUser };
+export { getOrgInfo, getStatesGroup, save };

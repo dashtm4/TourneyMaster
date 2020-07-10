@@ -1,51 +1,54 @@
-import { IMember } from 'common/models';
-import { IUtilitiesMember } from '../types';
+const LOAD_ORGANIZATION = 'UTILITIES/LOAD_ORGANIZATION';
+const LOAD_ORGANIZATION_SUCCESS = 'UTILITIES/LOAD_ORGANIZATION_SUCCESS';
+const LOAD_ORGANIZATION_FAILURE = 'UTILITIES/LOAD_ORGANIZATION_FAILURE';
 
-const LOAD_USER_DATA_START = 'UTILITIES:LOAD_USER_DATA_START';
-const LOAD_USER_DATA_SUCCESS = 'UTILITIES:LOAD_USER_DATA_SUCCESS';
-const LOAD_USER_DATA_FAILURE = 'UTILITIES:LOAD_USER_DATA_FAILURE';
+const LOAD_STATEGROUP = 'UTILITIES/LOAD_STATEGROUP';
+const LOAD_STATEGROUP_SUCCESS = 'UTILITIES/LOAD_STATEGROUP_SUCCESS';
+const LOAD_STATEGROUP_FAILURE = 'UTILITIES/LOAD_STATEGROUP_FAILURE';
 
-const SAVE_USER_DATA_SUCCESS = 'UTILITIES:SAVE_USER_DATA_SUCCESS';
-const SAVE_USER_DATA_FAILURE = 'UTILITIES:SAVE_USER_DATA_FAILURE';
-
-const CHANGE_USER = 'UTILITIES:CHANGE_USER';
-
-interface LoadUserDataStart {
-  type: 'UTILITIES:LOAD_USER_DATA_START';
+interface LoadOrganization {
+  type: 'UTILITIES/LOAD_ORGANIZATION';
 }
 
-interface LoadUserDataSuccess {
-  type: 'UTILITIES:LOAD_USER_DATA_SUCCESS';
+interface LoadOrganizationSuccess {
+  type: 'UTILITIES/LOAD_ORGANIZATION_SUCCESS';
   payload: {
-    userData: IMember;
+    orgList: any,
   };
 }
 
-interface saveUserDataSuccess {
-  type: 'UTILITIES:SAVE_USER_DATA_SUCCESS';
+interface LoadOrganizationFailure {
+  type: 'UTILITIES/LOAD_ORGANIZATION_FAILURE';
+}
+
+interface LoadStateGroup {
+  type: 'UTILITIES/LOAD_STATEGROUP';
+}
+
+interface LoadStateGroupSuccess {
+  type: 'UTILITIES/LOAD_STATEGROUP_SUCCESS';
   payload: {
-    userData: IMember;
+    stateGroup: any,
   };
 }
 
-interface changeUser {
-  type: 'UTILITIES:CHANGE_USER';
-  payload: {
-    userNewField: Partial<IUtilitiesMember>;
-  };
+interface LoadStateGroupFailure {
+  type: 'UTILITIES/LOAD_STATEGROUP_FAILURE';
 }
 
-export type UtilitiesAction =
-  | LoadUserDataStart
-  | LoadUserDataSuccess
-  | saveUserDataSuccess
-  | changeUser;
+export type OrgAction =
+  | LoadOrganization
+  | LoadOrganizationSuccess
+  | LoadOrganizationFailure
+  | LoadStateGroup
+  | LoadStateGroupSuccess
+  | LoadStateGroupFailure;
 
 export {
-  LOAD_USER_DATA_START,
-  LOAD_USER_DATA_SUCCESS,
-  LOAD_USER_DATA_FAILURE,
-  SAVE_USER_DATA_SUCCESS,
-  SAVE_USER_DATA_FAILURE,
-  CHANGE_USER,
+  LOAD_ORGANIZATION,
+  LOAD_ORGANIZATION_SUCCESS,
+  LOAD_ORGANIZATION_FAILURE,
+  LOAD_STATEGROUP,
+  LOAD_STATEGROUP_SUCCESS,
+  LOAD_STATEGROUP_FAILURE,
 };

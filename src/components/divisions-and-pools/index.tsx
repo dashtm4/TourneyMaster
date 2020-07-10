@@ -68,7 +68,7 @@ interface IDivisionAndPoolsState {
 class DivisionsAndPools extends React.Component<
   IDivisionsAndPoolsProps,
   IDivisionAndPoolsState
-> {
+  > {
   eventId = this.props.match.params.eventId;
 
   constructor(props: IDivisionsAndPoolsProps) {
@@ -235,12 +235,12 @@ class DivisionsAndPools extends React.Component<
               </ul>
             </>
           ) : (
-            !isLoading && (
-              <div className={styles.noFoundWrapper}>
-                <span>There are no divisions yet.</span>
-              </div>
-            )
-          )}
+              !isLoading && (
+                <div className={styles.noFoundWrapper}>
+                  <span>There are no divisions yet.</span>
+                </div>
+              )
+            )}
         </div>
         <CsvLoader
           isOpen={this.state.isCsvLoaderOpen}

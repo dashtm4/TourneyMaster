@@ -1,5 +1,6 @@
 export interface IUSAState {
   state_id: string;
+  state_abbr: string;
   state_name: string;
   region: string;
   is_active_YN: number;
