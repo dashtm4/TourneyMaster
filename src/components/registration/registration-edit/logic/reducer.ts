@@ -66,6 +66,7 @@ export default (
         data: action.payload,
         isLoading: false,
         error: false,
+        event: state.event,
       };
     }
     case DIVISIONS_FETCH_SUCCESS: {

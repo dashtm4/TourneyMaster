@@ -42,10 +42,12 @@ export const registrationFetchFailure = (): { type: string } => ({
 });
 
 export const registrationUpdateSuccess = (
-  payload: any
-): { type: string; payload: any } => ({
+  payload: any,
+  event: any | null
+): { type: string; payload: any, event: any | null } => ({
   type: REGISTRATION_UPDATE_SUCCESS,
   payload,
+  event
 });
 
 export const getRegistration: ActionCreator<ThunkAction<
@@ -75,23 +77,23 @@ export const saveRegistration: ActionCreator<ThunkAction<
 >> = (registration: IRegistration, eventId: string) => async (
   dispatch: Dispatch
 ) => {
-  const { event_name } = (await api.get(`/events?event_id=${eventId}`))[0];
+  const event  = (await api.get(`/events?event_id=${eventId}`))[0];
 
   const openEvent: Partial<ICalendarEvent> = {
     ...defaultCalendarEvent(),
-    cal_event_title: `${event_name} Open`,
+    cal_event_title: `${event.event_name} Open`,
     cal_event_startdate: registration.registration_start,
     cal_event_enddate: registration.registration_start,
   };
   const closeEvent: Partial<ICalendarEvent> = {
     ...defaultCalendarEvent(),
-    cal_event_title: `${event_name} Close`,
+    cal_event_title: `${event.event_name} Close`,
     cal_event_startdate: registration.registration_end,
     cal_event_enddate: registration.registration_end,
   };
   const discountEndEvent: Partial<ICalendarEvent> = {
     ...defaultCalendarEvent(),
-    cal_event_title: `${event_name} Early Bird Discount Ends`,
+    cal_event_title: `${event.event_name} Early Bird Discount Ends`,
     cal_event_startdate: registration.discount_enddate,
     cal_event_enddate: registration.discount_enddate,
   };
@@ -106,12 +108,8 @@ export const saveRegistration: ActionCreator<ThunkAction<
     if (response?.errorType === 'Error' || response?.message === false) {
       return Toasts.errorToast("Couldn't update a registration");
     }
-    // const event = await api.get(`/events?event_id=${eventId}`);
-    const data = {
-      ...registration,
-      // waivers_required: event[0].waivers_required,
-    };
-    dispatch(registrationUpdateSuccess(data));
+
+    dispatch(registrationUpdateSuccess(registration, event));
     dispatch<any>(saveCalendarEvent(openEvent));
     dispatch<any>(saveCalendarEvent(closeEvent));
     dispatch<any>(saveCalendarEvent(discountEndEvent));
@@ -133,7 +131,7 @@ export const saveRegistration: ActionCreator<ThunkAction<
     if (response?.errorType === 'Error' || response?.message === false) {
       return Toasts.errorToast("Couldn't save a registration");
     }
-    dispatch(registrationUpdateSuccess(data));
+    dispatch(registrationUpdateSuccess(data, event));
     dispatch<any>(saveCalendarEvent(openEvent));
     dispatch<any>(saveCalendarEvent(closeEvent));
     dispatch<any>(saveCalendarEvent(discountEndEvent));
