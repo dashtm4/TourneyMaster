@@ -1,13 +1,14 @@
 import React from 'react';
-import { Input, Select, CardMessage } from 'components/common';
-import { CardMessageTypes } from 'components/common/card-message/types';
-import { BindingCbWithTwo } from 'common/models';
 import { IIndividualsRegister } from 'common/models/register';
+import { Input, Select, CardMessage } from 'components/common';
+import { BindingCbWithTwo } from 'common/models';
+import { CardMessageTypes } from 'components/common/card-message/types';
 import styles from '../../styles.module.scss';
 
 interface IPlayerStatsProps {
   data: Partial<IIndividualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
+  jerseyNumberRequired: boolean;
 }
 
 const dominantHandOptions = [
@@ -55,7 +56,7 @@ const heightInchesOptions = [
   { label: '12', value: '12' },
 ];
 
-const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
+const PlayerStats = ({ data, onChange, jerseyNumberRequired }: IPlayerStatsProps) => {
   const onClubNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('player_club_name', e.target.value);
 
@@ -92,8 +93,8 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
   const onGPAChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('gpa', e.target.value);
 
-  const onHonorsClassesChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('honors_classes', e.target.value);
+  const onJerseyNumberChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('jersey_number', e.target.value);
 
   const onInstagramChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('player_instagram', e.target.value);
@@ -205,9 +206,11 @@ const PlayerStats = ({ data, onChange }: IPlayerStatsProps) => {
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="Honors Classes"
-            value={data.honors_classes || ''}
-            onChange={onHonorsClassesChange}
+            type="number"
+            label={`Jersey Number ${jerseyNumberRequired ? '(Required)' : null}`}
+            value={data.jersey_number || ''}
+            onChange={onJerseyNumberChange}
+            isRequired={jerseyNumberRequired}
           />
         </div>
       </div>

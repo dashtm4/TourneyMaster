@@ -18,7 +18,8 @@
   .footerCenter {
     .addressInfoContainer {
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
+      flex-wrap: wrap;
       padding: 10px 0;
     }
     .footerWithIcon {
@@ -50,7 +51,7 @@
     }
     .footerLinks {
       padding: 0;
-      width: 121px;
+      width: 33%;
       a {
         color: white;
         display: inline-block;

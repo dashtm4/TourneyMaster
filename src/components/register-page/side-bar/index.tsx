@@ -11,7 +11,7 @@ interface IProps {
 
 const SideBar = ({ event, eventRegistration }: IProps) => {
   return (
-    <div style={{ width: '90%' }}>
+    <div>
       <Paper>
         <div className={styles.headingWrapper}>
           <HeadingLevelTwo>
@@ -44,6 +44,14 @@ const SideBar = ({ event, eventRegistration }: IProps) => {
             <div className={styles.sideContentItem}>
               {`${eventRegistration.entry_fee} ${eventRegistration.currency ||
                 ''}`}
+            </div>
+          </>
+        )}
+        {eventRegistration.entry_fee && (
+          <>
+            <span className={styles.sectionTitle}>Sales Tax:</span>
+            <div className={styles.sideContentItem}>
+              {`${eventRegistration.sales_tax_rate}%`}
             </div>
           </>
         )}

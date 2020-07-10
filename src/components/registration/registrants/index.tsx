@@ -30,6 +30,7 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
       title: 'Date',
       field: 'date',
       type: 'date',
+      defaultSort: 'desc',
     },
     {
       title: 'Type',
@@ -69,6 +70,7 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
       field: 'contact_phone',
       type: 'string',
       cellStyle: { minWidth: 90 },
+      hidden: true,
     },
     {
       title: 'Due',
@@ -80,6 +82,13 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
     {
       title: 'Paid',
       field: 'amount_paid',
+      type: 'currency',
+      cellStyle: { maxWidth: 40 },
+      headerStyle: { maxWidth: 40 },
+    },
+    {
+      title: 'Net',
+      field: 'amount_net',
       type: 'currency',
       cellStyle: { maxWidth: 40 },
       headerStyle: { maxWidth: 40 },
@@ -108,6 +117,7 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
       date: moment(registrant.created_datetime).format('MM/DD/YYYY'),
       amount_due: registrant.amount_due?.toFixed(2),
       amount_paid: registrant.payment_amount.toFixed(2),
+      amount_net: registrant.amount_net.toFixed(2),
       team_name: registrant.team_name,
       division_id: registrant.division_id,
       status:
@@ -115,7 +125,7 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
           ? registrant.team_id
             ? 'confirmed'
             : 'pending'
-          : registrant.amount_due === registrant.payment_amount
+          : registrant.amount_due < registrant.payment_amount
           ? 'confirmed'
           : 'pending',
       participant:
@@ -140,7 +150,7 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
       <MaterialTable
         columns={columns}
         data={data}
-        title="All Participants"
+        title='All Participants'
         detailPanel={detailPanel}
         options={{
           pageSize: 10,

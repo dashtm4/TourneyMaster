@@ -1,12 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
+import { ButtonFormTypes } from 'common/enums';
+import {
+  IEventDetails,
+  IRegistration,
+  ISelectOption,
+  IUSAState,
+} from 'common/models';
+import { IIndividualsRegister, ITeamsRegister } from 'common/models/register';
+import { getVarcharEight } from 'helpers';
 import {
   Button,
   HeadingLevelThree,
@@ -14,8 +25,9 @@ import {
   HeadingLevelTwo,
   Loader,
 } from 'components/common';
-import styles from './styles.module.scss';
 import Paper from 'components/common/paper';
+import Footer from 'components/footer';
+import { eventTypeOptions } from 'components/event-details/event-structure';
 import RegistrantName from './individuals/registrant-name';
 import PlayerInfo from './individuals/player-info';
 import PlayerStats from './individuals/player-stats';
@@ -24,34 +36,22 @@ import Team from './teams/team';
 import ContactInfo from './teams/contact-info';
 import CoachInfo from './teams/coach-info';
 import PopupRegistrationType from './popup-registration-type';
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Header from './header';
-import Footer from 'components/footer';
-import axios from 'axios';
-import {
-  IEventDetails,
-  IRegistration,
-  ISelectOption,
-  IUSAState,
-} from 'common/models';
 import SideBar from './side-bar';
-import { getVarcharEight } from 'helpers';
-import { IIndividualsRegister, ITeamsRegister } from 'common/models/register';
-import { ButtonFormTypes } from 'common/enums';
-import { eventTypeOptions } from 'components/event-details/event-structure';
 import Waiver from './waiver';
+import styles from './styles.module.scss';
 
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
 export enum TypeOptions {
-  'Player' = 1,
+  'Participant' = 1,
   'Parent/Guardian' = 2,
   'Team Admin' = 3,
   'Coach' = 4,
 }
 
 const getInternalRegType = (type: TypeOptions) => {
-  if (type === TypeOptions.Player || type === TypeOptions['Parent/Guardian']) {
+  if (type === TypeOptions.Participant || type === TypeOptions['Parent/Guardian']) {
     return 'individual';
   } else {
     return 'team';
@@ -59,7 +59,7 @@ const getInternalRegType = (type: TypeOptions) => {
 };
 
 const getApiEndpointByRegType = (type: TypeOptions) => {
-  return '/reg_' + getInternalRegType(type) + 's';
+  return `/reg_${getInternalRegType(type)}s`;
 };
 
 export interface RegisterMatchParams {
@@ -77,7 +77,7 @@ export const wrappedRegister = ({ match }: RegisterMatchParams) => {
     ).data[0].stripe_connect_id;
     const stripe = await loadStripe(
       process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY ||
-        'pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh', // TODO: Remove the hardcoded key after initial deployment
+      'pk_test_O5DTSQoFgT6wdo6VTgQtiPx900GJLklPMh', // TODO: Remove the hardcoded key after initial deployment
       stripeAccount === 'main' ? undefined : { stripeAccount }
     );
     resolve(stripe);
@@ -92,10 +92,7 @@ export const wrappedRegister = ({ match }: RegisterMatchParams) => {
 
 const RegisterPage = ({ match }: RegisterMatchParams) => {
   const [event, setEvent] = useState<IEventDetails | null>(null);
-  const [
-    eventRegistration,
-    setEventRegistration,
-  ] = useState<IRegistration | null>(null);
+  const [eventRegistration, setEventRegistration,] = useState<IRegistration | null>(null);
   const [divisions, setDivisions] = useState([]);
   const [paymentPlans, setPaymentPlans] = useState([]);
   const [states, setStates] = useState<ISelectOption[]>([]);
@@ -111,19 +108,18 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   const [isInvited, setIsInvited] = useState(false);
   const [isDisable, setIsDisable] = useState<boolean>(false);
 
-  // const [clientSecret, setClientSecret] = useState<string>('');
   const stripe = useStripe()!;
   const elements = useElements();
 
   const getSteps = () => {
     if (
-      type === TypeOptions.Player ||
+      type === TypeOptions.Participant ||
       type === TypeOptions['Parent/Guardian']
     ) {
       const steps = [
         'Registrant Name',
-        'Player Info',
-        'Player Stats',
+        'Participant Personal Info',
+        'Participant Profile',
         'Waiver',
         'Payment',
       ];
@@ -146,7 +142,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   const query = useQuery();
 
   useEffect(() => {
-    const eventId = match.params.eventId;
+    const { params: { eventId } } = match;
+
     if (query.get('team') || query.get('division')) {
       setIsInvited(true);
       if (getInternalRegType(type) === 'individual') {
@@ -165,7 +162,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
       setEvent(eventData);
       setType(
         eventTypeOptions[eventData.event_type] === eventTypeOptions.Showcase
-          ? TypeOptions.Player
+          ? TypeOptions.Participant
           : TypeOptions['Team Admin']
       );
     });
@@ -205,10 +202,6 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     });
   }, []);
 
-  // const getPaymentIntent = (order: any) => {
-  //   return axios.post('/payments/create-payment-intent', order);
-  // };
-
   const saveRegistrationResponse = async () => {
     const updatedRegistration: any = {
       ...registration,
@@ -217,13 +210,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           ? registration.ext_sku.slice(4)
           : null,
       reg_response_id: getVarcharEight(),
-      registration_id: eventRegistration?.registration_id,
+      registration_id: eventRegistration ?.registration_id,
     };
     setRegistration(updatedRegistration);
-
-    // if (!data.payment_method) {
-    //   throw new Error('Please, specify payment method');
-    // }
 
     try {
       await axios.post(getApiEndpointByRegType(type), updatedRegistration);
@@ -233,9 +222,15 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     }
   };
 
-  const handleProceedToPayment = async () => {
-    axios
-      .get(`/payments/payment-plans?sku_id=${registration.ext_sku}`)
+  const loadPaymentPlans = async () => {
+    return axios
+      .get(
+        `/payments/payment-plans?sku_id=${registration.ext_sku}${
+        registration.discount_code
+          ? `&discount_code=${registration.discount_code}`
+          : ''
+        }`
+      )
       .then(response => {
         const plans = response.data.map((plan: any) => ({
           label: plan.payment_plan_name,
@@ -245,19 +240,24 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           notice: plan.payment_plan_notice,
         }));
         setPaymentPlans(plans);
-
-        const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
-          !cur.iterations ||
-          (cur.type === 'installment' && prev.iterations < cur.iterations)
-            ? prev
-            : cur
-        );
-        setRegistration({
-          ...registration,
-          payment_selection: planWithMinIterations.value,
-          payment_method: 'Credit Card',
-        });
+        return plans;
       });
+  };
+
+  const handleProceedToPayment = async () => {
+    loadPaymentPlans().then(plans => {
+      const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
+        !cur.iterations ||
+          (cur.type === 'installment' && prev.iterations < cur.iterations)
+          ? prev
+          : cur
+      );
+      setRegistration({
+        ...registration,
+        payment_selection: planWithMinIterations.value,
+        payment_method: 'Credit Card',
+      });
+    });
     setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
@@ -279,38 +279,32 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     setIsDisable(false);
   };
 
-  const onChange = (name: string, value: string | number) => {
+  const onChange = (name: string, value: string | number) =>
     setRegistration(prevRegistration => ({
       ...prevRegistration,
       [name]: value,
     }));
-  };
 
-  const fillParticipantInfo = (info: any) => {
+  const fillParticipantInfo = (info: any) =>
     setRegistration({ ...registration, ...info });
-  };
 
-  const fillCoachInfo = (info: any) => {
+  const fillCoachInfo = (info: any) =>
     setRegistration({ ...registration, ...info });
-  };
 
-  const onTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onTypeChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setType(Number(TypeOptions[e.target.value]));
-  };
 
-  const onTypeSelect = () => {
-    toggleModal(false);
-  };
+  const onTypeSelect = () => toggleModal(false);
 
-  const getStepContent = (step: number) => {
+  const getStepContent = (step: string) => {
     if (
-      type === TypeOptions.Player ||
+      type === TypeOptions.Participant ||
       type === TypeOptions['Parent/Guardian']
     ) {
       switch (step) {
-        case 0:
+        case 'Registrant Name':
           return <RegistrantName onChange={onChange} data={registration} />;
-        case 1:
+        case 'Participant Personal Info':
           return (
             <PlayerInfo
               onChange={onChange}
@@ -319,11 +313,20 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               divisions={divisions}
               states={states}
               isInvited={isInvited}
+              datePickerRequired={eventRegistration ?.request_athlete_birthdate === 1}
             />
           );
-        case 2:
-          return <PlayerStats onChange={onChange} data={registration} />;
-        case 3:
+        case 'Participant Profile':
+          return (
+            <PlayerStats
+              onChange={onChange}
+              data={registration}
+              jerseyNumberRequired={
+                eventRegistration?.request_athlete_jersey_number === 1
+              }
+            />
+          );
+        case 'Waiver':
           return (
             <Waiver
               data={registration}
@@ -333,7 +336,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               setDisabledButton={(e: boolean) => setIsDisable(e)}
             />
           );
-        case 4:
+        case 'Payment':
           return (
             <Payment
               onChange={onChange}
@@ -341,12 +344,13 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               processing={processing}
               purchasing={purchasing}
               paymentSelectionOptions={paymentPlans}
+              reloadPaymentPlans={loadPaymentPlans}
             />
           );
       }
     } else {
       switch (step) {
-        case 0:
+        case 'Team':
           return (
             <Team
               onChange={onChange}
@@ -356,9 +360,9 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               isInvited={isInvited}
             />
           );
-        case 1:
+        case 'Contact Info':
           return <ContactInfo onChange={onChange} data={registration} />;
-        case 2:
+        case 'Coach Info':
           return (
             <CoachInfo
               onChange={onChange}
@@ -366,7 +370,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               fillCoachInfo={fillCoachInfo}
             />
           );
-        case 3:
+        case 'Payment':
           return (
             <Payment
               onChange={onChange}
@@ -374,6 +378,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               processing={processing}
               purchasing={purchasing}
               paymentSelectionOptions={paymentPlans}
+              reloadPaymentPlans={loadPaymentPlans}
             />
           );
       }
@@ -568,10 +573,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
             sku_id: registration.ext_sku,
             payment_plan_id: registration.payment_selection,
             quantity: 1,
+            discount_code: updatedRegistration.discount_code,
           },
         ],
         paymentMethodId: paymentMethod!.id,
-        discount_code: updatedRegistration.discount_code,
       };
 
       subscriptionData.customer.address.postal_code = paymentMethod?.billing_details.address?.postal_code!;
@@ -595,11 +600,11 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           {event && eventRegistration ? (
             <SideBar event={event} eventRegistration={eventRegistration} />
           ) : (
-            <Loader />
-          )}
+              <Loader />
+            )}
         </div>
         <div className={styles.stepperWrapper}>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className={styles.headerStepper}>
             <HeadingLevelTwo>
               {`${TypeOptions[type]} Registration ${
                 isInvited
@@ -609,39 +614,39 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                       : ''
                     : 'for ' + registration.division_name
                   : ''
-              }`}
+                }`}
             </HeadingLevelTwo>
           </div>
-          <div style={{ width: '90%' }}>
+          <div>
             <Paper>
               <Stepper
                 activeStep={activeStep}
-                orientation='vertical'
+                orientation="vertical"
                 style={{ backgroundColor: 'transparent', width: '100%' }}
               >
-                {steps.map((label, index) => (
+                {steps.map(label => (
                   <Step key={label}>
                     <StepLabel>
-                      <HeadingLevelThree color='#1c315f'>
+                      <HeadingLevelThree color="#1c315f">
                         <span>{label}</span>
                       </HeadingLevelThree>
                     </StepLabel>
                     <StepContent>
                       <form onSubmit={handleNext}>
-                        <div>{getStepContent(index)}</div>
+                        <div>{getStepContent(label)}</div>
                         <div className={styles.buttonsWrapper}>
                           <Button
                             disabled={activeStep === 0}
                             onClick={handleBack}
-                            label='Back'
-                            variant='text'
-                            color='secondary'
+                            label="Back"
+                            variant="text"
+                            color="secondary"
                           />
                           <Button
                             btnType={ButtonFormTypes.SUBMIT}
-                            variant='contained'
+                            variant="contained"
                             disabled={processing || isDisable}
-                            color='primary'
+                            color="primary"
                             label={
                               activeStep === steps.length - 1
                                 ? 'Agree and Pay'
@@ -668,15 +673,17 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         </div>
       </div>
       {event && (
-        <PopupRegistrationType
-          event={event}
-          isOpenModalOpen={isOpenModalOpen}
-          onTypeChange={onTypeChange}
-          onTypeSelect={onTypeSelect}
-          type={type}
-        />
+        <div className={styles.modalWrapp}>
+          <PopupRegistrationType
+            event={event}
+            isOpenModalOpen={isOpenModalOpen}
+            onTypeChange={onTypeChange}
+            onTypeSelect={onTypeSelect}
+            type={type}
+          />
+        </div>
       )}
-      <div style={{ marginTop: '50px' }}>
+      <div style={{ marginTop: '50px', flex: '0 0 auto' }}>
         <Footer />
       </div>
     </div>

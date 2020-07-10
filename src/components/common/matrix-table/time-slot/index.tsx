@@ -9,6 +9,7 @@ import { formatTimeSlot } from 'helpers';
 import { ITeamCard } from 'common/models/schedule/teams';
 import { Icons, TableScheduleTypes } from 'common/enums';
 import { getIcon } from 'helpers';
+import { AssignmentType } from "../../table-schedule/helpers";
 
 interface IProps {
   tableType: TableScheduleTypes;
@@ -25,6 +26,7 @@ interface IProps {
   simultaneousDnd?: boolean;
   highlightedGamedId?: number;
   onGameUpdate: (game: IGame) => void;
+  assignmentType: AssignmentType | undefined;
 }
 
 const RenderTimeSlot = (props: IProps) => {
@@ -43,6 +45,7 @@ const RenderTimeSlot = (props: IProps) => {
     highlightedGamedId,
     onGameUpdate,
     simultaneousDnd,
+    assignmentType
   } = props;
 
   const idsGamesForTimeSlot = games
@@ -51,21 +54,26 @@ const RenderTimeSlot = (props: IProps) => {
 
   const currentDate = games.find(item => item.gameDate)?.gameDate;
 
-  const isEveryTeamInTimeSlotLocked = teamCards.every(team =>
-    team.games
-      ?.filter(
-        game =>
-          idsGamesForTimeSlot.includes(game.id) && currentDate === game.date
-      )
-      .every(game => game.isTeamLocked)
+  const filterByDayAndField = (g: any) => {
+    return idsGamesForTimeSlot.includes(g.id) && currentDate === g.date;
+  };
+
+  const anyTeamsInFieldUnlocked = teamCards.some((t) =>
+    t.games?.filter(filterByDayAndField).some((game) => !game.isTeamLocked)
   );
+
+  const noTeamsInField = !teamCards.some((t) =>
+    t.games?.some(filterByDayAndField)
+  );
+
+  const isTimeSlotLocked = !(anyTeamsInFieldUnlocked || noTeamsInField);
 
   const onLockClick = () => {
     const updatedTeamCards = teamCards.map(teamCard => ({
       ...teamCard,
       games: teamCard.games?.map(item =>
         idsGamesForTimeSlot.includes(item.id) && currentDate === item.date
-          ? { ...item, isTeamLocked: !isEveryTeamInTimeSlotLocked }
+          ? { ...item, isTeamLocked: !isTimeSlotLocked }
           : item
       ),
     }));
@@ -80,7 +88,7 @@ const RenderTimeSlot = (props: IProps) => {
           {tableType === TableScheduleTypes.SCHEDULES && (
             <button className={styles.lockBtn} onClick={onLockClick}>
               {getIcon(
-                isEveryTeamInTimeSlotLocked ? Icons.LOCK : Icons.LOCK_OPEN,
+                isTimeSlotLocked ? Icons.LOCK : Icons.LOCK_OPEN,
                 {
                   fill: '#00A3EA',
                 }
@@ -108,6 +116,7 @@ const RenderTimeSlot = (props: IProps) => {
             highlightedGamedId={highlightedGamedId}
             simultaneousDnd={simultaneousDnd}
             onGameUpdate={onGameUpdate}
+            assignmentType={assignmentType}
           />
         ))}
     </tr>

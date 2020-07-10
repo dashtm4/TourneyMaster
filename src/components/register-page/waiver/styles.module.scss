@@ -36,6 +36,11 @@
 }
 .inputWrapp {
   margin: 8px;
+
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+  }
 }
 .errorText {
   color: red;
@@ -53,4 +58,10 @@
 .warnText {
   visibility: hidden;
   height: 22px;
+}
+
+@media only screen and (max-width: 500px) {
+  .waiver {
+    padding: 20px;
+  }
 }

@@ -10,6 +10,7 @@ import InteractiveTooltip, {
   IModalItem,
 } from 'components/common/interactive-tooltip';
 import chainIcon from 'assets/chainIcon.png';
+import { AssignmentType } from '../../helpers';
 
 interface IProps {
   tableType: TableScheduleTypes;
@@ -17,6 +18,7 @@ interface IProps {
   warnings?: IModalItem[];
   filterValues: IScheduleFilter;
   simultaneousDnd?: boolean;
+  assignmentType?: AssignmentType;
   toggleSimultaneousDnd: () => void;
   onChangeFilterValue: (values: IScheduleFilter) => void;
 }
@@ -29,6 +31,7 @@ const ScoringFilter = (props: IProps) => {
     warnings,
     simultaneousDnd,
     toggleSimultaneousDnd,
+    assignmentType
   } = props;
 
   const {
@@ -112,7 +115,7 @@ const ScoringFilter = (props: IProps) => {
           {warnings?.length ? (
             <InteractiveTooltip title="Scheduling Warning" items={warnings} />
           ) : null}
-          {tableType === TableScheduleTypes.SCHEDULES && simultaneousDnd !== undefined && (
+          {tableType === TableScheduleTypes.SCHEDULES && (
             <Tooltip type="info" title="Move both teams simultaneously">
               <div style={{ marginLeft: '15px', marginBottom: '2px' }}>
                 <Button
@@ -130,6 +133,7 @@ const ScoringFilter = (props: IProps) => {
                   label={simultaneousDnd ? 'On' : 'Off'}
                   variant="contained"
                   color="primary"
+                  disabled={assignmentType === AssignmentType.Matchups}
                   onClick={toggleSimultaneousDnd}
                 />
               </div>

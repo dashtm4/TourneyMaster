@@ -14,7 +14,7 @@ interface Props {
 }
 
 const MESSAGE_SHOWCAST =
-  'Do you want to register as a player or as parent/guardian?';
+  'Do you want to register as a participant or as parent/guardian?';
 
 const MESSAGE_TOURNAMENT = 'Are you registering as a team admin or as a coach?';
 
@@ -36,7 +36,7 @@ const PopupRegistrationType = ({
   return (
     <Modal isOpen={isOpenModalOpen} onClose={() => {}}>
       <div className={styles.modalContainer}>
-        <div style={{ height: '190px' }}>
+        <div>
           <HeadingLevelFour>
             <span>Event Registration</span>
           </HeadingLevelFour>

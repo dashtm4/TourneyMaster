@@ -13,6 +13,7 @@ import { EventMenuTitles } from 'common/enums';
 
 import styles from '../styles.module.scss';
 
+import { IInputEvent } from 'common/types';
 import { IEventDetails } from 'common/models';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
@@ -63,6 +64,9 @@ const PlayoffsSection: React.FC<Props> = ({
   onChange,
   isSectionExpand,
 }: Props) => {
+  const [isPlayoffCommentsEnabled, togglePlayOffComments] = React.useState(false);
+  const [playoffComments, playoffCommentsChange] = React.useState('');
+
   const {
     playoffs_exist,
     bracket_type,
@@ -76,6 +80,29 @@ const PlayoffsSection: React.FC<Props> = ({
       checked: Boolean(bracket_durations_vary),
     },
   ];
+
+  const playoffsCommentsOpts = [
+    {
+      label: 'Add Playoff Explanation',
+      checked: Boolean(isPlayoffCommentsEnabled),
+    },
+  ];
+
+  const handleTogglePlayoffComments = (event: InputTargetValue) => {
+    const { checked } = event.target;
+
+    if (playoffComments !== '') {
+      onChange('playoff_comments', checked ? playoffComments : '');
+    }
+    togglePlayOffComments(checked);
+  };
+
+  const onPlayoffCommentsChange = ({ target }: IInputEvent) => {
+    const { value } = target;
+
+    playoffCommentsChange(value);
+    onChange('playoff_comments', value);
+  }
 
   const onPlayoffs = () => onChange('playoffs_exist', playoffs_exist ? 0 : 1);
 
@@ -97,9 +124,21 @@ const PlayoffsSection: React.FC<Props> = ({
     onChange('bracket_durations_vary', bracket_durations_vary ? 0 : 1);
 
   useEffect(() => {
-    if (playoffs_exist && !bracket_type)
+    if (playoffs_exist && !bracket_type) {
       onChange('bracket_type', bracketTypesEnum['Single Elimination']);
+    }
   });
+
+  useEffect(() => {
+    const { playoff_comments } = eventData;
+    console.log('userEfect', eventData.playoff_comments);
+    if (playoff_comments) {
+      togglePlayOffComments(true);
+      playoffCommentsChange(playoff_comments);
+    } else {
+      togglePlayOffComments(false);
+    }
+  }, [eventData]);
 
   return (
     <SectionDropdown
@@ -151,6 +190,19 @@ const PlayoffsSection: React.FC<Props> = ({
                 value={String(num_teams_bracket || '')}
                 onChange={onChangeMaxTeamNumber}
               />
+              <div>
+                <Checkbox
+                  options={playoffsCommentsOpts}
+                  onChange={handleTogglePlayoffComments}
+                />
+                {isPlayoffCommentsEnabled}
+                <Input
+                  value={playoffComments}
+                  fullWidth={true}
+                  onChange={onPlayoffCommentsChange}
+                  disabled={!isPlayoffCommentsEnabled}
+                />
+              </div>
             </div>
             <div className={styles.pdThird}>
               <Checkbox

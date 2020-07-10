@@ -166,13 +166,14 @@ const Waiver = ({
     const waiverContent =
       content.waiver_content === null || !content.waiver_content
         ? 'Not found.'
-        : `<div style="height: 220px"><div><h1 style="text-align: center">${event && event.event_name}</h1>` +
-          `<h2 style="text-align: center">${participantName}</h2></div>` +
-          `<img src="https://tourneymaster.s3.amazonaws.com/public/${event &&
-            event.desktop_icon_URL}" style="position: absolute; top: 60px; right: 40px; max-width: 200px; max-height: 200px" /></div>` +
+        : `<div style="display: flex; flex-wrap: wrap;
+        justify-content: center">` +
+          `<div style="width: calc( 100% - 200px ); min-width: 300px"><h1 style="text-align: center">${event && event.event_name}</h1>` +
+          `<h2 style="text-align: center">${participantName}</h2></div><img src="https://tourneymaster.s3.amazonaws.com/public/${event &&
+            event.desktop_icon_URL}" style="max-width: 200px; max-height: 200px; margin-bottom: 8px" /></div>` +
           content.waiver_content +
           `<h2 style="font-family: 'Segoe Script'; text-align: right">${signature}</h2>
-        <h2 style="font-size: 12px; text-align: right; height: 16px">${agreedment}</h2>` +
+        <h2 style="font-size: 12px; text-align: right; height: 30px">${agreedment}</h2>` +
           `<h3 style="font-size: 10px; text-align: right; height: 14px">${ip}</h3>
         <h3 style="font-size: 10px; text-align: right; height: 14px">${hash}</h3>`;
     return (
@@ -204,10 +205,8 @@ const Waiver = ({
         </div>
         <div>
           <div className={styles.inputWrapp}>
+            <h4>If you agree to these terms and conditions, please retype your first and last name.</h4>
             <Input
-              label={
-                'If you agree to these terms and conditions, please retype your first and last name.'
-              }
               value={name}
               onChange={onInputName}
               placeholder={'First name and Last name'}

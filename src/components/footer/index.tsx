@@ -46,7 +46,9 @@ const Footer: React.FC = () => {
         <div className={styles.addressInfoContainer}>
           <div className={styles.footerWithIcon}>
             <PlaceIcon />
-            <p>One World Trade Center, Suite 8500, New York NY 10007</p>
+            <p style={{ textAlign: 'center' }}>
+              One World Trade Center, Suite 8500, New York NY 10007
+            </p>
           </div>
 
           <div className={styles.footerWithIcon}>

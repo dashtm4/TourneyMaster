@@ -5,6 +5,7 @@ import { BindingCbWithTwo, ISelectOption } from 'common/models';
 import { IIndividualsRegister } from 'common/models/register';
 import { CardElement } from '@stripe/react-stripe-js';
 import stripeLogo from 'assets/stripeLogo.png';
+import { Button } from '@material-ui/core';
 // import CardHelp from '../../card-help';
 
 interface IPaymentSelectionOptions extends ISelectOption {
@@ -19,6 +20,7 @@ interface IPaymentProps {
   processing: boolean;
   purchasing: boolean;
   paymentSelectionOptions: IPaymentSelectionOptions[];
+  reloadPaymentPlans(): void;
 }
 
 const paymentMethodOptions = [
@@ -32,6 +34,7 @@ const Payment = ({
   onChange,
   processing,
   paymentSelectionOptions,
+  reloadPaymentPlans,
 }: IPaymentProps) => {
   const onPaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('payment_method', e.target.value);
@@ -53,51 +56,49 @@ const Payment = ({
 
   const paymentForm = (
     <div className={styles.section}>
-      <div className={styles.sectionRow}>
-        <div
-          className={styles.sectionItem}
-          style={{ maxWidth: '30%', flexGrow: 1 }}
-        >
-          <Select
-            options={paymentSelectionOptions}
-            label="Payment Options"
-            disabled={processing}
-            value={data.payment_selection || ''}
-            onChange={onPaymentSelectionChange}
-          />
+      <div className={styles.paymentRow}>
+        <div className={styles.sectionRow}>
+          <div className={styles.sectionItem}>
+            <Select
+              options={paymentSelectionOptions}
+              label="Payment Options"
+              disabled={processing}
+              value={data.payment_selection || ''}
+              onChange={onPaymentSelectionChange}
+            />
+          </div>
+          <div className={styles.sectionItem}>
+            <Select
+              options={paymentMethodOptions}
+              label="Payment Method"
+              disabled={true}
+              value={data.payment_method || ''}
+              onChange={onPaymentMethodChange}
+              isRequired={true}
+            />
+          </div>
+          <div className={styles.sectionItem}>
+            <Input
+              fullWidth={true}
+              label="Discount Code"
+              disabled={processing}
+              value={data.discount_code || ''}
+              onChange={onDiscountCodeChange}
+            />
+            <Button onClick={reloadPaymentPlans} color='primary'>
+              Apply Code
+            </Button>
+          </div>
         </div>
-        <div
-          className={styles.sectionItem}
-          style={{ maxWidth: '30%', flexGrow: 1 }}
-        >
-          <Select
-            options={paymentMethodOptions}
-            label="Payment Method"
-            disabled={true}
-            value={data.payment_method || ''}
-            onChange={onPaymentMethodChange}
-            isRequired={true}
-          />
-        </div>
-        <div
-          className={styles.sectionItem}
-          style={{ maxWidth: '30%', flexGrow: 1 }}
-        >
-          <Input
-            fullWidth={true}
-            label="Discount Code"
-            disabled={processing}
-            value={data.discount_code || ''}
-            onChange={onDiscountCodeChange}
-          />
-        </div>
+
       </div>
+
       <div className={styles.sectionRow}>
         <strong>{totalAmountNotice}</strong>
       </div>
       <div className={styles.sectionRow}>&nbsp;</div>
-      <div style={{ display: 'flex' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', width: '48%' }}>
+      <div className={styles.cardWrapp}>
+        <div className={styles.card}>
           <div className={styles.sectionTitle}>Card Details</div>
           <CardElement
             className={styles.stripeElement}
@@ -130,7 +131,7 @@ const Payment = ({
             width: '150px',
             height: '75px',
           }}
-          alt="Stripe logo"
+          alt='Stripe logo'
         />
       </div>
     </div>

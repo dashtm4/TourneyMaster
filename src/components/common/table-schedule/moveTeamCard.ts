@@ -95,6 +95,7 @@ export default (
 
     const timeSlotInUseForPossibleTeams =
       possibleGame &&
+      !originGameId &&
       filledGames.some(
         v =>
           v.timeSlotId === gamePlace?.timeSlotId &&
@@ -165,8 +166,12 @@ export default (
     if (
       gameId &&
       position &&
-      teamId === teamCard.id &&
-      !(simultaneousDnd && (originGameId || possibleGame))
+      teamId === teamCard.id && 
+      (
+        !(simultaneousDnd && (originGameId || possibleGame))
+        ||
+        (simultaneousDnd && (!possibleGame?.awayTeam?.id || !possibleGame?.homeTeam?.id))
+      )
     ) {
       let games = [
         ...teamCard.games?.filter(
@@ -238,7 +243,7 @@ export default (
     }
 
     if (
-      simultaneousDnd &&
+      (simultaneousDnd && !possibleGame?.homeTeam && !possibleGame?.awayTeam) &&
       originGameId &&
       findIndex(teamCard.games, {
         id: gameId,
