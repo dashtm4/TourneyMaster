@@ -1,6 +1,7 @@
 import React from 'react';
 import { Location } from 'common/models';
 import UserProfile from './components/user-profile';
+import OrganizationInfo from './components/organization-info';
 import TourneyImportWizard from './components/tourney-import';
 
 interface Props {
@@ -9,8 +10,11 @@ interface Props {
 
 const Utilities = ({ location }: Props) => {
   return (
-    location.hash === '#user-profile' ?
-      <UserProfile /> : <TourneyImportWizard />
+    <>
+      {location.hash === '#user-profile' && <UserProfile />}
+      {location.hash === '#tourney-import' && <TourneyImportWizard />}
+      {location.hash === '#organization-info' && <OrganizationInfo />}
+    </>
   );
 };
 

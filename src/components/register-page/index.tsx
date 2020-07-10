@@ -243,7 +243,6 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         return plans;
       });
   };
-
   const handleProceedToPayment = async () => {
     loadPaymentPlans().then(plans => {
       const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
@@ -529,8 +528,8 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         name:
           updatedRegistration.registrant_first_name ||
           updatedRegistration.contact_first_name +
-            ' ' +
-            updatedRegistration.registrant_last_name ||
+          ' ' +
+          updatedRegistration.registrant_last_name ||
           updatedRegistration.contact_last_name,
         email:
           updatedRegistration.registrant_email ||
