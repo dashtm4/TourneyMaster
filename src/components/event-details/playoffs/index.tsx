@@ -195,13 +195,20 @@ const PlayoffsSection: React.FC<Props> = ({
                   options={playoffsCommentsOpts}
                   onChange={handleTogglePlayoffComments}
                 />
-                {isPlayoffCommentsEnabled}
-                <Input
-                  value={playoffComments}
-                  fullWidth={true}
-                  onChange={onPlayoffCommentsChange}
-                  disabled={!isPlayoffCommentsEnabled}
-                />
+                {isPlayoffCommentsEnabled ?
+                  <Input
+                    value={playoffComments}
+                    fullWidth={true}
+                    onChange={onPlayoffCommentsChange}
+                    multiline={true}
+                  /> :
+                  <Input
+                    value={playoffComments}
+                    fullWidth={true}
+                    onChange={onPlayoffCommentsChange}
+                    disabled={true}
+                  />
+                }
               </div>
             </div>
             <div className={styles.pdThird}>
