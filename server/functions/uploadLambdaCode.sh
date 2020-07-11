@@ -45,7 +45,9 @@ aws lambda update-function-configuration --function-name "$STACK_NAME-PaymentsAp
   STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY,\
   PUBLIC_API_BASE_URL=$PUBLIC_API_BASE_URL,\
   EVENT_NOTIFICATIONS_TOPIC="arn:aws:sns:us-east-1:564748484972:$STACK_NAME-ErrorsTopic",\
+  USER_EVENTS_TOPIC="arn:aws:sns:us-east-1:564748484972:$STACK_NAME-UserEventsTopic",\
   STRIPE_WEBHOOK_SIGNING_SECRET=$STRIPE_WEBHOOK_SIGNING_SECRET,\
   STRIPE_CONNECT_WEBHOOK_SIGNING_SECRET=$STRIPE_CONNECT_WEBHOOK_SIGNING_SECRET}"
 
 aws lambda update-function-code --function-name "$STACK_NAME-ServicesApiFunction" --zip-file "fileb://dist/bundle.zip"
+aws lambda update-function-code --function-name "$STACK_NAME-SendEmailFunction" --zip-file "fileb://dist/bundle.zip"
