@@ -1,31 +1,33 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Payment Server",
-      "program": "${workspaceFolder}/src/index.js",
-      "skipFiles": ["<node_internals>/**"],
-      "env": {
-        "SMParameterName": "TourneyMasterAPIv2",
-        "AWS_PROFILE": "clubsports",
-        "TZ": "UTC",
-        "NODE_ENV": "development"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Sync Products",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/test/test.js",
-      "env": {
-        "TZ": "UTC"
-      }
-    }
-  ]
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Payment Server",
+			"program": "${workspaceFolder}/src/index.js",
+			"skipFiles": ["<node_internals>/**"],
+			"preLaunchTask": "tsc: build - tsconfig.json",
+			"outFiles": ["${workspaceFolder}/build/**/*.js"],
+			"env": {
+				"SMParameterName": "TourneyMasterAPIv2",
+				"AWS_PROFILE": "clubsports",
+				"TZ": "UTC",
+				"NODE_ENV": "development"
+			}
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Sync Products",
+			"skipFiles": ["<node_internals>/**"],
+			"program": "${workspaceFolder}/test/test.js",
+			"env": {
+				"TZ": "UTC"
+			}
+		}
+	]
 }

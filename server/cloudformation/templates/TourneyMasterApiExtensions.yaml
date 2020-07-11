@@ -29,10 +29,10 @@ Conditions:
   DeployPrivateApiComponents: !Not [!Equals ['', !Ref PrivateApiGatewayId]]
 
 Resources:
-  EventNotificationsTopic:
+  ErrorsTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: !Sub ${ProjectName}-EventNotificationsTopic
+      TopicName: !Sub ${ProjectName}-ErrorsTopic
 
   LambdaExecRole:
     Type: AWS::IAM::Role
@@ -66,7 +66,7 @@ Resources:
               - Effect: Allow
                 Action: sns:*
                 Resource:
-                  - !Ref EventNotificationsTopic
+                  - !Ref ErrorsTopic
         - PolicyName: GetSecretValue
           PolicyDocument:
             Version: '2012-10-17'
@@ -95,7 +95,7 @@ Resources:
       Timeout: 60
       Environment:
         Variables:
-          EVENT_NOTIFICATIONS_TOPIC: !Ref EventNotificationsTopic
+          EVENT_NOTIFICATIONS_TOPIC: !Ref ErrorsTopic
           STRIPE_SECRET_KEY: ''
           STRIPE_PUBLISHABLE_KEY: ''
           PUBLIC_API_BASE_URL: '1'
@@ -113,7 +113,7 @@ Resources:
       Timeout: 10
       Environment:
         Variables:
-          EVENT_NOTIFICATIONS_TOPIC: !Ref EventNotificationsTopic
+          EVENT_NOTIFICATIONS_TOPIC: !Ref ErrorsTopic
           SMParameterName: 'TourneyMasterAPIv2'
           STRIPE_SECRET_KEY: ''
           STRIPE_PUBLISHABLE_KEY: ''
