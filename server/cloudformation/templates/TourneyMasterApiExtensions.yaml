@@ -29,6 +29,43 @@ Conditions:
   DeployPrivateApiComponents: !Not [!Equals ['', !Ref PrivateApiGatewayId]]
 
 Resources:
+  UserEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${ProjectName}-UserEventsTopic
+
+  UnsentEmailsQueue:
+    Type: AWS::SQS::Queue
+
+  EmailsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      DelaySeconds: 0
+      VisibilityTimeout: 60
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt UnsentEmailsQueue.Arn
+        maxReceiveCount: 3
+
+  EmailsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref EmailsQueue
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: '*' # TODO: Specify EventsTopic
+            Action: SQS:SendMessage
+            Resource: '*' # TODO: Specify this queue
+
+  UserEventsTopicSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref UserEventsTopic
+      Endpoint: !GetAtt EmailsQueue.Arn
+      Protocol: sqs
+
   ErrorsTopic:
     Type: AWS::SNS::Topic
     Properties:
@@ -67,6 +104,18 @@ Resources:
                 Action: sns:*
                 Resource:
                   - !Ref ErrorsTopic
+                  - !Ref UserEventsTopic
+        - PolicyName: ReceiveMessagesFromSQS
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                Resource:
+                  - !GetAtt EmailsQueue.Arn
         - PolicyName: GetSecretValue
           PolicyDocument:
             Version: '2012-10-17'
@@ -135,6 +184,29 @@ Resources:
       Environment:
         Variables:
           SMParameterName: 'TourneyMasterAPIv2'
+
+  SendEmailFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-SendEmailFunction
+      Description: !Sub ${ProjectName}-SendEmailFunction
+      Handler: sendEmail.handler
+      Role: !GetAtt LambdaExecRole.Arn
+      Code:
+        ZipFile: 'exports.handler = function(event, context) { console.log("Hello World")}'
+      Runtime: nodejs12.x
+      Timeout: 15
+      Environment:
+        Variables:
+          EVENT_NOTIFICATIONS_TOPIC: !Ref ErrorsTopic
+
+  EmailSystemFunctionEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: 1
+      Enabled: True
+      EventSourceArn: !GetAtt EmailsQueue.Arn
+      FunctionName: !GetAtt SendEmailFunction.Arn
 
   ServicesPermission:
     Condition: DeployPrivateApiComponents
