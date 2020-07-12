@@ -13,6 +13,8 @@ cp ../../package.json .
 
 mkdir -p node_modules
 npm install --production
+# rm package*.json
+# touch package.json
 zip -r ../bundle.zip *
 popd
 

@@ -15,19 +15,25 @@ const createOrUpdateCustomer = async (subData, currency) => {
   console.log(customerData);
 
   let customer;
-  const customers = await stripe.customers
-    .list(
-      {
-        email: customerData.email,
-        limit: 1,
-      },
-      subData.requestParams
-    )
-    ?.data?.filter(
-      customer =>
-        customer.currency === null ||
-        customer.currency.toLowerCase() === currency.toLowerCase()
-    );
+  const customersList = await stripe.customers.list(
+    {
+      email: customerData.email,
+      limit: 100,
+    },
+    subData.requestParams
+  );
+
+  console.log(
+    `Customers with email ${customerData.email}: ${JSON.stringify(
+      customersList
+    )}. Currency: ${currency}`
+  );
+  const customers = customerList?.data?.filter(
+    customer =>
+      !customer.currency ||
+      customer.currency.toLowerCase() === currency.toLowerCase()
+  );
+  console.log(`Customers filtered by currency: ${JSON.stringify(customers)}`);
 
   if (customers?.length > 0) {
     customer = await stripe.customers.update(

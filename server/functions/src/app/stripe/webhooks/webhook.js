@@ -55,13 +55,20 @@ export const paymentSuccessWebhook = async req => {
       requestParams
     );
 
-    const charge = await stripe.charges.retrieve(
-      event.data.object.charge,
-      {
-        expand: ['balance_transaction'],
-      },
-      requestParams
-    );
+    let charge;
+    if (event.data.object.charge) {
+      charge = await stripe.charges.retrieve(
+        event.data.object.charge,
+        {
+          expand: ['balance_transaction'],
+        },
+        requestParams
+      );
+    } else {
+      if (event.data.object.amount_paid !== 0) {
+        throw new Error('Charge is empty while amoun_paid is not zero.');
+      }
+    }
 
     const discount = subscription.metadata.promo_code_discount
       ? +subscription.metadata.promo_code_discount
@@ -75,10 +82,9 @@ export const paymentSuccessWebhook = async req => {
       payment_plan_id,
     } = subscription.metadata;
     console.log(
-      `Registration type: ${reg_type}. Reg_response_id: ${reg_response_id}. Payment_plan_id: ${payment_plan_id}`
+      `Registration type: ${reg_type}. Reg_response_id: ${reg_response_id}. Sku_id: ${sku_id}. Payment_plan_id: ${payment_plan_id}`
     );
 
-    console.log(`sku_id: ${sku_id}, payment_plan_id: ${payment_plan_id}`);
     const paymentPlan = (await getPaymentPlans({ sku_id, payment_plan_id }))[0];
     console.log('paymentPlan', paymentPlan);
 
@@ -145,12 +151,12 @@ export const paymentSuccessWebhook = async req => {
           // Add Stripe stuff here
           reg_response.ext_payment_system = 'stripe';
           reg_response.ext_payment_id = event.data.object.id;
-          reg_response.currency = paymentPlan.currency;
+          reg_response.currency = lineItem.price.currency.toUpperCase();
           reg_response.amount_due =
             Math.round(
               paymentPlan.total_price *
                 (1 - discount / 100) *
-                (1 + paymentPlan.sales_tax_rate / 100) *
+                (1 + lineItem.price.metadata.sales_tax_rate / 100) *
                 100
             ) / 100;
           reg_response.payment_amount = 0;
