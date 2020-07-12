@@ -1,35 +1,37 @@
 {
-	"name": "clubsports-payments",
-	"version": "1.0.0",
-	"type": "module",
-	"description": "ClubSports Payment",
-	"main": "index.js",
-	"scripts": {
-		"start": "node --exec babel-node src/index.js --extensions '.js,.ts,.tsx'",
-		"tsc": "tsc",
-		"build": "npx babel src --out-dir dist/lambda --extensions '.js,.ts,.tsx'",
-		"upload": "export AWS_PROFILE=clubsports & ./uploadLambdaCode.sh"
-	},
-	"keywords": [],
-	"author": "GMind LLC",
-	"license": "",
-	"dependencies": {
-		"aws-serverless-express": "^3.3.8",
-		"axios": "^0.19.2",
-		"cors": "^2.8.5",
-		"dateformat": "^3.0.3",
-		"express": "^4.17.1",
-		"promise-mysql": "^4.1.3",
-		"stripe": "^8.48.0"
-	},
-	"devDependencies": {
-		"@babel/cli": "^7.8.4",
-		"@babel/core": "^7.9.6",
-		"@babel/node": "^7.8.7",
-		"@babel/plugin-proposal-class-properties": "^7.8.3",
-		"@babel/preset-env": "^7.9.6",
-		"@babel/preset-typescript": "^7.10.4",
-		"aws-sdk": "^2.669.0",
-		"typescript": "^3.9.6"
-	}
+  "name": "clubsports-payments",
+  "version": "1.0.0",
+  "description": "ClubSports Payment",
+  "main": "index.js",
+  "scripts": {
+    "start": "babel-node src/index.js --extensions '.js,.ts,.tsx'",
+    "tsc": "tsc",
+    "compile": "tsc && babel src --out-dir build --extensions '.js,.ts,.tsx'",
+    "build": "npx babel src --out-dir dist/lambda --extensions '.js,.ts,.tsx'",
+    "upload": "export AWS_PROFILE=clubsports & ./uploadLambdaCode.sh",
+    "syncproducts": "node -e 'require(\"./build/syncProducts.js\").handler()'"
+  },
+  "keywords": [],
+  "author": "GMind LLC",
+  "license": "",
+  "dependencies": {
+    "aws-serverless-express": "^3.3.8",
+    "axios": "^0.19.2",
+    "cors": "^2.8.5",
+    "dateformat": "^3.0.3",
+    "express": "^4.17.1",
+    "promise-mysql": "^4.1.3",
+    "stripe": "^8.48.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.6",
+    "@babel/node": "^7.8.7",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-typescript": "^7.10.4",
+    "@types/node": "^14.0.22",
+    "aws-sdk": "^2.713.0",
+    "typescript": "^3.9.6"
+  }
 }

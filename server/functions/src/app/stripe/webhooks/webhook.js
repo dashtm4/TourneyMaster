@@ -1,8 +1,8 @@
 import mysql from 'promise-mysql';
 import Stripe from 'stripe';
-import '../../../services/logger.js';
+import '../../../services/logger';
 import config from '../../../config.js';
-import { getParams, sendEmail } from '../../../services/aws-utils.js';
+import { getParams, sendEmail } from '../../../services/aws-utils';
 import { getPaymentPlans } from '../../products/activeProducts.js';
 const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
 

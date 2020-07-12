@@ -1,4 +1,4 @@
-name: Development deployment
+name: Front End STAGING
 
 on:
   push:

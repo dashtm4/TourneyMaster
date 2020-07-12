@@ -1,4 +1,4 @@
-import axios from '../../services/axios.js';
+import axios from '../../services/tm-axios';
 import dateFormat from 'dateformat';
 
 export const getActiveProducts = async () => {

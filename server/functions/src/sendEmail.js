@@ -1,5 +1,5 @@
 // Send Email via SES
-import './services/logger.js';
+import './services/logger';
 
 export const handler = async (event, context) => {
   console.log('Event:', JSON.stringify(event, null, 2));

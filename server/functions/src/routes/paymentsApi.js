@@ -1,4 +1,4 @@
-import '../services/logger.js';
+import '../services/logger';
 import { processCreateSubscription } from '../app/stripe/subscriptions/subscriptions.js';
 import { paymentSuccessWebhook } from '../app/stripe/webhooks/webhook.js';
 import { getPaymentPlans } from '../app/products/activeProducts.js';
@@ -51,7 +51,7 @@ export default api => {
         message: 'OK',
       });
     } catch (err) {
-      console.log(err);
+      console.logError(err);
       res.status(400).json({
         success: false,
         message: err.message,

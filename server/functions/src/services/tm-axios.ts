@@ -1,12 +1,12 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
-const instance = axios.create({
+const instance: AxiosInstance = axios.create({
   baseURL: process.env.PUBLIC_API_BASE_URL,
 });
 
 instance.defaults.headers.common['Content-Type'] = 'application/json';
 
-instance.interceptors.request.use(null, error => {
+instance.interceptors.request.use(undefined, error => {
   console.error('Request Error: ', error);
   return Promise.reject(error);
 });

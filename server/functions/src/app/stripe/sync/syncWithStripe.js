@@ -47,7 +47,7 @@ const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
           );
         }
       } else if (matchedStripeObjects.length === 0) {
-        objectClass.create(object);
+        await objectClass.create(object);
       }
     }
     // Delete products
@@ -71,7 +71,7 @@ const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
       );
     }
     for (const stripeObject of objectsToDelete) {
-      objectClass.delete(stripeObject);
+      await objectClass.delete(stripeObject);
     }
     console.log(`Finished ${objectClass.constructor.name} synchronization`);
   } catch (err) {

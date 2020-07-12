@@ -1,26 +1,25 @@
 import SSM from 'aws-sdk/clients/ssm.js';
 import SNS from 'aws-sdk/clients/sns.js';
-// import AWS from 'aws-sdk';
-// const { config } = AWS;
 
-// config.update({ region: 'us-east-1' });
 const sns = new SNS({ apiVersion: '2010-03-31', region: 'us-east-1' });
 const ssm = new SSM({ region: 'us-east-1' });
 
-export const getParams = async paramName => {
+export const getParams = async (paramName: string) => {
   return JSON.parse(
-    (
-      await ssm
-        .getParameter({
-          Name: paramName,
-          WithDecryption: true,
-        })
-        .promise()
-    ).Parameter.Value
+    (await ssm
+      .getParameter({
+        Name: paramName,
+        WithDecryption: true,
+      })
+      .promise())!.Parameter!.Value!
   );
 };
 
-export const sendSnsMessage = async (topic, subject, message) => {
+export const sendSnsMessage = async (
+  topic: string,
+  subject: string,
+  message: object | string
+) => {
   let params = {
     Subject: subject,
     Message: typeof message === 'object' ? JSON.stringify(message) : message,
@@ -34,6 +33,10 @@ export const sendSnsMessage = async (topic, subject, message) => {
   }
 };
 
-export const sendEmail = async data => {
-  return await sendSnsMessage(process.env.USER_EVENTS_TOPIC, 'SendEmail', data);
+export const sendEmail = async (data: object) => {
+  return await sendSnsMessage(
+    process.env.USER_EVENTS_TOPIC!,
+    'SendEmail',
+    data
+  );
 };
