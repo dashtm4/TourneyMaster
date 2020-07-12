@@ -6,7 +6,7 @@ import StripeServiceProductsHandler from './stripeServiceProductsHandler.js';
 import StripePricesHandler from './stripePricesHandler.js';
 import StripeTaxRatesHandler from './stripeTaxRatesHandler.js';
 import StripeCouponsHandler from './stripeCouponsHandler.js';
-import { loadAll, stripe } from '../common/common.js';
+import { loadAll, stripe } from '../common/common';
 
 const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
   try {

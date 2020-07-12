@@ -2,7 +2,7 @@ import mysql from 'promise-mysql';
 import '../../../services/logger';
 import { getParams, sendEmail } from '../../../services/aws-utils';
 import { getPaymentPlans } from '../../products/activeProducts.js';
-import { stripe } from '../common/common.js';
+import { stripe } from '../common/common';
 
 const sendWelcomeEmail = async data => {
   return sendEmail(data);
