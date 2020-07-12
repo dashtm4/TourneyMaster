@@ -1,10 +1,8 @@
 import mysql from 'promise-mysql';
-import Stripe from 'stripe';
 import '../../../services/logger';
-import config from '../../../config.js';
 import { getParams, sendEmail } from '../../../services/aws-utils';
 import { getPaymentPlans } from '../../products/activeProducts.js';
-const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
+import { stripe } from '../common/common.js';
 
 const sendWelcomeEmail = async data => {
   return sendEmail(data);

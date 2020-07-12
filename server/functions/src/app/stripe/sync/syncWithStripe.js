@@ -2,15 +2,11 @@ import {
   getActiveSkus,
   getPaymentPlans,
 } from '../../products/activeProducts.js';
-import config from '../../../config.js';
-import Stripe from 'stripe';
 import StripeServiceProductsHandler from './stripeServiceProductsHandler.js';
 import StripePricesHandler from './stripePricesHandler.js';
 import StripeTaxRatesHandler from './stripeTaxRatesHandler.js';
 import StripeCouponsHandler from './stripeCouponsHandler.js';
-import { loadAll } from '../utils/utils.js';
-
-const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
+import { loadAll, stripe } from '../common/common.js';
 
 const syncStripeObjects = async (objectClass, source, stripeEndpoint) => {
   try {
