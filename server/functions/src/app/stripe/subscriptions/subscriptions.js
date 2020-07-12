@@ -1,8 +1,5 @@
-import config from '../../../config.js';
-import Stripe from 'stripe';
 import { getPaymentPlans } from '../../products/activeProducts.js';
-import { loadAll } from '../utils/utils.js';
-const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
+import { loadAll, stripe } from '../common/common.js';
 
 const createOrUpdateCustomer = async (subData, currency) => {
   const customerData = {
