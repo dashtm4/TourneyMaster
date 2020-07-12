@@ -20,6 +20,20 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Send Email",
+      "preLaunchTask": "build",
+      "cwd": "${workspaceFolder}/build",
+      "program": "${workspaceFolder}/build/test/testSendEmail.js",
+      "env": {
+        "SMParameterName": "TourneyMasterAPIv2",
+        "AWS_PROFILE": "clubsports",
+        "TZ": "UTC",
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Sync Products",
       "preLaunchTask": "build",
       "runtimeExecutable": "npm",
