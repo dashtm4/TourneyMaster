@@ -233,7 +233,7 @@ const RegistrationDetails = ({
             country={'us'}
             disableDropdown
             onlyCountries={['us','ca']}
-            disableCountryCode={true}
+            disableCountryCode={false}
             placeholder=""
             value={data ? String(data.mobile_number) : ''}
             onChange={onMobileNumberChange}
