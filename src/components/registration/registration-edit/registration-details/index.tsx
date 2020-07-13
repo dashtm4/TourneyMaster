@@ -231,7 +231,7 @@ const RegistrationDetails = ({
           <div className={styles.sectionTitle}>Phone Number</div>
           <PhoneInput
             country={'us'}
-            disableDropdown
+            // disableDropdown
             onlyCountries={['us','ca']}
             disableCountryCode={false}
             placeholder=""
