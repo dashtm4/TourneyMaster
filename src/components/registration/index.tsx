@@ -1,40 +1,43 @@
 import React from 'react';
-import HeadingLevelTwo from '../common/headings/heading-level-two';
-import Button from '../common/buttons/button';
-import SectionDropdown from '../common/section-dropdown';
-import styles from './styles.module.scss';
-import Navigation from './navigation';
-import PricingAndCalendar from './pricing-and-calendar';
-import RegistrationDetails from './registration-details';
-import Registrants from './registrants';
-import Payments from './payments';
 import { connect } from 'react-redux';
-import {
-  getRegistration,
-  saveRegistration,
-  getDivisions,
-  getRegistrants,
-} from './registration-edit/logic/actions';
-import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
-import RegistrationEdit from 'components/registration/registration-edit';
-import { IRegistration } from 'common/models/registration';
-import {
-  BindingCbWithOne,
-  BindingCbWithTwo,
-  IDivision,
-  IEventDetails,
-  IRegistrant,
-} from 'common/models';
+import { History } from 'history';
 import {
   EventMenuRegistrationTitles,
   EntryPoints,
   LibraryStates,
   IRegistrationFields,
 } from 'common/enums';
-import { History } from 'history';
-import { Loader, Toasts } from 'components/common';
 import { IEntity } from 'common/types';
+import {
+  BindingCbWithOne,
+  BindingCbWithTwo,
+  BindingCbWithThree,
+  IDivision,
+  IEventDetails,
+  IRegistrant,
+} from 'common/models';
+import { IRegistration } from 'common/models/registration';
+import { Loader, Toasts, Modal } from 'components/common';
+import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
+import RegistrationEdit from 'components/registration/registration-edit';
+import AddNewField from 'components/registration/data-request/add-new-field';
+import HeadingLevelTwo from '../common/headings/heading-level-two';
+import Button from '../common/buttons/button';
+import SectionDropdown from '../common/section-dropdown';
+import Navigation from './navigation';
+import PricingAndCalendar from './pricing-and-calendar';
+import RegistrationDetails from './registration-details';
+import Registrants from './registrants';
+import Payments from './payments';
 import Waiver from './waiver';
+import {
+  getRegistration,
+  saveRegistration,
+  saveCustomData,
+  getDivisions,
+  getRegistrants,
+} from './registration-edit/logic/actions';
+import styles from './styles.module.scss';
 
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
@@ -42,11 +45,15 @@ interface IRegistrationState {
   isSectionsExpand: boolean;
   changesAreMade: boolean;
   event?: Partial<IEventDetails>;
+  requestIds: any;
+  options: any;
+  isAddNewFieldOpen: boolean;
 }
 
 interface IRegistrationProps {
   getRegistration: BindingCbWithOne<string>;
   saveRegistration: BindingCbWithTwo<string | undefined, string>;
+  saveCustomData: BindingCbWithThree<any, any, string>;
   getDivisions: BindingCbWithOne<string>;
   getRegistrants: BindingCbWithOne<string>;
   getRegistrantPayments: BindingCbWithOne<string>;
@@ -71,6 +78,9 @@ class RegistrationView extends React.Component<
     isSectionsExpand: true,
     changesAreMade: false,
     event: undefined,
+    requestIds: [],
+    options: [],
+    isAddNewFieldOpen: false,
   };
 
   componentDidMount() {
@@ -90,6 +100,53 @@ class RegistrationView extends React.Component<
       });
     }
   }
+
+  updateRequestIds = (id: number | string, status: string) => {
+    const { requestIds } = this.state;
+
+    switch (status) {
+      case 'add':
+        this.setState({
+          requestIds: [...requestIds, id],
+        });
+        return;
+      case 'remove':
+        this.setState({
+          requestIds: requestIds.filter((el: number | string) => el !== id),
+        });
+        return;
+      default:
+        return;
+    }
+  };
+
+  updateOptions = (id: number | string, value: number, status: boolean) => {
+    const { options } = this.state;
+
+    if (status) {
+      this.setState({
+        options: { ...options, [id]: value },
+      });
+    } else {
+      const newOptions = Object.keys(options)
+        .filter(el => el.toString() !== id.toString())
+        .map(el => ({ [el]: options[el] }));
+
+      this.setState({
+        options: newOptions,
+      });
+    }
+  };
+
+  onAddNewField = () => {
+    this.setState({ isAddNewFieldOpen: true });
+  };
+
+  onAddNewFieldClose = () => {
+    this.setState({
+      isAddNewFieldOpen: false,
+    });
+  };
 
   onRegistrationEdit = () => {
     this.setState({ isEdit: true });
@@ -132,7 +189,10 @@ class RegistrationView extends React.Component<
 
   onSaveClick = () => {
     if (this.scheduleIsValid(this.state.registration)) {
+      const { requestIds, options } = this.state;
+
       this.props.saveRegistration(this.state.registration, this.eventId);
+      this.props.saveCustomData(requestIds, options, this.eventId);
       this.setState({ isEdit: false, changesAreMade: false });
     } else {
       Toasts.errorToast('Total schedule amount must be equal to 100%');
@@ -173,19 +233,32 @@ class RegistrationView extends React.Component<
 
   renderView = () => {
     const { registration, event } = this.props;
+    const { requestIds, isAddNewFieldOpen } = this.state;
     const eventType = event && event[0].event_type;
     if (this.state.isEdit) {
       return (
-        <RegistrationEdit
-          event={event}
-          registration={this.state.registration}
-          onChange={this.onChange}
-          onCancel={this.onCancelClick}
-          onSave={this.onSaveClick}
-          changesAreMade={this.state.changesAreMade}
-          divisions={this.props.divisions}
-          eventType={eventType}
-        />
+        <>
+          <RegistrationEdit
+            event={event}
+            registration={this.state.registration}
+            onChange={this.onChange}
+            onCancel={this.onCancelClick}
+            onSave={this.onSaveClick}
+            changesAreMade={this.state.changesAreMade}
+            divisions={this.props.divisions}
+            eventType={eventType}
+            updateRequestIds={this.updateRequestIds}
+            updateOptions={this.updateOptions}
+            requestIds={requestIds}
+            onAddNewField={this.onAddNewField}
+          />
+          <Modal isOpen={isAddNewFieldOpen} onClose={this.onAddNewFieldClose}>
+            <AddNewField
+              onCancel={this.onAddNewFieldClose}
+              eventId={this.eventId}
+            />
+          </Modal>
+        </>
       );
     } else {
       return (
@@ -325,6 +398,7 @@ const mapStateToProps = (state: IState) => ({
 const mapDispatchToProps = {
   getRegistration,
   saveRegistration,
+  saveCustomData,
   getDivisions,
   getRegistrants,
   addEntityToLibrary,

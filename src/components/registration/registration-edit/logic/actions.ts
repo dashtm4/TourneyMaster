@@ -44,10 +44,10 @@ export const registrationFetchFailure = (): { type: string } => ({
 export const registrationUpdateSuccess = (
   payload: any,
   event: any | null
-): { type: string; payload: any, event: any | null } => ({
+): { type: string; payload: any; event: any | null } => ({
   type: REGISTRATION_UPDATE_SUCCESS,
   payload,
-  event
+  event,
 });
 
 export const getRegistration: ActionCreator<ThunkAction<
@@ -77,7 +77,7 @@ export const saveRegistration: ActionCreator<ThunkAction<
 >> = (registration: IRegistration, eventId: string) => async (
   dispatch: Dispatch
 ) => {
-  const event  = (await api.get(`/events?event_id=${eventId}`))[0];
+  const event = (await api.get(`/events?event_id=${eventId}`))[0];
 
   const openEvent: Partial<ICalendarEvent> = {
     ...defaultCalendarEvent(),
@@ -137,6 +137,45 @@ export const saveRegistration: ActionCreator<ThunkAction<
     dispatch<any>(saveCalendarEvent(discountEndEvent));
 
     Toasts.successToast('Registration is successfully saved');
+  }
+};
+
+export const saveCustomData: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (requestIds: any, options: any, eventId: string) => async () => {
+  try {
+    const requestList = await api.get(
+      `/registrant_data_requests?event_id=${eventId}`
+    );
+
+    if (requestList.length > 0) {
+      await api.put(`/registrant_data_requests`, {
+        request_id: requestList[0].request_id,
+        data_field_id_list: JSON.stringify(requestIds),
+      });
+    } else {
+      await api.post(`/registrant_data_requests`, {
+        event_id: eventId,
+        data_field_id_list: JSON.stringify(requestIds),
+        is_active_YN: 1,
+      });
+    }
+
+    const promises: Promise<any>[] = [];
+    Object.keys(options).forEach(el => {
+      promises.push(
+        api.put(`/registrant_data_fields`, {
+          data_field_id: Number(el),
+          is_default_YN: options[el],
+        })
+      );
+    });
+    await Promise.all(promises);
+  } catch {
+    Toasts.errorToast("Couldn't save custom data");
   }
 };
 

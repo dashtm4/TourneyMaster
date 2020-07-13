@@ -42,6 +42,7 @@ enum Icons {
   FULL_SCREEN = 'fullScreen',
   FULL_SCREEN_EXIT = 'fullScreenExit',
   ARROW_RIGHT = 'arrowRight',
+  CLOSE = 'close',
 }
 
 export { Icons };

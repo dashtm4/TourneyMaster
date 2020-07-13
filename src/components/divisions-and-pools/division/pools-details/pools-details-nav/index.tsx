@@ -29,11 +29,10 @@ const PoolsDetailsNav = ({
   onEdit,
   division,
 }: Props) => {
-  const inviteLink = `${window.location.origin.toString()}/register/event/${
-    division.event_id
-    }?division=${encodeURIComponent(division.short_name)}&division_id=${
-    division.division_id
-    }`;
+  const inviteLink = `${window.location.origin.toString()}/register/event/
+    ${division.event_id}
+    ?division=${encodeURIComponent(division.short_name)}
+    &division_id=${division.division_id}`;
 
   return (
     <div className={styles.wrapper}>
@@ -78,17 +77,17 @@ const PoolsDetailsNav = ({
             </span>
           </p>
         ) : (
-            <Button
-              onClick={onArrange}
-              icon={getIcon(Icons.ZOOM, ICON_STYLES)}
-              variant={ButtonVariant.TEXT}
-              color={ButtonColors.SECONDARY}
-              label="Arrange Teams"
-            />
-          )}
+          <Button
+            onClick={onArrange}
+            icon={getIcon(Icons.ZOOM, ICON_STYLES)}
+            variant={ButtonVariant.TEXT}
+            color={ButtonColors.SECONDARY}
+            label="Arrange Teams"
+          />
+        )}
       </div>
     </div>
   );
-}
+};
 
 export default PoolsDetailsNav;

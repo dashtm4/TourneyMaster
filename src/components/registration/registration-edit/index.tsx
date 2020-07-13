@@ -2,6 +2,7 @@ import React from 'react';
 import HeadingLevelTwo from '../../common/headings/heading-level-two';
 import Button from '../../common/buttons/button';
 import SectionDropdown from '../../common/section-dropdown';
+import DataRequest from '../data-request';
 import styles from './styles.module.scss';
 import Paper from '../../common/paper';
 import PricingAndCalendar from './pricing-and-calendar';
@@ -9,10 +10,15 @@ import RegistrationDetails from './registration-details';
 import Payments from './payments';
 import { IEventDetails } from 'common/models/event';
 import { IRegistration } from 'common/models/registration';
-import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
+import {
+  BindingAction,
+  BindingCbWithTwo,
+  BindingCbWithThree,
+  IDivision,
+} from 'common/models';
 import FabButton from 'components/common/fab-button';
 import { PopupExposure } from 'components/common';
-import Waiver from "../waiver";
+import Waiver from '../waiver';
 
 interface IRegistrationEditProps {
   onCancel: BindingAction;
@@ -23,6 +29,10 @@ interface IRegistrationEditProps {
   divisions: IDivision[];
   eventType: string;
   event?: IEventDetails;
+  onAddNewField: () => void;
+  updateRequestIds: BindingCbWithTwo<any, string>;
+  updateOptions: BindingCbWithThree<number | string, number, boolean>;
+  requestIds: any;
 }
 
 interface IRegistrationEditState {
@@ -32,7 +42,7 @@ interface IRegistrationEditState {
 class RegistrationEdit extends React.Component<
   IRegistrationEditProps,
   IRegistrationEditState
-  > {
+> {
   state = { isExposurePopupOpen: false };
 
   onModalClose = () => {
@@ -48,6 +58,13 @@ class RegistrationEdit extends React.Component<
   };
 
   render() {
+    const {
+      updateRequestIds,
+      updateOptions,
+      requestIds,
+      onAddNewField,
+    } = this.props;
+
     return (
       <section>
         <Paper sticky={true}>
@@ -109,6 +126,22 @@ class RegistrationEdit extends React.Component<
                   data={this.props.registration}
                   onChange={this.props.onChange}
                   eventType={this.props.eventType}
+                />
+              </SectionDropdown>
+            </li>
+            <li>
+              <SectionDropdown
+                type="section"
+                panelDetailsType="flat"
+                isDefaultExpanded={true}
+              >
+                <span>Data Requests</span>
+                <DataRequest
+                  eventId={this.props?.event?.event_id!}
+                  updateRequestIds={updateRequestIds}
+                  updateOptions={updateOptions}
+                  requestIds={requestIds}
+                  onAddNewField={onAddNewField}
                 />
               </SectionDropdown>
             </li>
