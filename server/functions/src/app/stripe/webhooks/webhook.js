@@ -283,11 +283,9 @@ export const paymentSuccessWebhook = async req => {
         );
 
         let availableForAllocation = await findScheduledPaymentToAllocateTo(
-          paymentPlan,
           toConn,
           toParams,
-          reg_response_id,
-          lineItem.price.metadata.externalId
+          reg_response_id
         );
 
         if (availableForAllocation) {
@@ -321,11 +319,9 @@ export const paymentSuccessWebhook = async req => {
           new Error(`Payment Failure Event: ${JSON.stringify(event)}`)
         );
         let availableForAllocation = await findScheduledPaymentToAllocateTo(
-          paymentPlan,
           toConn,
           toParams,
-          reg_response_id,
-          lineItem.price.metadata.externalId
+          reg_response_id
         );
 
         if (availableForAllocation) {
@@ -360,24 +356,16 @@ export const paymentSuccessWebhook = async req => {
 };
 
 const findScheduledPaymentToAllocateTo = async (
-  paymentPlan,
   toConn,
   toParams,
-  reg_response_id,
-  externalId
+  reg_response_id
 ) => {
   let dbPayments;
-  if (paymentPlan.type === 'installment') {
-    dbPayments = await toConn.query(
-      `select * from ${toParams.db.database}.registrations_payments where reg_response_id=?`,
-      [reg_response_id]
-    );
-  } else if (paymentPlan.type === 'schedule') {
-    dbPayments = await toConn.query(
-      `select * from ${toParams.db.database}.registrations_payments where reg_response_id=?`, //  and installment_id=?
-      [reg_response_id /*, externalId */]
-    );
-  }
+  dbPayments = await toConn.query(
+    `select * from ${toParams.db.database}.registrations_payments where reg_response_id=?`,
+    [reg_response_id]
+  );
+
   console.log(
     `Scheduled payments: ${JSON.stringify(
       dbPayments

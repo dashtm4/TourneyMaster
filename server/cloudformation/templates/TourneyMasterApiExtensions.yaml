@@ -177,7 +177,6 @@ Resources:
           PUBLIC_API_BASE_URL: '1'
 
   ServicesApiFunction:
-    Condition: DeployPrivateApiComponents
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub ${ProjectName}-ServicesApiFunction
