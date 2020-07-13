@@ -47,7 +47,7 @@ export const composeAndSendEmail = async (data: any) => {
         data.paymentSuccessEvent.data.object.amount_paid / 100
       ).toFixed(2),
     paymentPlan: data.paymentPlan.payment_plan_notice,
-    to: data.reg_response.contact_email,
+    to: data.reg_response.registrant_email || data.reg_response.contact_email,
   };
 
   for (const key in fields) {
