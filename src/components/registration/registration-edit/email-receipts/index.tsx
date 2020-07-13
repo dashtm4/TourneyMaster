@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 
 import { Checkbox, Input } from 'components/common';
@@ -17,7 +17,7 @@ interface IEmailReceiptsProps {
 
 
 const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
-  const [request, setRequest] = useState<IWelcomeSettings>(data && data.welcome_email_settings && data.welcome_email_settings !== null ? JSON.parse(data.welcome_email_settings) : {
+  const request = (data && data.welcome_email_settings && data.welcome_email_settings !== null ? JSON.parse(data.welcome_email_settings) : {
     from: '',
     replyTo: '',
     subject: '',
@@ -34,6 +34,10 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
   const [contactName, setContactName] = useState(contactInfo.substring(0, contactInfo.indexOf(' (')));
   const [contactEmail, setContactEmail] = useState(contactInfo.substring(contactInfo.indexOf('(') + 1, contactInfo.indexOf(',')));
   const [contactPhoneNumber, setContactPhoneNumber] = useState(contactInfo.substring(contactInfo.indexOf('+') + 1, contactInfo.indexOf(')')));
+
+  useEffect(() => {
+    toJoinContactInfo();
+  }, [contactName, contactPhoneNumber, contactEmail]);
 
   const formats = [
     'header', 'font', 'size',
@@ -64,31 +68,26 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
     }
     request.contactPerson = `${contactName} (${contactEmail}, +${contactPhoneNumber})`;
     onChange('welcome_email_settings', JSON.stringify(request));
-    setRequest(request);
   };
 
   const onFromFieldChange = (e: InputTargetValue) => {
     request.from = e.target.value;
     onChange('welcome_email_settings', JSON.stringify(request));
-    setRequest(request);
   };
 
   const onSubjectFieldChange = (e: InputTargetValue) => {
     request.subject = e.target.value;
     onChange('welcome_email_settings', JSON.stringify(request));
-    setRequest(request);
   };
 
   const onIncludeEventLogo = (e: InputTargetValue) => {
     request.includeEventLogo = e.target.checked ? 1 : 0;
     onChange('welcome_email_settings', JSON.stringify(request));
-    setRequest(request);
   };
 
   const onIncludeCancellationPolicy = (e: InputTargetValue) => {
     request.includeCancellationPolicy = e.target.checked ? 1 : 0;
     onChange('welcome_email_settings', JSON.stringify(request));
-    setRequest(request);
   };
 
   const onBodyChange = (text: string) => {
@@ -103,23 +102,18 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
   const onReplyToFieldChange = (e: InputTargetValue) => {
     request.replyTo = e.target.value;
     onChange('welcome_email_settings', JSON.stringify(request));
-    setRequest(request);
   };
 
   const onContactNameFieldChange = (e: InputTargetValue) => {
     setContactName(e.target.value);
-    toJoinContactInfo();
   };
 
   const onContactEmailFieldChange = (e: InputTargetValue) => {
     setContactEmail(e.target.value);
-    toJoinContactInfo();
   };
 
   const onContactPhoneNumberChange = (phoneNumber: string) => {
     setContactPhoneNumber(phoneNumber);
-    console.log(phoneNumber);
-    toJoinContactInfo();
   };
 
   return (
