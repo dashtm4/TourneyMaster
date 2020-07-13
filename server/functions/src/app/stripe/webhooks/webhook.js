@@ -1,27 +1,14 @@
-import '../services/logger.js';
 import mysql from 'promise-mysql';
-import SSM from 'aws-sdk/clients/ssm.js';
+import '../../../services/logger';
+import { getParams, sendEmail } from '../../../services/aws-utils';
+import { getPaymentPlans } from '../../products/activeProducts.js';
+import { stripe } from '../common/common';
 
-import config from '../config.js';
-import Stripe from 'stripe';
-import { getPaymentPlans } from '../services/activeProducts.js';
-const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
-const ssm = new SSM({ region: 'us-east-1' });
+const sendWelcomeEmail = async data => {
+  return sendEmail(data);
+};
 
 export const paymentSuccessWebhook = async req => {
-  const getParams = async paramName => {
-    return JSON.parse(
-      (
-        await ssm
-          .getParameter({
-            Name: paramName,
-            WithDecryption: true,
-          })
-          .promise()
-      ).Parameter.Value
-    );
-  };
-
   const sig = req.headers['stripe-signature'];
   let event;
 
@@ -66,13 +53,20 @@ export const paymentSuccessWebhook = async req => {
       requestParams
     );
 
-    const charge = await stripe.charges.retrieve(
-      event.data.object.charge,
-      {
-        expand: ['balance_transaction'],
-      },
-      requestParams
-    );
+    let charge;
+    if (event.data.object.charge) {
+      charge = await stripe.charges.retrieve(
+        event.data.object.charge,
+        {
+          expand: ['balance_transaction'],
+        },
+        requestParams
+      );
+    } else {
+      if (event.data.object.amount_paid !== 0) {
+        throw new Error('Charge is empty while amoun_paid is not zero.');
+      }
+    }
 
     const discount = subscription.metadata.promo_code_discount
       ? +subscription.metadata.promo_code_discount
@@ -86,10 +80,9 @@ export const paymentSuccessWebhook = async req => {
       payment_plan_id,
     } = subscription.metadata;
     console.log(
-      `Registration type: ${reg_type}. Reg_response_id: ${reg_response_id}. Payment_plan_id: ${payment_plan_id}`
+      `Registration type: ${reg_type}. Reg_response_id: ${reg_response_id}. Sku_id: ${sku_id}. Payment_plan_id: ${payment_plan_id}`
     );
 
-    console.log(`sku_id: ${sku_id}, payment_plan_id: ${payment_plan_id}`);
     const paymentPlan = (await getPaymentPlans({ sku_id, payment_plan_id }))[0];
     console.log('paymentPlan', paymentPlan);
 
@@ -151,17 +144,29 @@ export const paymentSuccessWebhook = async req => {
               [reg_response_id]
             )
           )[0];
+          const registration = (
+            await fromConn.query(
+              `select * from ${fromParams.db.database}.v_registrations where registration_id=?`,
+              [reg_response.registration_id]
+            )
+          )[0];
+          const event_master = (
+            await fromConn.query(
+              `select * from ${fromParams.db.database}.v_events where event_id=?`,
+              [registration.event_id]
+            )
+          )[0];
           await fromConn.end();
 
           // Add Stripe stuff here
           reg_response.ext_payment_system = 'stripe';
           reg_response.ext_payment_id = event.data.object.id;
-          reg_response.currency = paymentPlan.currency;
+          reg_response.currency = lineItem.price.currency.toUpperCase();
           reg_response.amount_due =
             Math.round(
               paymentPlan.total_price *
                 (1 - discount / 100) *
-                (1 + paymentPlan.sales_tax_rate / 100) *
+                (1 + lineItem.price.metadata.sales_tax_rate / 100) *
                 100
             ) / 100;
           reg_response.payment_amount = 0;
@@ -182,6 +187,15 @@ export const paymentSuccessWebhook = async req => {
             0,
             -1
           )})`;
+
+          await sendWelcomeEmail({
+            reg_response,
+            paymentPlan,
+            subscription,
+            registration,
+            paymentSuccessEvent: event,
+            event: event_master,
+          });
 
           await toConn.query(sql, params);
         }

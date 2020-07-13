@@ -273,13 +273,13 @@ export default (
 
     /* 3. Remove replaced team game */
     if (
-      !simultaneousDnd || isSeparateTeamInMatchupsMode &&
+      !simultaneousDnd || (isSeparateTeamInMatchupsMode &&
       findIndex(teamCard.games, {
         id: gameId,
         teamPosition: position,
         date: day,
       }) >= 0
-    ) {
+    )) {
       const games = [
         ...teamCard.games?.filter(
           item =>

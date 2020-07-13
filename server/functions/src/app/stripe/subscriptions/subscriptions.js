@@ -1,8 +1,5 @@
-import config from '../config.js';
-import Stripe from 'stripe';
-import { getPaymentPlans } from '../services/activeProducts.js';
-import { loadAll } from '../app/utils/stripeUtils.js';
-const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
+import { getPaymentPlans } from '../../products/activeProducts.js';
+import { loadAll, stripe } from '../common/common';
 
 const createOrUpdateCustomer = async (subData, currency) => {
   const customerData = {
@@ -15,19 +12,25 @@ const createOrUpdateCustomer = async (subData, currency) => {
   console.log(customerData);
 
   let customer;
-  const customers = await stripe.customers
-    .list(
-      {
-        email: customerData.email,
-        limit: 1,
-      },
-      subData.requestParams
-    )
-    ?.data?.filter(
-      customer =>
-        customer.currency === null ||
-        customer.currency.toLowerCase() === currency.toLowerCase()
-    );
+  const customersList = await stripe.customers.list(
+    {
+      email: customerData.email,
+      limit: 100,
+    },
+    subData.requestParams
+  );
+
+  console.log(
+    `Customers with email ${customerData.email}: ${JSON.stringify(
+      customersList
+    )}. Currency: ${currency}`
+  );
+  const customers = customersList?.data?.filter(
+    customer =>
+      !customer.currency ||
+      customer.currency.toLowerCase() === currency.toLowerCase()
+  );
+  console.log(`Customers filtered by currency: ${JSON.stringify(customers)}`);
 
   if (customers?.length > 0) {
     customer = await stripe.customers.update(
@@ -106,9 +109,9 @@ const createSubscription = async (customer, paymentPlan, subData) => {
     const prices = (
       await stripe.prices.list({ product: sku_id, active: true }, requestParams)
     ).data;
-    console.log(prices);
+    console.log(`Prices of sku ${sku_id}`, prices);
     const price = prices.find(x => x.metadata.externalId === payment_plan_id);
-    console.log(price);
+    console.log(`Price of ${payment_plan_id}:`, price);
     await validatePrice(price);
 
     return price;
@@ -138,7 +141,10 @@ const createSubscription = async (customer, paymentPlan, subData) => {
       plans: [{ price: price.id, quantity: subData.items[0].quantity }],
       iterations: paymentPlan.iterations,
       proration_behavior: 'none',
-      application_fee_percent: paymentPlan.application_fee_percent.toFixed(2),
+      application_fee_percent:
+        paymentPlan.stripe_connect_id !== 'main'
+          ? paymentPlan.application_fee_percent.toFixed(2)
+          : undefined,
       coupon: coupon?.id,
       default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
     });
@@ -211,9 +217,10 @@ const createSubscription = async (customer, paymentPlan, subData) => {
               : +phase.date + 60 * 60 * 24 // if the last installment end_date = phase.date + 1 day
           ),
           proration_behavior: 'none',
-          application_fee_percent: paymentPlan.application_fee_percent.toFixed(
-            2
-          ),
+          application_fee_percent:
+            paymentPlan.stripe_connect_id !== 'main'
+              ? paymentPlan.application_fee_percent.toFixed(2)
+              : undefined,
           coupon: coupon?.id,
           default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
         };

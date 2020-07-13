@@ -1,4 +1,4 @@
-name: Payments Server PROD
+name: Server PROD
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
       - name: Build and Deploy Server
         run: |
           cd server/functions
-          npm install --no-save inherits
+          npm install --no-save inherits safe-buffer
           npm install --only=dev
           source ./uploadLambdaCode.sh
         env:

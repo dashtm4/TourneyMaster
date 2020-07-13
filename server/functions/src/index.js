@@ -1,11 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-import api from './routes/api.js';
+import paymentsApi from './routes/paymentsApi.js';
+import servicesApi from './routes/servicesApi.js';
 
 import serverlessExpress from 'aws-serverless-express';
 
 const app = express();
 const router = express.Router();
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(
@@ -25,7 +27,8 @@ app.use((req, res, next) => {
   );
   next();
 });
-app.use(['/:publicapi/payments', '/payments'], api(router));
+app.use(['/:publicapi/payments', '/payments'], paymentsApi(router));
+app.use(['/:privateapi/services', '/services'], servicesApi(router));
 
 const isInLambda = !!process.env.LAMBDA_TASK_ROOT;
 let handler = null;
@@ -37,7 +40,7 @@ if (isInLambda) {
     serverlessExpress.proxy(server, event, context);
   };
 } else {
-  app.listen(3001, () => console.log(`Listening on 3000`));
+  app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 }
 
 export { handler };

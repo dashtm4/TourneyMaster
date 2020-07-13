@@ -138,7 +138,7 @@ class OrganizationInfo extends Component<IProps, IState> {
                       </fieldset>
                     </div>
                     <div className={styles.subSectionTitle}>
-                      Payment Accounts
+                      Merchant Payment Accounts
                   </div>
                     <div className={styles.subSectionContainer}>
                       <RadioGroup>
@@ -147,7 +147,7 @@ class OrganizationInfo extends Component<IProps, IState> {
                           <FormControlLabel
                             value={org.is_default_YN === 1}
                             control={<MuiRadio checked={org.is_default_YN === 1} color="secondary" />}
-                            label="Stripe"
+                            label="Stripe Connect ID"
                             onChange={() => this.onChange(1, org.org_id, 'is_default_YN')}
                           />
                           <Input

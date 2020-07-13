@@ -1,5 +1,6 @@
 {
   "presets": [
+    "@babel/preset-typescript",
     [
       "@babel/preset-env",
       {
@@ -9,6 +10,10 @@
       }
     ]
   ],
+  "sourceMaps": "inline",
   "retainLines": true,
-  "plugins": ["@babel/plugin-proposal-class-properties"]
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "babel-plugin-static-fs"
+  ]
 }

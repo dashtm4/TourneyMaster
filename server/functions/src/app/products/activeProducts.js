@@ -1,4 +1,4 @@
-import axios from './axios.js';
+import axios from '../../services/tm-axios';
 import dateFormat from 'dateformat';
 
 export const getActiveProducts = async () => {
@@ -142,13 +142,7 @@ export const getPaymentPlans = async ({
                     date === 'now' ? billingCycleAnchor : date,
                   amount,
                   price_external_id:
-                    sku.sku_id +
-                    '_' +
-                    rawPaymentPlan.id +
-                    '_' +
-                    date +
-                    '_' +
-                    amount,
+                    sku.sku_id + '_' + rawPaymentPlan.id + '_' + date,
                   amountWithTax:
                     Math.round(amount * (1 + sku.sales_tax_rate / 100) * 100) /
                     100,

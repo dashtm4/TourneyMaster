@@ -1,14 +1,15 @@
 {
   "name": "clubsports-payments",
   "version": "1.0.0",
-  "type": "module",
   "description": "ClubSports Payment",
   "main": "index.js",
   "scripts": {
-    "start": "node --exec babel-node src/index.js",
-    "build": "npx babel src --out-dir dist/lambda",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "upload": "export AWS_PROFILE=clubsports & ./uploadLambdaCode.sh"
+    "start": "babel-node src/index.js --extensions '.js,.ts,.tsx'",
+    "tsc": "tsc",
+    "compile": "tsc && babel src --out-dir build --extensions '.js,.ts,.tsx'",
+    "build": "npx babel src --out-dir dist/lambda --extensions '.js,.ts,.tsx'",
+    "upload": "export AWS_PROFILE=clubsports & ./uploadLambdaCode.sh",
+    "syncproducts": "node -e 'require(\"./build/syncProducts.js\").handler()'"
   },
   "keywords": [],
   "author": "GMind LLC",
@@ -28,6 +29,11 @@
     "@babel/node": "^7.8.7",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/preset-env": "^7.9.6",
-    "aws-sdk": "^2.669.0"
+    "@babel/preset-typescript": "^7.10.4",
+    "@types/aws-lambda": "^8.10.59",
+    "@types/node": "^14.0.22",
+    "aws-sdk": "^2.713.0",
+    "babel-plugin-static-fs": "^3.0.0",
+    "typescript": "^3.9.6"
   }
 }

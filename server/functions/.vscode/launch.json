@@ -7,9 +7,23 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Payment Server",
-      "program": "${workspaceFolder}/src/index.js",
-      "skipFiles": ["<node_internals>/**"],
+      "name": "API Server",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/build/index.js",
+      "env": {
+        "SMParameterName": "TourneyMasterAPIv2",
+        "AWS_PROFILE": "clubsports",
+        "TZ": "UTC",
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Send Email",
+      "preLaunchTask": "build",
+      "cwd": "${workspaceFolder}/build",
+      "program": "${workspaceFolder}/build/test/testSendEmail.js",
       "env": {
         "SMParameterName": "TourneyMasterAPIv2",
         "AWS_PROFILE": "clubsports",
@@ -21,8 +35,9 @@
       "type": "node",
       "request": "launch",
       "name": "Sync Products",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/test/test.js",
+      "preLaunchTask": "build",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "syncproducts"],
       "env": {
         "TZ": "UTC"
       }

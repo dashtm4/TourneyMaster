@@ -13,8 +13,8 @@ cp ../../package.json .
 
 mkdir -p node_modules
 npm install --production
-rm package*.json
-touch package.json
+# rm package*.json
+# touch package.json
 zip -r ../bundle.zip *
 popd
 
@@ -32,7 +32,7 @@ aws lambda update-function-code --function-name "$STACK_NAME-SyncProductsFunctio
 aws lambda update-function-configuration --function-name "$STACK_NAME-SyncProductsFunction" \
   --environment "Variables={PUBLIC_API_SM_PARAMETER_NAME=$PUBLIC_API_SM_PARAMETER_NAME,\
   STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY,\
-  EVENT_NOTIFICATIONS_TOPIC="arn:aws:sns:us-east-1:564748484972:$STACK_NAME-EventNotificationsTopic",\
+  EVENT_NOTIFICATIONS_TOPIC="arn:aws:sns:us-east-1:564748484972:$STACK_NAME-ErrorsTopic",\
   STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY,\
   PUBLIC_API_BASE_URL=$PUBLIC_API_BASE_URL}"
 
@@ -44,6 +44,10 @@ aws lambda update-function-configuration --function-name "$STACK_NAME-PaymentsAp
   STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY,\
   STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY,\
   PUBLIC_API_BASE_URL=$PUBLIC_API_BASE_URL,\
-  EVENT_NOTIFICATIONS_TOPIC="arn:aws:sns:us-east-1:564748484972:$STACK_NAME-EventNotificationsTopic",\
+  EVENT_NOTIFICATIONS_TOPIC="arn:aws:sns:us-east-1:564748484972:$STACK_NAME-ErrorsTopic",\
+  USER_EVENTS_TOPIC="arn:aws:sns:us-east-1:564748484972:$STACK_NAME-UserEventsTopic",\
   STRIPE_WEBHOOK_SIGNING_SECRET=$STRIPE_WEBHOOK_SIGNING_SECRET,\
   STRIPE_CONNECT_WEBHOOK_SIGNING_SECRET=$STRIPE_CONNECT_WEBHOOK_SIGNING_SECRET}"
+
+aws lambda update-function-code --function-name "$STACK_NAME-ServicesApiFunction" --zip-file "fileb://dist/bundle.zip"
+aws lambda update-function-code --function-name "$STACK_NAME-SendEmailFunction" --zip-file "fileb://dist/bundle.zip"

@@ -79,23 +79,23 @@ const ResultingGameList = (props: IProps) => {
                 Game #
               </TableCell>
               <TableCell className={classes.tableHeaderCell} align="center">
-                Home
+                Away
               </TableCell>
               <TableCell className={classes.tableHeaderCell} align="center">
-                Away
+                Home
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {games.map((row, index) => {
-              const homeTeamIndex = teams!.findIndex(
-                o => o.id === row.homeTeamId
-              );
               const awayTeamIndex = teams!.findIndex(
                 o => o.id === row.awayTeamId
               );
-              const homeTeamName = teams && teams[homeTeamIndex].name;
+              const homeTeamIndex = teams!.findIndex(
+                o => o.id === row.homeTeamId
+              );
               const awayTeamName = teams && teams[awayTeamIndex].name;
+              const homeTeamName = teams && teams[homeTeamIndex].name;
               return (
                 <TableRow
                   key={index}
@@ -108,18 +108,18 @@ const ResultingGameList = (props: IProps) => {
                   <TableCell className={classes.gameCell} align="center">
                     {index + 1}
                   </TableCell>
-                  <TableCell className={classes.homeCell} align="center">
-                    {showNames ? (
-                      homeTeamName
-                    ) : (
-                        <p title={homeTeamName}>{homeTeamIndex + 1}</p>
-                      )}
-                  </TableCell>
                   <TableCell className={classes.awayCell} align="center">
                     {showNames ? (
                       awayTeamName
                     ) : (
                         <p title={awayTeamName}>{awayTeamIndex + 1}</p>
+                      )}
+                  </TableCell>
+                  <TableCell className={classes.homeCell} align="center">
+                    {showNames ? (
+                      homeTeamName
+                    ) : (
+                        <p title={homeTeamName}>{homeTeamIndex + 1}</p>
                       )}
                   </TableCell>
                 </TableRow>
