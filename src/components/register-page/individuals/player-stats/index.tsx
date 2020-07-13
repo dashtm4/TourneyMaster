@@ -15,6 +15,7 @@ const dominantHandOptions = [
   { label: 'Right', value: 'Right' },
   { label: 'Left', value: 'Left' },
 ];
+
 const sizeOptions = [
   { label: 'XL', value: 'XL' },
   { label: 'L', value: 'L' },
@@ -34,6 +35,15 @@ const position = [
   { label: 'LSM', value: 'LSM' },
   { label: 'Other', value: 'Other' },
 
+]
+
+const canadianTeamName = [
+  {label: "Cardinals", value:'Cardinals'},
+  {label: "Dark Horse", value:'Dark Horse'},
+  {label: "Maverick", value:'Maverick'},
+  {label: "Orcas", value:'Orcas'},
+  {label: "Wolverines", value:'Wolverines'},
+  {label: "Not sure", value:'Not sure'},
 ]
 
 const heightFeetOptions = [
@@ -60,8 +70,8 @@ const PlayerStats = ({ data, onChange, jerseyNumberRequired }: IPlayerStatsProps
   const onClubNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('player_club_name', e.target.value);
 
-  const onClubCoachNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange('player_club_coach_name', e.target.value);
+  // const onClubCoachNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  //   onChange('player_club_coach_name', e.target.value);
 
   const onHighlightUrlChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('player_highlight_URL', e.target.value);
@@ -105,9 +115,20 @@ const PlayerStats = ({ data, onChange, jerseyNumberRequired }: IPlayerStatsProps
   const onConnectLaxUrlChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange('player_connectlax_url', e.target.value);
 
+  const oncanadianTeamChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange('canadian_team_name', e.target.value);  
+
   return (
     <div className={styles.section}>
       <div className={styles.sectionRow}>
+      <div className={styles.sectionItem}>
+          <Select
+            options={canadianTeamName}
+            label="Team Desired (* Req.)"
+            value={data.canadian_team_name || ''}
+            onChange={oncanadianTeamChange}
+          />
+        </div>
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
@@ -116,14 +137,14 @@ const PlayerStats = ({ data, onChange, jerseyNumberRequired }: IPlayerStatsProps
             onChange={onClubNameChange}
           />
         </div>
-        <div className={styles.sectionItem}>
+        {/* <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
             label="Club Head Coach Name"
             value={data.player_club_coach_name || ''}
             onChange={onClubCoachNameChange}
           />
-        </div>
+        </div> */}
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
