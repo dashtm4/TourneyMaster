@@ -1,32 +1,55 @@
-<h3>Hi {{firstName}},</h3>
+<!DOCTYPE html>
+<html>
+<body style = "background-color: #dae1ed;">
+
+<h3 style = "color : #1C315F;">Hi {{firstName}},</h3>
 
 <p>
   We are happy to inform you that we have accepted your payment for
-  {{eventName}}.
-</p>
-<p>
-  Your payment has been successfully charged on your credit card {{card}}.
+  {{eventName}}. Your payment has been successfully charged on your credit card {{card}}.
 </p>
 
-<p>Invoice date: {{invoiceDate}}</p>
-<p>Invoice id: {{invoiceId}} (<a href="{{invoicePdf}}">download</a>)</p>
+<p style="margin-left: 50px">Invoice date: {{invoiceDate}}</p>
+<p style="margin-left: 50px">Invoice id: {{invoiceId}} (<a href="{{invoicePdf}}">download</a>)</p>
 
-<p>Payment Plan: {{paymentPlan}}</p>
 
-<p>Original amount: {{amountDue}}</p>
-<p>Amount paid: {{amountPaid}}</p>
-<p>Outstanding balance: {{outstandingBalance}}</p>
 
-<p>
-  Should you have any questions please contact {{contactPerson}}.
-</p>
+<style type="text/css">
+.tftable {margin-left: 15PX; font-size:13px;color:#1C315F;width:30%;border-width: 2px;border-color: #a9a9a9;border-collapse: collapse;}
+.tftable th {font-size:12px;font-size:14px; color: white; background-color:#1C315F;border-width: 1px;padding: 8px;border-style: solid;border-color: #FFFFF;text-align:left;}
+.tftable tr {background-color:#C9CACA;}
+.tftable td {font-size:12px;border-width: 3px;padding: 8px;border-style: solid;border-color: #a9a9a9;}
+.tftable tr:hover {background-color:#ffff99;}
+.footer  {margin-left; 50px; color = #1C315F; border-width: 2px; border-color: #a9a9a9;border-collapse: collapse;}
+</style>
 
+<table class="tftable">
+  <tr><th>Line Item</th><th>Amount</th></tr>
+  <tr><td>Payment Plan: </td><td>{{paymentPlan}}</td></tr>
+  <tr><td>Original amount:</td><td>{{amountDue}}</td></tr>
+  <tr><td>Amount paid: </td><td>{{amountPaid}}</td></tr>
+  <tr><td>Outstanding balance:</td><td>{{outstandingBalance}}</td></tr>
+</table>
+<p></p>
 {{body}}
 
 <p>{{cancellationPolicy}}</p>
 
-<p>We look forward to seeing you at the event!</p>
+<p style="margin-left: 10px; font: bold"> We look forward to seeing you at the event!</p>
 
-<p>Best regards,</p>
-<p>{{from}}</p>
+<p style="margin-left: 10px">Best regards,</p>
+<p style="margin-left: 10px">{{from}}</p>
 {{eventLogo}}
+
+<p></p>
+
+<!-- Footer -->
+<footer>
+  <div class="footer">
+  <p style="margin-left: 10px; ">© 2020 Copyright "<a href="https://www.tourneymaster.com/"> www.TourneyMaster.com   </a></p>
+           <img style="margin-left: 30px; alt="ClubLax" src="https://clubsportsorganization.s3.amazonaws.com/images/color+very+small.png"
+         width=60" height="60"
+  </div>
+</footer>
+</body>
+</html>
