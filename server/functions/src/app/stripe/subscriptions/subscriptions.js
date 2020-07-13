@@ -1,5 +1,5 @@
 import { getPaymentPlans } from '../../products/activeProducts.js';
-import { loadAll, stripe } from '../common/common.js';
+import { loadAll, stripe } from '../common/common';
 
 const createOrUpdateCustomer = async (subData, currency) => {
   const customerData = {

@@ -116,6 +116,13 @@ Resources:
                   - sqs:GetQueueAttributes
                 Resource:
                   - !GetAtt EmailsQueue.Arn
+        - PolicyName: UseSES
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ses:*
+                Resource: '*'
         - PolicyName: GetSecretValue
           PolicyDocument:
             Version: '2012-10-17'

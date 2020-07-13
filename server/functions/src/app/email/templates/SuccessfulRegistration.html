@@ -1,0 +1,32 @@
+<h3>Hi {{firstName}},</h3>
+
+<p>
+  We are happy to inform you that we have accepted your payment for
+  {{eventName}}.
+</p>
+<p>
+  Your payment has been successfully charged on your credit card {{card}}.
+</p>
+
+<p>Invoice date: {{invoiceDate}}</p>
+<p>Invoice id: {{invoiceId}} (<a href="{{invoicePdf}}">download</a>)</p>
+
+<p>Payment Plan: {{paymentPlan}}</p>
+
+<p>Original amount: {{amountDue}}</p>
+<p>Amount paid: {{amountPaid}}</p>
+<p>Outstanding balance: {{outstandingBalance}}</p>
+
+<p>
+  Should you have any questions please contact {{contactPerson}}.
+</p>
+
+{{body}}
+
+<p>{{cancellationPolicy}}</p>
+
+<p>We look forward to seeing you at the event!</p>
+
+<p>Best regards,</p>
+<p>{{from}}</p>
+{{eventLogo}}

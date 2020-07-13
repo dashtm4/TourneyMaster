@@ -2,7 +2,7 @@ import mysql from 'promise-mysql';
 import '../../../services/logger';
 import { getParams, sendEmail } from '../../../services/aws-utils';
 import { getPaymentPlans } from '../../products/activeProducts.js';
-import { stripe } from '../common/common.js';
+import { stripe } from '../common/common';
 
 const sendWelcomeEmail = async data => {
   return sendEmail(data);
@@ -144,6 +144,18 @@ export const paymentSuccessWebhook = async req => {
               [reg_response_id]
             )
           )[0];
+          const registration = (
+            await fromConn.query(
+              `select * from ${fromParams.db.database}.v_registrations where registration_id=?`,
+              [reg_response.registration_id]
+            )
+          )[0];
+          const event_master = (
+            await fromConn.query(
+              `select * from ${fromParams.db.database}.v_events where event_id=?`,
+              [registration.event_id]
+            )
+          )[0];
           await fromConn.end();
 
           // Add Stripe stuff here
@@ -176,7 +188,14 @@ export const paymentSuccessWebhook = async req => {
             -1
           )})`;
 
-          await sendWelcomeEmail({ reg_response, paymentPlan });
+          await sendWelcomeEmail({
+            reg_response,
+            paymentPlan,
+            subscription,
+            registration,
+            paymentSuccessEvent: event,
+            event: event_master,
+          });
 
           await toConn.query(sql, params);
         }

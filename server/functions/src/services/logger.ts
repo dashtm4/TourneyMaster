@@ -2,7 +2,7 @@ import { sendSnsMessage } from './aws-utils';
 
 declare global {
   interface Console {
-    logError?(error: Error): Promise<void>;
+    logError(error: Error): Promise<void>;
   }
 }
 
