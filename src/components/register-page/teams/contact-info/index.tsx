@@ -59,12 +59,12 @@ const ContacnInfo = ({ data, onChange }: IContacnInfoProps) => {
           />
         </div>
         <div className={styles.sectionItem}>
-          <div className={styles.sectionTitle}>Phone Number</div>
+          <div className={styles.sectionTitle}>Phone Number Contact </div>
           <PhoneInput
             country={'us'}
             disableDropdown
-            onlyCountries={['us']}
-            disableCountryCode={true}
+            onlyCountries={['us','ca']}
+            disableCountryCode={false}
             placeholder=""
             value={data.contact_mobile || ''}
             onChange={onPhoneNumberChange}
