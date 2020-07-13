@@ -13,6 +13,7 @@ import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
 import FabButton from 'components/common/fab-button';
 import { PopupExposure } from 'components/common';
 import Waiver from "../waiver";
+import EmailReceipts from "../email-receipts";
 
 interface IRegistrationEditProps {
   onCancel: BindingAction;
@@ -143,6 +144,19 @@ class RegistrationEdit extends React.Component<
                 </SectionDropdown>
               </li>
             ) : null}
+            <li>
+              <SectionDropdown
+                type="section"
+                panelDetailsType="flat"
+                isDefaultExpanded={true}
+              >
+                <span>Email Receipts</span>
+                <EmailReceipts
+                  data={this.props.registration}
+                  onChange={this.props.onChange}
+                />
+              </SectionDropdown>
+            </li>
           </ul>
         </div>
         <PopupExposure
