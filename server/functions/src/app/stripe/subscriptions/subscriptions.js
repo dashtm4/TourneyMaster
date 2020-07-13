@@ -141,7 +141,10 @@ const createSubscription = async (customer, paymentPlan, subData) => {
       plans: [{ price: price.id, quantity: subData.items[0].quantity }],
       iterations: paymentPlan.iterations,
       proration_behavior: 'none',
-      application_fee_percent: paymentPlan.application_fee_percent.toFixed(2),
+      application_fee_percent:
+        paymentPlan.stripe_connect_id !== 'main'
+          ? paymentPlan.application_fee_percent.toFixed(2)
+          : undefined,
       coupon: coupon?.id,
       default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
     });
@@ -214,9 +217,10 @@ const createSubscription = async (customer, paymentPlan, subData) => {
               : +phase.date + 60 * 60 * 24 // if the last installment end_date = phase.date + 1 day
           ),
           proration_behavior: 'none',
-          application_fee_percent: paymentPlan.application_fee_percent.toFixed(
-            2
-          ),
+          application_fee_percent:
+            paymentPlan.stripe_connect_id !== 'main'
+              ? paymentPlan.application_fee_percent.toFixed(2)
+              : undefined,
           coupon: coupon?.id,
           default_tax_rates: salesTaxRate ? [salesTaxRate.id] : [],
         };
