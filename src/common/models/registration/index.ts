@@ -57,9 +57,15 @@ export interface IRegistration {
   updated_datetime: string;
 
   waiver_content: string | null;
+  welcome_email_settings: string;
 }
 
-// export interface IRegistrationSuccess {
-//   registration: IRegistration;
-//   waivers_re
-// }
+export interface IWelcomeSettings {
+  from: string;
+  replyTo: string;
+  subject: string;
+  contactPerson: string;
+  includeCancellationPolicy: 0 | 1;
+  includeEventLogo: 0 | 1;
+  body: string;
+}

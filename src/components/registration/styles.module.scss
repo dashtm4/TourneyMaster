@@ -109,3 +109,34 @@
 .waiverWrapp {
   width: 100%;
 }
+
+//EMAIL RECEIPTS
+
+.emailReceipts{
+  width: 100%;
+  flex-wrap: wrap;
+}
+.emailReceiptsView{
+  width: 100%;
+  background: #ffffff;
+  min-height: 300px;
+}
+
+.emailReceiptsElement{
+  width: 80%;
+}
+
+.emailReceiptWrapperEditor {
+  background-color: white;
+  visibility: visible;
+  height: 342px;
+
+  .emailReceiptsEditor{
+    height: 300px;
+  }
+}
+
+.hiddenBlock {
+  display: none;
+  visibility: hidden;
+}
