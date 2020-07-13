@@ -4,11 +4,18 @@ export default api => {
   api.post('/generate-pdf', async (req, res) => {
     try {
       const result = await generatePdf(req.body);
-
-      res.json({
+      res.set({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'X-Requested-With',
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename=Waiver-${new Date().getTime()}.pdf`
+      });
+      result.pipe(res);
+      //res.send(result);
+      /*res.json({
         success: true,
         result,
-      });
+      });*/
     } catch (err) {
       res.json({
         success: false,
