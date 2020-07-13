@@ -29,11 +29,10 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
   const [isAdditionalInstructions, setIsAdditionalInstructions] = useState(0);
 
   const currentData = data && data.welcome_email_settings ? JSON.parse(data.welcome_email_settings) : null;
-  const contactInfo = currentData.contactPerson;
 
-  const [contactName, setContactName] = useState(contactInfo.substring(0, contactInfo.indexOf(' (')));
-  const [contactEmail, setContactEmail] = useState(contactInfo.substring(contactInfo.indexOf('(') + 1, contactInfo.indexOf(',')));
-  const [contactPhoneNumber, setContactPhoneNumber] = useState(contactInfo.substring(contactInfo.indexOf('+') + 1, contactInfo.indexOf(')')));
+  const [contactName, setContactName] = useState(currentData ? currentData.contactPerson.substring(0, currentData.contactPerson.indexOf(' (')) : '');
+  const [contactEmail, setContactEmail] = useState(currentData ? currentData.contactPerson.substring(currentData.contactPerson.indexOf('(') + 1, currentData.contactPerson.indexOf(',')) : '');
+  const [contactPhoneNumber, setContactPhoneNumber] = useState(currentData ? currentData.contactPerson.substring(currentData.contactPerson.indexOf('+') + 1, currentData.contactPerson.indexOf(')')) : '');
 
   useEffect(() => {
     toJoinContactInfo();

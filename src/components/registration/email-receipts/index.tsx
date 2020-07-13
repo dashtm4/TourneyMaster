@@ -89,13 +89,15 @@ const EmailReceipts = ({ data }: IEmailReceipts) => {
         </div>
       </div>
 
-      {
-        emailReceiptsData && emailReceiptsData !== null
-          ? <div className={`${styles.emailReceiptsView} ql-snow ql-editor `}>
-            <div dangerouslySetInnerHTML={{ __html: emailReceiptsData.body }} />
-          </div>
-          : <p>—</p>
-      }
+      <div className={styles.sectionRow}>
+        {emailReceiptsData && emailReceiptsData !== null
+            ? <div className={`${styles.emailReceiptsView} ql-snow ql-editor `}>
+              <div dangerouslySetInnerHTML={{ __html: emailReceiptsData.body }} />
+            </div>
+            : <p>—</p>
+        }
+      </div>
+
     </div>
   )
 }
