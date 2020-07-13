@@ -44,8 +44,8 @@ const EmailReceipts = ({ data }: IEmailReceipts) => {
       </div>
 
       <div className={styles.sectionRow}>
-        <div className={styles.sectionItem}>
-          {emailReceiptsData.includeCancellationPolicy
+        <div className={`${styles.sectionItem} `}>
+          {emailReceiptsData && emailReceiptsData !== null
             ? <Checkbox
               options={[
                 {
@@ -63,7 +63,7 @@ const EmailReceipts = ({ data }: IEmailReceipts) => {
 
         </div>
         <div className={styles.sectionItem}>
-          {emailReceiptsData.includeEventLogo
+          {emailReceiptsData && emailReceiptsData !== null
             ? <Checkbox
               options={[
                 {
@@ -89,14 +89,13 @@ const EmailReceipts = ({ data }: IEmailReceipts) => {
         </div>
       </div>
 
-      <div className={styles.sectionRow}>
-        <div className={styles.sectionItem}>
-            <div className={`${styles.emailReceiptsView} ql-snow ql-editor ${styles.sectionRow}`}>
-                <div dangerouslySetInnerHTML={{ __html: emailReceiptsData.body }} />
-            </div>
-        </div>
-      </div>
-
+      {
+        emailReceiptsData && emailReceiptsData !== null
+          ? <div className={`${styles.emailReceiptsView} ql-snow ql-editor `}>
+            <div dangerouslySetInnerHTML={{ __html: emailReceiptsData.body }} />
+          </div>
+          : <p>—</p>
+      }
     </div>
   )
 }
