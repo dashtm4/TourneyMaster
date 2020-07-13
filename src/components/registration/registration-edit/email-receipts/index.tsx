@@ -194,7 +194,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
           <div className={styles.emailReceiptsElement}>
             <PhoneInput
               country={'us'}
-              disableDropdown
+              // disableDropdown
               onlyCountries={['us','ca']}
               disableCountryCode={false}
               placeholder=""
