@@ -17,7 +17,7 @@ export const handler = async (event: SQSEvent, context?: Context) => {
     const snsMessage = JSON.parse(event.Records[0].body) as SNSMessage;
     const data = JSON.parse(snsMessage.Message);
 
-    composeAndSendEmail(data);
+    await composeAndSendEmail(data);
     return;
   } catch (err) {
     console.logError(err);
