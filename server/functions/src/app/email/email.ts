@@ -1,8 +1,9 @@
 import SES from 'aws-sdk/clients/ses.js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import nodemailer, { SendMailOptions } from 'nodemailer';
+import nodemailer from 'nodemailer';
 import inlineBase64 from 'nodemailer-plugin-inline-base64';
+import SESTransport from 'nodemailer/lib/ses-transport';
 
 const template = readFileSync(
   join(__dirname, 'templates/SuccessfulRegistration.html'),
@@ -61,35 +62,23 @@ export const composeAndSendEmail = async (data: any) => {
     htmlBody = htmlBody.split(`{{${key}}}`).join(fields[key]);
   }
 
-  const params: SES.Types.SendEmailRequest = {
-    ConfigurationSetName: CONFIGURATION_SET_NAME,
-    Source: `${fields.from} <${FROM_EMAIL}>`,
-    ReplyToAddresses: [fields.replyTo],
-    Destination: {
-      ToAddresses: [fields.to],
-    },
-    Message: {
-      Subject: { Data: fields.subject },
-      Body: { Html: { Data: htmlBody } },
-    },
-  };
-  console.log(`Email params:`, params);
-
   const transporter = nodemailer.createTransport({
     SES: ses,
   });
 
-  const nmParams: SendMailOptions = {
+  const params: SESTransport.MailOptions = {
     from: `${fields.from} <${FROM_EMAIL}>`,
     to: fields.to,
     subject: fields.subject,
     html: htmlBody,
     replyTo: fields.replyTo,
+    ses: { ConfigurationSetName: CONFIGURATION_SET_NAME },
   };
+  console.log(`Email params:`, params);
 
   transporter.use('compile', inlineBase64({ cidPrefix: 'cidPrefix_' }));
 
-  const result = await transporter.sendMail(nmParams);
+  const result = await transporter.sendMail(params);
 
   // const result = await ses.sendEmail(params).promise();
   console.log(`Email sending result: `, result);
