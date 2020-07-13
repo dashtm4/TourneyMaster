@@ -126,7 +126,7 @@ const PlayerInfo = ({
           <PhoneInput
             country={'us'}
             disableDropdown
-            onlyCountries={['us']}
+            onlyCountries={['us','ca']}
             disableCountryCode={true}
             placeholder=""
             value={data.participant_mobile || ''}

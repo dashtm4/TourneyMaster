@@ -63,7 +63,7 @@ const ContacnInfo = ({ data, onChange }: IContacnInfoProps) => {
           <PhoneInput
             country={'us'}
             disableDropdown
-            onlyCountries={['us']}
+            onlyCountries={['us','ca']}
             disableCountryCode={true}
             placeholder=""
             value={data.contact_mobile || ''}

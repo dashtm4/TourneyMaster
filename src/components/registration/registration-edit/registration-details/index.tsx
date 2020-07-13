@@ -232,7 +232,7 @@ const RegistrationDetails = ({
           <PhoneInput
             country={'us'}
             disableDropdown
-            onlyCountries={['us']}
+            onlyCountries={['us','ca']}
             disableCountryCode={true}
             placeholder=""
             value={data ? String(data.mobile_number) : ''}

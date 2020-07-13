@@ -75,7 +75,7 @@ const CoachInfo = ({ data, onChange, fillCoachInfo }: ICoachInfoProps) => {
           <PhoneInput
             country={'us'}
             disableDropdown
-            onlyCountries={['us']}
+            onlyCountries={['us','ca']}
             disableCountryCode={true}
             placeholder=""
             value={data.coach_mobile || ''}

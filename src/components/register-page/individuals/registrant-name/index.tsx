@@ -63,7 +63,7 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
           <PhoneInput
             country={'us'}
             disableDropdown
-            onlyCountries={['us']}
+            onlyCountries={['us','ca']}
             disableCountryCode={true}
             placeholder=""
             value={data.registrant_mobile || ''}
