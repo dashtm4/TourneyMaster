@@ -45,6 +45,7 @@ enum EventMenuRegistrationTitles {
   PAYMENTS = 'Payments',
   WAIVER = 'Waivers',
   REGISTRANTS = 'Registrants',
+  EMAIL_RECEIPTS = 'Email Receipts',
 }
 
 enum RequiredMenuKeys {

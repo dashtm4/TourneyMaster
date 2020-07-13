@@ -17,7 +17,7 @@ import {
 } from './registration-edit/logic/actions';
 import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import RegistrationEdit from 'components/registration/registration-edit';
-import { IRegistration } from 'common/models/registration';
+import { IRegistration, IWelcomeSettings } from 'common/models/registration';
 import {
   BindingCbWithOne,
   BindingCbWithTwo,
@@ -95,7 +95,7 @@ class RegistrationView extends React.Component<
     this.setState({ isEdit: true });
   };
 
-  onChange = (name: string, value: string | number) => {
+  onChange = (name: string, value: string | number | IWelcomeSettings) => {
     this.setState(({ registration }) => ({
       registration: {
         ...registration,
@@ -173,7 +173,10 @@ class RegistrationView extends React.Component<
 
   renderView = () => {
     const { registration, event } = this.props;
-    const eventType = event && event[0].event_type;
+    if (!event) {
+      return;
+    }
+    const eventType = event[0] && event[0].event_type;
     if (this.state.isEdit) {
       return (
         <RegistrationEdit
@@ -280,6 +283,16 @@ class RegistrationView extends React.Component<
                   >
                     <span>Registrants</span>
                     <Registrants />
+                  </SectionDropdown>
+                </li>
+                <li>
+                  <SectionDropdown
+                    id={EventMenuRegistrationTitles.REGISTRANTS}
+                    type="section"
+                    panelDetailsType="flat"
+                    expanded={this.state.isSectionsExpand}
+                  >
+                    <span>Email Receipts</span>
                   </SectionDropdown>
                 </li>
               </ul>
