@@ -63,7 +63,7 @@ const Waiver = ({ data, isEdit, onChange }: IRegistrationDetailsProps) => {
       );
     }
     if (data.waiver_content === null) {
-      return <div>Not found waiver.</div>;
+      return <div>Not waivers exist. Create your first one using the above Edit.</div>;
     }
     return (
       <div className={`${styles.waiverWrapp} ql-snow ql-editor`}>
