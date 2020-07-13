@@ -53,6 +53,7 @@ export interface IIndividualsRegister {
   updated_datetime: string;
   waiver_signature: string;
   waiver_sign_datetime: string;
+  canadian_team_name: string;
 }
 export interface ITeamsRegister {
   reg_response_id: string;
@@ -93,4 +94,5 @@ export interface ITeamsRegister {
   updated_datetime: string;
   waiver_signature: string;
   waiver_sign_datetime: string;
+  canadian_team_name: string;
 }
