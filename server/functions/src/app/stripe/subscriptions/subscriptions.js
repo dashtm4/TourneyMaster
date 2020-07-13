@@ -25,7 +25,7 @@ const createOrUpdateCustomer = async (subData, currency) => {
       customersList
     )}. Currency: ${currency}`
   );
-  const customers = customerList?.data?.filter(
+  const customers = customersList?.data?.filter(
     customer =>
       !customer.currency ||
       customer.currency.toLowerCase() === currency.toLowerCase()
