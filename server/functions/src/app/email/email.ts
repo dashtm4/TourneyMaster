@@ -1,6 +1,8 @@
 import SES from 'aws-sdk/clients/ses.js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import nodemailer, { SendMailOptions } from 'nodemailer';
+import inlineBase64 from 'nodemailer-plugin-inline-base64';
 
 const template = readFileSync(
   join(__dirname, 'templates/SuccessfulRegistration.html'),
@@ -17,6 +19,11 @@ export const composeAndSendEmail = async (data: any) => {
   const welcomeEmailSettings = data.registration.welcome_email_settings
     ? JSON.parse(data.registration.welcome_email_settings)
     : {};
+
+  welcomeEmailSettings.body = welcomeEmailSettings.body.replace(
+    '"></p>',
+    '"/></p>'
+  );
 
   const fields: any = {
     ...welcomeEmailSettings,
@@ -67,6 +74,23 @@ export const composeAndSendEmail = async (data: any) => {
     },
   };
   console.log(`Email params:`, params);
-  const result = await ses.sendEmail(params).promise();
+
+  const transporter = nodemailer.createTransport({
+    SES: ses,
+  });
+
+  const nmParams: SendMailOptions = {
+    from: `${fields.from} <${FROM_EMAIL}>`,
+    to: fields.to,
+    subject: fields.subject,
+    html: htmlBody,
+    replyTo: fields.replyTo,
+  };
+
+  transporter.use('compile', inlineBase64({ cidPrefix: 'cidPrefix_' }));
+
+  const result = await transporter.sendMail(nmParams);
+
+  // const result = await ses.sendEmail(params).promise();
   console.log(`Email sending result: `, result);
 };
