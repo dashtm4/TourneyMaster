@@ -35,6 +35,7 @@ import { History } from 'history';
 import { Loader, Toasts } from 'components/common';
 import { IEntity } from 'common/types';
 import Waiver from './waiver';
+import EmailReceipts from "./email-receipts";
 
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
@@ -283,6 +284,17 @@ class RegistrationView extends React.Component<
                   >
                     <span>Registrants</span>
                     <Registrants />
+                  </SectionDropdown>
+                </li>
+                <li>
+                  <SectionDropdown
+                    id={EventMenuRegistrationTitles.REGISTRANTS}
+                    type="section"
+                    panelDetailsType="flat"
+                    expanded={this.state.isSectionsExpand}
+                  >
+                    <span>Email Receipts</span>
+                    <EmailReceipts data={registration}/>
                   </SectionDropdown>
                 </li>
               </ul>

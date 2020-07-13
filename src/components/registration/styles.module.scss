@@ -112,6 +112,16 @@
 
 //EMAIL RECEIPTS
 
+.emailReceipts{
+  width: 100%;
+  flex-wrap: wrap;
+}
+.emailReceiptsView{
+  width: 100%;
+  background: #ffffff;
+  min-height: 300px;
+}
+
 .emailReceiptsElement{
   width: 80%;
 }
@@ -123,12 +133,6 @@
 
   .emailReceiptsEditor{
     height: 300px;
-
-    img {
-      width: 200px;  
-      float: right;
-      margin: 15px;
-    }
   }
 }
 

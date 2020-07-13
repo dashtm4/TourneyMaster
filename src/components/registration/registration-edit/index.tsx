@@ -13,7 +13,7 @@ import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
 import FabButton from 'components/common/fab-button';
 import { PopupExposure } from 'components/common';
 import Waiver from "../waiver";
-import EmailReceipts from "../email-receipts";
+import EmailReceipts from "./email-receipts";
 
 interface IRegistrationEditProps {
   onCancel: BindingAction;
