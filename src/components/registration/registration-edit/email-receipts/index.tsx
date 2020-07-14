@@ -244,7 +244,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
           <div>
             <Checkbox
               options={[{
-                label: 'Event logo ',
+                label: 'Include Event Logo',
                 checked: Boolean(request && request.includeEventLogo),
               }]}
               onChange={onIncludeEventLogo}
