@@ -2,15 +2,17 @@
 <html>
 <body style = "background-color: #dae1ed; font-family: Calibri;">
 
-<h3 style = "color : #1C315F;">Hi {{firstName}},</h3>
+<DIV>
+<p style="text-align: right; margin-right: 150px">Invoice date: {{invoiceDate}}</p>
+<p style="text-align: right; margin-right: 150px">Invoice ID: {{invoiceId}} (<a href="{{invoicePdf}}">Download PDF Copy</a>)</p>
+</DIV>
 
+<h3 style = "color : #1C315F;">Hi {{firstName}},</h3>
 <p>
   We are happy to inform you that we have accepted your payment for
   {{eventName}}. Your payment has been successfully charged on your credit card {{card}}.
 </p>
 
-<p style="margin-left: 50px">Invoice date: {{invoiceDate}}</p>
-<p style="margin-left: 50px">Invoice ID: {{invoiceId}} (<a href="{{invoicePdf}}">Download PDF Copy</a>)</p>
 
 
 
