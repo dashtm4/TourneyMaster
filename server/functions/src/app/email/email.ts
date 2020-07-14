@@ -1,6 +1,7 @@
 import SES from 'aws-sdk/clients/ses.js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import dateFormat from 'dateformat';
 import nodemailer from 'nodemailer';
 import inlineBase64 from 'nodemailer-plugin-inline-base64';
 import SESTransport from 'nodemailer/lib/ses-transport';
@@ -45,8 +46,10 @@ export const composeAndSendEmail = async (data: any) => {
     firstName:
       data.reg_response.contact_first_name ||
       data.reg_response.registrant_first_name,
-    invoiceDate: data.reg_response.payment_date,
+    invoiceDate: dateFormat(data.reg_response.payment_date, 'mm/dd/yyyy'),
     invoiceId: `${data.reg_response.ext_payment_id} (or ${data.reg_response.reg_response_id})`,
+    extPaymentId: data.reg_response.ext_payment_id,
+    regResponseId: data.reg_response.reg_response_id,
     invoicePdf: data.paymentSuccessEvent.data.object.invoice_pdf,
     outstandingBalance:
       '$' +
