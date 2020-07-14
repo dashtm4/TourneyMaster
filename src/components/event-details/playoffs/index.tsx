@@ -131,7 +131,6 @@ const PlayoffsSection: React.FC<Props> = ({
 
   useEffect(() => {
     const { playoff_comments } = eventData;
-    console.log('userEfect', eventData.playoff_comments);
     if (playoff_comments) {
       togglePlayOffComments(true);
       playoffCommentsChange(playoff_comments);

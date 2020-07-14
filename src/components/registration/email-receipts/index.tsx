@@ -19,7 +19,7 @@ const EmailReceipts = ({ data }: IEmailReceipts) => {
 
       <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
-          <h3>Main Info</h3>
+          <h3>Email Sender Settings</h3>
         </div>
       </div>
 
@@ -49,14 +49,14 @@ const EmailReceipts = ({ data }: IEmailReceipts) => {
             ? <Checkbox
               options={[
                 {
-                  label: 'Cancelation Policy',
+                  label: 'Include Cancellation Policy',
                   checked: Boolean(emailReceiptsData ? emailReceiptsData.includeCancellationPolicy : false),
                   disabled: true,
                 },
               ]}
             />
             : <div>
-              <span className={styles.sectionTitle}>Cancelation Policy</span>
+              <span className={styles.sectionTitle}>Cancellation Policy</span>
               <p>—</p>
             </div>
           }
@@ -74,7 +74,7 @@ const EmailReceipts = ({ data }: IEmailReceipts) => {
               ]}
             />
             : <div>
-              <span className={styles.sectionTitle}>Event Logo</span>
+              <span className={styles.sectionTitle}>Include Event Logo</span>
               <p>—</p>
             </div>
           }
