@@ -293,7 +293,7 @@ class RegistrationView extends React.Component<
                     panelDetailsType="flat"
                     expanded={this.state.isSectionsExpand}
                   >
-                    <span>Email Receipts</span>
+                    <span>Email Confirms Settings</span>
                     <EmailReceipts data={registration}/>
                   </SectionDropdown>
                 </li>
