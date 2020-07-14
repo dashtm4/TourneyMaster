@@ -8,7 +8,7 @@ export default api => {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'X-Requested-With',
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename=Waiver-${new Date().getTime()}.pdf`
+        'Content-Disposition': `attachment; filename=Waiver-${new Date().getTime()}.pdf`,
       });
       result.pipe(res);
       //res.send(result);
@@ -20,6 +20,7 @@ export default api => {
       res.json({
         success: false,
         message: err.message,
+        stack: err.stack,
       });
     }
   });

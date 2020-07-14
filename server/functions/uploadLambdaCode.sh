@@ -10,9 +10,15 @@ mkdir -p ./dist/lambda
 npm run build
 pushd ./dist/lambda
 cp ../../package.json .
+cp -R ../../src/fonts .
 
 mkdir -p node_modules
-npm install --production
+
+docker run -v $(pwd):/var/task -it lambci/lambda:build-nodejs12.x npm install
+# docker run -v $(pwd):/var/task -it lambci/lambda:build-nodejs12.x npm install phantomjs-prebuilt
+# read
+
+# npm install --production
 # rm package*.json
 # touch package.json
 zip -r ../bundle.zip *
