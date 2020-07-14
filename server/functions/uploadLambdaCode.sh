@@ -14,7 +14,7 @@ cp -R ../../src/fonts .
 
 mkdir -p node_modules
 
-docker run -v $(pwd):/var/task -it lambci/lambda:build-nodejs12.x npm install
+docker run -v $(pwd):/var/task lambci/lambda:build-nodejs12.x npm install
 # docker run -v $(pwd):/var/task -it lambci/lambda:build-nodejs12.x npm install phantomjs-prebuilt
 # read
 
