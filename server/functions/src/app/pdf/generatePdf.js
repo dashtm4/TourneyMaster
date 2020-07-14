@@ -1,35 +1,30 @@
-// import puppeteer from 'puppeteer';
+import pdf from 'html-pdf';
 import request from 'sync-request';
-import { Duplex } from 'stream';
 
-const bufferToStream = buffer => {
-  const stream = new Duplex();
-  stream.push(buffer);
-  stream.push(null);
-  return stream;
-};
+const generateAndReturnBody = async (html) => {
+  const options = {
+    format: 'A4',
+    "border": {
+      "top": "10px",
+      "right": "10px",
+      "bottom": "10px",
+      "left": "10px"
+    },
+  };
 
-const generateAndReturnBody = async html => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
-      const browser = await puppeteer.launch({ headless: true });
-      const page = await browser.newPage();
-      await page.setContent(html);
-      const buffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: {
-          left: '10px',
-          top: '10px',
-          right: '10px',
-          bottom: '10px',
-        },
+      pdf.create(html, options).toStream(function (err, content) {
+        if (err) {
+          throw err;
+        }
+        resolve(content);
       });
     } catch (e) {
-      reject(e);
+      reject(e)
     }
   });
-};
+}
 
 export const generatePdf = async ({ html, styles }) => {
   const extraStyle = '<style>ul, ul li {list-style: none;}</style>';
