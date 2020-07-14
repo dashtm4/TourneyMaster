@@ -44,6 +44,23 @@ const EmailReceipts = ({ data }: IEmailReceipts) => {
       </div>
 
       <div className={styles.sectionRow}>
+        <div className={styles.sectionItem}>
+          {emailReceiptsData && emailReceiptsData !== null
+            ? <Checkbox
+              options={[
+                {
+                  label: 'Additional Instructions',
+                  checked: Boolean(emailReceiptsData.body),
+                  disabled: true,
+                },
+              ]}
+            />
+            : <div>
+              <span className={styles.sectionTitle}>Event Logo</span>
+              <p>—</p>
+            </div>
+          }
+        </div>
         <div className={`${styles.sectionItem} `}>
           {emailReceiptsData && emailReceiptsData !== null
             ? <Checkbox
@@ -79,7 +96,6 @@ const EmailReceipts = ({ data }: IEmailReceipts) => {
             </div>
           }
         </div>
-        <div className={styles.sectionItem} />
         <div className={styles.sectionItem} />
       </div>
 
