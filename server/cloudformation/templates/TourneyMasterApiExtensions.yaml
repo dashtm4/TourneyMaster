@@ -190,6 +190,7 @@ Resources:
       Environment:
         Variables:
           SMParameterName: 'TourneyMasterAPIv2'
+          FONTCONFIG_PATH: '/var/task/fonts'
 
   SendEmailFunction:
     Type: AWS::Lambda::Function
