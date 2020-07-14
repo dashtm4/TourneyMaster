@@ -29,14 +29,27 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
     includeEventLogo: 0,
     body: '',
   });
-  
   const [contactName, setContactName] = useState(request ? request.contactPerson.substring(0, request.contactPerson.indexOf(' (')) : '');
   const [contactEmail, setContactEmail] = useState(request ? request.contactPerson.substring(request.contactPerson.indexOf('(') + 1, request.contactPerson.indexOf(',')) : '');
   const [contactPhoneNumber, setContactPhoneNumber] = useState(request ? request.contactPerson.substring(request.contactPerson.indexOf('+') + 1, request.contactPerson.indexOf(')')) : '');
 
+  const updateRequest = (key: string, value: any) => {
+    request[key] = value;
+    onChange('welcome_email_settings', JSON.stringify(request));
+  };
+
+  const toJoinContactInfo = () => {
+    if (contactName === '' || contactEmail === '' || contactPhoneNumber === '') {
+      return;
+    }
+    updateRequest('contactPerson', `${contactName} (${contactEmail}, +${contactPhoneNumber})`);
+  };
+
   useEffect(() => {
     toJoinContactInfo();
-  }, [contactName, contactPhoneNumber, contactEmail]);
+  }, [contactName, contactEmail, contactPhoneNumber]);
+
+  
 
   const formats = [
     'header', 'font', 'size',
@@ -59,18 +72,6 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
       // toggle to add extra line breaks when pasting HTML:
       matchVisual: false
     }
-  };
-
-  const updateRequest = (key: string, value: any) => {
-    request[key] = value;
-    onChange('welcome_email_settings', JSON.stringify(request));
-  };
-
-  const toJoinContactInfo = () => {
-    if (contactName === '' || contactEmail === '' || contactPhoneNumber === '') {
-      return;
-    }
-    updateRequest('contactPerson', `${contactName} (${contactEmail}, +${contactPhoneNumber})`);
   };
 
   const onFromFieldChange = (e: InputTargetValue) => {
@@ -220,7 +221,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
           <div>
             <Checkbox
               options={[{
-                label: 'Additional Instructions',
+                label: 'Additional Instructions:',
                 checked: Boolean(isAdditionalInstructions),
               }]}
               onChange={onAdditionalInstructionsChange}
@@ -231,7 +232,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
           <div>
             <Checkbox
               options={[{
-                label: 'Cancellation Policy',
+                label: 'Cancellation Policy:',
                 checked: Boolean(request && request.includeCancellationPolicy),
               }]}
               onChange={onIncludeCancellationPolicy}
@@ -242,7 +243,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
           <div>
             <Checkbox
               options={[{
-                label: 'Include Event Logo',
+                label: 'Event logo: ',
                 checked: Boolean(request && request.includeEventLogo),
               }]}
               onChange={onIncludeEventLogo}
