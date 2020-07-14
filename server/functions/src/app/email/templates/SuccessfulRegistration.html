@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<body style = "background-color: #dae1ed;">
+<body style = "background-color: #dae1ed; font-family: Calibri;">
 
 <h3 style = "color : #1C315F;">Hi {{firstName}},</h3>
 
@@ -10,7 +10,7 @@
 </p>
 
 <p style="margin-left: 50px">Invoice date: {{invoiceDate}}</p>
-<p style="margin-left: 50px">Invoice id: {{invoiceId}} (<a href="{{invoicePdf}}">download</a>)</p>
+<p style="margin-left: 50px">Invoice ID: {{invoiceId}} (<a href="{{invoicePdf}}">Download PDF Copy</a>)</p>
 
 
 
@@ -18,7 +18,7 @@
 .tftable {margin-left: 15PX; font-size:13px;color:#1C315F;width:30%;border-width: 2px;border-color: #a9a9a9;border-collapse: collapse;}
 .tftable th {font-size:12px;font-size:14px; color: white; background-color:#1C315F;border-width: 1px;padding: 8px;border-style: solid; border-color: #FFFFFF;text-align:left;}
 .tftable tr {background-color:#C9CACA;}
-.tftable td {font-size:12px;border-width: 3px;padding: 8px;border-style: solid;border-color: #a9a9a9;}
+.tftable td {font-size:12px;border-width: 3px;padding: 8px;border-style: solid;border-color: #FFFFFF;}
 .tftable tr:hover {background-color:#ffff99;}
 .footer   {margin-left: 50px; color : #1C315F; border-width: 2px; border-color: #a9a9a9;border-collapse: collapse;}
 </style>
@@ -26,9 +26,9 @@
 <table class="tftable">
   <tr><th>Line Item</th><th>Amount</th></tr>
   <tr><td>Payment Plan: </td><td>{{paymentPlan}}</td></tr>
-  <tr><td>Original amount:</td><td>{{amountDue}}</td></tr>
-  <tr><td>Amount paid: </td><td>{{amountPaid}}</td></tr>
-  <tr><td>Outstanding balance:</td><td>{{outstandingBalance}}</td></tr>
+  <tr><td>Original Amount:</td><td>{{amountDue}}</td></tr>
+  <tr><td>Amount Paid: </td><td>{{amountPaid}}</td></tr>
+  <tr><td>Outstanding Balance:</td><td>{{outstandingBalance}}</td></tr>
 </table>
 <p></p>
 {{body}}
@@ -42,13 +42,14 @@
 {{eventLogo}}
 
 <p></p>
+<hr style = "margin-left : 2; size:6; width: 90%;background-color: #848484;" />
 
 <!-- Footer -->
 <footer>
   <div class="footer">
-  <p style="margin-left: 10px; ">© 2020 Copyright "<a href="https://www.tourneymaster.com/"> www.TourneyMaster.com   </a></p>
-           <img style="margin-left: 30px;" alt = "ClubLax" src="https://clubsportsorganization.s3.amazonaws.com/images/color+very+small.png"
-         width=60" height="60"
+  <p style="margin-left: 20px; ">© 2020 Copyright "<a href="https://www.tourneymaster.com/"> www.TourneyMaster.com</a></p>
+           <img style="margin-left: 60px;" alt = "Visit us on the Web!" src="https://tourneymaster.s3.amazonaws.com/Logos/tourney+master+color+200+x+156.png"
+         width=100" height="78"
   </div>
 </footer>
 </body>
