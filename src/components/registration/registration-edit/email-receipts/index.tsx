@@ -17,6 +17,9 @@ interface IEmailReceiptsProps {
 
 
 const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
+ 
+  const [isAdditionalInstructions, setIsAdditionalInstructions] = useState(0);
+
   const request = (data && data.welcome_email_settings && data.welcome_email_settings !== null ? JSON.parse(data.welcome_email_settings) : {
     from: '',
     replyTo: '',
@@ -26,13 +29,10 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
     includeEventLogo: 0,
     body: '',
   });
-  const [isAdditionalInstructions, setIsAdditionalInstructions] = useState(0);
-
-  const currentData = data && data.welcome_email_settings ? JSON.parse(data.welcome_email_settings) : null;
-
-  const [contactName, setContactName] = useState(currentData ? currentData.contactPerson.substring(0, currentData.contactPerson.indexOf(' (')) : '');
-  const [contactEmail, setContactEmail] = useState(currentData ? currentData.contactPerson.substring(currentData.contactPerson.indexOf('(') + 1, currentData.contactPerson.indexOf(',')) : '');
-  const [contactPhoneNumber, setContactPhoneNumber] = useState(currentData ? currentData.contactPerson.substring(currentData.contactPerson.indexOf('+') + 1, currentData.contactPerson.indexOf(')')) : '');
+  
+  const [contactName, setContactName] = useState(request ? request.contactPerson.substring(0, request.contactPerson.indexOf(' (')) : '');
+  const [contactEmail, setContactEmail] = useState(request ? request.contactPerson.substring(request.contactPerson.indexOf('(') + 1, request.contactPerson.indexOf(',')) : '');
+  const [contactPhoneNumber, setContactPhoneNumber] = useState(request ? request.contactPerson.substring(request.contactPerson.indexOf('+') + 1, request.contactPerson.indexOf(')')) : '');
 
   useEffect(() => {
     toJoinContactInfo();
@@ -61,37 +61,36 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
     }
   };
 
+  const updateRequest = (key: string, value: any) => {
+    request[key] = value;
+    onChange('welcome_email_settings', JSON.stringify(request));
+  };
+
   const toJoinContactInfo = () => {
     if (contactName === '' || contactEmail === '' || contactPhoneNumber === '') {
       return;
     }
-    request.contactPerson = `${contactName} (${contactEmail}, +${contactPhoneNumber})`;
-    onChange('welcome_email_settings', JSON.stringify(request));
+    updateRequest('contactPerson', `${contactName} (${contactEmail}, +${contactPhoneNumber})`);
   };
 
   const onFromFieldChange = (e: InputTargetValue) => {
-    request.from = e.target.value;
-    onChange('welcome_email_settings', JSON.stringify(request));
+    updateRequest('from', e.target.value);
   };
 
   const onSubjectFieldChange = (e: InputTargetValue) => {
-    request.subject = e.target.value;
-    onChange('welcome_email_settings', JSON.stringify(request));
+    updateRequest('subject', e.target.value);
   };
 
   const onIncludeEventLogo = (e: InputTargetValue) => {
-    request.includeEventLogo = e.target.checked ? 1 : 0;
-    onChange('welcome_email_settings', JSON.stringify(request));
+    updateRequest('includeEventLogo', e.target.checked ? 1 : 0);
   };
 
   const onIncludeCancellationPolicy = (e: InputTargetValue) => {
-    request.includeCancellationPolicy = e.target.checked ? 1 : 0;
-    onChange('welcome_email_settings', JSON.stringify(request));
+    updateRequest('includeCancellationPolicy', e.target.checked ? 1 : 0);
   };
 
   const onBodyChange = (text: string) => {
-    request.body = text;
-    onChange('welcome_email_settings', JSON.stringify(request));
+    updateRequest('body', text);
   };
 
   const onAdditionalInstructionsChange = (e: InputTargetValue) => {
@@ -99,8 +98,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
   };
 
   const onReplyToFieldChange = (e: InputTargetValue) => {
-    request.replyTo = e.target.value;
-    onChange('welcome_email_settings', JSON.stringify(request));
+    updateRequest('replyTo', e.target.value);
   };
 
   const onContactNameFieldChange = (e: InputTargetValue) => {

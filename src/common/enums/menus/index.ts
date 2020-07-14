@@ -43,7 +43,7 @@ enum EventMenuRegistrationTitles {
   PRICING_AND_CALENDAR = 'Pricing & Calendar',
   REGISTRATION_DETAILS = 'Registration Details',
   PAYMENTS = 'Payments',
-  WAIVER = 'Waivers',
+  WAIVER = 'Waivers & Wellness',
   REGISTRANTS = 'Registrants',
   EMAIL_RECEIPTS = 'Email Confirm Settings',
 }
