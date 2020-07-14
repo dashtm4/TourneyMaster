@@ -120,7 +120,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
 
       <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
-          <h3>Main Info</h3>
+          <h3>Email Sender Settings</h3>
         </div>
       </div>
 
