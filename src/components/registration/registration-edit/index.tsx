@@ -150,7 +150,7 @@ class RegistrationEdit extends React.Component<
                 panelDetailsType="flat"
                 isDefaultExpanded={true}
               >
-                <span>Email Receipts</span>
+                <span>Email Confirms Settings</span>
                 <EmailReceipts
                   data={this.props.registration}
                   onChange={this.props.onChange}
