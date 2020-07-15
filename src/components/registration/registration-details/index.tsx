@@ -6,7 +6,7 @@ import { Checkbox } from 'components/common';
 enum Options {
   'Required' = 1,
   'Requested' = 2,
-  'None' = 0,
+  'Not Needed' = 0,
 }
 
 interface IRegistrationDetails {

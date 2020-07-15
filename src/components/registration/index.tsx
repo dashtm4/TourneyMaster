@@ -205,7 +205,7 @@ class RegistrationView extends React.Component<
               {registration && (
                 <Button
                   label={
-                    this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+                    this.state.isSectionsExpand ? "Collapse All" : "Expand All"
                   }
                   variant="text"
                   color="secondary"
@@ -227,7 +227,7 @@ class RegistrationView extends React.Component<
                     <PricingAndCalendar
                       eventId={this.eventId}
                       data={registration}
-                      divisions={this.props.divisions.map(division => ({
+                      divisions={this.props.divisions.map((division) => ({
                         name: division.short_name,
                         id: division.division_id,
                       }))}
@@ -288,12 +288,12 @@ class RegistrationView extends React.Component<
                 </li>
                 <li>
                   <SectionDropdown
-                    id={EventMenuRegistrationTitles.REGISTRANTS}
+                    id={EventMenuRegistrationTitles.EMAIL_RECEIPTS}
                     type="section"
                     panelDetailsType="flat"
                     expanded={this.state.isSectionsExpand}
                   >
-                    <span>Email Receipts</span>
+                    <span>Email Confirms Settings</span>
                     <EmailReceipts data={registration}/>
                   </SectionDropdown>
                 </li>

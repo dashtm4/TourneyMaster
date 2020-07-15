@@ -1,5 +1,6 @@
-import puppeteer from 'puppeteer';
 import request from 'sync-request';
+import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 import { Duplex } from 'stream';
 
 const bufferToStream = (buffer) => {
@@ -12,7 +13,13 @@ const bufferToStream = (buffer) => {
 const generateAndReturnBody = async (html) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const browser = await puppeteer.launch({ headless: true });
+      const browser = await puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath,
+        headless: false,
+        ignoreHTTPSErrors: true,
+      });
       const page = await browser.newPage();
       await page.setContent(html);
       const buffer = await page.pdf({

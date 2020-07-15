@@ -9,9 +9,10 @@
   
 
 <DIV>
-<img style="margin-left: 30px;" alt = "TourneyMaster" src="https://tourneymaster.s3.amazonaws.com/Logos/tourney+master+color+200+x+156.png" width= 100; height=78; >
+<a href="https://www.tourneymaster.com"> <img style="margin-left: 30px;" alt = "TourneyMaster" src="https://tourneymaster.s3.amazonaws.com/Logos/tourney+master+color+200+x+156.png" width= 100; height=78; ></a>
 <p style="text-align: right; margin-right: 150px; line-height: 50%;">Invoice date: {{invoiceDate}}</p>
-<p style="text-align: right; margin-right: 150px; line-height: 50%;">Invoice ID: {{invoiceId}} (<a href="{{invoicePdf}}">Download PDF Copy</a>)</p>
+<p style="text-align: right; margin-right: 150px; line-height: 50%;">Ext Invoice ID: {{extPaymentId}}</p>
+<p style="text-align: right; margin-right: 150px; line-height: 50%;">Int Invoice ID {{regResponseId}} (<a href="{{invoicePdf}}">Download PDF Copy</a>)</p>
 </DIV>
 
 <h3 style = "margin-left: 10px; color : #FFFFFF;">Hi {{firstName}},</h3>
@@ -26,11 +27,13 @@
 	.tftable tr {background-color:#C9CACA;}
 	.tftable td {font-size:13px;border-width: 3px;padding: 8px;border-style: solid;border-color: #FFFFFF;}
 	.tftable tr:hover {background-color:#ffff99;}
-	.footer  {style = "margin-left; 50px; color = #1C315F; border-width: 2px; border-color: #a9a9a9;border-collapse: collapse;"}
+<!--	.footer  {style = "margin-left; 50px; color = #1C315F; border-width: 2px; border-color: #a9a9a9;border-collapse: collapse;"}
+-->
 	th:last-child,
 	td:last-child,
 	th:nth-last-child(1),
-	td:nth-last-child(1) {text-align: right;}
+	td:nth-last-child(1) {text-align: right;},
+	.center {"display: block;margin: 0 auto;"}
 </style>
 
 <table class="tftable">
@@ -57,12 +60,21 @@
 <!-- Footer -->
 <footer>
   <div class="footer">
-  <p style="text-align: center; line-height: 60%; color : #1C315F;text-shadow: 1px 1px #a6aaad; "> © 2020 Copyright <a href="https://www.tourneymaster.com/" style="color: #1C315F;">www.TourneyMaster.com</a></p>
+  <p style="text-align: center; line-height: 60%; color : #1C315F;text-shadow: 1px 1px #a6aaad; "> © 2020 Copyright</p>
   <p style="text-align: center; line-height: 50%; color : #FFFFFF; text-shadow: 1px 2px #1C315F;">The Club Sports Organization LLC</p>
 
   <p style="text-align: center; line-height: 50%; color : #FFFFFF;text-shadow: 1px 2px #1C315F;">One World Trade Center | Suite 8500 | New York City | NY</p>
-
+ 
+<style type="text/css">
+	.centerImage {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+} 
+</style>
+    <a href="https://www.theclubsportsorganization.com"> <img  class = "centerImage"  src="https://clubsportsorganization.s3.amazonaws.com/images/CSO+Logo+-+White+Version+130+x+98.png" width= 100; height=78; ></a>
   </div>
+	
 
 
 </footer>
