@@ -297,8 +297,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   const fillCoachInfo = (info: any) =>
     setRegistration({ ...registration, ...info });
 
-  const onTypeChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange('registrant_role', e.target.value);
     setType(Number(TypeOptions[e.target.value]));
+  };
 
   const onTypeSelect = () => toggleModal(false);
 
