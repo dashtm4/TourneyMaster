@@ -19,15 +19,6 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
  
   const [isAdditionalInstructions, setIsAdditionalInstructions] = useState(0);
 
-  const updateData = (key: string, value: any) => {
-    if (Object.keys(data.contactPerson).includes(key)) {
-      data.contactPerson[key] = value;
-    } else {
-      data[key] = value;
-    }
-    onChange(data);
-  };
-
   const formats = [
     'header', 'font', 'size',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
@@ -51,6 +42,21 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
     }
   };
 
+  const updateData = (key: string, value: any) => {
+    if (Object.keys(data.contactPerson).includes(key)) {
+      data.contactPerson[key] = value;
+    } else {
+      data[key] = value;
+    }
+    onChange(data);
+  };
+
+  const isEmptyBody = (body: string) => {
+    const div = document.createElement('div');
+    div.innerHTML = body;
+    return Boolean(div.textContent || div.innerText);
+  };
+
   const onFromFieldChange = (e: InputTargetValue) => {
     updateData('from', e.target.value);
   };
@@ -68,7 +74,9 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
   };
 
   const onBodyChange = (text: string) => {
-    updateData('body', text);
+    isEmptyBody(text)
+      ? updateData('body', text)
+      : updateData('body', '');
   };
 
   const onAdditionalInstructionsChange = (e: InputTargetValue) => {
