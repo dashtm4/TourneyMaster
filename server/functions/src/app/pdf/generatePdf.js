@@ -1,7 +1,14 @@
 import request from 'sync-request';
 import chromium from "chrome-aws-lambda";
 import puppeteer from "puppeteer-core";
+import { Duplex } from 'stream';
 
+const bufferToStream = (buffer) => {
+  const stream = new Duplex();
+  stream.push(buffer);
+  stream.push(null);
+  return stream;
+}
 
 const generateAndReturnBody = async (html) => {
   return new Promise(async (resolve, reject) => {
@@ -10,7 +17,7 @@ const generateAndReturnBody = async (html) => {
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath,
-        headless: chromium.headless,
+        headless: false,
         ignoreHTTPSErrors: true,
       });
       const page = await browser.newPage();
@@ -26,7 +33,7 @@ const generateAndReturnBody = async (html) => {
         }
       });
       await browser.close();
-      resolve(buffer);
+      resolve(bufferToStream(buffer));
     } catch (e) {
       reject(e)
     }
