@@ -1,19 +1,11 @@
 import request from 'sync-request';
-import chromium from "chrome-aws-lambda";
-import puppeteer from "puppeteer-core";
-import { Duplex } from 'stream';
-
-const bufferToStream = (buffer) => {
-  const stream = new Duplex();
-  stream.push(buffer);
-  stream.push(null);
-  return stream;
-}
+import chromium from 'chrome-aws-lambda';
+import puppeteer from 'puppeteer-core';
 
 const generateAndReturnBody = async (html) => {
   return new Promise(async (resolve, reject) => {
     try {
-      await chromium.font('/var/task/fonts/Segoe Script.ttf');
+      //await chromium.font('/var/task/fonts/Segoe Script.ttf');
       const browser = await puppeteer.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
@@ -34,7 +26,7 @@ const generateAndReturnBody = async (html) => {
         }
       });
       await browser.close();
-      resolve(bufferToStream(buffer));
+      resolve(buffer);
     } catch (e) {
       reject(e)
     }
