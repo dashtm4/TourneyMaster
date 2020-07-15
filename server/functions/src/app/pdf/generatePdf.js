@@ -1,37 +1,39 @@
-import pdf from 'html-pdf';
 import request from 'sync-request';
+import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 
-const generateAndReturnBody = async html => {
-  const options = {
-    format: 'A4',
-    border: {
-      top: '10px',
-      right: '10px',
-      bottom: '10px',
-      left: '10px',
-    },
-    phantomPath: './node_modules/phantomjs-prebuilt/bin/phantomjs',
-  };
 
-  return new Promise((resolve, reject) => {
+const generateAndReturnBody = async (html) => {
+  return new Promise(async (resolve, reject) => {
     try {
-      console.log('Before create');
-      pdf.create(html, options).toBuffer(function (err, content) {
-        if (err) {
-          throw err;
-        }
-        resolve(content);
+      const browser = await puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath,
+        headless: chromium.headless,
+        ignoreHTTPSErrors: true,
       });
+      const page = await browser.newPage();
+      await page.setContent(html);
+      const buffer = await page.pdf({
+        format: "A4",
+        printBackground: true,
+        margin: {
+          left: "10px",
+          top: "10px",
+          right: "10px",
+          bottom: "10px"
+        }
+      });
+      await browser.close();
+      resolve(buffer);
     } catch (e) {
-      console.log('Error in create: ', e);
-      reject(e);
+      reject(e)
     }
   });
-};
+}
 
 export const generatePdf = async ({ html, styles }) => {
-  process.env.FONTCONFIG_PATH = '/var/task/fonts';
-
   const extraStyle = '<style>ul, ul li {list-style: none;}</style>';
   let content = extraStyle + html;
   if (styles) {
