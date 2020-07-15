@@ -1,6 +1,14 @@
 import request from 'sync-request';
 import chromium from 'chrome-aws-lambda';
 import puppeteer from 'puppeteer-core';
+import { Duplex } from 'stream';
+
+const bufferToStream = (buffer) => {
+  const stream = new Duplex();
+  stream.push(buffer);
+  stream.push(null);
+  return stream;
+}
 
 const generateAndReturnBody = async (html) => {
   return new Promise(async (resolve, reject) => {
@@ -10,8 +18,7 @@ const generateAndReturnBody = async (html) => {
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath,
-        headless: false,
-        ignoreHTTPSErrors: true,
+        headless: chromium.headless
       });
       const page = await browser.newPage();
       await page.setContent(html);
@@ -26,7 +33,7 @@ const generateAndReturnBody = async (html) => {
         }
       });
       await browser.close();
-      resolve(buffer.toString('base64'));
+      resolve(bufferToStream(buffer));
     } catch (e) {
       reject(e)
     }
@@ -34,7 +41,7 @@ const generateAndReturnBody = async (html) => {
 }
 
 export const generatePdf = async ({ html, styles }) => {
-  const extraStyle = '<style>ul, ul li {list-style: none;}</style>';
+  const extraStyle = '<style>body{color:black;}ul, ul li {list-style: none;}</style>';
   let content = extraStyle + html;
   if (styles) {
     const req = request('GET', styles);
