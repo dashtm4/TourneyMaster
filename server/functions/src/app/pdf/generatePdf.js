@@ -13,6 +13,7 @@ const bufferToStream = (buffer) => {
 const generateAndReturnBody = async (html) => {
   return new Promise(async (resolve, reject) => {
     try {
+      await chromium.font('/var/task/fonts/Segoe Script.ttf');
       const browser = await puppeteer.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
@@ -41,7 +42,7 @@ const generateAndReturnBody = async (html) => {
 }
 
 export const generatePdf = async ({ html, styles }) => {
-  const extraStyle = '<style>ul, ul li {list-style: none;}</style>';
+  const extraStyle = '<style>@import url(https://fonts.google.com/download?family=Open%20Sans);body{font-family: \'Open Sans\', sans-serif;}ul, ul li {list-style: none;}</style>';
   let content = extraStyle + html;
   if (styles) {
     const req = request('GET', styles);
