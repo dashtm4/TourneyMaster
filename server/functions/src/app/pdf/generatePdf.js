@@ -13,7 +13,7 @@ const bufferToStream = (buffer) => {
 const generateAndReturnBody = async (html) => {
   return new Promise(async (resolve, reject) => {
     try {
-      await chromium.font('/var/task/fonts/Segoe Script.ttf');
+      //await chromium.font('/var/task/fonts/Segoe Script.ttf');
       const browser = await puppeteer.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
