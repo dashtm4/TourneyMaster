@@ -10,12 +10,8 @@ export default api => {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename=Waiver-${new Date().getTime()}.pdf`,
       });
-      result.pipe(res);
-      //res.send(result);
-      /*res.json({
-        success: true,
-        result,
-      });*/
+      //result.pipe(res);
+      res.send(result);
     } catch (err) {
       res.json({
         success: false,

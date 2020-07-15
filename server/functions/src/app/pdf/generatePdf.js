@@ -16,7 +16,7 @@ const generateAndReturnBody = async html => {
   return new Promise((resolve, reject) => {
     try {
       console.log('Before create');
-      pdf.create(html, options).toStream(function (err, content) {
+      pdf.create(html, options).toBuffer(function (err, content) {
         if (err) {
           throw err;
         }
