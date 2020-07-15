@@ -10,7 +10,7 @@ const generateAndReturnBody = async html => {
       bottom: '10px',
       left: '10px',
     },
-    // phantomPath: './node_modules/phantomjs-prebuilt/bin/phantomjs',
+    phantomPath: '/var/task/node_modules/phantom-prebuilt/lib/phantom/bin/phantomjs',
   };
 
   return new Promise((resolve, reject) => {
