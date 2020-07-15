@@ -186,7 +186,8 @@ Resources:
       Code:
         ZipFile: 'import json'
       Runtime: nodejs12.x
-      Timeout: 10
+      Timeout: 60
+      MemorySize: 1024
       Environment:
         Variables:
           SMParameterName: 'TourneyMasterAPIv2'
