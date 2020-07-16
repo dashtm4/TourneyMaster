@@ -99,6 +99,7 @@ const PlayerInfo = ({
             }
             isRequired={datePickerRequired}
             onChange={onPlayerBirthdayChange}
+            disableFuture={true}
             initialFocusedDate={new Date(2000, 0, 1)}
           />
         </div>

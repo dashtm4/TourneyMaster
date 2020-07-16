@@ -27,6 +27,7 @@ interface IDatePickerProps {
   viewType?: 'default' | 'input';
   fullWidth?: boolean;
   disabled?: boolean;
+  disableFuture?: boolean;
   isRequired?: boolean;
   initialFocusedDate?: ParsableDate;
 }
@@ -43,6 +44,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   viewType,
   fullWidth,
   disabled,
+  disableFuture,
   isRequired,
   initialFocusedDate,
 }) => {
@@ -59,6 +61,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       format={dateFormat || 'MM/dd/yyyy'}
       onChange={onChange}
       disabled={disabled}
+      disableFuture={disableFuture}
       required={isRequired}
       initialFocusedDate={initialFocusedDate}
     />
@@ -74,9 +77,11 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       inputVariant='outlined'
       value={value}
       format={dateFormat || 'MM/dd/yyyy'}
+      disableFuture={disableFuture}
       onChange={onChange}
       disabled={disabled}
       required={isRequired}
+      initialFocusedDate={initialFocusedDate}
     />
   );
   const renderInputTimePicker = () => (
