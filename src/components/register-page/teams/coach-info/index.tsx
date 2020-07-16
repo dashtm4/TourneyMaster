@@ -71,12 +71,12 @@ const CoachInfo = ({ data, onChange, fillCoachInfo }: ICoachInfoProps) => {
           />
         </div>
         <div className={styles.sectionItem}>
-          <div className={styles.sectionTitle}>Phone Number</div>
+          <div className={styles.sectionTitle}>Phone Number CA</div>
           <PhoneInput
             country={'us'}
-            disableDropdown
-            onlyCountries={['us']}
-            disableCountryCode={true}
+            // disableDropdown
+            onlyCountries={['us','ca']}
+            disableCountryCode={false}
             placeholder=""
             value={data.coach_mobile || ''}
             onChange={onPhoneNumberChange}

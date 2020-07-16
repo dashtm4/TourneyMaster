@@ -1,4 +1,4 @@
-import axios from '../../services/axios.js';
+import axios from '../../services/tm-axios';
 import dateFormat from 'dateformat';
 
 export const getActiveProducts = async () => {
@@ -157,7 +157,7 @@ export const getPaymentPlans = async ({
 
               const { payment_schedule_json, ...paymentPlan } = {
                 ...sku,
-                total_price: sku.price,
+                total_price: sku.price.reduce((a, c) => a + c.amountWithTax, 0),
                 discount: 0,
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
@@ -185,13 +185,16 @@ export const getPaymentPlans = async ({
       }
       // If no payment schedule specified (likely a front end bug) still allow to pay in full
       if (!paymentPlans || paymentPlans.length === 0) {
+        const discountAmount =
+          Math.round(+sku.price * (discount / 100) * 100) / 100;
+
         const { payment_schedule_json, ...paymentPlan } = {
           ...sku,
-          total_price: sku.price,
+          total_price: sku.price - discountAmount,
           payment_plan_id: sku.sku_id + '_FP',
           payment_plan_name: 'Pay in full',
           payment_plan_notice: `Your credit card will be charged $${(
-            sku.price *
+            (sku.price - discountAmount) *
             (1 + sku.sales_tax_rate / 100)
           ).toFixed(2)} now ${discountNotice}.`,
           type: 'installment',

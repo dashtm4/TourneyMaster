@@ -1,5 +1,5 @@
 // Sync products between Events/Registrations and Stripe
-import './services/logger.js';
+import './services/logger';
 
 import { syncWithStripe } from './app/stripe/sync/syncWithStripe.js';
 

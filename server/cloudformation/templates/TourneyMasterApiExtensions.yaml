@@ -116,6 +116,13 @@ Resources:
                   - sqs:GetQueueAttributes
                 Resource:
                   - !GetAtt EmailsQueue.Arn
+        - PolicyName: UseSES
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ses:*
+                Resource: '*'
         - PolicyName: GetSecretValue
           PolicyDocument:
             Version: '2012-10-17'
@@ -170,7 +177,6 @@ Resources:
           PUBLIC_API_BASE_URL: '1'
 
   ServicesApiFunction:
-    Condition: DeployPrivateApiComponents
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub ${ProjectName}-ServicesApiFunction
@@ -180,10 +186,12 @@ Resources:
       Code:
         ZipFile: 'import json'
       Runtime: nodejs12.x
-      Timeout: 10
+      Timeout: 60
+      MemorySize: 1024
       Environment:
         Variables:
           SMParameterName: 'TourneyMasterAPIv2'
+          FONTCONFIG_PATH: '/var/task/fonts'
 
   SendEmailFunction:
     Type: AWS::Lambda::Function
@@ -209,13 +217,13 @@ Resources:
       FunctionName: !GetAtt SendEmailFunction.Arn
 
   ServicesPermission:
-    Condition: DeployPrivateApiComponents
+    # Condition: DeployPrivateApiComponents
     Type: 'AWS::Lambda::Permission'
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt ServicesApiFunction.Arn
       Principal: apigateway.amazonaws.com
-      SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${PrivateApiGatewayId}/*/*/*
+      SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${PublicApiGatewayId}/*/*/*
 
   PaymentsPermission:
     Type: 'AWS::Lambda::Permission'
@@ -293,28 +301,27 @@ Resources:
             method.response.header.Access-Control-Allow-Origin: false
 
   ServicesApiResource:
-    Condition: DeployPrivateApiComponents
+    # Condition: DeployPrivateApiComponents
     Type: 'AWS::ApiGateway::Resource'
     Properties:
-      RestApiId: !Ref PrivateApiGatewayId
-      ParentId: !Ref PrivateRootResource
+      RestApiId: !Ref PublicApiGatewayId
+      ParentId: !Ref PublicRootResource
       PathPart: 'services'
 
   ServicesProxyResource:
-    Condition: DeployPrivateApiComponents
+    # Condition: DeployPrivateApiComponents
     Type: 'AWS::ApiGateway::Resource'
     Properties:
-      RestApiId: !Ref PrivateApiGatewayId
+      RestApiId: !Ref PublicApiGatewayId
       ParentId: !Ref ServicesApiResource
       PathPart: '{proxy+}'
 
   ServicesAnyMethod:
-    Condition: DeployPrivateApiComponents
+    # Condition: DeployPrivateApiComponents
     Type: AWS::ApiGateway::Method
     Properties:
       ApiKeyRequired: False
-      AuthorizationType: COGNITO_USER_POOLS
-      AuthorizerId: !Ref Authorizer
+      AuthorizationType: None
       HttpMethod: ANY
       Integration:
         Type: AWS_PROXY
@@ -331,14 +338,14 @@ Resources:
       MethodResponses:
         - StatusCode: 200
       ResourceId: !Ref ServicesProxyResource
-      RestApiId: !Ref PrivateApiGatewayId
+      RestApiId: !Ref PublicApiGatewayId
 
   ServicesOptionsMethod:
-    Condition: DeployPrivateApiComponents
+    # Condition: DeployPrivateApiComponents
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
-      RestApiId: !Ref PrivateApiGatewayId
+      RestApiId: !Ref PublicApiGatewayId
       ResourceId: !Ref ServicesProxyResource
       HttpMethod: OPTIONS
       Integration:

@@ -125,14 +125,14 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         'Registrant Name',
         'Participant Personal Info',
         'Participant Profile',
-        'Waiver',
+        'Waivers & Wellness',
         'Payment',
       ];
 
       if (event && event.waivers_required === 1) {
         return steps;
       } else {
-        return steps.filter(item => item !== 'Waiver');
+        return steps.filter(item => item !== 'Waivers & Wellness');
       }
     } else {
       return ['Team', 'Contact Info', 'Coach Info', 'Payment'];
@@ -297,8 +297,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
   const fillCoachInfo = (info: any) =>
     setRegistration({ ...registration, ...info });
 
-  const onTypeChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange('registrant_role', e.target.value);
     setType(Number(TypeOptions[e.target.value]));
+  };
 
   const onTypeSelect = () => toggleModal(false);
 
@@ -334,7 +336,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
               }
             />
           );
-        case 'Waiver':
+        case 'Waivers & Wellness':
           return (
             <Waiver
               data={registration}

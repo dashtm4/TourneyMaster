@@ -1,12 +1,12 @@
-name: Payments Server STAGING
+name: Server STAGING
 
 on:
   push:
     branches:
       - development
     paths:
-      - "server/**"
-      - ".github/workflows/deploy-server*"
+      - 'server/**'
+      - '.github/workflows/deploy-server*'
 
 jobs:
   build-and-deploy:
@@ -19,19 +19,19 @@ jobs:
       - name: Build and Deploy Server
         run: |
           cd server/functions
-          npm install --no-save inherits
+          npm install --no-save inherits safe-buffer glob
           npm install --only=dev
           source ./uploadLambdaCode.sh
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: "us-east-1"
+          AWS_DEFAULT_REGION: 'us-east-1'
           STRIPE_PUBLISHABLE_KEY: ${{secrets.STRIPE_PUBLISHABLE_KEY}}
           STRIPE_SECRET_KEY: ${{secrets.STRIPE_SECRET_KEY}}
-          STRIPE_WEBHOOK_SIGNING_SECRET: "whsec_pqHQrhQL4qZPhzniRAaB4W7SYuBKpaWn"
-          STRIPE_CONNECT_WEBHOOK_SIGNING_SECRET: "whsec_2n6ZshqRm4JjBoVBfoPl8jikcru3PvSK"
-          STACK_NAME: "TourneyMasterPayments"
-          PUBLIC_API_BASE_URL: "https://kr4h1pzp94.execute-api.us-east-1.amazonaws.com/PROD"
-          PRIVATE_API_SM_PARAMETER_NAME: "TourneyMasterAPIv2"
-          PUBLIC_API_SM_PARAMETER_NAME: "TMPublicAPIv2"
+          STRIPE_WEBHOOK_SIGNING_SECRET: 'whsec_pqHQrhQL4qZPhzniRAaB4W7SYuBKpaWn'
+          STRIPE_CONNECT_WEBHOOK_SIGNING_SECRET: 'whsec_2n6ZshqRm4JjBoVBfoPl8jikcru3PvSK'
+          STACK_NAME: 'TourneyMasterPayments'
+          PUBLIC_API_BASE_URL: 'https://kr4h1pzp94.execute-api.us-east-1.amazonaws.com/PROD'
+          PRIVATE_API_SM_PARAMETER_NAME: 'TourneyMasterAPIv2'
+          PUBLIC_API_SM_PARAMETER_NAME: 'TMPublicAPIv2'
           MAX_PAYMENT_AMOUNT: ${{secrets.MAX_PAYMENT_AMOUNT_STAGING}}

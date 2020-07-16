@@ -17,7 +17,7 @@ import {
 } from './registration-edit/logic/actions';
 import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import RegistrationEdit from 'components/registration/registration-edit';
-import { IRegistration } from 'common/models/registration';
+import { IRegistration, IWelcomeSettings } from 'common/models/registration';
 import {
   BindingCbWithOne,
   BindingCbWithTwo,
@@ -35,6 +35,7 @@ import { History } from 'history';
 import { Loader, Toasts } from 'components/common';
 import { IEntity } from 'common/types';
 import Waiver from './waiver';
+import EmailReceipts from "./email-receipts";
 
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
@@ -95,7 +96,7 @@ class RegistrationView extends React.Component<
     this.setState({ isEdit: true });
   };
 
-  onChange = (name: string, value: string | number) => {
+  onChange = (name: string, value: string | number | IWelcomeSettings) => {
     this.setState(({ registration }) => ({
       registration: {
         ...registration,
@@ -173,7 +174,10 @@ class RegistrationView extends React.Component<
 
   renderView = () => {
     const { registration, event } = this.props;
-    const eventType = event && event[0].event_type;
+    if (!event) {
+      return;
+    }
+    const eventType = event[0] && event[0].event_type;
     if (this.state.isEdit) {
       return (
         <RegistrationEdit
@@ -201,7 +205,7 @@ class RegistrationView extends React.Component<
               {registration && (
                 <Button
                   label={
-                    this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
+                    this.state.isSectionsExpand ? "Collapse All" : "Expand All"
                   }
                   variant="text"
                   color="secondary"
@@ -223,7 +227,7 @@ class RegistrationView extends React.Component<
                     <PricingAndCalendar
                       eventId={this.eventId}
                       data={registration}
-                      divisions={this.props.divisions.map(division => ({
+                      divisions={this.props.divisions.map((division) => ({
                         name: division.short_name,
                         id: division.division_id,
                       }))}
@@ -280,6 +284,17 @@ class RegistrationView extends React.Component<
                   >
                     <span>Registrants</span>
                     <Registrants />
+                  </SectionDropdown>
+                </li>
+                <li>
+                  <SectionDropdown
+                    id={EventMenuRegistrationTitles.EMAIL_RECEIPTS}
+                    type="section"
+                    panelDetailsType="flat"
+                    expanded={this.state.isSectionsExpand}
+                  >
+                    <span>Email Confirms Settings</span>
+                    <EmailReceipts data={registration}/>
                   </SectionDropdown>
                 </li>
               </ul>

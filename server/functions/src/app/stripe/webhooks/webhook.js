@@ -1,10 +1,8 @@
 import mysql from 'promise-mysql';
-import Stripe from 'stripe';
-import '../../../services/logger.js';
-import config from '../../../config.js';
-import { getParams, sendEmail } from '../../../services/aws-utils.js';
+import '../../../services/logger';
+import { getParams, sendEmail } from '../../../services/aws-utils';
 import { getPaymentPlans } from '../../products/activeProducts.js';
-const stripe = Stripe(config.STRIPE_API_SECRET_KEY);
+import { stripe } from '../common/common';
 
 const sendWelcomeEmail = async data => {
   return sendEmail(data);
@@ -55,13 +53,20 @@ export const paymentSuccessWebhook = async req => {
       requestParams
     );
 
-    const charge = await stripe.charges.retrieve(
-      event.data.object.charge,
-      {
-        expand: ['balance_transaction'],
-      },
-      requestParams
-    );
+    let charge;
+    if (event.data.object.charge) {
+      charge = await stripe.charges.retrieve(
+        event.data.object.charge,
+        {
+          expand: ['balance_transaction'],
+        },
+        requestParams
+      );
+    } else {
+      if (event.data.object.amount_paid !== 0) {
+        throw new Error('Charge is empty while amoun_paid is not zero.');
+      }
+    }
 
     const discount = subscription.metadata.promo_code_discount
       ? +subscription.metadata.promo_code_discount
@@ -75,10 +80,9 @@ export const paymentSuccessWebhook = async req => {
       payment_plan_id,
     } = subscription.metadata;
     console.log(
-      `Registration type: ${reg_type}. Reg_response_id: ${reg_response_id}. Payment_plan_id: ${payment_plan_id}`
+      `Registration type: ${reg_type}. Reg_response_id: ${reg_response_id}. Sku_id: ${sku_id}. Payment_plan_id: ${payment_plan_id}`
     );
 
-    console.log(`sku_id: ${sku_id}, payment_plan_id: ${payment_plan_id}`);
     const paymentPlan = (await getPaymentPlans({ sku_id, payment_plan_id }))[0];
     console.log('paymentPlan', paymentPlan);
 
@@ -140,17 +144,29 @@ export const paymentSuccessWebhook = async req => {
               [reg_response_id]
             )
           )[0];
+          const registration = (
+            await fromConn.query(
+              `select * from ${fromParams.db.database}.v_registrations where registration_id=?`,
+              [reg_response.registration_id]
+            )
+          )[0];
+          const event_master = (
+            await fromConn.query(
+              `select * from ${fromParams.db.database}.v_events where event_id=?`,
+              [registration.event_id]
+            )
+          )[0];
           await fromConn.end();
 
           // Add Stripe stuff here
           reg_response.ext_payment_system = 'stripe';
           reg_response.ext_payment_id = event.data.object.id;
-          reg_response.currency = paymentPlan.currency;
+          reg_response.currency = lineItem.price.currency.toUpperCase();
           reg_response.amount_due =
             Math.round(
               paymentPlan.total_price *
                 (1 - discount / 100) *
-                (1 + paymentPlan.sales_tax_rate / 100) *
+                (1 + lineItem.price.metadata.sales_tax_rate / 100) *
                 100
             ) / 100;
           reg_response.payment_amount = 0;
@@ -172,7 +188,14 @@ export const paymentSuccessWebhook = async req => {
             -1
           )})`;
 
-          await sendWelcomeEmail({ reg_response, paymentPlan });
+          await sendWelcomeEmail({
+            reg_response,
+            paymentPlan,
+            subscription,
+            registration,
+            paymentSuccessEvent: event,
+            event: event_master,
+          });
 
           await toConn.query(sql, params);
         }
@@ -260,11 +283,9 @@ export const paymentSuccessWebhook = async req => {
         );
 
         let availableForAllocation = await findScheduledPaymentToAllocateTo(
-          paymentPlan,
           toConn,
           toParams,
-          reg_response_id,
-          lineItem.price.metadata.externalId
+          reg_response_id
         );
 
         if (availableForAllocation) {
@@ -298,11 +319,9 @@ export const paymentSuccessWebhook = async req => {
           new Error(`Payment Failure Event: ${JSON.stringify(event)}`)
         );
         let availableForAllocation = await findScheduledPaymentToAllocateTo(
-          paymentPlan,
           toConn,
           toParams,
-          reg_response_id,
-          lineItem.price.metadata.externalId
+          reg_response_id
         );
 
         if (availableForAllocation) {
@@ -337,24 +356,16 @@ export const paymentSuccessWebhook = async req => {
 };
 
 const findScheduledPaymentToAllocateTo = async (
-  paymentPlan,
   toConn,
   toParams,
-  reg_response_id,
-  externalId
+  reg_response_id
 ) => {
   let dbPayments;
-  if (paymentPlan.type === 'installment') {
-    dbPayments = await toConn.query(
-      `select * from ${toParams.db.database}.registrations_payments where reg_response_id=?`,
-      [reg_response_id]
-    );
-  } else if (paymentPlan.type === 'schedule') {
-    dbPayments = await toConn.query(
-      `select * from ${toParams.db.database}.registrations_payments where reg_response_id=?`, //  and installment_id=?
-      [reg_response_id /*, externalId */]
-    );
-  }
+  dbPayments = await toConn.query(
+    `select * from ${toParams.db.database}.registrations_payments where reg_response_id=?`,
+    [reg_response_id]
+  );
+
   console.log(
     `Scheduled payments: ${JSON.stringify(
       dbPayments

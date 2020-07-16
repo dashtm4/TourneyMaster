@@ -5,15 +5,14 @@ import styles from './styles.module.scss';
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
 
-interface IRegistrationDetailsProps {
+interface IWaiverProps {
   data: IRegistration | undefined;
   isEdit: boolean;
   onChange?: BindingCbWithTwo<string, string | number>;
 }
 
-const Waiver = ({ data, isEdit, onChange }: IRegistrationDetailsProps) => {
+const Waiver = ({ data, isEdit, onChange }: IWaiverProps) => {
   const [model, setModel] = useState(data ?.waiver_content);
-
 
   const quill = {
     toolbar: [
@@ -63,7 +62,7 @@ const Waiver = ({ data, isEdit, onChange }: IRegistrationDetailsProps) => {
       );
     }
     if (data.waiver_content === null) {
-      return <div>Not found waiver.</div>;
+      return <div>Not waivers exist. Create your first one using the above Edit.</div>;
     }
     return (
       <div className={`${styles.waiverWrapp} ql-snow ql-editor`}>

@@ -1,4 +1,4 @@
-name: Production deployment
+name: Front End PROD
 
 on:
   push:

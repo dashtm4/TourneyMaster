@@ -8,11 +8,12 @@ import PricingAndCalendar from './pricing-and-calendar';
 import RegistrationDetails from './registration-details';
 import Payments from './payments';
 import { IEventDetails } from 'common/models/event';
-import { IRegistration } from 'common/models/registration';
+import { IRegistration, IWelcomeSettings, IContactPerson } from 'common/models/registration';
 import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
 import FabButton from 'components/common/fab-button';
 import { PopupExposure } from 'components/common';
 import Waiver from "../waiver";
+import EmailReceipts from "./email-receipts";
 
 interface IRegistrationEditProps {
   onCancel: BindingAction;
@@ -45,6 +46,54 @@ class RegistrationEdit extends React.Component<
     } else {
       this.props.onCancel();
     }
+  };
+
+  mapEmailSettingToObj = () => {
+    const { registration } = this.props;
+
+    if(!registration) {
+      return;
+    }
+
+    const emailSetting = !registration.welcome_email_settings 
+    ? {
+        from: '',
+        replyTo: '',
+        subject: '',
+        contactPerson: '',
+        includeCancellationPolicy: 0,
+        includeEventLogo: 0,
+        body: '',
+      }
+    : JSON.parse(registration.welcome_email_settings);
+
+    const contactPerson: IContactPerson = !emailSetting?.contactPerson
+      ? {
+          contactName: '',
+          contactEmail: '',
+          contactPhoneNumber: ''
+        }
+      : {
+          contactName: emailSetting.contactPerson.substring(0, emailSetting.contactPerson.indexOf(' (')),
+          contactEmail: emailSetting.contactPerson.substring(emailSetting.contactPerson.indexOf('(') + 1, emailSetting.contactPerson.indexOf(',')),
+          contactPhoneNumber: emailSetting.contactPerson.substring(emailSetting.contactPerson.indexOf('+') + 1, emailSetting.contactPerson.indexOf(')'))
+        };
+    emailSetting.contactPerson = contactPerson;
+
+    return emailSetting;
+  };
+
+  mapObjToEmailSettings = (emailSettings: IWelcomeSettings) => {
+    const { contactName, contactEmail, contactPhoneNumber } = emailSettings.contactPerson;
+
+    return {
+      ...emailSettings,
+      contactPerson: `${contactName} (${contactEmail}, +${contactPhoneNumber})`
+    };
+  };
+
+  onChangeEmailSettings = (emailSettings: IWelcomeSettings) => {
+    this.props.onChange('welcome_email_settings', JSON.stringify(this.mapObjToEmailSettings(emailSettings)));
   };
 
   render() {
@@ -143,6 +192,19 @@ class RegistrationEdit extends React.Component<
                 </SectionDropdown>
               </li>
             ) : null}
+            <li>
+              <SectionDropdown
+                type="section"
+                panelDetailsType="flat"
+                isDefaultExpanded={true}
+              >
+                <span>Email Confirms Settings</span>
+                <EmailReceipts
+                  data={this.mapEmailSettingToObj()}
+                  onChange={this.onChangeEmailSettings}
+                />
+              </SectionDropdown>
+            </li>
           </ul>
         </div>
         <PopupExposure
