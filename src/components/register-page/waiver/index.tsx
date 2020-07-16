@@ -115,7 +115,7 @@ const Waiver = ({
   const downloadPDF = (pdf: string) => {
     const linkSource = `data:application/pdf;base64,${pdf}`;
     const downloadLink = document.createElement("a");
-    const fileName = "Waiver.pdf";
+    const fileName = `Waiver-${event?.event_name}.pdf`;
 
     downloadLink.href = linkSource;
     downloadLink.download = fileName;
