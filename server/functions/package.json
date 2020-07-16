@@ -42,7 +42,6 @@
     "@types/nodemailer": "^6.4.0",
     "aws-sdk": "^2.713.0",
     "babel-plugin-static-fs": "^3.0.0",
-    "puppeteer": "^5.1.0",
     "typescript": "^3.9.6"
   }
 }
