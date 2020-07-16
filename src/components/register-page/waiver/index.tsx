@@ -1,14 +1,12 @@
 ﻿import React, { useState, useRef, useEffect } from 'react';
 import { BindingCbWithTwo, IRegistration, BindingCbWithOne, IEventDetails } from 'common/models';
 import 'react-phone-input-2/lib/high-res.css';
-import { Input, Button } from 'components/common';
+import { Input, Button, Toasts } from 'components/common';
 import { IIndividualsRegister } from 'common/models/register';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import axios from 'axios';
 import MD5 from 'crypto-js/md5';
 import { ButtonColors, ButtonVariant } from "common/enums/buttons";
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import moment from 'moment';
 import styles from './styles.module.scss';
 
@@ -114,39 +112,27 @@ const Waiver = ({
     setDisabledButton(false);
   };
 
-  const sendDataToPDF = (event: any) => {
+  const sendDataToPDF = async (event: any) => {
     event.preventDefault();
 
-    const htmlElement = document.getElementById('waiver-content');
+    if (!content) {
+      return;
+    }
 
-    if (htmlElement !== null && htmlElement !== undefined) {
-
-      html2canvas(htmlElement).then((canvas: any) => {
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = 595;
-        const pageHeight = 842;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width - 20;
-        let heightLeft = imgHeight;
-
-        const doc = new jsPDF('p', 'pt');
-        let position = 10;
-        doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight;
-          doc.addPage();
-          doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-        doc.save('Waiver.pdf');
+    try {
+      const response = await axios.post('https://api.tourneymaster.org/public/services/generate-pdf', {
+        html: getWaiverContent(),
       });
+      console.log(response.data.body);
+      
+    } catch (err) {
+      return Toasts.errorToast(err.message);
     }
   };
 
-  const renderWaiver = () => {
+  const getWaiverContent = () => {
     if (!content) {
-      return;
+      return '';
     }
     const signature = data.waiver_signature
       ? JSON.parse(data.waiver_signature).name
@@ -163,8 +149,7 @@ const Waiver = ({
       ? `Agreed and Accepted on ${date} at ${time}`
       : '';
     const participantName = `Participant Name: ${data.participant_first_name} ${data.participant_last_name}`;
-    const waiverContent =
-      content.waiver_content === null || !content.waiver_content
+    return content.waiver_content === null || !content.waiver_content
         ? 'Not found.'
         : `<div style="display: flex; flex-wrap: wrap;
         justify-content: center">` +
@@ -176,6 +161,10 @@ const Waiver = ({
         <h2 style="font-size: 12px; text-align: right; height: 30px">${agreedment}</h2>` +
           `<h3 style="font-size: 10px; text-align: right; height: 14px">${ip}</h3>
         <h3 style="font-size: 10px; text-align: right; height: 14px">${hash}</h3>`;
+  };
+
+  const renderWaiver = () => {
+    const waiverContent = getWaiverContent();
     return (
       <div className={styles.waiverContainer}>
         <div className={isComplete ? styles.buttonWrapp : styles.hiddenButton}>

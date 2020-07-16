@@ -56,7 +56,7 @@ const EmailReceipts = ({ data }: IEmailReceipts) => {
               ]}
             />
             : <div>
-              <span className={styles.sectionTitle}>Event Logo</span>
+              <span className={styles.sectionTitle}>Additional Instructions</span>
               <p>—</p>
             </div>
           }
@@ -106,7 +106,7 @@ const EmailReceipts = ({ data }: IEmailReceipts) => {
       </div>
 
       <div className={styles.sectionRow}>
-        {emailReceiptsData && emailReceiptsData !== null
+        {emailReceiptsData && emailReceiptsData.body
             ? <div className={`${styles.emailReceiptsView} ql-snow ql-editor `}>
               <div dangerouslySetInnerHTML={{ __html: emailReceiptsData.body }} />
             </div>

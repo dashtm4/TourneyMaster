@@ -1,55 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
 
 import { Checkbox, Input } from 'components/common';
 
 import styles from '../../styles.module.scss';
 import 'react-quill/dist/quill.snow.css';
-import { IRegistration, BindingCbWithTwo, IWelcomeSettings } from 'common/models';
+import { IWelcomeSettings, BindingCbWithOne } from 'common/models';
 import PhoneInput from 'react-phone-input-2';
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
 interface IEmailReceiptsProps {
-  data: IRegistration | undefined;
-  onChange: BindingCbWithTwo<string, string | number | IWelcomeSettings>;
-}
-
+  data: IWelcomeSettings;
+  onChange: BindingCbWithOne<IWelcomeSettings>;
+};
 
 const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
  
   const [isAdditionalInstructions, setIsAdditionalInstructions] = useState(0);
-
-  const request = (data && data.welcome_email_settings && data.welcome_email_settings !== null ? JSON.parse(data.welcome_email_settings) : {
-    from: '',
-    replyTo: '',
-    subject: '',
-    contactPerson: '',
-    includeCancellationPolicy: 0,
-    includeEventLogo: 0,
-    body: '',
-  });
-  const [contactName, setContactName] = useState(request ? request.contactPerson.substring(0, request.contactPerson.indexOf(' (')) : '');
-  const [contactEmail, setContactEmail] = useState(request ? request.contactPerson.substring(request.contactPerson.indexOf('(') + 1, request.contactPerson.indexOf(',')) : '');
-  const [contactPhoneNumber, setContactPhoneNumber] = useState(request ? request.contactPerson.substring(request.contactPerson.indexOf('+') + 1, request.contactPerson.indexOf(')')) : '');
-
-  const updateRequest = (key: string, value: any) => {
-    request[key] = value;
-    onChange('welcome_email_settings', JSON.stringify(request));
-  };
-
-  const toJoinContactInfo = () => {
-    if (contactName === '' || contactEmail === '' || contactPhoneNumber === '') {
-      return;
-    }
-    updateRequest('contactPerson', `${contactName} (${contactEmail}, +${contactPhoneNumber})`);
-  };
-
-  useEffect(() => {
-    toJoinContactInfo();
-  }, [contactName, contactEmail, contactPhoneNumber]);
-
-  
 
   const formats = [
     'header', 'font', 'size',
@@ -74,24 +42,41 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
     }
   };
 
+  const updateData = (key: string, value: any) => {
+    if (Object.keys(data.contactPerson).includes(key)) {
+      data.contactPerson[key] = value;
+    } else {
+      data[key] = value;
+    }
+    onChange(data);
+  };
+
+  const isEmptyBody = (body: string) => {
+    const div = document.createElement('div');
+    div.innerHTML = body;
+    return Boolean(div.textContent || div.innerText);
+  };
+
   const onFromFieldChange = (e: InputTargetValue) => {
-    updateRequest('from', e.target.value);
+    updateData('from', e.target.value);
   };
 
   const onSubjectFieldChange = (e: InputTargetValue) => {
-    updateRequest('subject', e.target.value);
+    updateData('subject', e.target.value);
   };
 
   const onIncludeEventLogo = (e: InputTargetValue) => {
-    updateRequest('includeEventLogo', e.target.checked ? 1 : 0);
+    updateData('includeEventLogo', e.target.checked ? 1 : 0);
   };
 
   const onIncludeCancellationPolicy = (e: InputTargetValue) => {
-    updateRequest('includeCancellationPolicy', e.target.checked ? 1 : 0);
+    updateData('includeCancellationPolicy', e.target.checked ? 1 : 0);
   };
 
   const onBodyChange = (text: string) => {
-    updateRequest('body', text);
+    isEmptyBody(text)
+      ? updateData('body', text)
+      : updateData('body', '');
   };
 
   const onAdditionalInstructionsChange = (e: InputTargetValue) => {
@@ -99,19 +84,19 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
   };
 
   const onReplyToFieldChange = (e: InputTargetValue) => {
-    updateRequest('replyTo', e.target.value);
+    updateData('replyTo', e.target.value);
   };
 
   const onContactNameFieldChange = (e: InputTargetValue) => {
-    setContactName(e.target.value);
+    updateData('contactName', e.target.value);
   };
 
   const onContactEmailFieldChange = (e: InputTargetValue) => {
-    setContactEmail(e.target.value);
+    updateData('contactEmail', e.target.value);
   };
 
   const onContactPhoneNumberChange = (phoneNumber: string) => {
-    setContactPhoneNumber(phoneNumber);
+    updateData('contactPhoneNumber', phoneNumber);
   };
 
   return (
@@ -129,7 +114,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
             <Input
               label='From:'
               placeholder='Enter your name'
-              value={request.from || ''}
+              value={data.from || ''}
               onChange={onFromFieldChange}
               isRequired={true}
             />
@@ -140,7 +125,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
             <Input
               label='Reply to:'
               placeholder='Enter email to reply you'
-              value={request.replyTo || ''}
+              value={data.replyTo || ''}
               onChange={onReplyToFieldChange}
               isRequired={true}
             />
@@ -151,7 +136,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
             <Input
               label='Subject:'
               placeholder='Enter title event'
-              value={request.subject || ''}
+              value={data.subject || ''}
               onChange={onSubjectFieldChange}
               isRequired={true}
             />
@@ -171,7 +156,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
             <Input
               label='Full name'
               placeholder='Enter full name'
-              value={contactName || ''}
+              value={data.contactPerson.contactName || ''}
               onChange={onContactNameFieldChange}
               isRequired={true}
             />
@@ -182,7 +167,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
             <Input
               label='Email'
               placeholder='Enter email'
-              value={contactEmail || ''}
+              value={data.contactPerson.contactEmail || ''}
               onChange={onContactEmailFieldChange}
               isRequired={true}
             />
@@ -197,7 +182,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
               onlyCountries={['us','ca']}
               disableCountryCode={false}
               placeholder=""
-              value={contactPhoneNumber || ''}
+              value={data.contactPerson.contactPhoneNumber || ''}
               onChange={onContactPhoneNumberChange}
               containerStyle={{ marginTop: '7px' }}
               inputStyle={{
@@ -233,7 +218,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
             <Checkbox
               options={[{
                 label: 'Cancellation Policy:',
-                checked: Boolean(request && request.includeCancellationPolicy),
+                checked: Boolean(data && data.includeCancellationPolicy),
               }]}
               onChange={onIncludeCancellationPolicy}
             />
@@ -244,7 +229,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
             <Checkbox
               options={[{
                 label: 'Event logo: ',
-                checked: Boolean(request && request.includeEventLogo),
+                checked: Boolean(data && data.includeEventLogo),
               }]}
               onChange={onIncludeEventLogo}
             />
@@ -256,7 +241,7 @@ const EmailReceipts = ({ data, onChange }: IEmailReceiptsProps) => {
         <ReactQuill
           className={styles.emailReceiptsEditor}
           theme={'snow'}
-          value={request.body || ''}
+          value={data.body || ''}
           modules={quill}
           formats={formats}
           onChange={onBodyChange}
