@@ -1,6 +1,7 @@
 import request from 'sync-request';
 import chromium from 'chrome-aws-lambda';
 import puppeteer from 'puppeteer-core';
+//import puppeteer from 'puppeteer';
 
 const generateAndReturnBody = async (html) => {
   return new Promise(async (resolve, reject) => {
@@ -9,7 +10,7 @@ const generateAndReturnBody = async (html) => {
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath,
-        headless: chromium.headless,
+        headless: true,
         ignoreHTTPSErrors: true,
       });
       const page = await browser.newPage();
@@ -18,12 +19,12 @@ const generateAndReturnBody = async (html) => {
         format: "A4",
         printBackground: true,
         margin: {
-          left: "15px",
-          top: "15px",
-          right: "15px",
-          bottom: "15px"
+          left: "20px",
+          top: "20px",
+          right: "20px",
+          bottom: "20px"
         },
-        scale: 0.80,
+        scale: 0.66,
         headless: true
       });
       await browser.close();
@@ -33,6 +34,7 @@ const generateAndReturnBody = async (html) => {
           'content-disposition': `attachment; filename=Waiver-${new Date().getTime()}.pdf`
         },
         statusCode: 200,
+        success: true,
         body: buffer.toString('base64'),
         isBase64Encoded: true
       });

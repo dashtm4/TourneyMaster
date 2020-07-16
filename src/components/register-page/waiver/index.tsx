@@ -133,6 +133,7 @@ const Waiver = ({
 
     try {
       setIsLoadFile(true);
+      //await axios.post('http://localhost:3001/services/generate-pdf', {
       await axios.post('https://api.tourneymaster.org/public/services/generate-pdf', {
         html: getWaiverContent(),
       }).then(response => downloadPDF(response.data.body));
