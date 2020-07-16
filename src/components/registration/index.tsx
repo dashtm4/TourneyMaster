@@ -11,7 +11,6 @@ import { IEntity } from 'common/types';
 import {
   BindingCbWithOne,
   BindingCbWithTwo,
-  BindingCbWithThree,
   IDivision,
   IEventDetails,
   IRegistrant,
@@ -36,7 +35,9 @@ import {
   saveCustomData,
   getDivisions,
   getRegistrants,
+  loadCustomData,
 } from './registration-edit/logic/actions';
+import { loadRegistrantData } from 'components/register-page/individuals/player-stats/logic/actions';
 import styles from './styles.module.scss';
 
 interface IRegistrationState {
@@ -45,15 +46,15 @@ interface IRegistrationState {
   isSectionsExpand: boolean;
   changesAreMade: boolean;
   event?: Partial<IEventDetails>;
-  requestIds: any;
-  options: any;
   isAddNewFieldOpen: boolean;
 }
 
 interface IRegistrationProps {
   getRegistration: BindingCbWithOne<string>;
+  loadCustomData: BindingCbWithOne<string>;
   saveRegistration: BindingCbWithTwo<string | undefined, string>;
-  saveCustomData: BindingCbWithThree<any, any, string>;
+  loadRegistrantData: () => void;
+  saveCustomData: BindingCbWithOne<string>;
   getDivisions: BindingCbWithOne<string>;
   getRegistrants: BindingCbWithOne<string>;
   getRegistrantPayments: BindingCbWithOne<string>;
@@ -65,6 +66,7 @@ interface IRegistrationProps {
   history: History;
   isLoading: boolean;
   event: IEventDetails;
+  registrantDataFields: any;
 }
 
 class RegistrationView extends React.Component<
@@ -78,14 +80,13 @@ class RegistrationView extends React.Component<
     isSectionsExpand: true,
     changesAreMade: false,
     event: undefined,
-    requestIds: [],
-    options: [],
     isAddNewFieldOpen: false,
   };
 
   componentDidMount() {
     this.props.getRegistration(this.eventId);
     this.props.getDivisions(this.eventId);
+    this.props.loadCustomData(this.eventId);
   }
 
   componentDidUpdate(prevProps: IRegistrationProps) {
@@ -101,48 +102,12 @@ class RegistrationView extends React.Component<
     }
   }
 
-  updateRequestIds = (id: number | string, status: string) => {
-    const { requestIds } = this.state;
-
-    switch (status) {
-      case 'add':
-        this.setState({
-          requestIds: [...requestIds, id],
-        });
-        return;
-      case 'remove':
-        this.setState({
-          requestIds: requestIds.filter((el: number | string) => el !== id),
-        });
-        return;
-      default:
-        return;
-    }
-  };
-
-  updateOptions = (id: number | string, value: number, status: boolean) => {
-    const { options } = this.state;
-
-    if (status) {
-      this.setState({
-        options: { ...options, [id]: value },
-      });
-    } else {
-      const newOptions = Object.keys(options)
-        .filter(el => el.toString() !== id.toString())
-        .map(el => ({ [el]: options[el] }));
-
-      this.setState({
-        options: newOptions,
-      });
-    }
-  };
-
   onAddNewField = () => {
     this.setState({ isAddNewFieldOpen: true });
   };
 
   onAddNewFieldClose = () => {
+    loadRegistrantData();
     this.setState({
       isAddNewFieldOpen: false,
     });
@@ -189,10 +154,8 @@ class RegistrationView extends React.Component<
 
   onSaveClick = () => {
     if (this.scheduleIsValid(this.state.registration)) {
-      const { requestIds, options } = this.state;
-
       this.props.saveRegistration(this.state.registration, this.eventId);
-      this.props.saveCustomData(requestIds, options, this.eventId);
+      this.props.saveCustomData(this.eventId);
       this.setState({ isEdit: false, changesAreMade: false });
     } else {
       Toasts.errorToast('Total schedule amount must be equal to 100%');
@@ -232,9 +195,10 @@ class RegistrationView extends React.Component<
   };
 
   renderView = () => {
-    const { registration, event } = this.props;
-    const { requestIds, isAddNewFieldOpen } = this.state;
+    const { registration, event, registrantDataFields } = this.props;
+    const { isAddNewFieldOpen } = this.state;
     const eventType = event && event[0].event_type;
+
     if (this.state.isEdit) {
       return (
         <>
@@ -247,10 +211,8 @@ class RegistrationView extends React.Component<
             changesAreMade={this.state.changesAreMade}
             divisions={this.props.divisions}
             eventType={eventType}
-            updateRequestIds={this.updateRequestIds}
-            updateOptions={this.updateOptions}
-            requestIds={requestIds}
             onAddNewField={this.onAddNewField}
+            registrantDataFields={registrantDataFields}
           />
           <Modal isOpen={isAddNewFieldOpen} onClose={this.onAddNewFieldClose}>
             <AddNewField
@@ -385,6 +347,7 @@ interface IState {
     isLoading: boolean;
     event: IEventDetails;
   };
+  playerStatsReducer: { registrantDataFields: any };
 }
 
 const mapStateToProps = (state: IState) => ({
@@ -393,6 +356,7 @@ const mapStateToProps = (state: IState) => ({
   divisions: state.registration.divisions,
   registrants: state.registration.registrants,
   event: state.registration.event,
+  registrantDataFields: state.playerStatsReducer.registrantDataFields,
 });
 
 const mapDispatchToProps = {
@@ -402,6 +366,8 @@ const mapDispatchToProps = {
   getDivisions,
   getRegistrants,
   addEntityToLibrary,
+  loadCustomData,
+  loadRegistrantData,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(RegistrationView);

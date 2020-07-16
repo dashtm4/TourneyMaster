@@ -10,12 +10,7 @@ import RegistrationDetails from './registration-details';
 import Payments from './payments';
 import { IEventDetails } from 'common/models/event';
 import { IRegistration } from 'common/models/registration';
-import {
-  BindingAction,
-  BindingCbWithTwo,
-  BindingCbWithThree,
-  IDivision,
-} from 'common/models';
+import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
 import FabButton from 'components/common/fab-button';
 import { PopupExposure } from 'components/common';
 import Waiver from '../waiver';
@@ -30,9 +25,7 @@ interface IRegistrationEditProps {
   eventType: string;
   event?: IEventDetails;
   onAddNewField: () => void;
-  updateRequestIds: BindingCbWithTwo<any, string>;
-  updateOptions: BindingCbWithThree<number | string, number, boolean>;
-  requestIds: any;
+  registrantDataFields: any;
 }
 
 interface IRegistrationEditState {
@@ -58,12 +51,7 @@ class RegistrationEdit extends React.Component<
   };
 
   render() {
-    const {
-      updateRequestIds,
-      updateOptions,
-      requestIds,
-      onAddNewField,
-    } = this.props;
+    const { onAddNewField, registrantDataFields } = this.props;
 
     return (
       <section>
@@ -137,11 +125,8 @@ class RegistrationEdit extends React.Component<
               >
                 <span>Data Requests</span>
                 <DataRequest
-                  eventId={this.props?.event?.event_id!}
-                  updateRequestIds={updateRequestIds}
-                  updateOptions={updateOptions}
-                  requestIds={requestIds}
                   onAddNewField={onAddNewField}
+                  registrantDataFields={registrantDataFields}
                 />
               </SectionDropdown>
             </li>

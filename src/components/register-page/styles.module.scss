@@ -2,8 +2,8 @@
   height: 100vh;
   width: 100%;
   display: flex;
-	flex-direction: column;
-	min-height: 100%;
+  flex-direction: column;
+  min-height: 100%;
 
   .main {
     display: flex;
@@ -20,12 +20,6 @@
       display: flex;
       justify-content: center;
     }
-  //   display: flex;
-  //   flex-direction: column;
-  //   align-items: center;
-  //   & > :first-child {
-  //     margin: 30px 0 10px 0;
-  //   }
   }
   .sideContent {
     width: 25%;
@@ -48,7 +42,6 @@
   flex-wrap: wrap;
   .sectionRow {
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
     // & > :last-child {
     //   margin-bottom: 0;
@@ -58,7 +51,8 @@
     flex-grow: 0;
     color: #6a6a6a;
     margin-bottom: 32px;
-    width: calc( 25% - 16px);
+    width: calc(25% - 16px);
+    margin: 8px 8px;
 
     // [class *= style_container] {
     //   min-width: 100px;
@@ -68,7 +62,7 @@
 
   .paymentRow {
     .sectionItem {
-      width: calc( 33% - 16px);
+      width: calc(33% - 16px);
     }
   }
 
@@ -79,7 +73,7 @@
     .card {
       display: flex;
       flex-direction: column;
-      width: calc( 100% - 196px);
+      width: calc(100% - 196px);
       max-width: 500px;
       margin: 8px 0;
     }
@@ -146,12 +140,12 @@
 @media only screen and (max-width: 1200px) {
   .container {
     .stepperWrapper {
-      width: calc( 100% - 392px );
+      width: calc(100% - 392px);
     }
   }
   .section {
     .sectionItem {
-      width: calc( 50% - 16px);
+      width: calc(50% - 16px);
     }
   }
 }
@@ -166,10 +160,10 @@
     .stepperWrapper {
       width: 100%;
 
-      [class *=MuiStepper-root] {
+      [class*="MuiStepper-root"] {
         padding: 8px;
       }
-         
+
       .headerStepper {
         margin: 8px 0;
         text-align: center;
@@ -182,12 +176,12 @@
   .section {
     .paymentRow {
       .sectionItem {
-        width: calc( 100% - 16px);
+        width: calc(100% - 16px);
       }
     }
     .cardWrapp {
       .card {
-        width: calc( 100% - 16px);
+        width: calc(100% - 16px);
       }
       img {
         display: none;
@@ -199,13 +193,12 @@
 @media only screen and (max-width: 500px) {
   .section {
     .sectionItem {
-      width: calc( 100% - 16px);
+      width: calc(100% - 16px);
     }
     .paymentRow {
       .sectionItem {
-        width: calc( 100% - 16px);
+        width: calc(100% - 16px);
       }
     }
-
   }
 }

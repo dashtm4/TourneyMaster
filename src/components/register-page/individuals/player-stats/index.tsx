@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { IIndividualsRegister } from 'common/models/register';
 import { Input, Select, CardMessage } from 'components/common';
 import {
-  BindingCbWithTwo,
   BindingCbWithOne,
+  BindingCbWithTwo,
   ISelectOption,
 } from 'common/models';
 import { CardMessageTypes } from 'components/common/card-message/types';
-import { loadRegistrantData } from './logic/actions';
+import { loadFormFields } from './logic/actions';
 import styles from '../../styles.module.scss';
 
 enum fieldType {
@@ -26,8 +26,8 @@ interface IPlayerStatsProps {
   data: Partial<IIndividualsRegister>;
   onChange: BindingCbWithTwo<string, string | number>;
   jerseyNumberRequired: boolean;
-  loadRegistrantData: BindingCbWithOne<string>;
-  registrantDataFields: any;
+  loadFormFields: BindingCbWithOne<string>;
+  formFields: any;
   eventId: string | undefined;
 }
 
@@ -35,13 +35,13 @@ const PlayerStats = ({
   data,
   onChange,
   jerseyNumberRequired,
-  registrantDataFields,
+  formFields,
   eventId,
-  loadRegistrantData,
+  loadFormFields,
 }: IPlayerStatsProps) => {
   useEffect(() => {
     if (eventId) {
-      loadRegistrantData(eventId);
+      loadFormFields(eventId);
     }
   }, []);
   const checkFieldType = (value: string | null) => {
@@ -72,23 +72,25 @@ const PlayerStats = ({
   const renderField = (field: {
     data_defaults: string | null;
     data_label: string;
-    is_default_YN: number | null;
+    is_required_YN: number | null;
+    data_sort_order: number;
+    request_id: number;
   }) => {
     const { value, type } = checkFieldType(field.data_defaults);
     const label = field.data_label;
-    const dataType = label.toLowerCase().replace(' ', '_');
+    const dataType = field.request_id.toString();
 
     if (type === fieldType.INPUT) {
       return (
         <Input
           fullWidth={true}
           label={
-            field.is_default_YN === defaultOptions.REQUIRED
-              ? `${field.data_label} *`
-              : field.data_label
+            field.is_required_YN === defaultOptions.REQUIRED
+              ? `${label} *`
+              : label
           }
           isRequired={
-            field.is_default_YN === defaultOptions.REQUIRED ? true : false
+            field.is_required_YN === defaultOptions.REQUIRED ? true : false
           }
           value={data[dataType]}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -101,9 +103,12 @@ const PlayerStats = ({
         <Select
           options={value as ISelectOption[]}
           label={
-            field.is_default_YN === defaultOptions.REQUIRED
-              ? `${field.data_label} *`
-              : field.data_label
+            field.is_required_YN === defaultOptions.REQUIRED
+              ? `${label} *`
+              : label
+          }
+          isRequired={
+            field.is_required_YN === defaultOptions.REQUIRED ? true : false
           }
           value={data[dataType]}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -114,11 +119,11 @@ const PlayerStats = ({
     }
   };
 
-  console.log('Player stats', registrantDataFields, jerseyNumberRequired);
+  console.log('Player stats', data, jerseyNumberRequired);
   return (
     <div className={styles.section}>
       <div className={styles.sectionRow}>
-        {registrantDataFields.map((el: any, index: number) => (
+        {formFields.map((el: any, index: number) => (
           <div className={styles.sectionItem} key={index}>
             {renderField(el)}
           </div>
@@ -135,13 +140,13 @@ const PlayerStats = ({
 };
 
 const mapStateToProps = (state: {
-  playerStatsReducer: { registrantDataFields: any };
+  playerStatsReducer: { formFields: any };
 }) => ({
-  registrantDataFields: state.playerStatsReducer.registrantDataFields,
+  formFields: state.playerStatsReducer.formFields,
 });
 
 const mapDispatchToProps = {
-  loadRegistrantData,
+  loadFormFields,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlayerStats);

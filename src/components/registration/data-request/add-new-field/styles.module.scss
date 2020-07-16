@@ -6,10 +6,9 @@
   color: #1c315f;
   font-size: 24px;
   font-weight: 600;
-  padding-bottom: 16px;
 }
 .buttonsGroup {
-  padding-top: 16px;
+  margin: 20px 10px 0 10px;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -21,6 +20,7 @@
 .sectionItem {
   color: #6a6a6a;
   padding: 5px;
+  margin-top: 10px;
 }
 
 .sectionRow {
@@ -32,4 +32,26 @@
   display: flex;
   justify-content: space-between;
   width: 747px;
+}
+
+.addSelectItem {
+  color: #6a6a6a;
+  padding: 5px;
+  margin-top: 10px;
+  display: flex;
+}
+
+.selectItems {
+  display: block;
+  background: white;
+  margin: 8px;
+
+  div {
+    padding: 10px;
+    border-bottom: 1px solid #dddedf;
+
+    &:last-of-type {
+      border: none;
+    }
+  }
 }

@@ -8,6 +8,9 @@ import {
   REGISTRANTS_PAYMENTS_FETCH_SUCCESS,
   REGISTRANTS_ADD_TO_EVENT_SUCCESS,
   EVENT_FETCH_SUCCESS,
+  LOAD_CUSTOM_DATA_SUCCESS,
+  UPDATE_REQUESTED_IDS_SUCCESS,
+  UPDATE_OPTIONS_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
 import { ActionCreator, Dispatch } from 'redux';
@@ -57,6 +60,8 @@ export const getRegistration: ActionCreator<ThunkAction<
   { type: string }
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   dispatch(registrationFetchStart());
+  dispatch<any>(loadCustomData(eventId));
+
   const data = await api.get(`/registrations?event_id=${eventId}`);
   if (data && data.length > 0) {
     dispatch<any>(getRegistrants(data[0].registration_id));
@@ -140,40 +145,64 @@ export const saveRegistration: ActionCreator<ThunkAction<
   }
 };
 
-export const saveCustomData: ActionCreator<ThunkAction<
-  void,
-  {},
-  null,
-  { type: string }
->> = (requestIds: any, options: any, eventId: string) => async () => {
+export const saveCustomData = (eventId: string) => async (
+  dispatch: Dispatch,
+  getState: () => any
+) => {
   try {
-    const requestList = await api.get(
+    const {
+      registration: { requestedIds, options },
+    } = getState();
+
+    const oldRequestFields = await api.get(
       `/registrant_data_requests?event_id=${eventId}`
     );
 
-    if (requestList.length > 0) {
-      await api.put(`/registrant_data_requests`, {
-        request_id: requestList[0].request_id,
-        data_field_id_list: JSON.stringify(requestIds),
-      });
-    } else {
-      await api.post(`/registrant_data_requests`, {
-        event_id: eventId,
-        data_field_id_list: JSON.stringify(requestIds),
-        is_active_YN: 1,
-      });
-    }
+    const oldRequestFieldsPromises: Promise<any>[] = [];
 
-    const promises: Promise<any>[] = [];
-    Object.keys(options).forEach(el => {
-      promises.push(
-        api.put(`/registrant_data_fields`, {
-          data_field_id: Number(el),
-          is_default_YN: options[el],
+    for (const field of oldRequestFields) {
+      oldRequestFieldsPromises.push(
+        api.delete(`/registrant_data_requests?request_id=${field.request_id}`)
+      );
+    }
+    await Promise.all(oldRequestFieldsPromises);
+
+    const requestFieldsPromises: Promise<any>[] = [];
+
+    requestedIds.map((id: number, idx: number) => {
+      requestFieldsPromises.push(
+        api.post(`/registrant_data_requests`, {
+          event_id: eventId,
+          data_field_id: id,
+          data_sort_order: idx + 1,
         })
       );
     });
-    await Promise.all(promises);
+    await Promise.all(requestFieldsPromises);
+
+    const updatedRequestFields = await api.get(
+      `/registrant_data_requests?event_id=${eventId}`
+    );
+
+    const optionsPromises: Promise<any>[] = [];
+
+    Object.keys(options).forEach(el => {
+      const optionsFields = updatedRequestFields.filter(
+        (updatedField: any) => updatedField.data_field_id.toString() === el
+      );
+
+      if (optionsFields.length > 0) {
+        optionsPromises.push(
+          api.put(`/registrant_data_requests`, {
+            request_id: optionsFields[0].request_id,
+            is_required_YN: options[el],
+          })
+        );
+      }
+    });
+    await Promise.all(optionsPromises);
+
+    dispatch<any>(loadCustomData(eventId));
   } catch {
     Toasts.errorToast("Couldn't save custom data");
   }
@@ -339,5 +368,66 @@ export const registrantsPaymentsFetchSuccess = (
   payload: any
 ): { type: string; payload: any[] } => ({
   type: REGISTRANTS_PAYMENTS_FETCH_SUCCESS,
+  payload,
+});
+
+export const loadCustomData: ActionCreator<ThunkAction<
+  void,
+  {},
+  null,
+  { type: string }
+>> = (eventId: string) => async (dispatch: Dispatch) => {
+  const requestedFieldsResponse = await api.get(
+    `/registrant_data_requests?event_id=${eventId}`
+  );
+  const requestedFields = requestedFieldsResponse.map((field: any) => ({
+    data_field_id: field.data_field_id,
+    data_sort_order: field.data_sort_order,
+    is_required_YN: field.is_required_YN || null,
+  }));
+  const requestedIds: number[] = [];
+  const options = {};
+
+  requestedFields
+    .sort((a: any, b: any) => {
+      const fieldA = a.data_sort_order;
+      const fieldB = b.data_sort_order;
+
+      let comparison = 0;
+      if (fieldA > fieldB) {
+        comparison = 1;
+      } else if (fieldA < fieldB) {
+        comparison = -1;
+      }
+      return comparison;
+    })
+    .map((el: any) => {
+      const { data_field_id, is_required_YN } = el;
+
+      requestedIds.push(data_field_id);
+      options[data_field_id] = is_required_YN;
+    });
+
+  dispatch(loadCustomDataSuccess({ requestedIds, options }));
+};
+
+export const loadCustomDataSuccess = (
+  payload: any
+): { type: string; payload: any[] } => ({
+  type: LOAD_CUSTOM_DATA_SUCCESS,
+  payload,
+});
+
+export const updateRequestedIds = (
+  payload: any
+): { type: string; payload: any[] } => ({
+  type: UPDATE_REQUESTED_IDS_SUCCESS,
+  payload,
+});
+
+export const updateOptions = (
+  payload: any
+): { type: string; payload: any[] } => ({
+  type: UPDATE_OPTIONS_SUCCESS,
   payload,
 });

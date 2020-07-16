@@ -1,27 +1,62 @@
 import React, { useState } from 'react';
-import api from 'api/api';
+import { connect } from 'react-redux';
 import history from 'browserhistory';
+import api from 'api/api';
 import Input from 'components/common/input';
-import { Toasts } from 'components/common';
-import styles from './styles.module.scss';
+import { Toasts, Select } from 'components/common';
 import Button from 'components/common/buttons/button';
+import { loadRegistrantData } from 'components/register-page/individuals/player-stats/logic/actions';
+
+import styles from './styles.module.scss';
 
 interface IAddNewField {
   onCancel: () => void;
   eventId: string;
+  registrantDataFields?: any;
+  loadRegistrantData: () => void;
 }
 
-const AddNewField = ({ eventId, onCancel }: IAddNewField) => {
-  const [dataGroup, setDataGroup] = useState('');
+const addButton = {
+  color: 'white',
+  fontSize: '16px',
+  opacity: '1',
+  height: '40px',
+  marginTop: 'auto',
+  marginLeft: '10px',
+};
+
+const type = [
+  { label: 'Input', value: 'Input' },
+  { label: 'Select', value: 'Select' },
+];
+
+const AddNewField = ({
+  registrantDataFields,
+  eventId,
+  onCancel,
+}: IAddNewField) => {
   const [dataLabel, setDataLabel] = useState('');
   const [dataDefaults, setDataDefaults] = useState('');
+  const [selectOptions, setSelectOptions] = useState<string[]>([]);
+  const [groupByValue, setGroupByValue] = useState('User Defined');
+  const [fieldType, setFieldType] = useState('Input');
+
+  console.log(eventId);
 
   const onAdd = async () => {
     try {
+      const structuredSelectOptions: any = [];
+      selectOptions.map((el: any, index: number) => {
+        const key = `value_${index + 1}`;
+        structuredSelectOptions.push({ [key]: el });
+      });
       await api.post('/registrant_data_fields', {
-        data_group: dataGroup,
+        data_group: groupByValue,
         data_label: dataLabel,
-        data_defaults: JSON.stringify(dataDefaults),
+        data_defaults:
+          fieldType === 'Input'
+            ? null
+            : JSON.stringify(structuredSelectOptions),
         is_active_YN: 1,
       });
     } catch {
@@ -31,8 +66,21 @@ const AddNewField = ({ eventId, onCancel }: IAddNewField) => {
     history.push(`/event/event-details/${eventId}/`);
   };
 
-  const onDataGroupChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDataGroup(e.target.value);
+  const getGroupByList = () => {
+    const groupByList = new Set();
+    registrantDataFields.map((el: any) => {
+      groupByList.add(el.data_group);
+    });
+    const options: any = [];
+
+    groupByList.forEach(el => {
+      options.push({
+        label: el,
+        value: el,
+      });
+    });
+
+    return options;
   };
 
   const onDataLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,18 +91,31 @@ const AddNewField = ({ eventId, onCancel }: IAddNewField) => {
     setDataDefaults(e.target.value);
   };
 
+  const onChangeGroupBy = (e: any) => {
+    setGroupByValue(e.target.value);
+  };
+
+  const onChangeFieldType = (e: any) => {
+    setFieldType(e.target.value);
+  };
+
+  const onAddSelectItem = () => {
+    setSelectOptions([...selectOptions, dataDefaults]);
+  };
+
+  console.log('> fieldType', fieldType);
   return (
     <div className={styles.container}>
       <div className={styles.sectionTitle}>Add a New Field</div>
       <div className={styles.sectionRow}>
         <div className={styles.sectionItem}>
           <div className={styles.sectionItem}>
-            <Input
-              fullWidth={true}
-              label="Group Name"
-              isRequired={true}
-              value={dataGroup}
-              onChange={onDataGroupChange}
+            <Select
+              onChange={onChangeGroupBy}
+              name={'Group by'}
+              options={getGroupByList()}
+              value={groupByValue}
+              label="Group by"
             />
           </div>
           <div className={styles.sectionItem}>
@@ -69,6 +130,15 @@ const AddNewField = ({ eventId, onCancel }: IAddNewField) => {
         </div>
         <div className={styles.sectionItem}>
           <div className={styles.sectionItem}>
+            <Select
+              onChange={onChangeFieldType}
+              name="Type"
+              options={type}
+              value={fieldType}
+              label="Type"
+            />
+          </div>
+          <div className={styles.addSelectItem}>
             <Input
               fullWidth={true}
               label="Add Select Options"
@@ -76,6 +146,18 @@ const AddNewField = ({ eventId, onCancel }: IAddNewField) => {
               value={dataDefaults}
               onChange={onDataDefaultsChange}
             />
+            <Button
+              label="+"
+              variant="contained"
+              color="secondary"
+              onClick={onAddSelectItem}
+              btnStyles={addButton}
+            />
+          </div>
+          <div className={styles.selectItems}>
+            {selectOptions.map((el: string, index: number) => (
+              <div key={index}>{el}</div>
+            ))}
           </div>
         </div>
       </div>
@@ -98,4 +180,14 @@ const AddNewField = ({ eventId, onCancel }: IAddNewField) => {
   );
 };
 
-export default AddNewField;
+const mapStateToProps = (state: {
+  playerStatsReducer: { registrantDataFields: any };
+}) => ({
+  registrantDataFields: state.playerStatsReducer.registrantDataFields,
+});
+
+const mapDispatchToProps = {
+  loadRegistrantData,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddNewField);

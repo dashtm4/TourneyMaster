@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import api from 'api/api';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
@@ -62,7 +63,14 @@ const getInternalRegType = (type: TypeOptions) => {
 };
 
 const getApiEndpointByRegType = (type: TypeOptions) => {
-  return `/reg_${getInternalRegType(type)}s`;
+  if (
+    type === TypeOptions.Participant ||
+    type === TypeOptions['Parent/Guardian']
+  ) {
+    return '/registrant_data_response';
+  } else {
+    return `/reg_teams`;
+  }
 };
 
 export interface RegisterMatchParams {
@@ -222,7 +230,24 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     setRegistration(updatedRegistration);
 
     try {
-      await axios.post(getApiEndpointByRegType(type), updatedRegistration);
+      if (
+        type === TypeOptions.Participant ||
+        type === TypeOptions['Parent/Guardian']
+      ) {
+        const updatedRegistrationPromises: Promise<any>[] = [];
+
+        Object.keys(registration).forEach(el => {
+          updatedRegistrationPromises.push(
+            api.post(`/registrant_data_response`, {
+              request_id: Number(el),
+              response_value: updatedRegistration[el],
+            })
+          );
+        });
+        await Promise.all(updatedRegistrationPromises);
+      } else {
+        await axios.post(getApiEndpointByRegType(type), updatedRegistration);
+      }
       return updatedRegistration;
     } catch (err) {
       return Toasts.errorToast(err.message);

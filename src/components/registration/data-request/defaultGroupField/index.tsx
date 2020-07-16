@@ -1,22 +1,19 @@
 import React from 'react';
 import { useDrag, DragSourceMonitor } from 'react-dnd';
-import { BindingCbWithTwo, ISelectOption } from 'common/models';
-import { Input, Select } from 'components/common/';
-import { DndItems } from 'components/divisions-and-pools/common';
+import { BindingCbWithOne } from 'common/models';
+import { DndItems } from 'components/registration/data-request/types';
 import moveIcon from 'assets/moveIcon.png';
 import styles from '../styles.module.scss';
 
-interface IFieldProps {
+interface IDefaultGroupField {
   data: any;
-  updateRequestIds: BindingCbWithTwo<any, string>;
+  updateRequestedIds: BindingCbWithOne<any>;
 }
 
-enum fieldType {
-  INPUT = 0,
-  SELECT = 1,
-}
-
-const Field = ({ data, updateRequestIds }: IFieldProps) => {
+const DefaultGroupField = ({
+  data,
+  updateRequestedIds,
+}: IDefaultGroupField) => {
   const [, drag] = useDrag({
     item: { type: DndItems.REGISTRANT_DATA_FIELD },
     end(_, monitor: DragSourceMonitor) {
@@ -26,59 +23,22 @@ const Field = ({ data, updateRequestIds }: IFieldProps) => {
         return;
       }
 
-      updateRequestIds(data.data_field_id, 'add');
+      const { name } = dropResult;
+      if (name === 'requestGroup') {
+        updateRequestedIds({
+          id: data.data_field_id,
+          status: 'add',
+        });
+      }
     },
   });
 
-  const checkFieldType = (value: string | null) => {
-    try {
-      if (!value) {
-        return { type: fieldType.INPUT, value };
-      }
-
-      const parsedArray = JSON.parse(value);
-      if (Array.isArray(parsedArray) && parsedArray.length === 1) {
-        const parsedObject = parsedArray[0];
-
-        const options = Object.entries(parsedObject).map(el => ({
-          value: el[0],
-          label: el[1],
-        }));
-        return {
-          type: fieldType.SELECT,
-          value: options,
-        };
-      }
-      return { type: fieldType.INPUT, value };
-    } catch {
-      return { type: fieldType.INPUT, value };
-    }
-  };
-
-  const renderField = (field: {
-    data_defaults: string | null;
-    data_label?: string;
-  }) => {
-    const { value, type } = checkFieldType(field.data_defaults);
-    const label = field.data_label;
-
-    if (type === fieldType.INPUT) {
-      return <Input fullWidth={true} label={label} value={value?.toString()} />;
-    } else {
-      const selectValue = (value as ISelectOption[])[0].value.toString();
-
-      return (
-        <Select
-          options={value as ISelectOption[]}
-          label={label}
-          value={selectValue}
-        />
-      );
-    }
-  };
   return (
     <div ref={drag} className={styles.fieldWrapper}>
-      <div className={styles.field}>{renderField(data)}</div>
+      <div className={styles.field}>
+        {data.data_field_id}
+        {data.data_label}
+      </div>
       <span className={styles.iconWrapper}>
         <img
           src={moveIcon}
@@ -94,4 +54,4 @@ const Field = ({ data, updateRequestIds }: IFieldProps) => {
   );
 };
 
-export default Field;
+export default DefaultGroupField;

@@ -1,36 +1,116 @@
-import React from 'react';
-import { BindingCbWithTwo } from 'common/models';
+import React, { useState } from 'react';
+import { useDrop } from 'react-dnd';
+import { BindingCbWithOne } from 'common/models';
 import DefaultGroupField from '../defaultGroupField';
 import { ButtonVariant, ButtonColors } from 'common/enums';
-import { Button } from 'components/common';
+import { Button, Select } from 'components/common';
+import { DndItems } from 'components/registration/data-request/types';
 import styles from '../styles.module.scss';
+
+const addButton = {
+  marginLeft: 'auto',
+  display: 'block',
+  fontSize: '14px',
+};
 
 interface IDefaultGroupProps {
   fields: any[];
-  updateRequestIds: BindingCbWithTwo<any, string>;
+  updateRequestedIds: BindingCbWithOne<any>;
   onAddNewField: () => void;
 }
 
 const DefaultGroup = ({
   fields,
-  updateRequestIds,
+  updateRequestedIds,
   onAddNewField,
 }: IDefaultGroupProps) => {
+  const [groupByValue, setGroupByValue] = useState('All');
+
+  const [, drop] = useDrop({
+    accept: DndItems.REGISTRANT_DATA_FIELD,
+    drop: () => ({ name: 'defaultGroup' }),
+  });
+
+  const getFieldsByGroup = () => {
+    const fieldsByGroup = {};
+    fields.map((el: any) => {
+      if (!fieldsByGroup.hasOwnProperty(el.data_group)) {
+        fieldsByGroup[el.data_group] = [];
+      }
+      fieldsByGroup[el.data_group].push(el);
+    });
+    return fieldsByGroup;
+  };
+
+  const getGroupByList = () => {
+    const groupByList = new Set();
+    fields.map((el: any) => {
+      groupByList.add(el.data_group);
+    });
+    const options: any = [];
+
+    groupByList.forEach(el => {
+      options.push({
+        label: el,
+        value: el,
+      });
+    });
+    options.push({ label: 'All', value: 'All' });
+
+    return options;
+  };
+
+  const compare = (a: any, b: any) => {
+    const fieldA = a.data_label.toUpperCase();
+    const fieldB = b.data_label.toUpperCase();
+
+    let comparison = 0;
+    if (fieldA > fieldB) {
+      comparison = 1;
+    } else if (fieldA < fieldB) {
+      comparison = -1;
+    }
+    return comparison;
+  };
+
+  const onChangeGroupBy = (e: any) => {
+    setGroupByValue(e.target.value);
+  };
+
   return (
-    <div className={styles.fieldGroup}>
+    <div ref={drop} className={styles.defaultGroupWrapper}>
+      <div className={styles.defaultGroupHeader}>
+        <Select
+          onChange={onChangeGroupBy}
+          name={'Group by'}
+          options={getGroupByList()}
+          value={groupByValue}
+          label="Group by"
+        />
+      </div>
+      <div className={styles.defaultGroup}>
+        {Object.entries(getFieldsByGroup())
+          .filter(el => groupByValue === 'All' || el[0] === groupByValue)
+          .map((field: any, index: number) => (
+            <div className={styles.subGroup} key={index}>
+              <div className={styles.fieldGroupTitle}>{field[0] || <br />}</div>
+              {field[1].sort(compare).map((el: any, index2: number) => (
+                <DefaultGroupField
+                  data={el}
+                  updateRequestedIds={updateRequestedIds}
+                  key={index2}
+                />
+              ))}
+            </div>
+          ))}
+      </div>
       <Button
         onClick={onAddNewField}
         variant={ButtonVariant.TEXT}
         color={ButtonColors.SECONDARY}
-        label="+ Add New Field"
+        label="+ Add Custom"
+        btnStyles={addButton}
       />
-      {fields.map((field: any, index: number) => (
-        <DefaultGroupField
-          data={field}
-          updateRequestIds={updateRequestIds}
-          key={index}
-        />
-      ))}
     </div>
   );
 };

@@ -3,45 +3,48 @@ import { connect } from 'react-redux';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { loadRegistrantData } from 'components/register-page/individuals/player-stats/logic/actions';
+import {
+  updateRequestedIds,
+  updateOptions,
+} from 'components/registration/registration-edit/logic/actions';
+
 import DefaultGroup from './defaultGroup';
 import RequestGroup from './requestGroup';
-import {
-  BindingCbWithOne,
-  BindingCbWithTwo,
-  BindingCbWithThree,
-} from 'common/models';
+import { BindingCbWithOne } from 'common/models';
 import styles from './styles.module.scss';
 
-interface IRegistrationDetails {
-  eventId: string;
+interface IDataRequest {
+  requestedIds: any;
+  options: any;
   registrantDataFields: any;
-  loadRegistrantData: BindingCbWithOne<string>;
-  updateRequestIds: BindingCbWithTwo<any, string>;
-  updateOptions: BindingCbWithThree<number | string, number, boolean>;
-  requestIds: any;
+  loadRegistrantData: () => void;
+  updateRequestedIds: BindingCbWithOne<any>;
+  updateOptions: BindingCbWithOne<any>;
   onAddNewField: () => void;
 }
 
 const DataRequest = ({
-  eventId,
+  requestedIds,
+  options,
   registrantDataFields,
   loadRegistrantData,
-  updateRequestIds,
+  updateRequestedIds,
   updateOptions,
-  requestIds,
   onAddNewField,
-}: IRegistrationDetails) => {
+}: IDataRequest) => {
   useEffect(() => {
-    loadRegistrantData(eventId);
+    loadRegistrantData();
   }, []);
+
+  console.log('> rquestedIds', requestedIds, options);
   const getRequestFields = () =>
     registrantDataFields.filter((el: any) =>
-      requestIds.every((id: number | string) => id !== el.data_field_id)
+      requestedIds.every((id: number | string) => id !== el.data_field_id)
     );
 
   const getDefaultFields = () =>
     registrantDataFields.filter((el: any) =>
-      requestIds.some((id: number | string) => id === el.data_field_id)
+      requestedIds.some((id: number | string) => id === el.data_field_id)
     );
 
   return (
@@ -49,12 +52,13 @@ const DataRequest = ({
       <DndProvider backend={HTML5Backend}>
         <DefaultGroup
           fields={getRequestFields()}
-          updateRequestIds={updateRequestIds}
+          updateRequestedIds={updateRequestedIds}
           onAddNewField={onAddNewField}
         />
         <RequestGroup
           fields={getDefaultFields()}
-          updateRequestIds={updateRequestIds}
+          options={options}
+          updateRequestedIds={updateRequestedIds}
           updateOptions={updateOptions}
         />
       </DndProvider>
@@ -63,13 +67,16 @@ const DataRequest = ({
 };
 
 const mapStateToProps = (state: {
-  playerStatsReducer: { registrantDataFields: any };
+  registration: { requestedIds: any; options: any };
 }) => ({
-  registrantDataFields: state.playerStatsReducer.registrantDataFields,
+  requestedIds: state.registration.requestedIds,
+  options: state.registration.options,
 });
 
 const mapDispatchToProps = {
   loadRegistrantData,
+  updateRequestedIds,
+  updateOptions,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DataRequest);
