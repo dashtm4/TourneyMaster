@@ -1,24 +1,15 @@
 import request from 'sync-request';
 import chromium from 'chrome-aws-lambda';
-import puppeteer from 'puppeteer-core';
-import { Duplex } from 'stream';
-
-const bufferToStream = (buffer) => {
-  const stream = new Duplex();
-  stream.push(buffer);
-  stream.push(null);
-  return stream;
-}
 
 const generateAndReturnBody = async (html) => {
   return new Promise(async (resolve, reject) => {
     try {
-      //await chromium.font('/var/task/fonts/Segoe Script.ttf');
-      const browser = await puppeteer.launch({
+      const browser = await chromium.puppeteer.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath,
-        headless: chromium.headless
+        headless: chromium.headless,
+        ignoreHTTPSErrors: true,
       });
       const page = await browser.newPage();
       await page.setContent(html);
@@ -30,10 +21,20 @@ const generateAndReturnBody = async (html) => {
           top: "10px",
           right: "10px",
           bottom: "10px"
-        }
+        },
+        scale: 0.98,
+        headless: true
       });
       await browser.close();
-      resolve(bufferToStream(buffer));
+      resolve({
+        headers: {
+          'Content-type': 'application/pdf',
+          'content-disposition': `attachment; filename=Waiver-${new Date().getTime()}.pdf`
+        },
+        statusCode: 200,
+        body: buffer.toString('base64'),
+        isBase64Encoded: true
+      });
     } catch (e) {
       reject(e)
     }
