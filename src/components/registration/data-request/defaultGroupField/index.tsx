@@ -35,10 +35,7 @@ const DefaultGroupField = ({
 
   return (
     <div ref={drag} className={styles.fieldWrapper}>
-      <div className={styles.field}>
-        {data.data_field_id}
-        {data.data_label}
-      </div>
+      <div className={styles.field}>{data.data_label}</div>
       <span className={styles.iconWrapper}>
         <img
           src={moveIcon}
