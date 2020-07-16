@@ -18,12 +18,12 @@ const generateAndReturnBody = async (html) => {
         format: "A4",
         printBackground: true,
         margin: {
-          left: "10px",
-          top: "10px",
-          right: "10px",
-          bottom: "10px"
+          left: "15px",
+          top: "15px",
+          right: "15px",
+          bottom: "15px"
         },
-        scale: 0.98,
+        scale: 0.80,
         headless: true
       });
       await browser.close();
