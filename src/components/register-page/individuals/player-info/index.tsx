@@ -73,7 +73,7 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="Participant First Name"
+            label='Participant First Name'
             value={data.participant_first_name || ''}
             isRequired={true}
             onChange={onFirstNameChange}
@@ -82,7 +82,7 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="Participant Last Name"
+            label='Participant Last Name'
             value={data.participant_last_name || ''}
             isRequired={true}
             onChange={onLastNameChange}
@@ -93,17 +93,20 @@ const PlayerInfo = ({
           <DatePicker
             fullWidth={true}
             label={`Birthdate ${datePickerRequired ? '(Required)' : ''}`}
-            type="date"
-            value={data.player_birthdate}
+            type='date'
+            value={
+              data.player_birthdate === undefined ? null : data.player_birthdate
+            }
             isRequired={datePickerRequired}
             onChange={onPlayerBirthdayChange}
+            initialFocusedDate={new Date(2000, 0, 1)}
           />
         </div>
 
         <div className={styles.sectionItem}>
           <Select
             options={divisions}
-            label="Division"
+            label='Division'
             value={data.ext_sku || ''}
             isRequired={true}
             onChange={onDivisionChange}
@@ -115,7 +118,7 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="Email"
+            label='Email'
             value={data.participant_email || ''}
             isRequired={true}
             onChange={onEmailChange}
@@ -126,9 +129,9 @@ const PlayerInfo = ({
           <PhoneInput
             country={'us'}
             // disableDropdown
-            onlyCountries={['us','ca']}
+            onlyCountries={['us', 'ca']}
             disableCountryCode={false}
-            placeholder=""
+            placeholder=''
             value={data.participant_mobile || ''}
             onChange={onPhoneNumberChange}
             containerStyle={{ marginTop: '7px' }}
@@ -148,7 +151,7 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <Input
             fullWidth={true}
-            label="City"
+            label='City'
             value={data.player_city || ''}
             isRequired={true}
             onChange={onPlayerCityChange}
@@ -157,7 +160,7 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <Select
             options={states}
-            label="State/Province"
+            label='State/Province'
             value={data.player_state || ''}
             onChange={onPlayerStateChange}
             isRequired={true}

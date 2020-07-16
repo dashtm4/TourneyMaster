@@ -11,12 +11,13 @@ import {
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import styles from './style.module.scss';
+import { ParsableDate } from '@material-ui/pickers/constants/prop-types';
 
 // const defaultWidth = 100;
 
 interface IDatePickerProps {
   label?: string;
-  value?: string | Date;
+  value?: string | Date | null;
   type: string;
   width?: string;
   minWidth?: string;
@@ -27,6 +28,7 @@ interface IDatePickerProps {
   fullWidth?: boolean;
   disabled?: boolean;
   isRequired?: boolean;
+  initialFocusedDate?: ParsableDate;
 }
 
 const DatePicker: React.FC<IDatePickerProps> = ({
@@ -42,6 +44,7 @@ const DatePicker: React.FC<IDatePickerProps> = ({
   fullWidth,
   disabled,
   isRequired,
+  initialFocusedDate,
 }) => {
   const renderInputDatePicker = () => (
     <InputDatePicker
@@ -49,14 +52,15 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       fullWidth={fullWidth}
       views={views}
       style={{ width, minWidth }}
-      variant="inline"
-      size="small"
-      inputVariant="outlined"
+      variant='inline'
+      size='small'
+      inputVariant='outlined'
       value={value}
       format={dateFormat || 'MM/dd/yyyy'}
       onChange={onChange}
       disabled={disabled}
       required={isRequired}
+      initialFocusedDate={initialFocusedDate}
     />
   );
   const renderDatePicker = () => (
@@ -65,9 +69,9 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       fullWidth={fullWidth}
       views={views}
       style={{ width, minWidth }}
-      variant="inline"
-      size="small"
-      inputVariant="outlined"
+      variant='inline'
+      size='small'
+      inputVariant='outlined'
       value={value}
       format={dateFormat || 'MM/dd/yyyy'}
       onChange={onChange}
@@ -80,10 +84,10 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       autoOk={true}
       fullWidth={fullWidth}
       style={{ width, minWidth }}
-      variant="inline"
-      size="small"
-      inputVariant="outlined"
-      placeholder="08:00 AM"
+      variant='inline'
+      size='small'
+      inputVariant='outlined'
+      placeholder='08:00 AM'
       value={value}
       onChange={onChange}
       disabled={disabled}
@@ -95,11 +99,11 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       autoOk={true}
       fullWidth={fullWidth}
       style={{ width, minWidth }}
-      variant="inline"
-      size="small"
-      inputVariant="outlined"
-      placeholder="08:00 AM"
-      mask="__:__ _M"
+      variant='inline'
+      size='small'
+      inputVariant='outlined'
+      placeholder='08:00 AM'
+      mask='__:__ _M'
       value={value}
       onChange={onChange}
       disabled={disabled}
@@ -113,9 +117,9 @@ const DatePicker: React.FC<IDatePickerProps> = ({
       fullWidth={fullWidth}
       views={views}
       style={{ width, minWidth }}
-      variant="inline"
-      size="small"
-      inputVariant="outlined"
+      variant='inline'
+      size='small'
+      inputVariant='outlined'
       value={value}
       onChange={onChange}
       disabled={disabled}
