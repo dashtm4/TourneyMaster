@@ -112,6 +112,16 @@ const Waiver = ({
     setDisabledButton(false);
   };
 
+  const downloadPDF = (pdf: string) => {
+    const linkSource = `data:application/pdf;base64,${pdf}`;
+    const downloadLink = document.createElement("a");
+    const fileName = "Waiver.pdf";
+
+    downloadLink.href = linkSource;
+    downloadLink.download = fileName;
+    downloadLink.click();
+};
+
   const sendDataToPDF = async (event: any) => {
     event.preventDefault();
 
@@ -123,11 +133,10 @@ const Waiver = ({
       const response = await axios.post('https://api.tourneymaster.org/public/services/generate-pdf', {
         html: getWaiverContent(),
       });
-      console.log(response.data.body);
-      
+      downloadPDF(response.data.body);
     } catch (err) {
       return Toasts.errorToast(err.message);
-    }
+    };
   };
 
   const getWaiverContent = () => {
