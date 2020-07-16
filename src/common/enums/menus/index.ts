@@ -44,8 +44,9 @@ enum EventMenuRegistrationTitles {
   REGISTRATION_DETAILS = 'Registration Details',
   DATA_REQUESTS = 'Data Requests',
   PAYMENTS = 'Payments',
-  WAIVER = 'Waivers',
+  WAIVER = 'Waivers & Wellness',
   REGISTRANTS = 'Registrants',
+  EMAIL_RECEIPTS = 'Email Confirm Settings',
 }
 
 enum RequiredMenuKeys {

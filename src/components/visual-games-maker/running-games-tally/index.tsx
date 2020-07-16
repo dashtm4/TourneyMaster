@@ -103,10 +103,10 @@ const RunningTally = (props: IProps) => {
                 Team
               </TableCell>
               <TableCell className={classes.tableHeaderCell} align="center">
-                Home
+                Away
               </TableCell>
               <TableCell className={classes.tableHeaderCell} align="center">
-                Away
+                Home
               </TableCell>
               <TableCell className={classes.tableHeaderCell} align="center">
                 Count
@@ -126,10 +126,10 @@ const RunningTally = (props: IProps) => {
                       )}
                   </TableCell>
                   <TableCell className={classes.tableCell} align="center">
-                    {row.homeGamesNumber}
+                    {row.awayGamesNumber}
                   </TableCell>
                   <TableCell className={classes.tableCell} align="center">
-                    {row.awayGamesNumber}
+                    {row.homeGamesNumber}
                   </TableCell>
                   <TableCell className={classes.tableCountCell} align="center">
                     {row.allGamesNumber}

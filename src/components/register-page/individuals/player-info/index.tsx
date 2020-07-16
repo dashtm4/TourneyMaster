@@ -125,9 +125,9 @@ const PlayerInfo = ({
           <div className={styles.sectionTitle}>Phone Number</div>
           <PhoneInput
             country={'us'}
-            disableDropdown
-            onlyCountries={['us']}
-            disableCountryCode={true}
+            // disableDropdown
+            onlyCountries={['us','ca']}
+            disableCountryCode={false}
             placeholder=""
             value={data.participant_mobile || ''}
             onChange={onPhoneNumberChange}

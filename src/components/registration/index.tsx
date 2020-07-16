@@ -15,7 +15,7 @@ import {
   IEventDetails,
   IRegistrant,
 } from 'common/models';
-import { IRegistration } from 'common/models/registration';
+import { IRegistration, IWelcomeSettings } from 'common/models/registration';
 import { Loader, Toasts, Modal } from 'components/common';
 import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import RegistrationEdit from 'components/registration/registration-edit';
@@ -37,6 +37,7 @@ import {
   getRegistrants,
   loadCustomData,
 } from './registration-edit/logic/actions';
+import EmailReceipts from './email-receipts';
 import { loadRegistrantData } from 'components/register-page/individuals/player-stats/logic/actions';
 import styles from './styles.module.scss';
 
@@ -117,7 +118,7 @@ class RegistrationView extends React.Component<
     this.setState({ isEdit: true });
   };
 
-  onChange = (name: string, value: string | number) => {
+  onChange = (name: string, value: string | number | IWelcomeSettings) => {
     this.setState(({ registration }) => ({
       registration: {
         ...registration,
@@ -197,7 +198,11 @@ class RegistrationView extends React.Component<
   renderView = () => {
     const { registration, event, registrantDataFields } = this.props;
     const { isAddNewFieldOpen } = this.state;
-    const eventType = event && event[0].event_type;
+
+    if (!event) {
+      return;
+    }
+    const eventType = event[0] && event[0].event_type;
 
     if (this.state.isEdit) {
       return (
@@ -315,6 +320,17 @@ class RegistrationView extends React.Component<
                   >
                     <span>Registrants</span>
                     <Registrants />
+                  </SectionDropdown>
+                </li>
+                <li>
+                  <SectionDropdown
+                    id={EventMenuRegistrationTitles.EMAIL_RECEIPTS}
+                    type="section"
+                    panelDetailsType="flat"
+                    expanded={this.state.isSectionsExpand}
+                  >
+                    <span>Email Confirms Settings</span>
+                    <EmailReceipts data={registration} />
                   </SectionDropdown>
                 </li>
               </ul>

@@ -1,4 +1,3 @@
-import config from '../../../config.js';
 import { StripeObject } from './stripeObject.js';
 
 export default class StripePricesHandler extends StripeObject {
