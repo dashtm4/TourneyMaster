@@ -12,6 +12,11 @@ import styles from './styles.module.scss';
 
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
+// interface IPostPDF {
+//   success: boolean;
+//   message: string;
+//   body: string;
+// }
 
 type InputTargetValue = React.ChangeEvent<HTMLInputElement>;
 
@@ -131,15 +136,15 @@ const Waiver = ({
       return;
     }
 
-    try {
-      setIsLoadFile(true);
-      //await axios.post('http://localhost:3001/services/generate-pdf', {
-      await axios.post('https://api.tourneymaster.org/public/services/generate-pdf', {
-        html: getWaiverContent(),
-      }).then(response => downloadPDF(response.data.body));
-    } catch (err) {
-      return Toasts.errorToast(err.message);
-    };
+    setIsLoadFile(true);
+    //await axios.post('http://localhost:3001/services/generate-pdf', {
+    const resp = await axios.post('https://api.tourneymaster.org/public/services/generate-pdf', {
+      html: getWaiverContent(),
+    });
+    if (!resp.data.success) {
+      return Toasts.errorToast(resp.data.message);
+    }
+    downloadPDF(resp.data.body);
   };
 
   const getWaiverContent = () => {
