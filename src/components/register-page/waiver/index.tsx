@@ -124,6 +124,7 @@ const Waiver = ({
         html: getWaiverContent(),
       });
       console.log(response.data.body);
+      
     } catch (err) {
       return Toasts.errorToast(err.message);
     }
