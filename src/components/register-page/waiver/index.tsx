@@ -1,7 +1,7 @@
 ﻿import React, { useState, useRef, useEffect } from 'react';
 import { BindingCbWithTwo, IRegistration, BindingCbWithOne, IEventDetails } from 'common/models';
 import 'react-phone-input-2/lib/high-res.css';
-import { Input, Button, Toasts } from 'components/common';
+import { Input, Button, Toasts, Loader } from 'components/common';
 import { IIndividualsRegister } from 'common/models/register';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import axios from 'axios';
@@ -32,6 +32,7 @@ const Waiver = ({
 }: IRegistrationDetailsProps) => {
   const [isBottom, setIsBottom] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [isLoadFile, setIsLoadFile] = useState(false);
   const [name, setName] = useState('');
   const [IP, setIP] = useState('');
   const [hash, setHash] = useState('');
@@ -120,6 +121,7 @@ const Waiver = ({
     downloadLink.href = linkSource;
     downloadLink.download = fileName;
     downloadLink.click();
+    setIsLoadFile(false);
 };
 
   const sendDataToPDF = async (event: any) => {
@@ -130,10 +132,10 @@ const Waiver = ({
     }
 
     try {
-      const response = await axios.post('https://api.tourneymaster.org/public/services/generate-pdf', {
+      setIsLoadFile(true);
+      await axios.post('https://api.tourneymaster.org/public/services/generate-pdf', {
         html: getWaiverContent(),
-      });
-      downloadPDF(response.data.body);
+      }).then(response => downloadPDF(response.data.body));
     } catch (err) {
       return Toasts.errorToast(err.message);
     };
@@ -177,14 +179,16 @@ const Waiver = ({
     return (
       <div className={styles.waiverContainer}>
         <div className={isComplete ? styles.buttonWrapp : styles.hiddenButton}>
-          <Button
-            onClick={sendDataToPDF}
-            variant={ButtonVariant.CONTAINED}
-            color={ButtonColors.PRIMARY}
-            label={'Save to PDF'}
-            icon={<GetAppIcon style={{ fill: '#FFFFFF' }} />}
-            isIconRightSide={true}
-          />
+          {isLoadFile
+          ? <Loader />
+          : <Button
+              onClick={sendDataToPDF}
+              variant={ButtonVariant.CONTAINED}
+              color={ButtonColors.PRIMARY}
+              label={'Save to PDF'}
+              icon={<GetAppIcon style={{ fill: '#FFFFFF' }} />}
+              isIconRightSide={true}
+            />}
         </div>
 
         <div className={styles.waiverWrapp} ref={scrollRef}>
