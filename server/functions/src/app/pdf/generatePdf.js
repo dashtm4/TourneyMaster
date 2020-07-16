@@ -43,7 +43,7 @@ const generateAndReturnBody = async (html) => {
 }
 
 export const generatePdf = async ({ html, styles }) => {
-  const extraStyle = '<style>body{color:black;}ul, ul li {list-style: none;}</style>';
+  const extraStyle = "<style>@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');body{font-family: 'Open Sans', sans-serif;color:black;}ul, ul li {list-style: none;}</style>";
   let content = extraStyle + html;
   if (styles) {
     const req = request('GET', styles);
