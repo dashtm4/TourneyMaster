@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { IRegistration } from 'common/models';
 import { loadFormFields } from 'components/register-page/individuals/player-stats/logic/actions';
 import styles from '../styles.module.scss';
 import { BindingCbWithOne } from 'common/models';
@@ -12,14 +11,12 @@ enum Options {
 }
 
 interface IRegistrationDetails {
-  data: IRegistration;
   eventId: string;
   loadFormFields: BindingCbWithOne<string>;
   formFields: any;
 }
 
-const RegistrationDetails = ({
-  data,
+const DataRequest = ({
   eventId,
   formFields,
   loadFormFields,
@@ -28,7 +25,6 @@ const RegistrationDetails = ({
     loadFormFields(eventId);
   }, [loadFormFields, eventId]);
 
-  console.log('> formFields', formFields, data);
   return (
     <div className={styles.section}>
       <div className={styles.sectionRowAligned}>
@@ -53,7 +49,4 @@ const mapDispatchToProps = {
   loadFormFields,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(RegistrationDetails);
+export default connect(mapStateToProps, mapDispatchToProps)(DataRequest);
