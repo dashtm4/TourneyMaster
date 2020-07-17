@@ -379,8 +379,8 @@ export const updateBracketGamesDndResult = (
     item.fieldId === gameSlot?.fieldId && item.startTime === gameSlot?.startTime
       ? updateBracketGame(item)
       : item.id === bracketGame?.id
-      ? updateBracketGame(item, gameSlot, fieldName)
-      : item
+        ? updateBracketGame(item, gameSlot, fieldName)
+        : item
   );
 
   /* WARNINGS SETUP */
@@ -391,10 +391,10 @@ export const updateBracketGamesDndResult = (
 
   warnings.gameAlreadyAssigned = Boolean(
     originId === -1 &&
-      bracketGame?.fieldId &&
-      bracketGame?.startTime &&
-      bracketGameToUpdate?.fieldId &&
-      bracketGameToUpdate.startTime
+    bracketGame?.fieldId &&
+    bracketGame?.startTime &&
+    bracketGameToUpdate?.fieldId &&
+    bracketGameToUpdate.startTime
   );
 
   /* Check play time for the given BracketGame */
@@ -461,8 +461,8 @@ export const updateBracketGamesDndResult = (
   const regularGamesFacilitiesUnmatch =
     divisionGamesFacilitiesIds.length === 0
       ? gameSlot?.facilityId &&
-        facilitiesIds.length > 0 &&
-        !facilitiesIds.includes(gameSlot?.facilityId)
+      facilitiesIds.length > 0 &&
+      !facilitiesIds.includes(gameSlot?.facilityId)
       : bracketGamesFacilitiesUnmatch;
 
   warnings.facilitiesDiffer = Boolean(
@@ -510,7 +510,7 @@ export const movePlayoffTimeSlots = (
 
   if (
     direction === MovePlayoffWindowEnum.UP &&
-    playoffStartTimeSlot.id - minGameTimeSlotAvailable >= 1
+    playoffStartTimeSlot.id - minGameTimeSlotAvailable >= 0
   ) {
     const previousTimeSlot = timeSlots.find(
       (_, index, arr) => arr[index + 1].id === playoffStartTimeSlot.id
@@ -603,7 +603,7 @@ export const getPlayoffMovementAvailability = (
     timeSlots.find(item => item.time === lastGameStartTime)?.id || 0;
 
   const upDisabled = Boolean(
-    playoffTimeSlots[0].id <= minGameTimeSlotAvailable
+    playoffTimeSlots[0].id < minGameTimeSlotAvailable
   );
 
   const bracketTimeSlotNumExceeded = playoffTimeSlots.length <= 1;

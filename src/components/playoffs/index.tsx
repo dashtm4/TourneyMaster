@@ -304,7 +304,7 @@ class Playoffs extends Component<IProps> {
     const initialStartTimeSlot = bracket.startTimeSlot;
 
     const playoffTimeSlots = timeSlots.slice(
-      Number(initialStartTimeSlot),
+      Number(initialStartTimeSlot) - 1,
       timeSlots.length
     );
 
@@ -414,9 +414,9 @@ class Playoffs extends Component<IProps> {
       playoffTimeSlots
     );
 
-    const existingBracketGames = bracketGames?.filter(v => !v.hidden);
+    const existingBracketGames = bracketGames?.filter((v) => !v.hidden);
 
-    const updatedGames = definedGames.map(item => {
+    const updatedGames = definedGames.map((item) => {
       const foundBracketGame = find(existingBracketGames, {
         fieldId: item.fieldId,
         startTime: item.startTime,
@@ -565,7 +565,7 @@ class Playoffs extends Component<IProps> {
     this.props.fetchBracketGames(newBracketGames);
   };
 
-  onSeedsUsed = () => { };
+  onSeedsUsed = () => {};
 
   saveBracketsData = () => {
     const { match, bracketGames } = this.props;
@@ -588,7 +588,7 @@ class Playoffs extends Component<IProps> {
     const bracketExists = Boolean(bracket);
     const bracketPublished = bracket?.published;
     const allGamesAssigned = bracketGames?.every(
-      game => game.hidden || (game.fieldId && game.startTime)
+      (game) => game.hidden || (game.fieldId && game.startTime)
     );
 
     return bracketExists && (!bracketPublished || allGamesAssigned);
@@ -671,8 +671,9 @@ class Playoffs extends Component<IProps> {
 
     return (
       <div
-        className={`${styles.container} ${isFullScreen &&
-          styles.containerFullScreen}`}
+        className={`${styles.container} ${
+          isFullScreen && styles.containerFullScreen
+        }`}
       >
         <DndProvider backend={HTML5Backend}>
           <div className={styles.paperWrapper}>
@@ -731,9 +732,9 @@ class Playoffs extends Component<IProps> {
                 scheduleData={schedule}
                 eventSummary={eventSummary}
                 schedulesDetails={schedulesDetails}
-                onTeamCardsUpdate={() => { }}
-                onTeamCardUpdate={() => { }}
-                onUndo={() => { }}
+                onTeamCardsUpdate={() => {}}
+                onTeamCardUpdate={() => {}}
+                onUndo={() => {}}
                 playoffTimeSlots={playoffTimeSlots}
                 isFullScreen={isFullScreen}
                 updateGame={this.updateMergedGames}
@@ -743,23 +744,23 @@ class Playoffs extends Component<IProps> {
                 movePlayoffWindow={this.movePlayoffWindow}
               />
             ) : (
-                <BracketManager
-                  history={history}
-                  match={match}
-                  bracket={bracket!}
-                  historyLength={historyLength}
-                  divisions={divisions!}
-                  seeds={bracketSeeds}
-                  bracketGames={bracketGames!}
-                  advancingInProgress={advancingInProgress}
-                  addGame={this.addGame}
-                  removeGame={this.removeGame}
-                  onUndoClick={onBracketsUndo}
-                  advanceTeamsToBrackets={advanceTeamsToBrackets}
-                  updateSeeds={this.updateGlobalSeeds}
-                  saveBracketsData={this.saveBracketsData}
-                />
-              )}
+              <BracketManager
+                history={history}
+                match={match}
+                bracket={bracket!}
+                historyLength={historyLength}
+                divisions={divisions!}
+                seeds={bracketSeeds}
+                bracketGames={bracketGames!}
+                advancingInProgress={advancingInProgress}
+                addGame={this.addGame}
+                removeGame={this.removeGame}
+                onUndoClick={onBracketsUndo}
+                advanceTeamsToBrackets={advanceTeamsToBrackets}
+                updateSeeds={this.updateGlobalSeeds}
+                saveBracketsData={this.saveBracketsData}
+              />
+            )}
           </section>
         </DndProvider>
         <PopupExposure
