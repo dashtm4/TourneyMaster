@@ -172,13 +172,15 @@ export const saveCustomData = (eventId: string) => async (
     const requestFieldsPromises: Promise<any>[] = [];
 
     requestedIds.map((id: number, idx: number) => {
-      requestFieldsPromises.push(
-        api.post(`/registrant_data_requests`, {
-          event_id: eventId,
-          data_field_id: id,
-          data_sort_order: idx + 1,
-        })
-      );
+      if (options.hasOwnProperty(id)) {
+        requestFieldsPromises.push(
+          api.post(`/registrant_data_requests`, {
+            event_id: eventId,
+            data_field_id: id,
+            data_sort_order: idx + 1,
+          })
+        );
+      }
       return true;
     });
     await Promise.all(requestFieldsPromises);

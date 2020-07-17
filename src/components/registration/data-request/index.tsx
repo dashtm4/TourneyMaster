@@ -6,8 +6,7 @@ import { BindingCbWithOne } from 'common/models';
 
 enum Options {
   'Required' = 1,
-  'Requested' = 2,
-  'Not Needed' = 0,
+  'Requested' = 0,
 }
 
 interface IRegistrationDetails {

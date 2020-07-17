@@ -49,6 +49,7 @@ interface IRegistrationState {
   changesAreMade: boolean;
   event?: Partial<IEventDetails>;
   isAddNewFieldOpen: boolean;
+  isDataRequestInfoOpen: boolean;
 }
 
 interface IRegistrationProps {
@@ -69,6 +70,7 @@ interface IRegistrationProps {
   isLoading: boolean;
   event: IEventDetails;
   registrantDataFields: any;
+  options: any;
 }
 
 class RegistrationView extends React.Component<
@@ -83,6 +85,7 @@ class RegistrationView extends React.Component<
     changesAreMade: false,
     event: undefined,
     isAddNewFieldOpen: false,
+    isDataRequestInfoOpen: false,
   };
 
   componentDidMount() {
@@ -112,6 +115,16 @@ class RegistrationView extends React.Component<
     loadRegistrantData();
     this.setState({
       isAddNewFieldOpen: false,
+    });
+  };
+
+  onDataRequestInfo = () => {
+    this.setState({ isDataRequestInfoOpen: true });
+  };
+
+  onDataRequestInfoClose = () => {
+    this.setState({
+      isDataRequestInfoOpen: false,
     });
   };
 
@@ -155,12 +168,18 @@ class RegistrationView extends React.Component<
   };
 
   onSaveClick = () => {
-    if (this.scheduleIsValid(this.state.registration)) {
-      this.props.saveRegistration(this.state.registration, this.eventId);
-      this.props.saveCustomData(this.eventId);
-      this.setState({ isEdit: false, changesAreMade: false });
+    const { options } = this.props;
+
+    if (Object.entries(options).length === 0) {
+      this.onDataRequestInfo();
     } else {
-      Toasts.errorToast('Total schedule amount must be equal to 100%');
+      if (this.scheduleIsValid(this.state.registration)) {
+        this.props.saveRegistration(this.state.registration, this.eventId);
+        this.props.saveCustomData(this.eventId);
+        this.setState({ isEdit: false, changesAreMade: false });
+      } else {
+        Toasts.errorToast('Total schedule amount must be equal to 100%');
+      }
     }
   };
 
@@ -198,7 +217,7 @@ class RegistrationView extends React.Component<
 
   renderView = () => {
     const { registration, event, registrantDataFields } = this.props;
-    const { isAddNewFieldOpen } = this.state;
+    const { isAddNewFieldOpen, isDataRequestInfoOpen } = this.state;
 
     if (!event) {
       return;
@@ -226,6 +245,25 @@ class RegistrationView extends React.Component<
               onCancel={this.onAddNewFieldClose}
               eventId={this.eventId}
             />
+          </Modal>
+          <Modal
+            isOpen={isDataRequestInfoOpen}
+            onClose={this.onDataRequestInfoClose}
+          >
+            <div className={styles.modalContainer}>
+              <div className={styles.modalContent}>
+                Make sure you select Requested or Required for each selected
+                data request.
+              </div>
+              <div className={styles.modalButton}>
+                <Button
+                  label="Dismiss"
+                  variant="text"
+                  color="secondary"
+                  onClick={this.onDataRequestInfoClose}
+                />
+              </div>
+            </div>
           </Modal>
         </>
       );
@@ -375,6 +413,7 @@ interface IState {
     registrants: IRegistrant[];
     isLoading: boolean;
     event: IEventDetails;
+    options: any;
   };
   playerStatsReducer: { registrantDataFields: any };
 }
@@ -386,6 +425,7 @@ const mapStateToProps = (state: IState) => ({
   registrants: state.registration.registrants,
   event: state.registration.event,
   registrantDataFields: state.playerStatsReducer.registrantDataFields,
+  options: state.registration.options,
 });
 
 const mapDispatchToProps = {

@@ -152,3 +152,19 @@
   display: none;
   visibility: hidden;
 }
+
+.modalContainer {
+  width: 510px;
+  padding: 32px;
+}
+
+.modalContent {
+  margin-top: 15px;
+  color: #6a6a6a;
+}
+
+.modalButton {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5px;
+}

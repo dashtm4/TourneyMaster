@@ -91,7 +91,7 @@ IRequestGroupProps) => {
     >
       <RequestGroupField
         data={value}
-        checkedValue={options[value.data_field_id] || null}
+        checkedValue={options[value.data_field_id]}
         updateRequestedIds={updateRequestedIds}
         updateOptions={updateOptions}
         allRequested={allRequested}

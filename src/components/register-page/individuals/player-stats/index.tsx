@@ -18,8 +18,7 @@ enum fieldType {
 
 enum defaultOptions {
   REQUIRED = 1,
-  REQUESTED = 2,
-  NONE = 0,
+  REQUESTED = 0,
 }
 
 interface IPlayerStatsProps {
