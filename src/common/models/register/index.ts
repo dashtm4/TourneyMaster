@@ -15,7 +15,7 @@ export interface IIndividualsRegister {
   participant_email: string;
   player_city: string;
   player_state: string;
-  player_birthdate: string;
+  player_birthdate: string | null;
   jersey_number: number;
   additional_emails: string;
   payment_method: string;

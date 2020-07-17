@@ -12,7 +12,7 @@ interface IWaiverProps {
 }
 
 const Waiver = ({ data, isEdit, onChange }: IWaiverProps) => {
-  const [model, setModel] = useState(data ?.waiver_content);
+  const [model, setModel] = useState(data?.waiver_content);
 
   const quill = {
     toolbar: [
