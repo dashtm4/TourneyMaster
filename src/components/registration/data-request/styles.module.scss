@@ -115,3 +115,16 @@
 .closeIcon {
   cursor: pointer;
 }
+
+.swapVertIcon {
+  display: flex;
+  align-items: center;
+  margin-left: -5px;
+  padding: 0 5px;
+  color: #6a6a6a;
+  cursor: pointer;
+
+  svg {
+    margin: 0px !important;
+  }
+}

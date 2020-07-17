@@ -49,7 +49,7 @@ const DefaultGroup = ({
     });
     const options: any = [];
 
-    groupByList.forEach(el => {
+    groupByList.forEach((el) => {
       options.push({
         label: el,
         value: el,
@@ -90,7 +90,7 @@ const DefaultGroup = ({
       </div>
       <div className={styles.defaultGroup}>
         {Object.entries(getFieldsByGroup())
-          .filter(el => groupByValue === 'All' || el[0] === groupByValue)
+          .filter((el) => groupByValue === 'All' || el[0] === groupByValue)
           .map((field: any, index: number) => (
             <div className={styles.subGroup} key={index}>
               <div className={styles.fieldGroupTitle}>{field[0] || <br />}</div>

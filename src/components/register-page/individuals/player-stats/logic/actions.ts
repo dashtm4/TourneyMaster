@@ -20,6 +20,7 @@ export const loadRegistrantData: ActionCreator<ThunkAction<
   null,
   PlayerStatsAction
 >> = () => async (dispatch: Dispatch) => {
+  console.log('>>> loadRegistrantData');
   try {
     dispatch({
       type: LOAD_REGISTRANT_DATA_START,
@@ -44,7 +45,7 @@ export const loadRegistrantData: ActionCreator<ThunkAction<
     const registrantDataFields = [
       ...registrantDefaultFields,
       ...registrantUserDefinedFields,
-    ].filter(el => {
+    ].filter((el) => {
       if (fieldIds.some((id: number) => id === el.data_field_id)) {
         return false;
       } else {
@@ -101,7 +102,7 @@ export const loadFormFields: ActionCreator<ThunkAction<
       ...registrantDefaultFields,
       ...registrantUserDefinedFields,
     ]
-      .filter(el => {
+      .filter((el) => {
         if (fieldIds.some((id: number) => id === el.data_field_id)) {
           return false;
         } else {
@@ -109,7 +110,7 @@ export const loadFormFields: ActionCreator<ThunkAction<
           return true;
         }
       })
-      .map(el => {
+      .map((el) => {
         const requestedFields = requestedFieldsResponse.filter(
           (requestedField: any) =>
             requestedField.data_field_id === el.data_field_id
@@ -125,7 +126,7 @@ export const loadFormFields: ActionCreator<ThunkAction<
           return null;
         }
       })
-      .filter(el => el)
+      .filter((el) => el)
       .sort((a: any, b: any) => {
         const fieldA = a.data_sort_order;
         const fieldB = b.data_sort_order;

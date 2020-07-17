@@ -10,6 +10,7 @@ import {
   EVENT_FETCH_SUCCESS,
   LOAD_CUSTOM_DATA_SUCCESS,
   UPDATE_REQUESTED_IDS_SUCCESS,
+  SWAP_REQUESTED_IDS_SUCCESS,
   UPDATE_OPTIONS_SUCCESS,
 } from './actionTypes';
 import api from 'api/api';
@@ -186,7 +187,7 @@ export const saveCustomData = (eventId: string) => async (
 
     const optionsPromises: Promise<any>[] = [];
 
-    Object.keys(options).forEach(el => {
+    Object.keys(options).forEach((el) => {
       const optionsFields = updatedRequestFields.filter(
         (updatedField: any) => updatedField.data_field_id.toString() === el
       );
@@ -422,6 +423,13 @@ export const updateRequestedIds = (
   payload: any
 ): { type: string; payload: any[] } => ({
   type: UPDATE_REQUESTED_IDS_SUCCESS,
+  payload,
+});
+
+export const swapRequestedIds = (
+  payload: any
+): { type: string; payload: any[] } => ({
+  type: SWAP_REQUESTED_IDS_SUCCESS,
   payload,
 });
 

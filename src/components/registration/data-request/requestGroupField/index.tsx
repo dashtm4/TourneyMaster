@@ -1,10 +1,16 @@
 import React, { useEffect } from 'react';
 import { useDrag, DragSourceMonitor } from 'react-dnd';
 import { FormControlLabel, Radio as MuiRadio } from '@material-ui/core';
+import { getIcon } from 'helpers';
+import { Icons } from 'common/enums';
 import { BindingCbWithOne } from 'common/models';
 import { DndItems } from 'components/registration/data-request/types';
 import moveIcon from 'assets/moveIcon.png';
 import styles from '../styles.module.scss';
+
+const SWAPVERT_ICON_STYLES = {
+  margin: '10px',
+};
 
 interface IRequestGroupFieldProps {
   data: any;
@@ -72,10 +78,11 @@ const RequestGroupField = ({
 
   return (
     <div ref={drag} className={styles.fieldWrapper}>
-      <div className={styles.field}>
-        {data.data_field_id}
-        {data.data_label}
+      <div className={styles.swapVertIcon} tabIndex={-1} data-movable-handle>
+        {getIcon(Icons.SWAPVERT, SWAPVERT_ICON_STYLES)}
       </div>
+
+      <div className={styles.field}>{data.data_label}</div>
       <div className={styles.selectWrapper}>
         <FormControlLabel
           value={checkedValue === defaultOptions.REQUIRED}
@@ -99,14 +106,6 @@ const RequestGroupField = ({
           label=""
           onChange={() => onChange(defaultOptions.REQUESTED)}
         />
-        {/* <Radio
-          options={defaultRadioOptions}
-          formLabel=""
-          checked={defaultRadioOptions[value]}
-          onChange={onChange}
-          row={true}
-        /> */}
-        {/* <Select options={requiredOptions} value={value} onChange={onChange} /> */}
       </div>
       <span className={styles.iconWrapper}>
         <img

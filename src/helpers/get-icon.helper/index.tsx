@@ -40,6 +40,7 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import CloseIcon from '@material-ui/icons/Close';
+import SwapVertIcon from '@material-ui/icons/SwapVert';
 import { PinIcon } from './own-icons';
 import { Icons } from 'common/enums/icons';
 
@@ -127,6 +128,8 @@ const getIcon = (icon: string, iconStyles?: object): JSX.Element => {
       return <ArrowRightAltIcon style={iconStyles} />;
     case Icons.CLOSE:
       return <CloseIcon style={iconStyles} />;
+    case Icons.SWAPVERT:
+      return <SwapVertIcon style={iconStyles} />;
     case Icons.EXPAND_MORE:
       return <ExpandMoreIcon style={iconStyles} />;
     case Icons.EXPAND_LESS:

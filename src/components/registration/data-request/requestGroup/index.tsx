@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDrop } from 'react-dnd';
+import { List } from 'react-movable';
 import { BindingCbWithOne } from 'common/models';
 import { Checkbox as MuiCheckbox } from '@material-ui/core';
 import { DndItems } from 'components/registration/data-request/types';
@@ -8,8 +9,10 @@ import styles from '../styles.module.scss';
 
 interface IRequestGroupProps {
   fields: any[];
+  requestedIds: number[];
   options: any;
   updateRequestedIds: BindingCbWithOne<any>;
+  swapRequestedIds: BindingCbWithOne<any>;
   updateOptions: BindingCbWithOne<any>;
 }
 
@@ -17,8 +20,10 @@ const RequestGroup = ({
   fields,
   options,
   updateRequestedIds,
+  swapRequestedIds,
   updateOptions,
-}: IRequestGroupProps) => {
+}: // requestedIds,
+IRequestGroupProps) => {
   const [allRequired, setAllRequired] = useState(false);
   const [allRequested, setAllRequested] = useState(false);
 
@@ -41,6 +46,60 @@ const RequestGroup = ({
     setAllRequested(!allRequested);
   };
 
+  const swapFields = ({
+    oldIndex,
+    newIndex,
+  }: {
+    oldIndex: number;
+    newIndex: number;
+  }) => swapRequestedIds({ oldIndex, newIndex });
+
+  const renderList = ({
+    children,
+    props,
+    isDragged,
+  }: {
+    children: any;
+    props: any;
+    isDragged: boolean;
+  }) => (
+    <div
+      {...props}
+      style={{
+        cursor: isDragged ? 'grabbing' : 'pointer',
+      }}
+    >
+      {children}
+    </div>
+  );
+
+  const renderItem = ({
+    value,
+    props,
+    isDragged,
+  }: {
+    value: any;
+    props: any;
+    isDragged: boolean;
+  }) => (
+    <div
+      {...props}
+      style={{
+        ...props.style,
+        cursor: isDragged ? 'grabbing' : 'inherit',
+      }}
+    >
+      <RequestGroupField
+        data={value}
+        checkedValue={options[value.data_field_id] || null}
+        updateRequestedIds={updateRequestedIds}
+        updateOptions={updateOptions}
+        allRequested={allRequested}
+        allRequired={allRequired}
+      />
+    </div>
+  );
+
   return (
     <div ref={drop} className={styles.requestGroup}>
       <div className={styles.requestGroupHeader}>
@@ -62,17 +121,12 @@ const RequestGroup = ({
           />
         </div>
       </div>
-      {fields.map((field: any, index: number) => (
-        <RequestGroupField
-          key={index}
-          data={field}
-          checkedValue={options[field.data_field_id] || null}
-          updateRequestedIds={updateRequestedIds}
-          updateOptions={updateOptions}
-          allRequested={allRequested}
-          allRequired={allRequired}
-        />
-      ))}
+      <List
+        values={fields}
+        onChange={swapFields}
+        renderList={renderList}
+        renderItem={renderItem}
+      />
     </div>
   );
 };

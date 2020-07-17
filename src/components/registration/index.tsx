@@ -73,7 +73,7 @@ interface IRegistrationProps {
 class RegistrationView extends React.Component<
   IRegistrationProps,
   IRegistrationState
-> {
+  > {
   eventId = this.props.match.params.eventId;
   state = {
     registration: undefined,
@@ -141,8 +141,8 @@ class RegistrationView extends React.Component<
   scheduleIsValid = (registration: any) => {
     const schedule = registration.payment_schedule_json
       ? JSON.parse(registration.payment_schedule_json!)?.find(
-          (x: any) => x.type === 'schedule'
-        )
+        (x: any) => x.type === 'schedule'
+      )
       : null;
     return (
       !schedule ||
@@ -218,6 +218,7 @@ class RegistrationView extends React.Component<
             eventType={eventType}
             onAddNewField={this.onAddNewField}
             registrantDataFields={registrantDataFields}
+            eventId={this.eventId}
           />
           <Modal isOpen={isAddNewFieldOpen} onClose={this.onAddNewFieldClose}>
             <AddNewField
@@ -335,15 +336,15 @@ class RegistrationView extends React.Component<
                 </li>
               </ul>
             ) : (
-              !this.props.isLoading && (
-                <div className={styles.noFoundWrapper}>
-                  <span>
-                    There are currently no registrations. Start with the "Add"
-                    button.
+                !this.props.isLoading && (
+                  <div className={styles.noFoundWrapper}>
+                    <span>
+                      There are currently no registrations. Start with the "Add"
+                      button.
                   </span>
-                </div>
-              )
-            )}
+                  </div>
+                )
+              )}
           </div>
         </section>
       );

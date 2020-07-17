@@ -28,6 +28,7 @@ interface IRegistrationEditProps {
   changesAreMade: boolean;
   divisions: IDivision[];
   eventType: string;
+  eventId: string;
   event?: IEventDetails;
   onAddNewField: () => void;
   registrantDataFields: any;
@@ -120,7 +121,7 @@ class RegistrationEdit extends React.Component<
   };
 
   render() {
-    const { onAddNewField, registrantDataFields } = this.props;
+    const { onAddNewField, registrantDataFields, eventId } = this.props;
 
     return (
       <section>
@@ -194,6 +195,7 @@ class RegistrationEdit extends React.Component<
               >
                 <span>Data Requests</span>
                 <DataRequest
+                  eventId={eventId}
                   onAddNewField={onAddNewField}
                   registrantDataFields={registrantDataFields}
                 />

@@ -5,7 +5,9 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { loadRegistrantData } from 'components/register-page/individuals/player-stats/logic/actions';
 import {
   updateRequestedIds,
+  swapRequestedIds,
   updateOptions,
+  loadCustomData,
 } from 'components/registration/registration-edit/logic/actions';
 
 import DefaultGroup from './defaultGroup';
@@ -15,37 +17,53 @@ import styles from './styles.module.scss';
 
 interface IDataRequest {
   requestedIds: any;
+  eventId: string;
   options: any;
   registrantDataFields: any;
   loadRegistrantData: () => void;
   updateRequestedIds: BindingCbWithOne<any>;
+  swapRequestedIds: BindingCbWithOne<any>;
   updateOptions: BindingCbWithOne<any>;
   onAddNewField: () => void;
+  loadCustomData: BindingCbWithOne<string>;
 }
 
 const DataRequest = ({
   requestedIds,
+  eventId,
   options,
   registrantDataFields,
   loadRegistrantData,
+  loadCustomData,
   updateRequestedIds,
+  swapRequestedIds,
   updateOptions,
   onAddNewField,
 }: IDataRequest) => {
   useEffect(() => {
     loadRegistrantData();
+    loadCustomData(eventId);
   }, []);
 
-  console.log('> rquestedIds', requestedIds, options);
   const getRequestFields = () =>
     registrantDataFields.filter((el: any) =>
       requestedIds.every((id: number | string) => id !== el.data_field_id)
     );
 
-  const getDefaultFields = () =>
-    registrantDataFields.filter((el: any) =>
-      requestedIds.some((id: number | string) => id === el.data_field_id)
-    );
+  const getDefaultFields = () => {
+    const sortedFields = requestedIds
+      .map((id: number) => {
+        const filteredList = registrantDataFields.filter(
+          (field: any) => field.data_field_id === id
+        );
+        if (filteredList.length > 0) {
+          return filteredList[0];
+        }
+      })
+      .filter((el: any) => el);
+
+    return sortedFields;
+  };
 
   return (
     <div className={styles.fieldGroupContainer}>
@@ -56,9 +74,11 @@ const DataRequest = ({
           onAddNewField={onAddNewField}
         />
         <RequestGroup
+          requestedIds={requestedIds}
           fields={getDefaultFields()}
           options={options}
           updateRequestedIds={updateRequestedIds}
+          swapRequestedIds={swapRequestedIds}
           updateOptions={updateOptions}
         />
       </DndProvider>
@@ -76,7 +96,9 @@ const mapStateToProps = (state: {
 const mapDispatchToProps = {
   loadRegistrantData,
   updateRequestedIds,
+  swapRequestedIds,
   updateOptions,
+  loadCustomData,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DataRequest);

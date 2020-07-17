@@ -150,7 +150,7 @@ const Registrants: React.FC<IRegistrantsProps> = (props: IRegistrantsProps) => {
       <MaterialTable
         columns={columns}
         data={data}
-        title='All Participants'
+        title="All Participants"
         detailPanel={detailPanel}
         options={{
           pageSize: 10,

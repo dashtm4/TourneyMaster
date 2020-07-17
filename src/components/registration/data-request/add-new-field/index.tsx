@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import history from 'browserhistory';
 import api from 'api/api';
 import Input from 'components/common/input';
 import { Toasts, Select } from 'components/common';
@@ -34,6 +33,7 @@ const AddNewField = ({
   registrantDataFields,
   eventId,
   onCancel,
+  loadRegistrantData,
 }: IAddNewField) => {
   const [dataLabel, setDataLabel] = useState('');
   const [dataDefaults, setDataDefaults] = useState('');
@@ -62,8 +62,9 @@ const AddNewField = ({
     } catch {
       Toasts.errorToast('Could not add a new field.');
     }
+
+    loadRegistrantData();
     onCancel();
-    history.push(`/event/event-details/${eventId}/`);
   };
 
   const getGroupByList = () => {
@@ -73,7 +74,7 @@ const AddNewField = ({
     });
     const options: any = [];
 
-    groupByList.forEach(el => {
+    groupByList.forEach((el) => {
       options.push({
         label: el,
         value: el,
