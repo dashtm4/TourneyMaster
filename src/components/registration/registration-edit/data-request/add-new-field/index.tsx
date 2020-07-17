@@ -115,10 +115,10 @@ const AddNewField = ({
           <div className={styles.sectionItem}>
             <Select
               onChange={onChangeGroupBy}
-              name={'Group by'}
+              name={'Data Group'}
               options={getGroupByList()}
               value={groupByValue}
-              label="Group by"
+              label="Data Group"
             />
           </div>
           <div className={styles.sectionItem}>
