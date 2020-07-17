@@ -294,7 +294,7 @@ class RegistrationView extends React.Component<
                     expanded={this.state.isSectionsExpand}
                   >
                     <span>Data Requests</span>
-                    <DataRequest data={registration} eventId={this.eventId} />
+                    <DataRequest eventId={this.eventId} />
                   </SectionDropdown>
                 </li>
                 <li>

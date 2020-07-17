@@ -18,6 +18,7 @@ import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { Toasts } from 'components/common';
 import { getVarcharEight } from 'helpers';
+import { loadFormFields } from 'components/register-page/individuals/player-stats/logic/actions';
 import { IRegistration } from 'common/models/registration';
 import { ICalendarEvent } from 'common/models/calendar';
 import { IDivision, ITeam, IEventDetails } from 'common/models';
@@ -204,7 +205,7 @@ export const saveCustomData = (eventId: string) => async (
     });
     await Promise.all(optionsPromises);
 
-    dispatch<any>(loadCustomData(eventId));
+    dispatch<any>(loadFormFields(eventId));
   } catch {
     Toasts.errorToast("Couldn't save custom data");
   }

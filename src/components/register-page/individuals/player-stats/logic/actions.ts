@@ -20,11 +20,9 @@ export const loadRegistrantData: ActionCreator<ThunkAction<
   null,
   PlayerStatsAction
 >> = () => async (dispatch: Dispatch) => {
-  console.log('>>> loadRegistrantData');
   try {
     dispatch({
       type: LOAD_REGISTRANT_DATA_START,
-      payload: '',
     });
 
     const currentSession = await Auth.currentSession();
@@ -71,7 +69,7 @@ export const loadFormFields: ActionCreator<ThunkAction<
   void,
   {},
   null,
-  PlayerStatsAction
+  { type: string }
 >> = (eventId: string) => async (dispatch: Dispatch) => {
   try {
     dispatch({
