@@ -7,8 +7,9 @@ interface IFabButtonState {
 }
 
 interface IFabButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   sequence: number | 0;
+  btnType?: 'button' | 'submit';
   variant: 'text' | 'outlined' | 'contained' | undefined;
   label: string;
 }
@@ -31,12 +32,12 @@ class FabButton extends React.Component<IFabButtonProps, IFabButtonState> {
     }
   };
 
-  onClick = () => {
-    this.props.onClick();
-  };
+  // onClick = () => {
+  //   this.props.onClick();
+  // };
 
   render() {
-    const { label, sequence, variant } = this.props;
+    const { label, sequence, variant, btnType } = this.props;
 
     return (
       <div
@@ -45,10 +46,11 @@ class FabButton extends React.Component<IFabButtonProps, IFabButtonState> {
       >
         <div className={!this.state.isBtnVisible ? styles.hidden : undefined}>
           <Button
+            btnType={btnType}
             label={label}
             variant={variant}
             color="primary"
-            onClick={this.onClick}
+            onClick={this.props.onClick}
           />
         </div>
       </div>

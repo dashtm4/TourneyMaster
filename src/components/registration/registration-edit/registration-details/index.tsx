@@ -94,15 +94,16 @@ const RegistrationDetails = ({
           />
         </div>
         <div className={styles.sectionItem}>
-          {eventType === 'Showcase' ? (
-            <Input
-              fullWidth={true}
-              label="Max Players Per Division"
-              type="number"
-              value={data ? data.max_players_per_division : ''}
-              onChange={onMaxPlayersPerDivisionChange}
-            />
-          ) : (
+          {eventType === 'Showcase' 
+          ? (
+              <Input
+                fullWidth={true}
+                label="Max Players Per Division"
+                type="number"
+                value={data ? data.max_players_per_division : ''}
+                onChange={onMaxPlayersPerDivisionChange}
+              />
+            ) : (
               <Input
                 fullWidth={true}
                 label="Max Teams Per Division"
