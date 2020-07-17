@@ -49,6 +49,7 @@ const AddNewField = ({
       selectOptions.map((el: any, index: number) => {
         const key = `value_${index + 1}`;
         structuredSelectOptions.push({ [key]: el });
+        return true;
       });
       await api.post('/registrant_data_fields', {
         data_group: groupByValue,
@@ -71,6 +72,7 @@ const AddNewField = ({
     const groupByList = new Set();
     registrantDataFields.map((el: any) => {
       groupByList.add(el.data_group);
+      return true;
     });
     const options: any = [];
 

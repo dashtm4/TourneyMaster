@@ -1,104 +1,59 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import { loadRegistrantData } from 'components/register-page/individuals/player-stats/logic/actions';
-import {
-  updateRequestedIds,
-  swapRequestedIds,
-  updateOptions,
-  loadCustomData,
-} from 'components/registration/registration-edit/logic/actions';
-
-import DefaultGroup from './defaultGroup';
-import RequestGroup from './requestGroup';
+import { IRegistration } from 'common/models';
+import { loadFormFields } from 'components/register-page/individuals/player-stats/logic/actions';
+import styles from '../styles.module.scss';
 import { BindingCbWithOne } from 'common/models';
-import styles from './styles.module.scss';
 
-interface IDataRequest {
-  requestedIds: any;
-  eventId: string;
-  options: any;
-  registrantDataFields: any;
-  loadRegistrantData: () => void;
-  updateRequestedIds: BindingCbWithOne<any>;
-  swapRequestedIds: BindingCbWithOne<any>;
-  updateOptions: BindingCbWithOne<any>;
-  onAddNewField: () => void;
-  loadCustomData: BindingCbWithOne<string>;
+enum Options {
+  'Required' = 1,
+  'Requested' = 2,
+  'Not Needed' = 0,
 }
 
-const DataRequest = ({
-  requestedIds,
+interface IRegistrationDetails {
+  data: IRegistration;
+  eventId: string;
+  loadFormFields: BindingCbWithOne<string>;
+  formFields: any;
+}
+
+const RegistrationDetails = ({
+  data,
   eventId,
-  options,
-  registrantDataFields,
-  loadRegistrantData,
-  loadCustomData,
-  updateRequestedIds,
-  swapRequestedIds,
-  updateOptions,
-  onAddNewField,
-}: IDataRequest) => {
+  formFields,
+  loadFormFields,
+}: IRegistrationDetails) => {
   useEffect(() => {
-    loadRegistrantData();
-    loadCustomData(eventId);
-  }, []);
+    loadFormFields(eventId);
+  }, [loadFormFields, eventId]);
 
-  const getRequestFields = () =>
-    registrantDataFields.filter((el: any) =>
-      requestedIds.every((id: number | string) => id !== el.data_field_id)
-    );
-
-  const getDefaultFields = () => {
-    const sortedFields = requestedIds
-      .map((id: number) => {
-        const filteredList = registrantDataFields.filter(
-          (field: any) => field.data_field_id === id
-        );
-        if (filteredList.length > 0) {
-          return filteredList[0];
-        }
-      })
-      .filter((el: any) => el);
-
-    return sortedFields;
-  };
-
+  console.log('> formFields', formFields, data);
   return (
-    <div className={styles.fieldGroupContainer}>
-      <DndProvider backend={HTML5Backend}>
-        <DefaultGroup
-          fields={getRequestFields()}
-          updateRequestedIds={updateRequestedIds}
-          onAddNewField={onAddNewField}
-        />
-        <RequestGroup
-          requestedIds={requestedIds}
-          fields={getDefaultFields()}
-          options={options}
-          updateRequestedIds={updateRequestedIds}
-          swapRequestedIds={swapRequestedIds}
-          updateOptions={updateOptions}
-        />
-      </DndProvider>
+    <div className={styles.section}>
+      <div className={styles.sectionRowAligned}>
+        {formFields.map((field: any, index: number) => (
+          <div className={styles.sectionItemAligned} key={index}>
+            <span className={styles.sectionTitle}>{field.data_label}</span>
+            <p>{Options[field.is_required_YN] || 'Not Needed'}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
 const mapStateToProps = (state: {
-  registration: { requestedIds: any; options: any };
+  playerStatsReducer: { formFields: any };
 }) => ({
-  requestedIds: state.registration.requestedIds,
-  options: state.registration.options,
+  formFields: state.playerStatsReducer.formFields,
 });
 
 const mapDispatchToProps = {
-  loadRegistrantData,
-  updateRequestedIds,
-  swapRequestedIds,
-  updateOptions,
-  loadCustomData,
+  loadFormFields,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DataRequest);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(RegistrationDetails);

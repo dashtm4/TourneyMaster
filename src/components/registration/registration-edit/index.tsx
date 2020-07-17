@@ -2,7 +2,7 @@ import React from 'react';
 import HeadingLevelTwo from '../../common/headings/heading-level-two';
 import Button from '../../common/buttons/button';
 import SectionDropdown from '../../common/section-dropdown';
-import DataRequest from '../data-request';
+import DataRequest from './data-request';
 import styles from './styles.module.scss';
 import Paper from '../../common/paper';
 import PricingAndCalendar from './pricing-and-calendar';

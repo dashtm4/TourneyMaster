@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDrag, DragSourceMonitor } from 'react-dnd';
 import { BindingCbWithOne } from 'common/models';
-import { DndItems } from 'components/registration/data-request/types';
+import { DndItems } from '../types';
 import moveIcon from 'assets/moveIcon.png';
 import styles from '../styles.module.scss';
 

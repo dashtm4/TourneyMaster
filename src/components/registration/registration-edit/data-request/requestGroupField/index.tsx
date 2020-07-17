@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useDrag, DragSourceMonitor } from 'react-dnd';
 import { FormControlLabel, Radio as MuiRadio } from '@material-ui/core';
 import { getIcon } from 'helpers';
 import { Icons } from 'common/enums';
 import { BindingCbWithOne } from 'common/models';
-import { DndItems } from 'components/registration/data-request/types';
+import { DndItems } from '../types';
 import moveIcon from 'assets/moveIcon.png';
 import styles from '../styles.module.scss';
 
@@ -59,6 +59,17 @@ const RequestGroupField = ({
     },
   });
 
+  const onChange = useCallback(
+    (value: any) => {
+      updateOptions({
+        id: data.data_field_id,
+        value,
+        status: 'add',
+      });
+    },
+    [data, updateOptions]
+  );
+
   useEffect(() => {
     if (allRequested) {
       onChange(defaultOptions.REQUESTED);
@@ -66,15 +77,7 @@ const RequestGroupField = ({
     if (allRequired) {
       onChange(defaultOptions.REQUIRED);
     }
-  }, [allRequested, allRequired]);
-
-  const onChange = (value: any) => {
-    updateOptions({
-      id: data.data_field_id,
-      value,
-      status: 'add',
-    });
-  };
+  }, [allRequested, allRequired, onChange]);
 
   return (
     <div ref={drag} className={styles.fieldWrapper}>

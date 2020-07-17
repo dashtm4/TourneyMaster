@@ -173,6 +173,7 @@ export default (
             .filter((el) => el.toString() !== id.toString())
             .map((el) => {
               newOptions[el] = options[el];
+              return true;
             });
 
           return { ...state, options: newOptions };

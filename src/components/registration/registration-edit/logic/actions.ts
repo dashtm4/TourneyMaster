@@ -178,6 +178,7 @@ export const saveCustomData = (eventId: string) => async (
           data_sort_order: idx + 1,
         })
       );
+      return true;
     });
     await Promise.all(requestFieldsPromises);
 
@@ -407,6 +408,7 @@ export const loadCustomData: ActionCreator<ThunkAction<
 
       requestedIds.push(data_field_id);
       options[data_field_id] = is_required_YN;
+      return true;
     });
 
   dispatch(loadCustomDataSuccess({ requestedIds, options }));

@@ -43,7 +43,7 @@ const PlayerStats = ({
     if (eventId) {
       loadFormFields(eventId);
     }
-  }, []);
+  }, [eventId, loadFormFields]);
   const checkFieldType = (value: string | null) => {
     try {
       if (!value) {
@@ -54,7 +54,7 @@ const PlayerStats = ({
       if (Array.isArray(parsedArray) && parsedArray.length === 1) {
         const parsedObject = parsedArray[0];
 
-        const options = Object.entries(parsedObject).map(el => ({
+        const options = Object.entries(parsedObject).map((el) => ({
           value: el[0],
           label: el[1],
         }));

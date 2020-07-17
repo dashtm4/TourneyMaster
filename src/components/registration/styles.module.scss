@@ -40,6 +40,10 @@
     display: flex;
     justify-content: space-between;
   }
+  .sectionRowAligned {
+    display: flex;
+    flex-wrap: wrap;
+  }
   .taSectionFirstRow,
   .taSectionSecondRow {
     display: flex;
@@ -55,6 +59,14 @@
   }
   .sectionItem {
     flex-grow: 1;
+    width: 25%;
+    color: #6a6a6a;
+    margin-bottom: 32px;
+    p {
+      margin-top: 4px;
+    }
+  }
+  .sectionItemAligned {
     width: 25%;
     color: #6a6a6a;
     margin-bottom: 32px;
@@ -112,17 +124,17 @@
 
 //EMAIL RECEIPTS
 
-.emailReceipts{
+.emailReceipts {
   width: 100%;
   flex-wrap: wrap;
 }
-.emailReceiptsView{
+.emailReceiptsView {
   width: 100%;
   background: #ffffff;
   min-height: 300px;
 }
 
-.emailReceiptsElement{
+.emailReceiptsElement {
   width: 80%;
 }
 
@@ -131,7 +143,7 @@
   visibility: visible;
   height: 342px;
 
-  .emailReceiptsEditor{
+  .emailReceiptsEditor {
     height: 300px;
   }
 }

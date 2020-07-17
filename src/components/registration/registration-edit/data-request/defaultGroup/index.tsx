@@ -4,7 +4,7 @@ import { BindingCbWithOne } from 'common/models';
 import DefaultGroupField from '../defaultGroupField';
 import { ButtonVariant, ButtonColors } from 'common/enums';
 import { Button, Select } from 'components/common';
-import { DndItems } from 'components/registration/data-request/types';
+import { DndItems } from '../types';
 import styles from '../styles.module.scss';
 
 const addButton = {
@@ -38,6 +38,7 @@ const DefaultGroup = ({
         fieldsByGroup[el.data_group] = [];
       }
       fieldsByGroup[el.data_group].push(el);
+      return true;
     });
     return fieldsByGroup;
   };
@@ -46,6 +47,7 @@ const DefaultGroup = ({
     const groupByList = new Set();
     fields.map((el: any) => {
       groupByList.add(el.data_group);
+      return true;
     });
     const options: any = [];
 

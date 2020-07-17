@@ -3,7 +3,7 @@ import { useDrop } from 'react-dnd';
 import { List } from 'react-movable';
 import { BindingCbWithOne } from 'common/models';
 import { Checkbox as MuiCheckbox } from '@material-ui/core';
-import { DndItems } from 'components/registration/data-request/types';
+import { DndItems } from '../types';
 import RequestGroupField from '../requestGroupField';
 import styles from '../styles.module.scss';
 

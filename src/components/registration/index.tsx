@@ -19,13 +19,14 @@ import { IRegistration, IWelcomeSettings } from 'common/models/registration';
 import { Loader, Toasts, Modal } from 'components/common';
 import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
 import RegistrationEdit from 'components/registration/registration-edit';
-import AddNewField from 'components/registration/data-request/add-new-field';
+import AddNewField from 'components/registration/registration-edit/data-request/add-new-field';
 import HeadingLevelTwo from '../common/headings/heading-level-two';
 import Button from '../common/buttons/button';
 import SectionDropdown from '../common/section-dropdown';
 import Navigation from './navigation';
 import PricingAndCalendar from './pricing-and-calendar';
 import RegistrationDetails from './registration-details';
+import DataRequest from './data-request';
 import Registrants from './registrants';
 import Payments from './payments';
 import Waiver from './waiver';
@@ -73,7 +74,7 @@ interface IRegistrationProps {
 class RegistrationView extends React.Component<
   IRegistrationProps,
   IRegistrationState
-  > {
+> {
   eventId = this.props.match.params.eventId;
   state = {
     registration: undefined,
@@ -141,8 +142,8 @@ class RegistrationView extends React.Component<
   scheduleIsValid = (registration: any) => {
     const schedule = registration.payment_schedule_json
       ? JSON.parse(registration.payment_schedule_json!)?.find(
-        (x: any) => x.type === 'schedule'
-      )
+          (x: any) => x.type === 'schedule'
+        )
       : null;
     return (
       !schedule ||
@@ -264,7 +265,7 @@ class RegistrationView extends React.Component<
                     <PricingAndCalendar
                       eventId={this.eventId}
                       data={registration}
-                      divisions={this.props.divisions.map(division => ({
+                      divisions={this.props.divisions.map((division) => ({
                         name: division.short_name,
                         id: division.division_id,
                       }))}
@@ -283,6 +284,17 @@ class RegistrationView extends React.Component<
                       data={registration}
                       eventType={eventType}
                     />
+                  </SectionDropdown>
+                </li>
+                <li>
+                  <SectionDropdown
+                    id={EventMenuRegistrationTitles.DATA_REQUESTS}
+                    type="section"
+                    panelDetailsType="flat"
+                    expanded={this.state.isSectionsExpand}
+                  >
+                    <span>Data Requests</span>
+                    <DataRequest data={registration} eventId={this.eventId} />
                   </SectionDropdown>
                 </li>
                 <li>
@@ -336,15 +348,15 @@ class RegistrationView extends React.Component<
                 </li>
               </ul>
             ) : (
-                !this.props.isLoading && (
-                  <div className={styles.noFoundWrapper}>
-                    <span>
-                      There are currently no registrations. Start with the "Add"
-                      button.
+              !this.props.isLoading && (
+                <div className={styles.noFoundWrapper}>
+                  <span>
+                    There are currently no registrations. Start with the "Add"
+                    button.
                   </span>
-                  </div>
-                )
-              )}
+                </div>
+              )
+            )}
           </div>
         </section>
       );
