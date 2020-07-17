@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Paper, Button } from 'components/common';
+import FabButton from 'components/common/fab-button';
 import { getIcon } from 'helpers';
 import { IRegistration, BindingAction } from 'common/models';
 import { ButtonVariant, ButtonColors, Routes, Icons } from 'common/enums';
@@ -41,7 +42,13 @@ const Navigation = ({
         variant={ButtonVariant.CONTAINED}
         color={ButtonColors.PRIMARY}
         onClick={onRegistrationEdit}
-        label={registration ? 'Edit' : '+ Add Regsistrations'}
+        label={registration ? 'Edit' : '+ Add Registrations'}
+      />
+      <FabButton
+        onClick={onRegistrationEdit}
+        sequence={1}
+        label={registration ? 'Edit' : '+ Add Registrations'}
+        variant="contained"
       />
     </div>
   </Paper>
