@@ -388,7 +388,7 @@ export const loadCustomData: ActionCreator<ThunkAction<
   const requestedFields = requestedFieldsResponse.map((field: any) => ({
     data_field_id: field.data_field_id,
     data_sort_order: field.data_sort_order,
-    is_required_YN: field.is_required_YN || null,
+    is_required_YN: field.is_required_YN,
   }));
   const requestedIds: number[] = [];
   const options = {};

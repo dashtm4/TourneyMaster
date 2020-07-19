@@ -45,19 +45,17 @@ const AddNewField = ({
 
   const onAdd = async () => {
     try {
-      const structuredSelectOptions: any = [];
+      const structuredSelectOptions = {};
       selectOptions.map((el: any, index: number) => {
         const key = `value_${index + 1}`;
-        structuredSelectOptions.push({ [key]: el });
+        structuredSelectOptions[key] = el;
         return true;
       });
+
       await api.post('/registrant_data_fields', {
         data_group: groupByValue,
         data_label: dataLabel,
-        data_defaults:
-          fieldType === 'Input'
-            ? null
-            : JSON.stringify(structuredSelectOptions),
+        data_defaults: fieldType === 'Input' ? null : JSON.stringify([structuredSelectOptions]),
         is_active_YN: 1,
       });
     } catch {
