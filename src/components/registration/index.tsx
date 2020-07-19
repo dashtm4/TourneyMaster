@@ -243,7 +243,6 @@ class RegistrationView extends React.Component<
           <Modal isOpen={isAddNewFieldOpen} onClose={this.onAddNewFieldClose}>
             <AddNewField
               onCancel={this.onAddNewFieldClose}
-              eventId={this.eventId}
             />
           </Modal>
           <Modal
