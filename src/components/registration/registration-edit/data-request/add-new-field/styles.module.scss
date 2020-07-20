@@ -39,19 +39,32 @@
   padding: 5px;
   margin-top: 10px;
   display: flex;
+
+  input:disabled {
+    background: #e8e8e8;
+  }
 }
 
 .selectItems {
   display: block;
-  background: white;
   margin: 8px;
+}
 
-  div {
-    padding: 10px;
-    border-bottom: 1px solid #dddedf;
+.selectItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 3px 0;
+  border-radius: 6px;
+  padding: 6px 15px;
+  background: white;
+}
 
-    &:last-of-type {
-      border: none;
-    }
-  }
+.disabled {
+  background: #e8e8e8;
+  color: #b3b3b3;
+}
+
+.closeIcon {
+  cursor: pointer;
 }

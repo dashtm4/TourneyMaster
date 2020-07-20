@@ -1,25 +1,25 @@
-import React from 'react';
-import HeadingLevelTwo from '../../common/headings/heading-level-two';
-import Button from '../../common/buttons/button';
-import SectionDropdown from '../../common/section-dropdown';
-import DataRequest from './data-request';
-import styles from './styles.module.scss';
-import Paper from '../../common/paper';
-import PricingAndCalendar from './pricing-and-calendar';
-import RegistrationDetails from './registration-details';
-import Payments from './payments';
-import { IEventDetails } from 'common/models/event';
+import React from "react";
+import HeadingLevelTwo from "../../common/headings/heading-level-two";
+import Button from "../../common/buttons/button";
+import SectionDropdown from "../../common/section-dropdown";
+import DataRequest from "./data-request";
+import styles from "./styles.module.scss";
+import Paper from "../../common/paper";
+import PricingAndCalendar from "./pricing-and-calendar";
+import RegistrationDetails from "./registration-details";
+import Payments from "./payments";
+import { IEventDetails } from "common/models/event";
 import {
   IRegistration,
   IWelcomeSettings,
   IContactPerson,
-} from 'common/models/registration';
-import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
-import { ButtonFormTypes } from 'common/enums';
-import FabButton from 'components/common/fab-button';
-import { PopupExposure } from 'components/common';
-import Waiver from '../waiver';
-import EmailReceipts from './email-receipts';
+} from "common/models/registration";
+import { BindingAction, BindingCbWithTwo, IDivision } from "common/models";
+import { ButtonFormTypes } from "common/enums";
+import FabButton from "components/common/fab-button";
+import { PopupExposure } from "components/common";
+import Waiver from "../waiver";
+import EmailReceipts from "./email-receipts";
 
 interface IRegistrationEditProps {
   onCancel: BindingAction;
@@ -66,34 +66,34 @@ class RegistrationEdit extends React.Component<
 
     const emailSetting = !registration.welcome_email_settings
       ? {
-          from: '',
-          replyTo: '',
-          subject: '',
-          contactPerson: '',
+          from: "",
+          replyTo: "",
+          subject: "",
+          contactPerson: "",
           includeCancellationPolicy: 0,
           includeEventLogo: 0,
-          body: '',
+          body: "",
         }
       : JSON.parse(registration.welcome_email_settings);
 
     const contactPerson: IContactPerson = !emailSetting?.contactPerson
       ? {
-          contactName: '',
-          contactEmail: '',
-          contactPhoneNumber: '',
+          contactName: "",
+          contactEmail: "",
+          contactPhoneNumber: "",
         }
       : {
           contactName: emailSetting.contactPerson.substring(
             0,
-            emailSetting.contactPerson.indexOf(' (')
+            emailSetting.contactPerson.indexOf(" (")
           ),
           contactEmail: emailSetting.contactPerson.substring(
-            emailSetting.contactPerson.indexOf('(') + 1,
-            emailSetting.contactPerson.indexOf(',')
+            emailSetting.contactPerson.indexOf("(") + 1,
+            emailSetting.contactPerson.indexOf(",")
           ),
           contactPhoneNumber: emailSetting.contactPerson.substring(
-            emailSetting.contactPerson.indexOf('+') + 1,
-            emailSetting.contactPerson.indexOf(')')
+            emailSetting.contactPerson.indexOf("+") + 1,
+            emailSetting.contactPerson.indexOf(")")
           ),
         };
     emailSetting.contactPerson = contactPerson;
@@ -116,7 +116,7 @@ class RegistrationEdit extends React.Component<
 
   onChangeEmailSettings = (emailSettings: IWelcomeSettings) => {
     this.props.onChange(
-      'welcome_email_settings',
+      "welcome_email_settings",
       JSON.stringify(this.mapObjToEmailSettings(emailSettings))
     );
   };
@@ -216,7 +216,8 @@ class RegistrationEdit extends React.Component<
                   />
                 </SectionDropdown>
               </li>
-              {this.props.event && this.props.event[0].waivers_required === 1 ? (
+              {this.props.event &&
+              this.props.event[0].waivers_required === 1 ? (
                 <li>
                   <SectionDropdown
                     type="section"
