@@ -42,7 +42,7 @@ const getStatesGroup = () => async (dispatch: Dispatch) => {
       type: LOAD_STATEGROUP_FAILURE,
     });
   }
-}
+};
 
 const getOrgInfo = () => async (dispatch: Dispatch) => {
   try {
@@ -61,22 +61,31 @@ const getOrgInfo = () => async (dispatch: Dispatch) => {
     const orgMemberList = await Api.get(`/org_members?member_id=${memberId}`);
     const promises: Promise<any>[] = [];
     orgMemberList.map((el: any) =>
-      promises.push(Api.get(`/organizations?org_id=${el.org_id}`).then(res => {
-        if (res?.length > 0) {
-          const { org_id, org_name, city, state, stripe_connect_id, authdotnet_id } = res[0];
-          return {
-            org_id,
-            org_name,
-            city,
-            state,
-            stripe_connect_id,
-            authdotnet_id,
-            is_default_YN: el.is_default_YN,
-            org_member_id: el.org_member_id
-          };
-        }
-        return null;
-      }))
+      promises.push(
+        Api.get(`/organizations?org_id=${el.org_id}`).then(res => {
+          if (res?.length > 0) {
+            const {
+              org_id,
+              org_name,
+              city,
+              state,
+              stripe_connect_id,
+              authdotnet_id,
+            } = res[0];
+            return {
+              org_id,
+              org_name,
+              city,
+              state,
+              stripe_connect_id,
+              authdotnet_id,
+              is_default_YN: el.is_default_YN,
+              org_member_id: el.org_member_id,
+            };
+          }
+          return null;
+        })
+      )
     );
 
     const orgList = await Promise.all(promises);
@@ -94,7 +103,6 @@ const getOrgInfo = () => async (dispatch: Dispatch) => {
   }
 };
 
-
 const save = (orgList: Array<any>) => async () => {
   try {
     const promises: Promise<any>[] = [];
@@ -102,19 +110,20 @@ const save = (orgList: Array<any>) => async () => {
     orgList.forEach(el => {
       const { is_default_YN, org_member_id, ...others } = el;
       promises.push(Api.put(`/organizations?org_id=${others.org_id}`, others));
-      promises.push(Api.put(`/org_members?org_member_id=${org_member_id}`, {
-        is_default_YN,
-        org_member_id,
-      }));
+      promises.push(
+        Api.put(`/org_members?org_member_id=${org_member_id}`, {
+          is_default_YN,
+          org_member_id,
+        })
+      );
     });
 
     await Promise.all(promises);
 
-    Toasts.successToast("Saved successfully");
-
+    Toasts.successToast('Saved successfully');
   } catch {
     Toasts.errorToast("Couldn't save");
   }
-}
+};
 
 export { getOrgInfo, getStatesGroup, save };

@@ -30,11 +30,11 @@ const RegistrationDetails = ({ data, eventType }: IRegistrationDetails) => (
             <p>{data.max_players_per_division || 'Not specified'}</p>
           </>
         ) : (
-            <>
-              <span className={styles.sectionTitle}>Max Teams Per Division</span>
-              <p>{data.max_teams_per_division || 'Not specified'}</p>
-            </>
-          )}
+          <>
+            <span className={styles.sectionTitle}>Max Teams Per Division</span>
+            <p>{data.max_teams_per_division || 'Not specified'}</p>
+          </>
+        )}
       </div>
       <div className={styles.sectionItem}>
         <span className={styles.sectionTitle}>Max Athletes on Roster</span>

@@ -170,7 +170,6 @@ const PoolsDetails = ({
   };
 
   const onChangePhoneNumber = (value: string) => {
-    console.log('pools-details', value);
     const editedTeam = {
       ...configurableTeam,
       phone_num: value,

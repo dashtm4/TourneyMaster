@@ -1,0 +1,70 @@
+.container {
+  width: 510px;
+  padding: 32px;
+}
+.sectionTitle {
+  color: #1c315f;
+  font-size: 24px;
+  font-weight: 600;
+}
+.buttonsGroup {
+  margin: 20px 10px 0 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  & > :first-child {
+    margin-right: 15px;
+  }
+}
+
+.sectionItem {
+  color: #6a6a6a;
+  padding: 5px;
+  margin-top: 10px;
+}
+
+.sectionRow {
+  display: flex;
+  justify-content: space-between;
+}
+.sectionTitle {
+  color: #1c315f;
+  display: flex;
+  justify-content: space-between;
+  width: 747px;
+}
+
+.addSelectItem {
+  color: #6a6a6a;
+  padding: 5px;
+  margin-top: 10px;
+  display: flex;
+
+  input:disabled {
+    background: #e8e8e8;
+  }
+}
+
+.selectItems {
+  display: block;
+  margin: 8px;
+}
+
+.selectItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 3px 0;
+  border-radius: 6px;
+  padding: 6px 15px;
+  background: white;
+}
+
+.disabled {
+  background: #e8e8e8;
+  color: #b3b3b3;
+}
+
+.closeIcon {
+  cursor: pointer;
+}

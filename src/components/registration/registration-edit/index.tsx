@@ -1,18 +1,23 @@
-import React from 'react';
-import HeadingLevelTwo from '../../common/headings/heading-level-two';
-import Button from '../../common/buttons/button';
-import SectionDropdown from '../../common/section-dropdown';
-import styles from './styles.module.scss';
-import Paper from '../../common/paper';
-import PricingAndCalendar from './pricing-and-calendar';
-import RegistrationDetails from './registration-details';
-import Payments from './payments';
-import { IEventDetails } from 'common/models/event';
-import { IRegistration, IWelcomeSettings, IContactPerson } from 'common/models/registration';
-import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
-import { ButtonFormTypes } from 'common/enums';
-import FabButton from 'components/common/fab-button';
-import { PopupExposure } from 'components/common';
+import React from "react";
+import HeadingLevelTwo from "../../common/headings/heading-level-two";
+import Button from "../../common/buttons/button";
+import SectionDropdown from "../../common/section-dropdown";
+import DataRequest from "./data-request";
+import styles from "./styles.module.scss";
+import Paper from "../../common/paper";
+import PricingAndCalendar from "./pricing-and-calendar";
+import RegistrationDetails from "./registration-details";
+import Payments from "./payments";
+import { IEventDetails } from "common/models/event";
+import {
+  IRegistration,
+  IWelcomeSettings,
+  IContactPerson,
+} from "common/models/registration";
+import { BindingAction, BindingCbWithTwo, IDivision } from "common/models";
+import { ButtonFormTypes } from "common/enums";
+import FabButton from "components/common/fab-button";
+import { PopupExposure } from "components/common";
 import Waiver from "../waiver";
 import EmailReceipts from "./email-receipts";
 
@@ -24,7 +29,10 @@ interface IRegistrationEditProps {
   changesAreMade: boolean;
   divisions: IDivision[];
   eventType: string;
+  eventId: string;
   event?: IEventDetails;
+  onAddNewField: () => void;
+  registrantDataFields: any;
 }
 
 interface IRegistrationEditState {
@@ -34,8 +42,7 @@ interface IRegistrationEditState {
 class RegistrationEdit extends React.Component<
   IRegistrationEditProps,
   IRegistrationEditState
-  > {
-
+> {
   state = { isExposurePopupOpen: false };
 
   onModalClose = () => {
@@ -53,32 +60,41 @@ class RegistrationEdit extends React.Component<
   mapEmailSettingToObj = () => {
     const { registration } = this.props;
 
-    if(!registration) {
+    if (!registration) {
       return;
     }
 
-    const emailSetting = !registration.welcome_email_settings 
-    ? {
-        from: '',
-        replyTo: '',
-        subject: '',
-        contactPerson: '',
-        includeCancellationPolicy: 0,
-        includeEventLogo: 0,
-        body: '',
-      }
-    : JSON.parse(registration.welcome_email_settings);
+    const emailSetting = !registration.welcome_email_settings
+      ? {
+          from: "",
+          replyTo: "",
+          subject: "",
+          contactPerson: "",
+          includeCancellationPolicy: 0,
+          includeEventLogo: 0,
+          body: "",
+        }
+      : JSON.parse(registration.welcome_email_settings);
 
     const contactPerson: IContactPerson = !emailSetting?.contactPerson
       ? {
-          contactName: '',
-          contactEmail: '',
-          contactPhoneNumber: ''
+          contactName: "",
+          contactEmail: "",
+          contactPhoneNumber: "",
         }
       : {
-          contactName: emailSetting.contactPerson.substring(0, emailSetting.contactPerson.indexOf(' (')),
-          contactEmail: emailSetting.contactPerson.substring(emailSetting.contactPerson.indexOf('(') + 1, emailSetting.contactPerson.indexOf(',')),
-          contactPhoneNumber: emailSetting.contactPerson.substring(emailSetting.contactPerson.indexOf('+') + 1, emailSetting.contactPerson.indexOf(')'))
+          contactName: emailSetting.contactPerson.substring(
+            0,
+            emailSetting.contactPerson.indexOf(" (")
+          ),
+          contactEmail: emailSetting.contactPerson.substring(
+            emailSetting.contactPerson.indexOf("(") + 1,
+            emailSetting.contactPerson.indexOf(",")
+          ),
+          contactPhoneNumber: emailSetting.contactPerson.substring(
+            emailSetting.contactPerson.indexOf("+") + 1,
+            emailSetting.contactPerson.indexOf(")")
+          ),
         };
     emailSetting.contactPerson = contactPerson;
 
@@ -86,19 +102,28 @@ class RegistrationEdit extends React.Component<
   };
 
   mapObjToEmailSettings = (emailSettings: IWelcomeSettings) => {
-    const { contactName, contactEmail, contactPhoneNumber } = emailSettings.contactPerson;
+    const {
+      contactName,
+      contactEmail,
+      contactPhoneNumber,
+    } = emailSettings.contactPerson;
 
     return {
       ...emailSettings,
-      contactPerson: `${contactName} (${contactEmail}, +${contactPhoneNumber})`
+      contactPerson: `${contactName} (${contactEmail}, +${contactPhoneNumber})`,
     };
   };
 
   onChangeEmailSettings = (emailSettings: IWelcomeSettings) => {
-    this.props.onChange('welcome_email_settings', JSON.stringify(this.mapObjToEmailSettings(emailSettings)));
+    this.props.onChange(
+      "welcome_email_settings",
+      JSON.stringify(this.mapObjToEmailSettings(emailSettings))
+    );
   };
 
   render() {
+    const { onAddNewField, registrantDataFields, eventId } = this.props;
+
     return (
       <section>
         <form onSubmit={() => this.props.onSave()} ref="formToSubmit">
@@ -170,6 +195,20 @@ class RegistrationEdit extends React.Component<
                   panelDetailsType="flat"
                   isDefaultExpanded={true}
                 >
+                  <span>Data Requests</span>
+                  <DataRequest
+                    eventId={eventId}
+                    onAddNewField={onAddNewField}
+                    registrantDataFields={registrantDataFields}
+                  />
+                </SectionDropdown>
+              </li>
+              <li>
+                <SectionDropdown
+                  type="section"
+                  panelDetailsType="flat"
+                  isDefaultExpanded={true}
+                >
                   <span>Payments</span>
                   <Payments
                     data={this.props.registration}
@@ -177,7 +216,8 @@ class RegistrationEdit extends React.Component<
                   />
                 </SectionDropdown>
               </li>
-              {this.props.event && this.props.event[0].waivers_required === 1 ? (
+              {this.props.event &&
+              this.props.event[0].waivers_required === 1 ? (
                 <li>
                   <SectionDropdown
                     type="section"

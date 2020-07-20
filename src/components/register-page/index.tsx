@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import api from 'api/api';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
@@ -62,7 +63,14 @@ const getInternalRegType = (type: TypeOptions) => {
 };
 
 const getApiEndpointByRegType = (type: TypeOptions) => {
-  return `/reg_${getInternalRegType(type)}s`;
+  if (
+    type === TypeOptions.Participant ||
+    type === TypeOptions['Parent/Guardian']
+  ) {
+    return '/registrant_data_response';
+  } else {
+    return `/reg_teams`;
+  }
 };
 
 export interface RegisterMatchParams {
@@ -222,7 +230,24 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
     setRegistration(updatedRegistration);
 
     try {
-      await axios.post(getApiEndpointByRegType(type), updatedRegistration);
+      if (
+        type === TypeOptions.Participant ||
+        type === TypeOptions['Parent/Guardian']
+      ) {
+        const updatedRegistrationPromises: Promise<any>[] = [];
+
+        Object.keys(registration).forEach(el => {
+          updatedRegistrationPromises.push(
+            api.post(`/registrant_data_response`, {
+              request_id: Number(el),
+              response_value: updatedRegistration[el],
+            })
+          );
+        });
+        await Promise.all(updatedRegistrationPromises);
+      } else {
+        await axios.post(getApiEndpointByRegType(type), updatedRegistration);
+      }
       return updatedRegistration;
     } catch (err) {
       return Toasts.errorToast(err.message);
@@ -250,6 +275,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
         return plans;
       });
   };
+
   const handleProceedToPayment = async () => {
     loadPaymentPlans().then(plans => {
       const planWithMinIterations = plans.reduce((prev: any, cur: any) =>
@@ -309,6 +335,10 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
       type === TypeOptions.Participant ||
       type === TypeOptions['Parent/Guardian']
     ) {
+      const {
+        params: { eventId },
+      } = match;
+
       switch (step) {
         case 'Registrant Name':
           return <RegistrantName onChange={onChange} data={registration} />;
@@ -330,6 +360,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
           return (
             <PlayerStats
               onChange={onChange}
+              eventId={eventId}
               data={registration}
               jerseyNumberRequired={
                 eventRegistration?.request_athlete_jersey_number === 1
@@ -631,13 +662,13 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
             <Paper>
               <Stepper
                 activeStep={activeStep}
-                orientation='vertical'
+                orientation="vertical"
                 style={{ backgroundColor: 'transparent', width: '100%' }}
               >
                 {steps.map(label => (
                   <Step key={label}>
                     <StepLabel>
-                      <HeadingLevelThree color='#1c315f'>
+                      <HeadingLevelThree color="#1c315f">
                         <span>{label}</span>
                       </HeadingLevelThree>
                     </StepLabel>
@@ -648,15 +679,15 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
                           <Button
                             disabled={activeStep === 0}
                             onClick={handleBack}
-                            label='Back'
-                            variant='text'
-                            color='secondary'
+                            label="Back"
+                            variant="text"
+                            color="secondary"
                           />
                           <Button
                             btnType={ButtonFormTypes.SUBMIT}
-                            variant='contained'
+                            variant="contained"
                             disabled={processing || isDisable}
-                            color='primary'
+                            color="primary"
                             label={
                               activeStep === steps.length - 1
                                 ? 'Agree and Pay'

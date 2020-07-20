@@ -149,11 +149,7 @@ const AuthorizedPageEvent = ({
     togglePublishPopup(!isPublishPopupOpen);
   };
 
-  const hideOnList = [
-    Routes.SCHEDULES,
-    Routes.RECORD_SCORES,
-    Routes.PLAYOFFS,
-  ];
+  const hideOnList = [Routes.SCHEDULES, Routes.RECORD_SCORES, Routes.PLAYOFFS];
   const schedulingIgnoreList = [
     EventMenuTitles.SCHEDULING,
     EventMenuTitles.SCORING,
@@ -181,7 +177,7 @@ const AuthorizedPageEvent = ({
         <main
           className={`${styles.eventPageContent} ${
             isFullScreen ? styles.contentFullScreen : ''
-            }`}
+          }`}
         >
           <Switch>
             <Route path={Routes.EVENT_DETAILS_ID} component={EventDetails} />

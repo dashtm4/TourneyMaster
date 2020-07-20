@@ -1,23 +1,13 @@
 import React from 'react';
-import HeadingLevelTwo from '../common/headings/heading-level-two';
-import Button from '../common/buttons/button';
-import SectionDropdown from '../common/section-dropdown';
-import styles from './styles.module.scss';
-import Navigation from './navigation';
-import PricingAndCalendar from './pricing-and-calendar';
-import RegistrationDetails from './registration-details';
-import Registrants from './registrants';
-import Payments from './payments';
 import { connect } from 'react-redux';
+import { History } from 'history';
 import {
-  getRegistration,
-  saveRegistration,
-  getDivisions,
-  getRegistrants,
-} from './registration-edit/logic/actions';
-import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
-import RegistrationEdit from 'components/registration/registration-edit';
-import { IRegistration, IWelcomeSettings } from 'common/models/registration';
+  EventMenuRegistrationTitles,
+  EntryPoints,
+  LibraryStates,
+  IRegistrationFields,
+} from 'common/enums';
+import { IEntity } from 'common/types';
 import {
   BindingCbWithOne,
   BindingCbWithTwo,
@@ -25,17 +15,32 @@ import {
   IEventDetails,
   IRegistrant,
 } from 'common/models';
-import {
-  EventMenuRegistrationTitles,
-  EntryPoints,
-  LibraryStates,
-  IRegistrationFields,
-} from 'common/enums';
-import { History } from 'history';
-import { Loader, Toasts } from 'components/common';
-import { IEntity } from 'common/types';
+import { IRegistration, IWelcomeSettings } from 'common/models/registration';
+import { Loader, Toasts, Modal } from 'components/common';
+import { addEntityToLibrary } from 'components/authorized-page/authorized-page-event/logic/actions';
+import RegistrationEdit from 'components/registration/registration-edit';
+import AddNewField from 'components/registration/registration-edit/data-request/add-new-field';
+import HeadingLevelTwo from '../common/headings/heading-level-two';
+import Button from '../common/buttons/button';
+import SectionDropdown from '../common/section-dropdown';
+import Navigation from './navigation';
+import PricingAndCalendar from './pricing-and-calendar';
+import RegistrationDetails from './registration-details';
+import DataRequest from './data-request';
+import Registrants from './registrants';
+import Payments from './payments';
 import Waiver from './waiver';
-import EmailReceipts from "./email-receipts";
+import {
+  getRegistration,
+  saveRegistration,
+  saveCustomData,
+  getDivisions,
+  getRegistrants,
+  loadCustomData,
+} from './registration-edit/logic/actions';
+import EmailReceipts from './email-receipts';
+import { loadRegistrantData } from 'components/register-page/individuals/player-stats/logic/actions';
+import styles from './styles.module.scss';
 
 interface IRegistrationState {
   registration?: Partial<IRegistration>;
@@ -43,11 +48,16 @@ interface IRegistrationState {
   isSectionsExpand: boolean;
   changesAreMade: boolean;
   event?: Partial<IEventDetails>;
+  isAddNewFieldOpen: boolean;
+  isDataRequestInfoOpen: boolean;
 }
 
 interface IRegistrationProps {
   getRegistration: BindingCbWithOne<string>;
+  loadCustomData: BindingCbWithOne<string>;
   saveRegistration: BindingCbWithTwo<string | undefined, string>;
+  loadRegistrantData: () => void;
+  saveCustomData: BindingCbWithOne<string>;
   getDivisions: BindingCbWithOne<string>;
   getRegistrants: BindingCbWithOne<string>;
   getRegistrantPayments: BindingCbWithOne<string>;
@@ -59,6 +69,8 @@ interface IRegistrationProps {
   history: History;
   isLoading: boolean;
   event: IEventDetails;
+  registrantDataFields: any;
+  options: any;
 }
 
 class RegistrationView extends React.Component<
@@ -72,11 +84,14 @@ class RegistrationView extends React.Component<
     isSectionsExpand: true,
     changesAreMade: false,
     event: undefined,
+    isAddNewFieldOpen: false,
+    isDataRequestInfoOpen: false,
   };
 
   componentDidMount() {
     this.props.getRegistration(this.eventId);
     this.props.getDivisions(this.eventId);
+    this.props.loadCustomData(this.eventId);
   }
 
   componentDidUpdate(prevProps: IRegistrationProps) {
@@ -91,6 +106,27 @@ class RegistrationView extends React.Component<
       });
     }
   }
+
+  onAddNewField = () => {
+    this.setState({ isAddNewFieldOpen: true });
+  };
+
+  onAddNewFieldClose = () => {
+    loadRegistrantData();
+    this.setState({
+      isAddNewFieldOpen: false,
+    });
+  };
+
+  onDataRequestInfo = () => {
+    this.setState({ isDataRequestInfoOpen: true });
+  };
+
+  onDataRequestInfoClose = () => {
+    this.setState({
+      isDataRequestInfoOpen: false,
+    });
+  };
 
   onRegistrationEdit = () => {
     this.setState({ isEdit: true });
@@ -132,11 +168,18 @@ class RegistrationView extends React.Component<
   };
 
   onSaveClick = () => {
-    if (this.scheduleIsValid(this.state.registration)) {
-      this.props.saveRegistration(this.state.registration, this.eventId);
-      this.setState({ isEdit: false, changesAreMade: false });
+    const { options } = this.props;
+
+    if (Object.entries(options).length === 0) {
+      this.onDataRequestInfo();
     } else {
-      Toasts.errorToast('Total schedule amount must be equal to 100%');
+      if (this.scheduleIsValid(this.state.registration)) {
+        this.props.saveRegistration(this.state.registration, this.eventId);
+        this.props.saveCustomData(this.eventId);
+        this.setState({ isEdit: false, changesAreMade: false });
+      } else {
+        Toasts.errorToast('Total schedule amount must be equal to 100%');
+      }
     }
   };
 
@@ -173,23 +216,55 @@ class RegistrationView extends React.Component<
   };
 
   renderView = () => {
-    const { registration, event } = this.props;
+    const { registration, event, registrantDataFields } = this.props;
+    const { isAddNewFieldOpen, isDataRequestInfoOpen } = this.state;
+
     if (!event) {
       return;
     }
     const eventType = event[0] && event[0].event_type;
+
     if (this.state.isEdit) {
       return (
-        <RegistrationEdit
-          event={event}
-          registration={this.state.registration}
-          onChange={this.onChange}
-          onCancel={this.onCancelClick}
-          onSave={this.onSaveClick}
-          changesAreMade={this.state.changesAreMade}
-          divisions={this.props.divisions}
-          eventType={eventType}
-        />
+        <>
+          <RegistrationEdit
+            event={event}
+            registration={this.state.registration}
+            onChange={this.onChange}
+            onCancel={this.onCancelClick}
+            onSave={this.onSaveClick}
+            changesAreMade={this.state.changesAreMade}
+            divisions={this.props.divisions}
+            eventType={eventType}
+            onAddNewField={this.onAddNewField}
+            registrantDataFields={registrantDataFields}
+            eventId={this.eventId}
+          />
+          <Modal isOpen={isAddNewFieldOpen} onClose={this.onAddNewFieldClose}>
+            <AddNewField
+              onCancel={this.onAddNewFieldClose}
+            />
+          </Modal>
+          <Modal
+            isOpen={isDataRequestInfoOpen}
+            onClose={this.onDataRequestInfoClose}
+          >
+            <div className={styles.modalContainer}>
+              <div className={styles.modalContent}>
+                Make sure you select Requested or Required for each selected
+                data request.
+              </div>
+              <div className={styles.modalButton}>
+                <Button
+                  label="Dismiss"
+                  variant="text"
+                  color="secondary"
+                  onClick={this.onDataRequestInfoClose}
+                />
+              </div>
+            </div>
+          </Modal>
+        </>
       );
     } else {
       return (
@@ -205,7 +280,7 @@ class RegistrationView extends React.Component<
               {registration && (
                 <Button
                   label={
-                    this.state.isSectionsExpand ? "Collapse All" : "Expand All"
+                    this.state.isSectionsExpand ? 'Collapse All' : 'Expand All'
                   }
                   variant="text"
                   color="secondary"
@@ -246,6 +321,17 @@ class RegistrationView extends React.Component<
                       data={registration}
                       eventType={eventType}
                     />
+                  </SectionDropdown>
+                </li>
+                <li>
+                  <SectionDropdown
+                    id={EventMenuRegistrationTitles.DATA_REQUESTS}
+                    type="section"
+                    panelDetailsType="flat"
+                    expanded={this.state.isSectionsExpand}
+                  >
+                    <span>Data Requests</span>
+                    <DataRequest eventId={this.eventId} />
                   </SectionDropdown>
                 </li>
                 <li>
@@ -294,7 +380,7 @@ class RegistrationView extends React.Component<
                     expanded={this.state.isSectionsExpand}
                   >
                     <span>Email Confirms Settings</span>
-                    <EmailReceipts data={registration}/>
+                    <EmailReceipts data={registration} />
                   </SectionDropdown>
                 </li>
               </ul>
@@ -326,7 +412,9 @@ interface IState {
     registrants: IRegistrant[];
     isLoading: boolean;
     event: IEventDetails;
+    options: any;
   };
+  playerStatsReducer: { registrantDataFields: any };
 }
 
 const mapStateToProps = (state: IState) => ({
@@ -335,14 +423,19 @@ const mapStateToProps = (state: IState) => ({
   divisions: state.registration.divisions,
   registrants: state.registration.registrants,
   event: state.registration.event,
+  registrantDataFields: state.playerStatsReducer.registrantDataFields,
+  options: state.registration.options,
 });
 
 const mapDispatchToProps = {
   getRegistration,
   saveRegistration,
+  saveCustomData,
   getDivisions,
   getRegistrants,
   addEntityToLibrary,
+  loadCustomData,
+  loadRegistrantData,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(RegistrationView);

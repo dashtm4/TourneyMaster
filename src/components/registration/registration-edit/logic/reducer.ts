@@ -8,6 +8,10 @@ import {
   REGISTRANTS_PAYMENTS_FETCH_SUCCESS,
   REGISTRANTS_ADD_TO_EVENT_SUCCESS,
   EVENT_FETCH_SUCCESS,
+  LOAD_CUSTOM_DATA_SUCCESS,
+  UPDATE_REQUESTED_IDS_SUCCESS,
+  SWAP_REQUESTED_IDS_SUCCESS,
+  UPDATE_OPTIONS_SUCCESS,
 } from './actionTypes';
 import { sortByField } from 'helpers';
 import {
@@ -19,6 +23,8 @@ import {
 import { SortByFilesTypes } from 'common/enums';
 
 export interface IState {
+  requestedIds: any;
+  options: any;
   data?: Partial<IRegistration>;
   divisions: IDivision[];
   registrants: IRegistrant[];
@@ -30,6 +36,8 @@ export interface IState {
 
 const defaultState: IState = {
   data: undefined,
+  requestedIds: [],
+  options: {},
   divisions: [],
   registrants: [],
   payments: [],
@@ -85,7 +93,7 @@ export default (
     }
     case REGISTRANTS_ADD_TO_EVENT_SUCCESS: {
       const { regResponseId, teamId } = action.payload;
-      const updatedRegistrants = state.registrants.map(registrant =>
+      const updatedRegistrants = state.registrants.map((registrant) =>
         registrant.reg_response_id === regResponseId
           ? { ...registrant, team_id: teamId }
           : registrant
@@ -111,6 +119,73 @@ export default (
     case EVENT_FETCH_SUCCESS: {
       return { ...state, event: action.payload };
     }
+
+    case LOAD_CUSTOM_DATA_SUCCESS: {
+      const { requestedIds, options } = action.payload;
+      return { ...state, requestedIds, options };
+    }
+
+    case UPDATE_REQUESTED_IDS_SUCCESS: {
+      const { id, status } = action.payload;
+      const { requestedIds } = state;
+
+      switch (status) {
+        case 'add':
+          return { ...state, requestedIds: [...requestedIds, id] };
+        case 'remove':
+          const updatedRequestedIds = requestedIds.filter(
+            (el: number | string) => el !== id
+          );
+
+          return {
+            ...state,
+            requestedIds: updatedRequestedIds,
+          };
+        default:
+          return {
+            state,
+          };
+      }
+    }
+
+    case SWAP_REQUESTED_IDS_SUCCESS: {
+      const { oldIndex, newIndex } = action.payload;
+      const { requestedIds } = state;
+
+      const updatedRequestedIds = [...requestedIds];
+      updatedRequestedIds.splice(oldIndex, 1);
+      updatedRequestedIds.splice(newIndex, 0, requestedIds[oldIndex]);
+
+      return { ...state, requestedIds: updatedRequestedIds };
+    }
+
+    case UPDATE_OPTIONS_SUCCESS: {
+      const { id, value, status } = action.payload;
+      const { options } = state;
+
+      switch (status) {
+        case 'add':
+          return { ...state, options: { ...options, [id]: value } };
+        case 'remove': {
+          const newOptions = {};
+
+          Object.keys(options || {})
+            .filter((el) => el.toString() !== id.toString())
+            .map((el) => {
+              newOptions[el] = options[el];
+              return true;
+            });
+
+          return { ...state, options: newOptions };
+        }
+        default: {
+          return {
+            state,
+          };
+        }
+      }
+    }
+
     default:
       return state;
   }
