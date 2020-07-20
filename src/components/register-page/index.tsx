@@ -53,7 +53,7 @@ export enum TypeOptions {
 
 const getInternalRegType = (type: TypeOptions) => {
   if (
-    type === TypeOptions.Participant ||
+    type === TypeOptions['Participant (Must be +18 years of age)'] ||
     type === TypeOptions['Parent/Guardian']
   ) {
     return 'individual';
@@ -64,7 +64,7 @@ const getInternalRegType = (type: TypeOptions) => {
 
 const getApiEndpointByRegType = (type: TypeOptions) => {
   if (
-    type === TypeOptions.Participant ||
+    type === TypeOptions['Participant (Must be +18 years of age)'] ||
     type === TypeOptions['Parent/Guardian']
   ) {
     return '/registrant_data_response';
@@ -126,7 +126,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
   const getSteps = () => {
     if (
-      type === TypeOptions.Participant ||
+      type === TypeOptions['Participant (Must be +18 years of age)'] ||
       type === TypeOptions['Parent/Guardian']
     ) {
       const steps = [
@@ -177,7 +177,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
       setEvent(eventData);
       setType(
         eventTypeOptions[eventData.event_type] === eventTypeOptions.Showcase
-          ? TypeOptions.Participant
+          ? TypeOptions['Participant (Must be +18 years of age)']
           : TypeOptions['Team Admin']
       );
     });
@@ -231,7 +231,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
     try {
       if (
-        type === TypeOptions.Participant ||
+        type === TypeOptions['Participant (Must be +18 years of age)'] ||
         type === TypeOptions['Parent/Guardian']
       ) {
         const updatedRegistrationPromises: Promise<any>[] = [];
@@ -332,7 +332,7 @@ const RegisterPage = ({ match }: RegisterMatchParams) => {
 
   const getStepContent = (step: string) => {
     if (
-      type === TypeOptions.Participant ||
+      type === TypeOptions['Participant (Must be +18 years of age)'] ||
       type === TypeOptions['Parent/Guardian']
     ) {
       const {
