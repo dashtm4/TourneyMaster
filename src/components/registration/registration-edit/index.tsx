@@ -15,6 +15,7 @@ import {
   IContactPerson,
 } from 'common/models/registration';
 import { BindingAction, BindingCbWithTwo, IDivision } from 'common/models';
+import { ButtonFormTypes } from 'common/enums';
 import FabButton from 'components/common/fab-button';
 import { PopupExposure } from 'components/common';
 import Waiver from '../waiver';
@@ -125,134 +126,136 @@ class RegistrationEdit extends React.Component<
 
     return (
       <section>
-        <Paper sticky={true}>
-          <div className={styles.mainMenu}>
-            <div className={styles.btnsWrapper}>
-              <Button
-                label="Cancel"
-                variant="text"
-                color="secondary"
-                onClick={this.onCancelClick}
-              />
-              <Button
-                label="Save"
-                variant="contained"
-                color="primary"
-                onClick={this.props.onSave}
-              />
-              <FabButton
-                onClick={this.onCancelClick}
-                sequence={1}
-                label="Cancel"
-                variant="outlined"
-              />
-              <FabButton
-                onClick={this.props.onSave}
-                sequence={2}
-                label="Save"
-                variant="contained"
-              />
+        <form onSubmit={() => this.props.onSave()} ref="formToSubmit">
+          <Paper sticky={true}>
+            <div className={styles.mainMenu}>
+              <div className={styles.btnsWrapper}>
+                <Button
+                  label="Cancel"
+                  variant="text"
+                  color="secondary"
+                  onClick={this.onCancelClick}
+                />
+                <Button
+                  label="Save"
+                  variant="contained"
+                  color="primary"
+                  btnType={ButtonFormTypes.SUBMIT}
+                />
+                <FabButton
+                  onClick={this.onCancelClick}
+                  sequence={1}
+                  label="Cancel"
+                  variant="outlined"
+                />
+                <FabButton
+                  btnType={ButtonFormTypes.SUBMIT}
+                  sequence={2}
+                  label="Save"
+                  variant="contained"
+                />
+              </div>
             </div>
-          </div>
-        </Paper>
-        <div className={styles.sectionContainer}>
-          <div className={styles.heading}>
-            <HeadingLevelTwo>Registration</HeadingLevelTwo>
-          </div>
-          <ul className={styles.libraryList}>
-            <li>
-              <SectionDropdown
-                type="section"
-                panelDetailsType="flat"
-                isDefaultExpanded={true}
-              >
-                <span>Pricing &amp; Calendar</span>
-                <PricingAndCalendar
-                  data={this.props.registration}
-                  onChange={this.props.onChange}
-                />
-              </SectionDropdown>
-            </li>
-            <li>
-              <SectionDropdown
-                type="section"
-                panelDetailsType="flat"
-                isDefaultExpanded={true}
-              >
-                <span>Registration Details</span>
-                <RegistrationDetails
-                  data={this.props.registration}
-                  onChange={this.props.onChange}
-                  eventType={this.props.eventType}
-                />
-              </SectionDropdown>
-            </li>
-            <li>
-              <SectionDropdown
-                type="section"
-                panelDetailsType="flat"
-                isDefaultExpanded={true}
-              >
-                <span>Data Requests</span>
-                <DataRequest
-                  eventId={eventId}
-                  onAddNewField={onAddNewField}
-                  registrantDataFields={registrantDataFields}
-                />
-              </SectionDropdown>
-            </li>
-            <li>
-              <SectionDropdown
-                type="section"
-                panelDetailsType="flat"
-                isDefaultExpanded={true}
-              >
-                <span>Payments</span>
-                <Payments
-                  data={this.props.registration}
-                  onChange={this.props.onChange}
-                />
-              </SectionDropdown>
-            </li>
-            {this.props.event && this.props.event[0].waivers_required === 1 ? (
+          </Paper>
+          <div className={styles.sectionContainer}>
+            <div className={styles.heading}>
+              <HeadingLevelTwo>Registration</HeadingLevelTwo>
+            </div>
+            <ul className={styles.libraryList}>
               <li>
                 <SectionDropdown
                   type="section"
                   panelDetailsType="flat"
                   isDefaultExpanded={true}
                 >
-                  <span>Waiver</span>
-                  <div className={styles.waiverWrapp}>
-                    <Waiver
-                      data={this.props.registration}
-                      onChange={this.props.onChange}
-                      isEdit={true}
-                    />
-                  </div>
+                  <span>Pricing &amp; Calendar</span>
+                  <PricingAndCalendar
+                    data={this.props.registration}
+                    onChange={this.props.onChange}
+                  />
                 </SectionDropdown>
               </li>
-            ) : null}
-            <li>
-              <SectionDropdown
-                type="section"
-                panelDetailsType="flat"
-                isDefaultExpanded={true}
-              >
-                <span>Email Confirms Settings</span>
-                <EmailReceipts
-                  data={this.mapEmailSettingToObj()}
-                  onChange={this.onChangeEmailSettings}
-                />
-              </SectionDropdown>
-            </li>
-          </ul>
-        </div>
-        <PopupExposure
-          isOpen={this.state.isExposurePopupOpen}
-          onClose={this.onModalClose}
-          onExitClick={this.props.onCancel}
-          onSaveClick={this.props.onSave}
-        />
+              <li>
+                <SectionDropdown
+                  type="section"
+                  panelDetailsType="flat"
+                  isDefaultExpanded={true}
+                >
+                  <span>Registration Details</span>
+                  <RegistrationDetails
+                    data={this.props.registration}
+                    onChange={this.props.onChange}
+                    eventType={this.props.eventType}
+                  />
+                </SectionDropdown>
+              </li>
+              <li>
+                <SectionDropdown
+                  type="section"
+                  panelDetailsType="flat"
+                  isDefaultExpanded={true}
+                >
+                  <span>Data Requests</span>
+                  <DataRequest
+                    eventId={eventId}
+                    onAddNewField={onAddNewField}
+                    registrantDataFields={registrantDataFields}
+                  />
+                </SectionDropdown>
+              </li>
+              <li>
+                <SectionDropdown
+                  type="section"
+                  panelDetailsType="flat"
+                  isDefaultExpanded={true}
+                >
+                  <span>Payments</span>
+                  <Payments
+                    data={this.props.registration}
+                    onChange={this.props.onChange}
+                  />
+                </SectionDropdown>
+              </li>
+              {this.props.event && this.props.event[0].waivers_required === 1 ? (
+                <li>
+                  <SectionDropdown
+                    type="section"
+                    panelDetailsType="flat"
+                    isDefaultExpanded={true}
+                  >
+                    <span>Waiver</span>
+                    <div className={styles.waiverWrapp}>
+                      <Waiver
+                        data={this.props.registration}
+                        onChange={this.props.onChange}
+                        isEdit={true}
+                      />
+                    </div>
+                  </SectionDropdown>
+                </li>
+              ) : null}
+              <li>
+                <SectionDropdown
+                  type="section"
+                  panelDetailsType="flat"
+                  isDefaultExpanded={true}
+                >
+                  <span>Email Confirms Settings</span>
+                  <EmailReceipts
+                    data={this.mapEmailSettingToObj()}
+                    onChange={this.onChangeEmailSettings}
+                  />
+                </SectionDropdown>
+              </li>
+            </ul>
+          </div>
+          <PopupExposure
+            isOpen={this.state.isExposurePopupOpen}
+            onClose={this.onModalClose}
+            onExitClick={this.props.onCancel}
+            onSaveClick={this.props.onSave}
+          />
+        </form>
       </section>
     );
   }
