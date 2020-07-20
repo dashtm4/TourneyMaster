@@ -45,7 +45,7 @@ import styles from './styles.module.scss';
 axios.defaults.baseURL = process.env.REACT_APP_PUBLIC_API_BASE_URL!;
 
 export enum TypeOptions {
-  'Participant' = 1,
+  'Participant (Must be +18 years of age)' = 1,
   'Parent/Guardian' = 2,
   'Team Admin' = 3,
   'Coach' = 4,
