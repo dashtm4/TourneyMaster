@@ -92,7 +92,7 @@ const PlayerInfo = ({
         <div className={styles.sectionItem}>
           <DatePicker
             fullWidth={true}
-            label={`Birthdate ${datePickerRequired ? '(Required)' : ''}`}
+            label={`Birthdate ${datePickerRequired ? '(MM/DD/YYYY)' : ''}`}
             type='date'
             value={
               data.player_birthdate === undefined ? null : data.player_birthdate
