@@ -157,7 +157,10 @@ export const getPaymentPlans = async ({
 
               const { payment_schedule_json, ...paymentPlan } = {
                 ...sku,
-                total_price: sku.price.reduce((a, c) => a + c.amountWithTax, 0),
+                total_price: scheduleArr.reduce(
+                  (a, c) => a + c.amountWithTax,
+                  0
+                ),
                 discount: 0,
                 payment_plan_id: sku.sku_id + '_' + rawPaymentPlan.id,
                 payment_plan_name: rawPaymentPlan.name,
