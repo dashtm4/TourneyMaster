@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { Input, Select, CardMessage } from 'components/common/';
 import Checkbox from 'components/common/buttons/checkbox';
 import styles from '../styles.module.scss';
@@ -249,12 +250,16 @@ class CreateTeamForm extends React.Component<
               />
             </div>
             <div className={styles.sectionItemLarge}>
-              <Input
-                fullWidth={true}
-                label="Email *"
-                value={contact_email || ''}
-                onChange={this.onEmailChange}
-              />
+              <span className={styles.label}>Email *</span>
+              <ValidatorForm onSubmit={() => { }}>
+                <TextValidator
+                  onChange={this.onEmailChange}
+                  value={contact_email || ''}
+                  name="email"
+                  validators={['required', 'isEmail']}
+                  errorMessages={['this field is required', 'email is not valid']}
+                />
+              </ValidatorForm>
             </div>
           </div>
           <div className={styles.sectionRow}>

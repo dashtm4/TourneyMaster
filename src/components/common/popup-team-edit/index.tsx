@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { orderBy } from 'lodash-es';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -111,8 +112,8 @@ const TeamDetailsPopup = ({
             {teamTitle}
             {division
               ? ` (${
-                  division && pool ? `${division}, ${pool}` : `${division}`
-                })`
+              division && pool ? `${division}, ${pool}` : `${division}`
+              })`
               : ''}
           </span>
         </HeadingLevelThree>
@@ -144,8 +145,8 @@ const TeamDetailsPopup = ({
                     <span className="visually-hidden">Long Name</span>
                   </label>
                 ) : (
-                  <span>{team.long_name}</span>
-                )}
+                    <span>{team.long_name}</span>
+                  )}
               </li>
               <li>
                 <b>Short name: </b>
@@ -160,8 +161,8 @@ const TeamDetailsPopup = ({
                     <span className="visually-hidden">Short name:</span>
                   </label>
                 ) : (
-                  <span>{team.short_name}</span>
-                )}
+                    <span>{team.short_name}</span>
+                  )}
               </li>
               <li>
                 <b>Tag: </b>
@@ -176,8 +177,8 @@ const TeamDetailsPopup = ({
                     <span className="visually-hidden">Tag</span>
                   </label>
                 ) : (
-                  <span>{team.team_tag}</span>
-                )}
+                    <span>{team.team_tag}</span>
+                  )}
               </li>
               <li>
                 <b>State: </b>
@@ -193,8 +194,8 @@ const TeamDetailsPopup = ({
                     <span className="visually-hidden">State</span>
                   </label>
                 ) : (
-                  <span>{team.state}</span>
-                )}
+                    <span>{team.state}</span>
+                  )}
               </li>
               <li>
                 <b>City: </b>
@@ -209,8 +210,8 @@ const TeamDetailsPopup = ({
                     <span className="visually-hidden">City</span>
                   </label>
                 ) : (
-                  <span>{team.city}</span>
-                )}
+                    <span>{team.city}</span>
+                  )}
               </li>
             </ul>
             <ul className={styles.contactList}>
@@ -238,9 +239,9 @@ const TeamDetailsPopup = ({
                     </label>
                   </p>
                 ) : (
-                  <span>{`${team.contact_first_name ||
-                    ''} ${team.contact_last_name || ''}`}</span>
-                )}
+                    <span>{`${team.contact_first_name ||
+                      ''} ${team.contact_last_name || ''}`}</span>
+                  )}
               </li>
               <li>
                 <b>Mobile: </b>
@@ -264,26 +265,29 @@ const TeamDetailsPopup = ({
                     inputClass={styles.phoneInput}
                   />
                 ) : (
-                  <span>
-                    {team.phone_num ? formatPhoneNumber(team.phone_num) : ''}
-                  </span>
-                )}
+                    <span>
+                      {team.phone_num ? formatPhoneNumber(team.phone_num) : ''}
+                    </span>
+                  )}
               </li>
               <li>
                 <b>Email: </b>
                 {isEdit ? (
-                  <label>
-                    <input
-                      onChange={onChangeTeam}
-                      value={team.contact_email || ''}
-                      name={FORM_FIELDS.CONCTACT_EMAIL}
-                      type="text"
-                    />
+                  <label className={styles.emailSectionItem}>
+                    <ValidatorForm onSubmit={() => { }}>
+                      <TextValidator
+                        onChange={onChangeTeam}
+                        value={team.contact_email || ''}
+                        name={FORM_FIELDS.CONCTACT_EMAIL}
+                        validators={['isEmail']}
+                        errorMessages={['email is not valid']}
+                      />
+                    </ValidatorForm>
                     <span className="visually-hidden">Email</span>
                   </label>
                 ) : (
-                  <span>{team.contact_email}</span>
-                )}
+                    <span>{team.contact_email}</span>
+                  )}
               </li>
             </ul>
           </div>
@@ -295,10 +299,10 @@ const TeamDetailsPopup = ({
                 ))}
               </ul>
             ) : (
-              <p className={styles.gamesMessage}>
-                There is no published schedule yet.
-              </p>
-            ))}
+                <p className={styles.gamesMessage}>
+                  There is no published schedule yet.
+                </p>
+              ))}
         </div>
         <div className={styles.btnsWrapper}>
           <span className={styles.BtnDeleteWrapper}>

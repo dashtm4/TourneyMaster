@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import styles from '../../styles.module.scss';
 import { Input } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
@@ -61,21 +62,24 @@ const CoachInfo = ({ data, onChange, fillCoachInfo }: ICoachInfoProps) => {
             isRequired={true}
           />
         </div>
-        <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            label="Email"
-            value={data.coach_email || ''}
-            onChange={onEmailChange}
-            isRequired={true}
-          />
+        <div className={styles.emailSectionItem}>
+          <span className={styles.label}>Email *</span>
+          <ValidatorForm onSubmit={() => { }}>
+            <TextValidator
+              onChange={onEmailChange}
+              value={data.coach_email || ''}
+              name="email"
+              validators={['required', 'isEmail']}
+              errorMessages={['this field is required', 'email is not valid']}
+            />
+          </ValidatorForm>
         </div>
         <div className={styles.sectionItem}>
           <div className={styles.sectionTitle}>Phone Number CA</div>
           <PhoneInput
             country={'us'}
             // disableDropdown
-            onlyCountries={['us','ca']}
+            onlyCountries={['us', 'ca']}
             disableCountryCode={false}
             placeholder=""
             value={data.coach_mobile || ''}

@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 
 import {
   SectionDropdown,
@@ -239,12 +240,18 @@ const PrimaryInformationSection: React.FC<Props> = ({
             value={eventData.main_contact_mobile || ''}
             onChange={onMainContactMobieChange}
           />
-          <Input
-            fullWidth={true}
-            label="Main Contact Email"
-            value={eventData.main_contact_email || ''}
-            onChange={onMainContactEmailChange}
-          />
+          <div className={styles.emailSectionItem}>
+            <span className={styles.label}>Main Contact Email</span>
+            <ValidatorForm onSubmit={() => { }}>
+              <TextValidator
+                value={eventData.main_contact_email || ''}
+                onChange={onMainContactEmailChange}
+                name="email"
+                validators={['isEmail']}
+                errorMessages={['email is not valid']}
+              />
+            </ValidatorForm>
+          </div>
           <CardMessage type={CardMessageTypes.EMODJI_OBJECTS}>
             {CONTACT_TOOLTIP_MESSAGE}
           </CardMessage>

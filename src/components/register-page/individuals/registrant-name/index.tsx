@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from '../../styles.module.scss';
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { Input, Checkbox } from 'components/common';
 import { BindingCbWithTwo } from 'common/models';
 import PhoneInput from 'react-phone-input-2';
@@ -49,21 +50,24 @@ const RegistrantName = ({ data, onChange }: IRegistrantNameProps) => {
             onChange={onLastNameChange}
           />
         </div>
-        <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            label="Email"
-            value={data.registrant_email || ''}
-            isRequired={true}
-            onChange={onEmailChange}
-          />
+        <div className={styles.emailSectionItem}>
+          <span className={styles.label}>Email *</span>
+          <ValidatorForm onSubmit={() => { }}>
+            <TextValidator
+              onChange={onEmailChange}
+              value={data.registrant_email || ''}
+              name="email"
+              validators={['required', 'isEmail']}
+              errorMessages={['this field is required', 'email is not valid']}
+            />
+          </ValidatorForm>
         </div>
         <div className={styles.sectionItem}>
           <div className={styles.sectionTitle}>Phone Number</div>
           <PhoneInput
             country={'us'}
             // disableDropdown
-            onlyCountries={['us','ca']}
+            onlyCountries={['us', 'ca']}
             disableCountryCode={false}
             placeholder=""
             value={data.registrant_mobile || ''}
