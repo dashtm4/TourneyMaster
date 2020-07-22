@@ -227,7 +227,7 @@ const RegistrationDetails = ({
               onChange={onEmailChange}
               name="email"
               validators={['isEmail']}
-              errorMessages={['email is not valid']}
+              errorMessages={['Invalid email format.']}
             />
           </ValidatorForm>
         </div>
