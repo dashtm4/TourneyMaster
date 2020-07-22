@@ -28,6 +28,7 @@ import Support from '../support';
 import LibraryManager from '../library-manager';
 import OrganizationsManagement from '../organizations-management';
 import styles from './styles.module.scss';
+import { RegistrantsReport } from 'components/reports';
 
 interface Props {
   getCalendarEvents: BindingAction;
@@ -94,6 +95,7 @@ const AuthorizedPage = ({
             />
             <Route path={Routes.CALENDAR} component={Calendar} />
             <Route path={Routes.UTILITIES} component={Utilities} />
+            <Route path={Routes.REPORTS} component={RegistrantsReport} />
             <Route
               path={Routes.EVENT_DAY_COMPLEXITIES}
               component={GamedayComplexities}

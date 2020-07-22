@@ -49,6 +49,12 @@ export const MenuList = [
     ],
   },
   {
+    title: MenuTitles.REPORTS,
+    icon: Icons.SWAPVERT,
+    link: Routes.REPORTS,
+    children: [],
+  },
+  {
     title: 'Event Day Complexities',
     link: Routes.EVENT_DAY_COMPLEXITIES,
     icon: Icons.ERROR,

@@ -191,7 +191,7 @@ export const saveCustomData = (eventId: string) => async (
 
     const optionsPromises: Promise<any>[] = [];
 
-    Object.keys(options).forEach((el) => {
+    Object.keys(options).forEach(el => {
       const optionsFields = updatedRequestFields.filter(
         (updatedField: any) => updatedField.data_field_id.toString() === el
       );
@@ -335,10 +335,13 @@ export const getRegistrants: ActionCreator<ThunkAction<
   {},
   null,
   { type: string }
->> = (registrationId: string) => async (dispatch: Dispatch) => {
+>> = (registrationId?: string) => async (dispatch: Dispatch) => {
+  const regQueryString = registrationId
+    ? `?registration_id=${registrationId}`
+    : '';
   let [teams, individuals] = await Promise.all([
-    api.get(`/reg_responses_teams?registration_id=${registrationId}`),
-    api.get(`/reg_responses_individuals?registration_id=${registrationId}`),
+    api.get(`/reg_responses_teams${regQueryString}`),
+    api.get(`/reg_responses_individuals${regQueryString}`),
   ]);
   teams = teams.map((x: any) => ({ ...x, type: 'team' }));
   individuals = individuals.map((x: any) => ({ ...x, type: 'individual' }));
