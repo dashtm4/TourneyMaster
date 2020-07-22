@@ -1,4 +1,5 @@
 import React from 'react';
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import styles from '../styles.module.scss';
 import { Input, Radio, Checkbox, Select } from 'components/common';
 import { IRegistration } from 'common/models/registration';
@@ -94,8 +95,8 @@ const RegistrationDetails = ({
           />
         </div>
         <div className={styles.sectionItem}>
-          {eventType === 'Showcase' 
-          ? (
+          {eventType === 'Showcase'
+            ? (
               <Input
                 fullWidth={true}
                 label="Max Players Per Division"
@@ -218,13 +219,17 @@ const RegistrationDetails = ({
             onChange={onRoleChange}
           />
         </div>
-        <div className={styles.sectionItem}>
-          <Input
-            fullWidth={true}
-            label="Email"
-            value={data ? data.email_address : ''}
-            onChange={onEmailChange}
-          />
+        <div className={styles.emailSectionItem}>
+          <span className={styles.label}>Email *</span>
+          <ValidatorForm onSubmit={() => { }}>
+            <TextValidator
+              value={data ? data.email_address : ''}
+              onChange={onEmailChange}
+              name="email"
+              validators={['isEmail']}
+              errorMessages={['email is not valid']}
+            />
+          </ValidatorForm>
         </div>
       </div>
       <div className={styles.sectionRow}>
@@ -233,7 +238,7 @@ const RegistrationDetails = ({
           <PhoneInput
             country={'us'}
             // disableDropdown
-            onlyCountries={['us','ca']}
+            onlyCountries={['us', 'ca']}
             disableCountryCode={false}
             placeholder=""
             value={data ? String(data.mobile_number) : ''}

@@ -304,3 +304,48 @@ $sectionBodyPadding: 20px 0;
     }
   }
 }
+
+.emailSectionItem  {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 11;
+  form {
+    margin-top: 7px;
+  }
+
+  input {
+    padding: 10px 14px;
+    color: #6a6a6a;
+  }
+
+  p {
+    padding: 10px 14px;
+    position: absolute;
+    bottom: -51px;
+    background: #e8402f;
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 6px;
+    color: white !important;
+
+    &:before {
+      content: "";
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 5px solid #e8402f;
+      top: -5px;
+      position: absolute;
+    }
+  }
+
+  .label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #6a6a6a;
+    margin-bottom: 7px;
+    white-space: nowrap;
+  }
+}
