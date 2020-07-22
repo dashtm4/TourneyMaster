@@ -10,6 +10,7 @@ enum Routes {
   COLLABORATION = '/collaboration',
   CALENDAR = '/calendar',
   UTILITIES = '/utilities',
+  REPORTS = '/reports',
   EVENT_DAY_COMPLEXITIES = '/event-day-complexities',
   ORGANIZATIONS_MANAGEMENT = '/organizations-management',
   EVENT_DETAILS = '/event/event-details',

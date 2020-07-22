@@ -34,6 +34,7 @@ const App: React.FC = () => {
             Routes.COLLABORATION,
             Routes.CALENDAR,
             Routes.UTILITIES,
+            Routes.REPORTS,
             Routes.EVENT_DAY_COMPLEXITIES,
             Routes.ORGANIZATIONS_MANAGEMENT,
             Routes.MOBILE_SCORING,

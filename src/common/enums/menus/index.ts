@@ -6,6 +6,7 @@ enum MenuTitles {
   DIVISIONS_AND_POOLS = 'Divisions & Pools',
   SCHEDULING = 'Scheduling',
   UTILITIES = 'Utilities',
+  REPORTS = 'Reports',
   USER_PROFILE = 'User Profile',
   ORG_INFO = 'Organization Info',
   TOURNEY_IMPORT = 'Tourney Import',
