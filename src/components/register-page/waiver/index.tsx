@@ -36,11 +36,9 @@ const Waiver = ({
   setDisabledButton,
 }: IRegistrationDetailsProps) => {
   const [isBottom, setIsBottom] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
+  const [isComplete, setIsComplete] = useState(Boolean(data.waiver_signature));
   const [isLoadFile, setIsLoadFile] = useState(false);
-  const [name, setName] = useState('');
-  const [IP, setIP] = useState('');
-  const [hash, setHash] = useState('');
+  const [name, setName] = useState(data.waiver_signature ? JSON.parse(data.waiver_signature).name : '');
   const [error, setError] = useState('');
   const scrollRef = useRef<HTMLInputElement>(null);
 
@@ -53,9 +51,23 @@ const Waiver = ({
     }
   };
 
+  const loadSignatureParams = async (inputedValue: string) => {
+    const res = await axios.get('https://api.ipify.org');
+    if (content === null || content.waiver_content === null) {
+      return;
+    }
+    onChange(
+      'waiver_signature',
+      JSON.stringify({ ip: res.data, hash: MD5(content.waiver_content).toString(), name: inputedValue })
+    );
+  };
+
   useEffect(() => {
-    loadPrevData();
-    loadSignatureParams();
+    if (!data.waiver_signature) {
+      setDisabledButton(true);
+      return;
+    }
+    setDisabledButton(false);
   });
 
   useEffect(() => {
@@ -90,32 +102,10 @@ const Waiver = ({
       setError('');
       setIsComplete(true);
       setDisabledButton(false);
-      onChange(
-        'waiver_signature',
-        JSON.stringify({ ip: IP, hash, name: inputedValue })
-      );
+      loadSignatureParams(inputedValue);
       const currentDate = new Date();
       onChange('waiver_sign_datetime', currentDate.toISOString());
     }
-  };
-
-  const loadSignatureParams = async () => {
-    const res = await axios.get('https://api.ipify.org');
-    setIP(res.data);
-    if (content === null || content.waiver_content === null) {
-      return;
-    }
-    setHash(MD5(content.waiver_content).toString());
-  };
-
-  const loadPrevData = () => {
-    if (!data.waiver_signature) {
-      setDisabledButton(true);
-      return;
-    }
-    setName(JSON.parse(data.waiver_signature).name);
-    setIsComplete(true);
-    setDisabledButton(false);
   };
 
   const downloadPDF = (pdf: string) => {
