@@ -54,7 +54,7 @@
     "ag-grid-enterprise": "^23.2.1",
     "ag-grid-react": "^23.2.1",
     "aws-amplify": "^2.3.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "connected-react-router": "^6.7.0",
     "crypto-js": "^4.0.0",
     "date-fns": "^2.9.0",
